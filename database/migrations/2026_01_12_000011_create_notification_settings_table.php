@@ -1,0 +1,30 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('notification_settings', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->boolean('order_placed')->default(true);
+            $table->boolean('invoice_generated')->default(true);
+            $table->boolean('low_stock_alert')->default(true);
+            $table->boolean('customer_registered')->default(false);
+            $table->boolean('daily_summary')->default(false);
+            $table->string('notification_email')->nullable();
+            $table->timestamps();
+
+            $table->unique('user_id');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('notification_settings');
+    }
+};

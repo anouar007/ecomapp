@@ -1,0 +1,691 @@
+:root {
+    /* Premium Elegant Color Palette */
+    --primary-color: #1a1a2e;
+    --primary-accent: #e94560;
+    --primary-accent-hover: #d63d56;
+    --secondary-color: #16213e;
+
+    /* Neutral Palette - Warm & Sophisticated */
+    --bg-light: #fafafa;
+    --bg-warm: #f8f6f3;
+    --bg-white: #ffffff;
+    --text-dark: #1a1a1a;
+    --text-body: #4a4a4a;
+    --text-muted: #8a8a8a;
+    --border-light: #e8e8e8;
+    --border-subtle: #f0f0f0;
+
+    /* Accent Colors */
+    --accent-gold: #c9a961;
+    --accent-success: #2d9567;
+    --accent-info: #4a90d9;
+
+    /* Spacing & Layout */
+    --container-width: 1320px;
+    --section-spacing: 100px;
+    --card-radius: 12px;
+    --btn-radius: 6px;
+
+    /* Typography */
+    --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 20px 60px rgba(0, 0, 0, 0.12);
+}
+
+/* Base Styles */
+body {
+    background-color: var(--bg-white);
+    color: var(--text-body);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--text-dark);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+/* Section Styling */
+.section-elegant {
+    padding: var(--section-spacing) 0;
+}
+
+.section-heading {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.section-heading h2 {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    text-transform: none;
+    letter-spacing: -0.02em;
+}
+
+.section-heading p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.section-divider {
+    width: 60px;
+    height: 3px;
+    background: var(--primary-accent);
+    margin: 20px auto 0;
+    border-radius: 2px;
+}
+
+/* Premium Hero Section */
+.hero-elegant {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: #fff;
+    padding: 120px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-elegant::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(135deg, transparent 0%, rgba(233, 69, 96, 0.1) 100%);
+}
+
+.hero-elegant .hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    text-transform: none;
+}
+
+.hero-elegant .hero-subtitle {
+    font-size: 1.25rem;
+    opacity: 0.85;
+    margin-bottom: 40px;
+    line-height: 1.7;
+    font-weight: 400;
+}
+
+.hero-elegant .hero-badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    margin-bottom: 24px;
+}
+
+/* Buttons - Elegant Style */
+.btn-elegant {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 32px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: var(--btn-radius);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-elegant-primary {
+    background: var(--primary-accent);
+    color: #fff;
+}
+
+.btn-elegant-primary:hover {
+    background: var(--primary-accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(233, 69, 96, 0.3);
+    color: #fff;
+}
+
+.btn-elegant-outline {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+}
+
+.btn-elegant-outline:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: #fff;
+}
+
+.btn-elegant-dark {
+    background: var(--text-dark);
+    color: #fff;
+}
+
+.btn-elegant-dark:hover {
+    background: #333;
+    transform: translateY(-2px);
+    color: #fff;
+}
+
+/* Value Propositions Bar */
+.value-props {
+    background: var(--bg-warm);
+    padding: 40px 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.value-prop-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 0;
+}
+
+.value-prop-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--bg-white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-accent);
+    font-size: 1.2rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.value-prop-text h6 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0 0 4px;
+    text-transform: none;
+}
+
+.value-prop-text p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* Category Cards - Premium Style */
+.category-card-elegant {
+    position: relative;
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    background: var(--bg-white);
+    box-shadow: var(--shadow-md);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    display: block;
+}
+
+.category-card-elegant:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+}
+
+.category-card-elegant .category-image {
+    aspect-ratio: 4/3;
+    overflow: hidden;
+}
+
+.category-card-elegant .category-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.category-card-elegant:hover .category-image img {
+    transform: scale(1.08);
+}
+
+.category-card-elegant .category-content {
+    padding: 24px;
+    text-align: center;
+}
+
+.category-card-elegant .category-content h3 {
+    font-size: 1.15rem;
+    margin-bottom: 6px;
+    transition: color 0.3s;
+}
+
+.category-card-elegant:hover .category-content h3 {
+    color: var(--primary-accent);
+}
+
+.category-card-elegant .category-content span {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* Product Cards - Elegant Style */
+.product-card-elegant {
+    background: var(--bg-white);
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-subtle);
+}
+
+.product-card-elegant:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+    border-color: transparent;
+}
+
+.product-card-elegant .product-image {
+    position: relative;
+    aspect-ratio: 1/1;
+    overflow: hidden;
+    background: var(--bg-warm);
+}
+
+.product-card-elegant .product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product-card-elegant:hover .product-image img {
+    transform: scale(1.06);
+}
+
+.product-card-elegant .product-badges {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.product-badge {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.product-badge-new {
+    background: var(--text-dark);
+    color: #fff;
+}
+
+.product-badge-sale {
+    background: var(--primary-accent);
+    color: #fff;
+}
+
+.product-card-elegant .product-actions {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+}
+
+.product-card-elegant:hover .product-actions {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.product-action-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg-white);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-md);
+    color: var(--text-body);
+}
+
+.product-action-btn:hover {
+    background: var(--primary-accent);
+    color: #fff;
+    transform: scale(1.1);
+}
+
+.product-card-elegant .product-info {
+    padding: 20px;
+}
+
+.product-card-elegant .product-category {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.product-card-elegant .product-title {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+    line-height: 1.4;
+    transition: color 0.3s;
+}
+
+.product-card-elegant:hover .product-title {
+    color: var(--primary-accent);
+}
+
+.product-card-elegant .product-rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.product-card-elegant .product-rating .stars {
+    color: #fbbf24;
+    font-size: 0.85rem;
+}
+
+.product-card-elegant .product-rating span {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.product-card-elegant .product-price {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.product-card-elegant .price-current {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.product-card-elegant .price-original {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    text-decoration: line-through;
+}
+
+/* Promo Banner */
+.promo-banner-elegant {
+    background: linear-gradient(135deg, var(--primary-accent) 0%, #ff6b6b 100%);
+    color: #fff;
+    padding: 80px 0;
+    text-align: center;
+}
+
+.promo-banner-elegant h2 {
+    font-size: 2.5rem;
+    color: #fff;
+    margin-bottom: 16px;
+    text-transform: none;
+}
+
+.promo-banner-elegant p {
+    font-size: 1.15rem;
+    opacity: 0.9;
+    margin-bottom: 32px;
+}
+
+/* Testimonials */
+.testimonial-card-elegant {
+    background: var(--bg-white);
+    border-radius: var(--card-radius);
+    padding: 32px;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s;
+    height: 100%;
+}
+
+.testimonial-card-elegant:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.testimonial-card-elegant .testimonial-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.testimonial-card-elegant .testimonial-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-accent), #ff6b6b);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.testimonial-card-elegant .testimonial-info h5 {
+    font-size: 1rem;
+    margin: 0 0 4px;
+}
+
+.testimonial-card-elegant .testimonial-stars {
+    color: #fbbf24;
+    font-size: 0.85rem;
+}
+
+.testimonial-card-elegant .testimonial-text {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-body);
+    font-style: italic;
+}
+
+/* Newsletter Section */
+.newsletter-elegant {
+    background: var(--primary-color);
+    color: #fff;
+    padding: 80px 0;
+}
+
+.newsletter-elegant h2 {
+    font-size: 2rem;
+    color: #fff;
+    margin-bottom: 12px;
+    text-transform: none;
+}
+
+.newsletter-elegant p {
+    opacity: 0.8;
+    margin-bottom: 32px;
+}
+
+.newsletter-form {
+    display: flex;
+    gap: 12px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.newsletter-form input {
+    flex: 1;
+    padding: 16px 20px;
+    border: none;
+    border-radius: var(--btn-radius);
+    font-size: 1rem;
+    outline: none;
+}
+
+.newsletter-form button {
+    padding: 16px 32px;
+    background: var(--primary-accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--btn-radius);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.newsletter-form button:hover {
+    background: var(--primary-accent-hover);
+}
+
+/* Header & Nav (keeping existing functionality) */
+.header-main {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.nav-link-custom {
+    color: var(--text-body);
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 8px 16px;
+    position: relative;
+    transition: color 0.3s;
+    text-decoration: none;
+}
+
+.nav-link-custom::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--primary-accent);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.nav-link-custom:hover::after,
+.nav-link-custom.active::after {
+    width: 80%;
+}
+
+.nav-link-custom:hover,
+.nav-link-custom.active {
+    color: var(--primary-accent);
+}
+
+.action-btn-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--bg-warm);
+    color: var(--text-body);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    border: none;
+    text-decoration: none;
+}
+
+.action-btn-circle:hover {
+    background: var(--primary-accent);
+    color: #fff;
+}
+
+/* Footer */
+.footer-modern {
+    background: var(--primary-color);
+    color: #e5e5e5;
+    padding-top: 80px;
+    padding-bottom: 30px;
+}
+
+.footer-title {
+    color: #fff;
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+    font-weight: 600;
+    text-transform: none;
+}
+
+.footer-link {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: 0.3s;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.footer-link:hover {
+    color: #fff;
+}
+
+/* Utility Classes */
+.hover-lift {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Override Tailwind's collapse utility to fix Bootstrap Navbar */
+.collapse {
+    visibility: visible !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .hero-elegant {
+        padding: 80px 0;
+    }
+
+    .hero-elegant .hero-title {
+        font-size: 2.25rem;
+    }
+
+    .section-heading h2 {
+        font-size: 1.75rem;
+    }
+
+    .section-elegant {
+        padding: 60px 0;
+    }
+
+    .newsletter-form {
+        flex-direction: column;
+    }
+}
