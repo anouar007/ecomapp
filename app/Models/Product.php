@@ -52,7 +52,7 @@ class Product extends Model
 
     public function getFormattedSalePriceAttribute()
     {
-        return 'MAD ' . number_format($this->sale_price, 2);
+        return currency($this->sale_price);
     }
 
     /**
@@ -92,7 +92,7 @@ class Product extends Model
      */
     public function getFormattedPriceAttribute()
     {
-        return '$' . number_format($this->price, 2);
+        return currency($this->price);
     }
 
     /**
@@ -100,7 +100,7 @@ class Product extends Model
      */
     public function getFormattedCostPriceAttribute()
     {
-        return $this->cost_price ? '$' . number_format($this->cost_price, 2) : 'N/A';
+        return $this->cost_price ? currency($this->cost_price) : 'N/A';
     }
 
     /**

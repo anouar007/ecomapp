@@ -204,20 +204,28 @@
     <footer class="footer-modern">
         <div class="container">
             <div class="row g-5">
-                <div class="col-lg-4">
+                <div class="col-lg-6">
                     <h5 class="fw-bold text-white mb-4 text-uppercase ls-1">About SpeedStore</h5>
-                    <p class="text-muted small lh-lg mb-4">
+                    <p class="small lh-lg mb-4">
                         Your ultimate destination for high-performance gaming gear. We provide the latest hardware to elevate your gaming experience.
                     </p>
                     <div class="d-flex gap-3">
-                        <a href="#" class="btn btn-sm btn-outline-light rounded-circle" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="btn btn-sm btn-outline-light rounded-circle" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="btn btn-sm btn-outline-light rounded-circle" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="btn btn-sm btn-outline-light rounded-circle" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i class="fab fa-discord"></i></a>
+                        @if(setting('social_facebook'))
+                        <a href="{{ setting('social_facebook') }}" target="_blank" class="btn btn-sm btn-outline-light rounded-circle" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i class="fab fa-facebook-f"></i></a>
+                        @endif
+                        @if(setting('social_twitter'))
+                        <a href="{{ setting('social_twitter') }}" target="_blank" class="btn btn-sm btn-outline-light rounded-circle" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i class="fab fa-twitter"></i></a>
+                        @endif
+                        @if(setting('social_instagram'))
+                        <a href="{{ setting('social_instagram') }}" target="_blank" class="btn btn-sm btn-outline-light rounded-circle" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i class="fab fa-instagram"></i></a>
+                        @endif
+                        @if(setting('social_discord'))
+                        <a href="{{ setting('social_discord') }}" target="_blank" class="btn btn-sm btn-outline-light rounded-circle" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"><i class="fab fa-discord"></i></a>
+                        @endif
                     </div>
                 </div>
                 
-                <div class="col-lg-2 col-6">
+                <div class="col-lg-3 col-6">
                     <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">Shop</h6>
                     <ul class="list-unstyled">
                         <li><a href="{{ route('shop.index') }}" class="footer-link small">All Products</a></li>
@@ -227,7 +235,7 @@
                     </ul>
                 </div>
 
-                <div class="col-lg-2 col-6">
+                <div class="col-lg-3 col-6">
                     <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">Support</h6>
                     <ul class="list-unstyled">
                         <li><a href="#" class="footer-link small">Help Center</a></li>
@@ -237,26 +245,13 @@
                     </ul>
                 </div>
 
-                <div class="col-lg-4">
-                    <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">Stay Updated</h6>
-                    <p class="text-muted small mb-3">Subscribe for exclusive deals and drops.</p>
-                    <form action="#" class="position-relative">
-                        <input type="email" class="form-control bg-dark border-secondary text-white py-2 pe-5" placeholder="Your email address" style="border-color: #333;">
-                        <button class="btn btn-link position-absolute top-50 end-0 translate-middle-y text-primary text-decoration-none fw-bold" type="submit">JOIN</button>
-                    </form>
-                </div>
             </div>
             
             <hr class="border-secondary opacity-25 my-5">
             
             <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                    <p class="small text-muted mb-0">&copy; {{ date('Y') }} SpeedStore. All Rights Reserved.</p>
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" height="20" class="mx-2 opacity-50 grayscale">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" height="20" class="mx-2 opacity-50 grayscale">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" height="20" class="mx-2 opacity-50 grayscale">
+                <div class="col-md-12 text-center text-md-start mb-3 mb-md-0">
+                    <p class="small text-center mb-0">&copy; {{ date('Y') }} SpeedStore. All Rights Reserved.</p>
                 </div>
             </div>
         </div>
