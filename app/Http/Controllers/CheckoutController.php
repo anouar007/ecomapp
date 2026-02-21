@@ -39,8 +39,6 @@ class CheckoutController extends Controller
             'customer_phone' => 'required|string|max:20',
             'shipping_address' => 'required|string|max:255',
             'shipping_city' => 'required|string|max:255',
-            'shipping_zip' => 'required|string|max:20',
-            'shipping_country' => 'required|string|max:255',
         ]);
 
         $cart = session()->get('cart', []);
@@ -64,8 +62,8 @@ class CheckoutController extends Controller
             'shipping_address' => $request->shipping_address,
             'shipping_city' => $request->shipping_city,
             'shipping_state' => $request->shipping_state,
-            'shipping_zip' => $request->shipping_zip,
-            'shipping_country' => $request->shipping_country,
+            'shipping_zip'   => 'N/A',
+            'shipping_country' => 'Morocco',
             'subtotal' => $subtotal,
             'total' => $subtotal,
             'status' => 'pending',

@@ -1,6 +1,6 @@
 @extends('layouts.frontend')
 
-@section('meta_title', 'Order Confirmed - Speed Platform')
+@section('meta_title', 'Commande confirmée - Speed Platform')
 
 @section('content')
 <div class="bg-light py-5 min-vh-100 d-flex align-items-center">
@@ -14,17 +14,17 @@
                         </div>
                     </div>
                     
-                    <h1 class="fw-bold mb-3">Order Confirmed!</h1>
-                    <p class="text-muted mb-4 lead">Thank you for your purchase. We've received your order and are processing it.</p>
+                    <h1 class="fw-bold mb-3">Commande confirmée !</h1>
+                    <p class="text-muted mb-4 lead">Merci pour votre achat. Nous avons bien reçu votre commande et la traitons dès maintenant.</p>
                     
                     <div class="bg-light p-4 rounded-4 mb-4 text-start">
                         <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted fw-bold small">ORDER NUMBER</span>
+                            <span class="text-muted fw-bold small">N° DE COMMANDE</span>
                             <span class="fw-bold text-dark">{{ $order->order_number }}</span>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span class="text-muted fw-bold small">DATE</span>
-                            <span class="fw-bold text-dark">{{ $order->created_at->format('M d, Y') }}</span>
+                            <span class="fw-bold text-dark">{{ $order->created_at->format('d M Y') }}</span>
                         </div>
                         <div class="d-flex justify-content-between mb-2 border-top pt-2 mt-2">
                             <span class="text-muted fw-bold small">TOTAL</span>
@@ -33,7 +33,7 @@
                     </div>
 
                     <a href="{{ route('shop.index') }}" class="btn btn-dark rounded-pill px-5 py-3 fw-bold w-100">
-                        Continue Shopping
+                        Continuer les achats
                     </a>
                 </div>
             </div>

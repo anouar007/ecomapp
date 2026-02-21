@@ -83,7 +83,7 @@ class Order extends Model
      */
     public function getFormattedTotalAttribute()
     {
-        return '$' . number_format($this->total, 2);
+        return currency($this->total);
     }
 
     /**

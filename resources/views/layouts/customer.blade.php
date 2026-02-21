@@ -17,18 +17,18 @@
                         </div>
                         <div class="list-group list-group-flush">
                             <a href="{{ route('customer.dashboard') }}" class="list-group-item list-group-item-action p-3 {{ request()->routeIs('customer.dashboard') ? 'active fw-bold' : '' }}">
-                                <i class="fas fa-home me-2 opacity-50"></i> Dashboard
+                                <i class="fas fa-home me-2 opacity-50"></i> Tableau de bord
                             </a>
                             <a href="{{ route('customer.orders') }}" class="list-group-item list-group-item-action p-3 {{ request()->routeIs('customer.orders*') ? 'active fw-bold' : '' }}">
-                                <i class="fas fa-shopping-bag me-2 opacity-50"></i> My Orders
+                                <i class="fas fa-shopping-bag me-2 opacity-50"></i> Mes commandes
                             </a>
                             <a href="{{ route('customer.profile') }}" class="list-group-item list-group-item-action p-3 {{ request()->routeIs('customer.profile') ? 'active fw-bold' : '' }}">
-                                <i class="fas fa-user-cog me-2 opacity-50"></i> Profile Settings
+                                <i class="fas fa-user-cog me-2 opacity-50"></i> Paramètres du profil
                             </a>
                             <form action="{{ route('logout') }}" method="POST" class="border-top">
                                 @csrf
                                 <button type="submit" class="list-group-item list-group-item-action p-3 text-danger">
-                                    <i class="fas fa-sign-out-alt me-2 opacity-50"></i> Logout
+                                    <i class="fas fa-sign-out-alt me-2 opacity-50"></i> Déconnexion
                                 </button>
                             </form>
                         </div>
