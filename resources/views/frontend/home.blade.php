@@ -14,7 +14,12 @@
     <div class="hero-orb hero-orb-3"></div>
 
     <div class="container position-relative z-1">
-        <div class="row align-items-center gy-5">
+
+
+
+
+        {{-- ── HERO COPY + IMAGE ─────────────────────────── --}}
+        <div class="row align-items-center gy-5" style="margin-top:48px;">
 
             {{-- LEFT: Copy --}}
             <div class="col-lg-6">
@@ -48,21 +53,36 @@
                 </div>
             </div>
 
-            {{-- RIGHT: Image --}}
-            <div class="col-lg-6 d-none d-lg-block" data-aos="fade-left" data-aos-delay="200" data-aos-duration="900">
-                <div class="hero-visual">
-                    <div class="hero-img">
-                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=900"
-                             alt="Impression professionnelle Casablanca">
+            {{-- RIGHT: Animated Logo --}}
+            <div class="col-lg-6 d-none d-lg-flex justify-content-center align-items-center"
+                 data-aos="fade-left" data-aos-delay="200" data-aos-duration="900">
+                <div class="hero-logo-visual">
+
+                    {{-- Outer glow ring --}}
+                    <div class="hlv-ring hlv-ring-1"></div>
+                    <div class="hlv-ring hlv-ring-2"></div>
+
+                    {{-- Logo container --}}
+                    <div class="hlv-logo">
+                        @if(setting('app_logo'))
+                            <img src="{{ asset('storage/' . setting('app_logo')) }}"
+                                 alt="{{ setting('app_name', 'Jawhara Pro Print') }}"
+                                 class="hlv-logo-img">
+                        @else
+                            <span class="hero-logo-text">{{ setting('app_name', 'Jawhara') }}</span>
+                        @endif
                     </div>
-                    <div class="float-card" style="top:32px;left:-52px;">
+
+                    {{-- Floating stat cards --}}
+                    <div class="float-card" style="top:20px; left:-60px;">
                         <span class="fc-num">500+</span>
                         <span class="fc-lbl">Projets livrés</span>
                     </div>
-                    <div class="float-card" style="bottom:40px;right:-44px;">
+                    <div class="float-card" style="bottom:20px; right:-60px;">
                         <span class="fc-num">200+</span>
                         <span class="fc-lbl">Clients satisfaits</span>
                     </div>
+
                 </div>
             </div>
 
@@ -400,6 +420,9 @@
 ══════════════════════════════════════════════ --}}
 <section id="contact" class="contact-section section-py">
     <div class="container">
+
+
+
 
         <div class="text-center mb-5" data-aos="fade-up">
             <p class="eyebrow" style="justify-content:center;">Contactez-nous</p>

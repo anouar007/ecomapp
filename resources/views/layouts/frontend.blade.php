@@ -58,44 +58,8 @@
         {!! $code->content !!}
     @endforeach
 
-    <!-- Main Header -->
-    <header class="site-header">
-        <div class="container">
-            <nav class="navbar navbar-expand-lg py-2">
-                <div class="container-fluid px-0">
-                    <!-- Brand -->
-                    <a class="navbar-brand me-4" href="{{ url('/') }}">
-                        @if(setting('app_logo'))
-                            <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="Logo" style="height:46px;">
-                        @else
-                            <span class="brand-name">{{ setting('app_name', 'Jawhara') }}</span>
-                        @endif
-                    </a>
 
-                    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-label="Menu">
-                        <span style="display:block;width:22px;height:2px;background:#fff;margin:5px 0;border-radius:2px;"></span>
-                        <span style="display:block;width:16px;height:2px;background:#fff;margin:5px 0;border-radius:2px;"></span>
-                        <span style="display:block;width:22px;height:2px;background:#fff;margin:5px 0;border-radius:2px;"></span>
-                    </button>
 
-                    <div class="collapse navbar-collapse" id="navbarMain">
-                        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                            <li class="nav-item"><a class="nav-link" href="#home" onclick="smoothTo('home'); return false;">Accueil</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#about" onclick="smoothTo('about'); return false;">&Agrave; Propos</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#services" onclick="smoothTo('services'); return false;">Services</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#projects" onclick="smoothTo('projects'); return false;">Projets</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#clients" onclick="smoothTo('clients'); return false;">Clients</a></li>
-                        </ul>
-                        <div class="ms-lg-4 mt-3 mt-lg-0">
-                            <a href="#contact" onclick="smoothTo('contact'); return false;" class="btn-header">
-                                <i class="fas fa-comment-alt"></i> Contactez-nous
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-        </div>
-    </header>
 
     <main>
         @yield('content')
@@ -110,7 +74,7 @@
                 {{-- Brand column --}}
                 <div class="col-lg-4 pe-lg-5">
                     @if(setting('app_logo'))
-                        <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="Logo" style="height:45px;margin-bottom:14px;">
+                        <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="Logo" style="height:64px; max-width:200px; object-fit:contain; margin-bottom:16px; filter:drop-shadow(0 2px 16px rgba(233,164,37,.22));">
                     @else
                         <div class="footer-brand">{{ setting('app_name', 'Jawhara') }}</div>
                     @endif
