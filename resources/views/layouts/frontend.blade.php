@@ -94,7 +94,9 @@
                         @if(setting('social_linkedin'))
                             <a href="{{ setting('social_linkedin') }}" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
                         @endif
-                        <a href="https://wa.me/212700331450" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                        @if(setting('social_whatsapp'))
+                            <a href="https://wa.me/{{ setting('social_whatsapp') }}" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                        @endif
                     </div>
                 </div>
 
