@@ -6,6 +6,14 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') - {{ setting('app_name', 'E-commerce') }}</title>
+    {{-- Dynamic Favicon from Logo Setting --}}
+    @if(setting('app_logo'))
+        <link rel="icon" type="image/png" href="{{ asset('storage/' . setting('app_logo')) }}">
+        <link rel="shortcut icon" href="{{ asset('storage/' . setting('app_logo')) }}">
+        <link rel="apple-touch-icon" href="{{ asset('storage/' . setting('app_logo')) }}">
+    @else
+        <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    @endif
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

@@ -6,6 +6,14 @@
     <title>@yield('meta_title', setting('app_name', 'Speed Platform'))</title>
     <meta name="description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    {{-- Dynamic Favicon from Logo Setting --}}
+    @if(setting('app_logo'))
+        <link rel="icon" type="image/png" href="{{ asset('storage/' . setting('app_logo')) }}">
+        <link rel="shortcut icon" href="{{ asset('storage/' . setting('app_logo')) }}">
+        <link rel="apple-touch-icon" href="{{ asset('storage/' . setting('app_logo')) }}">
+    @else
+        <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    @endif
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
