@@ -670,6 +670,30 @@
     color: #1e293b;
 }
 
+/* Decimal quantity input inside cart row */
+.qty-input {
+    width: 64px;
+    text-align: center;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 3px 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1e293b;
+    background: #f8fafc;
+    transition: border-color 0.2s, background 0.2s;
+    outline: none;
+    /* hide browser spin arrows */
+    -moz-appearance: textfield;
+}
+.qty-input::-webkit-outer-spin-button,
+.qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.qty-input:focus {
+    border-color: #6366f1;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(99,102,241,.12);
+}
+
 /* Order Form Footer with Totals */
 .order-totals {
     background: white;
@@ -983,7 +1007,7 @@
 
         grid.innerHTML = products.map(product => {
             const cartItem = cart.find(item => item.product_id === product.id);
-            const quantityBadge = cartItem ? `<div class="qty-badge">${cartItem.quantity}</div>` : '';
+            const quantityBadge = cartItem ? `<div class="qty-badge">${formatQty(cartItem.quantity)}</div>` : '';
             
             // Build image path correctly
             let imageSrc = '';
@@ -1058,7 +1082,7 @@
         
         // Update cart count badge
         if (cartCountBadge) {
-            cartCountBadge.textContent = totalItems;
+            cartCountBadge.textContent = formatQty(totalItems);
             cartCountBadge.style.display = totalItems > 0 ? 'inline-block' : 'none';
         }
         
@@ -1085,7 +1109,17 @@
                         <div class="control-btn" onclick="updateQuantity(${item.product_id}, -1)">
                             <i class="fas fa-minus" style="font-size: 10px;"></i>
                         </div>
-                        <div class="qty-text">${item.quantity}</div>
+                        <input
+                            type="number"
+                            class="qty-input"
+                            value="${formatQty(item.quantity)}"
+                            min="0"
+                            step="0.001"
+                            onchange="setQuantity(${item.product_id}, this)"
+                            onblur="setQuantity(${item.product_id}, this)"
+                            onclick="this.select()"
+                            title="Tap to edit quantity (decimals allowed)"
+                        >
                         <div class="control-btn" onclick="updateQuantity(${item.product_id}, 1)">
                             <i class="fas fa-plus" style="font-size: 10px;"></i>
                         </div>

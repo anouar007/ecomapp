@@ -1,10 +1,10 @@
-// POS Terminal JavaScript - Professional Edition
+// POS Terminal JavaScript - Decimal Quantities Edition
 window.cart = [];
 window.products = [];
 
 // Initialize when document is ready
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('POS Terminal initialized');
+    console.log('POS Terminal initialized (decimal qty support)');
     setupEventListeners();
     loadAllProducts();
 });
@@ -34,7 +34,6 @@ function setupEventListeners() {
     searchInput.addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
             e.preventDefault();
-            // If products are filtered to one, auto-add it
             if (products.length === 1) {
                 addToCart(products[0].id);
                 this.value = '';
@@ -47,7 +46,6 @@ function setupEventListeners() {
 
     // Keyboard shortcuts
     document.addEventListener('keydown', function (e) {
-        // Ignore if in input field (except function keys)
         const isInput = ['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName);
 
         switch (e.key) {
@@ -91,19 +89,13 @@ function loadAllProducts() {
     console.log('Loading all products...');
     fetch('/pos/search?query=', {
         credentials: 'same-origin',
-        headers: {
-            'Accept': 'application/json'
-        }
+        headers: { 'Accept': 'application/json' }
     })
         .then(response => {
-            console.log('Response status:', response.status);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             return response.json();
         })
         .then(data => {
-            console.log('Products loaded:', data);
             products = data;
             displayProducts(data);
         })
@@ -128,31 +120,21 @@ function searchProducts() {
     const categoryId = document.querySelector('.category-btn.active')?.dataset.category;
 
     let url = `/pos/search?query=${encodeURIComponent(query)}`;
-    if (categoryId) {
-        url += `&category_id=${categoryId}`;
-    }
+    if (categoryId) url += `&category_id=${categoryId}`;
 
-    console.log('Searching:', url);
     fetch(url, {
         credentials: 'same-origin',
-        headers: {
-            'Accept': 'application/json'
-        }
+        headers: { 'Accept': 'application/json' }
     })
         .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             return response.json();
         })
         .then(data => {
-            console.log('Search results:', data);
             products = data;
             displayProducts(data);
         })
-        .catch(error => {
-            console.error('Error searching products:', error);
-        });
+        .catch(error => console.error('Error searching products:', error));
 }
 
 // Display products in grid with visual indicators for cart items
@@ -171,30 +153,31 @@ function displayProducts(products) {
     }
 
     grid.innerHTML = products.map(product => {
-        // Check if product is in cart
         const cartItem = cart.find(item => item.product_id === product.id);
         const inCartClass = cartItem ? 'in-cart' : '';
-        const quantityBadge = cartItem ?
-            `<div style="position: absolute; top: 8px; left: 8px; background: #10b981; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 700; z-index: 1; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">×${cartItem.quantity}</div>` : '';
+        const qtyLabel = cartItem ? formatQty(cartItem.quantity) : '';
+        const quantityBadge = cartItem
+            ? `<div style="position: absolute; top: 8px; left: 8px; background: #10b981; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 700; z-index: 1; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">×${qtyLabel}</div>`
+            : '';
 
         return `
             <div class="product-card ${inCartClass}" onclick="addToCart(${product.id})" style="position: relative;">
                 ${quantityBadge}
                 ${product.image
-                ? `<img src="${product.image}" class="product-image" alt="${product.name}">`
-                : `<div class="product-image" style="display: flex; align-items: center; justify-content: center; color: #94a3b8;">
+            ? `<img src="${product.image}" class="product-image" alt="${product.name}">`
+            : `<div class="product-image" style="display: flex; align-items: center; justify-content: center; color: #94a3b8;">
                          <i class="fas fa-image" style="font-size: 32px;"></i>
                        </div>`
-            }
+        }
                 <div class="product-name">${product.name}</div>
                 <div class="product-price">${formatCurrency(parseFloat(product.price))}</div>
-                <div class="product-stock">Stock: ${product.stock}</div>
+                <div class="product-stock">Stock: ${formatQty(product.stock)}</div>
             </div>
         `;
     }).join('');
 }
 
-// Add to cart
+// ─── Add to cart ────────────────────────────────────
 window.addToCart = function (productId) {
     const product = products.find(p => p.id === productId);
     if (!product) return;
@@ -202,8 +185,10 @@ window.addToCart = function (productId) {
     const existingItem = cart.find(item => item.product_id === productId);
 
     if (existingItem) {
-        if (existingItem.quantity < product.stock) {
-            existingItem.quantity++;
+        // Default step is 1; bump by 1 each click
+        const newQty = parseFloat((existingItem.quantity + 1).toFixed(4));
+        if (newQty <= parseFloat(product.stock)) {
+            existingItem.quantity = newQty;
         } else {
             showStockLimit(product.name, product.stock);
             return;
@@ -212,51 +197,83 @@ window.addToCart = function (productId) {
         cart.push({
             product_id: productId,
             name: product.name,
-            price: product.price,
+            price: parseFloat(product.price),
             quantity: 1,
-            stock: product.stock
+            stock: parseFloat(product.stock)
         });
     }
 
     updateCart();
-}
+};
 
-// Remove from cart
+// ─── Remove from cart ───────────────────────────────
 window.removeFromCart = function (productId) {
     cart = cart.filter(item => item.product_id !== productId);
     updateCart();
-}
+};
 
-// Update quantity
+// ─── Update quantity by a delta (supports decimals) ─
 window.updateQuantity = function (productId, delta) {
     const item = cart.find(item => item.product_id === productId);
     if (!item) return;
 
-    const newQuantity = item.quantity + delta;
+    const newQuantity = parseFloat((item.quantity + delta).toFixed(4));
 
     if (newQuantity <= 0) {
         removeFromCart(productId);
     } else if (newQuantity <= item.stock) {
-        if (delta > 0 && item.quantity >= item.stock) { // Check for stock limit when increasing
-            showStockLimit(item.name, item.stock);
-            return;
-        }
         item.quantity = newQuantity;
         updateCart();
     } else {
         showStockLimit(item.name, item.stock);
     }
-}
+};
 
-// Update cart display
+// ─── Set quantity directly (from input field) ───────
+window.setQuantity = function (productId, inputEl) {
+    const item = cart.find(item => item.product_id === productId);
+    if (!item) return;
+
+    let val = parseFloat(inputEl.value);
+
+    // Guard: must be a positive number
+    if (isNaN(val) || val < 0) {
+        inputEl.value = formatQty(item.quantity);
+        return;
+    }
+
+    // Guard: cannot exceed stock (only for tracked stock > 0)
+    if (item.stock > 0 && val > item.stock) {
+        showStockLimit(item.name, item.stock);
+        val = item.stock;
+        inputEl.value = formatQty(val);
+    }
+
+    if (val === 0) {
+        removeFromCart(productId);
+        return;
+    }
+
+    item.quantity = parseFloat(val.toFixed(4));
+    updateCart();
+};
+
+// ─── Format quantity for display (trim trailing zeros) ──
+window.formatQty = function (qty) {
+    const n = parseFloat(qty);
+    if (isNaN(n)) return '0';
+    // Show up to 3 decimal places, strip trailing zeros
+    return n % 1 === 0 ? n.toString() : parseFloat(n.toFixed(3)).toString();
+};
+
+// ─── Update cart display ─────────────────────────────
 function updateCart() {
     const cartItemsContainer = document.getElementById('cartItems');
     const cartCount = document.getElementById('cartCount');
 
-    // Update cart count
     if (cartCount) {
         const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-        cartCount.textContent = totalItems;
+        cartCount.textContent = formatQty(totalItems);
     }
 
     if (cart.length === 0) {
@@ -273,13 +290,22 @@ function updateCart() {
             <div class="cart-item">
                 <div class="cart-item-info">
                     <div class="cart-item-name">${item.name}</div>
-                    <div class="cart-item-price">${formatCurrency(parseFloat(item.price))} × ${item.quantity} = ${formatCurrency(item.price * item.quantity)}</div>
+                    <div class="cart-item-price">${formatCurrency(parseFloat(item.price))} × ${formatQty(item.quantity)} = ${formatCurrency(item.price * item.quantity)}</div>
                 </div>
                 <div class="cart-item-controls">
                     <button class="qty-btn" onclick="updateQuantity(${item.product_id}, -1)" title="Decrease">
                         <i class="fas fa-minus"></i>
                     </button>
-                    <div class="qty-display">${item.quantity}</div>
+                    <input
+                        type="number"
+                        class="qty-display qty-input"
+                        value="${formatQty(item.quantity)}"
+                        min="0"
+                        step="0.001"
+                        style="width:62px; text-align:center; border:1px solid #e2e8f0; border-radius:6px; padding:2px 4px; font-size:13px; font-weight:600;"
+                        onchange="setQuantity(${item.product_id}, this)"
+                        onblur="setQuantity(${item.product_id}, this)"
+                    >
                     <button class="qty-btn" onclick="updateQuantity(${item.product_id}, 1)" title="Increase">
                         <i class="fas fa-plus"></i>
                     </button>
@@ -294,17 +320,15 @@ function updateCart() {
 
     updateTotals();
 
-    // Refresh product display to update visual indicators
     if (products.length > 0) {
         displayProducts(products);
     }
 }
 
-// Update totals with discount support
+// ─── Update totals with discount support ─────────────
 function updateTotals() {
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-    // Calculate discount
     let discount = 0;
     const discountAmountInput = document.getElementById('discountAmount');
     const discountTypeSelect = document.getElementById('discountType');
@@ -321,20 +345,15 @@ function updateTotals() {
             } else {
                 discount = Math.min(discountValue, subtotal);
             }
-
-            // Show discount row
             if (discountRow) {
                 discountRow.style.display = 'flex';
                 discountDisplay.textContent = '-' + formatCurrency(discount);
             }
         } else {
-            if (discountRow) {
-                discountRow.style.display = 'none';
-            }
+            if (discountRow) discountRow.style.display = 'none';
         }
     }
 
-    // Store discount for checkout
     window.currentDiscount = discount;
 
     const discountedSubtotal = subtotal - discount;
@@ -345,72 +364,51 @@ function updateTotals() {
     document.getElementById('tax').textContent = formatCurrency(tax);
     document.getElementById('total').textContent = formatCurrency(total);
 
-    // Update charge button text
     const checkoutBtn = document.getElementById('checkoutBtn');
     if (checkoutBtn && cart.length > 0) {
         checkoutBtn.textContent = `Charge ${formatCurrency(total)}`;
     }
 }
 
-/**
- * Clear all items from the cart
- * Shows confirmation dialog before clearing
- * Provides feedback for empty cart scenario
- */
+// ─── Clear cart ──────────────────────────────────────
 window.clearCart = function () {
-    // Check if cart is empty
     if (!cart || cart.length === 0) {
         showInfo('Empty Cart', 'Cart is already empty!');
         return;
     }
 
-    // Get current cart count for confirmation message
     const itemCount = cart.length;
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-    // Show contextual confirmation message
     const confirmMessage = `<div style="text-align: left; margin-top: 10px;">
                               <p><strong>Items:</strong> ${itemCount} product(s)</p>
-                              <p><strong>Total quantity:</strong> ${totalItems}</p>
+                              <p><strong>Total quantity:</strong> ${formatQty(totalItems)}</p>
                               <p style="margin-top: 12px; color: #ef4444;">This action cannot be undone.</p>
                             </div>`;
 
-    // Request user confirmation
     confirmAction('Clear the cart?', confirmMessage, 'Yes, clear it', 'Cancel').then(confirmed => {
         if (confirmed) {
-            // Clear the cart
             cart = [];
-
-            // Update the UI
             updateCart();
-
-            // Show success feedback
             console.log('✅ Cart cleared successfully');
-
-            // Optional: Show subtle success message
-            // You can uncomment this if you want visual feedback
-            // showSuccess('Cart Cleared', 'All items have been removed from the cart');
         }
     }).catch(() => {
-        // User canceled or error - log for debugging
         console.log('❌ Clear cart operation canceled by user');
     });
-}
+};
 
-// Checkout
+// ─── Checkout ────────────────────────────────────────
 window.checkout = function () {
     const customerName = document.getElementById('customerName').value.trim();
     const customerEmail = document.getElementById('customerEmail').value.trim();
     const customerPhone = document.getElementById('customerPhone').value.trim();
     const paymentMethod = document.getElementById('paymentMethod').value;
 
-    // Validate customer name
     if (!customerName || customerName.trim() === '') {
         showWarning('Required Field', 'Please enter customer name');
         document.getElementById('customerName').focus();
         return;
     }
-    // Check if cart is empty
     if (cart.length === 0) {
         showWarning('Empty Cart', 'Please add items to cart before checkout');
         return;
@@ -427,13 +425,12 @@ window.checkout = function () {
         payment_method: paymentMethod,
         items: cart.map(item => ({
             product_id: item.product_id,
-            quantity: item.quantity,
+            quantity: item.quantity,   // already a float
             price: item.price
         }))
     };
 
-    // Get CSRF token from meta tag or hidden input
-    const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+    const csrfMeta  = document.querySelector('meta[name="csrf-token"]');
     const csrfInput = document.querySelector('input[name="_token"]');
     const csrfToken = csrfMeta ? csrfMeta.content : (csrfInput ? csrfInput.value : '');
 
@@ -450,11 +447,9 @@ window.checkout = function () {
     })
         .then(response => response.json())
         .then(data => {
-            // Success
             if (data.success) {
                 showOrderSuccess(data.order.order_number, data.order.total);
 
-                // Reset form
                 cart = [];
                 updateCart();
                 document.getElementById('customerName').value = '';
@@ -462,7 +457,6 @@ window.checkout = function () {
                 document.getElementById('customerPhone').value = '';
                 document.getElementById('paymentMethod').value = 'cash';
 
-                // Reload products to update stock
                 loadAllProducts();
             } else {
                 showError('Order Failed', data.message);
@@ -476,4 +470,4 @@ window.checkout = function () {
             checkoutBtn.disabled = false;
             checkoutBtn.innerHTML = '<i class="fas fa-check-circle"></i> Complete Order';
         });
-}
+};

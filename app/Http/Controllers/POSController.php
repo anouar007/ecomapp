@@ -91,7 +91,7 @@ class POSController extends Controller
             'discount_type' => ['nullable', 'string', 'in:percent,fixed'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'exists:products,id'],
-            'items.*.quantity' => ['required', 'integer', 'min:1'],
+            'items.*.quantity' => ['required', 'numeric', 'min:0.001'],
             'items.*.price' => ['required', 'numeric', 'min:0'],
         ]);
 
