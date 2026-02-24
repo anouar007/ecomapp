@@ -80,8 +80,9 @@ class ShopController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(5);
         
-        // Related products
-        $relatedProducts = Product::where('status', 'active')
+        // Related products — eager-load images so main_image accessor works in view
+        $relatedProducts = Product::with('images')
+            ->where('status', 'active')
             ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->take(4)

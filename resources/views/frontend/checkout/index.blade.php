@@ -9,20 +9,20 @@
             <div class="col-lg-7">
                 <div class="card border-0 shadow-sm rounded-4 mb-4">
                     <div class="card-body p-4">
-                        <h4 class="fw-bold mb-4">Shipping Information</h4>
+                        <h4 class="fw-bold mb-4">Informations de livraison</h4>
                         <form action="{{ route('checkout.store') }}" method="POST" id="checkout-form">
                             @csrf
                             <div class="row g-3">
                                 <div class="col-12">
-                                    <label class="form-label small fw-bold text-muted">FULL NAME</label>
+                                    <label class="form-label small fw-bold text-muted">NOM COMPLET</label>
                                     <input type="text" name="customer_name" class="form-control bg-light border-0 py-2" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">EMAIL ADDRESS <span class="text-muted fw-normal">(optional)</span></label>
-                                    <input type="email" name="customer_email" class="form-control bg-light border-0 py-2" placeholder="For order confirmation">
+                                    <label class="form-label small fw-bold text-muted">ADRESSE E-MAIL <span class="text-muted fw-normal">(optionnel)</span></label>
+                                    <input type="email" name="customer_email" class="form-control bg-light border-0 py-2" placeholder="Pour la confirmation de commande">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">PHONE NUMBER</label>
+                                    <label class="form-label small fw-bold text-muted">NUMÉRO DE TÉLÉPHONE</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light border-0">+212</span>
                                         <input type="tel" name="customer_phone" class="form-control bg-light border-0 py-2" 
@@ -33,13 +33,13 @@
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label small fw-bold text-muted">ADDRESS</label>
+                                    <label class="form-label small fw-bold text-muted">ADRESSE</label>
                                     <input type="text" name="shipping_address" class="form-control bg-light border-0 py-2" required>
                                 </div>
                                 <div class="col-md-5">
-                                    <label class="form-label small fw-bold text-muted">CITY</label>
+                                    <label class="form-label small fw-bold text-muted">VILLE</label>
                                     <select name="shipping_city" class="form-select bg-light border-0 py-2" required>
-                                        <option value="">Select City</option>
+                                        <option value="">Choisir la ville</option>
                                         <option value="Casablanca">Casablanca</option>
                                         <option value="Rabat">Rabat</option>
                                         <option value="Fès">Fès</option>
@@ -91,19 +91,9 @@
                                         <option value="Dakhla">Dakhla</option>
                                     </select>
                                 </div>
-                                <div class="col-md-4">
-                                    <label class="form-label small fw-bold text-muted">REGION</label>
-                                    <input type="text" name="shipping_state" class="form-control bg-light border-0 py-2" placeholder="e.g. Casablanca-Settat">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label small fw-bold text-muted">CODE POSTAL</label>
-                                    <input type="text" name="shipping_zip" class="form-control bg-light border-0 py-2" required placeholder="e.g. 20000">
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label small fw-bold text-muted">COUNTRY</label>
-                                    <select name="shipping_country" class="form-select bg-light border-0 py-2" required>
-                                        <option value="Morocco" selected>Morocco</option>
-                                    </select>
+                                <div class="col-md-5">
+                                    <label class="form-label small fw-bold text-muted">RÉGION</label>
+                                    <input type="text" name="shipping_state" class="form-control bg-light border-0 py-2" placeholder="ex. Casablanca-Settat">
                                 </div>
                             </div>
                         </form>
@@ -112,14 +102,14 @@
 
                 <div class="card border-0 shadow-sm rounded-4">
                     <div class="card-body p-4">
-                        <h4 class="fw-bold mb-4">Payment</h4>
+                        <h4 class="fw-bold mb-4">Paiement</h4>
                         <div class="alert alert-info border-0 rounded-3">
-                            <i class="fas fa-info-circle me-2"></i> For demo purposes, this store uses <strong>Cash on Delivery</strong> (COD) or Check payments.
+                            <i class="fas fa-info-circle me-2"></i> Pour la démo, cette boutique utilise le <strong>paiement à la livraison</strong> (COD) ou par chèque.
                         </div>
                         <div class="form-check p-3 border rounded-3 bg-white mb-2">
                             <input class="form-check-input ms-0 me-3" type="radio" name="payment_method" id="cod" checked>
                             <label class="form-check-label fw-bold" for="cod">
-                                Cash on Delivery
+                                Paiement à la livraison
                             </label>
                         </div>
                     </div>
@@ -129,7 +119,7 @@
             <div class="col-lg-5">
                 <div class="card border-0 shadow-sm rounded-4">
                     <div class="card-header bg-white p-4 border-bottom-0">
-                        <h5 class="fw-bold m-0">Order Summary</h5>
+                        <h5 class="fw-bold m-0">Récapitulatif de la commande</h5>
                     </div>
                     <div class="card-body p-4 pt-0">
                         @foreach($cart as $id => $details)
@@ -147,34 +137,34 @@
                             <div class="flex-grow-1">
                                 <h6 class="fw-bold mb-0 text-truncate" style="max-width: 150px;">{{ $details['name'] }}</h6>
                             </div>
-                            <div class="fw-bold">${{ number_format($details['price'] * $details['quantity'], 2) }}</div>
+                            <div class="fw-bold">{{ currency($details['price'] * $details['quantity']) }}</div>
                         </div>
                         @endforeach
                         
                         <hr class="my-4 opacity-10">
                         
                         <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted">Subtotal</span>
-                            <span class="fw-bold">${{ number_format($total, 2) }}</span>
+                            <span class="text-muted">Sous-total</span>
+                            <span class="fw-bold">{{ currency($total) }}</span>
                         </div>
                         <div class="d-flex justify-content-between mb-4">
-                            <span class="text-muted">Shipping</span>
-                            <span class="text-success fw-bold">Free</span>
+                            <span class="text-muted">Livraison</span>
+                            <span class="text-success fw-bold">Gratuit</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center py-3 border-top">
                             <span class="h5 fw-bold mb-0">Total</span>
-                            <span class="h4 fw-bold text-primary mb-0">${{ number_format($total, 2) }}</span>
+                            <span class="h4 fw-bold text-primary mb-0">{{ currency($total) }}</span>
                         </div>
 
                         <button type="submit" form="checkout-form" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow">
-                            Place Order (${{ number_format($total, 2) }})
+                            Commander ({{ currency($total) }})
                         </button>
                     </div>
                 </div>
                 
                 <div class="text-center mt-4">
                     <a href="{{ route('cart.index') }}" class="text-muted text-decoration-none small">
-                        <i class="fas fa-arrow-left me-1"></i> Return to Cart
+                        <i class="fas fa-arrow-left me-1"></i> Retour au panier
                     </a>
                 </div>
             </div>
