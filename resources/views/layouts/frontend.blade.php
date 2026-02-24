@@ -21,6 +21,15 @@
     <meta property="twitter:description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
     <meta property="twitter:image" content="@yield('meta_image', asset('images/og-default.jpg'))">
     
+    <!-- Favicon -->
+    @if(setting('app_favicon'))
+        <link rel="icon" href="{{ asset('storage/' . setting('app_favicon')) }}">
+    @elseif(setting('app_logo'))
+        <link rel="icon" href="{{ asset('storage/' . setting('app_logo')) }}">
+    @else
+        <link rel="icon" href="{{ asset('favicon.ico') }}">
+    @endif
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
