@@ -102,18 +102,6 @@
 
                         <!-- Actions -->
                         <div class="d-flex align-items-center gap-3 ms-3">
-                            <a href="https://wa.me/212680631919" target="_blank" class="btn btn-sm rounded-pill px-3 fw-bold" style="background: var(--accent); color: white; border: none;">
-                                <i class="fab fa-whatsapp me-1"></i> Commander
-                            </a>
-
-                            @auth
-                                <a href="{{ route('dashboard') }}" class="action-btn-circle text-decoration-none" title="My Account">
-                                    <i class="far fa-user"></i>
-                                </a>
-                            @else
-                                <a href="{{ route('login') }}" class="btn btn-sm btn-outline-dark rounded-pill px-3 fw-bold">Connexion</a>
-                            @endauth
-
                             <div class="position-relative">
                                 <button class="action-btn-circle bg-transparent" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart">
                                     <i class="fas fa-shopping-bag"></i>
@@ -305,13 +293,11 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        @if(setting('frontend_enable_animations'))
         AOS.init({
             duration: 800,
             once: true,
             offset: 100
         });
-        @endif
 
         // Mini Cart Functions
         function updateQty(id, qty) {

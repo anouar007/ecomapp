@@ -33,10 +33,6 @@
                         <i class="fas fa-heart"></i>
                         <span>Découvrir la collection</span>
                     </a>
-                    <a href="https://wa.me/212680631919" target="_blank" class="btn-hero-ghost">
-                        <i class="fab fa-whatsapp"></i>
-                        <span>Commandez par message</span>
-                    </a>
                 </div>
 
                 {{-- Trust pills --}}
@@ -93,28 +89,28 @@
 <section class="metrics-strip">
     <div class="container">
         <div class="row g-0 metrics-row">
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="0">
                 <div class="metric-item">
                     <div class="metric-icon"><i class="fas fa-box-heart"></i></div>
                     <div class="metric-number">Tous<span> types</span></div>
                     <div class="metric-label">De morphologies</div>
                 </div>
             </div>
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="100">
                 <div class="metric-item">
                     <div class="metric-icon"><i class="fas fa-truck"></i></div>
                     <div class="metric-number">24h<span>-48h</span></div>
                     <div class="metric-label">Livraison rapide</div>
                 </div>
             </div>
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="200">
                 <div class="metric-item">
                     <div class="metric-icon"><i class="fas fa-star"></i></div>
                     <div class="metric-number">100<span>%</span></div>
                     <div class="metric-label">Qualité garantie</div>
                 </div>
             </div>
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="300">
                 <div class="metric-item border-end-0">
                     <div class="metric-icon"><i class="fab fa-whatsapp"></i></div>
                     <div class="metric-number">7<span>j/7</span></div>
@@ -239,7 +235,7 @@
                             </span>
                             @endif
                             <a href="{{ route('shop.show', $product->id) }}" class="btn-overlay-icon" title="Voir l'article">
-                                <i class="fas fa-heart"></i>
+                                <i class="fas fa-eye"></i>
                             </a>
                         </div>
                     </div>

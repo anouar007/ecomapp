@@ -196,6 +196,17 @@ a { text-decoration: none; }
     pointer-events: none;
 }
 
+@keyframes smoothFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .hero-eyebrow {
     display: inline-flex;
     align-items: center;
@@ -210,6 +221,10 @@ a { text-decoration: none; }
     padding: 7px 18px;
     border-radius: 30px;
     margin-bottom: 24px;
+    
+    opacity: 0;
+    animation: smoothFadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation-delay: 0.1s;
 }
 
 .hero-eyebrow-dot {
@@ -232,6 +247,10 @@ a { text-decoration: none; }
     letter-spacing: -0.02em;
     color: var(--text-dark);
     margin-bottom: 24px;
+    
+    opacity: 0;
+    animation: smoothFadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation-delay: 0.2s;
 }
 
 .hero-lead {
@@ -241,6 +260,10 @@ a { text-decoration: none; }
     margin-bottom: 40px;
     max-width: 500px;
     font-family: var(--font-body);
+    
+    opacity: 0;
+    animation: smoothFadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation-delay: 0.3s;
 }
 
 .hero-lead strong { color: var(--accent); }
@@ -250,6 +273,10 @@ a { text-decoration: none; }
     gap: 14px;
     flex-wrap: wrap;
     margin-bottom: 40px;
+    
+    opacity: 0;
+    animation: smoothFadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation-delay: 0.4s;
 }
 
 .btn-hero-primary {
@@ -297,6 +324,10 @@ a { text-decoration: none; }
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
+    
+    opacity: 0;
+    animation: smoothFadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation-delay: 0.5s;
 }
 
 .trust-pill {
@@ -324,6 +355,10 @@ a { text-decoration: none; }
     border-radius: var(--radius-xl);
     overflow: hidden;
     box-shadow: 0 30px 80px rgba(0,0,0,.4);
+    
+    opacity: 0;
+    animation: smoothFadeUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation-delay: 0.2s;
 }
 .hero-img-main img {
     width: 100%;
@@ -343,10 +378,19 @@ a { text-decoration: none; }
     padding: 16px 20px;
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-md);
-    animation: float-card 4s ease-in-out infinite;
 }
-.hero-float-top    { top: 30px; left: -30px; animation-delay: 0s; }
-.hero-float-bottom { bottom: 40px; right: -28px; animation-delay: -2s; }
+.hero-float-top { 
+    top: 30px; left: -30px; 
+    opacity: 0;
+    animation: smoothFadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, float-card 4s ease-in-out infinite 1s;
+    animation-delay: 0.6s, 1s;
+}
+.hero-float-bottom { 
+    bottom: 40px; right: -28px; 
+    opacity: 0;
+    animation: smoothFadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, float-card 4s ease-in-out infinite 1s;
+    animation-delay: 0.8s, 1s;
+}
 
 @keyframes float-card {
     0%,100% { transform: translateY(0); }
@@ -377,6 +421,10 @@ a { text-decoration: none; }
     border-radius: 30px;
     box-shadow: 0 6px 20px rgba(233,69,96,.4);
     letter-spacing: .3px;
+    
+    opacity: 0;
+    animation: smoothFadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation-delay: 1s;
 }
 
 /* Hero wave */
@@ -406,37 +454,52 @@ a { text-decoration: none; }
    METRICS STRIP
    ================================================================ */
 .metrics-strip {
-    background: var(--bg-white);
-    border-bottom: 1px solid var(--border);
-    box-shadow: var(--shadow-xs);
+    background: transparent;
+    padding: 0 0 60px 0;
+    margin-top: -30px;
+    position: relative;
+    z-index: 10;
+    border: none;
+    box-shadow: none;
 }
 
-.metrics-row { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+.metrics-row { 
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(201, 123, 138, 0.15); 
+    border-radius: var(--radius-xl); 
+    box-shadow: 0 16px 48px rgba(201, 123, 138, 0.08);
+}
 
 .metric-item {
-    padding: 32px 20px;
+    padding: 36px 20px;
     text-align: center;
-    border-right: 1px solid var(--border);
-    transition: background .3s;
+    border-right: 1px solid rgba(201, 123, 138, 0.1);
+    transition: all .3s;
 }
-.metric-item:hover { background: var(--bg-surface); }
+.metric-item:last-child { border-right: none; }
+.metric-item:hover { 
+    background: rgba(201, 123, 138, 0.03); 
+    transform: translateY(-2px);
+}
 
 .metric-icon {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     color: var(--accent);
-    margin-bottom: 10px;
-    opacity: .8;
+    margin-bottom: 12px;
+    opacity: 0.9;
 }
 
 .metric-number {
-    font-size: 2rem;
-    font-weight: 900;
+    font-size: 2.2rem;
+    font-weight: 700;
+    font-family: 'Cormorant Garamond', serif;
     color: var(--text-dark);
-    letter-spacing: -0.04em;
+    letter-spacing: 0;
     line-height: 1;
     margin-bottom: 6px;
 }
-.metric-number span { font-size: 1.2rem; color: var(--accent); }
+.metric-number span { font-size: 1.4rem; font-weight: 600; color: var(--accent); }
 
 .metric-label {
     font-size: 0.78rem;
@@ -447,27 +510,39 @@ a { text-decoration: none; }
 }
 
 /* ================================================================
-   CATEGORY CARDS V2
+   CATEGORY CARDS V2 - ELEGANT REDESIGN
    ================================================================ */
 .cat-card-v2 {
-    display: block;
-    background: var(--bg-card);
-    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-radius: var(--radius-xl);
     overflow: hidden;
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow-xs);
-    transition: all .4s cubic-bezier(.4,0,.2,1);
+    border: 1px solid rgba(201, 123, 138, 0.15);
+    box-shadow: 0 4px 20px rgba(201, 123, 138, 0.05);
+    transition: all .5s cubic-bezier(.4,0,.2,1);
     text-decoration: none;
+    padding: 12px;
 }
 .cat-card-v2:hover {
     transform: translateY(-8px);
-    box-shadow: var(--shadow-lg);
-    border-color: transparent;
+    box-shadow: 0 20px 40px rgba(201, 123, 138, 0.12);
+    border-color: rgba(201, 123, 138, 0.3);
 }
 
-.cat-card-img { aspect-ratio: 4/3; overflow: hidden; position: relative; }
-.cat-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
-.cat-card-v2:hover .cat-card-img img { transform: scale(1.08); }
+.cat-card-img { 
+    aspect-ratio: 1/1; 
+    overflow: hidden; 
+    position: relative; 
+    border-radius: var(--radius-lg); 
+}
+.cat-card-img img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    transition: transform 1s ease; 
+}
+.cat-card-v2:hover .cat-card-img img { transform: scale(1.05); }
 
 .cat-icon-placeholder {
     width: 100%;
@@ -476,46 +551,51 @@ a { text-decoration: none; }
     align-items: center;
     justify-content: center;
     font-size: 4rem;
-    transition: transform .5s ease;
+    transition: transform .8s ease;
+    background: var(--bg-surface);
+    color: rgba(201, 123, 138, 0.5);
 }
-.cat-card-v2:hover .cat-icon-placeholder { transform: scale(1.1); }
-
-.cat-icon-0 { background: rgba(233,69,96,.1); color: var(--accent); }
-.cat-icon-1 { background: rgba(0,119,255,.1); color: var(--blue); }
-.cat-icon-2 { background: rgba(245,158,11,.1); color: var(--amber); }
-.cat-icon-3 { background: rgba(16,185,129,.1); color: var(--green); }
+.cat-card-v2:hover .cat-icon-placeholder { transform: scale(1.1); color: var(--accent); }
 
 .cat-card-body {
-    padding: 20px 20px 20px;
+    padding: 24px 10px 10px 10px;
     position: relative;
+    text-align: center;
 }
 .cat-card-name {
-    font-size: 1rem;
-    font-weight: 700;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 600;
     color: var(--text-dark);
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    text-transform: capitalize;
     transition: color .3s;
 }
 .cat-card-v2:hover .cat-card-name { color: var(--accent); }
 .cat-card-count {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: var(--text-muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
 .cat-card-arrow {
     position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%) translateX(-6px);
+    right: 15px;
+    bottom: 10px;
     width: 32px; height: 32px;
     border-radius: 50%;
-    background: var(--accent-light);
+    background: var(--bg-surface);
     color: var(--accent);
     display: flex; align-items: center; justify-content: center;
     font-size: 0.8rem;
     opacity: 0;
-    transition: all .3s;
+    transition: all .4s;
 }
-.cat-card-v2:hover .cat-card-arrow { opacity: 1; transform: translateY(-50%) translateX(0); }
+.cat-card-v2:hover .cat-card-arrow { 
+    opacity: 1; 
+    background: var(--accent); 
+    color: #fff; 
+}
 
 /* ================================================================
    PRODUCT CARDS V2
