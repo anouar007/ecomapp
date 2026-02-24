@@ -15,36 +15,35 @@
 
                 <div class="hero-eyebrow">
                     <span class="hero-eyebrow-dot"></span>
-                    Spécialiste Solutions d'Impression
+                    HMC — Votre univers douceur
                 </div>
 
                 <h1 class="display-hero">
-                    Équipez votre<br>
-                    <span class="text-gradient-primary">atelier d'impression</span><br>
-                    pro
+                    Parce que votre<br>
+                    <span class="text-gradient-primary">confort est féminin</span><br>
+                    ✨
                 </h1>
 
                 <p class="hero-lead">
-                    Imprimantes grand format <strong>éco-solvant &amp; UV</strong>, traceurs de découpe,
-                    encres certifiées et consommables — livrés partout au Maroc avec installation et formation.
+                    Découvrez notre collection raffinée de <strong>Pyjamas</strong> élégants, articles de <strong>Décoration</strong> chaleureux, et produits de <strong>Soins</strong> de beauté pour sublimer votre quotidien.
                 </p>
 
                 <div class="hero-actions">
                     <a href="{{ route('shop.index') }}" class="btn-hero-primary">
-                        <i class="fas fa-print"></i>
-                        <span>Voir les machines</span>
+                        <i class="fas fa-heart"></i>
+                        <span>Découvrir la collection</span>
                     </a>
-                    <a href="mailto:{{ setting('company_email', 'contact@speedprint.ma') }}" class="btn-hero-ghost">
-                        <i class="fas fa-file-invoice"></i>
-                        <span>Demander un devis</span>
+                    <a href="https://wa.me/212680631919" target="_blank" class="btn-hero-ghost">
+                        <i class="fab fa-whatsapp"></i>
+                        <span>Commandez par message</span>
                     </a>
                 </div>
 
                 {{-- Trust pills --}}
                 <div class="hero-trust-pills">
-                    <div class="trust-pill"><i class="fas fa-shipping-fast"></i> Livraison nationale</div>
-                    <div class="trust-pill"><i class="fas fa-tools"></i> SAV technique</div>
-                    <div class="trust-pill"><i class="fas fa-shield-alt"></i> Pièces d'origine</div>
+                    <div class="trust-pill"><i class="fas fa-truck-pickup"></i> Livraison toutes villes</div>
+                    <div class="trust-pill"><i class="fas fa-gem"></i> Qualité premium</div>
+                    <div class="trust-pill"><i class="fas fa-box-open"></i> Emballage soigné</div>
                 </div>
             </div>
 
@@ -53,29 +52,29 @@
                     {{-- Main image --}}
                     <div class="hero-img-main">
                         @if(isset($heroSlides) && $heroSlides->count() > 0)
-                            <img src="{{ $heroSlides[0]->image_url ?? Storage::url($heroSlides[0]->main_image) }}" alt="Imprimante grand format" class="img-fluid">
+                            <img src="{{ $heroSlides[0]->image_url ?? Storage::url($heroSlides[0]->main_image) }}" alt="HM Collection Store" class="img-fluid">
                         @else
-                            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=900" alt="Imprimante grand format éco-solvant" class="img-fluid">
+                            <img src="{{ asset('images/hmc_hero.png') }}" alt="Pyjamas et Soins HM Collection" class="img-fluid">
                         @endif
                     </div>
 
                     {{-- Floating cards --}}
                     <div class="hero-float-card hero-float-top">
-                        <div class="float-icon-wrap"><i class="fas fa-tachometer-alt"></i></div>
+                        <div class="float-icon-wrap"><i class="fas fa-moon"></i></div>
                         <div>
-                            <div class="float-label">Vitesse max</div>
-                            <div class="float-value">42 m²/h</div>
+                            <div class="float-label">Nuits douces</div>
+                            <div class="float-value">Pyjamas Soie & Coton</div>
                         </div>
                     </div>
                     <div class="hero-float-card hero-float-bottom">
-                        <div class="float-icon-wrap float-icon-green"><i class="fas fa-expand-arrows-alt"></i></div>
+                        <div class="float-icon-wrap float-icon-green"><i class="fas fa-spa"></i></div>
                         <div>
-                            <div class="float-label">Largeur max</div>
-                            <div class="float-value">3.2 mètres</div>
+                            <div class="float-label">Bien-être</div>
+                            <div class="float-value">Soins Naturels</div>
                         </div>
                     </div>
                     <div class="hero-float-badge">
-                        <i class="fas fa-star me-1"></i>Résolution 2400 dpi
+                        <i class="fas fa-star me-1"></i>Nouveautés Disponibles
                     </div>
                 </div>
             </div>
@@ -84,7 +83,7 @@
 
     {{-- Bottom wave separator --}}
     <div class="hero-wave">
-        <svg viewBox="0 0 1440 60" preserveAspectRatio="none"><path d="M0,40 C360,80 1080,0 1440,40 L1440,60 L0,60 Z" fill="#ffffff"/></svg>
+        <svg viewBox="0 0 1440 60" preserveAspectRatio="none"><path d="M0,40 C360,80 1080,0 1440,40 L1440,60 L0,60 Z" fill="#fdf6f7"/></svg>
     </div>
 </section>
 
@@ -96,30 +95,30 @@
         <div class="row g-0 metrics-row">
             <div class="col-6 col-md-3">
                 <div class="metric-item">
-                    <div class="metric-icon"><i class="fas fa-users"></i></div>
-                    <div class="metric-number">500<span>+</span></div>
-                    <div class="metric-label">Clients actifs</div>
+                    <div class="metric-icon"><i class="fas fa-box-heart"></i></div>
+                    <div class="metric-number">Tous<span> types</span></div>
+                    <div class="metric-label">De morphologies</div>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="metric-item">
-                    <div class="metric-icon"><i class="fas fa-print"></i></div>
-                    <div class="metric-number">50<span>+</span></div>
-                    <div class="metric-label">Modèles disponibles</div>
+                    <div class="metric-icon"><i class="fas fa-truck"></i></div>
+                    <div class="metric-number">24h<span>-48h</span></div>
+                    <div class="metric-label">Livraison rapide</div>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="metric-item">
-                    <div class="metric-icon"><i class="fas fa-history"></i></div>
-                    <div class="metric-number">15<span> ans</span></div>
-                    <div class="metric-label">D'expérience</div>
+                    <div class="metric-icon"><i class="fas fa-star"></i></div>
+                    <div class="metric-number">100<span>%</span></div>
+                    <div class="metric-label">Qualité garantie</div>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="metric-item border-end-0">
-                    <div class="metric-icon"><i class="fas fa-headset"></i></div>
-                    <div class="metric-number">24<span>/7</span></div>
-                    <div class="metric-label">Support technique</div>
+                    <div class="metric-icon"><i class="fab fa-whatsapp"></i></div>
+                    <div class="metric-number">7<span>j/7</span></div>
+                    <div class="metric-label">Support & Commandes</div>
                 </div>
             </div>
         </div>
@@ -127,18 +126,18 @@
 </section>
 
 {{-- =============================================
-     CATEGORIES — Print Industry
+     CATEGORIES — HMC Collections
      ============================================= --}}
 <section id="categories" class="section-py bg-surface">
     <div class="container">
         <div class="section-header" data-aos="fade-up">
-            <span class="section-eyebrow">Notre offre</span>
-            <h2 class="section-title">Tout pour votre production</h2>
-            <p class="section-subtitle">Des équipements professionnels, des consommables d'origine, et un support expert — en un seul endroit</p>
+            <span class="section-eyebrow">Nos Collections</span>
+            <h2 class="section-title">L'univers HM Collection</h2>
+            <p class="section-subtitle">Découvrez nos gammes conçues pour votre confort et bien-être, de jour comme de nuit.</p>
         </div>
 
         @if($allCategories->count() > 0)
-        <div class="row g-4">
+        <div class="row g-4 align-items-center justify-content-center">
             @foreach($allCategories->take(4) as $index => $category)
             <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="{{ $index * 80 }}">
                 <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="cat-card-v2">
@@ -150,7 +149,7 @@
                                 <img src="{{ Storage::url($category->image) }}" alt="{{ $category->name }}">
                             @endif
                         @else
-                            @php $catIcons = ['fa-print','fa-cut','fa-fill-drip','fa-scroll']; @endphp
+                            @php $catIcons = ['fa-bed','fa-spa','fa-couch','fa-gem']; @endphp
                             <div class="cat-icon-placeholder cat-icon-{{ $index }}">
                                 <i class="fas {{ $catIcons[$index % 4] }}"></i>
                             </div>
@@ -159,23 +158,23 @@
                     <div class="cat-card-body">
                         <h3 class="cat-card-name">{{ $category->name }}</h3>
                         <span class="cat-card-count">{{ $category->products_count ?? $category->products()->count() }} produits</span>
-                        <div class="cat-card-arrow"><i class="fas fa-arrow-right"></i></div>
+                        <div class="cat-card-arrow"><i class="fas fa-chevron-right"></i></div>
                     </div>
                 </a>
             </div>
             @endforeach
         </div>
         @else
-        {{-- Fallback static industry categories --}}
+        {{-- Fallback static lifestyle categories --}}
         @php
         $staticCats = [
-            ['icon'=>'fa-print',     'color'=>'#e94560', 'bg'=>'rgba(233,69,96,.12)',    'name'=>'Imprimantes Éco-Solvant', 'sub'=>'Grand format · UV · Sublimation'],
-            ['icon'=>'fa-cut',       'color'=>'#0077ff', 'bg'=>'rgba(0,119,255,.12)',    'name'=>'Traceurs de découpe',      'sub'=>'Vinyle · Flex · Autocollant'],
-            ['icon'=>'fa-fill-drip', 'color'=>'#f59e0b', 'bg'=>'rgba(245,158,11,.12)',  'name'=>'Encres & consommables',    'sub'=>'Toutes marques · Origine'],
-            ['icon'=>'fa-scroll',    'color'=>'#10b981', 'bg'=>'rgba(16,185,129,.12)',   'name'=>'Médias & supports',        'sub'=>'Bâche · PVC · Bannière'],
+            ['icon'=>'fa-bed',     'color'=>'#c97b8a', 'bg'=>'rgba(201,123,138,.12)',  'name'=>'Pyjamas', 'sub'=>'Chic & Confortables'],
+            ['icon'=>'fa-couch',   'color'=>'#b07aba', 'bg'=>'rgba(176,122,186,.12)',  'name'=>'Décoration', 'sub'=>'Bougies & Intérieurs'],
+            ['icon'=>'fa-spa',     'color'=>'#e8a87c', 'bg'=>'rgba(232,168,124,.12)',  'name'=>'Soins',    'sub'=>'Sérums & Beauté'],
+            ['icon'=>'fa-gift',    'color'=>'#e8799a', 'bg'=>'rgba(232,121,154,.12)',  'name'=>'Packs & Cadeaux','sub'=>'L\'idée parfaite'],
         ];
         @endphp
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
             @foreach($staticCats as $i => $cat)
             <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="{{ $i * 80 }}">
                 <a href="{{ route('shop.index') }}" class="cat-card-v2">
@@ -187,7 +186,7 @@
                     <div class="cat-card-body">
                         <h3 class="cat-card-name">{{ $cat['name'] }}</h3>
                         <span class="cat-card-count">{{ $cat['sub'] }}</span>
-                        <div class="cat-card-arrow"><i class="fas fa-arrow-right"></i></div>
+                        <div class="cat-card-arrow"><i class="fas fa-chevron-right"></i></div>
                     </div>
                 </a>
             </div>
@@ -204,9 +203,9 @@
     <div class="container">
         <div class="d-flex justify-content-between align-items-end mb-5" data-aos="fade-up">
             <div>
-                <span class="section-eyebrow">Sélection</span>
-                <h2 class="section-title mb-0">Nos machines phares</h2>
-                <p class="section-subtitle mb-0 mt-2">Équipements testés, certifiés et plébiscités par nos ateliers partenaires</p>
+                <span class="section-eyebrow">Coups de cœur</span>
+                <h2 class="section-title mb-0">Nos pépites du moment</h2>
+                <p class="section-subtitle mb-0 mt-2">Les vêtements et accessoires préférés de nos clientes</p>
             </div>
             <a href="{{ route('shop.index') }}" class="btn-link-arrow d-none d-md-inline-flex">
                 Voir tout <i class="fas fa-arrow-right ms-2"></i>
@@ -239,8 +238,8 @@
                                 <i class="fas fa-ban"></i> Rupture
                             </span>
                             @endif
-                            <a href="{{ route('shop.show', $product->id) }}" class="btn-overlay-icon" title="Voir la fiche">
-                                <i class="fas fa-eye"></i>
+                            <a href="{{ route('shop.show', $product->id) }}" class="btn-overlay-icon" title="Voir l'article">
+                                <i class="fas fa-heart"></i>
                             </a>
                         </div>
                     </div>
@@ -268,7 +267,7 @@
                             @endif
                         </div>
                         @if(!$product->isInStock())
-                        <div class="out-of-stock-label"><i class="fas fa-exclamation-circle me-1"></i>Rupture de stock</div>
+                        <div class="out-of-stock-label"><i class="fas fa-exclamation-circle me-1"></i>En réapprovisionnement</div>
                         @endif
                     </div>
                 </div>
@@ -278,31 +277,31 @@
 
         <div class="text-center mt-5">
             <a href="{{ route('shop.index') }}" class="btn-cta-outline">
-                Voir tous nos équipements <i class="fas fa-arrow-right ms-2"></i>
+                Explorer toute la boutique <i class="fas fa-arrow-right ms-2"></i>
             </a>
         </div>
     </div>
 </section>
 
 {{-- =============================================
-     APPLICATIONS — What Can You Print?
+     APPLICATIONS — Moments de vie
      ============================================= --}}
 <section class="section-py bg-dark-gradient">
     <div class="container">
         <div class="section-header section-header-light" data-aos="fade-up">
-            <span class="section-eyebrow eyebrow-light">Applications</span>
-            <h2 class="section-title text-white">Ce que vous pouvez réaliser</h2>
-            <p class="section-subtitle" style="color: rgba(255,255,255,.65);">Des machines polyvalentes pour tous les secteurs de l'impression</p>
+            <span class="section-eyebrow eyebrow-light">Inspirations</span>
+            <h2 class="section-title text-white">Vos moments de détente</h2>
+            <p class="section-subtitle" style="color: rgba(255,255,255,.65);">L'élégance s'invite dans chacune de vos routines</p>
         </div>
         <div class="row g-3 mt-2">
             @php
             $apps = [
-                ['icon'=>'fa-store',         'title'=>'Enseignes & signalétique', 'desc'=>'Bannières, roll-ups, panneaux PVC, signalétique intérieure/extérieure'],
-                ['icon'=>'fa-car',           'title'=>'Covering véhicule',        'desc'=>'Films adhésifs, covering complet, décoration de flotte'],
-                ['icon'=>'fa-tshirt',        'title'=>'Textile & habillement',    'desc'=>'Impression sur tissu, flex thermocollant, sublimation textile'],
-                ['icon'=>'fa-building',      'title'=>'Décoration intérieure',    'desc'=>'Papier peint, toile tendue, stickers déco, vitrophanie'],
-                ['icon'=>'fa-image',         'title'=>'Photo & fine art',         'desc'=>'Tirages haute résolution sur papier, toile, aluminium'],
-                ['icon'=>'fa-box-open',      'title'=>'Packaging & étiquettes',   'desc'=>'Étiquettes autocollantes, emballages personnalisés, codage couleur'],
+                ['icon'=>'fa-mug-hot',       'title'=>'Dimanche cocooning',   'desc'=>'Le confort ultime pour vos journées détente à la maison en pyjama soie.'],
+                ['icon'=>'fa-moon',          'title'=>'Nuits réparatrices',   'desc'=>'Des matières douces et fluides pour un sommeil profond et élégant.'],
+                ['icon'=>'fa-spray-can',     'title'=>'Routine beauté',       'desc'=>'Prenez soin de vous avec nos sérums et crèmes de qualité premium.'],
+                ['icon'=>'fa-home',          'title'=>'Atmosphère zen',       'desc'=>'Bougies et diffuseurs pour créer une ambiance chaleureuse et apaisante.'],
+                ['icon'=>'fa-gifts',         'title'=>'Le cadeau idéal',      'desc'=>'Packs soins et pyjamas emballés avec soin pour offrir du bonheur.'],
+                ['icon'=>'fa-camera',        'title'=>'Soirée pyjama',        'desc'=>'Des ensembles matchy pour des moments inoubliables entre amies.'],
             ];
             @endphp
             @foreach($apps as $i => $app)
@@ -324,9 +323,9 @@
 <section class="section-py bg-surface">
     <div class="container">
         <div class="section-header" data-aos="fade-up">
-            <span class="section-eyebrow">Processus</span>
-            <h2 class="section-title">Comment ça marche ?</h2>
-            <p class="section-subtitle">De la commande à la mise en production, nous vous accompagnons à chaque étape</p>
+            <span class="section-eyebrow">Délai express</span>
+            <h2 class="section-title">Comment commander ?</h2>
+            <p class="section-subtitle">Un processus simple par message pour un service 100% personnalisé</p>
         </div>
 
         <div class="process-track" data-aos="fade-up" data-aos-delay="100">
@@ -334,10 +333,10 @@
             <div class="row g-4 position-relative">
                 @php
                 $steps = [
-                    ['num'=>'01', 'icon'=>'fa-search', 'title'=>'Choisissez votre machine', 'desc'=>'Consultez notre catalogue, comparez les modèles ou appelez nos experts pour un conseil personnalisé.'],
-                    ['num'=>'02', 'icon'=>'fa-file-invoice',  'title'=>'Recevez votre devis', 'desc'=>'Devis détaillé sous 24h incluant machine, installation, formation et garantie.'],
-                    ['num'=>'03', 'icon'=>'fa-truck-moving',  'title'=>'Livraison & installation', 'desc'=>'Nos techniciens livrent, installent et configurent votre équipement sur site.'],
-                    ['num'=>'04', 'icon'=>'fa-graduation-cap','title'=>'Formation & suivi', 'desc'=>'Formation opérateur incluse. SAV réactif et stock de pièces en permanence.'],
+                    ['num'=>'01', 'icon'=>'fa-heart', 'title'=>'Choisissez', 'desc'=>'Explorez nos collections Pyjamas, Déco ou Soins sur le site et faites votre choix.'],
+                    ['num'=>'02', 'icon'=>'fa-comment-dots',  'title'=>'Contactez-nous', 'desc'=>'Envoyez-nous un message WhatsApp au 0680631919 avec vos de demande de tailles ou infos.'],
+                    ['num'=>'03', 'icon'=>'fa-box',  'title'=>'Confirmation', 'desc'=>'Notre équipe valide avec vous la taille, la couleur et les délais de livraison en temps réel.'],
+                    ['num'=>'04', 'icon'=>'fa-gift','title'=>'Livraison & Plaisir', 'desc'=>'Recevez votre commande joliment emballée chez vous, paiement à la livraison.'],
                 ];
                 @endphp
                 @foreach($steps as $i => $step)
@@ -358,32 +357,31 @@
 </section>
 
 {{-- =============================================
-     WHY CHOOSE US — Expert USPs
+     WHY CHOOSE US — HMC USPs
      ============================================= --}}
 <section class="section-py bg-white">
     <div class="container">
         <div class="row align-items-center g-5">
             <div class="col-lg-5" data-aos="fade-right">
-                <span class="section-eyebrow">Pourquoi nous</span>
-                <h2 class="section-title">Votre partenaire de confiance depuis 15 ans</h2>
+                <span class="section-eyebrow">Notre promesse</span>
+                <h2 class="section-title">L'excellence au service de votre bien-être</h2>
                 <p class="section-subtitle text-start">
-                    Nous ne vendons pas juste des machines — nous construisons des relations à long terme avec nos clients. 
-                    Stock permanent, SAV réactif, et expertise technique inégalée.
+                    HM Collection sélectionne avec amour chaque pyjama, crème et accessoire déco. Notre priorité : la qualité des matières, des finitions parfaites, et un service irréprochable.
                 </p>
                 <a href="{{ route('shop.index') }}" class="btn-cta-primary mt-3">
-                    Découvrir notre catalogue <i class="fas fa-arrow-right ms-2"></i>
+                    Voir la nouvelle collection <i class="fas fa-arrow-right ms-2"></i>
                 </a>
             </div>
             <div class="col-lg-7" data-aos="fade-left" data-aos-delay="100">
                 <div class="row g-3">
                     @php
                     $usps = [
-                        ['icon'=>'fa-user-tie',      'color'=>'#e94560', 'title'=>'Experts certifiés',      'desc'=>'Nos conseillers maîtrisent chaque technologie: éco-solvant, UV, sublimation, découpe.'],
-                        ['icon'=>'fa-warehouse',     'color'=>'#0077ff', 'title'=>'Stock permanent',         'desc'=>'Pièces de rechange, têtes d\'impression, encres et médias disponibles immédiatement.'],
-                        ['icon'=>'fa-tools',         'color'=>'#f59e0b', 'title'=>'SAV en 24h',              'desc'=>'Intervention sur site sous 24h dans les grandes villes, téléassistance immédiate.'],
-                        ['icon'=>'fa-graduation-cap','color'=>'#10b981', 'title'=>'Formation incluse',       'desc'=>'Chaque machine est livrée avec une formation opérateur complète pour votre équipe.'],
-                        ['icon'=>'fa-tags',          'color'=>'#8b5cf6', 'title'=>'Meilleurs prix garantis', 'desc'=>'Tarifs compétitifs, financement disponible, devis personnalisé selon votre volume.'],
-                        ['icon'=>'fa-leaf',          'color'=>'#06b6d4', 'title'=>'Encres certifiées',       'desc'=>'Encres éco-solvant conformes aux normes environnementales, longue durée de vie.'],
+                        ['icon'=>'fa-gem',           'color'=>'#c97b8a', 'title'=>'Qualité premium',      'desc'=>'Soie, satin, et coton doux. Nos tissus sont rigoureusement sélectionnés pour durer.'],
+                        ['icon'=>'fa-boxes',         'color'=>'#b07aba', 'title'=>'Collections uniques',  'desc'=>'Des coupes raffinées et des collections qui se renouvellent constamment suivant les tendances.'],
+                        ['icon'=>'fa-shipping-fast', 'color'=>'#e8a87c', 'title'=>'Livraison express',    'desc'=>'Recevez votre colis de bonheur en 24h/48h dans toutes les villes du Maroc.'],
+                        ['icon'=>'fa-leaf',          'color'=>'#e8799a', 'title'=>'Soins naturels',       'desc'=>'Nos gammes de soin visage et corps privilégient des ingrédients sûrs et testés dermatologiquement.'],
+                        ['icon'=>'fa-gift',          'color'=>'#7c5cbf', 'title'=>'Emballage cadeau',     'desc'=>'Nous emballons vos cadeaux avec un soin particulier, prêts à être offerts.'],
+                        ['icon'=>'fa-headset',       'color'=>'#f0a8c2', 'title'=>'Service client 7j/7',  'desc'=>'Une équipe à l\'écoute pour vous conseiller sur les tailles ou suivre vos colis.'],
                     ];
                     @endphp
                     @foreach($usps as $i => $u)
@@ -402,7 +400,7 @@
 </section>
 
 {{-- =============================================
-     PROMO BANNER — Quote CTA
+     PROMO BANNER — WhatsApp CTA
      ============================================= --}}
 <section class="quote-banner" data-aos="fade-up">
     <div class="quote-banner-bg"></div>
@@ -410,22 +408,22 @@
         <div class="row align-items-center g-4">
             <div class="col-lg-7">
                 <span class="quote-eyebrow">
-                    <i class="fas fa-file-invoice me-2"></i>Devis gratuit & sans engagement
+                    <i class="fab fa-whatsapp me-2"></i>Commande direct depuis WhatsApp
                 </span>
-                <h2 class="quote-title">Besoin d'un équipement sur mesure ?</h2>
-                <p class="quote-sub">Dites-nous vos besoins (format, vitesse, budget) et nous vous proposons la machine idéale avec installation, formation et garantie.</p>
+                <h2 class="quote-title">Vous avez un coup de cœur ?</h2>
+                <p class="quote-sub">Commandez vos pyjamas et articles favoris dès maintenant par message. Prenez un screen de l'article et envoyez le nous sur WhatsApp !</p>
             </div>
             <div class="col-lg-5 text-lg-end">
                 <div class="quote-actions">
-                    <a href="tel:{{ setting('company_phone', '+212600000000') }}" class="btn-quote-phone">
-                        <i class="fas fa-phone-alt"></i>
+                    <a href="https://wa.me/212680631919" target="_blank" class="btn-quote-phone">
+                        <i class="fab fa-whatsapp" style="color: #25d366;"></i>
                         <div class="btn-quote-text">
-                            <small>Appelez-nous</small>
-                            <strong>{{ setting('company_phone', '+212 6XX XX XX XX') }}</strong>
+                            <small>Réponse instantanée</small>
+                            <strong>06 80 63 19 19</strong>
                         </div>
                     </a>
-                    <a href="mailto:{{ setting('company_email', 'contact@speedprint.ma') }}" class="btn-quote-email">
-                        <i class="fas fa-envelope"></i> Envoyer un email
+                    <a href="https://instagram.com" target="_blank" class="btn-quote-email">
+                        <i class="fab fa-instagram"></i> Suivez-nous sur Instagram
                     </a>
                 </div>
             </div>
@@ -438,14 +436,14 @@
      ============================================= --}}
 <section class="brands-section">
     <div class="container">
-        <p class="brands-label">Marques et équipements disponibles</p>
+        <p class="brands-label">Collections HM Collection</p>
         <div class="brands-ticker">
             @php
-            $brands = ['Epson', 'Roland', 'Mimaki', 'Mutoh', 'Graphtec', 'Summa', 'HP Latex', 'Flora', 'Allwin'];
+            $brands = ['Pyjamas Soie', 'Pyjamas Coton', 'Sérums Visage', 'Soins Corps', 'Bougies Parfumées', 'Déco Minimaliste', 'Packs Cadeaux'];
             @endphp
             @foreach($brands as $brand)
             <div class="brand-chip">
-                <i class="fas fa-print me-2 opacity-50"></i>{{ $brand }}
+                <i class="fas fa-heart me-2 opacity-50" style="color:var(--accent);"></i>{{ $brand }}
             </div>
             @endforeach
         </div>
@@ -459,9 +457,9 @@
 <section class="section-py bg-surface">
     <div class="container">
         <div class="section-header" data-aos="fade-up">
-            <span class="section-eyebrow">Avis clients</span>
-            <h2 class="section-title">Ce que disent nos ateliers</h2>
-            <p class="section-subtitle">Des imprimeurs professionnels qui nous font confiance au quotidien</p>
+            <span class="section-eyebrow">Avis clientes</span>
+            <h2 class="section-title">Ce que disent nos clientes</h2>
+            <p class="section-subtitle">Votre satisfaction est notre plus belle réussite. Découvrez leurs retours.</p>
         </div>
         <div class="row g-4">
             @foreach($testimonials->take(3) as $i => $t)
@@ -475,7 +473,7 @@
                         <div class="review-avatar">{{ strtoupper(substr($t->name, 0, 1)) }}</div>
                         <div>
                             <div class="review-name">{{ $t->name }}</div>
-                            <div class="review-role">Client vérifié</div>
+                            <div class="review-role">Cliente vérifiée</div>
                         </div>
                     </div>
                 </div>
@@ -495,25 +493,25 @@
             <div class="col-lg-4" data-aos="fade-right">
                 <span class="section-eyebrow">FAQ</span>
                 <h2 class="section-title">Questions fréquentes</h2>
-                <p class="section-subtitle text-start">Vous avez d'autres questions ? Notre équipe est disponible 6j/7.</p>
-                <a href="tel:{{ setting('company_phone', '+212600000000') }}" class="btn-cta-outline mt-3">
-                    <i class="fas fa-phone-alt me-2"></i>Nous appeler
+                <p class="section-subtitle text-start">Vous avez d'autres questions ? Notre équipe répond très vite sur WhatsApp.</p>
+                <a href="https://wa.me/212680631919" target="_blank" class="btn-cta-outline mt-3">
+                    <i class="fab fa-whatsapp me-2"></i>Nous écrire
                 </a>
             </div>
             <div class="col-lg-8" data-aos="fade-left" data-aos-delay="100">
                 <div class="faq-list">
                     @php
                     $faqs = [
-                        ['q'=>'Quelle est la différence entre échosolvant et UV ?',
-                         'a'=>'L\'éco-solvant utilise des encres à base de solvant doux, idéal pour les supports souples (bâche, vinyle). L\'UV imprime directement sur des supports rigides (bois, verre, métal) et sèche instantanément par lampe ultraviolet.'],
-                        ['q'=>'Livrez-vous dans tout le Maroc ?',
-                         'a'=>'Oui. Nous livrons partout au Maroc avec notre propre réseau logistique. Les grandes villes bénéficient d\'une livraison J+1 et d\'une installation sur site incluse.'],
-                        ['q'=>'La formation est-elle incluse à l\'achat ?',
-                         'a'=>'Oui, chaque machine est accompagnée d\'une formation opérateur gratuite (1 à 2 jours selon la complexité) réalisée sur votre lieu de production par nos techniciens certifiés.'],
-                        ['q'=>'Proposez-vous des facilités de paiement ?',
-                         'a'=>'Oui, nous proposons des solutions de financement personnalisées (paiement en plusieurs fois, leasing) selon votre situation. Contactez-nous pour un devis adapté à votre budget.'],
-                        ['q'=>'Quels types d\'encres compatibles sont disponibles ?',
-                         'a'=>'Nous stockons les encres d\'origine pour toutes les marques (Roland, Epson, Mimaki...) ainsi que des encres compatibles certifiées offrant un excellent rapport qualité/prix sans altérer la tête d\'impression.'],
+                        ['q'=>'Comment choisir ma taille de pyjama ?',
+                         'a'=>'Nos coupes taillent normalement. Vous pouvez consulter notre guide des tailles sur WhatsApp ou nous communiquer vos mensurations pour vous orienter vers la taille parfaite.'],
+                        ['q'=>'Quels sont vos délais de livraison ?',
+                         'a'=>'Toutes les commandes sont expédiées le jour même de la confirmation. Comptez 24h à 48h maximum partout au Maroc.'],
+                        ['q'=>'Puis-je échanger un article ?',
+                         'a'=>'Absolument. Si la taille ne convient pas, l\'échange est possible sous 3 jours (sous conditions d\'essayage). Les frais de retour sont à la charge du client.'],
+                        ['q'=>'Quels sont les modes de paiement ?',
+                         'a'=>'Le paiement s\'effectue en toute sécurité à la livraison avec notre livreur partenaire, ou par virement bancaire sur demande.'],
+                        ['q'=>'Comment commander plusieurs articles en pack cadeau ?',
+                         'a'=>'Il suffit de nous envoyer la liste des articles sur WhatsApp. Nous composerons votre box sur-mesure et vous enverrons une photo du coffret avant l\'expédition !'],
                     ];
                     @endphp
                     @foreach($faqs as $fi => $faq)
@@ -542,8 +540,8 @@
     $waLink = $waNumber ? 'https://wa.me/' . preg_replace('/[^0-9]/', '', $waNumber) : '';
 @endphp
 
-@if($waLink)
-<a href="{{ $waLink }}?text=Bonjour%2C%20je%20suis%20intéressé%20par%20vos%20machines%20d'impression." 
+@if($waLink || true)
+<a href="https://wa.me/212680631919?text=Bonjour%2C%20je%20suis%20intéressée%20par%20vos%20collections." 
    class="whatsapp-float" 
    target="_blank" 
    rel="noopener noreferrer"

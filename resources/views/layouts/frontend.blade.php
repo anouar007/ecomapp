@@ -21,7 +21,9 @@
     <meta property="twitter:description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
     <meta property="twitter:image" content="@yield('meta_image', asset('images/og-default.jpg'))">
     
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
@@ -66,11 +68,11 @@
                     <!-- Logo -->
                     <a class="navbar-brand me-5" href="{{ url('/') }}">
                         @if(setting('app_logo'))
-                            <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="Logo" style="height: 40px;">
+                            <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="Logo" style="height: 48px;">
                         @else
-                            <h3 class="m-0 fw-bold text-uppercase fst-italic position-relative" style="font-family: 'Rajdhani'; letter-spacing: 1px;">
-                                Speed<span class="text-primary">Store</span>
-                                <i class="fas fa-bolt text-warning position-absolute top-0 start-100 translate-middle ms-2" style="font-size: 0.8em; transform: rotate(15deg);"></i>
+                            <h3 class="m-0 fw-bold position-relative" style="font-family: 'Cormorant Garamond', serif; letter-spacing: 0.5px; color: var(--text-dark);">
+                                HM<span style="color: var(--accent); font-weight:400;">Collection</span>
+                                <i class="fas fa-heart position-absolute top-0 start-100 translate-middle ms-2" style="font-size: 0.5em; color: var(--accent);"></i>
                             </h3>
                         @endif
                     </a>
@@ -100,6 +102,10 @@
 
                         <!-- Actions -->
                         <div class="d-flex align-items-center gap-3 ms-3">
+                            <a href="https://wa.me/212680631919" target="_blank" class="btn btn-sm rounded-pill px-3 fw-bold" style="background: var(--accent); color: white; border: none;">
+                                <i class="fab fa-whatsapp me-1"></i> Commander
+                            </a>
+
                             @auth
                                 <a href="{{ route('dashboard') }}" class="action-btn-circle text-decoration-none" title="My Account">
                                     <i class="far fa-user"></i>
@@ -205,10 +211,18 @@
         <div class="container">
             <div class="row g-5">
                 <div class="col-lg-6">
-                    <h5 class="fw-bold text-white mb-4 text-uppercase ls-1">{{ setting('app_name', 'Speed Print') }}</h5>
+                    <h5 class="fw-bold text-white mb-4 ls-1" style="font-family: 'Cormorant Garamond', serif; font-size: 1.5rem;">HM Collection</h5>
                     <p class="small lh-lg mb-4">
-                        Votre partenaire de confiance en solutions d'impression grand format. Machines éco-solvant, traceurs de découpe, encres et consommables — tout pour votre production.
+                        Parce que votre confort est féminin. ✨<br>
+                        Découvrez notre univers de douceur : Pyjamas soie et coton, articles de décoration chaleureux, et soins de beauté naturels. 
+                        Livraison express partout au Maroc.
                     </p>
+                    <div class="mb-4">
+                        <a href="https://wa.me/212680631919" target="_blank" class="text-white text-decoration-none small">
+                            <i class="fab fa-whatsapp text-success me-2 fs-5 align-middle"></i>
+                            <span class="align-middle">06 80 63 19 19</span>
+                        </a>
+                    </div>
                     @php
                         $sfb  = setting('social_facebook',  '');
                         $stw  = setting('social_twitter',   '');
@@ -257,10 +271,10 @@
                 <div class="col-lg-3 col-6">
                     <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">Boutique</h6>
                     <ul class="list-unstyled">
-                        <li><a href="{{ route('shop.index') }}" class="footer-link small">Tous les produits</a></li>
-                        <li><a href="#" class="footer-link small">Nouveautés</a></li>
-                        <li><a href="#" class="footer-link small">Coup de cœur</a></li>
-                        <li><a href="#" class="footer-link small">Promotions</a></li>
+                        <li><a href="{{ route('shop.index', ['category' => 'pyjamas']) }}" class="footer-link small">Pyjamas</a></li>
+                        <li><a href="{{ route('shop.index', ['category' => 'decoration']) }}" class="footer-link small">Décoration</a></li>
+                        <li><a href="{{ route('shop.index', ['category' => 'soins']) }}" class="footer-link small">Soins de beauté</a></li>
+                        <li><a href="{{ route('shop.index') }}" class="footer-link small">Toute la collection</a></li>
                     </ul>
                 </div>
 
@@ -280,7 +294,7 @@
             
             <div class="row align-items-center">
                 <div class="col-md-12 text-center text-md-start mb-3 mb-md-0">
-                    <p class="small text-center mb-0">&copy; {{ date('Y') }} {{ setting('app_name', 'Speed Print') }}. Tous droits réservés.</p>
+                    <p class="small text-center mb-0">&copy; {{ date('Y') }} HM Collection Store. Tous droits réservés.</p>
                 </div>
             </div>
         </div>
