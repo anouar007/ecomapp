@@ -1,7 +1,7 @@
 @extends('layouts.frontend')
 
-@section('meta_title', 'Catalogue — ' . setting('app_name', 'Speed Print'))
-@section('meta_description', 'Parcourez notre catalogue complet de machines d\'impression grand format, traceurs de découpe, encres et consommables.')
+@section('meta_title', 'Catalogue — ' . setting('app_name', 'HM Collection'))
+@section('meta_description', 'Parcourez notre catalogue complet de pyjamas raffinés, articles de décoration chaleureux et soins sublimateurs.')
 
 @section('content')
 
@@ -22,11 +22,11 @@
                 @elseif(request('category'))
                     <span class="text-gradient-primary">{{ $categories->where('slug', request('category'))->first()->name ?? 'Produits' }}</span>
                 @else
-                    Nos <span class="text-gradient-primary">équipements</span> & consommables
+                    Nos <span class="text-gradient-primary">Créations</span> & Soins
                 @endif
             </h1>
             <p class="shop-hero-sub">
-                Machines éco-solvant, traceurs de découpe, encres certifiées et accessoires — tout pour votre production.
+                Élégance, douceur et bien-être — tout pour sublimer votre quotidien.
             </p>
 
             {{-- Breadcrumb --}}

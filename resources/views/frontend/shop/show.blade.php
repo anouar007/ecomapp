@@ -1,9 +1,35 @@
 @extends('layouts.frontend')
 
-@section('meta_title', $product->name . ' — ' . setting('app_name', 'Speed Print'))
+@section('meta_title', $product->name . ' — HM Collection')
 @section('meta_description', Str::limit(strip_tags($product->description), 155))
+@section('meta_type', 'product')
+@section('meta_image', $product->main_image ? asset('storage/' . $product->main_image) : asset('images/hmc_hero.png'))
 
 @section('content')
+
+{{-- =============================================
+     JSON-LD STRUCTURED DATA
+     ============================================= --}}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": "{{ $product->name }}",
+  "image": "{{ $product->main_image ? asset('storage/' . $product->main_image) : asset('images/hmc_hero.png') }}",
+  "description": "{{ strip_tags($product->description) }}",
+  "brand": {
+    "@type": "Brand",
+    "name": "HM Collection"
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": "{{ url()->current() }}",
+    "priceCurrency": "MAD",
+    "price": "{{ $product->sale_price ?? $product->price }}",
+    "availability": "{{ $product->isInStock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}"
+  }
+}
+</script>
 
 {{-- =============================================
      PRODUCT HERO STRIP (dark, matching site design)

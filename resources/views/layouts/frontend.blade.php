@@ -7,18 +7,21 @@
     <meta name="description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ url()->current() }}">
+    
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="@yield('meta_type', 'website')">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('meta_title', setting('app_name', 'Speed Platform'))">
-    <meta property="og:description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
+    <meta property="og:title" content="@yield('meta_title', setting('app_name', 'HM Collection'))">
+    <meta property="og:description" content="@yield('meta_description', setting('app_description', 'Parce que votre confort est féminin. ✨'))">
     <meta property="og:image" content="@yield('meta_image', asset('images/og-default.jpg'))">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ url()->current() }}">
-    <meta property="twitter:title" content="@yield('meta_title', setting('app_name', 'Speed Platform'))">
-    <meta property="twitter:description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
+    <meta property="twitter:title" content="@yield('meta_title', setting('app_name', 'HM Collection'))">
+    <meta property="twitter:description" content="@yield('meta_description', setting('app_description', 'Parce que votre confort est féminin. ✨'))">
     <meta property="twitter:image" content="@yield('meta_image', asset('images/og-default.jpg'))">
     
     <!-- Favicon -->
