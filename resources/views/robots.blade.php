@@ -21,5 +21,4 @@ Disallow: /activity-logs/
 Disallow: /analytics/
 Disallow: /reports/
 
-Sitemap: http://localhost/sitemap.xml
-
+Sitemap: {{ $sitemapUrl }}

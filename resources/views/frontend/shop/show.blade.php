@@ -1,7 +1,100 @@
 @extends('layouts.frontend')
 
-@section('meta_title', $product->name . ' — ' . setting('app_name', 'Speed Print'))
+@section('meta_title', $product->name . ' — ' . setting('app_name', 'Speed Platform'))
 @section('meta_description', Str::limit(strip_tags($product->description), 155))
+@section('meta_keywords', $product->name . ', ' . ($product->category_name ?? '') . ', acheter ' . $product->name . ', ' . setting('app_name', 'boutique') . ', Maroc')
+@section('meta_type', 'product')
+@section('meta_image', $product->main_image ? asset('storage/' . $product->main_image) : asset('images/og-default.jpg'))
+
+@section('json_ld')
+@php
+    $avgRating = $product->reviews()->avg('rating') ?? 0;
+    $reviewCount = $product->reviews()->count();
+@endphp
+<script type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": "{{ addslashes($product->name) }}",
+    "image": [
+      "{{ $product->main_image ? asset('storage/' . $product->main_image) : asset('images/og-default.jpg') }}"
+    ],
+    "description": "{{ addslashes(Str::limit(strip_tags($product->description), 155)) }}",
+    "sku": "{{ $product->sku ?? 'PROD-' . $product->id }}",
+    "mpn": "{{ $product->sku ?? 'PROD-' . $product->id }}",
+    @if($product->category_name)
+    "brand": {
+      "@type": "Brand",
+      "name": "{{ addslashes($product->category_name) }}"
+    },
+    @endif
+    "offers": {
+      "@type": "Offer",
+      "url": "{{ url()->current() }}",
+      "priceCurrency": "{{ setting('currency_code', 'MAD') }}",
+      "price": "{{ $product->isOnSale() ? $product->sale_price : $product->price }}",
+      "itemCondition": "https://schema.org/NewCondition",
+      "availability": "{{ $product->isInStock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
+      "seller": {
+        "@type": "Organization",
+        "name": "{{ addslashes(setting('app_name', 'Speed Platform')) }}"
+      }
+    }
+    @if($reviewCount > 0)
+    ,
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "{{ number_format($avgRating, 1) }}",
+      "reviewCount": "{{ $reviewCount }}",
+      "bestRating": "5",
+      "worstRating": "1"
+    }
+    @endif
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Accueil",
+        "item": "{{ url('/') }}"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Boutique",
+        "item": "{{ route('shop.index') }}"
+      }
+      @if($product->category_name && optional($product->category)->slug)
+      ,{
+        "@type": "ListItem",
+        "position": 3,
+        "name": "{{ addslashes($product->category_name) }}",
+        "item": "{{ route('shop.index', ['category' => optional($product->category)->slug]) }}"
+      },
+      {
+        "@type": "ListItem",
+        "position": 4,
+        "name": "{{ addslashes($product->name) }}",
+        "item": "{{ url()->current() }}"
+      }
+      @else
+      ,{
+        "@type": "ListItem",
+        "position": 3,
+        "name": "{{ addslashes($product->name) }}",
+        "item": "{{ url()->current() }}"
+      }
+      @endif
+    ]
+  }
+]
+</script>
+@endsection
+
 
 @section('content')
 

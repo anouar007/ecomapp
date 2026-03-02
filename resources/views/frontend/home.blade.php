@@ -1,5 +1,93 @@
 @extends('layouts.frontend')
 
+@section('meta_title', setting('app_name') . ' — ' . setting('app_description', 'Équipements d\'impression grand format au Maroc'))
+@section('meta_description', 'Découvrez notre gamme d\'imprimantes éco-solvant, traceurs de découpe, encres et consommables. Livraison partout au Maroc, installation et formation incluses. Devis gratuit !')
+@section('meta_keywords', setting('app_name', 'boutique') . ', imprimantes grand format Maroc, traceur de découpe, éco-solvant, encres imprimante, consommables impression, équipement atelier impression Maroc')
+
+@section('json_ld')
+<script type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "{{ setting('app_name', 'Speed Platform') }}",
+    "url": "{{ url('/') }}",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "{{ route('shop.index') }}?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "{{ setting('app_name', 'Speed Platform') }}",
+    "url": "{{ url('/') }}",
+    "logo": "{{ setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/logo.png') }}",
+    @if(setting('company_phone'))
+    "telephone": "{{ setting('company_phone') }}",
+    @endif
+    @if(setting('company_email'))
+    "email": "{{ setting('company_email') }}",
+    @endif
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "{{ setting('company_phone', '') }}",
+      "contactType": "customer service",
+      "areaServed": "MA",
+      "availableLanguage": ["French", "Arabic"]
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Quelle est la différence entre éco-solvant et UV ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "L'éco-solvant utilise des encres à base de solvant doux, idéal pour les supports souples (bâche, vinyle). L'UV imprime directement sur des supports rigides (bois, verre, métal) et sèche instantanément par lampe ultraviolet."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Livrez-vous dans tout le Maroc ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Oui. Nous livrons partout au Maroc avec notre propre réseau logistique. Les grandes villes bénéficient d'une livraison J+1 et d'une installation sur site incluse."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "La formation est-elle incluse à l'achat ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Oui, chaque machine est accompagnée d'une formation opérateur gratuite (1 à 2 jours selon la complexité) réalisée sur votre lieu de production par nos techniciens certifiés."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Proposez-vous des facilités de paiement ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Oui, nous proposons des solutions de financement personnalisées (paiement en plusieurs fois, leasing) selon votre situation. Contactez-nous pour un devis adapté à votre budget."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Quels types d'encres compatibles sont disponibles ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Nous stockons les encres d'origine pour toutes les marques (Roland, Epson, Mimaki...) ainsi que des encres compatibles certifiées offrant un excellent rapport qualité/prix sans altérer la tête d'impression."
+        }
+      }
+    ]
+  }
+]
+</script>
+@endsection
+
 @section('content')
 
 {{-- =============================================

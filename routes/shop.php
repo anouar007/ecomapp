@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// SEO: Sitemap & Robots
+Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
+Route::get('/robots.txt', [\App\Http\Controllers\SitemapController::class, 'robots'])->name('robots');
+
 // Home & Newsletter
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::post('/newsletter', [\App\Http\Controllers\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');

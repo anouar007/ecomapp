@@ -1,25 +1,55 @@
 <!DOCTYPE html>
-<html lang="{{ setting('language', 'en') }}" dir="{{ setting('text_direction', 'ltr') }}">
+<html lang="{{ setting('language', 'fr') }}" dir="{{ setting('text_direction', 'ltr') }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('meta_title', setting('app_name', 'Speed Platform'))</title>
     <meta name="description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
+    <meta name="keywords" content="@yield('meta_keywords', setting('app_name', 'boutique') . ', e-commerce, Maroc, acheter en ligne, livraison Maroc')">
+    <meta name="robots" content="@yield('meta_robots', 'index, follow')">
+    <meta name="author" content="{{ setting('app_name', 'Speed Platform') }}">
+    <meta name="theme-color" content="#e94560">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Preconnect to external resources for faster loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+    <!-- Favicon -->
+    @if(setting('app_logo'))
+        <link rel="icon" href="{{ asset('storage/' . setting('app_logo')) }}" type="image/x-icon">
+        <link rel="apple-touch-icon" href="{{ asset('storage/' . setting('app_logo')) }}">
+    @else
+        <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    @endif
+
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="@yield('meta_type', 'website')">
+    <meta property="og:site_name" content="{{ setting('app_name', 'Speed Platform') }}">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="@yield('meta_title', setting('app_name', 'Speed Platform'))">
     <meta property="og:description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
-    <meta property="og:image" content="@yield('meta_image', asset('images/og-default.jpg'))">
+    <meta property="og:image" content="@yield('meta_image', setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/og-default.jpg'))">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="{{ setting('language', 'fr') === 'ar' ? 'ar_MA' : 'fr_MA' }}">
+    <meta property="og:updated_time" content="{{ now()->toIso8601String() }}">
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="{{ url()->current() }}">
-    <meta property="twitter:title" content="@yield('meta_title', setting('app_name', 'Speed Platform'))">
-    <meta property="twitter:description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
-    <meta property="twitter:image" content="@yield('meta_image', asset('images/og-default.jpg'))">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ url()->current() }}">
+    <meta name="twitter:title" content="@yield('meta_title', setting('app_name', 'Speed Platform'))">
+    <meta name="twitter:description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
+    <meta name="twitter:image" content="@yield('meta_image', setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/og-default.jpg'))">    
+    <meta name="twitter:site" content="@yield('twitter_site', '@' . str_replace(' ', '', setting('app_name', 'SpeedPlatform')))">
+    
+    <!-- JSON-LD Structured Data Schema -->
+    @yield('json_ld')
     
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">

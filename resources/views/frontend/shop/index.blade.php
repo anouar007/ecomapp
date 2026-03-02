@@ -1,7 +1,71 @@
 @extends('layouts.frontend')
 
-@section('meta_title', 'Catalogue — ' . setting('app_name', 'Speed Print'))
-@section('meta_description', 'Parcourez notre catalogue complet de machines d\'impression grand format, traceurs de découpe, encres et consommables.')
+@php
+    $activeCategory = $categories->where('slug', request('category'))->first();
+    $pageTitle = $activeCategory
+        ? ($activeCategory->name . ' — ' . setting('app_name', 'Speed Platform'))
+        : (request('q') ? 'Résultats pour "' . request('q') . '" — ' . setting('app_name') : 'Boutique — ' . setting('app_name', 'Speed Platform'));
+    $pageDescription = $activeCategory
+        ? ('Découvrez notre gamme de ' . $activeCategory->name . '. Livraison partout au Maroc, installation et SAV inclus. ' . $activeCategory->products_count . ' produits disponibles.')
+        : 'Parcourez notre catalogue complet de machines d\'impression grand format, traceurs de découpe, encres et consommables. Livraison Maroc, devis gratuit.';
+    $pageKeywords = $activeCategory
+        ? ($activeCategory->name . ', ' . setting('app_name', 'boutique') . ', acheter ' . $activeCategory->name . ' Maroc, prix ' . $activeCategory->name)
+        : setting('app_name', 'boutique') . ', machines impression, traceur découpe, encres, consommables, Maroc';
+@endphp
+
+@section('meta_title', $pageTitle)
+@section('meta_description', $pageDescription)
+@section('meta_keywords', $pageKeywords)
+
+@section('json_ld')
+<script type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Accueil",
+        "item": "{{ url('/') }}"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Boutique",
+        "item": "{{ route('shop.index') }}"
+      }
+      @if($activeCategory)
+      ,{
+        "@type": "ListItem",
+        "position": 3,
+        "name": "{{ addslashes($activeCategory->name) }}",
+        "item": "{{ route('shop.index', ['category' => $activeCategory->slug]) }}"
+      }
+      @endif
+    ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "{{ addslashes($pageTitle) }}",
+    "url": "{{ url()->current() }}",
+    "numberOfItems": {{ $products->total() }},
+    "itemListElement": [
+      @foreach($products as $i => $prod)
+      {
+        "@type": "ListItem",
+        "position": {{ $i + 1 }},
+        "url": "{{ route('shop.show', $prod->id) }}",
+        "name": "{{ addslashes($prod->name) }}"
+      }{{ !$loop->last ? ',' : '' }}
+      @endforeach
+    ]
+  }
+]
+</script>
+@endsection
 
 @section('content')
 
