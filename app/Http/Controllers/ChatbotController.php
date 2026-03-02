@@ -99,42 +99,124 @@ PROMPT;
     }
 
     /**
-     * Simple rule-based fallback when no API key is set.
+     * Comprehensive bilingual (FR + EN) rule-based fallback.
      */
     private function fallbackReply(string $message): string
     {
-        $msg = mb_strtolower($message);
+        $msg   = mb_strtolower($message);
+        $name  = setting('app_name', 'notre boutique');
         $phone = setting('company_phone', '');
         $email = setting('company_email', '');
 
-        if (str_contains($msg, 'commande') || str_contains($msg, 'order')) {
-            return "Pour passer une commande, rendez-vous dans notre **Boutique**, ajoutez vos articles au panier et validez le paiement. Pour suivre vos commandes existantes, consultez la section **Mes commandes** dans votre espace client.";
+        // Helper: checks if any needle exists in the message
+        $has = fn(array $needles) => collect($needles)->contains(fn($n) => str_contains($msg, $n));
+
+        // ── ADMIN: Products ──────────────────────────────────────────────────
+        if ($has(['add product', 'new product', 'ajouter produit', 'créer produit', 'create product',
+                  'ajouter un produit', 'nouveau produit', 'add a product'])) {
+            return "Pour **ajouter un produit**, allez dans **Products → Add Product** dans le menu de gauche. Remplissez le nom, la description, le prix, la catégorie et les images, puis cliquez sur **Save**. Vous pouvez activer/désactiver le produit via le statut.";
         }
-        if (str_contains($msg, 'livraison') || str_contains($msg, 'délai') || str_contains($msg, 'livr')) {
-            return "Nous livrons partout au Maroc ! Les grandes villes sont livrées en **J+1** avec installation sur site incluse. Contactez-nous au {$phone} pour plus de détails.";
+        if ($has(['edit product', 'modifier produit', 'update product', 'mettre à jour produit', 'changer produit'])) {
+            return "Pour **modifier un produit**, allez dans **Products**, cliquez sur le bouton ✏️ (Edit) à droite du produit concerné, faites vos changements, puis cliquez sur **Update**.";
         }
-        if (str_contains($msg, 'retour') || str_contains($msg, 'remboursement') || str_contains($msg, 'rembours')) {
-            return "Pour toute demande de retour ou de remboursement, contactez notre service client au **{$phone}** ou par email à **{$email}**. Nous traitons les demandes sous 48h ouvrées.";
-        }
-        if (str_contains($msg, 'paiement') || str_contains($msg, 'prix') || str_contains($msg, 'cost')) {
-            return "Nous acceptons le **virement bancaire**, le **chèque** et proposons des **facilités de paiement** adaptées à votre situation. Contactez-nous pour un devis personnalisé.";
-        }
-        if (str_contains($msg, 'formation') || str_contains($msg, 'installer') || str_contains($msg, 'installation')) {
-            return "L'installation et la **formation opérateur gratuite** (1 à 2 jours selon la machine) sont incluses avec chaque équipement pour les grandes villes marocaines.";
-        }
-        if (str_contains($msg, 'garantie') || str_contains($msg, 'sav') || str_contains($msg, 'panne')) {
-            return "Toutes nos machines bénéficient d'une **garantie 1 an** (pièces + main d'œuvre). Notre SAV est disponible au {$phone} du lundi au vendredi.";
-        }
-        if (str_contains($msg, 'profil') || str_contains($msg, 'mot de passe') || str_contains($msg, 'compte')) {
-            return "Pour modifier votre profil ou changer votre mot de passe, accédez à la section **Paramètres du profil** dans le menu de gauche de votre espace client.";
-        }
-        if (str_contains($msg, 'contact') || str_contains($msg, 'joindre') || str_contains($msg, 'téléphone')) {
-            return "Vous pouvez nous joindre par **téléphone au {$phone}** ou par **email à {$email}**. Nous sommes disponibles du lundi au vendredi de 9h à 18h.";
-        }
-        if (str_contains($msg, 'encre') || str_contains($msg, 'consommable') || str_contains($msg, 'produit')) {
-            return "Nous proposons une large gamme d'**encres d'origine et compatibles certifiées** (Roland, Epson, Mimaki...), ainsi que tous les consommables pour votre atelier. Consultez notre boutique !";
+        if ($has(['delete product', 'supprimer produit', 'remove product', 'effacer produit'])) {
+            return "Pour **supprimer un produit**, allez dans **Products**, cliquez sur le bouton 🗑️ (Delete) du produit et confirmez. Attention : cette action est irréversible.";
         }
 
-        return "Bonjour ! Je suis l'assistant de " . setting('app_name', 'notre boutique') . ". Je peux vous aider avec vos commandes, la livraison, les produits, ou l'utilisation de votre espace client. Comment puis-je vous aider ?";
+        // ── ADMIN: Categories ────────────────────────────────────────────────
+        if ($has(['category', 'categorie', 'catégorie', 'categories', 'catégories'])) {
+            return "Pour gérer les **catégories**, allez dans **Categories** dans le menu de gauche. Vous pouvez y ajouter, modifier ou supprimer des catégories et y attacher des produits.";
+        }
+
+        // ── ADMIN: Orders ────────────────────────────────────────────────────
+        if ($has(['manage order', 'gérer commande', 'gérer les commandes', 'order management',
+                  'update order', 'modifier commande', 'order status', 'statut commande'])) {
+            return "Pour **gérer les commandes**, allez dans **Orders** dans le menu. Cliquez sur une commande pour voir les détails, modifier le statut (En attente → Confirmée → Expédiée → Livrée) et imprimer la facture.";
+        }
+
+        // ── ADMIN: Invoices ──────────────────────────────────────────────────
+        if ($has(['invoice', 'facture', 'invoices', 'factures', 'pdf'])) {
+            return "Les **factures** se génèrent automatiquement à chaque commande. Pour les consulter ou les télécharger en PDF, allez dans **Invoices** dans le menu de gauche.";
+        }
+
+        // ── ADMIN: Coupons ───────────────────────────────────────────────────
+        if ($has(['coupon', 'promo', 'discount', 'réduction', 'code promo', 'promotion',
+                  'create coupon', 'créer coupon', 'add coupon'])) {
+            return "Pour **créer un coupon**, allez dans **Coupons → Add Coupon**. Définissez un code, le type de réduction (fixe ou %), la valeur, la date d'expiration et la limite d'utilisation. Le client l'entre au moment du paiement.";
+        }
+
+        // ── ADMIN: Inventory ─────────────────────────────────────────────────
+        if ($has(['inventory', 'stock', 'inventaire', 'quantité', 'quantity', 'rupture'])) {
+            return "Pour gérer le **stock**, allez dans **Inventory**. Vous pouvez y ajuster les quantités manuellement, voir les alertes de rupture de stock et exporter l'inventaire.";
+        }
+
+        // ── ADMIN: Customers ─────────────────────────────────────────────────
+        if ($has(['customer', 'client', 'clients', 'customers', 'user list', 'liste clients'])) {
+            return "Pour voir vos **clients**, allez dans **Customers**. Vous pouvez consulter leurs informations, leur historique de commandes, leur ajouter des points de fidélité ou les contacter directement.";
+        }
+
+        // ── ADMIN: Reports ───────────────────────────────────────────────────
+        if ($has(['report', 'rapport', 'analytics', 'statistique', 'stats', 'ventes', 'revenue', 'chiffre'])) {
+            return "Pour les **rapports et statistiques**, allez dans **Reports** dans le menu. Vous y trouverez les ventes par période, les produits les plus vendus, et les revenus par catégorie.";
+        }
+
+        // ── ADMIN: Settings ─────────────────────────────────────────────────
+        if ($has(['setting', 'paramètre', 'settings', 'configuration', 'config', 'theme',
+                  'color', 'couleur', 'logo', 'app name', 'nom app'])) {
+            return "Pour configurer l'application, allez dans **Settings** dans le menu. Vous pouvez y changer le nom, logo, couleurs, devise, coordonnées, et bien plus encore.";
+        }
+
+        // ── ADMIN: Users & Roles ─────────────────────────────────────────────
+        if ($has(['user', 'admin', 'role', 'permission', 'access', 'utilisateur', 'accès',
+                  'add user', 'ajouter utilisateur', 'new user'])) {
+            return "Pour gérer les **utilisateurs et les rôles**, allez dans **Access Control**. Vous pouvez créer des utilisateurs, leur assigner des rôles (Admin, Manager, etc.) et contrôler leurs permissions.";
+        }
+
+        // ── ADMIN: POS ───────────────────────────────────────────────────────
+        if ($has(['pos', 'point of sale', 'caisse', 'terminal', 'vente directe'])) {
+            return "Le **POS Terminal** (Point de vente) vous permet de créer des ventes directement sans que le client passe par le site. Cliquez sur **POS Terminal** dans le menu vert pour l'ouvrir.";
+        }
+
+        // ── SHARED: Orders (customer view) ───────────────────────────────────
+        if ($has(['commande', 'order', 'my order', 'ma commande', 'où est', 'track', 'suivi'])) {
+            return "Pour **suivre vos commandes**, allez dans la section **Mes commandes** de votre espace client (`/my-account`). Chaque commande indique son statut en temps réel (En attente, Confirmée, Expédiée, Livrée).";
+        }
+
+        // ── SHARED: Delivery ─────────────────────────────────────────────────
+        if ($has(['livraison', 'délai', 'delivery', 'shipping', 'livrer', 'when will', 'quand'])) {
+            return "Nous livrons **partout au Maroc**. Les grandes villes sont livrées en **J+1** avec installation sur site incluse. Contactez-nous au **{$phone}** pour plus de détails.";
+        }
+
+        // ── SHARED: Payment ──────────────────────────────────────────────────
+        if ($has(['paiement', 'payment', 'pay', 'prix', 'price', 'cost', 'tarif', 'combien', 'how much'])) {
+            return "Nous acceptons le **virement bancaire**, le **chèque** et proposons des **facilités de paiement**. Contactez-nous au {$phone} pour un devis personnalisé.";
+        }
+
+        // ── SHARED: Contact ──────────────────────────────────────────────────
+        if ($has(['contact', 'phone', 'téléphone', 'email', 'joindre', 'reach', 'call', 'appeler', 'mail'])) {
+            return "Vous pouvez nous contacter par **téléphone : {$phone}** ou **email : {$email}**. Nous sommes disponibles du lundi au vendredi, 9h–18h.";
+        }
+
+        // ── SHARED: Warranty / Support ───────────────────────────────────────
+        if ($has(['garantie', 'warranty', 'sav', 'support', 'panne', 'broken', 'repair', 'réparation'])) {
+            return "Toutes nos machines bénéficient d'une **garantie 1 an** (pièces + main d'œuvre). Notre SAV est disponible au **{$phone}** du lundi au vendredi. Décrivez le problème par email à {$email} pour un suivi écrit.";
+        }
+
+        // ── SHARED: Training / Installation ─────────────────────────────────
+        if ($has(['formation', 'training', 'install', 'installation', 'setup', 'apprendre', 'learn'])) {
+            return "L'**installation et la formation opérateur** (1 à 2 jours) sont **gratuites** et incluses avec chaque machine pour les grandes villes marocaines.";
+        }
+
+        // ── SHARED: Profile / Password ───────────────────────────────────────
+        if ($has(['profil', 'profile', 'password', 'mot de passe', 'email change', 'changer email'])) {
+            return "Pour modifier votre profil ou changer votre mot de passe, allez dans **Settings → Profile** si vous êtes admin, ou dans **Paramètres du profil** de l'espace client.";
+        }
+
+        // ── Catch-all ────────────────────────────────────────────────────────
+        $suggestions = auth()->user()?->hasRole('Admin')
+            ? "ajouter un produit, créer un coupon, gérer les commandes, voir les rapports, configurer les paramètres"
+            : "suivre mes commandes, livraison, paiement, contacter le support";
+
+        return "Je n'ai pas de réponse précise pour **\"{$message}\"** dans ma base de connaissances. Voici quelques sujets sur lesquels je peux vous renseigner : {$suggestions}. Ou contactez-nous directement au **{$phone}**.";
     }
 }
