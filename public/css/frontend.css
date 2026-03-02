@@ -1701,11 +1701,27 @@ a { text-decoration: none; }
 .pdp-stock-badge--in  { background: rgba(16,185,129,.12); color: #059669; }
 .pdp-stock-badge--out { background: rgba(107,114,128,.12); color: #6b7280; }
 
-/* Description */
+/* Description — scrollable so action buttons stay visible */
 .pdp-description {
     font-size: 0.94rem; color: var(--text-body); line-height: 1.7;
     margin-bottom: 24px;
+    max-height: 180px;
+    overflow-y: auto;
+    padding-right: 8px;
+    /* Subtle bottom fade to hint more content exists */
+    -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
 }
+.pdp-description:hover {
+    /* Show full content when user hovers/interacts */
+    -webkit-mask-image: none;
+    mask-image: none;
+}
+.pdp-description::-webkit-scrollbar { width: 4px; }
+.pdp-description::-webkit-scrollbar-track { background: transparent; }
+.pdp-description::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 .pdp-divider { height: 1px; background: var(--border); margin-bottom: 24px; }
 
 /* ── Qty + Cart Row ── */
