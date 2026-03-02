@@ -85,13 +85,15 @@ PROMPT;
                 return response()->json(['reply' => trim($reply)]);
             }
 
+            // Fallback to rules if API fails (e.g., quota exceeded)
             return response()->json([
-                'reply' => "Je rencontre une difficulté technique. Veuillez contacter notre support au {$phone}."
+                'reply' => $this->fallbackReply($request->message)
             ]);
 
         } catch (\Exception $e) {
+            // Fallback to rules on exception (e.g., timeout, network issue)
             return response()->json([
-                'reply' => "Service temporairement indisponible. Veuillez réessayer ou contacter le support."
+                'reply' => $this->fallbackReply($request->message)
             ]);
         }
     }
