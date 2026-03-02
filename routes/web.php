@@ -41,6 +41,9 @@ Route::middleware('auth')->group(function () {
         Route::put('/profile', [CustomerDashboardController::class, 'updateProfile'])->name('profile.update');
     });
 
+    // AI Chatbot
+    Route::post('/chatbot/ask', [\App\Http\Controllers\ChatbotController::class, 'ask'])->name('chatbot.ask');
+
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
     // Profile Management
