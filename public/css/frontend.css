@@ -1601,20 +1601,36 @@ a { text-decoration: none; }
 .pdp-image-panel {
     border-right: 1px solid var(--border);
     background: #f8f9fb;
-    display: flex; flex-direction: column;
+    display: flex;
+    flex-direction: column;
+    /* Stick the image panel so it stays visible while
+       the user reads a long description on the right */
+    position: sticky;
+    top: 70px; /* below fixed header */
+    align-self: flex-start;
+    /* Ensure it never collapses smaller than its content */
+    height: auto;
 }
 .pdp-main-image-wrap {
-    flex: 1;
-    display: flex; align-items: center; justify-content: center;
-    min-height: 420px;
-    padding: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Fixed square-ish frame — never shrinks or grows with description */
+    height: 480px;
+    min-height: 320px;
+    max-height: 560px;
+    padding: 28px;
     position: relative;
     cursor: zoom-in;
     overflow: hidden;
+    background: #f8f9fb;
 }
 .pdp-main-image {
-    max-width: 100%; max-height: 420px;
+    /* Fill the frame while preserving aspect ratio — no stretching */
+    width: 100%;
+    height: 100%;
     object-fit: contain;
+    object-position: center;
     transition: transform .1s ease-out, opacity .18s;
 }
 .pdp-main-image-wrap:hover .pdp-main-image { transform: scale(2); }
@@ -1808,9 +1824,14 @@ a { text-decoration: none; }
 
 /* ── Responsive ── */
 @media (max-width: 991px) {
-    .pdp-image-panel { border-right: none; border-bottom: 1px solid var(--border); }
+    /* On mobile/tablet, remove sticky and restore normal flow */
+    .pdp-image-panel {
+        position: static;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
     .pdp-info-panel { padding: 28px 24px; }
-    .pdp-main-image-wrap { min-height: 280px; padding: 20px; }
+    .pdp-main-image-wrap { height: 300px; min-height: 240px; max-height: 360px; padding: 20px; }
 }
 @media (max-width: 575px) {
     .pdp-cart-row { flex-direction: column; }
