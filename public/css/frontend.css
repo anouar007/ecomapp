@@ -1117,6 +1117,15 @@ a { text-decoration: none; }
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
 }
+.navbar-logo-img {
+    height: 56px;
+    width: auto;
+    display: block;
+}
+@media (max-width: 991px) {
+    .navbar-logo-img { height: 46px; }
+}
+
 
 .nav-link-custom {
     color: var(--text-body);
@@ -1127,6 +1136,7 @@ a { text-decoration: none; }
     transition: color .3s;
     text-decoration: none;
 }
+
 .nav-link-custom::after {
     content: '';
     position: absolute;

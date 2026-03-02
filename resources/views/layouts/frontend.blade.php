@@ -96,7 +96,7 @@
                     <!-- Logo -->
                     <a class="navbar-brand me-3 me-lg-5" href="{{ url('/') }}">
                         @if(setting('app_logo'))
-                            <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="{{ setting('app_name', 'Logo') }}" style="height: 40px;">
+                            <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="{{ setting('app_name', 'Logo') }}" class="navbar-logo-img">
                         @else
                             <h3 class="m-0 fw-bold text-uppercase fst-italic position-relative" style="font-family: 'Rajdhani'; letter-spacing: 1px;">
                                 Speed<span class="text-primary">Store</span>
@@ -109,10 +109,6 @@
                     <div class="d-flex align-items-center gap-2 ms-auto d-lg-none">
                         @auth
                             <a href="{{ route('dashboard') }}" class="action-btn-circle text-decoration-none" title="Mon compte">
-                                <i class="far fa-user"></i>
-                            </a>
-                        @else
-                            <a href="{{ route('login') }}" class="action-btn-circle text-decoration-none" title="Connexion">
                                 <i class="far fa-user"></i>
                             </a>
                         @endauth
@@ -155,8 +151,6 @@
                                 <a href="{{ route('dashboard') }}" class="action-btn-circle text-decoration-none" title="Mon compte">
                                     <i class="far fa-user"></i>
                                 </a>
-                            @else
-                                <a href="{{ route('login') }}" class="btn btn-sm btn-outline-dark rounded-pill px-3 fw-bold">Connexion</a>
                             @endauth
 
                             <div class="position-relative">
