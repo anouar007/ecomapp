@@ -1153,6 +1153,41 @@ a { text-decoration: none; }
 }
 .action-btn-circle:hover { background: var(--accent); color: #fff; }
 
+/* ── Mobile navbar collapse styles ── */
+@media (max-width: 991px) {
+    /* Collapsed menu panel */
+    #navbarMain {
+        background: rgba(255,255,255,.98);
+        border-top: 1px solid var(--border);
+        padding: 16px 4px 20px;
+        margin: 0 -12px;
+    }
+
+    /* Nav links become full-width tappable rows */
+    .nav-link-custom {
+        display: block;
+        padding: 11px 20px;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+    .nav-link-custom:hover,
+    .nav-link-custom.active {
+        background: var(--accent-light);
+        color: var(--accent);
+    }
+    /* Hide the underline animation on mobile (background pill looks better) */
+    .nav-link-custom::after { display: none; }
+
+    /* Search full-width on mobile */
+    #navbarMain form {
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+}
+
+
 /* ================================================================
    FOOTER
    ================================================================ */

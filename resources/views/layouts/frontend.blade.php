@@ -94,9 +94,9 @@
             <nav class="navbar navbar-expand-lg navbar-light py-2">
                 <div class="container-fluid px-0">
                     <!-- Logo -->
-                    <a class="navbar-brand me-5" href="{{ url('/') }}">
+                    <a class="navbar-brand me-3 me-lg-5" href="{{ url('/') }}">
                         @if(setting('app_logo'))
-                            <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="Logo" style="height: 40px;">
+                            <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="{{ setting('app_name', 'Logo') }}" style="height: 40px;">
                         @else
                             <h3 class="m-0 fw-bold text-uppercase fst-italic position-relative" style="font-family: 'Rajdhani'; letter-spacing: 1px;">
                                 Speed<span class="text-primary">Store</span>
@@ -105,13 +105,34 @@
                         @endif
                     </a>
 
-                    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
+                    <!-- Mobile: always-visible actions (cart + user) + toggler -->
+                    <div class="d-flex align-items-center gap-2 ms-auto d-lg-none">
+                        @auth
+                            <a href="{{ route('dashboard') }}" class="action-btn-circle text-decoration-none" title="Mon compte">
+                                <i class="far fa-user"></i>
+                            </a>
+                        @else
+                            <a href="{{ route('login') }}" class="action-btn-circle text-decoration-none" title="Connexion">
+                                <i class="far fa-user"></i>
+                            </a>
+                        @endauth
+                        <div class="position-relative">
+                            <button class="action-btn-circle bg-transparent" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart">
+                                <i class="fas fa-shopping-bag"></i>
+                            </button>
+                            <span id="header-cart-count-mobile" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style="font-size: 0.6rem;">
+                                {{ count(session('cart', [])) }}
+                            </span>
+                        </div>
+                        <button class="navbar-toggler border-0 p-1" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-expanded="false" aria-label="Menu">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
 
+                    <!-- Collapsible section -->
                     <div class="collapse navbar-collapse" id="navbarMain">
-                        <!-- Navigation -->
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-1">
+                        <!-- Navigation links -->
+                        <ul class="navbar-nav me-auto mb-0 gap-1 mb-3 mb-lg-0">
                             <li class="nav-item">
                                 <a class="nav-link-custom {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Accueil</a>
                             </li>
@@ -121,17 +142,17 @@
                         </ul>
 
                         <!-- Search -->
-                        <form action="{{ route('shop.index') }}" method="GET" class="d-flex mx-lg-4 position-relative" style="min-width: 300px;">
+                        <form action="{{ route('shop.index') }}" method="GET" class="d-flex mx-lg-4 flex-grow-1 flex-lg-grow-0 mb-3 mb-lg-0" style="max-width: 380px;">
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0 text-muted ps-3"><i class="fas fa-search"></i></span>
-                                <input class="form-control bg-light border-start-0 ps-0 text-muted" type="search" name="q" placeholder="Rechercher des produits..." aria-label="Rechercher">
+                                <input class="form-control bg-light border-start-0 ps-0 text-muted" type="search" name="q" placeholder="Rechercher des produits..." aria-label="Rechercher" value="{{ request('q') }}">
                             </div>
                         </form>
 
-                        <!-- Actions -->
-                        <div class="d-flex align-items-center gap-3 ms-3">
+                        <!-- Desktop-only actions -->
+                        <div class="d-none d-lg-flex align-items-center gap-3 ms-3">
                             @auth
-                                <a href="{{ route('dashboard') }}" class="action-btn-circle text-decoration-none" title="My Account">
+                                <a href="{{ route('dashboard') }}" class="action-btn-circle text-decoration-none" title="Mon compte">
                                     <i class="far fa-user"></i>
                                 </a>
                             @else
@@ -152,6 +173,7 @@
             </nav>
         </div>
     </div>
+
 
     <main>
         @yield('content')
@@ -347,11 +369,14 @@
             })
             .then(response => response.json())
             .then(data => {
-                // Update cart count badge
-                const countEl = document.getElementById('header-cart-count');
-                if(countEl && data.cartCount !== undefined) {
-                    countEl.textContent = data.cartCount;
-                }
+                // Update both desktop and mobile cart count badges
+                const updateCartBadges = (count) => {
+                    ['header-cart-count', 'header-cart-count-mobile'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el && count !== undefined) el.textContent = count;
+                    });
+                };
+                updateCartBadges(data.cartCount);
                 // Refresh mini-cart content
                 refreshMiniCart();
             })
@@ -390,11 +415,11 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        // Update cart count badge
-                        const countEl = document.getElementById('header-cart-count');
-                        if(countEl && data.cartCount !== undefined) {
-                            countEl.textContent = data.cartCount;
-                        }
+                        // Update both desktop and mobile cart count badges
+                        ['header-cart-count', 'header-cart-count-mobile'].forEach(id => {
+                            const el = document.getElementById(id);
+                            if (el && data.cartCount !== undefined) el.textContent = data.cartCount;
+                        });
                         // Refresh mini-cart content
                         refreshMiniCart();
                         
