@@ -16,7 +16,7 @@ class ChatbotController extends Controller
         $request->validate(['message' => 'required|string|max:500']);
 
         // Rate limit: max 15 requests per minute per user
-        $key = 'chatbot:' . auth()->id();
+        $key = 'chatbot:' . (auth()->id() ?? 'guest');
         if (RateLimiter::tooManyAttempts($key, 15)) {
             return response()->json([
                 'reply' => "Vous envoyez trop de messages. Veuillez patienter une minute avant de réessayer."
@@ -24,79 +24,70 @@ class ChatbotController extends Controller
         }
         RateLimiter::hit($key, 60);
 
-        $apiKey = config('services.openai.key');
+        $appName  = setting('app_name', 'cette boutique');
+        $shopUrl  = url('/shop');
+        $phone    = setting('company_phone', '');
+        $email    = setting('company_email', '');
+        $currency = setting('currency_code', 'MAD');
+        $isAdmin  = auth()->user()?->hasRole('Admin') ?? false;
 
-        // Fallback if no API key is configured
-        if (empty($apiKey)) {
-            return response()->json([
-                'reply' => $this->fallbackReply($request->message)
-            ]);
-        }
+        $systemPrompt = $isAdmin
+            ? "Tu es un assistant IA expert pour les administrateurs de {$appName}, une boutique e-commerce d'équipements d'impression grand format au Maroc. Tu aides avec : gestion des produits, commandes, coupons, inventaire, clients, rapports, paramètres et l'utilisation du tableau de bord. Réponds en français, de façon concise (max 4 phrases). Si tu ne sais pas, dis-le honnêtement."
+            : "Tu es un assistant client pour {$appName}, une boutique d'équipements d'impression grand format au Maroc. Infos clés: livraison J+1 grandes villes, installation gratuite, formation incluse, garantie 1 an, paiement par virement/chèque/facilités. Contact: {$phone} / {$email}. Réponds en français, de façon concise (max 4 phrases).";
 
-        $appName   = setting('app_name', 'notre boutique');
-        $shopUrl   = url('/shop');
-        $phone     = setting('company_phone', 'non disponible');
-        $email     = setting('company_email', 'non disponible');
-        $currency  = setting('currency_code', 'MAD');
+        $messages = [
+            ['role' => 'system', 'content' => $systemPrompt],
+            ['role' => 'user',   'content' => $request->message],
+        ];
 
-        $systemPrompt = <<<PROMPT
-Tu es un assistant client IA pour {$appName}, une boutique en ligne spécialisée dans les équipements d'impression grand format au Maroc (imprimantes éco-solvant, traceurs de découpe, encres, consommables et accessoires).
-
-Informations importantes :
-- Boutique : {$appName}
-- Catalogue : {$shopUrl}
-- Téléphone : {$phone}
-- Email : {$email}
-- Devise : {$currency}
-- Livraison : partout au Maroc, J+1 dans les grandes villes
-- Installation : incluse avec chaque machine pour les grandes villes
-- Formation opérateur : gratuite (1-2 jours) à l'installation
-- Paiement : virement, chèque, et facilités de paiement disponibles
-- Garantie : 1 an sur les pièces et la main d'œuvre
-
-Fonctionnalités de l'espace client :
-- "Mes commandes" : consulter l'historique et le statut de vos commandes
-- "Paramètres du profil" : modifier nom, email et mot de passe
-- Pour passer une commande : aller dans la boutique, ajouter au panier, et valider
-
-Règles :
-- Réponds TOUJOURS en français, de manière concise et amicale
-- Ne révèle jamais de données personnelles d'autres clients
-- Si tu ne sais pas, propose de contacter le support via {$phone} ou {$email}
-- Maximum 3-4 phrases par réponse
-PROMPT;
-
+        // ── 1. Try Ollama (local, free, privacy-first) ───────────────────────
         try {
-            $response = Http::withHeaders([
-                'Authorization' => "Bearer {$apiKey}",
-                'Content-Type'  => 'application/json',
-            ])->timeout(15)->post('https://api.openai.com/v1/chat/completions', [
-                'model'       => 'gpt-4o-mini',
-                'max_tokens'  => 256,
-                'temperature' => 0.7,
-                'messages'    => [
-                    ['role' => 'system', 'content' => $systemPrompt],
-                    ['role' => 'user',   'content' => $request->message],
-                ],
+            $ollamaResponse = Http::timeout(30)->post('http://localhost:11434/api/chat', [
+                'model'    => config('services.ollama.model', 'llama3.2'),
+                'messages' => $messages,
+                'stream'   => false,
             ]);
 
-            if ($response->successful()) {
-                $reply = $response->json('choices.0.message.content', '');
-                return response()->json(['reply' => trim($reply)]);
+            if ($ollamaResponse->successful()) {
+                $reply = $ollamaResponse->json('message.content', '');
+                if (!empty(trim($reply))) {
+                    return response()->json(['reply' => trim($reply)]);
+                }
             }
-
-            // Fallback to rules if API fails (e.g., quota exceeded)
-            return response()->json([
-                'reply' => $this->fallbackReply($request->message)
-            ]);
-
         } catch (\Exception $e) {
-            // Fallback to rules on exception (e.g., timeout, network issue)
-            return response()->json([
-                'reply' => $this->fallbackReply($request->message)
-            ]);
+            // Ollama not running — fall through to next option
         }
+
+        // ── 2. Try OpenAI (if API key is set) ───────────────────────────────
+        $apiKey = config('services.openai.key');
+        if (!empty($apiKey)) {
+            try {
+                $openaiResponse = Http::withHeaders([
+                    'Authorization' => "Bearer {$apiKey}",
+                    'Content-Type'  => 'application/json',
+                ])->timeout(15)->post('https://api.openai.com/v1/chat/completions', [
+                    'model'      => 'gpt-4o-mini',
+                    'max_tokens' => 256,
+                    'messages'   => $messages,
+                ]);
+
+                if ($openaiResponse->successful()) {
+                    $reply = $openaiResponse->json('choices.0.message.content', '');
+                    if (!empty(trim($reply))) {
+                        return response()->json(['reply' => trim($reply)]);
+                    }
+                }
+            } catch (\Exception $e) {
+                // OpenAI failed — fall through to rule-based fallback
+            }
+        }
+
+        // ── 3. Rule-based fallback (always works) ────────────────────────────
+        return response()->json([
+            'reply' => $this->fallbackReply($request->message)
+        ]);
     }
+
 
     /**
      * Comprehensive bilingual (FR + EN) rule-based fallback.
