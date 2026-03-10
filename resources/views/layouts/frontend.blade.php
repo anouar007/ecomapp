@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('meta_title', setting('app_name', 'Speed Platform'))</title>
+    <title>@yield('meta_title', 'Coopérative Ait Oumdis' . ' — ' . 'Produits du terroir & Santé naturelle')</title>
     <meta name="description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
     <meta name="keywords" content="@yield('meta_keywords', setting('app_name', 'boutique') . ', e-commerce, Maroc, acheter en ligne, livraison Maroc')">
     <meta name="robots" content="@yield('meta_robots', 'index, follow')">
-    <meta name="author" content="{{ setting('app_name', 'Speed Platform') }}">
-    <meta name="theme-color" content="#e94560">
+    <meta name="author" content="{{ setting('app_name', 'Cooperative Ait Oumdis') }}">
+    <meta name="theme-color" content="#00b878">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Canonical URL -->
@@ -30,10 +30,10 @@
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="@yield('meta_type', 'website')">
-    <meta property="og:site_name" content="{{ setting('app_name', 'Speed Platform') }}">
+    <meta property="og:site_name" content="Coopérative Ait Oumdis">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('meta_title', setting('app_name', 'Speed Platform'))">
-    <meta property="og:description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
+    <meta property="og:title" content="@yield('meta_title', 'Coopérative Ait Oumdis')">
+    <meta property="og:description" content="@yield('meta_description', 'Découvrez les trésors de la province d\'Azilal : miel pur, huile d\'argan, amlou artisanal et recettes naturelles.')">
     <meta property="og:image" content="@yield('meta_image', setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/og-default.jpg'))">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -51,10 +51,10 @@
     <!-- JSON-LD Structured Data Schema -->
     @yield('json_ld')
     
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
     <link rel="stylesheet" href="{{ asset('css/frontend.css') }}">
@@ -95,14 +95,11 @@
                 <div class="container-fluid px-0">
                     <!-- Logo -->
                     <a class="navbar-brand me-3 me-lg-5" href="{{ url('/') }}">
-                        @if(setting('app_logo'))
-                            <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="{{ setting('app_name', 'Logo') }}" class="navbar-logo-img">
-                        @else
-                            <h3 class="m-0 fw-bold text-uppercase fst-italic position-relative" style="font-family: 'Rajdhani'; letter-spacing: 1px;">
-                                Speed<span class="text-primary">Store</span>
-                                <i class="fas fa-bolt text-warning position-absolute top-0 start-100 translate-middle ms-2" style="font-size: 0.8em; transform: rotate(15deg);"></i>
-                            </h3>
-                        @endif
+                        {{-- Force Text Logo for Ait Oumdis Branding --}}
+                        <h3 class="m-0 fw-bold text-uppercase position-relative" style="font-family: 'Nunito'; letter-spacing: 0.5px; color: var(--primary);">
+                            Ait<span class="text-accent">Oumdis</span>
+                            <i class="fas fa-leaf text-primary position-absolute top-0 start-100 translate-middle ms-2" style="font-size: 0.8em;"></i>
+                        </h3>
                     </a>
 
                     <!-- Mobile: always-visible actions (cart + user) + toggler -->
@@ -247,14 +244,14 @@
         </div>
     </div>
 
-    <footer class="footer-modern">
+    <footer class="footer-modern bg-white pt-5 pb-4 border-top">
         <div class="container">
             <div class="row g-5">
-                <div class="col-lg-6">
-                    <h5 class="fw-bold text-white mb-4 text-uppercase ls-1">{{ setting('app_name', 'Speed Print') }}</h5>
-                    <p class="small lh-lg mb-4">
-                        Votre partenaire de confiance en solutions d'impression grand format. Machines éco-solvant, traceurs de découpe, encres et consommables — tout pour votre production.
-                    </p>
+                <div class="col-lg-4">
+                    <div class="footer-brand mb-4">
+                        <img src="{{ Storage::url(setting('site_logo')) }}" alt="Ait Oumdis" height="40" class="mb-4">
+                        <p class="text-muted small lh-lg">Plongez au cœur de l'Atlas marocain avec les produits authentiques de la Coopérative Ait Oumdis. Miel pur, huile d'Argan, et remèdes naturels d'Azilal.</p>
+                    </div>
                     @php
                         $sfb  = setting('social_facebook',  '');
                         $stw  = setting('social_twitter',   '');
@@ -266,74 +263,87 @@
                     @endphp
                     <div class="d-flex gap-3 flex-wrap">
                         @if($validUrl($sfb))
-                        <a href="{{ $sfb }}" target="_blank" rel="noopener" class="footer-social-btn" title="Facebook">
+                        <a href="{{ $sfb }}" target="_blank" rel="noopener" class="footer-social-btn text-muted hover-primary transition-all" title="Facebook">
                             <i class="fab fa-facebook-f"></i>
                         </a>
                         @endif
                         @if($validUrl($stw))
-                        <a href="{{ $stw }}" target="_blank" rel="noopener" class="footer-social-btn" title="Twitter / X">
+                        <a href="{{ $stw }}" target="_blank" rel="noopener" class="footer-social-btn text-muted hover-primary transition-all" title="Twitter">
                             <i class="fab fa-twitter"></i>
                         </a>
                         @endif
                         @if($validUrl($sig))
-                        <a href="{{ $sig }}" target="_blank" rel="noopener" class="footer-social-btn" title="Instagram">
+                        <a href="{{ $sig }}" target="_blank" rel="noopener" class="footer-social-btn text-muted hover-primary transition-all" title="Instagram">
                             <i class="fab fa-instagram"></i>
                         </a>
                         @endif
                         @if($validUrl($sli))
-                        <a href="{{ $sli }}" target="_blank" rel="noopener" class="footer-social-btn" title="LinkedIn">
+                        <a href="{{ $sli }}" target="_blank" rel="noopener" class="footer-social-btn text-muted hover-primary transition-all" title="LinkedIn">
                             <i class="fab fa-linkedin-in"></i>
                         </a>
                         @endif
                         @if($validUrl($swa))
-                        @php
-                            $waFooterLink = 'https://wa.me/' . preg_replace('/[^0-9]/', '', $swa);
-                        @endphp
-                        <a href="{{ $waFooterLink }}" target="_blank" rel="noopener" class="footer-social-btn footer-social-btn--wa" title="WhatsApp">
+                        <a href="{{ $swa }}" target="_blank" rel="noopener" class="footer-social-btn text-muted hover-primary transition-all" title="WhatsApp">
                             <i class="fab fa-whatsapp"></i>
                         </a>
-                        @endif
-                        {{-- If none configured, show placeholder text --}}
-                        @if(!$validUrl($sfb) && !$validUrl($stw) && !$validUrl($sig) && !$validUrl($sli) && !$validUrl($swa))
-                        <span class="text-muted small fst-italic">Réseaux sociaux bientôt disponibles</span>
                         @endif
                     </div>
                 </div>
                 
-                <div class="col-lg-3 col-6">
-                    <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">Boutique</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="{{ route('shop.index') }}" class="footer-link small">Tous les produits</a></li>
-                        <li><a href="#" class="footer-link small">Nouveautés</a></li>
-                        <li><a href="#" class="footer-link small">Coup de cœur</a></li>
-                        <li><a href="#" class="footer-link small">Promotions</a></li>
+                <div class="col-lg-2">
+                    <h6 class="footer-title fw-bold text-dark mb-4">Boutique</h6>
+                    <ul class="footer-links list-unstyled">
+                        <li class="mb-2"><a href="{{ route('shop.index') }}" class="text-muted text-decoration-none hover-primary transition-all small">Tous les produits</a></li>
+                        <li class="mb-2"><a href="{{ route('shop.index', ['category' => 'miel-pur']) }}" class="text-muted text-decoration-none hover-primary transition-all small">Miel Pur</a></li>
+                        <li class="mb-2"><a href="{{ route('shop.index', ['category' => 'huile-dargan']) }}" class="text-muted text-decoration-none hover-primary transition-all small">Huile d'Argan</a></li>
+                        <li class="mb-2"><a href="{{ route('shop.index', ['category' => 'plantes-medicinales']) }}" class="text-muted text-decoration-none hover-primary transition-all small">Plantes</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-3">
+                    <h6 class="footer-title fw-bold text-dark mb-4">Informations</h6>
+                    <ul class="footer-links list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-primary transition-all small">À propos de nous</a></li>
+                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-primary transition-all small">Notre coopérative</a></li>
+                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-primary transition-all small">Expédition & Livraison</a></li>
+                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-primary transition-all small">Contact</a></li>
                     </ul>
                 </div>
 
-                <div class="col-lg-3 col-6">
-                    <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">Assistance</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="footer-link small">Centre d'aide</a></li>
-                        <li><a href="#" class="footer-link small">Suivre ma commande</a></li>
-                        <li><a href="#" class="footer-link small">Retours</a></li>
-                        <li><a href="#" class="footer-link small">Garantie</a></li>
+                <div class="col-lg-3">
+                    <h6 class="footer-title fw-bold text-dark mb-4">Contact</h6>
+                    <ul class="footer-links footer-contact list-unstyled">
+                        <li class="mb-3 d-flex align-items-start text-muted small">
+                            <i class="fas fa-map-marker-alt mt-1 me-2 text-primary"></i>
+                            <span>Ait Oumdis, Province d'Azilal<br>Maroc</span>
+                        </li>
+                        <li class="mb-3 d-flex align-items-start text-muted small">
+                            <i class="fas fa-envelope mt-1 me-2 text-primary"></i>
+                            <a href="mailto:{{ setting('company_email', 'contact@aitoumdis.com') }}" class="text-muted text-decoration-none hover-primary transition-all">{{ setting('company_email', 'contact@aitoumdis.com') }}</a>
+                        </li>
+                        <li class="mb-3 d-flex align-items-start text-muted small">
+                            <i class="fas fa-phone mt-1 me-2 text-primary"></i>
+                            <a href="tel:{{ setting('company_phone', '+212600000000') }}" class="text-muted text-decoration-none hover-primary transition-all">{{ setting('company_phone', '+212600000000') }}</a>
+                        </li>
                     </ul>
                 </div>
-
             </div>
             
-            <hr class="border-secondary opacity-25 my-5">
+            <hr class="my-4 text-muted opacity-25">
             
             <div class="row align-items-center">
-                <div class="col-md-12 text-center text-md-start mb-3 mb-md-0">
-                    <p class="small text-center mb-0">&copy; {{ date('Y') }} {{ setting('app_name', 'Speed Print') }}. Tous droits réservés.</p>
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    <p class="text-muted small mb-0">&copy; {{ date('Y') }} Coopérative Ait Oumdis. Tous droits réservés.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <img src="{{ asset('images/payments.png') }}" alt="Paiement Sécurisé" height="24" onerror="this.style.display='none'">
                 </div>
             </div>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
