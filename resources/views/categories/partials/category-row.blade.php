@@ -14,10 +14,10 @@
                 @endif
             </div>
             <div>
-                <div class="fw-bold text-dark">{{ $category->name }}</div>
-                @if($category->description)
+                <div class="fw-bold text-dark">{{ $category->translated_name }}</div>
+                @if($category->translated_description)
                     <div class="text-muted small" style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                        {{ $category->description }}
+                        {{ $category->translated_description }}
                     </div>
                 @endif
                 @if($category->hasChildren())
@@ -54,7 +54,7 @@
                       style="display: inline;"
                       data-confirm-delete="true"
                       data-item-type="category"
-                      data-item-name="{{ $category->name }}">
+                      data-item-name="{{ $category->translated_name }}">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn-action-icon danger" title="Delete">

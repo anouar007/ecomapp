@@ -797,7 +797,7 @@
             <div class="category-pills">
                 <div class="category-pill category-btn active" data-category="">All Items</div>
                 @foreach($categories as $category)
-                    <div class="category-pill category-btn" data-category="{{ $category->id }}">{{ $category->name }}</div>
+                    <div class="category-pill category-btn" data-category="{{ $category->id }}">{{ $category->translated_name }}</div>
                 @endforeach
             </div>
         </div>

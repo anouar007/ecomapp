@@ -108,18 +108,23 @@
             
             <div class="form-row">
                 <div class="form-group">
-                    <label for="name" class="form-label">
-                        Category Name <span class="required">*</span>
+                    <label for="name_fr" class="form-label">
+                        Category Name (FR) <span class="required">*</span>
                     </label>
-                    <input type="text" 
-                           id="name" 
-                           name="name" 
-                           class="form-control" 
-                           value="{{ old('name', $category->name) }}" 
-                           placeholder="e.g., Electronics" 
-                           required 
-                           autofocus>
+                    <input type="text" id="name_fr" name="name_fr" class="form-control" value="{{ old('name_fr', $category->name_fr ?: $category->name) }}" placeholder="Nom de la catégorie" required autofocus>
                 </div>
+                <div class="form-group">
+                    <label for="name_en" class="form-label">Category Name (EN)</label>
+                    <input type="text" id="name_en" name="name_en" class="form-control" value="{{ old('name_en', $category->name_en) }}" placeholder="Category Name">
+                </div>
+                <div class="form-group">
+                    <label for="name_ar" class="form-label">Category Name (AR)</label>
+                    <input type="text" id="name_ar" name="name_ar" class="form-control" value="{{ old('name_ar', $category->name_ar) }}" placeholder="اسم الفئة" dir="rtl">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <input type="hidden" name="name" id="name" value="{{ old('name', $category->name) }}">
 
                 <div class="form-group">
                     <label for="slug" class="form-label">Slug</label>
@@ -133,16 +138,20 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="description" class="form-label">Description</label>
-                <textarea id="description" 
-                          name="description" 
-                          class="form-control" 
-                          rows="3" 
-                          placeholder="Category description...">{{ old('description', $category->description) }}</textarea>
+            <div class="form-group mt-3">
+                <label for="description_fr" class="form-label">Description (FR)</label>
+                <textarea id="description_fr" name="description_fr" class="form-control" rows="2" placeholder="Description en français...">{{ old('description_fr', $category->description_fr ?: $category->description) }}</textarea>
+            </div>
+            <div class="form-group mt-3">
+                <label for="description_en" class="form-label">Description (EN)</label>
+                <textarea id="description_en" name="description_en" class="form-control" rows="2" placeholder="English description...">{{ old('description_en', $category->description_en) }}</textarea>
+            </div>
+            <div class="form-group mt-3">
+                <label for="description_ar" class="form-label">Description (AR)</label>
+                <textarea id="description_ar" name="description_ar" class="form-control" rows="2" placeholder="وصف عربي..." dir="rtl">{{ old('description_ar', $category->description_ar) }}</textarea>
             </div>
 
-            <div class="form-row">
+            <div class="form-row mt-4">
                 <div class="form-group">
                     <label for="parent_id" class="form-label">Parent Category</label>
                     <select id="parent_id" name="parent_id" class="form-control">
@@ -205,7 +214,7 @@
                 <div class="mb-3">
                     <p class="text-muted mb-2"><small>Current Image:</small></p>
                     <div class="current-image-preview">
-                        <img src="{{ Storage::url($category->image) }}" alt="{{ $category->name }}">
+                        <img src="{{ Storage::url($category->image) }}" alt="{{ $category->translated_name }}">
                     </div>
                     <div class="form-check mt-2">
                         <input type="checkbox" class="form-check-input" id="remove_image" name="remove_image" value="1">

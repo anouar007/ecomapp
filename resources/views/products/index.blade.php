@@ -33,7 +33,7 @@
                 <option value="">All Categories</option>
                 @foreach($categories as $category)
                     <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
-                        {{ $category->name }}
+                        {{ $category->translated_name }}
                     </option>
                 @endforeach
             </select>
@@ -189,10 +189,10 @@
                                     @endif
                                 </div>
                                 <div>
-                                    <div class="fw-bold text-dark">{{ $product->name }}</div>
-                                    @if($product->description)
+                                    <div class="fw-bold text-dark">{{ $product->translated_name }}</div>
+                                    @if($product->translated_description)
                                         <div class="text-muted small" style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                            {{ $product->description }}
+                                            {{ $product->translated_description }}
                                         </div>
                                     @endif
                                 </div>
@@ -247,7 +247,7 @@
                                       style="display: inline;"
                                       data-confirm-delete="true"
                                       data-item-type="product"
-                                      data-item-name="{{ $product->name }}">
+                                      data-item-name="{{ $product->translated_name }}">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn-action-icon danger" title="Delete Product">

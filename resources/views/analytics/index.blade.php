@@ -57,7 +57,7 @@
                     <ul class="list-group list-group-flush">
                         @forelse($analytics['sales']['top_selling_products'] as $product)
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                {{ $product->name }}
+                                {{ $product->translated_name }}
                                 <span class="badge badge-primary badge-pill">{{ $product->total_sold }} sold</span>
                             </li>
                         @empty

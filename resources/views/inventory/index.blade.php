@@ -85,7 +85,7 @@
                 <option value="">All Categories</option>
                 @foreach($categories as $category)
                     <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                        {{ $category->name }}
+                        {{ $category->translated_name }}
                     </option>
                 @endforeach
             </select>
@@ -147,7 +147,7 @@
                                     @endif
                                 </div>
                                 <div>
-                                    <div class="fw-bold text-dark">{{ $product->name }}</div>
+                                    <div class="fw-bold text-dark">{{ $product->translated_name }}</div>
                                     <div class="d-flex align-items-center gap-2 mt-1">
                                         <span class="badge bg-light text-secondary font-monospace" style="font-size: 0.65rem;">{{ $product->sku ?? 'NO-SKU' }}</span>
                                         <span class="text-muted small">•</span>
@@ -258,7 +258,7 @@
                             <div class="d-flex justify-content-end gap-2">
                                 @if($product->track_inventory)
                                 <button type="button" class="btn-action-icon" 
-                                        onclick="openAdjustModal('{{ $product->id }}', '{{ addslashes($product->name) }}', {{ $product->stock ?? 0 }})"
+                                        onclick="openAdjustModal('{{ $product->id }}', '{{ addslashes($product->translated_name) }}', {{ $product->stock ?? 0 }})"
                                         title="Adjust Stock">
                                     <i class="fas fa-sliders-h"></i>
                                 </button>

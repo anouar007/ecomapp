@@ -113,19 +113,24 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="name" class="form-label">
-                        Product Name <span class="required">*</span>
+                    <label for="name_fr" class="form-label">
+                        Product Name (FR) <span class="required">*</span>
                     </label>
-                    <input type="text" 
-                           id="name" 
-                           name="name" 
-                           class="form-control" 
-                           value="{{ old('name') }}" 
-                           placeholder="Enter product name" 
-                           required 
-                           autofocus>
+                    <input type="text" id="name_fr" name="name_fr" class="form-control" value="{{ old('name_fr') }}" placeholder="Nom du produit" required autofocus>
                 </div>
+                <div class="form-group">
+                    <label for="name_en" class="form-label">Product Name (EN)</label>
+                    <input type="text" id="name_en" name="name_en" class="form-control" value="{{ old('name_en') }}" placeholder="Product Name">
+                </div>
+                <div class="form-group">
+                    <label for="name_ar" class="form-label">Product Name (AR)</label>
+                    <input type="text" id="name_ar" name="name_ar" class="form-control" value="{{ old('name_ar') }}" placeholder="اسم المنتج" dir="rtl">
+                </div>
+            </div>
 
+            <div class="form-row">
+                <input type="hidden" name="name" id="name" value="{{ old('name', 'autofill') }}">
+                
                 <div class="form-group">
                     <label for="sku" class="form-label">
                         SKU <span class="required">*</span>
@@ -152,16 +157,20 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="description" class="form-label">Description</label>
-                <textarea id="description" 
-                          name="description" 
-                          class="form-control" 
-                          rows="4" 
-                          placeholder="Product description...">{{ old('description') }}</textarea>
+            <div class="form-group mt-3">
+                <label for="description_fr" class="form-label">Description (FR)</label>
+                <textarea id="description_fr" name="description_fr" class="form-control" rows="2" placeholder="Description en français...">{{ old('description_fr') }}</textarea>
+            </div>
+            <div class="form-group mt-3">
+                <label for="description_en" class="form-label">Description (EN)</label>
+                <textarea id="description_en" name="description_en" class="form-control" rows="2" placeholder="English description...">{{ old('description_en') }}</textarea>
+            </div>
+            <div class="form-group mt-3">
+                <label for="description_ar" class="form-label">Description (AR)</label>
+                <textarea id="description_ar" name="description_ar" class="form-control" rows="2" placeholder="وصف عربي..." dir="rtl">{{ old('description_ar') }}</textarea>
             </div>
 
-            <div class="form-row">
+            <div class="form-row mt-4">
                 <div class="form-group">
                     <label for="cost_price" class="form-label">
                         <i class="fas fa-dollar-sign"></i> Cost Price ($)
@@ -318,7 +327,8 @@ function updateFileInput() {
 
 // SKU Auto-Generation
 function generateSKU() {
-    const name = document.getElementById('name').value;
+    // We will use FR name or EN name as backup for generating SKU
+    const name = document.getElementById('name_fr').value || document.getElementById('name_en').value || document.getElementById('name_ar').value || '';
     const categoryId = document.getElementById('category_id').value;
     
     // Get category select element
@@ -378,14 +388,17 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Offer to generate SKU when product name is typed
     let nameTimeout;
-    document.getElementById('name').addEventListener('input', function() {
-        clearTimeout(nameTimeout);
-        nameTimeout = setTimeout(() => {
-            if (!document.getElementById('sku').value && this.value.length > 3) {
-                generateSKU();
-            }
-        }, 800); // Wait 800ms after user stops typing
-    });
+    const nameInput = document.getElementById('name_fr') || document.getElementById('name_en');
+    if(nameInput) {
+        nameInput.addEventListener('input', function() {
+            clearTimeout(nameTimeout);
+            nameTimeout = setTimeout(() => {
+                if (!document.getElementById('sku').value && this.value.length > 3) {
+                    generateSKU();
+                }
+            }, 800); // Wait 800ms after user stops typing
+        });
+    }
 });
 </script>
 @endpush

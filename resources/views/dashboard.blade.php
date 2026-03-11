@@ -199,7 +199,7 @@
                                     @endif
                                 </div>
                                 <div class="flex-grow-1">
-                                    <div class="text-dark fw-bold small line-clamp-1">{{ $product->name }}</div>
+                                    <div class="text-dark fw-bold small line-clamp-1">{{ $product->translated_name }}</div>
                                     <div class="text-muted" style="font-size: 11px;">SKU: {{ $product->sku }}</div>
                                 </div>
                                 <div class="text-end">

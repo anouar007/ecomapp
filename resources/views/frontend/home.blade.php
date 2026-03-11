@@ -233,9 +233,9 @@
                     <div class="cat-card-img">
                         @if($category->image)
                             @if(Str::startsWith($category->image, ['http://', 'https://']))
-                                <img src="{{ $category->image }}" alt="{{ $category->name }}">
+                                <img src="{{ $category->image }}" alt="{{ $category->translated_name }}">
                             @else
-                                <img src="{{ Storage::url($category->image) }}" alt="{{ $category->name }}">
+                                <img src="{{ Storage::url($category->image) }}" alt="{{ $category->translated_name }}">
                             @endif
                         @else
                             @php $catIcons = ['fa-print','fa-cut','fa-fill-drip','fa-scroll']; @endphp
@@ -245,7 +245,7 @@
                         @endif
                     </div>
                     <div class="cat-card-body">
-                        <h3 class="cat-card-name">{{ $category->name }}</h3>
+                        <h3 class="cat-card-name">{{ $category->translated_name }}</h3>
                         <span class="cat-card-count">{{ $category->products_count ?? $category->products()->count() }} produits</span>
                         <div class="cat-card-arrow"><i class="fas fa-arrow-right"></i></div>
                     </div>
@@ -306,7 +306,7 @@
             <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="{{ ($index % 4) * 80 }}">
                 <div class="product-card-v2">
                     <div class="product-v2-image">
-                        <img src="{{ $product->thumbnail ?? asset('images/placeholder-product.jpg') }}" alt="{{ $product->name }}">
+                        <img src="{{ $product->thumbnail ?? asset('images/placeholder-product.jpg') }}" alt="{{ $product->translated_name }}">
 
                         <div class="product-v2-badges">
                             @if($product->created_at->diffInDays(now()) < 7)
@@ -337,7 +337,7 @@
                         @if($product->productCategory)
                             <span class="product-v2-cat">{{ $product->productCategory->name }}</span>
                         @endif
-                        <h4 class="product-v2-name">{{ Str::limit($product->name, 40) }}</h4>
+                        <h4 class="product-v2-name">{{ Str::limit($product->translated_name, 40) }}</h4>
                         <div class="product-v2-rating">
                             @php $rating = round($product->reviews()->avg('rating') ?? 0); @endphp
                             <div class="stars-row">

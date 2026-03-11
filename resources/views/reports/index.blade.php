@@ -177,7 +177,7 @@
                             @foreach($lowStockProducts as $product)
                             <tr>
                                 <td style="padding-left: 1.5rem;">
-                                    <div class="fw-bold text-dark">{{ $product->name }}</div>
+                                    <div class="fw-bold text-dark">{{ $product->translated_name }}</div>
                                     <div class="text-muted small">SKU: {{ $product->sku }}</div>
                                 </td>
                                 <td>{{ $product->category->name ?? 'N/A' }}</td>

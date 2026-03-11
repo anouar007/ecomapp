@@ -2,7 +2,7 @@
     <div class="position-relative overflow-hidden group">
         <a href="{{ route('shop.show', $product->id) }}">
             @if($product->main_image)
-            <img src="{{ Storage::url($product->main_image) }}" class="card-img-top p-3 transition-transform duration-500 group-hover:scale-110" alt="{{ $product->name }}" style="height: 220px; object-fit: contain;">
+            <img src="{{ Storage::url($product->main_image) }}" class="card-img-top p-3 transition-transform duration-500 group-hover:scale-110" alt="{{ $product->translated_name }}" style="height: 220px; object-fit: contain;">
             @else
             <div class="bg-light d-flex align-items-center justify-content-center text-muted col-12" style="height: 220px;">
                 <i class="fas fa-image fa-3x opacity-25"></i>
@@ -44,7 +44,7 @@
     <div class="card-body p-3 pt-2 text-center border-top border-light">
         <div class="mb-1 text-muted small text-uppercase fw-bold ls-1" style="font-size: 10px">{{ $product->category_name }}</div>
         <h6 class="card-title fw-bold mb-2 text-truncate">
-            <a href="{{ route('shop.show', $product->id) }}" class="text-decoration-none text-dark stretched-link hover-text-primary" style="font-size: 14px">{{ $product->name }}</a>
+            <a href="{{ route('shop.show', $product->id) }}" class="text-decoration-none text-dark stretched-link hover-text-primary" style="font-size: 14px">{{ $product->translated_name }}</a>
         </h6>
         
         <div class="d-flex justify-content-center align-items-center gap-2">

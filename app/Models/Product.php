@@ -11,9 +11,15 @@ class Product extends Model
 
     protected $fillable = [
         'name',
+        'name_en',
+        'name_fr',
+        'name_ar',
         'sku',
         'slug',
         'description',
+        'description_en',
+        'description_fr',
+        'description_ar',
         'price',
         'cost_price',
         'sale_price',
@@ -313,6 +319,38 @@ class Product extends Model
         }
 
         return null;
+    }
+
+    /**
+     * Get the translated name based on current application locale.
+     */
+    public function getTranslatedNameAttribute()
+    {
+        $locale = app()->getLocale();
+        $nameField = 'name_' . $locale;
+        
+        if (!empty($this->{$nameField})) {
+            return $this->{$nameField};
+        }
+        
+        // Fallbacks
+        return $this->name_fr ?: $this->name_en ?: $this->name_ar ?: $this->name;
+    }
+
+    /**
+     * Get the translated description based on current application locale.
+     */
+    public function getTranslatedDescriptionAttribute()
+    {
+        $locale = app()->getLocale();
+        $descField = 'description_' . $locale;
+        
+        if (!empty($this->{$descField})) {
+            return $this->{$descField};
+        }
+        
+        // Fallbacks
+        return $this->description_fr ?: $this->description_en ?: $this->description_ar ?: $this->description;
     }
 }
 

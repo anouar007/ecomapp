@@ -1,8 +1,8 @@
 @extends('layouts.frontend')
 
-@section('meta_title', $product->name . ' — ' . setting('app_name', 'Speed Platform'))
-@section('meta_description', Str::limit(strip_tags($product->description), 155))
-@section('meta_keywords', $product->name . ', ' . ($product->category_name ?? '') . ', acheter ' . $product->name . ', ' . setting('app_name', 'boutique') . ', Maroc')
+@section('meta_title', $product->translated_name . ' — ' . setting('app_name', 'Speed Platform'))
+@section('meta_description', Str::limit(strip_tags($product->translated_description), 155))
+@section('meta_keywords', $product->translated_name . ', ' . ($product->category_name ?? '') . ', acheter ' . $product->translated_name . ', ' . setting('app_name', 'boutique') . ', Maroc')
 @section('meta_type', 'product')
 @section('meta_image', $product->main_image ? asset('storage/' . $product->main_image) : asset('images/og-default.jpg'))
 
@@ -16,11 +16,11 @@
   {
     "@context": "https://schema.org/",
     "@type": "Product",
-    "name": "{{ addslashes($product->name) }}",
+    "name": "{{ addslashes($product->translated_name) }}",
     "image": [
       "{{ $product->main_image ? asset('storage/' . $product->main_image) : asset('images/og-default.jpg') }}"
     ],
-    "description": "{{ addslashes(Str::limit(strip_tags($product->description), 155)) }}",
+    "description": "{{ addslashes(Str::limit(strip_tags($product->translated_description), 155)) }}",
     "sku": "{{ $product->sku ?? 'PROD-' . $product->id }}",
     "mpn": "{{ $product->sku ?? 'PROD-' . $product->id }}",
     @if($product->category_name)
@@ -78,14 +78,14 @@
       {
         "@type": "ListItem",
         "position": 4,
-        "name": "{{ addslashes($product->name) }}",
+        "name": "{{ addslashes($product->translated_name) }}",
         "item": "{{ url()->current() }}"
       }
       @else
       ,{
         "@type": "ListItem",
         "position": 3,
-        "name": "{{ addslashes($product->name) }}",
+        "name": "{{ addslashes($product->translated_name) }}",
         "item": "{{ url()->current() }}"
       }
       @endif
@@ -112,7 +112,7 @@
                 <a href="{{ route('shop.index', ['category' => optional($product->category)->slug]) }}">{{ $product->category_name }}</a>
             @endif
             <span class="pdp-bc-sep">/</span>
-            <span class="pdp-bc-current">{{ Str::limit($product->name, 40) }}</span>
+            <span class="pdp-bc-current">{{ Str::limit($product->translated_name, 40) }}</span>
         </nav>
     </div>
 </section>
@@ -139,7 +139,7 @@
                     <div class="pdp-main-image-wrap" id="zoomWrap" onmousemove="pdpZoom(event)">
                         @if($product->main_image)
                             <img id="mainImage" src="{{ Storage::url($product->main_image) }}"
-                                 alt="{{ $product->name }}" class="pdp-main-image">
+                                 alt="{{ $product->translated_name }}" class="pdp-main-image">
                         @else
                             <div class="pdp-no-image"><i class="fas fa-print"></i></div>
                         @endif
@@ -182,7 +182,7 @@
                     @endif
 
                     {{-- Title --}}
-                    <h1 class="pdp-title">{{ $product->name }}</h1>
+                    <h1 class="pdp-title">{{ $product->translated_name }}</h1>
 
                     {{-- Rating Row --}}
                     @if($reviews->total() > 0)
@@ -218,9 +218,9 @@
                     </div>
 
                     {{-- Description --}}
-                    @if($product->description)
+                    @if($product->translated_description)
                     <div class="pdp-description">
-                        {!! nl2br(e($product->description)) !!}
+                        {!! nl2br(e($product->translated_description)) !!}
                     </div>
                     @endif
 
@@ -490,7 +490,7 @@ function pdpAddToCart(event) {
             if (typeof refreshMiniCart === 'function') refreshMiniCart();
             Swal.fire({ toast:true, position:'top-end', icon:'success',
                 title:'Ajouté au panier !',
-                text:'{{ addslashes($product->name) }}',
+                text:'{{ addslashes($product->translated_name) }}',
                 showConfirmButton:false, timer:2500,
                 background:'#1a1a2e', color:'#fff' });
         } else {

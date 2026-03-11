@@ -6,7 +6,7 @@
             <div class="pcard-img">
                 <a href="{{ route('shop.show', $product->id) }}">
                     @if($product->main_image)
-                        <img src="{{ Storage::url($product->main_image) }}" alt="{{ $product->name }}" loading="lazy">
+                        <img src="{{ Storage::url($product->main_image) }}" alt="{{ $product->translated_name }}" loading="lazy">
                     @else
                         <div class="pcard-no-img"><i class="fas fa-print"></i></div>
                     @endif
@@ -42,7 +42,7 @@
                 <div class="pcard-cat">{{ $product->category_name }}</div>
                 @endif
                 <h4 class="pcard-name">
-                    <a href="{{ route('shop.show', $product->id) }}">{{ Str::limit($product->name, 42) }}</a>
+                    <a href="{{ route('shop.show', $product->id) }}">{{ Str::limit($product->translated_name, 42) }}</a>
                 </h4>
                 <div class="pcard-rating">
                     <div class="pcard-stars">
