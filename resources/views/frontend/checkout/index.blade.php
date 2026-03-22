@@ -1,171 +1,127 @@
 @extends('layouts.frontend')
 
-@section('meta_title', 'Checkout - Speed Platform')
+@section('meta_title', 'إتمام الطلب — ' . setting('app_name', 'Hijab Princesses'))
 
 @section('content')
-<div class="bg-light py-5">
+<div class="bg-surface section-py min-vh-100">
     <div class="container">
-        <div class="row">
+        <h1 class="fw-black mb-5 h2 border-start-primary ps-3">تأكيد الطلب</h1>
+
+        <div class="row g-4">
             <div class="col-lg-7">
-                <div class="card border-0 shadow-sm rounded-4 mb-4">
-                    <div class="card-body p-4">
-                        <h4 class="fw-bold mb-4">Informations de livraison</h4>
+                <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+                    <div class="card-body p-4 p-md-5">
+                        <h4 class="fw-bold mb-4 h5">معلومات التوصيل</h4>
                         <form action="{{ route('checkout.store') }}" method="POST" id="checkout-form">
                             @csrf
-                            <div class="row g-3">
+                            <div class="row g-4">
                                 <div class="col-12">
-                                    <label class="form-label small fw-bold text-muted">NOM COMPLET</label>
-                                    <input type="text" name="customer_name" class="form-control bg-light border-0 py-2" required>
+                                    <label class="form-label small fw-bold text-muted">الاسم الكامل</label>
+                                    <input type="text" name="customer_name" class="form-control bg-light border-0 py-3 rounded-3" placeholder="اكتبي اسمك الكامل هنا" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">ADRESSE E-MAIL <span class="text-muted fw-normal">(optionnel)</span></label>
-                                    <input type="email" name="customer_email" class="form-control bg-light border-0 py-2" placeholder="Pour la confirmation de commande">
+                                    <label class="form-label small fw-bold text-muted">البريد الإلكتروني (اختياري)</label>
+                                    <input type="email" name="customer_email" class="form-control bg-light border-0 py-3 rounded-3" placeholder="لتلقي تفاصيل الطلب">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">NUMÉRO DE TÉLÉPHONE</label>
+                                    <label class="form-label small fw-bold text-muted">رقم الهاتف</label>
                                     <div class="input-group">
-                                        <span class="input-group-text bg-light border-0">+212</span>
-                                        <input type="tel" name="customer_phone" class="form-control bg-light border-0 py-2" 
+                                        <span class="input-group-text bg-light border-0 rounded-start-3" dir="ltr">+212</span>
+                                        <input type="tel" name="customer_phone" class="form-control bg-light border-0 py-3 rounded-end-3" 
                                                placeholder="6 XX XX XX XX" 
                                                pattern="[0-9]{9}" 
-                                               title="Enter 9 digits (e.g. 612345678)"
                                                required>
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label small fw-bold text-muted">ADRESSE</label>
-                                    <input type="text" name="shipping_address" class="form-control bg-light border-0 py-2" required>
+                                    <label class="form-label small fw-bold text-muted">العنوان السكني</label>
+                                    <input type="text" name="shipping_address" class="form-control bg-light border-0 py-3 rounded-3" placeholder="مثال: حي الرياض، شارع النخيل، رقم 12" required>
                                 </div>
-                                <div class="col-md-5">
-                                    <label class="form-label small fw-bold text-muted">VILLE</label>
-                                    <select name="shipping_city" class="form-select bg-light border-0 py-2" required>
-                                        <option value="">Choisir la ville</option>
-                                        <option value="Casablanca">Casablanca</option>
-                                        <option value="Rabat">Rabat</option>
-                                        <option value="Fès">Fès</option>
-                                        <option value="Marrakech">Marrakech</option>
-                                        <option value="Tanger">Tanger</option>
-                                        <option value="Salé">Salé</option>
-                                        <option value="Meknès">Meknès</option>
-                                        <option value="Oujda">Oujda</option>
-                                        <option value="Kénitra">Kénitra</option>
-                                        <option value="Agadir">Agadir</option>
-                                        <option value="Tétouan">Tétouan</option>
-                                        <option value="Temara">Temara</option>
-                                        <option value="Safi">Safi</option>
-                                        <option value="Mohammedia">Mohammedia</option>
-                                        <option value="Khouribga">Khouribga</option>
-                                        <option value="El Jadida">El Jadida</option>
-                                        <option value="Béni Mellal">Béni Mellal</option>
-                                        <option value="Aït Melloul">Aït Melloul</option>
-                                        <option value="Nador">Nador</option>
-                                        <option value="Dar Bouazza">Dar Bouazza</option>
-                                        <option value="Taza">Taza</option>
-                                        <option value="Settat">Settat</option>
-                                        <option value="Berrechid">Berrechid</option>
-                                        <option value="Khémisset">Khémisset</option>
-                                        <option value="Inezgane">Inezgane</option>
-                                        <option value="Larache">Larache</option>
-                                        <option value="Guelmim">Guelmim</option>
-                                        <option value="Ksar El Kebir">Ksar El Kebir</option>
-                                        <option value="Al Hoceïma">Al Hoceïma</option>
-                                        <option value="Ouarzazate">Ouarzazate</option>
-                                        <option value="Essaouira">Essaouira</option>
-                                        <option value="Bouskoura">Bouskoura</option>
-                                        <option value="Fquih Ben Salah">Fquih Ben Salah</option>
-                                        <option value="Dcheira El Jihadia">Dcheira El Jihadia</option>
-                                        <option value="Oued Zem">Oued Zem</option>
-                                        <option value="Sidi Slimane">Sidi Slimane</option>
-                                        <option value="Errachidia">Errachidia</option>
-                                        <option value="Guercif">Guercif</option>
-                                        <option value="Oulad Teïma">Oulad Teïma</option>
-                                        <option value="Ben Guerir">Ben Guerir</option>
-                                        <option value="Taroudant">Taroudant</option>
-                                        <option value="Fnideq">Fnideq</option>
-                                        <option value="Sefrou">Sefrou</option>
-                                        <option value="Youssoufia">Youssoufia</option>
-                                        <option value="Martil">Martil</option>
-                                        <option value="Tiznit">Tiznit</option>
-                                        <option value="Tan-Tan">Tan-Tan</option>
-                                        <option value="Laâyoune">Laâyoune</option>
-                                        <option value="Dakhla">Dakhla</option>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">المدينة</label>
+                                    <select name="shipping_city" class="form-select bg-light border-0 py-3 rounded-3" required>
+                                        <option value="">اختاري المدينة</option>
+                                        @foreach(['الدار البيضاء', 'الرباط', 'مراكش', 'طنجة', 'فاس', 'أكادير', 'مكناس', 'وجدة', 'القنيطرة', 'تطوان', 'تمارة', 'آسفي', 'المحمدية', 'بني ملال', 'الجديدة', 'الناظور', 'سطات', 'تازة', 'الخميسات', 'العرائش', 'العيون', 'الداخلة'] as $city)
+                                            <option value="{{ $city }}">{{ $city }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-5">
-                                    <label class="form-label small fw-bold text-muted">RÉGION</label>
-                                    <input type="text" name="shipping_state" class="form-control bg-light border-0 py-2" placeholder="ex. Casablanca-Settat">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">الجهة</label>
+                                    <input type="text" name="shipping_state" class="form-control bg-light border-0 py-3 rounded-3" placeholder="اختياري">
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
 
-                <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-body p-4">
-                        <h4 class="fw-bold mb-4">Paiement</h4>
-                        <div class="alert alert-info border-0 rounded-3">
-                            <i class="fas fa-info-circle me-2"></i> Pour la démo, cette boutique utilise le <strong>paiement à la livraison</strong> (COD) ou par chèque.
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                    <div class="card-body p-4 p-md-5 text-center">
+                        <i class="fas fa-truck fa-3x text-primary mb-3"></i>
+                        <h4 class="fw-bold mb-3 h5">طريقة الدفع</h4>
+                        <div class="p-4 border rounded-4 bg-light-primary-subtle border-primary d-inline-block px-5">
+                            <span class="fw-bold h6 m-0"><i class="fas fa-money-bill-wave me-2"></i> الدفع عند الاستلام</span>
                         </div>
-                        <div class="form-check p-3 border rounded-3 bg-white mb-2">
-                            <input class="form-check-input ms-0 me-3" type="radio" name="payment_method" id="cod" checked>
-                            <label class="form-check-label fw-bold" for="cod">
-                                Paiement à la livraison
-                            </label>
-                        </div>
+                        <p class="text-muted small mt-3">سوف تتواصل معك إحدى عضوات فريقنا لتأكيد الطلب قبل الإرسال.</p>
                     </div>
                 </div>
             </div>
 
             <div class="col-lg-5">
-                <div class="card border-0 shadow-sm rounded-4">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden sticky-top" style="top: 100px;">
                     <div class="card-header bg-white p-4 border-bottom-0">
-                        <h5 class="fw-bold m-0">Récapitulatif de la commande</h5>
+                        <h5 class="fw-black m-0">ملخص الطلب</h5>
                     </div>
                     <div class="card-body p-4 pt-0">
-                        @foreach($cart as $id => $details)
-                        <div class="d-flex align-items-center mb-3">
+                        @foreach($cart as $key => $details)
+                        <div class="d-flex align-items-center mb-4">
                             <div class="me-3 position-relative">
                                 @if($details['image'])
-                                <img src="{{ Storage::url($details['image']) }}" alt="{{ $details['name'] }}" class="rounded-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                <img src="{{ Storage::url($details['image']) }}" alt="{{ $details['name'] }}" class="rounded-3 shadow-sm" style="width: 70px; height: 90px; object-fit: cover;">
                                 @else
-                                <div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                                    <i class="fas fa-image text-muted opacity-25"></i>
+                                <div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="width: 70px; height: 90px;">
+                                    <i class="fas fa-image text-muted opacity-25 fa-2x"></i>
                                 </div>
                                 @endif
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary tiny-badge">{{ $details['quantity'] }}</span>
+                                <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-primary border-0 shadow-sm">{{ $details['quantity'] }}</span>
                             </div>
                             <div class="flex-grow-1">
-                                <h6 class="fw-bold mb-0 text-truncate" style="max-width: 150px;">{{ $details['name'] }}</h6>
+                                <h6 class="fw-bold mb-1 text-truncate" style="max-width: 180px;">{{ $details['name'] }}</h6>
+                                <div class="small text-muted">
+                                    @if(($details['color'] ?? null)) {{ $details['color'] }} @endif
+                                    @if(($details['color'] ?? null) && ($details['size'] ?? null)) | @endif
+                                    @if(($details['size'] ?? null)) {{ $details['size'] }} @endif
+                                </div>
                             </div>
-                            <div class="fw-bold">{{ currency($details['price'] * $details['quantity']) }}</div>
+                            <div class="fw-bold text-primary">{{ currency($details['price'] * $details['quantity']) }}</div>
                         </div>
                         @endforeach
                         
-                        <hr class="my-4 opacity-10">
-                        
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted">Sous-total</span>
-                            <span class="fw-bold">{{ currency($total) }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between mb-4">
-                            <span class="text-muted">Livraison</span>
-                            <span class="text-success fw-bold">Gratuit</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center py-3 border-top">
-                            <span class="h5 fw-bold mb-0">Total</span>
-                            <span class="h4 fw-bold text-primary mb-0">{{ currency($total) }}</span>
+                        <div class="bg-light p-4 rounded-4 mt-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">المجموع الفرعي</span>
+                                <span class="fw-bold">{{ currency($total) }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-4">
+                                <span class="text-muted">التوصيل</span>
+                                <span class="text-success fw-bold">مجاني</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary-subtle">
+                                <span class="h5 fw-black mb-0">الإجمالي</span>
+                                <span class="h3 fw-black text-primary mb-0">{{ currency($total) }}</span>
+                            </div>
                         </div>
 
-                        <button type="submit" form="checkout-form" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow">
-                            Commander ({{ currency($total) }})
+                        <button type="submit" form="checkout-form" class="btn btn-primary btn-lg w-100 rounded-pill py-3 fw-bold shadow mt-4">
+                            تأكيد الطلب الآن <i class="fas fa-check-circle ms-2"></i>
                         </button>
+                        
+                        <div class="text-center mt-4">
+                            <a href="{{ route('cart.index') }}" class="text-muted text-decoration-none small">
+                                <i class="fas fa-arrow-right me-1"></i> العودة للسلة
+                            </a>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="text-center mt-4">
-                    <a href="{{ route('cart.index') }}" class="text-muted text-decoration-none small">
-                        <i class="fas fa-arrow-left me-1"></i> Retour au panier
-                    </a>
                 </div>
             </div>
         </div>

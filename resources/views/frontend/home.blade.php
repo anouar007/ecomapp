@@ -349,14 +349,56 @@
                         </div>
                         <div class="product-v2-price">
                             @if($product->isOnSale())
-                                <span class="price-sale">{{ $product->formatted_sale_price }}</span>
+                                <span class="price-sale" id="pcard-price-v2-{{ $product->id }}">{{ $product->formatted_sale_price }}</span>
                                 <span class="price-old">{{ $product->formatted_price }}</span>
                             @else
-                                <span class="price-sale">{{ $product->formatted_price }}</span>
+                                <span class="price-sale" id="pcard-price-v2-{{ $product->id }}">{{ $product->formatted_price }}</span>
                             @endif
                         </div>
+
+                        {{-- Card Variations Selector --}}
+                        @if($product->variants->count() > 0)
+                        <div class="pcard-variants mt-2">
+                             @php 
+                                $sizes = $product->available_sizes;
+                                $colors = $product->available_colors;
+                            @endphp
+
+                            @if($colors->count() > 0)
+                            <div class="pcard-variant-row">
+                                <span class="pcard-variant-label">اللون:</span>
+                                @foreach($colors as $color)
+                                <div class="pcard-color-dot" 
+                                     style="background: {{ $color->color_code ?: '#eee' }}" 
+                                     onclick="selectCardVariant({{ $product->id }}, 'color', '{{ $color->color }}', this, 'v2')"
+                                     title="{{ $color->color }}">
+                                </div>
+                                @endforeach
+                            </div>
+                            @endif
+
+                            @if($sizes->count() > 0)
+                            <div class="pcard-variant-row">
+                                <span class="pcard-variant-label">المقاس:</span>
+                                @foreach($sizes as $size)
+                                <div class="pcard-size-pill" 
+                                     onclick="selectCardVariant({{ $product->id }}, 'size', '{{ $size }}', this, 'v2')">
+                                    {{ $size }}
+                                </div>
+                                @endforeach
+                            </div>
+                            @endif
+
+                            <input type="hidden" id="card-selected-variant-v2-{{ $product->id }}" value="">
+                            <script>
+                                if (typeof cardVariants === 'undefined') window.cardVariants = {};
+                                window.cardVariants[{{ $product->id }}] = {!! $product->variants_json !!};
+                            </script>
+                        </div>
+                        @endif
+
                         @if(!$product->isInStock())
-                        <div class="out-of-stock-label"><i class="fas fa-exclamation-circle me-1"></i>Rupture de stock</div>
+                        <div class="out-of-stock-label mt-2"><i class="fas fa-exclamation-circle me-1"></i>Rupture de stock</div>
                         @endif
                     </div>
                 </div>
@@ -647,25 +689,6 @@
 
 @push('scripts')
 <script>
-function addToCart(productId) {
-    fetch(`{{ url('/cart/add') }}/${productId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
-        body: JSON.stringify({ quantity: 1 })
-    })
-    .then(async response => {
-        const isJson = response.headers.get('content-type')?.includes('application/json');
-        const data = isJson ? await response.json() : null;
-        if (!response.ok) throw new Error((data && data.message) || `Server Error: ${response.status}`);
-        const countEl = document.getElementById('header-cart-count');
-        if(countEl && data.cartCount !== undefined) countEl.textContent = data.cartCount;
-        refreshMiniCart();
-        Swal.fire({ toast:true, position:'top-end', icon:'success', title:'Ajouté au panier !', showConfirmButton:false, timer:2500, background:'#1a1a2e', color:'#fff' });
-    })
-    .catch(error => {
-        Swal.fire({ toast:true, position:'top-end', icon:'error', title: error.message || 'Erreur', showConfirmButton:false, timer:3000 });
-    });
-}
 
 function toggleFaq(btn) {
     const item   = btn.closest('.faq-item');

@@ -73,11 +73,19 @@ class ProductController extends Controller
             'category_id' => ['nullable', 'exists:categories,id'],
             'images.*' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
+            'variants' => ['nullable', 'array'],
+            'variants.*.size' => ['nullable', 'string', 'max:255'],
+            'variants.*.color' => ['nullable', 'string', 'max:255'],
+            'variants.*.color_code' => ['nullable', 'string', 'max:7'],
+            'variants.*.sku' => ['nullable', 'string', 'max:255'],
+            'variants.*.price' => ['nullable', 'numeric', 'min:0'],
+            'variants.*.stock' => ['required_with:variants', 'integer', 'min:0'],
+            'variants.*.color_image' => ['nullable', 'image', 'max:2048'],
         ]);
 
         DB::beginTransaction();
         try {
-            $product = Product::create($validated);
+            $product = Product::create(\Illuminate\Support\Arr::except($validated, ['variants']));
 
             // Handle multiple image uploads
             if ($request->hasFile('images')) {
@@ -90,6 +98,18 @@ class ProductController extends Controller
                         'is_primary' => $index === 0, // First image is primary
                     ]);
                 }
+            }
+
+            // Handle Variations
+            if ($request->has('variants')) {
+                foreach ($request->variants as $variantData) {
+                    if (isset($variantData['color_image'])) {
+                        $variantData['color_image'] = $variantData['color_image']->store('variants', 'public');
+                    }
+                    $product->variants()->create($variantData);
+                }
+                // Sync main stock
+                $product->update(['stock' => $product->variants()->sum('stock')]);
             }
 
             DB::commit();
@@ -107,7 +127,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $product->load('images', 'productCategory');
+        $product->load(['images', 'productCategory', 'variants']);
         $categories = \App\Models\Category::where('status', 'active')
             ->orderBy('name')
             ->get();
@@ -139,11 +159,21 @@ class ProductController extends Controller
             'status' => ['required', 'in:active,inactive'],
             'remove_images' => ['nullable', 'array'],
             'remove_images.*' => ['exists:product_images,id'],
+            'variants' => ['nullable', 'array'],
+            'variants.*.id' => ['nullable', 'exists:product_variants,id'],
+            'variants.*.size' => ['nullable', 'string', 'max:255'],
+            'variants.*.color' => ['nullable', 'string', 'max:255'],
+            'variants.*.color_code' => ['nullable', 'string', 'max:7'],
+            'variants.*.sku' => ['nullable', 'string', 'max:255'],
+            'variants.*.price' => ['nullable', 'numeric', 'min:0'],
+            'variants.*.stock' => ['required_with:variants', 'integer', 'min:0'],
+            'variants.*.color_image' => ['nullable', 'image', 'max:2048'],
+            'variants.*.remove_image' => ['nullable', 'boolean'],
         ]);
 
         DB::beginTransaction();
         try {
-            $product->update($validated);
+            $product->update(\Illuminate\Support\Arr::except($validated, ['variants', 'remove_images']));
 
             // Handle image removal
             if ($request->has('remove_images')) {
@@ -165,6 +195,43 @@ class ProductController extends Controller
                         'sort_order' => $currentMaxOrder + $index + 1,
                         'is_primary' => $product->images()->count() === 0 && $index === 0,
                     ]);
+                }
+            }
+
+            // Handle variations
+            if ($request->has('variants')) {
+                $submittedVariantIds = collect($request->variants)->pluck('id')->filter()->toArray();
+                
+                // Delete removed variants
+                $product->variants()->whereNotIn('id', $submittedVariantIds)->delete();
+
+                foreach ($request->variants as $variantData) {
+                    $variantId = $variantData['id'] ?? null;
+                    
+                    // Handle color image upload
+                    if (isset($variantData['color_image']) && $variantData['color_image'] instanceof \Illuminate\Http\UploadedFile) {
+                        $variantData['color_image'] = $variantData['color_image']->store('variants', 'public');
+                    } elseif (isset($variantData['remove_image']) && $variantData['remove_image']) {
+                        $variantData['color_image'] = null;
+                    } else {
+                        unset($variantData['color_image']);
+                    }
+
+                    if ($variantId) {
+                        $product->variants()->where('id', $variantId)->update(
+                            \Illuminate\Support\Arr::except($variantData, ['id', 'remove_image'])
+                        );
+                    } else {
+                        $product->variants()->create($variantData);
+                    }
+                }
+
+                // Sync main stock with variants total
+                $product->update(['stock' => $product->variants()->sum('stock')]);
+            } else {
+                // If variants was submitted as empty array but was present, it means all were removed
+                if ($request->exists('variants')) {
+                    $product->variants()->delete();
                 }
             }
 

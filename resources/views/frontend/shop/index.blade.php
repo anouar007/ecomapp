@@ -316,38 +316,5 @@ document.getElementById('priceFilterForm').addEventListener('submit', function(e
 document.getElementById('searchForm').addEventListener('submit', function(e) { e.preventDefault(); fetchProducts(); });
 attachPaginationListeners();
 
-function addToCart(id) {
-    const btn = document.querySelector(`button[onclick="addToCart(${id})"]`);
-    const originalHtml = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-
-    fetch(`/cart/add/${id}`, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({ quantity: 1 })
-    })
-    .then(r => r.json())
-    .then(data => {
-        btn.disabled = false;
-        btn.innerHTML = originalHtml;
-        if (data.success) {
-            Swal.fire({ toast:true, position:'top-end', icon:'success', title:'Ajouté au panier !',
-                showConfirmButton:false, timer:2500, background:'#1a1a2e', color:'#fff' });
-            const badge = document.getElementById('header-cart-count');
-            if (badge && data.cartCount !== undefined) badge.innerText = data.cartCount;
-            if (typeof refreshMiniCart === 'function') refreshMiniCart();
-        }
-    })
-    .catch(err => {
-        console.error(err);
-        btn.disabled = false;
-        btn.innerHTML = originalHtml;
-    });
-}
 </script>
 @endpush

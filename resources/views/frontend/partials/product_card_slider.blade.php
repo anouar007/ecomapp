@@ -48,11 +48,50 @@
         </h6>
         
         <div class="d-flex justify-content-center align-items-center gap-2">
-            <h5 class="fw-bold text-primary m-0 fs-6">{{ $product->formatted_price }}</h5>
+            <h5 class="fw-bold text-primary m-0 fs-6" id="pcard-price-slider-{{ $product->id }}">{{ $product->formatted_price }}</h5>
             @if($product->isOnSale())
                 <small class="text-decoration-line-through text-muted" style="font-size: 11px">{{ $product->formatted_sale_price }}</small>
             @endif
         </div>
+
+        {{-- Card Variations Selector --}}
+        @if($product->variants->count() > 0)
+        <div class="pcard-variants justify-content-center mt-3">
+             @php 
+                $sizes = $product->available_sizes;
+                $colors = $product->available_colors;
+            @endphp
+
+            @if($colors->count() > 0)
+            <div class="pcard-variant-row justify-content-center">
+                @foreach($colors as $color)
+                <div class="pcard-color-dot" 
+                     style="background: {{ $color->color_code ?: '#eee' }}" 
+                     onclick="selectCardVariant({{ $product->id }}, 'color', '{{ $color->color }}', this, true)"
+                     title="{{ $color->color }}">
+                </div>
+                @endforeach
+            </div>
+            @endif
+
+            @if($sizes->count() > 0)
+            <div class="pcard-variant-row justify-content-center mt-1">
+                @foreach($sizes as $size)
+                <div class="pcard-size-pill" 
+                     onclick="selectCardVariant({{ $product->id }}, 'size', '{{ $size }}', this, true)">
+                    {{ $size }}
+                </div>
+                @endforeach
+            </div>
+            @endif
+
+            <input type="hidden" id="card-selected-variant-slider-{{ $product->id }}" value="">
+            <script>
+                if (typeof cardVariants === 'undefined') window.cardVariants = {};
+                window.cardVariants[{{ $product->id }}] = {!! $product->variants_json !!};
+            </script>
+        </div>
+        @endif
     </div>
 </div>
 
