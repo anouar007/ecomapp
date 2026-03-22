@@ -108,35 +108,71 @@
 
 @push('scripts')
 <script>
-function addToCart(productId) {
-    fetch(`{{ url('/cart/add') }}/${productId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
-        body: JSON.stringify({ quantity: 1 })
-    })
-    .then(async response => {
-        const isJson = response.headers.get('content-type')?.includes('application/json');
-        const data = isJson ? await response.json() : null;
-        if (!response.ok) throw new Error((data && data.message) || `حدث خطأ في الخادم`);
-        
-        const countEl = document.getElementById('header-cart-count');
-        if(countEl && data.cartCount !== undefined) countEl.textContent = data.cartCount;
-        
-        Swal.fire({ 
-            toast:true, 
-            position:'top-start', 
-            icon:'success', 
-            title:'تمت الإضافة للسلة!', 
-            showConfirmButton:false, 
-            timer:2500, 
-            background:'#000', 
-            color:'#fff' 
+let currentCategory = "{{ request('category') }}";
+
+function getParams() {
+    const p = new URLSearchParams();
+    if (currentCategory) p.append('category', currentCategory);
+    
+    const sortEl = document.getElementById('sortSelect');
+    const sort = sortEl ? sortEl.value : '';
+    
+    const qEl = document.querySelector('input[name="q"]');
+    const q = qEl ? qEl.value : '';
+    
+    const minPriceEl = document.querySelector('input[name="min_price"]');
+    const minPrice = minPriceEl ? minPriceEl.value : '';
+    
+    const maxPriceEl = document.querySelector('input[name="max_price"]');
+    const maxPrice = maxPriceEl ? maxPriceEl.value : '';
+
+    if (sort)     p.append('sort',      sort);
+    if (q)        p.append('q',         q);
+    if (minPrice) p.append('min_price', minPrice);
+    if (maxPrice) p.append('max_price', maxPrice);
+    return p;
+}
+
+function fetchProducts(url = "{{ route('shop.index') }}") {
+        .then(r => r.text())
+        .then(html => {
+            grid.innerHTML = html;
+            grid.style.opacity = '1';
+            loader.classList.add('d-none');
+            attachPaginationListeners();
+        })
+        .catch(err => {
+            console.error(err);
+            grid.style.opacity = '1';
+            loader.classList.add('d-none');
         });
-        if (typeof refreshMiniCart === 'function') refreshMiniCart();
-    })
-    .catch(error => {
-        Swal.fire({ toast:true, position:'top-start', icon:'error', title: error.message || 'خطأ', showConfirmButton:false, timer:3000 });
+}
+
+function attachPaginationListeners() {
+    document.querySelectorAll('.pagination a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            fetchProducts(this.href);
+            document.getElementById('productGridContainer').scrollIntoView({ behavior: 'smooth' });
+        });
     });
 }
+
+document.querySelectorAll('.category-filter').forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelectorAll('.category-filter').forEach(el => el.classList.remove('active'));
+        this.classList.add('active');
+        currentCategory = this.dataset.slug;
+        document.getElementById('categoryTitle').innerText = this.querySelector('span').innerText;
+        fetchProducts();
+    });
+});
+
+document.getElementById('sortSelect').addEventListener('change', () => fetchProducts());
+document.getElementById('priceFilterForm').addEventListener('submit', function(e) { e.preventDefault(); fetchProducts(); });
+document.getElementById('searchForm').addEventListener('submit', function(e) { e.preventDefault(); fetchProducts(); });
+attachPaginationListeners();
+
 </script>
 @endpush

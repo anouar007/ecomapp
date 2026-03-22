@@ -73,6 +73,38 @@
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 20px;
 }
+
+/* Variations Table Styles */
+.variant-img-upload {
+    width: 48px;
+    height: 48px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    transition: all 0.2s ease;
+}
+.variant-img-upload:hover {
+    border-color: #3b82f6;
+    background: #eff6ff;
+}
+.variant-img-upload img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.no-img-placeholder {
+    color: #94a3b8;
+    font-size: 12px;
+}
+.form-control-color {
+    padding: 0.2rem;
+    height: 31px;
+}
 </style>
 @endpush
 
@@ -280,6 +312,84 @@
                 </select>
             </div>
 
+            <!-- Variations Section -->
+            <div class="card mt-4 border-0 shadow-sm" style="background: #fdfdfd;">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                    <h3 class="card-title mb-0"><i class="fas fa-layer-group text-primary"></i> Product Variations</h3>
+                    <button type="button" class="btn btn-sm btn-primary rounded-pill px-3" onclick="addVariationRow()">
+                        <i class="fas fa-plus me-1"></i> Add Variation
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="variantsTable">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th style="width: 80px; padding-left: 1.5rem;">Image</th>
+                                    <th>Color</th>
+                                    <th style="width: 100px;">Hex</th>
+                                    <th style="width: 120px;">Size</th>
+                                    <th>SKU</th>
+                                    <th style="width: 140px;">Price (Override)</th>
+                                    <th style="width: 100px;">Stock</th>
+                                    <th style="width: 50px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="variantsBody">
+                                @foreach($product->variants as $index => $variant)
+                                <tr data-index="{{ $index }}">
+                                    <td style="padding-left: 1.5rem;">
+                                        <input type="hidden" name="variants[{{ $index }}][id]" value="{{ $variant->id }}">
+                                        <div class="variant-img-upload" onclick="this.querySelector('input').click()">
+                                            @if($variant->color_image)
+                                                <img src="{{ asset('storage/' . $variant->color_image) }}" id="variant_img_preview_{{ $index }}">
+                                            @else
+                                                <div class="no-img-placeholder"><i class="fas fa-camera"></i></div>
+                                            @endif
+                                            <input type="file" name="variants[{{ $index }}][color_image]" class="d-none" accept="image/*" onchange="previewVariantImage(this, {{ $index }})">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="variants[{{ $index }}][color]" class="form-control form-control-sm" value="{{ $variant->color }}" placeholder="e.g. Red">
+                                    </td>
+                                    <td>
+                                        <input type="color" name="variants[{{ $index }}][color_code]" class="form-control form-control-color form-control-sm w-100" value="{{ $variant->color_code ?: '#000000' }}" title="Choose color">
+                                    </td>
+                                    <td>
+                                        <input type="text" name="variants[{{ $index }}][size]" class="form-control form-control-sm" value="{{ $variant->size }}" placeholder="e.g. XL">
+                                    </td>
+                                    <td>
+                                        <input type="text" name="variants[{{ $index }}][sku]" class="form-control form-control-sm" value="{{ $variant->sku }}" placeholder="Unique SKU">
+                                    </td>
+                                    <td>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">$</span>
+                                            <input type="number" name="variants[{{ $index }}][price]" class="form-control" value="{{ $variant->price }}" step="0.01" placeholder="{{ $product->price }}">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input type="number" name="variants[{{ $index }}][stock]" class="form-control form-control-sm text-center" value="{{ $variant->stock }}" required min="0">
+                                    </td>
+                                    <td class="text-end pe-3">
+                                        <button type="button" class="btn btn-link text-danger p-0" onclick="removeVariationRow(this)">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="noVariantsMsg" class="p-5 text-center text-muted {{ $product->variants->count() > 0 ? 'd-none' : '' }}">
+                        <div class="mb-3">
+                            <i class="fas fa-layer-group" style="font-size: 40px; color: #e2e8f0;"></i>
+                        </div>
+                        <h5>No variations configured</h5>
+                        <p class="small mb-0">Products without variations use the main color (if defined) and total stock.</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="form-actions">
                 <a href="{{ route('products.index') }}" class="btn btn-secondary">
                     <i class="fas fa-times"></i> Cancel
@@ -337,6 +447,85 @@ function handleNewImages(event) {
         };
         reader.readAsDataURL(file);
     });
+}
+
+// ── Variations Management ───────────────────────
+let variantIndex = {{ $product->variants->count() }};
+
+function addVariationRow() {
+    const tbody = document.getElementById('variantsBody');
+    const noMsg = document.getElementById('noVariantsMsg');
+    
+    if (noMsg) noMsg.classList.add('d-none');
+    
+    const tr = document.createElement('tr');
+    tr.dataset.index = variantIndex;
+    tr.innerHTML = `
+        <td style="padding-left: 1.5rem;">
+            <div class="variant-img-upload" onclick="this.querySelector('input').click()">
+                <div class="no-img-placeholder"><i class="fas fa-camera"></i></div>
+                <input type="file" name="variants[${variantIndex}][color_image]" class="d-none" accept="image/*" onchange="previewVariantImage(this, ${variantIndex})">
+            </div>
+        </td>
+        <td>
+            <input type="text" name="variants[${variantIndex}][color]" class="form-control form-control-sm" placeholder="e.g. Red">
+        </td>
+        <td>
+            <input type="color" name="variants[${variantIndex}][color_code]" class="form-control form-control-color form-control-sm w-100" value="#000000" title="Choose color">
+        </td>
+        <td>
+            <input type="text" name="variants[${variantIndex}][size]" class="form-control form-control-sm" placeholder="e.g. XL">
+        </td>
+        <td>
+            <input type="text" name="variants[${variantIndex}][sku]" class="form-control form-control-sm" placeholder="SKU">
+        </td>
+        <td>
+            <div class="input-group input-group-sm">
+                <span class="input-group-text">$</span>
+                <input type="number" name="variants[${variantIndex}][price]" class="form-control" step="0.01" placeholder="{{ $product->price }}">
+            </div>
+        </td>
+        <td>
+            <input type="number" name="variants[${variantIndex}][stock]" class="form-control form-control-sm text-center" value="10" required min="0">
+        </td>
+        <td class="text-end pe-3">
+            <button type="button" class="btn btn-link text-danger p-0" onclick="removeVariationRow(this)">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </td>
+    `;
+    tbody.appendChild(tr);
+    variantIndex++;
+}
+
+function removeVariationRow(btn) {
+    if (confirm('Are you sure you want to remove this variation?')) {
+        const tr = btn.closest('tr');
+        tr.remove();
+        
+        const tbody = document.getElementById('variantsBody');
+        if (tbody.children.length === 0) {
+            document.getElementById('noVariantsMsg').classList.remove('d-none');
+        }
+    }
+}
+
+function previewVariantImage(input, index) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            let img = document.getElementById(`variant_img_preview_${index}`);
+            const parent = input.parentElement;
+            
+            if (!img) {
+                parent.innerHTML = `<img src="${e.target.result}" id="variant_img_preview_${index}">
+                                    <input type="file" name="variants[${index}][color_image]" class="d-none" accept="image/*" onchange="previewVariantImage(this, ${index})">`;
+            } else {
+                img.src = e.target.result;
+            }
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
 }
 </script>
 @endpush

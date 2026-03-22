@@ -80,9 +80,60 @@
                     <div class="product-v2-body">
                         <h4 class="product-v2-name mb-2">{{ Str::limit($product->translated_name, 35) }}</h4>
                         <div class="product-v2-price">
-                            <span class="price-sale text-primary">{{ $product->formatted_price }}</span>
+                            @if($product->isOnSale())
+                                <span class="price-sale" id="pcard-price-v2-{{ $product->id }}">{{ $product->formatted_sale_price }}</span>
+                                <span class="price-old">{{ $product->formatted_price }}</span>
+                            @else
+                                <span class="price-sale" id="pcard-price-v2-{{ $product->id }}">{{ $product->formatted_price }}</span>
+                            @endif
                         </div>
-                        <button onclick="addToCart({{ $product->id }})" class="btn btn-primary w-100 mt-3 rounded-pill">
+
+                        {{-- Card Variations Selector --}}
+                        @if($product->variants->count() > 0)
+                        <div class="pcard-variants mt-2">
+                             @php 
+                                $sizes = $product->available_sizes;
+                                $colors = $product->available_colors;
+                            @endphp
+
+                            @if($colors->count() > 0)
+                            <div class="pcard-variant-row">
+                                <span class="pcard-variant-label">اللون:</span>
+                                @foreach($colors as $color)
+                                <div class="pcard-color-dot" 
+                                     style="background: {{ $color->color_code ?: '#eee' }}" 
+                                     onclick="selectCardVariant({{ $product->id }}, 'color', '{{ $color->color }}', this, 'v2')"
+                                     title="{{ $color->color }}">
+                                </div>
+                                @endforeach
+                            </div>
+                            @endif
+
+                            @if($sizes->count() > 0)
+                            <div class="pcard-variant-row">
+                                <span class="pcard-variant-label">المقاس:</span>
+                                @foreach($sizes as $size)
+                                <div class="pcard-size-pill" 
+                                     onclick="selectCardVariant({{ $product->id }}, 'size', '{{ $size }}', this, 'v2')">
+                                    {{ $size }}
+                                </div>
+                                @endforeach
+                            </div>
+                            @endif
+
+                            <input type="hidden" id="card-selected-variant-v2-{{ $product->id }}" value="">
+                        </div>
+                        <script>
+                            if (typeof window.cardVariants === 'undefined') window.cardVariants = {};
+                            window.cardVariants[{{ $product->id }}] = {!! $product->variants_json !!};
+                        </script>
+                        @endif
+
+                        @if(!$product->isInStock())
+                        <div class="out-of-stock-label mt-2"><i class="fas fa-exclamation-circle me-1"></i>نفذ من المخزن</div>
+                        @endif
+
+                        <button onclick="addToCart({{ $product->id }}, 'v2')" class="btn btn-primary w-100 mt-3 rounded-pill">
                             أضيفي للسلة <i class="fas fa-cart-plus ms-2"></i>
                         </button>
                     </div>
@@ -132,33 +183,122 @@
 
 @push('scripts')
 <script>
-function addToCart(productId) {
+
+function toggleFaq(btn) {
+    const item   = btn.closest('.faq-item');
+    const answer = item.querySelector('.faq-answer');
+    const allItems = document.querySelectorAll('.faq-item');
+
+    allItems.forEach(el => {
+        if (el !== item) {
+            el.classList.remove('faq-open');
+            el.querySelector('.faq-answer').style.display = 'none';
+        }
+    });
+
+    if (item.classList.contains('faq-open')) {
+        item.classList.remove('faq-open');
+        answer.style.display = 'none';
+    } else {
+        item.classList.add('faq-open');
+        answer.style.display = 'block';
+    }
+}
+
+// ── Variant Selection Logic ──
+function selectCardVariant(productId, type, value, element, prefix) {
+    const container = element.closest('.pcard-variants');
+    const row = element.closest('.pcard-variant-row');
+    
+    // Toggle active class
+    row.querySelectorAll('.pcard-color-dot, .pcard-size-pill').forEach(el => el.classList.remove('active'));
+    element.classList.add('active');
+
+    // Update state
+    if (!window.selectedCardVariants) window.selectedCardVariants = {};
+    if (!window.selectedCardVariants[productId]) window.selectedCardVariants[productId] = {};
+    window.selectedCardVariants[productId][type] = value;
+
+    // Check if we have a complete match
+    const variants = window.cardVariants[productId];
+    const selection = window.selectedCardVariants[productId];
+    
+    const match = variants.find(v => {
+        let isMatch = true;
+        if (selection.color && v.color !== selection.color) isMatch = false;
+        if (selection.size && v.size !== selection.size) isMatch = false;
+        return isMatch;
+    });
+
+    if (match) {
+        // Update price
+        const priceEl = document.getElementById(`pcard-price-${prefix}-${productId}`);
+        if (priceEl) priceEl.innerText = match.formatted_price;
+        
+        // Update hidden input
+        const input = document.getElementById(`card-selected-variant-${prefix}-${productId}`);
+        if (input) input.value = match.id;
+    }
+}
+
+function addToCart(productId, prefix) {
+    const variants = window.cardVariants ? window.cardVariants[productId] : null;
+    const selectedVariantId = prefix ? document.getElementById(`card-selected-variant-${prefix}-${productId}`)?.value : null;
+
+    if (variants && variants.length > 0 && !selectedVariantId) {
+        Swal.fire({
+            icon: 'warning',
+            text: 'يرجى اختيار اللون والمقاس أولاً',
+            confirmButtonText: 'حسناً',
+            confirmButtonColor: 'var(--accent)'
+        });
+        return;
+    }
+
+    const payload = {
+        quantity: 1,
+        variant_id: selectedVariantId
+    };
+
     fetch(`{{ url('/cart/add') }}/${productId}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
-        body: JSON.stringify({ quantity: 1 })
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
     })
     .then(async response => {
         const isJson = response.headers.get('content-type')?.includes('application/json');
         const data = isJson ? await response.json() : null;
-        if (!response.ok) throw new Error((data && data.message) || `حدث خطأ في الخادم`);
+
+        if (!response.ok) {
+            throw new Error((data && data.message) || `حدث خطأ في الخادم`);
+        }
         
-        const countEl = document.getElementById('header-cart-count');
-        if(countEl && data.cartCount !== undefined) countEl.textContent = data.cartCount;
+        // Success
+        if (window.showMiniCart) window.showMiniCart();
         
-        Swal.fire({ 
-            toast:true, 
-            position:'top-start', 
-            icon:'success', 
-            title:'تمت الإضافة للسلة!', 
-            showConfirmButton:false, 
-            timer:2500, 
-            background:'#000', 
-            color:'#fff' 
+        Swal.fire({
+            icon: 'success',
+            title: 'تمت الإضافة!',
+            text: 'تمت إضافة المنتج إلى سلتك بنجاح',
+            showConfirmButton: false,
+            timer: 1500,
+            position: 'top-end',
+            toast: true
         });
     })
     .catch(error => {
-        Swal.fire({ toast:true, position:'top-start', icon:'error', title: error.message || 'خطأ', showConfirmButton:false, timer:3000 });
+        console.error('Error adding to cart:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'عذراً',
+            text: error.message,
+            confirmButtonText: 'حسناً',
+            confirmButtonColor: 'var(--accent)'
+        });
     });
 }
 </script>

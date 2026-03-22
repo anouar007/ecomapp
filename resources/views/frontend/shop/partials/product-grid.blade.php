@@ -54,12 +54,53 @@
                 </div>
                 <div class="pcard-price">
                     @if($product->isOnSale())
-                        <span class="pcard-price-current">{{ $product->formatted_sale_price }}</span>
+                        <span class="pcard-price-current" id="pcard-price-{{ $product->id }}">{{ $product->formatted_sale_price }}</span>
                         <span class="pcard-price-old">{{ $product->formatted_price }}</span>
                     @else
-                        <span class="pcard-price-current">{{ $product->formatted_price }}</span>
+                        <span class="pcard-price-current" id="pcard-price-{{ $product->id }}">{{ $product->formatted_price }}</span>
                     @endif
                 </div>
+
+                {{-- Card Variations Selector --}}
+                @if($product->variants->count() > 0)
+                <div class="pcard-variants">
+                    @php 
+                        $sizes = $product->available_sizes;
+                        $colors = $product->available_colors;
+                    @endphp
+
+                    @if($colors->count() > 0)
+                    <div class="pcard-variant-row">
+                        <span class="pcard-variant-label">اللون:</span>
+                        @foreach($colors as $color)
+                        <div class="pcard-color-dot" 
+                             style="background: {{ $color->color_code ?: '#eee' }}" 
+                             onclick="selectCardVariant({{ $product->id }}, 'color', '{{ $color->color }}', this)"
+                             title="{{ $color->color }}">
+                        </div>
+                        @endforeach
+                    </div>
+                    @endif
+
+                    @if($sizes->count() > 0)
+                    <div class="pcard-variant-row">
+                        <span class="pcard-variant-label">المقاس:</span>
+                        @foreach($sizes as $size)
+                        <div class="pcard-size-pill" 
+                             onclick="selectCardVariant({{ $product->id }}, 'size', '{{ $size }}', this)">
+                            {{ $size }}
+                        </div>
+                        @endforeach
+                    </div>
+                    @endif
+
+                    <input type="hidden" id="card-selected-variant-{{ $product->id }}" value="">
+                    <script>
+                        if (typeof cardVariants === 'undefined') window.cardVariants = {};
+                        window.cardVariants[{{ $product->id }}] = {!! $product->variants_json !!};
+                    </script>
+                </div>
+                @endif
             </div>
         </div>
     </div>

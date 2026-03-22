@@ -492,6 +492,179 @@
             })
             .catch(console.error);
         }
+
+        // Global Variation Selection for Product Cards
+        function selectCardVariant(productId, type, value, el, isSlider = false) {
+            const cardId = isSlider ? `slider-${productId}` : productId;
+            const cardEl = el.closest(isSlider ? '.product-card' : '.pcard');
+            
+            // Initialize storage if needed
+            if (!window.selectedCardOptions) window.selectedCardOptions = {};
+            if (!window.selectedCardOptions[cardId]) window.selectedCardOptions[cardId] = {};
+            const selection = window.selectedCardOptions[cardId];
+
+            // Update active class for the specific row
+            const row = el.closest('.pcard-variant-row');
+            if (el.classList.contains('active')) {
+                el.classList.remove('active');
+                selection[type] = null;
+            } else {
+                const siblings = row.querySelectorAll(el.classList.contains('pcard-color-dot') ? '.pcard-color-dot' : '.pcard-size-pill');
+                siblings.forEach(s => s.classList.remove('active'));
+                el.classList.add('active');
+                selection[type] = value;
+            }
+
+            // Find matching variant
+            const variants = window.cardVariants[productId];
+            
+            // Check if both are needed
+            const hasColor = cardEl.querySelector('.pcard-color-dot');
+            const hasSize = cardEl.querySelector('.pcard-size-pill');
+            
+            let match = null;
+            if (hasColor && hasSize) {
+                if (selection.color && selection.size) {
+                    match = variants.find(v => v.color == selection.color && v.size == selection.size);
+                }
+            } else if (hasColor) {
+                if (selection.color) {
+                    match = variants.find(v => v.color == selection.color);
+                }
+            } else if (hasSize) {
+                if (selection.size) {
+                    match = variants.find(v => v.size == selection.size);
+                }
+            }
+
+            // Update UI based on match or lack thereof
+            const priceEl = document.getElementById(isSlider ? `pcard-price-slider-${productId}` : `pcard-price-${productId}`);
+            const inputId = isSlider ? `card-selected-variant-slider-${productId}` : `card-selected-variant-${productId}`;
+            const input = document.getElementById(inputId);
+
+            if (match) {
+                if (priceEl) priceEl.innerText = match.formatted_price;
+                if (input) input.value = match.id;
+            } else {
+                // If no match or partially selected, revert price to default if we can find it
+                // For simplicity, we keep the price or reset if the product price is in data
+                if (input) input.value = "";
+            }
+
+            // Update availability of other pills in this card
+            updateCardAvailability(productId, cardEl, selection);
+        }
+
+        function updateCardAvailability(productId, cardEl, selection) {
+            const variants = window.cardVariants[productId];
+            if (!variants) return;
+
+            // Update Size Pills
+            cardEl.querySelectorAll('.pcard-size-pill').forEach(pill => {
+                const size = pill.innerText.trim();
+                let isAvailable = false;
+                if (selection.color) {
+                    isAvailable = variants.some(v => v.color == selection.color && v.size == size && v.stock > 0);
+                } else {
+                    isAvailable = variants.some(v => v.size == size && v.stock > 0);
+                }
+                pill.classList.toggle('disabled', !isAvailable);
+            });
+
+            // Update Color Dots
+            cardEl.querySelectorAll('.pcard-color-dot').forEach(dot => {
+                const color = dot.title;
+                let isAvailable = false;
+                if (selection.size) {
+                    isAvailable = variants.some(v => v.size == selection.size && v.color == color && v.stock > 0);
+                } else {
+                    isAvailable = variants.some(v => v.color == color && v.stock > 0);
+                }
+                dot.classList.toggle('disabled', !isAvailable);
+            });
+        }
+
+        // Initialize all cards availability on load
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.pcard, .product-card, .product-card-v2').forEach(cardEl => {
+                const productIdMatch = cardEl.innerHTML.match(/window\.cardVariants\[(\d+)\]/);
+                if (productIdMatch) {
+                    const productId = productIdMatch[1];
+                    updateCardAvailability(productId, cardEl, {});
+                }
+            });
+        });
+
+        // Global Add to Cart with Variant Support
+        function addToCart(productId, isSlider = false) {
+            const cardId = isSlider ? `slider-${productId}` : productId;
+            const inputId = isSlider ? `card-selected-variant-slider-${productId}` : `card-selected-variant-${productId}`;
+            const variantInput = document.getElementById(inputId);
+            let variantId = (variantInput && variantInput.value) ? variantInput.value : null;
+
+            // If product has variants but none selected, alert user
+            if (!variantId && window.cardVariants && window.cardVariants[productId] && window.cardVariants[productId].length > 0) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'يرجى اختيار المقاس واللون',
+                    text: 'الرجاء اختيار الخيارات المفضلة قبل الإضافة إلى السلة.',
+                    confirmButtonText: 'حسناً',
+                    confirmButtonColor: '#c5a059'
+                });
+                return;
+            }
+
+            // Find button to show loading
+            const btn = event ? event.currentTarget : null;
+            const originalHtml = btn ? btn.innerHTML : '';
+            if (btn && btn.tagName === 'BUTTON') {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            }
+
+            fetch(`/cart/add/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    quantity: 1,
+                    variant_id: variantId 
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (btn && btn.tagName === 'BUTTON') {
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
+                }
+                if (data.success) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'تمت الإضافة إلى السلة!',
+                        showConfirmButton: false, timer: 2500, background: '#1a1a2e', color: '#fff'
+                    });
+                    ['header-cart-count', 'header-cart-count-mobile'].forEach(id => {
+                        const badge = document.getElementById(id);
+                        if (badge && data.cartCount !== undefined) badge.innerText = data.cartCount;
+                    });
+                    if (typeof refreshMiniCart === 'function') refreshMiniCart();
+                } else {
+                    Swal.fire({ icon: 'error', title: 'خطأ', text: data.message || 'حدث خطأ ما' });
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                if (btn && btn.tagName === 'BUTTON') {
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
+                }
+            });
+        }
     </script>
     @stack('scripts')
 

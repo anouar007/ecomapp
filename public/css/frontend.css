@@ -1894,11 +1894,6 @@ a { text-decoration: none; }
     .pdp-info-panel { padding: 28px 24px; }
     .pdp-main-image-wrap { height: 300px; min-height: 240px; max-height: 360px; padding: 20px; }
 }
-@media (max-width: 575px) {
-    .pdp-cart-row { flex-direction: column; }
-    .pdp-add-btn { min-width: 100%; }
-    .pdp-price-main { font-size: 1.5rem; }
-}
 /* ── Super Easy Version Styles ── */
 
 /* Circular Categories */
@@ -2001,3 +1996,145 @@ a { text-decoration: none; }
 [dir="rtl"] .ms-auto { margin-right: auto !important; margin-left: 0 !important; }
 [dir="rtl"] .text-start { text-align: right !important; }
 [dir="rtl"] .text-end { text-align: left !important; }
+@media (max-width: 575px) {
+    .pdp-cart-row { flex-direction: column; }
+    .pdp-add-btn { min-width: 100%; }
+    .pdp-price-main { font-size: 1.5rem; }
+}
+/* Variant Selection Styles */
+.variant-option {
+    border: 1px solid #ddd;
+    border-radius: 50px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #fff;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 60px;
+}
+.variant-option.active {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(197, 160, 89, 0.2);
+}
+.color-pill {
+    width: 45px;
+    height: 45px;
+    padding: 3px;
+    min-width: auto;
+}
+.color-pill img, .color-pill .color-box {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.color-box {
+    border: 1px solid rgba(0,0,0,0.1);
+}
+.thumb-item.active {
+    border-color: var(--accent) !important;
+}
+
+/* In-Card Variant Selectors */
+.pcard-variants {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.pcard-variant-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.pcard-color-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 1px solid rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+    position: relative;
+}
+.pcard-color-dot.active {
+    box-shadow: 0 0 0 2px #fff, 0 0 0 3px #c5a059;
+    transform: scale(1.1);
+}
+.pcard-size-pill {
+    font-size: 10px;
+    padding: 2px 6px;
+    border: 1px solid #eee;
+    background: #fdfdfd;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+    color: #666;
+    min-width: 24px;
+    text-align: center;
+}
+.pcard-size-pill.active {
+    background: #c5a059;
+    color: #fff;
+    border-color: #c5a059;
+}
+.pcard-size-pill:hover:not(.active) {
+    background: #f5f5f5;
+}
+.pcard-variant-label {
+    font-size: 10px;
+    color: #999;
+    text-transform: uppercase;
+    font-weight: 600;
+    min-width: 35px;
+}
+
+/* Variant Selection Visual Feedback */
+.variant-option.disabled-option {
+    opacity: 0.3 !important;
+    filter: grayscale(0.8);
+    cursor: not-allowed !important;
+    pointer-events: none;
+}
+
+.size-pill.disabled-option {
+    position: relative;
+    color: #999;
+    border-color: #ddd;
+}
+
+.size-pill.disabled-option::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    width: 80%;
+    height: 1px;
+    background: #999;
+    transform: rotate(-25deg);
+}
+
+/* In-Card Variants Disabled States */
+.pcard-color-dot.disabled,
+.pcard-size-pill.disabled {
+    opacity: 0.25 !important;
+    cursor: not-allowed !important;
+    pointer-events: none;
+    position: relative;
+}
+
+.pcard-size-pill.disabled::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    width: 80%;
+    height: 1px;
+    background: #999;
+    transform: rotate(-15deg);
+}

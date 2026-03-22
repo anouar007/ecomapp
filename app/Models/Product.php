@@ -9,6 +9,11 @@ class Product extends Model
 {
     use HasFactory;
 
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
+
     protected $fillable = [
         'name',
         'name_en',
@@ -351,6 +356,50 @@ class Product extends Model
         
         // Fallbacks
         return $this->description_fr ?: $this->description_en ?: $this->description_ar ?: $this->description;
+    }
+
+    /**
+     * Get all unique sizes available for this product.
+     */
+    public function getAvailableSizesAttribute()
+    {
+        return $this->variants->pluck('size')->unique()->filter()->values();
+    }
+
+    /**
+     * Get all unique colors available for this product.
+     */
+    public function getAvailableColorsAttribute()
+    {
+        return $this->variants->where('status', 'active')->unique('color')->values();
+    }
+
+    /**
+     * Get total stock across all variants.
+     */
+    public function getTotalStockAttribute()
+    {
+        if ($this->variants->count() > 0) {
+            return $this->variants->sum('stock');
+        }
+        return $this->stock;
+    }
+
+    /**
+     * Get variants as JSON for frontend selection.
+     */
+    public function getVariantsJsonAttribute()
+    {
+        return $this->variants->where('status', 'active')->map(function($v) {
+            return [
+                'id' => $v->id,
+                'size' => $v->size,
+                'color' => $v->color,
+                'price' => $v->price ?: $this->price,
+                'stock' => $v->stock,
+                'formatted_price' => currency($v->price ?: $this->price)
+            ];
+        })->toJson();
     }
 }
 

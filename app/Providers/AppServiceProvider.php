@@ -24,6 +24,11 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrapFive();
         \App\Models\Order::observe(\App\Observers\OrderObserver::class);
 
+        // Grant all permissions to the 'Admin' role
+        \Illuminate\Support\Facades\Gate::before(function ($user, $ability) {
+            return $user->hasRole('Admin') ? true : null;
+        });
+
         try {
             // Only attempt to load settings if the table exists to prevent migration errors
             if (\Schema::hasTable('settings')) {
