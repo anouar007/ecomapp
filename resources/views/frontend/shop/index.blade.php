@@ -3,248 +3,104 @@
 @php
     $activeCategory = $categories->where('slug', request('category'))->first();
     $pageTitle = $activeCategory
-        ? ($activeCategory->name . ' — ' . setting('app_name', 'Speed Platform'))
-        : (request('q') ? 'Résultats pour "' . request('q') . '" — ' . setting('app_name') : 'Boutique — ' . setting('app_name', 'Speed Platform'));
-    $pageDescription = $activeCategory
-        ? ('Découvrez notre gamme de ' . $activeCategory->name . '. Livraison partout au Maroc, installation et SAV inclus. ' . $activeCategory->products_count . ' produits disponibles.')
-        : 'Parcourez notre catalogue complet de machines d\'impression grand format, traceurs de découpe, encres et consommables. Livraison Maroc, devis gratuit.';
-    $pageKeywords = $activeCategory
-        ? ($activeCategory->name . ', ' . setting('app_name', 'boutique') . ', acheter ' . $activeCategory->name . ' Maroc, prix ' . $activeCategory->name)
-        : setting('app_name', 'boutique') . ', machines impression, traceur découpe, encres, consommables, Maroc';
+        ? ($activeCategory->translated_name . ' — ' . setting('app_name', 'Hijab Princesses'))
+        : (request('q') ? 'نتائج البحث عن "' . request('q') . '" — ' . setting('app_name') : 'المتجر — ' . setting('app_name', 'Hijab Princesses'));
 @endphp
 
 @section('meta_title', $pageTitle)
-@section('meta_description', $pageDescription)
-@section('meta_keywords', $pageKeywords)
 
-@section('json_ld')
-<script type="application/ld+json">
-[
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Accueil",
-        "item": "{{ url('/') }}"
-      },
-      {
-        "@type": "ListItem",
-        "position": 2,
-        "name": "Boutique",
-        "item": "{{ route('shop.index') }}"
-      }
-      @if($activeCategory)
-      ,{
-        "@type": "ListItem",
-        "position": 3,
-        "name": "{{ addslashes($activeCategory->name) }}",
-        "item": "{{ route('shop.index', ['category' => $activeCategory->slug]) }}"
-      }
-      @endif
-    ]
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    "name": "{{ addslashes($pageTitle) }}",
-    "url": "{{ url()->current() }}",
-    "numberOfItems": {{ $products->total() }},
-    "itemListElement": [
-      @foreach($products as $i => $prod)
-      {
-        "@type": "ListItem",
-        "position": {{ $i + 1 }},
-        "url": "{{ route('shop.show', $prod->id) }}",
-        "name": "{{ addslashes($prod->name) }}"
-      }{{ !$loop->last ? ',' : '' }}
-      @endforeach
-    ]
-  }
-]
-</script>
-@endsection
+@section('content')
 
 @section('content')
 
 {{-- =============================================
-     SHOP HERO STRIP (dark, matching home page)
+     TOP CATEGORY FILTER (Circular Style)
      ============================================= --}}
-<section class="shop-hero">
-    <div class="shop-hero-backdrop"></div>
-    <div class="container position-relative">
-        <div class="shop-hero-content">
-            <div class="hero-eyebrow">
-                <span class="hero-eyebrow-dot"></span>
-                {{ request('q') ? 'Résultats de recherche' : (request('category') ? 'Catégorie' : 'Catalogue complet') }}
-            </div>
-            <h1 class="shop-hero-title">
-                @if(request('q'))
-                    Résultats pour <span class="text-gradient-primary">« {{ request('q') }} »</span>
-                @elseif(request('category'))
-                    <span class="text-gradient-primary">{{ $categories->where('slug', request('category'))->first()->name ?? 'Produits' }}</span>
-                @else
-                    Nos <span class="text-gradient-primary">équipements</span> & consommables
-                @endif
-            </h1>
-            <p class="shop-hero-sub">
-                Machines éco-solvant, traceurs de découpe, encres certifiées et accessoires — tout pour votre production.
-            </p>
-
-            {{-- Breadcrumb --}}
-            <nav class="shop-breadcrumb" aria-label="breadcrumb">
-                <a href="{{ url('/') }}"><i class="fas fa-home"></i> Accueil</a>
-                <span class="shop-bc-sep">/</span>
-                <a href="{{ route('shop.index') }}">Catalogue</a>
-                @if(request('category'))
-                    <span class="shop-bc-sep">/</span>
-                    <span>{{ $categories->where('slug', request('category'))->first()->name ?? 'Catégorie' }}</span>
-                @endif
-            </nav>
+<section class="bg-white border-bottom sticky-top shadow-sm" style="top: 70px; z-index: 1020;">
+    <div class="container">
+        <div class="cat-circle-list py-3" style="justify-content: center; gap: 30px;">
+            <a href="{{ route('shop.index') }}" class="cat-circle-item {{ !request('category') ? 'active' : '' }}" style="min-width: 80px;">
+                <div class="cat-circle-img" style="width: 65px; height: 65px; {{ !request('category') ? 'border-color: var(--primary); box-shadow: 0 0 10px var(--accent);' : '' }}">
+                    <img src="{{ asset('images/all-products.jpg') }}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3050/3050239.png'" alt="الكل">
+                </div>
+                <span class="cat-circle-name small">الكل</span>
+            </a>
+            @foreach($categories as $cat)
+            <a href="{{ route('shop.index', ['category' => $cat->slug]) }}" class="cat-circle-item {{ request('category') == $cat->slug ? 'active' : '' }}" style="min-width: 80px;">
+                <div class="cat-circle-img" style="width: 65px; height: 65px; {{ request('category') == $cat->slug ? 'border-color: var(--primary); box-shadow: 0 0 10px var(--accent);' : '' }}">
+                    <img src="{{ $cat->image ? (Str::startsWith($cat->image, 'http') ? $cat->image : Storage::url($cat->image)) : asset('images/placeholder-cat.jpg') }}" alt="{{ $cat->translated_name }}">
+                </div>
+                <span class="cat-circle-name small">{{ $cat->translated_name }}</span>
+            </a>
+            @endforeach
         </div>
     </div>
 </section>
 
 {{-- =============================================
-     MAIN SHOP LAYOUT
+     PRODUCT GRID
      ============================================= --}}
-<section class="shop-body">
+<section class="section-py bg-surface min-vh-100">
     <div class="container">
-        <div class="row g-5">
+        
+        <div class="d-flex justify-content-between align-items-center mb-5" data-aos="fade-up">
+            <h2 class="h4 fw-bold m-0 border-start-primary ps-3">
+                {{ $activeCategory ? $activeCategory->translated_name : 'جميع المنتجات' }}
+                <span class="text-muted small ms-2">({{ $products->total() }} منتج)</span>
+            </h2>
+            
+            {{-- Simple Sort --}}
+            <div class="d-flex align-items-center gap-2">
+                <span class="small text-muted d-none d-md-inline">ترتيب:</span>
+                <select class="form-select form-select-sm rounded-pill border-0 shadow-sm" id="sortSelect" style="width: 140px;" onchange="location = '{{ route('shop.index', array_merge(request()->query(), ['sort' => ''])) }}'.replace('sort=', 'sort=' + this.value)">
+                    <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>الأحدث</option>
+                    <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>الأقل سعراً</option>
+                    <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>الأعلى سعراً</option>
+                </select>
+            </div>
+        </div>
 
-            {{-- ── SIDEBAR ── --}}
-            <div class="col-lg-3">
-                <div class="shop-sidebar sticky-top" style="top: 90px;">
-
-                    {{-- Search --}}
-                    <div class="shop-filter-card mb-4">
-                        <h6 class="shop-filter-title"><i class="fas fa-search me-2"></i>Recherche</h6>
-                        <form id="searchForm">
-                            <div class="shop-search-wrap">
-                                <input type="text" name="q" class="shop-search-input"
-                                       placeholder="Nom du produit…" value="{{ request('q') }}">
-                                <button type="submit" class="shop-search-btn">
-                                    <i class="fas fa-arrow-right"></i>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    {{-- Categories --}}
-                    <div class="shop-filter-card mb-4">
-                        <h6 class="shop-filter-title"><i class="fas fa-th-large me-2"></i>Catégories</h6>
-                        <ul class="shop-cat-list">
-                            <li>
-                                <a href="#" class="shop-cat-link category-filter {{ !request('category') ? 'active' : '' }}" data-slug="">
-                                    <span>Tous les produits</span>
-                                    <span class="shop-cat-count">{{ \App\Models\Product::where('status','active')->count() }}</span>
+        @if($products->isEmpty())
+            <div class="text-center py-5" data-aos="fade-up">
+                <div class="mb-4">
+                    <i class="fas fa-search fa-4x text-muted opacity-25"></i>
+                </div>
+                <h3 class="fw-bold">لم نجد أي منتجات</h3>
+                <p class="text-muted">جربي اختيار فئة أخرى أو العودة للمتجر الرئيسي.</p>
+                <a href="{{ route('shop.index') }}" class="btn btn-primary rounded-pill px-5 mt-3">عرض كل المنتجات</a>
+            </div>
+        @else
+            <div class="row g-4" id="productGridContainer">
+                @foreach($products as $product)
+                <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up">
+                    <div class="product-card-v2 h-100">
+                        <div class="product-v2-image">
+                            <img src="{{ $product->main_image ? (Str::startsWith($product->main_image, 'http') ? $product->main_image : Storage::url($product->main_image)) : asset('images/placeholder-product.jpg') }}" alt="{{ $product->translated_name }}">
+                            <div class="product-v2-overlay">
+                                <a href="{{ route('shop.show', $product->id) }}" class="btn-overlay">
+                                    <i class="fas fa-eye me-2"></i> تفاصيل
                                 </a>
-                            </li>
-                            @foreach($categories as $cat)
-                            <li>
-                                <a href="#" class="shop-cat-link category-filter {{ request('category') == $cat->slug ? 'active' : '' }}" data-slug="{{ $cat->slug }}">
-                                    <span>{{ $cat->name }}</span>
-                                    <span class="shop-cat-count">{{ $cat->products_count }}</span>
-                                </a>
-                            </li>
-                            @endforeach
-                        </ul>
-                    </div>
-
-                    {{-- Price Range --}}
-                    <div class="shop-filter-card mb-4">
-                        <h6 class="shop-filter-title"><i class="fas fa-tag me-2"></i>Fourchette de prix</h6>
-                        <form id="priceFilterForm">
-                            <div class="shop-price-inputs">
-                                <input type="number" name="min_price" class="shop-price-input"
-                                       placeholder="Min" value="{{ request('min_price') }}" min="0">
-                                <span class="shop-price-sep">—</span>
-                                <input type="number" name="max_price" class="shop-price-input"
-                                       placeholder="Max" value="{{ request('max_price') }}" min="0">
                             </div>
-                            <button type="submit" class="shop-apply-btn w-100 mt-3">
-                                <i class="fas fa-filter me-2"></i>Appliquer
+                        </div>
+                        <div class="product-v2-body">
+                            <h5 class="product-v2-name mb-2">{{ Str::limit($product->translated_name, 30) }}</h5>
+                            <div class="product-v2-price mb-3">
+                                <span class="text-primary fw-bold">{{ $product->formatted_price }}</span>
+                            </div>
+                            <button onclick="addToCart({{ $product->id }})" class="btn btn-primary w-100 rounded-pill btn-sm py-2">
+                                أضيفي للسلة <i class="fas fa-cart-plus ms-2"></i>
                             </button>
-                        </form>
-                    </div>
-
-                    {{-- Quick Links --}}
-                    <div class="shop-filter-card">
-                        <h6 class="shop-filter-title"><i class="fas fa-bolt me-2"></i>Raccourcis</h6>
-                        <div class="d-flex flex-column gap-2">
-                            <a href="{{ route('shop.index') }}?sort=newest" class="shop-quick-link">
-                                <i class="fas fa-star me-2 text-accent"></i>Nouveautés
-                            </a>
-                            <a href="{{ route('shop.index') }}?sort=price_asc" class="shop-quick-link">
-                                <i class="fas fa-sort-amount-up me-2 text-accent"></i>Prix croissant
-                            </a>
-                            <a href="{{ route('shop.index') }}?sort=price_desc" class="shop-quick-link">
-                                <i class="fas fa-sort-amount-down me-2 text-accent"></i>Prix décroissant
-                            </a>
                         </div>
                     </div>
-
                 </div>
+                @endforeach
             </div>
 
-            {{-- ── PRODUCT GRID ── --}}
-            <div class="col-lg-9">
-
-                {{-- Toolbar --}}
-                <div class="shop-toolbar mb-4">
-                    <div class="shop-toolbar-left">
-                        <span class="shop-toolbar-title" id="categoryTitle">
-                            @if(request('category'))
-                                {{ $categories->where('slug', request('category'))->first()->name ?? 'Produits' }}
-                            @else
-                                Tous les équipements
-                            @endif
-                        </span>
-                        <span class="shop-toolbar-count">{{ $products->total() }} produit{{ $products->total() != 1 ? 's' : '' }}</span>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <label class="shop-sort-label">Trier :</label>
-                        <select class="shop-sort-select" id="sortSelect">
-                            <option value="newest"  {{ request('sort') == 'newest'     ? 'selected' : '' }}>Plus récents</option>
-                            <option value="price_asc"  {{ request('sort') == 'price_asc'  ? 'selected' : '' }}>Prix croissant</option>
-                            <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Prix décroissant</option>
-                        </select>
-                    </div>
-                </div>
-
-                {{-- Active Filters --}}
-                @if(request('q') || request('category') || request('min_price') || request('max_price'))
-                <div class="shop-active-filters mb-4">
-                    <span class="shop-active-label">Filtres actifs :</span>
-                    @if(request('q'))
-                        <span class="shop-filter-tag">Recherche : {{ request('q') }}</span>
-                    @endif
-                    @if(request('category'))
-                        <span class="shop-filter-tag">Catégorie : {{ $categories->where('slug', request('category'))->first()->name ?? request('category') }}</span>
-                    @endif
-                    @if(request('min_price') || request('max_price'))
-                        <span class="shop-filter-tag">Prix : {{ request('min_price', '0') }} — {{ request('max_price', '∞') }} DH</span>
-                    @endif
-                    <a href="{{ route('shop.index') }}" class="shop-clear-link">
-                        <i class="fas fa-times me-1"></i>Effacer tout
-                    </a>
-                </div>
-                @endif
-
-                {{-- Product Grid (AJAX-swapped partial) --}}
-                <div id="productGridContainer">
-                    @include('frontend.shop.partials.product-grid')
-                </div>
-
-                {{-- Loader --}}
-                <div id="loader" class="d-none text-center py-5">
-                    <div class="shop-loader-spinner"></div>
-                </div>
+            <div class="mt-5 d-flex justify-content-center">
+                {{ $products->links() }}
             </div>
+        @endif
 
-        </div>
     </div>
 </section>
 
@@ -252,101 +108,34 @@
 
 @push('scripts')
 <script>
-let currentCategory = "{{ request('category') }}";
-
-function getParams() {
-    const p = new URLSearchParams();
-    if (currentCategory) p.append('category', currentCategory);
-    const sort     = document.getElementById('sortSelect').value;
-    const q        = document.querySelector('input[name="q"]').value;
-    const minPrice = document.querySelector('input[name="min_price"]').value;
-    const maxPrice = document.querySelector('input[name="max_price"]').value;
-    if (sort)     p.append('sort',      sort);
-    if (q)        p.append('q',         q);
-    if (minPrice) p.append('min_price', minPrice);
-    if (maxPrice) p.append('max_price', maxPrice);
-    return p;
-}
-
-function fetchProducts(url = "{{ route('shop.index') }}") {
-    const grid   = document.getElementById('productGridContainer');
-    const loader = document.getElementById('loader');
-    grid.style.opacity = '0.4';
-    loader.classList.remove('d-none');
-    const fetchUrl = url.includes('?') ? url : `${url}?${getParams().toString()}`;
-    window.history.pushState(null, '', fetchUrl);
-    fetch(fetchUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-        .then(r => r.text())
-        .then(html => {
-            grid.innerHTML = html;
-            grid.style.opacity = '1';
-            loader.classList.add('d-none');
-            attachPaginationListeners();
-        })
-        .catch(err => {
-            console.error(err);
-            grid.style.opacity = '1';
-            loader.classList.add('d-none');
-        });
-}
-
-function attachPaginationListeners() {
-    document.querySelectorAll('.pagination a').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            fetchProducts(this.href);
-            document.getElementById('productGridContainer').scrollIntoView({ behavior: 'smooth' });
-        });
-    });
-}
-
-document.querySelectorAll('.category-filter').forEach(link => {
-    link.addEventListener('click', function(e) {
-        e.preventDefault();
-        document.querySelectorAll('.category-filter').forEach(el => el.classList.remove('active'));
-        this.classList.add('active');
-        currentCategory = this.dataset.slug;
-        document.getElementById('categoryTitle').innerText = this.querySelector('span').innerText;
-        fetchProducts();
-    });
-});
-
-document.getElementById('sortSelect').addEventListener('change', () => fetchProducts());
-document.getElementById('priceFilterForm').addEventListener('submit', function(e) { e.preventDefault(); fetchProducts(); });
-document.getElementById('searchForm').addEventListener('submit', function(e) { e.preventDefault(); fetchProducts(); });
-attachPaginationListeners();
-
-function addToCart(id) {
-    const btn = document.querySelector(`button[onclick="addToCart(${id})"]`);
-    const originalHtml = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-
-    fetch(`/cart/add/${id}`, {
+function addToCart(productId) {
+    fetch(`{{ url('/cart/add') }}/${productId}`, {
         method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
         body: JSON.stringify({ quantity: 1 })
     })
-    .then(r => r.json())
-    .then(data => {
-        btn.disabled = false;
-        btn.innerHTML = originalHtml;
-        if (data.success) {
-            Swal.fire({ toast:true, position:'top-end', icon:'success', title:'Ajouté au panier !',
-                showConfirmButton:false, timer:2500, background:'#1a1a2e', color:'#fff' });
-            const badge = document.getElementById('header-cart-count');
-            if (badge && data.cartCount !== undefined) badge.innerText = data.cartCount;
-            if (typeof refreshMiniCart === 'function') refreshMiniCart();
-        }
+    .then(async response => {
+        const isJson = response.headers.get('content-type')?.includes('application/json');
+        const data = isJson ? await response.json() : null;
+        if (!response.ok) throw new Error((data && data.message) || `حدث خطأ في الخادم`);
+        
+        const countEl = document.getElementById('header-cart-count');
+        if(countEl && data.cartCount !== undefined) countEl.textContent = data.cartCount;
+        
+        Swal.fire({ 
+            toast:true, 
+            position:'top-start', 
+            icon:'success', 
+            title:'تمت الإضافة للسلة!', 
+            showConfirmButton:false, 
+            timer:2500, 
+            background:'#000', 
+            color:'#fff' 
+        });
+        if (typeof refreshMiniCart === 'function') refreshMiniCart();
     })
-    .catch(err => {
-        console.error(err);
-        btn.disabled = false;
-        btn.innerHTML = originalHtml;
+    .catch(error => {
+        Swal.fire({ toast:true, position:'top-start', icon:'error', title: error.message || 'خطأ', showConfirmButton:false, timer:3000 });
     });
 }
 </script>

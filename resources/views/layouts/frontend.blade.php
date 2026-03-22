@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ setting('language', 'fr') }}" dir="{{ setting('text_direction', 'ltr') }}">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +7,8 @@
     <meta name="description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
     <meta name="keywords" content="@yield('meta_keywords', setting('app_name', 'boutique') . ', e-commerce, Maroc, acheter en ligne, livraison Maroc')">
     <meta name="robots" content="@yield('meta_robots', 'index, follow')">
-    <meta name="author" content="{{ setting('app_name', 'Speed Platform') }}">
-    <meta name="theme-color" content="#e94560">
+    <meta name="author" content="{{ setting('app_name', 'Hijab Princesses') }}">
+    <meta name="theme-color" content="#D4AF37">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Canonical URL -->
@@ -57,6 +57,19 @@
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <!-- Dynamic Theme CSS Variables -->
+    <style>
+        :root {
+            --primary: {{ setting('primary_color', '#000000') }};
+            --accent: {{ setting('accent_color', '#D4AF37') }};
+            --accent-hover: {{ setting('accent_hover_color', '#C5A028') }};
+            --accent-light: {{ setting('accent_light_color', 'rgba(212,175,55,.12)') }};
+        }
+        .text-primary { color: var(--accent) !important; }
+        .bg-primary { background-color: var(--accent) !important; }
+        .btn-primary { background-color: var(--accent) !important; border-color: var(--accent) !important; }
+        .btn-primary:hover { background-color: var(--accent-hover) !important; border-color: var(--accent-hover) !important; }
+    </style>
     <link rel="stylesheet" href="{{ asset('css/frontend.css') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Custom Head Codes -->
@@ -99,8 +112,8 @@
                             <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="{{ setting('app_name', 'Logo') }}" class="navbar-logo-img">
                         @else
                             <h3 class="m-0 fw-bold text-uppercase fst-italic position-relative" style="font-family: 'Rajdhani'; letter-spacing: 1px;">
-                                Speed<span class="text-primary">Store</span>
-                                <i class="fas fa-bolt text-warning position-absolute top-0 start-100 translate-middle ms-2" style="font-size: 0.8em; transform: rotate(15deg);"></i>
+                                Hijab <span class="text-primary">Princesses</span>
+                                <i class="fas fa-crown text-primary position-absolute top-0 start-100 translate-middle ms-2" style="font-size: 0.8em; transform: rotate(15deg);"></i>
                             </h3>
                         @endif
                     </a>
@@ -130,10 +143,10 @@
                         <!-- Navigation links -->
                         <ul class="navbar-nav me-auto mb-0 gap-1 mb-3 mb-lg-0">
                             <li class="nav-item">
-                                <a class="nav-link-custom {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Accueil</a>
+                                <a class="nav-link-custom {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">الرئيسية</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link-custom {{ request()->routeIs('shop.index') ? 'active' : '' }}" href="{{ route('shop.index') }}">Boutique</a>
+                                <a class="nav-link-custom {{ request()->routeIs('shop.index') ? 'active' : '' }}" href="{{ route('shop.index') }}">المتجر</a>
                             </li>
                         </ul>
 
@@ -141,7 +154,7 @@
                         <form action="{{ route('shop.index') }}" method="GET" class="d-flex mx-lg-4 flex-grow-1 flex-lg-grow-0 mb-3 mb-lg-0" style="max-width: 380px;">
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0 text-muted ps-3"><i class="fas fa-search"></i></span>
-                                <input class="form-control bg-light border-start-0 ps-0 text-muted" type="search" name="q" placeholder="Rechercher des produits..." aria-label="Rechercher" value="{{ request('q') }}">
+                                <input class="form-control bg-light border-start-0 ps-0 text-muted" type="search" name="q" placeholder="البحث عن منتجات..." aria-label="Rechercher" value="{{ request('q') }}">
                             </div>
                         </form>
 
@@ -177,7 +190,7 @@
     <div class="offcanvas offcanvas-end border-0 shadow-lg" tabindex="-1" id="miniCart" aria-labelledby="miniCartLabel" style="width: 450px; background: #f8fafc;">
         <div class="offcanvas-header bg-white border-bottom py-3">
             <h5 class="offcanvas-title fw-bold font-heading" id="miniCartLabel">
-                <i class="fas fa-shopping-bag me-2 text-primary"></i>Mon Panier
+                <i class="fas fa-shopping-bag me-2 text-primary"></i>سلتي
             </h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
@@ -220,9 +233,9 @@
                         <div class="mb-4 bg-white rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 100px; height: 100px;">
                             <i class="fas fa-shopping-basket fa-3x text-muted opacity-25"></i>
                         </div>
-                        <h5 class="fw-bold text-dark">Votre panier est vide</h5>
-                        <p class="text-muted small mb-4">Vous n'avez encore rien ajouté à votre panier.</p>
-                        <a href="{{ route('shop.index') }}" class="btn btn-primary rounded-pill px-5 shadow-sm">Commencer les achats</a>
+                        <h5 class="fw-bold text-dark">سلتك فارغة</h5>
+                        <p class="text-muted small mb-4">لم تقومي بإضافة أي منتج بعد.</p>
+                        <a href="{{ route('shop.index') }}" class="btn btn-primary rounded-pill px-5 shadow-sm">ابدئي التسوق</a>
                     </div>
                 @endforelse
             </div>
@@ -251,9 +264,9 @@
         <div class="container">
             <div class="row g-5">
                 <div class="col-lg-6">
-                    <h5 class="fw-bold text-white mb-4 text-uppercase ls-1">{{ setting('app_name', 'Speed Print') }}</h5>
+                    <h5 class="fw-bold text-white mb-4 text-uppercase ls-1">{{ setting('app_name', 'Hijab Princesses') }}</h5>
                     <p class="small lh-lg mb-4">
-                        Votre partenaire de confiance en solutions d'impression grand format. Machines éco-solvant, traceurs de découpe, encres et consommables — tout pour votre production.
+                        وجهتكم الفاخرة لكل ما يخص الأناقة المحتشمة في المغرب. عبايات راقية، خمارات متميزة، ومجموعات حصرية — مصممة للأميرة العصرية.
                     </p>
                     @php
                         $sfb  = setting('social_facebook',  '');
@@ -301,22 +314,22 @@
                 </div>
                 
                 <div class="col-lg-3 col-6">
-                    <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">Boutique</h6>
+                    <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">المتجر</h6>
                     <ul class="list-unstyled">
-                        <li><a href="{{ route('shop.index') }}" class="footer-link small">Tous les produits</a></li>
-                        <li><a href="#" class="footer-link small">Nouveautés</a></li>
-                        <li><a href="#" class="footer-link small">Coup de cœur</a></li>
-                        <li><a href="#" class="footer-link small">Promotions</a></li>
+                        <li><a href="{{ route('shop.index') }}" class="footer-link small">جميع المنتجات</a></li>
+                        <li><a href="#" class="footer-link small">وصل حديثاً</a></li>
+                        <li><a href="#" class="footer-link small">الأكثر مبيعاً</a></li>
+                        <li><a href="#" class="footer-link small">تخفيضات</a></li>
                     </ul>
                 </div>
 
                 <div class="col-lg-3 col-6">
-                    <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">Assistance</h6>
+                    <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">الدعم والمساعدة</h6>
                     <ul class="list-unstyled">
-                        <li><a href="#" class="footer-link small">Centre d'aide</a></li>
-                        <li><a href="#" class="footer-link small">Suivre ma commande</a></li>
-                        <li><a href="#" class="footer-link small">Retours</a></li>
-                        <li><a href="#" class="footer-link small">Garantie</a></li>
+                        <li><a href="#" class="footer-link small">مركز المساعدة</a></li>
+                        <li><a href="#" class="footer-link small">تتبع طلبي</a></li>
+                        <li><a href="#" class="footer-link small">سياسة الاسترجاع</a></li>
+                        <li><a href="#" class="footer-link small">الضمان</a></li>
                     </ul>
                 </div>
 
@@ -326,7 +339,7 @@
             
             <div class="row align-items-center">
                 <div class="col-md-12 text-center text-md-start mb-3 mb-md-0">
-                    <p class="small text-center mb-0">&copy; {{ date('Y') }} {{ setting('app_name', 'Speed Print') }}. Tous droits réservés.</p>
+                    <p class="small text-center mb-0">&copy; {{ date('Y') }} {{ setting('app_name', 'Hijab Princesses') }}. جميع الحقوق محفوظة.</p>
                 </div>
             </div>
         </div>

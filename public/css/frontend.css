@@ -4,11 +4,11 @@
 
 :root {
     /* Brand Colors */
-    --primary:          #1a1a2e;
-    --primary-mid:      #16213e;
-    --accent:           #e94560;
-    --accent-hover:     #d63d56;
-    --accent-light:     rgba(233,69,96,.12);
+    --primary:          #000000;
+    --primary-mid:      #111111;
+    --accent:           #D4AF37;
+    --accent-hover:     #C5A028;
+    --accent-light:     rgba(212,175,55,.12);
 
     /* Neutral Scale */
     --bg-white:   #ffffff;
@@ -1899,3 +1899,105 @@ a { text-decoration: none; }
     .pdp-add-btn { min-width: 100%; }
     .pdp-price-main { font-size: 1.5rem; }
 }
+/* ── Super Easy Version Styles ── */
+
+/* Circular Categories */
+.cat-circle-list {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    padding: 20px 0;
+    scrollbar-width: none;
+    justify-content: center;
+}
+.cat-circle-list::-webkit-scrollbar { display: none; }
+
+.cat-circle-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    min-width: 100px;
+}
+.cat-circle-item:hover { transform: scale(1.1); }
+
+.cat-circle-img {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--accent);
+    padding: 3px;
+    background: #fff;
+    box-shadow: 0 4px 15px rgba(212,175,55,0.2);
+}
+.cat-circle-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+.cat-circle-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+/* Horizontal Product Scroll */
+.h-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    padding: 15px 5px 30px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.h-scroll-container::-webkit-scrollbar { display: none; }
+
+.h-scroll-item {
+    flex: 0 0 280px;
+    max-width: 280px;
+}
+
+/* Video Hero */
+.video-hero {
+    position: relative;
+    height: 75vh;
+    min-height: 480px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: #fff;
+    text-align: center;
+}
+.video-hero-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+}
+.video-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.6));
+    z-index: 0;
+}
+.video-hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 750px;
+    padding: 30px;
+}
+
+/* RTL Adjustments */
+[dir="rtl"] .me-auto { margin-left: auto !important; margin-right: 0 !important; }
+[dir="rtl"] .ms-auto { margin-right: auto !important; margin-left: 0 !important; }
+[dir="rtl"] .text-start { text-align: right !important; }
+[dir="rtl"] .text-end { text-align: left !important; }

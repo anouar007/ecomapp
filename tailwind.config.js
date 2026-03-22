@@ -17,8 +17,9 @@ export default {
             colors: {
                 danger: '#e60000',
                 warning: '#ffc107',
-                dark: '#0f172a', // Slate 900 or similar dark
-                primary: '#e60000',
+                dark: '#000000', // Pure Black
+                primary: '#D4AF37', // Metallic Gold
+                accent: '#C5A028', // Darker Gold
             },
         },
     },
