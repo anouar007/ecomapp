@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Permissions Management')
+@section('title', __('Permissions Management'))
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/management.css') }}">
@@ -10,11 +10,11 @@
 <div class="page-header">
     <div style="display: flex; justify-content: space-between; align-items: center;">
         <div>
-            <h1 class="page-title"><i class="fas fa-key"></i> Permissions Management</h1>
-            <p class="page-subtitle">Manage system permissions and capabilities</p>
+            <h1 class="page-title"><i class="fas fa-key"></i> {{ __('Permissions Management') }}</h1>
+            <p class="page-subtitle">{{ __('Manage system permissions and capabilities') }}</p>
         </div>
         <a href="{{ route('permissions.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Create New Permission
+            <i class="fas fa-plus"></i> {{ __('Create New Permission') }}
         </a>
     </div>
 </div>
@@ -33,15 +33,15 @@
 
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-list"></i> All Permissions</h3>
+        <h3 class="card-title"><i class="fas fa-list"></i> {{ __('All Permissions') }}</h3>
     </div>
     <div class="table-responsive">
         <table class="table">
             <thead>
                 <tr>
-                    <th>Permission Name</th>
-                    <th>Assigned To Roles</th>
-                    <th>Actions</th>
+                    <th>{{ __('Permission Name') }}</th>
+                    <th>{{ __('Assigned To Roles') }}</th>
+                    <th>{{ __('Actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -60,7 +60,7 @@
                                 @endforeach
                             </div>
                         @else
-                            <span class="text-muted">Not assigned to any role</span>
+                            <span class="text-muted">{{ __('Not assigned to any role') }}</span>
                         @endif
                     </td>
                     <td>
@@ -85,7 +85,7 @@
                 <tr>
                     <td colspan="3" class="empty-state">
                         <i class="fas fa-key"></i>
-                        <p>No permissions found. Create your first permission to get started.</p>
+                        <p>{{ __('No permissions found. Create your first permission to get started.') }}</p>
                     </td>
                 </tr>
                 @endforelse

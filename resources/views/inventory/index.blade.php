@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Inventory Management')
+@section('title', __('Inventory Management'))
 
 @section('content')
     <!-- Page Header -->
@@ -10,111 +10,174 @@
                 <div class="brand-header-icon">
                     <i class="fas fa-boxes"></i>
                 </div>
-                Inventory Management
+                {{ __('Inventory Management') }}
             </h1>
-            <p class="brand-subtitle">Monitor stock levels, track sales velocity, and manage reorder points</p>
+            <p class="brand-subtitle">{{ __('Monitor stock levels, track sales velocity, and manage reorder points') }}</p>
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ route('inventory.alerts') }}" class="btn-brand-light">
-                <i class="fas fa-bell me-2" style="color: var(--warning-color)"></i>Stock Alerts
+            <a href="{{ route('inventory.alerts') }}" class="btn btn-brand-light font-inter">
+                <i class="fas fa-bell me-1" style="color: var(--warning-color)"></i> {{ __('Stock Alerts') }}
             </a>
-            <a href="{{ route('inventory.movements') }}" class="btn-brand-light">
-                <i class="fas fa-history me-2" style="color: var(--primary-color)"></i>Movements
+            <a href="{{ route('inventory.movements') }}" class="btn btn-brand-light font-inter">
+                <i class="fas fa-history me-1" style="color: var(--primary-color)"></i> {{ __('Movements') }}
             </a>
         </div>
     </div>
 
     <!-- Statistics Cards -->
-    <div class="brand-stats-grid">
-        <div class="brand-stat-card">
+    <div class="brand-stats-grid mb-4">
+        <div class="brand-stat-card shadow-soft">
             <div class="brand-stat-icon primary">
                 <i class="fas fa-cubes"></i>
             </div>
-            <div class="brand-stat-label">Total Products</div>
-            <div class="brand-stat-value">{{ number_format($stats['total_products']) }}</div>
-            <div class="brand-stat-desc">
-                <i class="fas fa-info-circle"></i> Tracked items in inventory
-            </div>
+            <div class="brand-stat-label">{{ __('Total Products') }}</div>
+            <div class="brand-stat-value font-inter">{{ number_format($stats['total_products']) }}</div>
         </div>
         
-        <div class="brand-stat-card">
+        <div class="brand-stat-card shadow-soft">
             <div class="brand-stat-icon warning">
                 <i class="fas fa-exclamation-triangle"></i>
             </div>
-            <div class="brand-stat-label">Low Stock</div>
-            <div class="brand-stat-value">{{ number_format($stats['low_stock']) }}</div>
-            <div class="brand-stat-desc">
-                <i class="fas fa-clock"></i> Items need restocking
-            </div>
+            <div class="brand-stat-label">{{ __('Low Stock') }}</div>
+            <div class="brand-stat-value font-inter text-warning">{{ number_format($stats['low_stock']) }}</div>
         </div>
         
-        <div class="brand-stat-card">
+        <div class="brand-stat-card shadow-soft">
             <div class="brand-stat-icon danger">
                 <i class="fas fa-times-circle"></i>
             </div>
-            <div class="brand-stat-label">Out of Stock</div>
-            <div class="brand-stat-value">{{ number_format($stats['out_of_stock']) }}</div>
-            <div class="brand-stat-desc">
-                <i class="fas fa-bolt"></i> Immediate action required
-            </div>
+            <div class="brand-stat-label">{{ __('Out of Stock') }}</div>
+            <div class="brand-stat-value font-inter text-danger">{{ number_format($stats['out_of_stock']) }}</div>
         </div>
         
-        <div class="brand-stat-card">
+        <div class="brand-stat-card shadow-soft">
             <div class="brand-stat-icon success">
                 <i class="fas fa-coins"></i>
             </div>
-            <div class="brand-stat-label">Stock Value</div>
-            <div class="brand-stat-value">{{ currency($stats['total_stock_value']) }}</div>
-            <div class="brand-stat-desc">
-                <i class="fas fa-chart-line"></i> Total inventory worth
-            </div>
+            <div class="brand-stat-label">{{ __('Stock Value') }}</div>
+            <div class="brand-stat-value font-inter text-success">{{ currency($stats['total_stock_value']) }}</div>
         </div>
     </div>
 
     <!-- Filter Bar -->
-    <div class="brand-filter-bar">
-        <form method="GET" action="{{ route('inventory.index') }}" class="d-flex align-items-center gap-3 flex-wrap">
-            <div class="brand-search-wrapper">
-                <i class="fas fa-search"></i>
-                <input type="text" name="search" class="form-control" 
-                       placeholder="Search by product name or SKU..."
-                       value="{{ request('search') }}">
+    <div class="brand-filter-bar px-3 py-3">
+        <form method="GET" action="{{ route('inventory.index') }}" class="row g-2 align-items-end">
+            <div class="col-12 col-lg-5">
+                <div class="brand-search-wrapper w-100">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="search" class="form-control font-inter" 
+                           placeholder="{{ __('Search product or SKU...') }}"
+                           value="{{ request('search') }}">
+                </div>
             </div>
             
-            <select name="category_id" class="form-select w-auto">
-                <option value="">All Categories</option>
-                @foreach($categories as $category)
-                    <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                        {{ $category->translated_name }}
-                    </option>
-                @endforeach
-            </select>
+            <div class="col-6 col-lg-3">
+                <select name="category_id" class="form-select custom-select-premium font-inter">
+                    <option value="">{{ __('Categories') }}</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                            {{ $category->translated_name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-            <select name="stock_status" class="form-select w-auto">
-                <option value="">All Status</option>
-                <option value="in_stock" {{ request('stock_status') == 'in_stock' ? 'selected' : '' }}>In Stock</option>
-                <option value="low_stock" {{ request('stock_status') == 'low_stock' ? 'selected' : '' }}>Low Stock</option>
-                <option value="out_of_stock" {{ request('stock_status') == 'out_of_stock' ? 'selected' : '' }}>Out of Stock</option>
-            </select>
+            <div class="col-6 col-lg-2">
+                <select name="stock_status" class="form-select custom-select-premium font-inter">
+                    <option value="">{{ __('Status') }}</option>
+                    <option value="in_stock" {{ request('stock_status') == 'in_stock' ? 'selected' : '' }}>{{ __('In Stock') }}</option>
+                    <option value="low_stock" {{ request('stock_status') == 'low_stock' ? 'selected' : '' }}>{{ __('Low') }}</option>
+                    <option value="out_of_stock" {{ request('stock_status') == 'out_of_stock' ? 'selected' : '' }}>{{ __('Out') }}</option>
+                </select>
+            </div>
             
-            <button type="submit" class="btn-brand-primary">
-                <i class="fas fa-filter me-1"></i> Filter
-            </button>
-            <a href="{{ route('inventory.index') }}" class="btn-brand-light" title="Reset">
-                <i class="fas fa-redo"></i>
-            </a>
-            
-            <div class="ms-auto">
-                <a href="{{ route('inventory.export', request()->all()) }}" class="btn-brand-outline">
-                    <i class="fas fa-download text-primary"></i>
-                    Export CSV
-                </a>
+            <div class="col-12 col-lg-2">
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-brand-primary flex-grow-1">
+                        <i class="fas fa-filter"></i>
+                    </button>
+                    <a href="{{ route('inventory.index') }}" class="btn btn-brand-light px-3">
+                        <i class="fas fa-redo"></i>
+                    </a>
+                </div>
             </div>
         </form>
     </div>
 
-    <!-- Inventory Table -->
-    <div class="brand-table-card">
+    <!-- Mobile Inventory Cards -->
+    <div class="d-lg-none mt-3 px-1">
+        @forelse($products as $product)
+        <div class="glass-card mb-3 p-3 border-0 shadow-soft">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="brand-avatar" style="width: 50px; height: 50px; border-radius: 12px; background: #f1f5f9;">
+                    @if($product->image)
+                        <img src="{{ asset('storage/' . $product->image) }}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+                    @else
+                        <i class="fas fa-box text-muted"></i>
+                    @endif
+                </div>
+                <div class="flex-grow-1 min-width-0">
+                    <h6 class="mb-0 fw-bold text-dark text-truncate">{{ $product->translated_name }}</h6>
+                    <div class="text-muted small font-inter" style="font-size: 0.7rem;">{{ $product->sku ?? 'NO-SKU' }}</div>
+                </div>
+                <div class="text-end">
+                    @if($product->track_inventory)
+                        <div class="fw-bold font-inter fs-5">{{ $product->stock ?? 0 }}</div>
+                        <div class="text-muted small" style="font-size: 0.65rem;">{{ __('UNITS') }}</div>
+                    @else
+                        <span class="badge bg-light text-muted">{{ __('N/A') }}</span>
+                    @endif
+                </div>
+            </div>
+
+            @if($product->track_inventory)
+            <div class="row g-2 mb-3 py-2 border-top border-bottom" style="border-style: dashed !important; border-color: #f1f5f9 !important;">
+                <div class="col-6">
+                    <div class="text-muted small mb-1">{{ __('Stock Status') }}</div>
+                    @php
+                        $stock = $product->stock ?? 0;
+                        $threshold = $product->low_stock_threshold ?? 10;
+                        $badgeClass = $stock <= 0 ? 'danger' : ($stock <= $threshold ? 'warning' : 'success');
+                        $badgeText = $stock <= 0 ? __('Out') : ($stock <= $threshold ? __('Low') : __('In Stock'));
+                    @endphp
+                    <span class="brand-badge {{ $badgeClass }}" style="font-size: 0.65rem; padding: 2px 8px;">{{ $badgeText }}</span>
+                </div>
+                <div class="col-6 text-end">
+                    <div class="text-muted small mb-1">{{ __('Valuation') }}</div>
+                    <div class="fw-bold text-dark font-inter" style="font-size: 0.85rem;">{{ currency(($product->stock ?? 0) * ($product->cost_price ?? 0)) }}</div>
+                </div>
+            </div>
+            @endif
+
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex gap-3">
+                    <div class="text-center">
+                        <div class="text-muted" style="font-size: 0.65rem;">{{ __('30D VOL') }}</div>
+                        <div class="fw-bold font-inter small">{{ number_format($product->sold_last_30_days ?? 0) }}</div>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    @if($product->track_inventory)
+                    <button class="btn btn-sm btn-brand-primary rounded-pill px-3" onclick="openAdjustModal('{{ $product->id }}', '{{ addslashes($product->translated_name) }}', {{ $product->stock ?? 0 }})">
+                        <i class="fas fa-sliders-h me-1"></i> {{ __('Adjust') }}
+                    </button>
+                    @endif
+                    <a href="{{ route('inventory.movements', ['product_id' => $product->id]) }}" class="btn btn-sm btn-brand-light rounded-pill px-3">
+                        <i class="fas fa-history me-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        @empty
+            <div class="glass-card p-5 text-center">
+                <i class="fas fa-boxes opacity-25 mb-3" style="font-size: 48px;"></i>
+                <h5 class="fw-bold">{{ __('No inventory items') }}</h5>
+            </div>
+        @endforelse
+    </div>
+
+    <!-- Inventory Table (Desktop Only) -->
+    <div class="brand-table-card d-none d-lg-block mt-4">
         <div class="table-responsive" style="max-height: 65vh;">
             <table class="brand-table">
                 <thead style="position: sticky; top: 0; z-index: 10;">
@@ -122,13 +185,13 @@
                         <th style="width: 40px; padding-left: 1.5rem;">
                             <input type="checkbox" class="form-check-input" id="checkAll">
                         </th>
-                        <th>Product</th>
-                        <th>Stock Level</th>
-                        <th class="text-center">30d Sales</th>
-                        <th class="text-center">Forecasting</th>
-                        <th class="text-center">Reorder Pt</th>
-                        <th>Value</th>
-                        <th class="text-end" style="padding-right: 1.5rem;">Actions</th>
+                        <th>{{ __('Product') }}</th>
+                        <th>{{ __('Stock Level') }}</th>
+                        <th class="text-center">{{ __('30d Sales') }}</th>
+                        <th class="text-center">{{ __('Forecasting') }}</th>
+                        <th class="text-center">{{ __('Reorder Pt') }}</th>
+                        <th>{{ __('Value') }}</th>
+                        <th class="text-end" style="padding-right: 1.5rem;">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -151,7 +214,7 @@
                                     <div class="d-flex align-items-center gap-2 mt-1">
                                         <span class="badge bg-light text-secondary font-monospace" style="font-size: 0.65rem;">{{ $product->sku ?? 'NO-SKU' }}</span>
                                         <span class="text-muted small">•</span>
-                                        <span class="text-muted small">{{ $product->category->name ?? 'Uncategorized' }}</span>
+                                        <span class="text-muted small">{{ $product->category->name ?? __('Uncategorized') }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -164,15 +227,15 @@
                                             $stock = $product->stock ?? 0;
                                             $threshold = $product->low_stock_threshold ?? 10;
                                             $badgeClass = 'success';
-                                            $badgeText = 'In Stock';
+                                            $badgeText = __('In Stock');
                                             $barClass = 'success';
                                             if ($stock <= 0) {
                                                 $badgeClass = 'danger';
-                                                $badgeText = 'Out';
+                                                $badgeText = __('Out');
                                                 $barClass = 'danger';
                                             } elseif ($stock <= $threshold) {
                                                 $badgeClass = 'warning';
-                                                $badgeText = 'Low';
+                                                $badgeText = __('Low');
                                                 $barClass = 'warning';
                                             }
                                             $percent = min(100, $stock > 0 ? ($stock / ($threshold * 3)) * 100 : 0);
@@ -186,13 +249,13 @@
                                     </div>
                                 </div>
                             @else
-                                <span class="brand-badge" style="background: #f1f5f9; color: #94a3b8;">Not Tracked</span>
+                                <span class="brand-badge" style="background: #f1f5f9; color: #94a3b8;">{{ __('Not Tracked') }}</span>
                             @endif
                         </td>
                         <td class="text-center">
                             @if($product->sold_last_30_days > 0)
                                 <div class="fw-bold">{{ number_format($product->sold_last_30_days) }}</div>
-                                <div class="text-muted small">units/mo</div>
+                                <div class="text-muted small">{{ __('units/mo') }}</div>
                             @else
                                 <span class="text-muted">—</span>
                             @endif
@@ -277,8 +340,8 @@
                                 <div class="brand-avatar mx-auto mb-3" style="width: 64px; height: 64px; font-size: 24px;">
                                     <i class="fas fa-box-open"></i>
                                 </div>
-                                <h5 class="fw-bold text-dark">No products found</h5>
-                                <p class="text-muted">Try adjusting your search or filter criteria</p>
+                                <h5 class="fw-bold text-dark">{{ __('No products found') }}</h5>
+                                <p class="text-muted">{{ __('Try adjusting your search or filter criteria') }}</p>
                             </div>
                         </td>
                     </tr>
@@ -298,45 +361,44 @@
     <div class="modal-dialog modal-dialog-centered">
         <form id="adjustStockForm" method="POST" action="">
             @csrf
-            <div class="modal-content" style="border-radius: var(--radius-xl); border: none; box-shadow: var(--shadow-lg);">
+            <div class="modal-content glass-card shadow-lg" style="border: none;">
                 <div class="modal-header border-0 pb-0" style="padding: 1.5rem 1.5rem 0;">
-                    <h5 class="modal-title fw-bold">Stock Adjustment</h5>
+                    <h5 class="modal-title fw-bold text-dark">{{ __('Stock Adjustment') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body" style="padding: 1.5rem;">
                     <div class="p-3 mb-4 d-flex align-items-center gap-3" style="background: #f0f9ff; border-radius: var(--radius-lg);">
-                        <div class="brand-avatar" style="background: #0ea5e9; color: white;">
+                        <div class="brand-avatar" style="background: var(--primary-color); color: white;">
                             <i class="fas fa-box"></i>
                         </div>
                         <div>
                             <div class="fw-bold text-dark" id="modalProductName" style="font-size: 1rem;"></div>
-                            <div class="text-primary small fw-semibold">Current Level: <span id="modalCurrentStock"></span> units</div>
+                            <div class="text-primary small fw-semibold">{{ __('Current Level:') }} <span id="modalCurrentStock" class="font-inter"></span> {{ __('units') }}</div>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-semibold small text-uppercase" style="letter-spacing: 0.05em; color: #64748b;">Method</label>
-                        <select name="adjustment_type" class="form-select brand-input" required onchange="updateReasonPlaceholder(this.value)" style="border-radius: var(--radius-md);">
-                            <option value="in">➕ Add units</option>
-                            <option value="out">➖ Remove units</option>
-                            <option value="adjustment">🔄 Manual Correction</option>
+                        <label class="form-label fw-semibold small text-uppercase text-muted">{{ __('Adjustment Type') }}</label>
+                        <select name="adjustment_type" class="form-select custom-select-premium" required onchange="updateReasonPlaceholder(this.value)">
+                            <option value="in">➕ {{ __('Add units') }}</option>
+                            <option value="out">➖ {{ __('Remove units') }}</option>
+                            <option value="adjustment">🔄 {{ __('Manual Correction') }}</option>
                         </select>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-semibold small text-uppercase" style="letter-spacing: 0.05em; color: #64748b;">Quantity</label>
-                        <input type="number" name="quantity" class="form-control brand-input" required min="1" placeholder="0" style="border-radius: var(--radius-md);">
-                        <div class="form-text" id="quantityHelp">Total quantity to be added to stock.</div>
+                        <label class="form-label fw-semibold small text-uppercase text-muted">{{ __('Quantity') }}</label>
+                        <input type="number" name="quantity" class="form-control brand-input font-inter" required min="1" placeholder="0">
+                        <div class="form-text mt-1 small opacity-75" id="quantityHelp">{{ __('Total units to be added.') }}</div>
                     </div>
 
                     <div class="mb-0">
-                        <label class="form-label fw-semibold small text-uppercase" style="letter-spacing: 0.05em; color: #64748b;">Adjustment Reason</label>
-                        <textarea name="reason" class="form-control brand-input" rows="2" required placeholder="e.g., Weekly restocking from supplier" style="border-radius: var(--radius-md);"></textarea>
+                        <label class="form-label fw-semibold small text-uppercase text-muted">{{ __('Reference/Reason') }}</label>
+                        <textarea name="reason" class="form-control brand-input" rows="2" required placeholder="{{ __('e.g., Weekly restocking') }}"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-0" style="padding: 0 1.5rem 1.5rem;">
-                    <button type="button" class="btn w-100 mb-2 py-3 fw-bold" style="background: var(--gradient-primary); color: white; border-radius: var(--radius-md); border: none;" onclick="this.form.submit()">Confirm Adjustment</button>
-                    <button type="button" class="btn btn-link w-100 text-muted text-decoration-none small" data-bs-dismiss="modal">Cancel and go back</button>
+                    <button type="submit" class="btn btn-brand-primary w-100 py-3 fw-bold">{{ __('Confirm Adjustment') }}</button>
                 </div>
             </div>
         </form>
@@ -361,16 +423,16 @@
         
         switch(type) {
             case 'in':
-                textarea.placeholder = "e.g., Restocked from supplier, customer return";
-                quantityHelp.textContent = "Number of units to ADD to the current stock level.";
+                textarea.placeholder = "{{ __('e.g., Restocked from supplier') }}";
+                quantityHelp.textContent = "{{ __('Units to ADD to stock.') }}";
                 break;
             case 'out':
-                textarea.placeholder = "e.g., Damaged item, expired stock, office use";
-                quantityHelp.textContent = "Number of units to REMOVE from the current stock level.";
+                textarea.placeholder = "{{ __('e.g., Damaged item, expired') }}";
+                quantityHelp.textContent = "{{ __('Units to REMOVE from stock.') }}";
                 break;
             case 'adjustment':
-                textarea.placeholder = "e.g., Physical inventory audit, sync fix";
-                quantityHelp.textContent = "The final correct absolute number of units in stock.";
+                textarea.placeholder = "{{ __('e.g., Physical audit adjustment') }}";
+                quantityHelp.textContent = "{{ __('The NEW absolute total quantity.') }}";
                 break;
         }
     }

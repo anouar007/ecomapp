@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Roles Management')
+@section('title', __('Roles Management'))
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/management.css') }}">
@@ -10,11 +10,11 @@
 <div class="page-header">
     <div style="display: flex; justify-content: space-between; align-items: center;">
         <div>
-            <h1 class="page-title"><i class="fas fa-user-shield"></i> Roles Management</h1>
-            <p class="page-subtitle">Manage system roles and their permissions</p>
+            <h1 class="page-title"><i class="fas fa-user-shield"></i> {{ __('Roles Management') }}</h1>
+            <p class="page-subtitle">{{ __('Manage system roles and their permissions') }}</p>
         </div>
         <a href="{{ route('roles.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Create New Role
+            <i class="fas fa-plus"></i> {{ __('Create New Role') }}
         </a>
     </div>
 </div>
@@ -33,16 +33,16 @@
 
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-list"></i> All Roles</h3>
+        <h3 class="card-title"><i class="fas fa-list"></i> {{ __('All Roles') }}</h3>
     </div>
     <div class="table-responsive">
         <table class="table">
             <thead>
                 <tr>
-                    <th>Role Name</th>
-                    <th>Permissions</th>
-                    <th>Users</th>
-                    <th>Actions</th>
+                    <th>{{ __('Role Name') }}</th>
+                    <th>{{ __('Permissions') }}</th>
+                    <th>{{ __('Users') }}</th>
+                    <th>{{ __('Actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -51,7 +51,7 @@
                     <td>
                         <strong>{{ $role->name }}</strong>
                         @if(in_array($role->name, ['Admin', 'Manager', 'Staff']))
-                            <span class="badge badge-primary">System</span>
+                            <span class="badge badge-primary">{{ __('System') }}</span>
                         @endif
                     </td>
                     <td>
@@ -61,14 +61,14 @@
                                     <span class="badge badge-secondary">{{ ucwords(str_replace('_', ' ', $permission->name)) }}</span>
                                 @endforeach
                                 @if($role->permissions->count() > 3)
-                                    <span class="badge badge-light">+{{ $role->permissions->count() - 3 }} more</span>
+                                    <span class="badge badge-light">+{{ $role->permissions->count() - 3 }} {{ __('more') }}</span>
                                 @endif
                             </div>
                         @else
-                            <span class="text-muted">No permissions</span>
+                            <span class="text-muted">{{ __('No permissions') }}</span>
                         @endif
                     </td>
-                    <td>{{ $role->users->count() }} users</td>
+                    <td>{{ $role->users->count() }} {{ __('users') }}</td>
                     <td>
                         <div class="action-buttons">
                             <a href="{{ route('roles.edit', $role) }}" class="btn-action btn-action-edit" title="Edit">
@@ -95,7 +95,7 @@
                 <tr>
                     <td colspan="4" class="empty-state">
                         <i class="fas fa-user-shield"></i>
-                        <p>No roles found. Create your first role to get started.</p>
+                        <p>{{ __('No roles found. Create your first role to get started.') }}</p>
                     </td>
                 </tr>
                 @endforelse

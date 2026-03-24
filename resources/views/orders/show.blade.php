@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Order Details - ' . $order->order_number)
+@section('title', __('Order Details - ') . $order->order_number)
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/management.css') }}">
@@ -116,11 +116,11 @@
                 <a href="{{ route('orders.index') }}" class="btn-action btn-action-view" style="width: 32px; height: 32px; border-radius: 8px;">
                     <i class="fas fa-arrow-left"></i>
                 </a>
-                <h1 class="page-title" style="margin: 0; font-size: 28px;">Order #{{ $order->order_number }}</h1>
-                <span class="badge {{ $order->status_badge_class }}" style="margin: 0;">{{ ucfirst($order->status) }}</span>
+                <h1 class="page-title" style="margin: 0; font-size: 28px;">{{ __('Order') }} #{{ $order->order_number }}</h1>
+                <span class="badge {{ $order->status_badge_class }}" style="margin: 0;">{{ __(ucfirst($order->status)) }}</span>
             </div>
             <p class="page-subtitle">
-                Placed on {{ $order->created_at->format('F d, Y') }} at {{ $order->created_at->format('h:i A') }}
+                {{ __('Placed on') }} {{ $order->created_at->format('F d, Y') }} {{ __('at') }} {{ $order->created_at->format('h:i A') }}
             </p>
         </div>
         <div style="display: flex; gap: 10px;">
@@ -128,16 +128,16 @@
             <form action="{{ route('orders.generate-invoice', $order) }}" method="POST">
                 @csrf
                 <button type="submit" class="btn btn-success">
-                    <i class="fas fa-file-invoice"></i> Generate Invoice
+                    <i class="fas fa-file-invoice"></i> {{ __('Generate Invoice') }}
                 </button>
             </form>
             @else
             <a href="{{ route('invoices.show', $order->invoice) }}" class="btn btn-secondary">
-                <i class="fas fa-file-invoice"></i> Invoice
+                <i class="fas fa-file-invoice"></i> {{ __('Invoice') }}
             </a>
             @endif
             <a href="{{ route('orders.edit', $order) }}" class="btn btn-primary">
-                <i class="fas fa-edit"></i> Edit Order
+                <i class="fas fa-edit"></i> {{ __('Edit Order') }}
             </a>
         </div>
     </div>
@@ -160,8 +160,8 @@
                    <div class="alert alert-danger" style="margin: 0;">
                         <i class="fas fa-times-circle"></i>
                         <div>
-                            <strong>Order Cancelled</strong>
-                            <p style="margin: 4px 0 0 0; font-size: 13px;">This order was cancelled on {{ $order->updated_at->format('M d, Y') }}</p>
+                            <strong>{{ __('Order Cancelled') }}</strong>
+                            <p style="margin: 4px 0 0 0; font-size: 13px;">{{ __('This order was cancelled on') }} {{ $order->updated_at->format('M d, Y') }}</p>
                         </div>
                    </div> 
                 @else
@@ -184,7 +184,7 @@
                                 <div class="step-icon">
                                     <i class="fas {{ $icons[$step] }}"></i>
                                 </div>
-                                <div class="step-label">{{ ucfirst($step) }}</div>
+                                <div class="step-label">{{ __(ucfirst($step)) }}</div>
                             </div>
                         @endforeach
                     </div>
@@ -197,7 +197,7 @@
         <div class="card">
             <div class="card-header">
                 <div class="card-title">
-                    <i class="fas fa-box-open"></i> Order Items ({{ $order->items->count() }})
+                    <i class="fas fa-box-open"></i> {{ __('Order Items') }} ({{ $order->items->count() }})
                 </div>
             </div>
             <div class="card-body" style="padding: 0;">
@@ -205,10 +205,10 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th style="padding-left: 24px;">Product Items</th>
-                                <th class="text-right">Price</th>
-                                <th class="text-center">Qty</th>
-                                <th class="text-right" style="padding-right: 24px;">Total</th>
+                                <th style="padding-left: 24px;">{{ __('Product Items') }}</th>
+                                <th class="text-right">{{ __('Price') }}</th>
+                                <th class="text-center">{{ __('Qty') }}</th>
+                                <th class="text-right" style="padding-right: 24px;">{{ __('Total') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -216,12 +216,24 @@
                             <tr>
                                 <td style="padding-left: 24px;">
                                     <div style="display: flex; align-items: center; gap: 16px;">
-                                        <div style="width: 48px; height: 48px; background: #f1f5f9; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #cbd5e1;">
-                                            <i class="fas fa-image fa-lg"></i>
+                                        <div class="product-img-thumb" style="width: 54px; height: 54px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                                            @if($item->display_image)
+                                                <img src="{{ Storage::url($item->display_image) }}" alt="{{ $item->product_name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                            @else
+                                                <i class="fas fa-image text-muted opacity-50"></i>
+                                            @endif
                                         </div>
                                         <div>
-                                            <div style="font-weight: 600; color: #1e293b; font-size: 15px;">{{ $item->product_name }}</div>
-                                            <div style="font-size: 12px; color: #64748b; margin-top: 2px;">SKU: {{ $item->product->sku ?? 'N/A' }}</div>
+                                            <div style="font-weight: 700; color: #1e293b; font-size: 15px;">{{ $item->product_name }}</div>
+                                            <div class="d-flex align-items-center gap-2 mt-1">
+                                                <span class="badge bg-light text-muted border py-1 px-2" style="font-size: 10px; font-weight: 600;">SKU: {{ $item->product_sku }}</span>
+                                                @if($item->color)
+                                                    <span class="badge bg-light text-muted border py-1 px-2" style="font-size: 10px; font-weight: 600;">{{ __('Color') }}: {{ $item->color }}</span>
+                                                @endif
+                                                @if($item->size)
+                                                    <span class="badge bg-light text-muted border py-1 px-2" style="font-size: 10px; font-weight: 600;">{{ __('Size') }}: {{ $item->size }}</span>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
@@ -244,7 +256,7 @@
         @if($order->notes)
         <div class="card" style="margin-top: 24px;">
             <div class="card-header">
-                <div class="card-title"><i class="fas fa-sticky-note"></i> Order Notes</div>
+                <div class="card-title"><i class="fas fa-sticky-note"></i> {{ __('Order Notes') }}</div>
             </div>
             <div class="card-body">
                 <p style="color: #475569; line-height: 1.6; margin: 0; font-style: italic;">"{{ $order->notes }}"</p>
@@ -260,38 +272,38 @@
         <!-- Order Summary -->
         <div class="card" style="margin-bottom: 24px;">
             <div class="card-header">
-                <div class="card-title"><i class="fas fa-calculator"></i> Summary</div>
+                <div class="card-title"><i class="fas fa-calculator"></i> {{ __('Summary') }}</div>
             </div>
             <div class="card-body">
                 <div class="info-row">
-                    <span class="info-label">Subtotal</span>
+                    <span class="info-label">{{ __('Subtotal') }}</span>
                     <span class="info-value">{{ currency($order->subtotal) }}</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">Tax</span>
+                    <span class="info-label">{{ __('Tax') }}</span>
                     <span class="info-value">{{ currency($order->tax) }}</span>
                 </div>
                 <!-- Shipping -->
                 <div class="info-row">
-                    <span class="info-label">Shipping</span>
-                    <span class="info-value">{{ $order->shipping_cost > 0 ? currency($order->shipping_cost) : 'Free' }}</span>
+                    <span class="info-label">{{ __('Shipping') }}</span>
+                    <span class="info-value">{{ $order->shipping_cost > 0 ? currency($order->shipping_cost) : __('Free') }}</span>
                 </div>
                 <!-- Discount -->
                 @if($order->discount > 0)
                 <div class="info-row">
-                    <span class="info-label">Discount</span>
+                    <span class="info-label">{{ __('Discount') }}</span>
                     <span class="info-value" style="color: #10b981;">-{{ currency($order->discount) }}</span>
                 </div>
                 @endif
                 
                 <div style="margin-top: 16px; padding-top: 16px; border-top: 2px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-weight: 700; color: #1e293b; font-size: 16px;">Total</span>
+                    <span style="font-weight: 700; color: #1e293b; font-size: 16px;">{{ __('Total') }}</span>
                     <span style="font-weight: 800; color: #6366f1; font-size: 24px;">{{ currency($order->total) }}</span>
                 </div>
                 
                 <div style="margin-top: 20px; text-align: center;">
                     <span class="badge {{ $order->payment_status_badge_class }}" style="width: 100%; justify-content: center; padding: 10px; font-size: 14px;">
-                        Payment: {{ ucfirst($order->payment_status) }}
+                        {{ __('Payment:') }} {{ __(ucfirst($order->payment_status)) }}
                     </span>
                 </div>
             </div>
@@ -300,7 +312,7 @@
         <!-- Customer Card -->
         <div class="card" style="margin-bottom: 24px;">
             <div class="card-header">
-                <div class="card-title"><i class="fas fa-user"></i> Customer</div>
+                <div class="card-title"><i class="fas fa-user"></i> {{ __('Customer') }}</div>
             </div>
             <div class="card-body">
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
@@ -309,18 +321,18 @@
                     </div>
                     <div>
                         <div style="font-weight: 700; color: #1e293b;">{{ $order->customer_name }}</div>
-                        <div style="font-size: 12px; color: #64748b;">Customer</div>
+                        <div style="font-size: 12px; color: #64748b;">{{ __('Customer') }}</div>
                     </div>
                 </div>
                 
                 <div style="display: flex; flex-direction: column; gap: 12px;">
                     <div style="display: flex; gap: 10px;">
                         <i class="fas fa-envelope" style="color: #94a3b8; margin-top: 3px;"></i>
-                        <span style="font-size: 14px; color: #334155;">{{ $order->customer_email ?? 'No email' }}</span>
+                        <span style="font-size: 14px; color: #334155;">{{ $order->customer_email ?? __('No email') }}</span>
                     </div>
                     <div style="display: flex; gap: 10px;">
                         <i class="fas fa-phone" style="color: #94a3b8; margin-top: 3px;"></i>
-                        <span style="font-size: 14px; color: #334155;">{{ $order->customer_phone ?? 'No phone' }}</span>
+                        <span style="font-size: 14px; color: #334155;">{{ $order->customer_phone ?? __('No phone') }}</span>
                     </div>
                     @if($order->shipping_address)
                     <div style="display: flex; gap: 10px;">
@@ -339,21 +351,21 @@
         <!-- Payment Info -->
         <div class="card">
             <div class="card-header">
-                <div class="card-title"><i class="fas fa-credit-card"></i> Payment</div>
+                <div class="card-title"><i class="fas fa-credit-card"></i> {{ __('Payment') }}</div>
             </div>
             <div class="card-body">
                 <div class="info-row">
-                    <span class="info-label">Method</span>
+                    <span class="info-label">{{ __('Method') }}</span>
                     <span class="info-value" style="text-transform: capitalize;">{{ str_replace('_', ' ', $order->payment_method) }}</span>
                 </div>
                 @if($order->transaction_id)
                 <div class="info-row">
-                    <span class="info-label">Trans. ID</span>
+                    <span class="info-label">{{ __('Trans. ID') }}</span>
                     <span class="info-value" style="font-family: monospace; font-size: 13px;">{{ $order->transaction_id }}</span>
                 </div>
                 @endif
                 <div class="info-row">
-                    <span class="info-label">Date</span>
+                    <span class="info-label">{{ __('Date') }}</span>
                     <span class="info-value">{{ $order->created_at->format('M d, Y') }}</span>
                 </div>
             </div>

@@ -27,8 +27,10 @@ class CartController extends Controller
      */
     public function addToCart(Request $request, $id)
     {
+        $p = Product::with(['images'])->find($id);
+        @file_put_contents(storage_path('debug.txt'), "ID: $id, Main: " . ($p ? $p->main_image : 'NONE') . ", Count: " . ($p ? $p->images->count() : 0) . "\n", FILE_APPEND);
         try {
-            $product = Product::with(['variants'])->findOrFail($id);
+            $product = Product::with(['variants', 'images', 'primaryImage'])->findOrFail($id);
             $variantId = $request->get('variant_id');
             $variant = null;
 
@@ -69,8 +71,20 @@ class CartController extends Controller
                 return back()->with('error', $msg);
             }
 
+            $imagePath = null;
+            if ($variant && $variant->color_image && strval($variant->color_image) !== '0') {
+                $imagePath = $variant->color_image;
+            } elseif ($product->primaryImage) {
+                $imagePath = $product->primaryImage->image_path;
+            } elseif ($product->images->count() > 0) {
+                $imagePath = $product->images->first()->image_path;
+            } else {
+                $imagePath = $product->image; // Legacy column
+            }
+
             if (isset($cart[$cartKey])) {
                 $cart[$cartKey]['quantity'] += $quantity;
+                $cart[$cartKey]['image'] = $imagePath; // Update image in case it was missing
             } else {
                 $cart[$cartKey] = [
                     'product_id' => $id,
@@ -78,8 +92,8 @@ class CartController extends Controller
                     'name' => $product->translated_name,
                     'quantity' => $quantity,
                     'price' => $variant ? ($variant->price ?? $product->price) : $product->price,
-                    'image' => $variant && $variant->color_image ? $variant->color_image : $product->main_image,
-                    'color' => $variant ? $variant->color : null,
+                    'image' => $imagePath,
+                    'color' => $variant ? $variant->color_name : null,
                     'size' => $variant ? $variant->size : null,
                 ];
             }

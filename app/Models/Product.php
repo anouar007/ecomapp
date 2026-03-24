@@ -397,6 +397,7 @@ class Product extends Model
                 'color' => $v->color,
                 'price' => $v->price ?: $this->price,
                 'stock' => $v->stock,
+                'color_image' => $v->color_image && strval($v->color_image) !== "0" ? \Illuminate\Support\Facades\Storage::url($v->color_image) : null,
                 'formatted_price' => currency($v->price ?: $this->price)
             ];
         })->toJson();

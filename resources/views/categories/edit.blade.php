@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title','Edit Category')
+@section('title', __('Edit Category'))
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/management.css') }}">
@@ -79,15 +79,15 @@
 
 @section('content')
 <div class="page-header">
-    <h1 class="page-title"><i class="fas fa-edit"></i> Edit Category</h1>
-    <p class="page-subtitle">Update category details</p>
+    <h1 class="page-title"><i class="fas fa-edit"></i> {{ __('Edit Category') }}</h1>
+    <p class="page-subtitle">{{ __('Update category details') }}</p>
 </div>
 
 @if($errors->any())
 <div class="alert alert-danger">
     <i class="fas fa-exclamation-circle"></i>
     <div>
-        <strong>Oops! Something went wrong:</strong>
+        <strong>{{ __('Oops! Something went wrong:') }}</strong>
         <ul style="margin: 8px 0 0 20px; padding: 0;">
             @foreach($errors->all() as $error)
                 <li>{{ $error }}</li>
@@ -99,7 +99,7 @@
 
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-file-alt"></i> Category Information</h3>
+        <h3 class="card-title"><i class="fas fa-file-alt"></i> {{ __('Category Information') }}</h3>
     </div>
     <div class="card-body">
         <form action="{{ route('categories.update', $category->id) }}" method="POST" enctype="multipart/form-data">
@@ -109,17 +109,17 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="name_fr" class="form-label">
-                        Category Name (FR) <span class="required">*</span>
+                        {{ __('Category Name (FR)') }} <span class="required">*</span>
                     </label>
                     <input type="text" id="name_fr" name="name_fr" class="form-control" value="{{ old('name_fr', $category->name_fr ?: $category->name) }}" placeholder="Nom de la catégorie" required autofocus>
                 </div>
                 <div class="form-group">
-                    <label for="name_en" class="form-label">Category Name (EN)</label>
-                    <input type="text" id="name_en" name="name_en" class="form-control" value="{{ old('name_en', $category->name_en) }}" placeholder="Category Name">
+                    <label for="name_en" class="form-label">{{ __('Category Name (EN)') }}</label>
+                    <input type="text" id="name_en" name="name_en" class="form-control" value="{{ old('name_en', $category->name_en) }}" placeholder="{{ __('Category Name (EN)') }}">
                 </div>
                 <div class="form-group">
-                    <label for="name_ar" class="form-label">Category Name (AR)</label>
-                    <input type="text" id="name_ar" name="name_ar" class="form-control" value="{{ old('name_ar', $category->name_ar) }}" placeholder="اسم الفئة" dir="rtl">
+                    <label for="name_ar" class="form-label">{{ __('Category Name (AR)') }}</label>
+                    <input type="text" id="name_ar" name="name_ar" class="form-control" value="{{ old('name_ar', $category->name_ar) }}" placeholder="{{ __('Category Name (AR)') }}" dir="rtl">
                 </div>
             </div>
 
@@ -127,35 +127,35 @@
                 <input type="hidden" name="name" id="name" value="{{ old('name', $category->name) }}">
 
                 <div class="form-group">
-                    <label for="slug" class="form-label">Slug</label>
+                    <label for="slug" class="form-label">{{ __('Slug') }}</label>
                     <input type="text" 
                            id="slug" 
                            name="slug" 
                            class="form-control" 
                            value="{{ old('slug', $category->slug) }}" 
-                           placeholder="auto-generated from name">
-                    <small class="form-help">Leave empty to auto-generate</small>
+                           placeholder="{{ __('auto-generated from name') }}">
+                    <small class="form-help">{{ __('Leave empty to auto-generate') }}</small>
                 </div>
             </div>
 
             <div class="form-group mt-3">
-                <label for="description_fr" class="form-label">Description (FR)</label>
-                <textarea id="description_fr" name="description_fr" class="form-control" rows="2" placeholder="Description en français...">{{ old('description_fr', $category->description_fr ?: $category->description) }}</textarea>
+                <label for="description_fr" class="form-label">{{ __('Description (FR)') }}</label>
+                <textarea id="description_fr" name="description_fr" class="form-control" rows="2" placeholder="{{ __('Description (FR)') }}...">{{ old('description_fr', $category->description_fr ?: $category->description) }}</textarea>
             </div>
             <div class="form-group mt-3">
-                <label for="description_en" class="form-label">Description (EN)</label>
-                <textarea id="description_en" name="description_en" class="form-control" rows="2" placeholder="English description...">{{ old('description_en', $category->description_en) }}</textarea>
+                <label for="description_en" class="form-label">{{ __('Description (EN)') }}</label>
+                <textarea id="description_en" name="description_en" class="form-control" rows="2" placeholder="{{ __('Description (EN)') }}...">{{ old('description_en', $category->description_en) }}</textarea>
             </div>
             <div class="form-group mt-3">
-                <label for="description_ar" class="form-label">Description (AR)</label>
-                <textarea id="description_ar" name="description_ar" class="form-control" rows="2" placeholder="وصف عربي..." dir="rtl">{{ old('description_ar', $category->description_ar) }}</textarea>
+                <label for="description_ar" class="form-label">{{ __('Description (AR)') }}</label>
+                <textarea id="description_ar" name="description_ar" class="form-control" rows="2" placeholder="{{ __('Description (AR)') }}..." dir="rtl">{{ old('description_ar', $category->description_ar) }}</textarea>
             </div>
 
             <div class="form-row mt-4">
                 <div class="form-group">
-                    <label for="parent_id" class="form-label">Parent Category</label>
+                    <label for="parent_id" class="form-label">{{ __('Parent Category') }}</label>
                     <select id="parent_id" name="parent_id" class="form-control">
-                        <option value="">-- No Parent (Top Level) --</option>
+                        <option value="">-- {{ __('No Parent (Top Level)') }} --</option>
                         @foreach($parentCategories as $parent)
                             @if($parent->id !== $category->id) {{-- Prevent selecting self as parent --}}
                             <option value="{{ $parent->id }}" {{ old('parent_id', $category->parent_id) == $parent->id ? 'selected' : '' }}>
@@ -164,40 +164,40 @@
                             @endif
                         @endforeach
                     </select>
-                    <small class="form-help">Create a subcategory by selecting a parent</small>
+                    <small class="form-help">{{ __('Create a subcategory by selecting a parent') }}</small>
                 </div>
 
                 <div class="form-group">
                     <label for="status" class="form-label">
-                        Status <span class="required">*</span>
+                        {{ __('Status') }} <span class="required">*</span>
                     </label>
                     <select id="status" name="status" class="form-control" required>
-                        <option value="active" {{ old('status', $category->status) == 'active' ? 'selected' : '' }}>Active</option>
-                        <option value="inactive" {{ old('status', $category->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                        <option value="active" {{ old('status', $category->status) == 'active' ? 'selected' : '' }}>{{ __('Active') }}</option>
+                        <option value="inactive" {{ old('status', $category->status) == 'inactive' ? 'selected' : '' }}>{{ __('Inactive') }}</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="sort_order" class="form-label">Sort Order</label>
+                    <label for="sort_order" class="form-label">{{ __('Sort Order') }}</label>
                     <input type="number" 
                            id="sort_order" 
                            name="sort_order" 
                            class="form-control" 
                            value="{{ old('sort_order', $category->sort_order) }}" 
                            min="0">
-                    <small class="form-help">Lower numbers appear first</small>
+                    <small class="form-help">{{ __('Lower numbers appear first') }}</small>
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Icon (FontAwesome)</label>
+                <label class="form-label">{{ __('Icon (FontAwesome)') }}</label>
                 <input type="text" 
                        id="icon" 
                        name="icon" 
                        class="form-control" 
                        value="{{ old('icon', $category->icon) }}" 
                        placeholder="e.g., fas fa-laptop">
-                <small class="form-help">Enter FontAwesome class or select from popular icons:</small>
+                <small class="form-help">{{ __('Enter FontAwesome class or select from popular icons:') }}</small>
                 <div class="icon-picker" style="margin-top: 12px;">
                     @foreach(['fas fa-laptop', 'fas fa-mobile', 'fas fa-tshirt', 'fas fa-book', 'fas fa-utensils', 'fas fa-home', 'fas fa-car', 'fas fa-gamepad', 'fas fa-music', 'fas fa-camera', 'fas fa-toolbox', 'fas fa-heart'] as $iconClass)
                         <div class="icon-option {{ old('icon', $category->icon) == $iconClass ? 'selected' : '' }}" onclick="selectIcon('{{ $iconClass }}')">
@@ -208,18 +208,18 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label">Category Image</label>
+                <label class="form-label">{{ __('Category Image') }}</label>
                 
                 @if($category->image)
                 <div class="mb-3">
-                    <p class="text-muted mb-2"><small>Current Image:</small></p>
+                    <p class="text-muted mb-2"><small>{{ __('Current Image:') }}</small></p>
                     <div class="current-image-preview">
                         <img src="{{ Storage::url($category->image) }}" alt="{{ $category->translated_name }}">
                     </div>
                     <div class="form-check mt-2">
                         <input type="checkbox" class="form-check-input" id="remove_image" name="remove_image" value="1">
                         <label class="form-check-label text-danger" for="remove_image">
-                            <i class="fas fa-trash me-1"></i> Remove current image
+                            <i class="fas fa-trash me-1"></i> {{ __('Remove current image') }}
                         </label>
                     </div>
                 </div>
@@ -235,24 +235,24 @@
                     <div id="imagePreview" class="image-preview-container" style="display: none;">
                         <img id="previewImg" src="" alt="Preview" style="max-width: 100%; max-height: 180px; border-radius: 8px;">
                         <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeImage(event)">
-                            <i class="fas fa-times me-1"></i> Remove
+                            <i class="fas fa-times me-1"></i> {{ __('Remove') }}
                         </button>
                     </div>
                     <div id="uploadPlaceholder" class="text-center py-4">
                         <i class="fas fa-cloud-upload-alt" style="font-size: 2.5rem; color: #667eea; opacity: 0.6;"></i>
-                        <p class="mb-0 mt-2 text-muted">{{ $category->image ? 'Upload a new image to replace' : 'Click to upload or drag and drop' }}</p>
-                        <small class="text-muted">PNG, JPG up to 2MB</small>
+                        <p class="mb-0 mt-2 text-muted">{{ $category->image ? __('Upload a new image to replace') : __('Click to upload or drag and drop') }}</p>
+                        <small class="text-muted">{{ __('PNG, JPG up to 2MB') }}</small>
                     </div>
                 </div>
-                <small class="form-help">{{ $category->image ? 'Upload a new image to replace the current one, or check the box above to remove it' : 'Optional image to represent this category' }}</small>
+                <small class="form-help">{{ $category->image ? __('Upload a new image to replace the current one, or check the box above to remove it') : __('Optional image to represent this category') }}</small>
             </div>
 
             <div class="form-actions">
                 <a href="{{ route('categories.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> Cancel
+                    <i class="fas fa-times"></i> {{ __('Cancel') }}
                 </a>
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Update Category
+                    <i class="fas fa-save"></i> {{ __('Update Category') }}
                 </button>
             </div>
         </form>

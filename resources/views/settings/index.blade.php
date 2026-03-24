@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Settings')
+@section('title', __('Settings'))
 
 @push('styles')
 <style>
@@ -284,8 +284,8 @@ ashed #cbd5e1;
 @section('content')
 <div class="settings-container">
     <div class="settings-header">
-        <h1 class="settings-title">Settings</h1>
-        <p class="settings-subtitle">Customize your application preferences and configurations</p>
+        <h1 class="settings-title">{{ __('Settings') }}</h1>
+        <p class="settings-subtitle">{{ __('Customize your application preferences and configurations') }}</p>
     </div>
 
     @if(session('success'))
@@ -313,31 +313,31 @@ ashed #cbd5e1;
         <div class="settings-tabs">
             <button class="settings-tab" onclick="switchTab('general')">
                 <i class="fas fa-sliders-h"></i>
-                <span>General</span>
+                <span>{{ __('General') }}</span>
             </button>
             <button class="settings-tab" onclick="switchTab('company')">
                 <i class="fas fa-building"></i>
-                <span>Company Info</span>
+                <span>{{ __('Company Info') }}</span>
             </button>
             <button class="settings-tab" onclick="switchTab('theme')">
                 <i class="fas fa-palette"></i>
-                <span>Theme</span>
+                <span>{{ __('Theme') }}</span>
             </button>
             <button class="settings-tab" onclick="switchTab('social')">
                 <i class="fas fa-share-alt"></i>
-                <span>Social Media</span>
+                <span>{{ __('Social Media') }}</span>
             </button>
             <button class="settings-tab" onclick="switchTab('frontend')">
                 <i class="fas fa-desktop"></i>
-                <span>Frontend</span>
+                <span>{{ __('Frontend') }}</span>
             </button>
             <button class="settings-tab" onclick="switchTab('localization')">
                 <i class="fas fa-globe"></i>
-                <span>Localization</span>
+                <span>{{ __('Localization') }}</span>
             </button>
             <button class="settings-tab" onclick="switchTab('advanced')">
                 <i class="fas fa-cogs"></i>
-                <span>Advanced</span>
+                <span>{{ __('Advanced') }}</span>
             </button>
         </div>
 
@@ -350,50 +350,50 @@ ashed #cbd5e1;
                 <!-- General Tab -->
                 <div class="tab-pane active" id="general-tab">
                     <div class="settings-section">
-                        <h3 class="section-title">Application Information</h3>
+                        <h3 class="section-title">{{ __('Application Information') }}</h3>
                         
                         @php
                             $generalSettings = $settings->get('general', collect());
                         @endphp
                         
                         <div class="form-group">
-                            <label class="form-label">Application Name</label>
+                            <label class="form-label">{{ __('Application Name') }}</label>
                             <input type="text" name="settings[app_name]" class="form-input" 
                                    value="{{ $generalSettings->where('key', 'app_name')->first()?->value ?? '' }}">
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Application Description</label>
+                            <label class="form-label">{{ __('Application Description') }}</label>
                             <input type="text" name="settings[app_description]" class="form-input" 
                                    value="{{ $generalSettings->where('key', 'app_description')->first()?->value ?? '' }}">
                         </div>
                     </div>
 
                     <div class="settings-section">
-                        <h3 class="section-title">Logo</h3>
+                        <h3 class="section-title">{{ __('Logo') }}</h3>
                         
                         @if(setting('app_logo'))
                             <div style="text-align: center; margin-bottom: 20px;">
-                                <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="Logo" class="logo-preview">
-                                    <button type="submit" form="remove-logo-form" class="btn-danger" onclick="return confirm('Remove logo?')">
-                                        <i class="fas fa-trash"></i> Remove Logo
+                                <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="{{ __('Logo') }}" class="logo-preview">
+                                    <button type="submit" form="remove-logo-form" class="btn-danger" onclick="return confirm('{{ __('Remove logo?') }}')">
+                                        <i class="fas fa-trash"></i> {{ __('Remove Logo') }}
                                     </button>
                             </div>
                         @endif
 
                             <div class="logo-upload-area" onclick="document.getElementById('logo-input').click()">
                                 <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #3b82f6; margin-bottom: 16px;"></i>
-                                <p style="margin: 0; color: #64748b;">Click to upload logo</p>
-                                <p style="margin: 4px 0 0 0; font-size: 12px; color: #94a3b8;">PNG, JPG, SVG up to 2MB</p>
+                                <p style="margin: 0; color: #64748b;">{{ __('Click to upload logo') }}</p>
+                                <p style="margin: 4px 0 0 0; font-size: 12px; color: #94a3b8;">{{ __('PNG, JPG, SVG up to 2MB') }}</p>
                                 <input type="file" id="logo-input" form="logo-upload-form" name="logo" accept="image/*" style="display: none;" onchange="document.getElementById('logo-upload-form').submit()">
                             </div>
                     </div>
 
                     <div class="settings-section">
-                        <h3 class="section-title">Regional Settings</h3>
+                        <h3 class="section-title">{{ __('Regional Settings') }}</h3>
                         
                         <div class="form-group">
-                            <label class="form-label">Timezone</label>
+                            <label class="form-label">{{ __('Timezone') }}</label>
                             <select name="settings[timezone]" class="form-select">
                                 <option value="UTC" {{ setting('timezone') == 'UTC' ? 'selected' : '' }}>UTC</option>
                                 <option value="America/New_York" {{ setting('timezone') == 'America/New_York' ? 'selected' : '' }}>America/New York</option>
@@ -404,7 +404,7 @@ ashed #cbd5e1;
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Date Format</label>
+                            <label class="form-label">{{ __('Date Format') }}</label>
                             <select name="settings[date_format]" class="form-select">
                                 <option value="Y-m-d" {{ setting('date_format') == 'Y-m-d' ? 'selected' : '' }}>2026-01-11</option>
                                 <option value="m/d/Y" {{ setting('date_format') == 'm/d/Y' ? 'selected' : '' }}>01/11/2026</option>
@@ -415,10 +415,10 @@ ashed #cbd5e1;
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Time Format</label>
+                            <label class="form-label">{{ __('Time Format') }}</label>
                             <select name="settings[time_format]" class="form-select">
-                                <option value="H:i" {{ setting('time_format') == 'H:i' ? 'selected' : '' }}>24-hour (14:30)</option>
-                                <option value="h:i A" {{ setting('time_format') == 'h:i A' ? 'selected' : '' }}>12-hour (02:30 PM)</option>
+                                <option value="H:i" {{ setting('time_format') == 'H:i' ? 'selected' : '' }}>{{ __('24-hour (14:30)') }}</option>
+                                <option value="h:i A" {{ setting('time_format') == 'h:i A' ? 'selected' : '' }}>{{ __('12-hour (02:30 PM)') }}</option>
                             </select>
                         </div>
                     </div>
@@ -427,52 +427,52 @@ ashed #cbd5e1;
                 <!-- Company Info Tab -->
                 <div class="tab-pane" id="company-tab">
                     <div class="settings-section">
-                        <h3 class="section-title">Company Details</h3>
-                        <p style="color: #64748b; font-size: 13px; margin-bottom: 24px;">This information will appear on invoices and reports.</p>
+                        <h3 class="section-title">{{ __('Company Details') }}</h3>
+                        <p style="color: #64748b; font-size: 13px; margin-bottom: 24px;">{{ __('This information will appear on invoices and reports.') }}</p>
                         
                         @php
                             $companySettings = $settings->get('company', collect());
                         @endphp
 
                         <div class="form-group">
-                            <label class="form-label">Company Name</label>
+                            <label class="form-label">{{ __('Company Name') }}</label>
                             <input type="text" name="settings[company_name]" class="form-input" 
                                    value="{{ $companySettings->where('key', 'company_name')->first()->value ?? '' }}">
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Address</label>
+                            <label class="form-label">{{ __('Address') }}</label>
                             <textarea name="settings[company_address]" class="form-input" rows="3" style="resize: vertical;">{{ $companySettings->where('key', 'company_address')->first()->value ?? '' }}</textarea>
                         </div>
                     </div>
 
                     <div class="settings-section">
-                        <h3 class="section-title">Invoicing Information</h3>
+                        <h3 class="section-title">{{ __('Invoicing Information') }}</h3>
                         
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                             <div class="form-group">
-                                <label class="form-label">Tax ID / ICE (Morocco)</label>
+                                <label class="form-label">{{ __('Tax ID / ICE (Morocco)') }}</label>
                                 <input type="text" name="settings[company_tax_id]" class="form-input" 
                                        value="{{ $companySettings->where('key', 'company_tax_id')->first()->value ?? '' }}"
                                        placeholder="e.g., 001569874000089">
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Registry ID / RC (Morocco)</label>
+                                <label class="form-label">{{ __('Registry ID / RC (Morocco)') }}</label>
                                 <input type="text" name="settings[company_registry_id]" class="form-input" 
                                        value="{{ $companySettings->where('key', 'company_registry_id')->first()->value ?? '' }}"
                                        placeholder="e.g., 12345">
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Professional Tax / Patente</label>
+                                <label class="form-label">{{ __('Professional Tax / Patente') }}</label>
                                 <input type="text" name="settings[company_patente]" class="form-input" 
                                        value="{{ $companySettings->where('key', 'company_patente')->first()->value ?? '' }}"
                                        placeholder="e.g., 45891236">
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Fiscal ID / IF</label>
+                                <label class="form-label">{{ __('Fiscal ID / IF') }}</label>
                                 <input type="text" name="settings[company_fiscal_id]" class="form-input" 
                                        value="{{ $companySettings->where('key', 'company_fiscal_id')->first()->value ?? '' }}"
                                        placeholder="e.g., 33221144">
@@ -481,24 +481,24 @@ ashed #cbd5e1;
                     </div>
 
                     <div class="settings-section">
-                        <h3 class="section-title">Contact Information</h3>
+                        <h3 class="section-title">{{ __('Contact Information') }}</h3>
                         
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                             <div class="form-group">
-                                <label class="form-label">Email Address</label>
+                                <label class="form-label">{{ __('Email Address') }}</label>
                                 <input type="email" name="settings[company_email]" class="form-input" 
                                        value="{{ $companySettings->where('key', 'company_email')->first()->value ?? '' }}">
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Phone Number</label>
+                                <label class="form-label">{{ __('Phone Number') }}</label>
                                 <input type="text" name="settings[company_phone]" class="form-input" 
                                        value="{{ $companySettings->where('key', 'company_phone')->first()->value ?? '' }}">
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Website</label>
+                            <label class="form-label">{{ __('Website') }}</label>
                             <input type="url" name="settings[company_website]" class="form-input" 
                                    value="{{ $companySettings->where('key', 'company_website')->first()->value ?? '' }}">
                         </div>
@@ -508,11 +508,11 @@ ashed #cbd5e1;
                 <!-- Theme Tab -->
                 <div class="tab-pane" id="theme-tab">
                     <div class="settings-section">
-                        <h3 class="section-title">Colors</h3>
+                        <h3 class="section-title">{{ __('Colors') }}</h3>
                         
                         <div class="color-picker-group">
                             <div class="form-group">
-                                <label class="form-label">Primary Color</label>
+                                <label class="form-label">{{ __('Primary Color') }}</label>
                                 <div class="color-input-wrapper">
                                     <input type="color" name="settings[primary_color]" class="color-input" 
                                            value="{{ setting('primary_color', '#3b82f6') }}">
@@ -521,7 +521,7 @@ ashed #cbd5e1;
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Secondary Color</label>
+                                <label class="form-label">{{ __('Secondary Color') }}</label>
                                 <div class="color-input-wrapper">
                                     <input type="color" name="settings[secondary_color]" class="color-input" 
                                            value="{{ setting('secondary_color', '#10b981') }}">
@@ -530,7 +530,7 @@ ashed #cbd5e1;
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Accent Color</label>
+                                <label class="form-label">{{ __('Accent Color') }}</label>
                                 <div class="color-input-wrapper">
                                     <input type="color" name="settings[accent_color]" class="color-input" 
                                            value="{{ setting('accent_color', '#8b5cf6') }}">
@@ -539,7 +539,7 @@ ashed #cbd5e1;
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Success Color</label>
+                                <label class="form-label">{{ __('Success Color') }}</label>
                                 <div class="color-input-wrapper">
                                     <input type="color" name="settings[success_color]" class="color-input" 
                                            value="{{ setting('success_color', '#10b981') }}">
@@ -548,7 +548,7 @@ ashed #cbd5e1;
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Warning Color</label>
+                                <label class="form-label">{{ __('Warning Color') }}</label>
                                 <div class="color-input-wrapper">
                                     <input type="color" name="settings[warning_color]" class="color-input" 
                                            value="{{ setting('warning_color', '#f59e0b') }}">
@@ -557,7 +557,7 @@ ashed #cbd5e1;
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Danger Color</label>
+                                <label class="form-label">{{ __('Danger Color') }}</label>
                                 <div class="color-input-wrapper">
                                     <input type="color" name="settings[danger_color]" class="color-input" 
                                            value="{{ setting('danger_color', '#ef4444') }}">
@@ -568,10 +568,10 @@ ashed #cbd5e1;
                     </div>
 
                     <div class="settings-section">
-                        <h3 class="section-title">Typography</h3>
+                        <h3 class="section-title">{{ __('Typography') }}</h3>
                         
                         <div class="form-group">
-                            <label class="form-label">Font Family</label>
+                            <label class="form-label">{{ __('Font Family') }}</label>
                             <select name="settings[font_family]" class="form-select">
                                 <option value="Inter, system-ui, sans-serif" {{ setting('font_family') == 'Inter, system-ui, sans-serif' ? 'selected' : '' }}>Inter</option>
                                 <option value="Roboto, sans-serif" {{ setting('font_family') == 'Roboto, sans-serif' ? 'selected' : '' }}>Roboto</option>
@@ -582,13 +582,13 @@ ashed #cbd5e1;
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Base Font Size (px)</label>
+                            <label class="form-label">{{ __('Base Font Size (px)') }}</label>
                             <input type="number" name="settings[font_size_base]" class="form-input" min="12" max="20"
                                    value="{{ setting('font_size_base', 14) }}">
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Border Radius (px)</label>
+                            <label class="form-label">{{ __('Border Radius (px)') }}</label>
                             <input type="number" name="settings[border_radius]" class="form-input" min="0" max="24"
                                    value="{{ setting('border_radius', 12) }}">
                         </div>
@@ -598,10 +598,10 @@ ashed #cbd5e1;
                 <!-- Localization Tab -->
                 <div class="tab-pane" id="localization-tab">
                     <div class="settings-section">
-                        <h3 class="section-title">Language & Region</h3>
+                        <h3 class="section-title">{{ __('Language & Region') }}</h3>
                         
                         <div class="form-group">
-                            <label class="form-label">Language</label>
+                            <label class="form-label">{{ __('Language') }}</label>
                             <select name="settings[language]" class="form-select">
                                 <option value="en" {{ setting('language') == 'en' ? 'selected' : '' }}>English</option>
                                 <option value="ar" {{ setting('language') == 'ar' ? 'selected' : '' }}>Arabic (العربية)</option>
@@ -611,7 +611,7 @@ ashed #cbd5e1;
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Text Direction</label>
+                            <label class="form-label">{{ __('Text Direction') }}</label>
                             <select name="settings[text_direction]" class="form-select">
                                 <option value="ltr" {{ setting('text_direction') == 'ltr' ? 'selected' : '' }}>Left to Right (LTR)</option>
                                 <option value="rtl" {{ setting('text_direction') == 'rtl' ? 'selected' : '' }}>Right to Left (RTL)</option>
@@ -619,24 +619,24 @@ ashed #cbd5e1;
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Default Country</label>
+                            <label class="form-label">{{ __('Default Country') }}</label>
                             <select name="settings[default_country]" class="form-select">
-                                <option value="US" {{ setting('default_country') == 'US' ? 'selected' : '' }}>United States</option>
-                                <option value="GB" {{ setting('default_country') == 'GB' ? 'selected' : '' }}>United Kingdom</option>
-                                <option value="AE" {{ setting('default_country') == 'AE' ? 'selected' : '' }}>United Arab Emirates</option>
-                                <option value="SA" {{ setting('default_country') == 'SA' ? 'selected' : '' }}>Saudi Arabia</option>
-                                <option value="FR" {{ setting('default_country') == 'FR' ? 'selected' : '' }}>France</option>
+                                <option value="US" {{ setting('default_country') == 'US' ? 'selected' : '' }}>{{ __('United States') }}</option>
+                                <option value="GB" {{ setting('default_country') == 'GB' ? 'selected' : '' }}>{{ __('United Kingdom') }}</option>
+                                <option value="AE" {{ setting('default_country') == 'AE' ? 'selected' : '' }}>{{ __('United Arab Emirates') }}</option>
+                                <option value="SA" {{ setting('default_country') == 'SA' ? 'selected' : '' }}>{{ __('Saudi Arabia') }}</option>
+                                <option value="FR" {{ setting('default_country') == 'FR' ? 'selected' : '' }}>{{ __('France') }}</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="settings-section">
-                        <h3 class="section-title">Currency Settings</h3>
+                        <h3 class="section-title">{{ __('Currency Settings') }}</h3>
                         
                         <div class="form-group">
-                            <label class="form-label">Currency Code</label>
+                            <label class="form-label">{{ __('Currency Code') }}</label>
                             <div class="mb-2">
-                                <input type="text" id="currency-search" class="form-input" placeholder="Search currency (code or name)..." style="margin-bottom: 10px;">
+                                <input type="text" id="currency-search" class="form-input" placeholder="{{ __('Search currency (code or name)...') }}" style="margin-bottom: 10px;">
                             </div>
                             <select name="settings[currency_code]" id="currency-select" class="form-select">
                                 @foreach($currencies as $code => $data)
@@ -650,51 +650,51 @@ ashed #cbd5e1;
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Currency Symbol</label>
+                            <label class="form-label">{{ __('Currency Symbol') }}</label>
                             <input type="text" name="settings[currency_symbol]" class="form-input" maxlength="5"
                                    value="{{ setting('currency_symbol', '$') }}" placeholder="$">
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Symbol Position</label>
+                            <label class="form-label">{{ __('Symbol Position') }}</label>
                             <select name="settings[currency_position]" class="form-select">
-                                <option value="before" {{ setting('currency_position') == 'before' ? 'selected' : '' }}>Before amount ($100)</option>
-                                <option value="after" {{ setting('currency_position') == 'after' ? 'selected' : '' }}>After amount (100 $)</option>
+                                <option value="before" {{ setting('currency_position') == 'before' ? 'selected' : '' }}>{{ __('Before amount ($100)') }}</option>
+                                <option value="after" {{ setting('currency_position') == 'after' ? 'selected' : '' }}>{{ __('After amount (100 $)') }}</option>
                             </select>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Decimal Places</label>
+                            <label class="form-label">{{ __('Decimal Places') }}</label>
                             <input type="number" name="settings[currency_decimals]" class="form-input" min="0" max="4"
                                    value="{{ setting('currency_decimals', 2) }}">
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Decimal Separator</label>
+                            <label class="form-label">{{ __('Decimal Separator') }}</label>
                             <input type="text" name="settings[decimal_separator]" class="form-input" maxlength="1"
                                    value="{{ setting('decimal_separator', '.') }}" placeholder=".">
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Thousands Separator</label>
+                            <label class="form-label">{{ __('Thousands Separator') }}</label>
                             <input type="text" name="settings[thousands_separator]" class="form-input" maxlength="1"
                                    value="{{ setting('thousands_separator', ',') }}" placeholder=",">
                         </div>
                     </div>
 
                     <div class="settings-section">
-                        <h3 class="section-title">Tax Configuration</h3>
+                        <h3 class="section-title">{{ __('Tax Configuration') }}</h3>
                         
                         <div class="form-group">
-                            <label class="form-label">Tax Rate (%)</label>
+                            <label class="form-label">{{ __('Tax Rate (%)') }}</label>
                             <input type="number" name="settings[tax_rate]" class="form-input" min="0" max="100" step="0.01"
                                    value="{{ setting('tax_rate', 0) }}">
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Tax Label</label>
+                            <label class="form-label">{{ __('Tax Label') }}</label>
                             <input type="text" name="settings[tax_label]" class="form-input"
-                                   value="{{ setting('tax_label', 'Tax') }}" placeholder="Tax">
+                                   value="{{ setting('tax_label', 'Tax') }}" placeholder="{{ __('Tax') }}">
                         </div>
                     </div>
                 </div>
@@ -702,30 +702,30 @@ ashed #cbd5e1;
                 <!-- Advanced Tab -->
                 <div class="tab-pane" id="advanced-tab">
                     <div class="settings-section">
-                        <h3 class="section-title">Pagination</h3>
+                        <h3 class="section-title">{{ __('Pagination') }}</h3>
                         
                         <div class="form-group">
-                            <label class="form-label">Items Per Page</label>
+                            <label class="form-label">{{ __('Items Per Page') }}</label>
                             <input type="number" name="settings[items_per_page]" class="form-input" min="5" max="100"
                                    value="{{ setting('items_per_page', 10) }}">
                         </div>
                     </div>
 
                     <div class="settings-section">
-                        <h3 class="section-title">Inventory</h3>
+                        <h3 class="section-title">{{ __('Inventory') }}</h3>
                         
                         <div class="form-group">
-                            <label class="form-label">Low Stock Threshold</label>
+                            <label class="form-label">{{ __('Low Stock Threshold') }}</label>
                             <input type="number" name="settings[low_stock_threshold]" class="form-input" min="0"
                                    value="{{ setting('low_stock_threshold', 10) }}">
                         </div>
                     </div>
 
                     <div class="settings-section">
-                        <h3 class="section-title">Default Values</h3>
+                        <h3 class="section-title">{{ __('Default Values') }}</h3>
                         
                         <div class="form-group">
-                            <label class="form-label">Default Order Status</label>
+                            <label class="form-label">{{ __('Default Order Status') }}</label>
                             <select name="settings[default_order_status]" class="form-select">
                                 <option value="pending" {{ setting('default_order_status') == 'pending' ? 'selected' : '' }}>Pending</option>
                                 <option value="processing" {{ setting('default_order_status') == 'processing' ? 'selected' : '' }}>Processing</option>
@@ -734,7 +734,7 @@ ashed #cbd5e1;
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Default Payment Status</label>
+                            <label class="form-label">{{ __('Default Payment Status') }}</label>
                             <select name="settings[default_payment_status]" class="form-select">
                                 <option value="pending" {{ setting('default_payment_status') == 'pending' ? 'selected' : '' }}>Pending</option>
                                 <option value="paid" {{ setting('default_payment_status') == 'paid' ? 'selected' : '' }}>Paid</option>
@@ -744,21 +744,21 @@ ashed #cbd5e1;
                     </div>
 
                     <div class="settings-section">
-                        <h3 class="section-title">Cache Settings</h3>
+                        <h3 class="section-title">{{ __('Cache Settings') }}</h3>
                         
                         <div class="form-group">
-                            <label class="form-label">Cache Duration (seconds)</label>
+                            <label class="form-label">{{ __('Cache Duration (seconds)') }}</label>
                             <input type="number" name="settings[cache_duration]" class="form-input" min="0"
                                    value="{{ setting('cache_duration', 3600) }}">
-                            <small style="color: #64748b; font-size: 12px;">Set to 0 to disable caching</small>
+                            <small style="color: #64748b; font-size: 12px;">{{ __('Set to 0 to disable caching') }}</small>
                         </div>
                     </div>
 
                     <div class="settings-section">
-                        <h3 class="section-title">Danger Zone</h3>
+                        <h3 class="section-title">{{ __('Danger Zone') }}</h3>
                         
-                            <button type="submit" form="reset-settings-form" class="btn-danger" onclick="return confirm('Are you sure you want to reset all settings to default values?')">
-                                <i class="fas fa-undo"></i> Reset All Settings to Default
+                            <button type="submit" form="reset-settings-form" class="btn-danger" onclick="return confirm('{{ __('Are you sure you want to reset all settings to default values?') }}')">
+                                <i class="fas fa-undo"></i> {{ __('Reset All Settings to Default') }}
                             </button>
                     </div>
                 </div>
@@ -766,26 +766,26 @@ ashed #cbd5e1;
                 <!-- Social Media Tab -->
                 <div class="tab-pane" id="social-tab">
                     <div class="settings-section">
-                        <h3 class="section-title">Social Media Profiles</h3>
+                        <h3 class="section-title">{{ __('Social Media Profiles') }}</h3>
                         <div class="row g-4">
                             <div class="col-md-6">
-                                <label class="form-label">Facebook URL</label>
+                                <label class="form-label">{{ __('Facebook URL') }}</label>
                                 <input type="text" name="settings[social_facebook]" class="form-input" value="{{ setting('social_facebook', '#') }}">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Instagram URL</label>
+                                <label class="form-label">{{ __('Instagram URL') }}</label>
                                 <input type="text" name="settings[social_instagram]" class="form-input" value="{{ setting('social_instagram', '#') }}">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Twitter/X URL</label>
+                                <label class="form-label">{{ __('Twitter/X URL') }}</label>
                                 <input type="text" name="settings[social_twitter]" class="form-input" value="{{ setting('social_twitter', '#') }}">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">LinkedIn URL</label>
+                                <label class="form-label">{{ __('LinkedIn URL') }}</label>
                                 <input type="text" name="settings[social_linkedin]" class="form-input" value="{{ setting('social_linkedin', '#') }}">
                             </div>
                             <div class="col-md-12">
-                                <label class="form-label">WhatsApp (International Format)</label>
+                                <label class="form-label">{{ __('WhatsApp (International Format)') }}</label>
                                 <input type="text" name="settings[social_whatsapp]" class="form-input" value="{{ setting('social_whatsapp') }}" placeholder="e.g. 212600000000">
                             </div>
                         </div>
@@ -795,28 +795,28 @@ ashed #cbd5e1;
                 <!-- Frontend Tab -->
                 <div class="tab-pane" id="frontend-tab">
                     <div class="settings-section">
-                        <h3 class="section-title">Frontend Experience</h3>
+                        <h3 class="section-title">{{ __('Frontend Experience') }}</h3>
                         <div class="row g-4">
                             <div class="col-md-6">
-                                <label class="form-label">Sticky Header</label>
+                                <label class="form-label">{{ __('Sticky Header') }}</label>
                                 <select name="settings[frontend_sticky_header]" class="form-select">
-                                    <option value="1" {{ setting('frontend_sticky_header') == '1' ? 'selected' : '' }}>Enabled</option>
-                                    <option value="0" {{ setting('frontend_sticky_header') == '0' ? 'selected' : '' }}>Disabled</option>
+                                    <option value="1" {{ setting('frontend_sticky_header') == '1' ? 'selected' : '' }}>{{ __('Enabled') }}</option>
+                                    <option value="0" {{ setting('frontend_sticky_header') == '0' ? 'selected' : '' }}>{{ __('Disabled') }}</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Scroll Animations (AOS)</label>
+                                <label class="form-label">{{ __('Scroll Animations (AOS)') }}</label>
                                 <select name="settings[frontend_enable_animations]" class="form-select">
-                                    <option value="1" {{ setting('frontend_enable_animations') == '1' ? 'selected' : '' }}>Enabled</option>
-                                    <option value="0" {{ setting('frontend_enable_animations') == '0' ? 'selected' : '' }}>Disabled</option>
+                                    <option value="1" {{ setting('frontend_enable_animations') == '1' ? 'selected' : '' }}>{{ __('Enabled') }}</option>
+                                    <option value="0" {{ setting('frontend_enable_animations') == '0' ? 'selected' : '' }}>{{ __('Disabled') }}</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Primary Google Font</label>
+                                <label class="form-label">{{ __('Primary Google Font') }}</label>
                                 <input type="text" name="settings[frontend_primary_font]" class="form-input" value="{{ setting('frontend_primary_font', 'Inter') }}">
                             </div>
                             <div class="col-md-12">
-                                <label class="form-label">Footer Biography / Tagline</label>
+                                <label class="form-label">{{ __('Footer Biography / Tagline') }}</label>
                                 <textarea name="settings[frontend_footer_text]" class="form-input" rows="3">{{ setting('frontend_footer_text') }}</textarea>
                             </div>
                         </div>
@@ -826,10 +826,10 @@ ashed #cbd5e1;
                 <!-- Form Actions -->
                 <div class="form-actions">
                     <button type="button" class="btn-secondary" onclick="window.location.reload()">
-                        <i class="fas fa-times"></i> Cancel
+                        <i class="fas fa-times"></i> {{ __('Cancel') }}
                     </button>
                     <button type="submit" class="btn-primary">
-                        <i class="fas fa-save"></i> Save Changes
+                        <i class="fas fa-save"></i> {{ __('Save Changes') }}
                     </button>
                 </div>
             </form>

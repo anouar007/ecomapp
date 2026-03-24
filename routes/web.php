@@ -209,5 +209,5 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-// Public routes - Reviews (accessible by guests)
-Route::post('/reviews', [\App\Http\Controllers\ProductReviewController::class, 'store'])->name('reviews.store');
+// Public Page routes
+Route::get('/p/{slug}', [\App\Http\Controllers\PageController::class, 'showPublic'])->name('pages.show.public');

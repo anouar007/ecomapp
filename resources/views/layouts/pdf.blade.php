@@ -1,13 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html dir="rtl" lang="ar">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>@yield('title')</title>
     <style>
+        @font-face {
+            font-family: 'Amiri';
+            src: url('{{ public_path('fonts/amiri-regular.ttf') }}') format('truetype');
+        }
         body {
-            font-family: sans-serif;
+            font-family: 'Amiri', sans-serif;
             font-size: 12px;
             color: #333;
+            direction: rtl;
+            text-align: right;
         }
         .header {
             text-align: center;
@@ -32,15 +38,15 @@
         .table th, .table td {
             padding: 0.5rem;
             border: 1px solid #e3e6f0;
+            text-align: right;
         }
         .table th {
             background-color: #f8f9fc;
             font-weight: bold;
             color: #4e73df;
-            text-align: left;
         }
         .text-end {
-            text-align: right;
+            text-align: left;
         }
         .text-center {
             text-align: center;
@@ -84,14 +90,14 @@
     @yield('content')
 
     <div class="footer">
-        Generated on {{ date('Y-m-d H:i') }} | Page <span class="page-number"></span>
+        {{ __('Generated on') }} {{ date('Y-m-d H:i') }} | {{ __('Page') }} <span class="page-number"></span>
     </div>
 
     <script type="text/php">
         if (isset($pdf)) {
             $x = 520;
             $y = 820;
-            $text = "Page {PAGE_NUM} of {PAGE_COUNT}";
+            $text = "{{ __('Page') }} {PAGE_NUM} {{ __('of') }} {PAGE_COUNT}";
             $font = null;
             $size = 10;
             $color = array(0.5, 0.5, 0.5);

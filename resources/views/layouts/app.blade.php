@@ -1,16 +1,15 @@
-<!DOCTYPE html>
-<html lang="{{ setting('language', 'en') }}" dir="{{ setting('text_direction', 'ltr') }}">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Dashboard') - {{ setting('app_name', 'E-commerce') }}</title>
+    <title>@yield('title', __('Dashboard')) - {{ setting('app_name', 'E-commerce') }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.7.32/sweetalert2.min.css">
@@ -24,7 +23,7 @@
             --success-color: {{ setting('success_color', '#10b981') }};
             --warning-color: {{ setting('warning_color', '#f59e0b') }};
             --danger-color: {{ setting('danger_color', '#ef4444') }};
-            --font-family: {{ setting('font_family', 'Inter, system-ui, sans-serif') }};
+            --font-family: {{ setting('font_family', "'Cairo', 'Inter', system-ui, sans-serif") }};
             --font-size-base: {{ setting('font_size_base', '14') }}px;
             --border-radius: {{ setting('border_radius', '12') }}px;
         }
@@ -39,25 +38,25 @@
     @stack('styles')
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <button class="navbar-toggler">
+    <!-- Mobile Header -->
+    <header class="mobile-header d-lg-none">
+        <button class="sidebar-toggle" id="mobile-sidebar-toggle">
             <i class="fas fa-bars"></i>
         </button>
-        <a href="{{ route('dashboard') }}" class="navbar-brand">
-            @if(setting('app_logo'))
-                <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="{{ setting('app_name') }}" style="height: 32px; margin-right: 8px;">
-            @else
-                <i class="fas fa-shopping-cart" style="margin-right: 8px;"></i>
-            @endif
+        <div class="mobile-brand">
             {{ setting('app_name', 'E-commerce') }}
-        </a>
-        
-        <div class="navbar-user">
-            <!-- Help/Tour Button -->
+        </div>
+        <div class="mobile-user" id="user-menu-trigger-mobile">
+            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+        </div>
+    </header>
+
+    <!-- Navbar (Desktop) -->
+    <nav class="navbar d-none d-lg-flex">
+        <div class="navbar-container">
             <button onclick="startTour()" class="btn btn-sm btn-outline-primary" style="margin-right: 12px; border-radius: 20px; display: flex; align-items: center; gap: 6px;">
                 <i class="fas fa-question-circle"></i>
-                <span class="d-none d-md-inline">Help & Guide</span>
+                <span class="d-none d-md-inline">{{ __('Help & Guide') }}</span>
             </button>
 
             <div class="user-avatar" id="user-menu-trigger">
@@ -70,17 +69,17 @@
                 </div>
                 <a href="{{ route('profile.show') }}" class="user-dropdown-item">
                     <i class="fas fa-user"></i>
-                    My Profile
+                    {{ __('My Profile') }}
                 </a>
                 <a href="{{ route('profile.edit') }}" class="user-dropdown-item">
                     <i class="fas fa-edit"></i>
-                    Edit Profile
+                    {{ __('Edit Profile') }}
                 </a>
                 <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
                     @csrf
                     <button type="submit" class="user-dropdown-item" style="width: 100%;">
                         <i class="fas fa-sign-out-alt"></i>
-                        Logout
+                        {{ __('Logout') }}
                     </button>
                 </form>
             </div>
@@ -93,22 +92,14 @@
             <li class="sidebar-menu-item">
                 <a href="{{ route('dashboard') }}" class="sidebar-menu-link active">
                     <i class="fas fa-home"></i>
-                    <span>Dashboard</span>
+                    <span>{{ __('Dashboard') }}</span>
                 </a>
             </li>
-            @can('manage_orders')
-            <li class="sidebar-menu-item">
-                <a href="{{ route('pos.index') }}" class="sidebar-menu-link" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
-                    <i class="fas fa-cash-register"></i>
-                    <span>POS Terminal</span>
-                </a>
-            </li>
-            @endcan
             @can('manage_products')
             <li class="sidebar-menu-item">
                 <a href="{{ route('products.index') }}" class="sidebar-menu-link">
                     <i class="fas fa-box"></i>
-                    <span>Products</span>
+                    <span>{{ __('Products') }}</span>
                 </a>
             </li>
             @endcan
@@ -116,185 +107,132 @@
             <li class="sidebar-menu-item">
                 <a href="{{ route('categories.index') }}" class="sidebar-menu-link">
                     <i class="fas fa-folder-tree"></i>
-                    <span>Categories</span>
+                    <span>{{ __('Categories') }}</span>
                 </a>
             </li>
             @endcan
+            
+{{-- 
+            @can('manage_orders')
+            <li class="sidebar-menu-item">
+                <a href="{{ route('pos.index') }}" class="sidebar-menu-link" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
+                    <i class="fas fa-cash-register"></i>
+                    <span>{{ __('POS Terminal') }}</span>
+                </a>
+            </li>
+            @endcan
+--}}
             @can('manage_orders')
             <li class="sidebar-menu-item">
                 <a href="{{ route('orders.index') }}" class="sidebar-menu-link">
                     <i class="fas fa-shopping-cart"></i>
-                    <span>Orders</span>
+                    <span>{{ __('Orders') }}</span>
                 </a>
             </li>
             @endcan
+{{-- 
             @can('manage_invoices')
             <li class="sidebar-menu-item">
                 <a href="{{ route('invoices.index') }}" class="sidebar-menu-link">
                     <i class="fas fa-file-invoice"></i>
-                    <span>Invoices</span>
+                    <span>{{ __('Invoices') }}</span>
                 </a>
             </li>
             @endcan
+--}}
+{{-- 
             @can('manage_customers')
             <li class="sidebar-menu-item">
                 <a href="{{ route('customers.index') }}" class="sidebar-menu-link">
                     <i class="fas fa-users"></i>
-                    <span>Customers</span>
+                    <span>{{ __('Customers') }}</span>
                 </a>
             </li>
             <li class="sidebar-menu-item">
                 <a href="{{ route('debtors.index') }}" class="sidebar-menu-link">
                     <i class="fas fa-hand-holding-usd"></i>
-                    <span>Debtors</span>
+                    <span>{{ __('Debtors') }}</span>
                 </a>
             </li>
             @endcan
+--}}
             @can('manage_inventory')
             <li class="sidebar-menu-item">
                 <a href="{{ route('inventory.index') }}" class="sidebar-menu-link">
                     <i class="fas fa-boxes"></i>
-                    <span>Inventory</span>
+                    <span>{{ __('Inventory') }}</span>
                 </a>
             </li>
             @endcan
+{{-- 
             @can('manage_coupons')
             <li class="sidebar-menu-item">
                 <a href="{{ route('coupons.index') }}" class="sidebar-menu-link">
                     <i class="fas fa-tags"></i>
-                    <span>Coupons</span>
+                    <span>{{ __('Coupons') }}</span>
                 </a>
             </li>
             @endcan
+--}}
             
+{{-- 
             @can('manage_reviews')
             <li class="sidebar-menu-item">
                 <a href="{{ route('reviews.index') }}" class="sidebar-menu-link">
                     <i class="fas fa-star"></i>
-                    <span>Reviews</span>
+                    <span>{{ __('Reviews') }}</span>
                 </a>
             </li>
             @endcan
+--}}
             
+{{-- 
             <!-- Access Control Section (Grouped) -->
             @if(auth()->user()->hasRole('Admin') || auth()->user()->can('manage_users') || auth()->user()->can('manage_roles'))
-            <li class="sidebar-menu-item sidebar-submenu {{ request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('permissions.*') || request()->routeIs('activity-logs.*') ? 'active' : '' }}">
-                <a href="#" class="sidebar-menu-link" onclick="toggleSubmenu(event)">
-                    <i class="fas fa-user-shield"></i>
-                    <span>Access Control</span>
-                    <i class="fas fa-chevron-down submenu-arrow"></i>
-                </a>
-                <ul class="submenu-items">
-                    @can('manage_users')
-                    <li class="submenu-item">
-                        <a href="{{ route('users.index') }}" class="submenu-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                            <i class="fas fa-users"></i>
-                            <span>Users</span>
-                        </a>
-                    </li>
-                    @endcan
-                    @can('manage_roles')
-                    <li class="submenu-item">
-                        <a href="{{ route('roles.index') }}" class="submenu-link {{ request()->routeIs('roles.*') ? 'active' : '' }}">
-                            <i class="fas fa-user-tag"></i>
-                            <span>Roles</span>
-                        </a>
-                    </li>
-                    <li class="submenu-item">
-                        <a href="{{ route('permissions.index') }}" class="submenu-link {{ request()->routeIs('permissions.*') ? 'active' : '' }}">
-                            <i class="fas fa-key"></i>
-                            <span>Permissions</span>
-                        </a>
-                    </li>
-                    @endcan
-                    @can('view_activity_logs')
-                    <li class="submenu-item">
-                        <a href="{{ route('activity-logs.index') }}" class="submenu-link {{ request()->routeIs('activity-logs.*') ? 'active' : '' }}">
-                            <i class="fas fa-history"></i>
-                            <span>Activity Logs</span>
-                        </a>
-                    </li>
-                    @endcan
-                </ul>
+            ...
             </li>
             @endif
+--}}
             
+{{-- 
             @can('view_reports')
             <li class="sidebar-menu-item">
                 <a href="{{ route('reports.index') }}" class="sidebar-menu-link">
                     <i class="fas fa-chart-line"></i>
-                    <span>Reports</span>
+                    <span>{{ __('Reports') }}</span>
                 </a>
             </li>
             @endcan
+--}}
 
+{{-- 
             @can('manage_accounting')
-            <li class="sidebar-menu-item sidebar-submenu {{ request()->is('accounting*') ? 'active' : '' }}">
-                <a href="#" class="sidebar-menu-link" onclick="toggleSubmenu(event)">
-                    <i class="fas fa-calculator"></i>
-                    <span>Accounting</span>
-                    <i class="fas fa-chevron-down submenu-arrow"></i>
-                </a>
-                <ul class="submenu-items">
-                    <li class="submenu-item">
-                        <a href="{{ route('accounting.index') }}" class="submenu-link {{ request()->routeIs('accounting.index') ? 'active' : '' }}">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
-                    <li class="submenu-item">
-                        <a href="{{ route('accounting.accounts') }}" class="submenu-link {{ request()->routeIs('accounting.accounts') ? 'active' : '' }}">
-                            <i class="fas fa-list-ol"></i>
-                            <span>Chart of Accounts</span>
-                        </a>
-                    </li>
-                    <li class="submenu-item">
-                        <a href="{{ route('accounting.entries') }}" class="submenu-link {{ request()->routeIs('accounting.entries*', 'accounting.entries') ? 'active' : '' }}">
-                            <i class="fas fa-book"></i>
-                            <span>Journal Entries</span>
-                        </a>
-                    </li>
-                    <li class="submenu-item">
-                        <a href="{{ route('accounting.reports') }}" class="submenu-link {{ request()->routeIs('accounting.reports*') ? 'active' : '' }}">
-                            <i class="fas fa-file-invoice-dollar"></i>
-                            <span>Reports</span>
-                        </a>
-                    </li>
-                </ul>
+            ...
             </li>
             @endcan
+--}}
 
+{{-- 
             @can('manage_content')
-            <li class="sidebar-menu-item">
-                <a href="{{ route('pages.index') }}" class="sidebar-menu-link">
-                    <i class="fas fa-file-code"></i>
-                    <span>Page Manager</span>
-                </a>
-            </li>
-            <li class="sidebar-menu-item">
-                <a href="{{ route('menus.index') }}" class="sidebar-menu-link">
-                    <i class="fas fa-compass"></i>
-                    <span>Navigation Menus</span>
-                </a>
-            </li>
-            <li class="sidebar-menu-item">
-                <a href="{{ route('custom-codes.index') }}" class="sidebar-menu-link">
-                    <i class="fas fa-code"></i>
-                    <span>Custom Codes</span>
-                </a>
+            ...
             </li>
             @endcan
+--}}
 
+{{-- 
             @can('manage_settings')
             <li class="sidebar-menu-item">
                 <a href="{{ route('settings.index') }}" class="sidebar-menu-link">
                     <i class="fas fa-cog"></i>
-                    <span>Settings</span>
+                    <span>{{ __('Settings') }}</span>
                 </a>
             </li>
             @endcan
+--}}
         </ul>
     </aside>
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
     <!-- Main Content -->
     <main class="main-content">
@@ -337,6 +275,34 @@
                 title: '{{ session('error') }}'
             });
         @endif
+
+        // Mobile Sidebar Toggle
+        const mobileToggle = document.getElementById('mobile-sidebar-toggle');
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const userMenuMobile = document.getElementById('user-menu-trigger-mobile');
+        const userDropdown = document.querySelector('.user-dropdown');
+
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', () => {
+                sidebar.classList.add('show');
+                overlay.classList.add('show');
+            });
+        }
+
+        if (overlay) {
+            overlay.addEventListener('click', () => {
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+            });
+        }
+
+        if (userMenuMobile) {
+            userMenuMobile.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userDropdown.classList.toggle('active');
+            });
+        }
     </script>
     @stack('scripts')
 
@@ -350,8 +316,8 @@
             <div class="d-flex align-items-center gap-2">
                 <div class="ai-avatar"><i class="fas fa-robot"></i></div>
                 <div>
-                    <h6 class="mb-0 fw-bold">Assistant IA</h6>
-                    <small class="opacity-75" style="font-size: 0.75rem;">Toujours disponible</small>
+                    <h6 class="mb-0 fw-bold">{{ __('Assistant IA') }}</h6>
+                    <small class="opacity-75" style="font-size: 0.75rem;">{{ __('Toujours disponible') }}</small>
                 </div>
             </div>
             <button type="button" class="btn-close btn-close-white" id="ai-chat-close"></button>
@@ -359,19 +325,17 @@
 
         <div class="ai-chat-body" id="ai-chat-body">
             <div class="ai-msg ai-msg-bot">
-                Bonjour {{ auth()->user()->name }} ! 🤖 Je suis votre assistant IA. Je peux vous aider à utiliser le tableau de bord, gérer les commandes, les produits, les clients, et répondre à toute question sur l'application. Comment puis-je vous aider ?
+                {{ __('Bonjour') }} {{ auth()->user()->name }} ! 🤖 {{ __("Je suis votre assistant IA. Je peux vous aider à utiliser le tableau de bord, gérer les commandes, les produits, les clients, et répondre à toute question sur l'application. Comment puis-je vous aider ?") }}
             </div>
             <div class="ai-chat-suggestions mt-3" id="ai-chat-suggestions">
-                <button class="ai-chip" onclick="sendSuggestedMessage('Comment ajouter un produit ?')">Comment ajouter un produit ?</button>
-                <button class="ai-chip" onclick="sendSuggestedMessage('Comment créer un coupon de réduction ?')">Créer un coupon</button>
-                <button class="ai-chip" onclick="sendSuggestedMessage('Comment gérer les commandes ?')">Gérer les commandes</button>
+                <button class="ai-chip" onclick="sendSuggestedMessage('{{ __('Comment ajouter un produit ?') }}')">{{ __('Comment ajouter un produit ?') }}</button>
+                <button class="ai-chip" onclick="sendSuggestedMessage('{{ __('Créer un coupon') }}')">{{ __('Créer un coupon') }}</button>
+                <button class="ai-chip" onclick="sendSuggestedMessage('{{ __('Gérer les commandes') }}')">{{ __('Gérer les commandes') }}</button>
             </div>
         </div>
 
         <div class="ai-chat-footer">
-            <form id="ai-chat-form" class="m-0 position-relative">
-                <input type="text" id="ai-chat-input" class="form-control" placeholder="Posez votre question..." autocomplete="off" required>
-                <button type="submit" class="ai-chat-send" id="ai-chat-send-btn">
+                <input type="text" id="ai-chat-input" class="form-control" placeholder="{{ __('Posez votre question...') }}" autocomplete="off" required>
                     <i class="fas fa-paper-plane"></i>
                 </button>
             </form>
@@ -379,7 +343,7 @@
     </div>
 
     <!-- Floating Toggle Button -->
-    <button id="ai-chat-toggle" class="btn shadow-lg" style="background: var(--primary-color, #3b82f6);" title="Assistant IA">
+    <button id="ai-chat-toggle" class="btn shadow-lg" style="background: var(--primary-color, #3b82f6);" title="{{ __('Assistant IA') }}">
         <i class="fas fa-comment-dots"></i>
     </button>
 </div>
@@ -388,7 +352,7 @@
 #ai-chat-widget {
     position: fixed;
     bottom: 24px;
-    right: 24px;
+    left: 24px;
     z-index: 9999;
     font-family: var(--font-family, system-ui, -apple-system, sans-serif);
 }
@@ -404,7 +368,7 @@
 #ai-chat-toggle:hover { transform: scale(1.1); color: white; box-shadow: 0 8px 24px rgba(59,130,246,.45) !important; }
 #ai-chat-panel {
     position: absolute;
-    bottom: 74px; right: 0;
+    bottom: 74px; left: 0;
     width: 360px; height: 500px;
     max-height: calc(100vh - 110px);
     background: white;
@@ -413,7 +377,7 @@
     overflow: hidden;
     opacity: 0; visibility: hidden;
     transform: translateY(20px) scale(0.95);
-    transform-origin: bottom right;
+    transform-origin: bottom left;
     transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
 }
 #ai-chat-panel.active { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
@@ -427,14 +391,14 @@
 .ai-msg { max-width: 85%; padding: 12px 16px; border-radius: 16px; font-size: 0.88rem; line-height: 1.55; animation: aiMsgIn .3s ease; word-wrap: break-word; }
 .ai-msg-bot { background: white; color: #1e293b; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,.06); }
 .ai-msg-bot strong { font-weight: 700; color: var(--primary-color, #3b82f6); }
-.ai-msg-user { background: var(--primary-color, #3b82f6); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+.ai-msg-user { background: var(--primary-color, #3b82f6); color: white; align-self: flex-end; border-bottom-left-radius: 4px; }
 .ai-chat-suggestions { display: flex; flex-wrap: wrap; gap: 7px; }
 .ai-chip { background: transparent; border: 1.5px solid var(--primary-color, #3b82f6); color: var(--primary-color, #3b82f6); padding: 5px 13px; border-radius: 20px; font-size: 0.78rem; cursor: pointer; transition: all .2s; }
 .ai-chip:hover { background: var(--primary-color, #3b82f6); color: white; }
 .ai-chat-footer { padding: 14px; background: white; border-top: 1px solid #e8eaf0; }
 #ai-chat-input { border-radius: 24px; padding: 11px 46px 11px 18px; border: 1.5px solid #dde1ea; background: #f4f6f9; font-size: 0.88rem; box-shadow: none !important; }
 #ai-chat-input:focus { border-color: var(--primary-color, #3b82f6); background: white; }
-.ai-chat-send { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; border-radius: 50%; background: var(--primary-color, #3b82f6); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity .2s; }
+.ai-chat-send { position: absolute; left: 6px; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; border-radius: 50%; background: var(--primary-color, #3b82f6); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity .2s; }
 .ai-chat-send:hover { opacity: .85; }
 .ai-chat-send:disabled { background: #c5cad3; cursor: not-allowed; }
 .typing-indicator { display: flex; align-items: center; gap: 4px; padding: 12px 16px; background: white; border-radius: 16px; border-bottom-left-radius: 4px; align-self: flex-start; box-shadow: 0 2px 6px rgba(0,0,0,.06); }
@@ -507,10 +471,10 @@
             });
             const data = await res.json();
             hideTyping();
-            appendMsg(data.reply || "Erreur de connexion. Veuillez réessayer.", 'bot');
+            appendMsg(data.reply || "{{ __('Erreur de connexion. Veuillez réessayer.') }}", 'bot');
         } catch (err) {
             hideTyping();
-            appendMsg("Impossible de joindre le serveur. Réessayez plus tard.", 'bot');
+            appendMsg("{{ __('Impossible de joindre le serveur. Réessayez plus tard.') }}", 'bot');
         } finally {
             input.disabled = false;
             sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';

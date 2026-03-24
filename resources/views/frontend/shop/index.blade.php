@@ -11,26 +11,30 @@
 
 @section('content')
 
-@section('content')
-
 {{-- =============================================
      TOP CATEGORY FILTER (Circular Style)
      ============================================= --}}
-<section class="bg-white border-bottom sticky-top shadow-sm" style="top: 70px; z-index: 1020;">
-    <div class="container">
-        <div class="cat-circle-list py-3" style="justify-content: center; gap: 30px;">
-            <a href="{{ route('shop.index') }}" class="cat-circle-item {{ !request('category') ? 'active' : '' }}" style="min-width: 80px;">
-                <div class="cat-circle-img" style="width: 65px; height: 65px; {{ !request('category') ? 'border-color: var(--primary); box-shadow: 0 0 10px var(--accent);' : '' }}">
-                    <img src="{{ asset('images/all-products.jpg') }}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3050/3050239.png'" alt="الكل">
+<section class="bg-brand-overlay-light bg-silk border-bottom shadow-sm">
+    <div class="container px-xl-5">
+        <div class="category-circle-grid py-3" style="gap: 20px;">
+            <a href="{{ route('shop.index') }}" 
+               class="category-ajax-link category-circle-item text-decoration-none {{ !request('category') ? 'active' : '' }}" 
+               data-category=""
+               style="width: 70px;">
+                <div class="category-circle-img-wrap" style="width: 60px; height: 60px; {{ !request('category') ? 'border-color: var(--brand-gold);' : '' }}">
+                    <img src="https://img.icons8.com/ios/100/c5a059/infinity.png" alt="الكل" style="padding: 10px;">
                 </div>
-                <span class="cat-circle-name small">الكل</span>
+                <span class="category-circle-name small font-body">الكل</span>
             </a>
             @foreach($categories as $cat)
-            <a href="{{ route('shop.index', ['category' => $cat->slug]) }}" class="cat-circle-item {{ request('category') == $cat->slug ? 'active' : '' }}" style="min-width: 80px;">
-                <div class="cat-circle-img" style="width: 65px; height: 65px; {{ request('category') == $cat->slug ? 'border-color: var(--primary); box-shadow: 0 0 10px var(--accent);' : '' }}">
+            <a href="{{ route('shop.index', ['category' => $cat->slug]) }}" 
+               class="category-ajax-link category-circle-item text-decoration-none {{ request('category') == $cat->slug ? 'active' : '' }}" 
+               data-category="{{ $cat->slug }}"
+               style="width: 70px;">
+                <div class="category-circle-img-wrap" style="width: 60px; height: 60px; {{ request('category') == $cat->slug ? 'border-color: var(--brand-gold);' : '' }}">
                     <img src="{{ $cat->image ? (Str::startsWith($cat->image, 'http') ? $cat->image : Storage::url($cat->image)) : asset('images/placeholder-cat.jpg') }}" alt="{{ $cat->translated_name }}">
                 </div>
-                <span class="cat-circle-name small">{{ $cat->translated_name }}</span>
+                <span class="category-circle-name small font-body">{{ $cat->translated_name }}</span>
             </a>
             @endforeach
         </div>
@@ -38,68 +42,33 @@
 </section>
 
 {{-- =============================================
-     PRODUCT GRID
+     PRODUCT GRID AREA
      ============================================= --}}
 <section class="section-py bg-surface min-vh-100">
-    <div class="container">
+    <div class="container px-xl-5" id="shopMainContainer">
         
-        <div class="d-flex justify-content-between align-items-center mb-5" data-aos="fade-up">
-            <h2 class="h4 fw-bold m-0 border-start-primary ps-3">
-                {{ $activeCategory ? $activeCategory->translated_name : 'جميع المنتجات' }}
-                <span class="text-muted small ms-2">({{ $products->total() }} منتج)</span>
-            </h2>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4" data-aos="fade-up">
+            <div>
+                <h2 class="brand-heading h4 m-0" id="categoryTitle">
+                    {{ $activeCategory ? $activeCategory->translated_name : 'جميع المنتجات' }}
+                    <span class="text-muted small ms-2 fw-normal" id="productCount" style="font-family: var(--font-body);">({{ $products->total() }} قطعة)</span>
+                </h2>
+                <div class="bg-gold mt-2 rounded" style="width: 40px; height: 3px;"></div>
+            </div>
             
-            {{-- Simple Sort --}}
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2 w-100 w-md-auto">
                 <span class="small text-muted d-none d-md-inline">ترتيب:</span>
-                <select class="form-select form-select-sm rounded-pill border-0 shadow-sm" id="sortSelect" style="width: 140px;" onchange="location = '{{ route('shop.index', array_merge(request()->query(), ['sort' => ''])) }}'.replace('sort=', 'sort=' + this.value)">
-                    <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>الأحدث</option>
-                    <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>الأقل سعراً</option>
-                    <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>الأعلى سعراً</option>
+                <select class="form-select form-select-sm brand-card border-0 shadow-sm py-2 px-3 flex-grow-1" id="sortSelect" style="min-width: 160px;">
+                    <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>✨ الأحدث تقديماً</option>
+                    <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>💰 السعر (من الأقل)</option>
+                    <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>💎 السعر (من الأعلى)</option>
                 </select>
             </div>
         </div>
 
-        @if($products->isEmpty())
-            <div class="text-center py-5" data-aos="fade-up">
-                <div class="mb-4">
-                    <i class="fas fa-search fa-4x text-muted opacity-25"></i>
-                </div>
-                <h3 class="fw-bold">لم نجد أي منتجات</h3>
-                <p class="text-muted">جربي اختيار فئة أخرى أو العودة للمتجر الرئيسي.</p>
-                <a href="{{ route('shop.index') }}" class="btn btn-primary rounded-pill px-5 mt-3">عرض كل المنتجات</a>
-            </div>
-        @else
-            <div class="row g-4" id="productGridContainer">
-                @foreach($products as $product)
-                <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up">
-                    <div class="product-card-v2 h-100">
-                        <div class="product-v2-image">
-                            <img src="{{ $product->main_image ? (Str::startsWith($product->main_image, 'http') ? $product->main_image : Storage::url($product->main_image)) : asset('images/placeholder-product.jpg') }}" alt="{{ $product->translated_name }}">
-                            <div class="product-v2-overlay">
-                                <a href="{{ route('shop.show', $product->id) }}" class="btn-overlay">
-                                    <i class="fas fa-eye me-2"></i> تفاصيل
-                                </a>
-                            </div>
-                        </div>
-                        <div class="product-v2-body">
-                            <h5 class="product-v2-name mb-2">{{ Str::limit($product->translated_name, 30) }}</h5>
-                            <div class="product-v2-price mb-3">
-                                <span class="text-primary fw-bold">{{ $product->formatted_price }}</span>
-                            </div>
-                            <button onclick="addToCart({{ $product->id }})" class="btn btn-primary w-100 rounded-pill btn-sm py-2">
-                                أضيفي للسلة <i class="fas fa-cart-plus ms-2"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-
-            <div class="mt-5 d-flex justify-content-center">
-                {{ $products->links() }}
-            </div>
-        @endif
+        <div id="productGridWrapper" class="transition-300">
+            @include('frontend.shop.partials.product-grid', ['products' => $products])
+        </div>
 
     </div>
 </section>
@@ -108,71 +77,95 @@
 
 @push('scripts')
 <script>
-let currentCategory = "{{ request('category') }}";
+let currentCategory = "{{ request('category', '') }}";
+let currentSort = "{{ request('sort', 'newest') }}";
+let currentSearch = "{{ request('q', '') }}";
 
-function getParams() {
-    const p = new URLSearchParams();
-    if (currentCategory) p.append('category', currentCategory);
-    
-    const sortEl = document.getElementById('sortSelect');
-    const sort = sortEl ? sortEl.value : '';
-    
-    const qEl = document.querySelector('input[name="q"]');
-    const q = qEl ? qEl.value : '';
-    
-    const minPriceEl = document.querySelector('input[name="min_price"]');
-    const minPrice = minPriceEl ? minPriceEl.value : '';
-    
-    const maxPriceEl = document.querySelector('input[name="max_price"]');
-    const maxPrice = maxPriceEl ? maxPriceEl.value : '';
-
-    if (sort)     p.append('sort',      sort);
-    if (q)        p.append('q',         q);
-    if (minPrice) p.append('min_price', minPrice);
-    if (maxPrice) p.append('max_price', maxPrice);
-    return p;
-}
-
-function fetchProducts(url = "{{ route('shop.index') }}") {
-        .then(r => r.text())
-        .then(html => {
-            grid.innerHTML = html;
-            grid.style.opacity = '1';
-            loader.classList.add('d-none');
-            attachPaginationListeners();
-        })
-        .catch(err => {
-            console.error(err);
-            grid.style.opacity = '1';
-            loader.classList.add('d-none');
-        });
-}
-
-function attachPaginationListeners() {
-    document.querySelectorAll('.pagination a').forEach(link => {
+document.addEventListener('DOMContentLoaded', () => {
+    // Intercept Category Clicks
+    document.querySelectorAll('.category-ajax-link').forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
-            fetchProducts(this.href);
-            document.getElementById('productGridContainer').scrollIntoView({ behavior: 'smooth' });
+            currentCategory = this.dataset.category;
+            
+            // Update UI State
+            document.querySelectorAll('.category-ajax-link').forEach(l => {
+                l.classList.remove('active');
+                l.querySelector('.category-circle-img-wrap').style.borderColor = 'var(--brand-gold-light)';
+            });
+            this.classList.add('active');
+            this.querySelector('.category-circle-img-wrap').style.borderColor = 'var(--brand-gold)';
+            
+            fetchProducts(true);
         });
     });
-}
 
-document.querySelectorAll('.category-filter').forEach(link => {
-    link.addEventListener('click', function(e) {
-        e.preventDefault();
-        document.querySelectorAll('.category-filter').forEach(el => el.classList.remove('active'));
-        this.classList.add('active');
-        currentCategory = this.dataset.slug;
-        document.getElementById('categoryTitle').innerText = this.querySelector('span').innerText;
-        fetchProducts();
+    // Handle Sorting
+    const sortSelect = document.getElementById('sortSelect');
+    if (sortSelect) {
+        sortSelect.addEventListener('change', function() {
+            currentSort = this.value;
+            fetchProducts(true);
+        });
+    }
+
+    // Handle Pagination (Delegated)
+    document.getElementById('productGridWrapper').addEventListener('click', function(e) {
+        const link = e.target.closest('.pagination a');
+        if (link) {
+            e.preventDefault();
+            fetchProducts(false, link.href);
+            window.scrollTo({ top: document.getElementById('shopMainContainer').offsetTop - 100, behavior: 'smooth' });
+        }
     });
 });
 
-document.getElementById('sortSelect').addEventListener('change', () => fetchProducts());
-document.getElementById('priceFilterForm').addEventListener('submit', function(e) { e.preventDefault(); fetchProducts(); });
-document.getElementById('searchForm').addEventListener('submit', function(e) { e.preventDefault(); fetchProducts(); });
-attachPaginationListeners();
+function fetchProducts(resetPage = true, customUrl = null) {
+    const wrapper = document.getElementById('productGridWrapper');
+    wrapper.style.opacity = '0.5';
+    wrapper.style.pointerEvents = 'none';
 
+    let url = customUrl || "{{ route('shop.index') }}";
+    const params = new URLSearchParams();
+    
+    if (currentCategory) params.append('category', currentCategory);
+    if (currentSort)     params.append('sort',     currentSort);
+    if (currentSearch)   params.append('q',        currentSearch);
+    
+    // If not using a custom pagination URL, add params to the base URL
+    if (!customUrl) {
+        url = url + '?' + params.toString();
+    } else {
+        // If it's a pagination URL, ensure other filters are preserved
+        let pUrl = new URL(customUrl);
+        if (currentCategory) pUrl.searchParams.set('category', currentCategory);
+        if (currentSort)     pUrl.searchParams.set('sort',     currentSort);
+        if (currentSearch)   pUrl.searchParams.set('q',        currentSearch);
+        url = pUrl.toString();
+    }
+
+    fetch(url, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        wrapper.innerHTML = data.grid_html;
+        document.getElementById('categoryTitle').innerHTML = `${data.category_name} <span class="text-muted small ms-2 fw-normal" id="productCount" style="font-family: var(--font-body);">(${data.total_count} قطعة)</span>`;
+        
+        // Update URL
+        history.pushState(null, null, url);
+        
+        wrapper.style.opacity = '1';
+        wrapper.style.pointerEvents = 'all';
+        
+        // Re-init AOS if needed
+        if (window.AOS) AOS.refresh();
+    })
+    .catch(err => {
+        console.error(err);
+        wrapper.style.opacity = '1';
+        wrapper.style.pointerEvents = 'all';
+    });
+}
 </script>
 @endpush

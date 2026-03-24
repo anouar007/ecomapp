@@ -45,13 +45,13 @@
     <meta name="twitter:url" content="{{ url()->current() }}">
     <meta name="twitter:title" content="@yield('meta_title', setting('app_name', 'Speed Platform'))">
     <meta name="twitter:description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
-    <meta name="twitter:image" content="@yield('meta_image', setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/og-default.jpg'))">    
+    <meta name="twitter:image" content="@yield('twitter_image', setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/og-default.jpg'))">    
     <meta name="twitter:site" content="@yield('twitter_site', '@' . str_replace(' ', '', setting('app_name', 'SpeedPlatform')))">
     
     <!-- JSON-LD Structured Data Schema -->
     @yield('json_ld')
     
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
@@ -71,6 +71,7 @@
         .btn-primary:hover { background-color: var(--accent-hover) !important; border-color: var(--accent-hover) !important; }
     </style>
     <link rel="stylesheet" href="{{ asset('css/frontend.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/brand.css') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Custom Head Codes -->
     @php
@@ -88,6 +89,7 @@
             {!! $code->content !!}
         @endif
     @endforeach
+    @stack('styles')
 </head>
 <body>
     <!-- Custom Body Start Codes -->
@@ -101,170 +103,434 @@
         {!! $code->content !!}
     @endforeach
 
-    <!-- Main Header -->
-    <div class="header-main sticky-top shadow-sm w-100 z-50">
-        <div class="container">
-            <nav class="navbar navbar-expand-lg navbar-light py-2">
-                <div class="container-fluid px-0">
-                    <!-- Logo -->
-                    <a class="navbar-brand me-3 me-lg-5" href="{{ url('/') }}">
+
+    <!-- ── Main Header ────────────────────────────────────────────── -->
+    <header class="main-header shadow-sm">
+        <div class="container px-xl-5">
+            <div class="d-flex align-items-center justify-content-between py-2 py-lg-3">
+                
+                <!-- Left: Burger Menu (Mobile) / Nav (Desktop) -->
+                <div class="d-flex align-items-center flex-1">
+                    <button class="header-action-btn d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-expanded="false" aria-label="Menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    
+                    <nav class="d-none d-lg-flex align-items-center gap-4">
+                        <a href="{{ route('home') }}" class="nav-link-custom text-decoration-none {{ request()->is('/') ? 'active' : '' }}">الرئيسية</a>
+                        <a href="{{ route('shop.index') }}" class="nav-link-custom text-decoration-none {{ request()->is('shop*') ? 'active' : '' }}">المتجر</a>
+                    </nav>
+                </div>
+
+                <!-- Center: Brand Logo -->
+                <div class="header-logo-container">
+                    <a href="{{ url('/') }}" class="text-decoration-none">
                         @if(setting('app_logo'))
-                            <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="{{ setting('app_name', 'Logo') }}" class="navbar-logo-img">
+                            <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="{{ setting('app_name') }}" style="height: 42px; object-fit: contain;">
                         @else
-                            <h3 class="m-0 fw-bold text-uppercase fst-italic position-relative" style="font-family: 'Rajdhani'; letter-spacing: 1px;">
-                                Hijab <span class="text-primary">Princesses</span>
-                                <i class="fas fa-crown text-primary position-absolute top-0 start-100 translate-middle ms-2" style="font-size: 0.8em; transform: rotate(15deg);"></i>
-                            </h3>
+                            <div class="brand-logo-text">
+                                Hijab <span class="gold-part">Princesses</span>
+                            </div>
                         @endif
                     </a>
+                </div>
 
-                    <!-- Mobile: always-visible actions (cart + user) + toggler -->
-                    <div class="d-flex align-items-center gap-2 ms-auto d-lg-none">
-                        @auth
-                            <a href="{{ route('dashboard') }}" class="action-btn-circle text-decoration-none" title="Mon compte">
-                                <i class="far fa-user"></i>
-                            </a>
-                        @endauth
-                        <div class="position-relative">
-                            <button class="action-btn-circle bg-transparent" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart">
-                                <i class="fas fa-shopping-bag"></i>
-                            </button>
-                            <span id="header-cart-count-mobile" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style="font-size: 0.6rem;">
+                <!-- Right: Actions -->
+                <div class="d-flex align-items-center justify-content-end gap-1 gap-lg-3 flex-1">
+                    <!-- Search Toggle -->
+                    <button class="header-action-btn" type="button" data-bs-toggle="collapse" data-bs-target="#searchCollapse">
+                        <i class="fas fa-search"></i>
+                    </button>
+
+                    <!-- Account (Universal) -->
+                    <a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="header-action-btn text-decoration-none" title="{{ auth()->check() ? 'حسابي' : 'تسجيل الدخول' }}">
+                        <i class="fas fa-user-circle"></i>
+                    </a>
+
+                    <!-- Cart -->
+                    <div class="position-relative">
+                        <button class="header-action-btn position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span id="header-cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style="font-size: 0.6rem; transform: translate(-35%, 25%);">
                                 {{ count(session('cart', [])) }}
                             </span>
-                        </div>
-                        <button class="navbar-toggler border-0 p-1" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-expanded="false" aria-label="Menu">
-                            <span class="navbar-toggler-icon"></span>
                         </button>
                     </div>
-
-                    <!-- Collapsible section -->
-                    <div class="collapse navbar-collapse" id="navbarMain">
-                        <!-- Navigation links -->
-                        <ul class="navbar-nav me-auto mb-0 gap-1 mb-3 mb-lg-0">
-                            <li class="nav-item">
-                                <a class="nav-link-custom {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">الرئيسية</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link-custom {{ request()->routeIs('shop.index') ? 'active' : '' }}" href="{{ route('shop.index') }}">المتجر</a>
-                            </li>
-                        </ul>
-
-                        <!-- Search -->
-                        <form action="{{ route('shop.index') }}" method="GET" class="d-flex mx-lg-4 flex-grow-1 flex-lg-grow-0 mb-3 mb-lg-0" style="max-width: 380px;">
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0 text-muted ps-3"><i class="fas fa-search"></i></span>
-                                <input class="form-control bg-light border-start-0 ps-0 text-muted" type="search" name="q" placeholder="البحث عن منتجات..." aria-label="Rechercher" value="{{ request('q') }}">
-                            </div>
-                        </form>
-
-                        <!-- Desktop-only actions -->
-                        <div class="d-none d-lg-flex align-items-center gap-3 ms-3">
-                            @auth
-                                <a href="{{ route('dashboard') }}" class="action-btn-circle text-decoration-none" title="Mon compte">
-                                    <i class="far fa-user"></i>
-                                </a>
-                            @endauth
-
-                            <div class="position-relative">
-                                <button class="action-btn-circle bg-transparent" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart">
-                                    <i class="fas fa-shopping-bag"></i>
-                                </button>
-                                <span id="header-cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style="font-size: 0.6rem;">
-                                    {{ count(session('cart', [])) }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
-            </nav>
+            </div>
+
+            <!-- Collapsible Search -->
+            <div class="collapse" id="searchCollapse">
+                <div class="pb-3 px-1">
+                    <form action="{{ route('shop.index') }}" method="GET" class="w-100" style="max-width: 600px; margin: 0 auto;">
+                        <div class="input-group brand-card border-0">
+                            <span class="input-group-text bg-white border-0 text-muted ps-3"><i class="fas fa-search"></i></span>
+                            <input class="form-control border-0 ps-0 text-muted py-2" type="search" name="q" placeholder="ماذا تبحثين عنه اليوم؟" value="{{ request('q') }}">
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Mobile Menu Expandable (Navbar Collapse) -->
+            <div class="collapse d-lg-none" id="navbarMain">
+                <div class="py-3 border-top mt-1 nav-mobile-v2">
+                    <ul class="list-unstyled mb-0 d-flex flex-column gap-3 fs-5 fw-bold">
+                        <li><a href="{{ route('home') }}" class="text-dark text-decoration-none d-block py-1">الرئيسية</a></li>
+                        <li><a href="{{ route('shop.index') }}" class="text-dark text-decoration-none d-block py-1">المتجر</a></li>
+                        @auth
+                            <li><a href="{{ route('dashboard') }}" class="text-dark text-decoration-none d-block py-1">حسابي</a></li>
+                        @else
+                            <li><a href="{{ route('login') }}" class="text-dark text-decoration-none d-block py-1">تسجيل الدخول</a></li>
+                        @endauth
+                    </ul>
+                </div>
+            </div>
         </div>
-    </div>
+    </header>
 
 
     <main>
         @yield('content')
     </main>
 
-    <!-- Offcanvas Mini Cart -->
-    <div class="offcanvas offcanvas-end border-0 shadow-lg" tabindex="-1" id="miniCart" aria-labelledby="miniCartLabel" style="width: 450px; background: #f8fafc;">
-        <div class="offcanvas-header bg-white border-bottom py-3">
-            <h5 class="offcanvas-title fw-bold font-heading" id="miniCartLabel">
-                <i class="fas fa-shopping-bag me-2 text-primary"></i>سلتي
-            </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+
+    <!-- ── Mini-Cart Drawer ─────────────────────────────────────────── -->
+    <style>
+    /* Mini-cart drawer */
+    #miniCart {
+        width: 100vw !important;
+        max-width: 420px;
+        background: #fafafa;
+        border: none;
+    }
+    .mc-header {
+        background: #fff;
+        padding: 1rem 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .mc-header-title {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-weight: 800;
+        font-size: 1.05rem;
+        color: #1e293b;
+    }
+    .mc-header-icon {
+        width: 36px; height: 36px;
+        background: linear-gradient(135deg, #c5a059, #a07840);
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: 0.9rem;
+    }
+    .mc-close {
+        width: 32px; height: 32px;
+        border-radius: 50%;
+        background: #f1f5f9;
+        border: none;
+        display: flex; align-items: center; justify-content: center;
+        color: #64748b;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+    .mc-close:hover { background: #e2e8f0; }
+    /* Items */
+    .mc-items {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem;
+        -webkit-overflow-scrolling: touch;
+    }
+    .mc-item {
+        background: #fff;
+        border-radius: 1rem;
+        padding: 0.875rem;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.875rem;
+        position: relative;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+        transition: box-shadow 0.2s;
+    }
+    .mc-item:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+    .mc-item-img {
+        width: 72px; height: 88px;
+        object-fit: cover;
+        border-radius: 0.75rem;
+        flex-shrink: 0;
+        background: #f1f5f9;
+    }
+    .mc-item-info { flex: 1; min-width: 0; }
+    .mc-item-name {
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: #1e293b;
+        line-height: 1.3;
+        margin-bottom: 0.35rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        padding-left: 1.5rem;
+    }
+    .mc-tags {
+        display: flex;
+        gap: 0.35rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.5rem;
+    }
+    .mc-tag {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: #64748b;
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 100px;
+    }
+    .mc-item-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 0.4rem;
+    }
+    .mc-price {
+        font-weight: 800;
+        color: #c5a059;
+        font-size: 0.95rem;
+    }
+    /* Qty stepper */
+    .mc-qty {
+        display: flex;
+        align-items: center;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 100px;
+        overflow: hidden;
+    }
+    .mc-qty-btn {
+        width: 30px; height: 30px;
+        border: none;
+        background: transparent;
+        color: #1e293b;
+        font-size: 0.75rem;
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        transition: background 0.15s;
+    }
+    .mc-qty-btn:hover { background: #e2e8f0; }
+    .mc-qty-val {
+        width: 28px;
+        text-align: center;
+        font-weight: 800;
+        font-size: 0.85rem;
+        color: #1e293b;
+        border: none;
+        background: transparent;
+        pointer-events: none;
+    }
+    /* Delete — always visible on mobile */
+    .mc-delete {
+        position: absolute;
+        top: 0.75rem;
+        left: 0.75rem;
+        width: 24px; height: 24px;
+        border-radius: 50%;
+        background: #fff0f0;
+        border: none;
+        color: #ef4444;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.65rem;
+        cursor: pointer;
+        opacity: 0.75;
+        transition: opacity 0.15s, background 0.15s;
+    }
+    .mc-delete:hover { opacity: 1; background: #ffe4e4; }
+    /* Footer */
+    .mc-footer {
+        background: #fff;
+        border-top: 1px solid #f0f0f0;
+        padding: 1rem 1.25rem;
+        padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+    }
+    .mc-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    .mc-total-label { font-size: 0.8rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+    .mc-total-val { font-size: 1.35rem; font-weight: 900; color: #1e293b; }
+    .mc-checkout-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        background: linear-gradient(135deg, #c5a059, #a07840);
+        color: #fff;
+        border: none;
+        border-radius: 0.875rem;
+        padding: 0.9rem 1.25rem;
+        font-weight: 700;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
+        text-decoration: none;
+        box-shadow: 0 4px 16px rgba(197,160,89,0.4);
+        transition: transform 0.15s, box-shadow 0.15s;
+        margin-bottom: 0.6rem;
+    }
+    .mc-checkout-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(197,160,89,0.45);
+        color: #fff;
+    }
+    .mc-view-btn {
+        display: block;
+        text-align: center;
+        color: #94a3b8;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        padding: 0.4rem;
+    }
+    .mc-view-btn:hover { color: #64748b; }
+    /* Free shipping badge */
+    .mc-shipping {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        color: #16a34a;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-align: center;
+        padding: 0.4rem 0.75rem;
+        border-radius: 0.5rem;
+        margin-bottom: 0.875rem;
+    }
+    /* Empty state */
+    .mc-empty {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1.5rem;
+        text-align: center;
+    }
+    .mc-empty-icon {
+        width: 90px; height: 90px;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 1.25rem;
+        font-size: 2rem;
+        color: #cbd5e1;
+    }
+    .mc-empty h5 { font-weight: 800; color: #1e293b; margin-bottom: 0.5rem; }
+    .mc-empty p { color: #94a3b8; font-size: 0.875rem; margin-bottom: 1.5rem; }
+    .mc-shop-btn {
+        background: linear-gradient(135deg, #c5a059, #a07840);
+        color: #fff;
+        border: none;
+        border-radius: 100px;
+        padding: 0.75rem 2rem;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-block;
+    }
+    </style>
+
+    <div class="offcanvas offcanvas-end border-0" tabindex="-1" id="miniCart" aria-labelledby="miniCartLabel">
+        <!-- Header -->
+        <div class="mc-header">
+            <div class="mc-header-title">
+                <div class="mc-header-icon"><i class="fas fa-shopping-bag"></i></div>
+                <span id="miniCartLabel">سلتي</span>
+            </div>
+            <button class="mc-close" data-bs-dismiss="offcanvas" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
-        <div class="offcanvas-body p-0 d-flex flex-column h-100">
-            <div class="flex-grow-1 overflow-auto p-4" id="mini-cart-items">
+
+        <div class="offcanvas-body p-0 d-flex flex-column" style="height: calc(100% - 65px);">
+
+            <!-- Items -->
+            <div class="mc-items" id="mini-cart-items">
                 @php $total = 0; @endphp
                 @forelse(session('cart', []) as $id => $details)
                     @php $total += $details['price'] * $details['quantity']; @endphp
-                    <div class="cart-item bg-white p-3 rounded-4 shadow-sm mb-3 position-relative border border-light" id="cart-item-{{ $id }}">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-shrink-0 me-3 position-relative">
-                                <img src="{{ Storage::url($details['image']) }}" alt="{{ $details['name'] }}" class="rounded-3 object-fit-cover" style="width: 80px; height: 80px;">
-                                <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-light text-dark border shadow-sm" style="font-size: 0.7rem;">x{{ $details['quantity'] }}</span>
+                    <div class="mc-item" id="cart-item-{{ $id }}">
+                        <img src="{{ !empty($details['image']) && strval($details['image']) !== '0' ? Storage::url($details['image']) : asset('images/placeholder-product.jpg') }}"
+                             alt="{{ $details['name'] }}" class="mc-item-img">
+                        <div class="mc-item-info">
+                            <div class="mc-item-name">{{ $details['name'] }}</div>
+                            <div class="mc-tags">
+                                @if(!empty($details['color']))
+                                    <span class="mc-tag">{{ $details['color'] }}</span>
+                                @endif
+                                @if(!empty($details['size']))
+                                    <span class="mc-tag">{{ $details['size'] }}</span>
+                                @endif
                             </div>
-                            <div class="flex-grow-1 min-w-0">
-                                <h6 class="fw-bold mb-1 text-truncate pe-4" title="{{ $details['name'] }}">{{ $details['name'] }}</h6>
-                                <p class="mb-2 text-muted small">{{ $details['category_name'] ?? 'Produit' }}</p>
-                                
-                                <div class="d-flex align-items-center justify-content-between mt-2">
-                                    <span class="text-primary fw-bold" style="font-size: 1.1rem;">{{ currency($details['price']) }}</span>
-                                    
-                                    <div class="quantity-control bg-light rounded-pill d-flex align-items-center px-1 border">
-                                        <button class="btn btn-sm btn-link text-dark text-decoration-none p-1 border-0" onclick="updateQty({{ $id }}, {{ $details['quantity'] - 1 }})">
-                                            <i class="fas fa-minus" style="font-size: 0.7rem;"></i>
-                                        </button>
-                                        <input type="text" class="form-control form-control-sm border-0 bg-transparent text-center fw-bold p-0" value="{{ $details['quantity'] }}" readonly style="width: 30px;">
-                                        <button class="btn btn-sm btn-link text-dark text-decoration-none p-1 border-0" onclick="updateQty({{ $id }}, {{ $details['quantity'] + 1 }})">
-                                            <i class="fas fa-plus" style="font-size: 0.7rem;"></i>
-                                        </button>
-                                    </div>
+                            <div class="mc-item-bottom">
+                                <span class="mc-price">{{ currency($details['price']) }}</span>
+                                <div class="mc-qty">
+                                    <button class="mc-qty-btn" onclick="updateQty({{ $id }}, {{ $details['quantity'] - 1 }})">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <input class="mc-qty-val" value="{{ $details['quantity'] }}" readonly>
+                                    <button class="mc-qty-btn" onclick="updateQty({{ $id }}, {{ $details['quantity'] + 1 }})">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                        <button class="btn btn-sm text-danger position-absolute top-0 end-0 mt-2 me-2 opacity-50 hover-opacity-100 transition-all" onclick="removeItem({{ $id }})" title="Remove">
+                        <button class="mc-delete" onclick="removeItem({{ $id }})" title="حذف">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
                 @empty
-                    <div class="text-center py-5 mt-5">
-                        <div class="mb-4 bg-white rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 100px; height: 100px;">
-                            <i class="fas fa-shopping-basket fa-3x text-muted opacity-25"></i>
-                        </div>
-                        <h5 class="fw-bold text-dark">سلتك فارغة</h5>
-                        <p class="text-muted small mb-4">لم تقومي بإضافة أي منتج بعد.</p>
-                        <a href="{{ route('shop.index') }}" class="btn btn-primary rounded-pill px-5 shadow-sm">ابدئي التسوق</a>
+                    <div class="mc-empty">
+                        <div class="mc-empty-icon">🛍️</div>
+                        <h5>سلتك فارغة</h5>
+                        <p>لم تقومي بإضافة أي منتج بعد.</p>
+                        <a href="{{ route('shop.index') }}" class="mc-shop-btn" data-bs-dismiss="offcanvas">ابدئي التسوق</a>
                     </div>
                 @endforelse
             </div>
-            
+
+            <!-- Footer (only when cart has items) -->
             @if(count(session('cart', [])) > 0)
-            <div class="border-top p-4 bg-white mt-auto shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
-                <div class="d-flex justify-content-between align-items-end mb-4">
-                    <span class="text-muted small text-uppercase fw-bold ls-1">Sous-total</span>
-                    <span class="h4 fw-bold text-dark mb-0 ls-tight" id="mini-cart-total">{{ currency($total) }}</span>
+            <div class="mc-footer" id="mini-cart-footer">
+                <div class="mc-shipping">
+                    <i class="fas fa-truck me-1"></i> توصيل مجاني لجميع أنحاء المغرب 🇲🇦
                 </div>
-                <div class="d-grid gap-2">
-                    <a href="{{ route('checkout.index') }}" class="btn btn-primary py-3 rounded-pill fw-bold shadow-sm d-flex justify-content-between align-items-center px-4">
-                        <span>Commander</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
-                    <a href="{{ route('cart.index') }}" class="btn btn-light py-2 rounded-pill fw-bold text-muted small">
-                        Voir le panier complet
-                    </a>
+                <div class="mc-total-row">
+                    <span class="mc-total-label">الإجمالي</span>
+                    <span class="mc-total-val" id="mini-cart-total">{{ currency($total) }}</span>
                 </div>
+                <a href="{{ route('checkout.index') }}" class="mc-checkout-btn">
+                    <i class="fas fa-check-circle"></i>
+                    <span>إتمام الطلب</span>
+                </a>
+                <a href="{{ route('cart.index') }}" class="mc-view-btn">عرض السلة كاملة</a>
             </div>
             @endif
+
         </div>
     </div>
+
+
 
     <footer class="footer-modern">
         <div class="container">
             <div class="row g-5">
                 <div class="col-lg-6">
-                    <h5 class="fw-bold text-white mb-4 text-uppercase ls-1">{{ setting('app_name', 'Hijab Princesses') }}</h5>
+                    <h5 class="brand-heading text-white mb-4 text-uppercase ls-1" style="font-size: 1.5rem;">Hijab <span class="text-gold">Princesses</span></h5>
                     <p class="small lh-lg mb-4">
                         وجهتكم الفاخرة لكل ما يخص الأناقة المحتشمة في المغرب. عبايات راقية، خمارات متميزة، ومجموعات حصرية — مصممة للأميرة العصرية.
                     </p>
@@ -308,7 +574,7 @@
                         @endif
                         {{-- If none configured, show placeholder text --}}
                         @if(!$validUrl($sfb) && !$validUrl($stw) && !$validUrl($sig) && !$validUrl($sli) && !$validUrl($swa))
-                        <span class="text-muted small fst-italic">Réseaux sociaux bientôt disponibles</span>
+                        <span class="text-muted small fst-italic">{{ __('Réseaux sociaux bientôt disponibles') }}</span>
                         @endif
                     </div>
                 </div>
@@ -378,10 +644,8 @@
             .then(data => {
                 // Update both desktop and mobile cart count badges
                 const updateCartBadges = (count) => {
-                    ['header-cart-count', 'header-cart-count-mobile'].forEach(id => {
-                        const el = document.getElementById(id);
-                        if (el && count !== undefined) el.textContent = count;
-                    });
+                    const el = document.getElementById('header-cart-count');
+                    if (el && count !== undefined) el.textContent = count;
                 };
                 updateCartBadges(data.cartCount);
                 // Refresh mini-cart content
@@ -393,7 +657,7 @@
                     toast: true,
                     position: 'top-end',
                     icon: 'error',
-                    title: 'Erreur lors de la mise à jour du panier',
+                    title: '{{ __('Erreur lors de la mise à jour du panier') }}',
                     showConfirmButton: false,
                     timer: 2500
                 });
@@ -402,13 +666,13 @@
 
         function removeItem(id) {
             Swal.fire({
-                title: 'Retirer du panier ?',
-                text: "Voulez-vous supprimer cet article ?",
+                title: '{{ __('Retirer du panier ?') }}',
+                text: "{{ __('Voulez-vous supprimer cet article ?') }}",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: '#6b7280',
-                confirmButtonText: 'Oui, supprimer !'
+                confirmButtonText: '{{ __('Oui, supprimer !') }}'
             }).then((result) => {
                 if (result.isConfirmed) {
                     fetch('{{ route('cart.remove') }}', {
@@ -422,11 +686,9 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        // Update both desktop and mobile cart count badges
-                        ['header-cart-count', 'header-cart-count-mobile'].forEach(id => {
-                            const el = document.getElementById(id);
-                            if (el && data.cartCount !== undefined) el.textContent = data.cartCount;
-                        });
+                        const el = document.getElementById('header-cart-count');
+                        if (el && data.cartCount !== undefined) el.textContent = data.cartCount;
+                        
                         // Refresh mini-cart content
                         refreshMiniCart();
                         
@@ -434,7 +696,7 @@
                             toast: true,
                             position: 'top-end',
                             icon: 'success',
-                            title: 'Article supprimé !',
+                            title: '{{ __('Article supprimé !') }}',
                             showConfirmButton: false,
                             timer: 2000,
                             background: '#1a1a2e',
@@ -443,14 +705,6 @@
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            icon: 'error',
-                            title: 'Erreur lors de la suppression',
-                            showConfirmButton: false,
-                            timer: 2500
-                        });
                     });
                 }
             });
@@ -468,26 +722,6 @@
                 const miniCartContainer = document.getElementById('mini-cart-items');
                 if(miniCartContainer) {
                     miniCartContainer.innerHTML = html;
-                }
-                // Also update the footer section if cart has items
-                const cartOffcanvas = document.getElementById('miniCart');
-                if(cartOffcanvas) {
-                    const footerSection = cartOffcanvas.querySelector('.border-top.p-4');
-                    // Fetch full mini-cart to get updated footer
-                    fetch('{{ route('cart.miniFooter') }}', {
-                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                    })
-                    .then(r => r.text())
-                    .then(footerHtml => {
-                        const existingFooter = cartOffcanvas.querySelector('.border-top.p-4.bg-white');
-                        if(existingFooter && footerHtml.trim()) {
-                            existingFooter.outerHTML = footerHtml;
-                        } else if(!existingFooter && footerHtml.trim()) {
-                            // Append footer if it didn't exist before
-                            cartOffcanvas.querySelector('.offcanvas-body').insertAdjacentHTML('beforeend', footerHtml);
-                        }
-                    })
-                    .catch(console.error);
                 }
             })
             .catch(console.error);
@@ -546,8 +780,6 @@
                 if (priceEl) priceEl.innerText = match.formatted_price;
                 if (input) input.value = match.id;
             } else {
-                // If no match or partially selected, revert price to default if we can find it
-                // For simplicity, we keep the price or reset if the product price is in data
                 if (input) input.value = "";
             }
 
@@ -584,25 +816,12 @@
             });
         }
 
-        // Initialize all cards availability on load
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.pcard, .product-card, .product-card-v2').forEach(cardEl => {
-                const productIdMatch = cardEl.innerHTML.match(/window\.cardVariants\[(\d+)\]/);
-                if (productIdMatch) {
-                    const productId = productIdMatch[1];
-                    updateCardAvailability(productId, cardEl, {});
-                }
-            });
-        });
-
-        // Global Add to Cart with Variant Support
         function addToCart(productId, isSlider = false) {
             const cardId = isSlider ? `slider-${productId}` : productId;
             const inputId = isSlider ? `card-selected-variant-slider-${productId}` : `card-selected-variant-${productId}`;
             const variantInput = document.getElementById(inputId);
             let variantId = (variantInput && variantInput.value) ? variantInput.value : null;
 
-            // If product has variants but none selected, alert user
             if (!variantId && window.cardVariants && window.cardVariants[productId] && window.cardVariants[productId].length > 0) {
                 Swal.fire({
                     icon: 'info',
@@ -614,7 +833,6 @@
                 return;
             }
 
-            // Find button to show loading
             const btn = event ? event.currentTarget : null;
             const originalHtml = btn ? btn.innerHTML : '';
             if (btn && btn.tagName === 'BUTTON') {
@@ -622,7 +840,7 @@
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             }
 
-            fetch(`/cart/add/${productId}`, {
+            fetch(`{{ url('/cart/add') }}/${productId}`, {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -648,10 +866,8 @@
                         title: 'تمت الإضافة إلى السلة!',
                         showConfirmButton: false, timer: 2500, background: '#1a1a2e', color: '#fff'
                     });
-                    ['header-cart-count', 'header-cart-count-mobile'].forEach(id => {
-                        const badge = document.getElementById(id);
-                        if (badge && data.cartCount !== undefined) badge.innerText = data.cartCount;
-                    });
+                    const badge = document.getElementById('header-cart-count');
+                    if (badge && data.cartCount !== undefined) badge.innerText = data.cartCount;
                     if (typeof refreshMiniCart === 'function') refreshMiniCart();
                 } else {
                     Swal.fire({ icon: 'error', title: 'خطأ', text: data.message || 'حدث خطأ ما' });
@@ -667,22 +883,5 @@
         }
     </script>
     @stack('scripts')
-
-    <!-- Custom Body End Codes -->
-    @php
-        $bodyEndCodes = \App\Models\CustomCode::where('is_active', true)
-            ->where('position', 'body_end')
-            ->orderBy('priority', 'desc')
-            ->get();
-    @endphp
-    @foreach($bodyEndCodes as $code)
-        @if($code->type == 'css')
-            <style>{!! $code->content !!}</style>
-        @elseif($code->type == 'js')
-            <script>{!! $code->content !!}</script>
-        @else
-            {!! $code->content !!}
-        @endif
-    @endforeach
 </body>
 </html>

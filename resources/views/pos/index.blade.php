@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'POS Terminal')
+@section('title', __('POS Terminal'))
 
 @push('styles')
 <style>
@@ -75,61 +75,103 @@
 @media (max-width: 767px) {
     .main-content {
         height: auto;
-        min-height: calc(100vh - 70px);
+        min-height: calc(100vh - 60px); 
         overflow: auto;
-        padding-bottom: 100px;
+        padding-bottom: 80px; 
     }
     
     .pos-layout {
-        grid-template-columns: 1fr;
-        display: flex;
-        flex-direction: column;
+        display: block; 
     }
 
     .pos-products-area {
         height: auto;
-        min-height: 50vh;
+        padding: 12px;
         overflow: visible;
-        padding: 16px;
+    }
+    
+    .pos-header {
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    
+    .search-container {
+        max-width: 100%;
     }
     
     .products-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
         overflow: visible;
         max-height: none;
     }
+    
+    .pos-product-card {
+        border-radius: 12px;
+    }
+    
+    .card-img-wrapper {
+        height: 100px;
+        min-height: 100px;
+    }
 
     .pos-order-wrapper {
-        display: flex;
-        flex-direction: column;
-        border-top: 2px solid #e2e8f0;
-    }
-    
-    .cart-items-panel {
-        border-left: none !important;
-        border-bottom: 1px solid #e2e8f0;
-        max-height: 280px;
-    }
-    
-    .order-form-panel {
-        border-left: none !important;
-        position: sticky;
+        display: none; 
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
         bottom: 0;
         background: white;
-        box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
-        z-index: 50;
+        z-index: 2000;
+        padding-top: 60px;
     }
     
-    .panel-header {
-        padding: 12px 16px;
+    .pos-order-wrapper.show {
+        display: flex;
+        flex-direction: column;
     }
     
-    .panel-content {
-        padding: 12px 16px;
+    .cart-items-panel,
+    .order-form-panel {
+        flex: 1;
+        max-height: 50% !important;
+        border-left: none !important;
     }
     
-    .order-form-panel .panel-content {
-        max-height: 60vh;
-        overflow-y: auto;
+    .mobile-cart-toggle {
+        display: flex !important;
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        height: 56px;
+        background: var(--gradient-primary, linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%));
+        color: white;
+        border-radius: 16px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+        z-index: 1500;
+        border: none;
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .close-cart-btn {
+        display: block !important;
+        position: absolute;
+        top: 15px;
+        inset-inline-end: 15px;
+        background: #f1f5f9;
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        color: #1e293b;
+        z-index: 2001;
     }
 }
 
@@ -157,7 +199,9 @@
 
 .search-input {
     width: 100%;
-    padding: 16px 24px 16px 50px;
+    padding: 16px;
+    padding-inline-start: 50px;
+    padding-inline-end: 24px;
     border: none;
     border-radius: 16px;
     background: white;
@@ -179,7 +223,8 @@
 
 .search-icon {
     position: absolute;
-    left: 20px;
+    right: 20px !important;
+    left: auto !important;
     top: 50%;
     transform: translateY(-50%);
     color: #94a3b8;
@@ -349,7 +394,7 @@
 .card-stock {
     position: absolute;
     top: 10px;
-    right: 10px;
+    inset-inline-end: 10px;
     background: rgba(255, 255, 255, 0.9);
     padding: 4px 8px;
     border-radius: 6px;
@@ -363,7 +408,7 @@
 .qty-badge {
     position: absolute;
     top: 10px;
-    left: 10px;
+    inset-inline-start: 10px;
     background: #10b981;
     color: white;
     width: 24px;
@@ -388,7 +433,7 @@
 .stock-badge {
     position: absolute;
     top: 10px;
-    right: 10px;
+    inset-inline-end: 10px;
     padding: 5px 10px;
     border-radius: 8px;
     font-size: 11px;
@@ -422,7 +467,7 @@
 .sale-badge {
     position: absolute;
     top: 10px;
-    left: 50px;
+    inset-inline-start: 50px;
     background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     color: white;
     padding: 4px 10px;
@@ -513,7 +558,7 @@
 /* === Cart Items Panel === */
 .cart-items-panel {
     background: white;
-    border-left: 1px solid #e2e8f0;
+    border-inline-start: 1px solid #e2e8f0;
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -523,7 +568,7 @@
 /* === Order Form Panel === */
 .order-form-panel {
     background: #f8fafc;
-    border-left: 1px solid #e2e8f0;
+    border-inline-start: 1px solid #e2e8f0;
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -615,7 +660,7 @@
 
 .item-details {
     flex: 1;
-    padding-right: 12px;
+    padding-inline-end: 12px;
 }
 
 .item-details h4 {
@@ -780,22 +825,21 @@
         <div class="pos-header">
             <div class="search-container">
                 <i class="fas fa-search search-icon"></i>
-                <input type="text" id="searchInput" class="search-input" placeholder="Search products by name or SKU..." autofocus>
+                <input type="text" id="searchInput" class="search-input" placeholder="{{ __('Search products by name or SKU...') }}" autofocus>
             </div>
             <div style="font-weight: 700; color: #334155; display: flex; align-items: center; margin-left: 20px;">
                 <div style="width: 40px; height: 40px; background: #e0e7ff; color: #6366f1; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
                     <i class="fas fa-store-alt" style="font-size: 18px;"></i>
                 </div>
                 <div style="display: none; @media(min-width: 768px){display:block;}">
-                    <div style="font-size: 12px; color: #64748b; font-weight: 600;">TERMINAL</div>
-                    <div style="font-size: 16px; color: #1e293b;">POS-{{ str_pad(auth()->id(), 3, '0', STR_PAD_LEFT) }}</div>
+                    <div style="font-size: 16px; color: #1e293b;">{{ __('POS') }}-{{ str_pad(auth()->id(), 3, '0', STR_PAD_LEFT) }}</div>
                 </div>
             </div>
         </div>
 
         <div class="categories-wrapper">
             <div class="category-pills">
-                <div class="category-pill category-btn active" data-category="">All Items</div>
+                <div class="category-pill category-btn active" data-category="">{{ __('All Items') }}</div>
                 @foreach($categories as $category)
                     <div class="category-pill category-btn" data-category="{{ $category->id }}">{{ $category->translated_name }}</div>
                 @endforeach
@@ -806,22 +850,25 @@
             <!-- Products will be injected here via JS -->
             <div style="grid-column: 1/-1; text-align: center; padding-top: 100px; color: #94a3b8;">
                 <i class="fas fa-circle-notch fa-spin fa-3x" style="color: #cbd5e1;"></i>
-                <p style="margin-top: 16px; font-weight: 500;">Loading catalog...</p>
+                <p style="margin-top: 16px; font-weight: 500;">{{ __('Loading catalog...') }}</p>
             </div>
         </div>
     </div>
     <!-- Order Wrapper: Contains Cart Items + Order Form -->
-    <div class="pos-order-wrapper">
+    <div class="pos-order-wrapper" id="pos-order-wrapper">
+        <button class="close-cart-btn d-none" id="close-cart-btn">
+            <i class="fas fa-times"></i>
+        </button>
         
         <!-- Panel 1: Cart Items -->
         <div class="cart-items-panel">
             <div class="panel-header">
                 <div class="panel-title">
                     <i class="fas fa-shopping-cart"></i>
-                    Cart
+                    {{ __('Cart') }}
                     <span class="panel-badge" id="cartCount">0</span>
                 </div>
-                <button onclick="clearCart()" title="Clear Cart (F4)" style="background: #fee2e2; color: #ef4444; border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
+                <button onclick="clearCart()" title="{{ __('Clear Cart (F4)') }}" style="background: #fee2e2; color: #ef4444; border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
                     <i class="fas fa-trash-alt" style="font-size: 12px;"></i>
                 </button>
             </div>
@@ -832,8 +879,8 @@
                     <div style="width: 64px; height: 64px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
                         <i class="fas fa-shopping-basket" style="font-size: 24px; color: #cbd5e1;"></i>
                     </div>
-                    <h3 style="font-size: 14px; font-weight: 600; color: #64748b;">Empty Cart</h3>
-                    <p style="font-size: 12px; margin-top: 4px;">Click products to add</p>
+                    <h3 style="font-size: 14px; font-weight: 600; color: #64748b;">{{ __('Empty Cart') }}</h3>
+                    <p style="font-size: 12px; margin-top: 4px;">{{ __('Click products to add') }}</p>
                 </div>
             </div>
         </div>
@@ -843,16 +890,16 @@
             <div class="panel-header">
                 <div class="panel-title">
                     <i class="fas fa-file-invoice"></i>
-                    Order Details
+                    {{ __('Order Details') }}
                 </div>
             </div>
 
             <div class="panel-content">
                 <!-- Customer Selection -->
                 <div style="margin-bottom: 16px;">
-                    <label style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; display: block;">Customer</label>
+                    <label style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; display: block;">{{ __('Customer') }}</label>
                     <select id="customerSelect" class="compact-input" style="background: white; cursor: pointer; font-size: 13px;">
-                        <option value="">🚶 Walk-in Customer</option>
+                        <option value="">🚶 {{ __('Walk-in Customer') }}</option>
                         @foreach($customers as $customer)
                             <option value="{{ $customer->id }}" 
                                     data-name="{{ $customer->name }}"
@@ -862,7 +909,7 @@
                                     data-balance="{{ $customer->current_balance }}">
                                 {{ $customer->name }} ({{ $customer->customer_code }})
                                 @if($customer->credit_limit > 0)
-                                    - Credit: {{ currency($customer->credit_limit) }}
+                                    - {{ __('Credit:') }} {{ currency($customer->credit_limit) }}
                                 @endif
                             </option>
                         @endforeach
@@ -879,7 +926,7 @@
                     </div>
                     <div id="creditInfo" style="display: none; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.2);">
                         <div style="display: flex; justify-content: space-between; align-items: center; font-size: 10px; margin-bottom: 4px;">
-                            <span style="color: rgba(255,255,255,0.9);">Credit:</span>
+                            <span style="color: rgba(255,255,255,0.9);">{{ __('Credit:') }}</span>
                             <span id="creditUsed" style="font-weight: 700; color: white; font-size: 11px;"></span>
                         </div>
                         <div style="height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden;">
@@ -889,13 +936,13 @@
                 </div>
 
                 <input type="hidden" id="customerId">
-                <input type="hidden" id="customerName" value="Walk-in Customer">
+                <input type="hidden" id="customerName" value="{{ __('Walk-in Customer') }}">
                 <input type="hidden" id="customerEmail">
                 <input type="hidden" id="customerPhone">
                 
                 <!-- Discount Input -->
                 <div style="margin-bottom: 16px;">
-                    <label style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; display: block;">Discount</label>
+                    <label style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; display: block;">{{ __('Discount') }}</label>
                     <div style="display: flex; gap: 8px;">
                         <input type="number" id="discountAmount" class="compact-input" placeholder="0" min="0" step="0.01" style="flex: 1; font-size: 13px;">
                         <select id="discountType" class="compact-input" style="width: 65px; font-size: 13px; padding: 8px;">
@@ -907,13 +954,13 @@
 
                 <!-- Payment Method -->
                 <div style="margin-bottom: 16px;">
-                    <label style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; display: block;">Payment</label>
+                    <label style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; display: block;">{{ __('Payment') }}</label>
                     <select id="paymentMethod" class="compact-input" style="background: white; font-size: 13px;">
-                        <option value="cash">💵 Cash</option>
-                        <option value="card">💳 Credit Card</option>
-                        <option value="mobile">📱 Mobile Payment</option>
-                        <option value="credit" id="creditOption" disabled style="color: #9ca3af;">🏦 On Credit</option>
-                        <option value="other">⚪ Other</option>
+                        <option value="cash">💵 {{ __('Cash') }}</option>
+                        <option value="card">💳 {{ __('Credit Card') }}</option>
+                        <option value="mobile">📱 {{ __('Mobile Payment') }}</option>
+                        <option value="credit" id="creditOption" disabled style="color: #9ca3af;">🏦 {{ __('On Credit') }}</option>
+                        <option value="other">⚪ {{ __('Other') }}</option>
                     </select>
                 </div>
             </div>
@@ -921,33 +968,33 @@
             <!-- Order Totals - Fixed at bottom -->
             <div class="order-totals">
                 <div class="bill-row">
-                    <span>Subtotal</span>
+                    <span>{{ __('Subtotal') }}</span>
                     <span id="subtotal" style="font-weight: 600; color: #1e293b;">{{ currency(0) }}</span>
                 </div>
                 <div class="bill-row" id="discountRow" style="display: none;">
-                    <span>Discount</span>
+                    <span>{{ __('Discount') }}</span>
                     <span id="discountDisplay" style="font-weight: 600; color: #10b981;">-{{ currency(0) }}</span>
                 </div>
                 <div class="bill-row">
-                    <span>Tax ({{ setting('tax_rate', 0) }}%)</span>
+                    <span>{{ __('Tax') }} ({{ setting('tax_rate', 0) }}%)</span>
                     <span id="tax" style="font-weight: 600; color: #1e293b;">{{ currency(0) }}</span>
                 </div>
                 <div class="bill-total">
-                    <span>Total</span>
+                    <span>{{ __('Total') }}</span>
                     <span id="total" style="color: #6366f1;">{{ currency(0) }}</span>
                 </div>
 
                 <!-- Keyboard Shortcuts -->
                 <div style="margin-top: 10px; font-size: 9px; color: #94a3b8; text-align: center;">
-                    <kbd style="background: #e2e8f0; padding: 1px 4px; border-radius: 2px; font-family: monospace;">F2</kbd> Search
+                    <kbd style="background: #e2e8f0; padding: 1px 4px; border-radius: 2px; font-family: monospace;">F2</kbd> {{ __('Search') }}
                     <span style="margin: 0 6px;">•</span>
-                    <kbd style="background: #e2e8f0; padding: 1px 4px; border-radius: 2px; font-family: monospace;">F4</kbd> Clear
+                    <kbd style="background: #e2e8f0; padding: 1px 4px; border-radius: 2px; font-family: monospace;">F4</kbd> {{ __('Clear') }}
                     <span style="margin: 0 6px;">•</span>
-                    <kbd style="background: #e2e8f0; padding: 1px 4px; border-radius: 2px; font-family: monospace;">F9</kbd> Pay
+                    <kbd style="background: #e2e8f0; padding: 1px 4px; border-radius: 2px; font-family: monospace;">F9</kbd> {{ __('Pay') }}
                 </div>
 
                 <button class="pay-btn" id="checkoutBtn" onclick="checkout()" disabled>
-                    Charge {{ currency(0) }}
+                    {{ __('Charge') }} <span class="charge-amount-display">{{ currency(0) }}</span>
                 </button>
             </div>
         </div>
@@ -975,7 +1022,7 @@
             grid.innerHTML = `
                 <div style="grid-column: 1/-1; text-align: center; padding-top: 60px; color: #94a3b8;">
                     <i class="fas fa-search" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
-                    <p>No matching products found</p>
+                    <p>{{ __('No matching products found') }}</p>
                 </div>
             `;
             return;
@@ -999,16 +1046,16 @@
             let stockBadgeHtml = '';
             let isOutOfStock = product.stock <= 0;
             if (isOutOfStock) {
-                stockBadgeHtml = `<div class="stock-badge out-of-stock"><i class="fas fa-times-circle"></i> Out of Stock</div>`;
+                stockBadgeHtml = `<div class="stock-badge out-of-stock"><i class="fas fa-times-circle"></i> {{ __('Out of Stock') }}</div>`;
             } else if (product.stock <= 5) {
-                stockBadgeHtml = `<div class="stock-badge low-stock"><i class="fas fa-exclamation-triangle"></i> ${product.stock} left</div>`;
+                stockBadgeHtml = `<div class="stock-badge low-stock"><i class="fas fa-exclamation-triangle"></i> ${product.stock} {{ __('left') }}</div>`;
             } else {
                 stockBadgeHtml = `<div class="stock-badge in-stock"><i class="fas fa-check-circle"></i> ${product.stock}</div>`;
             }
             
             // Sale badge if applicable
             const saleBadge = product.sale_price && parseFloat(product.sale_price) < parseFloat(product.price) 
-                ? `<div class="sale-badge">SALE</div>` 
+                ? `<div class="sale-badge">{{ __('SALE') }}</div>` 
                 : '';
             
             // Price display
@@ -1068,12 +1115,12 @@
                     <div style="width: 64px; height: 64px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
                         <i class="fas fa-shopping-basket" style="font-size: 24px; color: #cbd5e1;"></i>
                     </div>
-                    <h3 style="font-size: 14px; font-weight: 600; color: #64748b;">Empty Cart</h3>
-                    <p style="font-size: 12px; margin-top: 4px;">Click products to add</p>
+                    <h3 style="font-size: 14px; font-weight: 600; color: #64748b;">{{ __('Empty Cart') }}</h3>
+                    <p style="font-size: 12px; margin-top: 4px;">{{ __('Click products to add') }}</p>
                 </div>
             `;
             document.getElementById('checkoutBtn').disabled = true;
-            document.getElementById('checkoutBtn').innerHTML = `Charge ${formatCurrency(0)}`;
+            document.getElementById('checkoutBtn').innerHTML = `{{ __('Charge') }} ${formatCurrency(0)}`;
         } else {
             container.innerHTML = cart.map(item => `
                 <div class="cart-item">
@@ -1103,7 +1150,7 @@
         const total = subtotal * (1 + window.currencyConfig.tax_rate);
         
         if(cart.length > 0) {
-            document.getElementById('checkoutBtn').innerHTML = `Charge ${formatCurrency(total)}`;
+            document.getElementById('checkoutBtn').innerHTML = `{{ __('Charge') }} ${formatCurrency(total)}`;
         }
     };
 
@@ -1117,7 +1164,7 @@
             if(typeof Toast !== 'undefined') {
                 Toast.fire({
                     icon: 'success',
-                    title: 'Added to cart',
+                    title: '{{ __('Added to cart') }}',
                     timer: 1000,
                     showConfirmButton: false
                 });
@@ -1165,5 +1212,48 @@
         loadAllProducts();
     });
 </script>
+    <!-- Mobile Cart Toggle -->
+    <button class="mobile-cart-toggle d-none" id="mobile-cart-toggle">
+        <div class="d-flex align-items-center gap-3">
+            <i class="fas fa-shopping-cart"></i>
+            <span>{{ __('View Cart') }}</span>
+        </div>
+        <span class="total-badge" id="mobile-total-badge">{{ currency(0) }}</span>
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cartToggle = document.getElementById('mobile-cart-toggle');
+            const cartWrapper = document.getElementById('pos-order-wrapper');
+            const closeCart = document.getElementById('close-cart-btn');
+            const totalBadge = document.getElementById('mobile-total-badge');
+
+            if (cartToggle) {
+                cartToggle.addEventListener('click', () => {
+                    cartWrapper.classList.add('show');
+                });
+            }
+
+            if (closeCart) {
+                closeCart.addEventListener('click', () => {
+                    cartWrapper.classList.remove('show');
+                });
+            }
+
+            // Sync total badge with main total
+            const observer = new MutationObserver(() => {
+                const checkoutBtn = document.getElementById('checkoutBtn');
+                if (checkoutBtn) {
+                    const totalText = checkoutBtn.innerText.replace('{{ __("Charge") }}', '').trim();
+                    totalBadge.innerText = totalText;
+                }
+            });
+
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            if (checkoutBtn) {
+                observer.observe(checkoutBtn, { childList: true, characterData: true, subtree: true });
+            }
+        });
+    </script>
 @endpush
 @endsection

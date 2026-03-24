@@ -8,18 +8,18 @@
 {{-- =============================================
      BREADCRUMB
      ============================================= --}}
-<section class="pdp-breadcrumb-bar py-3 bg-light border-bottom">
-    <div class="container small">
+<section class="pdp-breadcrumb-bar py-3 bg-white border-bottom">
+    <div class="container px-xl-5 small font-body">
         <nav class="pdp-breadcrumb" aria-label="breadcrumb">
-            <a href="{{ url('/') }}" class="text-muted"><i class="fas fa-home"></i></a>
-            <span class="mx-2 text-muted">/</span>
-            <a href="{{ route('shop.index') }}" class="text-muted">المتجر</a>
+            <a href="{{ url('/') }}" class="text-muted text-decoration-none"><i class="fas fa-home"></i></a>
+            <span class="mx-2 text-muted opacity-50">/</span>
+            <a href="{{ route('shop.index') }}" class="text-muted text-decoration-none">المتجر</a>
             @if($product->productCategory)
-                <span class="mx-2 text-muted">/</span>
-                <a href="{{ route('shop.index', ['category' => $product->productCategory->slug]) }}" class="text-muted">{{ $product->productCategory->translated_name }}</a>
+                <span class="mx-2 text-muted opacity-50">/</span>
+                <a href="{{ route('shop.index', ['category' => $product->productCategory->slug]) }}" class="text-muted text-decoration-none">{{ $product->productCategory->translated_name }}</a>
             @endif
-            <span class="mx-2 text-muted">/</span>
-            <span class="text-dark fw-bold">{{ Str::limit($product->translated_name, 40) }}</span>
+            <span class="mx-2 text-muted opacity-50">/</span>
+            <span class="text-gold fw-bold">{{ Str::limit($product->translated_name, 40) }}</span>
         </nav>
     </div>
 </section>
@@ -28,8 +28,8 @@
      MAIN PRODUCT LAYOUT
      ============================================= --}}
 <section class="pdp-body section-py">
-    <div class="container">
-        <div class="row g-5">
+    <div class="container px-xl-5">
+        <div class="row g-4 g-lg-5">
 
             {{-- ── IMAGE PANEL ── --}}
             <div class="col-lg-6">
@@ -56,11 +56,11 @@
                 {{-- Thumbnail Strip --}}
                 @if($product->images->count() > 0)
                 <div class="d-flex gap-2 overflow-auto pdp-thumbs pb-2">
-                    <div class="thumb-item active" onclick="pdpChangeImage('{{ Storage::url($product->main_image) }}', this)" style="width: 80px; height: 100px; flex-shrink: 0; cursor: pointer; border: 2px solid transparent; border-radius: 8px; overflow: hidden;">
+                    <div class="thumb-item active border rounded overflow-hidden" onclick="pdpChangeImage('{{ Storage::url($product->main_image) }}', this)" style="width: 80px; height: 100px; flex-shrink: 0; cursor: pointer; transition: 0.3s;">
                         <img src="{{ Storage::url($product->main_image) }}" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                     @foreach($product->images as $img)
-                    <div class="thumb-item" onclick="pdpChangeImage('{{ Storage::url($img->image_path) }}', this)" style="width: 80px; height: 100px; flex-shrink: 0; cursor: pointer; border: 2px solid transparent; border-radius: 8px; overflow: hidden;">
+                    <div class="thumb-item border rounded overflow-hidden" onclick="pdpChangeImage('{{ Storage::url($img->image_path) }}', this)" style="width: 80px; height: 100px; flex-shrink: 0; cursor: pointer; transition: 0.3s;">
                         <img src="{{ Storage::url($img->image_path) }}" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                     @endforeach
@@ -70,59 +70,55 @@
 
             {{-- ── INFO PANEL ── --}}
             <div class="col-lg-6">
-                <div class="ps-lg-4">
+                <div class="ps-lg-5">
                     @if($product->productCategory)
-                    <div class="text-primary small fw-bold mb-2 text-uppercase ls-1">{{ $product->productCategory->translated_name }}</div>
+                    <div class="text-gold small fw-bold mb-2 text-uppercase ls-2 font-body" style="letter-spacing: 2px;">{{ $product->productCategory->translated_name }}</div>
                     @endif
                     
-                    <h1 class="h2 fw-black mb-3">{{ $product->translated_name }}</h1>
+                    <h1 class="brand-heading h1 mb-3 text-dark">{{ $product->translated_name }}</h1>
 
                     {{-- Price & Stock --}}
-                    <div class="d-flex align-items-baseline gap-3 mb-4">
-                        @if($product->isOnSale())
-                            <span class="h3 fw-bold text-primary m-0" id="displayPrice">{{ $product->formatted_sale_price }}</span>
-                            <span class="text-muted text-decoration-line-through">{{ $product->formatted_price }}</span>
-                        @else
-                            <span class="h3 fw-bold text-primary m-0" id="displayPrice">{{ $product->formatted_price }}</span>
-                        @endif
-                        
-                        <span id="stockBadge" class="small px-2 py-1 rounded-pill {{ $product->getTotalStockAttribute() > 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }}">
-                            @if($product->getTotalStockAttribute() > 0)
-                                <i class="fas fa-check-circle me-1"></i> متوفر حالياً
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <div class="pdp-price">
+                            @if($product->isOnSale())
+                                <span class="h2 fw-bold text-gold m-0" id="displayPrice">{{ $product->formatted_sale_price }}</span>
+                                <span class="text-muted text-decoration-line-through ms-2 small font-body">{{ $product->formatted_price }}</span>
                             @else
-                                <i class="fas fa-times-circle me-1"></i> غير متوفر
+                                <span class="h2 fw-bold text-gold m-0" id="displayPrice">{{ $product->formatted_price }}</span>
+                            @endif
+                        </div>
+                        
+                        <span id="stockBadge" class="small px-3 py-1 rounded-pill fw-bold font-body {{ $product->getTotalStockAttribute() > 0 ? 'bg-gold-light text-dark' : 'bg-light text-muted' }}">
+                            @if($product->getTotalStockAttribute() > 0)
+                                <i class="fas fa-crown me-1 small"></i> متوفر في المتجر
+                            @else
+                                <i class="fas fa-times me-1"></i> غير متوفر حالياً
                             @endif
                         </span>
                     </div>
 
                     {{-- Description --}}
-                    <div class="text-muted mb-4 lead-sm lh-lg">
+                    <div class="text-muted mb-4 font-body lh-lg" style="font-size: 0.95rem;">
                         {!! nl2br(e($product->translated_description)) !!}
                     </div>
 
-                    <hr class="my-4 opacity-10">
+                    <div class="bg-gold-light opacity-50 my-4" style="height: 1px;"></div>
 
                     {{-- VARIANT SELECTION --}}
                     @if($product->variants->count() > 0)
-                        <div class="pdp-variants mb-5">
+                        <div class="pdp-variants mb-5 font-body">
                             {{-- Colors --}}
                             @php $colors = $product->getAvailableColorsAttribute(); @endphp
                             @if($colors->count() > 0)
                                 <div class="mb-4">
-                                    <label class="fw-bold mb-3 d-block h6">اللون:</label>
+                                    <label class="fw-bold mb-2 d-block small text-muted text-uppercase">اللون المختار:</label>
                                     <div class="d-flex flex-wrap gap-3" id="colorOptions">
                                         @foreach($colors as $color)
-                                            <div class="variant-option color-pill {{ $loop->first ? 'active' : '' }}" 
+                                            <div class="variant-option border rounded-circle p-1" 
                                                  data-color="{{ $color->color }}" 
-                                                 title="{{ $color->color }}"
+                                                 style="cursor: pointer; transition: 0.3s;"
                                                  onclick="selectColor(this)">
-                                                @if($color->color_image)
-                                                    <img src="{{ Storage::url($color->color_image) }}" alt="{{ $color->color }}">
-                                                @elseif($color->color_code)
-                                                    <span class="color-box" style="background-color: {{ $color->color_code }}"></span>
-                                                @else
-                                                    <span class="color-text">{{ $color->color }}</span>
-                                                @endif
+                                                <div class="rounded-circle" style="width: 32px; height: 32px; background-color: {{ $color->color_code ?: '#eee' }}; border: 1px solid rgba(0,0,0,0.1);"></div>
                                             </div>
                                         @endforeach
                                     </div>
@@ -133,10 +129,11 @@
                             @php $sizes = $product->getAvailableSizesAttribute(); @endphp
                             @if($sizes->count() > 0)
                                 <div class="mb-4">
-                                    <label class="fw-bold mb-3 d-block h6">المقاس:</label>
+                                    <label class="fw-bold mb-2 d-block small text-muted text-uppercase">المقاس:</label>
                                     <div class="d-flex flex-wrap gap-2" id="sizeOptions">
                                         @foreach($sizes as $size)
-                                            <div class="variant-option size-pill" 
+                                            <div class="variant-option border rounded px-3 py-2 small fw-bold" 
+                                                 style="cursor: pointer; transition: 0.3s;"
                                                  data-size="{{ $size }}"
                                                  onclick="selectSize(this)">
                                                 {{ $size }}
@@ -154,22 +151,21 @@
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
                         <input type="hidden" name="variant_id" id="selectedVariantId" value="">
                         
-                        <div class="row g-3 align-items-center mb-5">
-                            <div class="col-auto">
-                                <div class="d-flex align-items-center border rounded-pill bg-white px-2">
-                                    <button type="button" class="btn btn-link link-dark p-2" onclick="pdpChangeQty(-1)">
-                                        <i class="fas fa-minus"></i>
+                        <div class="row g-2 align-items-stretch mb-5">
+                            <div class="col-4 col-md-3">
+                                <div class="d-flex align-items-center border rounded h-100 bg-white">
+                                    <button type="button" class="btn btn-link text-muted p-2 text-decoration-none" onclick="pdpChangeQty(-1)">
+                                        <i class="fas fa-minus small"></i>
                                     </button>
                                     <input type="number" name="quantity" id="pdpQty" value="1"
-                                           min="1" max="{{ $product->getTotalStockAttribute() }}" class="form-control border-0 text-center fw-bold" style="width: 50px; background: transparent;">
-                                    <button type="button" class="btn btn-link link-dark p-2" onclick="pdpChangeQty(1)">
-                                        <i class="fas fa-plus"></i>
+                                           min="1" max="{{ $product->getTotalStockAttribute() }}" class="form-control border-0 text-center fw-bold p-0 font-body" style="background: transparent;">
+                                    <button type="button" class="btn btn-link text-muted p-2 text-decoration-none" onclick="pdpChangeQty(1)">
+                                        <i class="fas fa-plus small"></i>
                                     </button>
                                 </div>
                             </div>
-                            <div class="col">
-                                <button type="submit" id="addToCartBtn" class="btn btn-primary w-100 rounded-pill py-3 fw-bold"
-                                        {{ $product->getTotalStockAttribute() <= 0 ? 'disabled' : '' }}>
+                            <div class="col-8 col-md-9">
+                                <button type="submit" id="addToCartBtn" class="btn-brand-primary w-100 h-100 py-3 font-body">
                                     أضيفي للسلة <i class="fas fa-cart-plus ms-2"></i>
                                 </button>
                             </div>
@@ -178,22 +174,22 @@
 
                     {{-- Trust Pills --}}
                     <div class="row g-3">
-                        <div class="col-6 col-md-4">
-                            <div class="p-3 bg-light rounded-4 text-center h-100">
-                                <i class="fas fa-truck text-primary mb-2 d-block h4"></i>
-                                <span class="small fw-bold">توصيل سريع</span>
+                        <div class="col-4">
+                            <div class="brand-card p-3 border-0 bg-gold-light text-center h-100">
+                                <i class="fas fa-truck text-gold mb-2 d-block h4"></i>
+                                <span class="small fw-bold font-body" style="font-size: 0.7rem;">توصيل سريع</span>
                             </div>
                         </div>
-                        <div class="col-6 col-md-4">
-                            <div class="p-3 bg-light rounded-4 text-center h-100">
-                                <i class="fas fa-undo text-primary mb-2 d-block h4"></i>
-                                <span class="small fw-bold">استرجاع سهل</span>
+                        <div class="col-4">
+                            <div class="brand-card p-3 border-0 bg-gold-light text-center h-100">
+                                <i class="fas fa-undo text-gold mb-2 d-block h4"></i>
+                                <span class="small fw-bold font-body" style="font-size: 0.7rem;">استرجاع سهل</span>
                             </div>
                         </div>
-                        <div class="col-6 col-md-4">
-                            <div class="p-3 bg-light rounded-4 text-center h-100">
-                                <i class="fas fa-shield-alt text-primary mb-2 d-block h4"></i>
-                                <span class="small fw-bold">دفع آمن</span>
+                        <div class="col-4">
+                            <div class="brand-card p-3 border-0 bg-gold-light text-center h-100">
+                                <i class="fas fa-shield-alt text-gold mb-2 d-block h4"></i>
+                                <span class="small fw-bold font-body" style="font-size: 0.7rem;">دفع آمن</span>
                             </div>
                         </div>
                     </div>
@@ -205,21 +201,16 @@
         {{-- RELATED PRODUCTS --}}
         @if($relatedProducts->count() > 0)
         <div class="mt-5 pt-5 border-top">
-            <h3 class="fw-bold mb-4">منتجات قد تعجبك</h3>
-            <div class="row g-4">
+            <div class="d-flex justify-content-between align-items-end mb-4">
+                <div>
+                    <h3 class="brand-heading m-0">منتجات قد تعجبك</h3>
+                    <div class="bg-gold mt-2 rounded" style="width: 40px; height: 3px;"></div>
+                </div>
+            </div>
+            <div class="row g-3 g-lg-4">
                 @foreach($relatedProducts as $related)
                 <div class="col-6 col-md-3">
-                    <div class="product-card-v2">
-                        <div class="product-v2-image">
-                            <a href="{{ route('shop.show', $related->id) }}">
-                                <img src="{{ $related->main_image ? Storage::url($related->main_image) : asset('images/placeholder-product.jpg') }}" alt="{{ $related->translated_name }}">
-                            </a>
-                        </div>
-                        <div class="product-v2-body">
-                            <h5 class="product-v2-name"><a href="{{ route('shop.show', $related->id) }}">{{ Str::limit($related->translated_name, 30) }}</a></h5>
-                            <div class="product-v2-price">{{ $related->formatted_price }}</div>
-                        </div>
-                    </div>
+                    @include('frontend.partials.product_card_v2', ['product' => $related])
                 </div>
                 @endforeach
             </div>
@@ -243,10 +234,15 @@ const mainImageSrc = "{{ $product->main_image ? Storage::url($product->main_imag
 function selectColor(el) {
     if (el.classList.contains('active')) {
         el.classList.remove('active');
+        el.style.borderColor = 'rgba(0,0,0,0.1)';
         selectedColor = null;
     } else {
-        document.querySelectorAll('.color-pill').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.color-pill, .variant-option').forEach(p => {
+            p.classList.remove('active');
+            p.style.borderColor = 'rgba(0,0,0,0.1)';
+        });
         el.classList.add('active');
+        el.style.borderColor = 'var(--brand-gold)';
         selectedColor = el.dataset.color;
     }
     updateVariantSelection();
@@ -255,10 +251,20 @@ function selectColor(el) {
 function selectSize(el) {
     if (el.classList.contains('active')) {
         el.classList.remove('active');
+        el.style.borderColor = 'rgba(0,0,0,0.1)';
+        el.style.color = 'inherit';
         selectedSize = null;
     } else {
-        document.querySelectorAll('.size-pill').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.size-pill, .variant-option').forEach(p => {
+            if(p.dataset.size) {
+                p.classList.remove('active');
+                p.style.borderColor = 'rgba(0,0,0,0.1)';
+                p.style.color = 'inherit';
+            }
+        });
         el.classList.add('active');
+        el.style.borderColor = 'var(--brand-gold)';
+        el.style.color = 'var(--brand-gold)';
         selectedSize = el.dataset.size;
     }
     updateVariantSelection();
@@ -270,10 +276,8 @@ function updateVariantSelection() {
     const stockBadge = document.getElementById('stockBadge');
     const priceDisplay = document.getElementById('displayPrice');
     
-    // Reset hidden input
     input.value = '';
 
-    // Find the specific matching variant
     const match = variants.find(v => 
         (v.color === selectedColor) && 
         (v.size === selectedSize)
@@ -283,106 +287,38 @@ function updateVariantSelection() {
         input.value = match.id;
         if (match.stock > 0) {
             btn.disabled = false;
-            stockBadge.innerHTML = '<i class="fas fa-check-circle me-1"></i> متوفر حالياً';
-            stockBadge.className = 'small px-2 py-1 rounded-pill bg-success-subtle text-success';
+            stockBadge.innerHTML = '<i class="fas fa-crown me-1 small"></i> متوفر في المتجر';
+            stockBadge.className = 'small px-3 py-1 rounded-pill fw-bold font-body bg-gold-light text-dark';
             document.getElementById('pdpQty').max = match.stock;
         } else {
             btn.disabled = true;
-            stockBadge.innerHTML = '<i class="fas fa-times-circle me-1"></i> غير متوفر';
-            stockBadge.className = 'small px-2 py-1 rounded-pill bg-danger-subtle text-danger';
+            stockBadge.innerHTML = '<i class="fas fa-times me-1"></i> غير متوفر حالياً';
+            stockBadge.className = 'small px-3 py-1 rounded-pill fw-bold font-body bg-light text-muted';
         }
         if (match.price) {
             priceDisplay.textContent = match.price + ' DH';
         }
         if (match.color_image) {
-            pdpChangeImage(`/storage/${match.color_image}`, null);
+            pdpChangeImage(match.color_image, null);
         }
     } else {
-        // Handle partial or no selection
-        btn.disabled = (variants.length > 0); // Disable if we need a variant but don't have a full match
+        btn.disabled = (variants.length > 0); 
         
         if (selectedColor && selectedSize) {
-            stockBadge.innerHTML = '<i class="fas fa-times-circle me-1"></i> غير متوفر بهذا المقاس/اللون';
-            stockBadge.className = 'small px-2 py-1 rounded-pill bg-danger-subtle text-danger';
+            stockBadge.innerHTML = '<i class="fas fa-times me-1"></i> غير متوفر بهذا الخيار';
+            stockBadge.className = 'small px-3 py-1 rounded-pill fw-bold font-body bg-light text-muted';
         } else {
-            // Revert to global stock status
             const totalStock = {{ $product->getTotalStockAttribute() }};
-            stockBadge.innerHTML = totalStock > 0 ? '<i class="fas fa-check-circle me-1"></i> متوفر حالياً' : '<i class="fas fa-times-circle me-1"></i> نفذ من المخزن';
-            stockBadge.className = totalStock > 0 ? 'small px-2 py-1 rounded-pill bg-success-subtle text-success' : 'small px-2 py-1 rounded-pill bg-danger-subtle text-danger';
+            stockBadge.innerHTML = totalStock > 0 ? '<i class="fas fa-crown me-1 small"></i> متوفر في المتجر' : '<i class="fas fa-times me-1"></i> غير متوفر حالياً';
+            stockBadge.className = totalStock > 0 ? 'small px-3 py-1 rounded-pill fw-bold font-body bg-gold-light text-dark' : 'small px-3 py-1 rounded-pill fw-bold font-body bg-light text-muted';
             
-            // Revert price and image if nothing selected
             if (!selectedColor && !selectedSize) {
                 priceDisplay.textContent = basePrice;
                 if (mainImageSrc) pdpChangeImage(mainImageSrc, document.querySelector('.thumb-item'));
-            } else if (selectedColor) {
-                // If only color selected, maybe find first variant of that color to show price?
-                const firstColVariant = variants.find(v => v.color === selectedColor);
-                if (firstColVariant && firstColVariant.price) {
-                    priceDisplay.textContent = firstColVariant.price + ' DH';
-                }
-                if (firstColVariant && firstColVariant.color_image) {
-                    pdpChangeImage(`/storage/${firstColVariant.color_image}`, null);
-                }
             }
         }
     }
-
-    updateAvailability();
 }
-
-function updateAvailability() {
-    // 1. Update Size Availability based on selected color
-    document.querySelectorAll('.size-pill').forEach(pill => {
-        const size = pill.dataset.size;
-        let isAvailable = false;
-        
-        if (selectedColor) {
-            // Check if this size is in stock for the selected color
-            isAvailable = variants.some(v => v.color === selectedColor && v.size === size && v.stock > 0);
-        } else {
-            // If no color selected, check if this size is in stock in ANY color
-            isAvailable = variants.some(v => v.size === size && v.stock > 0);
-        }
-        
-        pill.classList.toggle('disabled-option', !isAvailable);
-    });
-
-    // 2. Update Color Availability based on selected size
-    document.querySelectorAll('.color-pill').forEach(pill => {
-        const color = pill.dataset.color;
-        let isAvailable = false;
-        
-        if (selectedSize) {
-            // Check if this color is in stock for the selected size
-            isAvailable = variants.some(v => v.size === selectedSize && v.color === color && v.stock > 0);
-        } else {
-            // If no size selected, check if this color is in stock in ANY size
-            isAvailable = variants.some(v => v.color === color && v.stock > 0);
-        }
-        
-        pill.classList.toggle('disabled-option', !isAvailable);
-    });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Initial availability check
-    updateAvailability();
-
-    // Auto-select first available combo
-    const firstAvailable = variants.find(v => v.stock > 0);
-    if (firstAvailable) {
-        const colorPill = document.querySelector(`.color-pill[data-color="${firstAvailable.color}"]`);
-        if (colorPill) selectColor(colorPill);
-        const sizePill = document.querySelector(`.size-pill[data-size="${firstAvailable.size}"]`);
-        if (sizePill) selectSize(sizePill);
-    } else {
-        // Just select first ones if everything is out of stock
-        const firstColor = document.querySelector('.color-pill');
-        if (firstColor) selectColor(firstColor);
-        const firstSize = document.querySelector('.size-pill');
-        if (firstSize) selectSize(firstSize);
-    }
-});
 
 function pdpZoom(e) {
     const wrap = document.getElementById('zoomWrap');
@@ -407,9 +343,12 @@ function pdpChangeImage(src, thumb) {
         mainImg.style.opacity = '1';
     }, 120);
     if (thumb) {
-        document.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.thumb-item').forEach(t => {
+            t.classList.remove('active');
+            t.style.borderColor = 'rgba(0,0,0,0.1)';
+        });
         thumb.classList.add('active');
-        thumb.style.borderColor = 'var(--primary)';
+        thumb.style.borderColor = 'var(--brand-gold)';
     }
 }
 
@@ -436,7 +375,7 @@ function pdpAddToCart(event) {
     const orig = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإضافة…';
 
-    fetch(`/cart/add/${productId}`, {
+    fetch(`{{ url('/cart/add') }}/${productId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

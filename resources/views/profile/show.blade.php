@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'My Profile')
+@section('title', __('My Profile'))
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/management.css') }}">
@@ -81,11 +81,11 @@
 <div class="page-header">
     <div style="display: flex; justify-content: space-between; align-items: center;">
         <div>
-            <h1 class="page-title"><i class="fas fa-user"></i> My Profile</h1>
-            <p class="page-subtitle">View and manage your account information</p>
+            <h1 class="page-title"><i class="fas fa-user"></i> {{ __('My Profile') }}</h1>
+            <p class="page-subtitle">{{ __('View and manage your account information') }}</p>
         </div>
         <a href="{{ route('profile.edit') }}" class="btn btn-primary">
-            <i class="fas fa-edit"></i> Edit Profile
+            <i class="fas fa-edit"></i> {{ __('Edit Profile') }}
         </a>
     </div>
 </div>
@@ -119,27 +119,27 @@
 
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-info-circle"></i> Account Information</h3>
+        <h3 class="card-title"><i class="fas fa-info-circle"></i> {{ __('Account Information') }}</h3>
     </div>
     <div class="card-body">
         <div class="info-grid">
             <div class="info-item">
-                <div class="info-label"><i class="fas fa-user"></i> Full Name</div>
+                <div class="info-label"><i class="fas fa-user"></i> {{ __('Full Name') }}</div>
                 <div class="info-value">{{ $user->name }}</div>
             </div>
             
             <div class="info-item">
-                <div class="info-label"><i class="fas fa-envelope"></i> Email Address</div>
+                <div class="info-label"><i class="fas fa-envelope"></i> {{ __('Email Address') }}</div>
                 <div class="info-value">{{ $user->email }}</div>
             </div>
             
             <div class="info-item">
-                <div class="info-label"><i class="fas fa-calendar"></i> Member Since</div>
+                <div class="info-label"><i class="fas fa-calendar"></i> {{ __('Member Since') }}</div>
                 <div class="info-value">{{ $user->created_at->format('F d, Y') }}</div>
             </div>
             
             <div class="info-item">
-                <div class="info-label"><i class="fas fa-clock"></i> Last Updated</div>
+                <div class="info-label"><i class="fas fa-clock"></i> {{ __('Last Updated') }}</div>
                 <div class="info-value">{{ $user->updated_at->diffForHumans() }}</div>
             </div>
         </div>
@@ -148,22 +148,22 @@
 
 <div class="card" style="margin-top: 24px;">
     <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-shield-alt"></i> Roles & Permissions</h3>
+        <h3 class="card-title"><i class="fas fa-shield-alt"></i> {{ __('Roles & Permissions') }}</h3>
     </div>
     <div class="card-body">
-        <h4 style="margin-bottom: 12px;">Your Roles:</h4>
+        <h4 style="margin-bottom: 12px;">{{ __('Your Roles:') }}</h4>
         <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px;">
             @forelse($user->roles as $role)
                 <span class="badge badge-primary" style="padding: 8px 16px; font-size: 14px;">
                     <i class="fas fa-user-shield"></i> {{ $role->name }}
                 </span>
             @empty
-                <p class="text-muted">No roles assigned</p>
+                <p class="text-muted">{{ __('No roles assigned') }}</p>
             @endforelse
         </div>
         
         @if($user->roles->isNotEmpty())
-        <h4 style="margin-bottom: 12px;">Your Permissions:</h4>
+        <h4 style="margin-bottom: 12px;">{{ __('Your Permissions:') }}</h4>
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             @php
                 $permissions = $user->roles->flatMap->permissions->unique('id');

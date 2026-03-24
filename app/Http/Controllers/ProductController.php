@@ -58,9 +58,9 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => ['nullable', 'string', 'max:255'],
-            'name_fr' => ['required', 'string', 'max:255'],
+            'name_fr' => ['nullable', 'string', 'max:255'],
             'name_en' => ['nullable', 'string', 'max:255'],
-            'name_ar' => ['nullable', 'string', 'max:255'],
+            'name_ar' => ['required', 'string', 'max:255'],
             'sku' => ['required', 'string', 'max:255', 'unique:products,sku'],
             'description' => ['nullable', 'string'],
             'description_fr' => ['nullable', 'string'],
@@ -85,6 +85,20 @@ class ProductController extends Controller
 
         DB::beginTransaction();
         try {
+            // Fallback for primary name fields if hidden ones are empty
+            if (empty($validated['name_fr'])) {
+                $validated['name_fr'] = $validated['name_ar'];
+            }
+            if (empty($validated['name'])) {
+                $validated['name'] = $validated['name_ar'];
+            }
+            if (empty($validated['description_fr'])) {
+                $validated['description_fr'] = $validated['description_ar'] ?? '';
+            }
+            if (empty($validated['description'])) {
+                $validated['description'] = $validated['description_ar'] ?? '';
+            }
+
             $product = Product::create(\Illuminate\Support\Arr::except($validated, ['variants']));
 
             // Handle multiple image uploads
@@ -102,9 +116,14 @@ class ProductController extends Controller
 
             // Handle Variations
             if ($request->has('variants')) {
-                foreach ($request->variants as $variantData) {
-                    if (isset($variantData['color_image'])) {
-                        $variantData['color_image'] = $variantData['color_image']->store('variants', 'public');
+                foreach ($request->variants as $index => $variantData) {
+                    // Fallback to HEX code if color name is not provided
+                    if (empty($variantData['color']) && !empty($variantData['color_code'])) {
+                        $variantData['color'] = $variantData['color_code'];
+                    }
+
+                    if ($request->hasFile("variants.{$index}.color_image")) {
+                        $variantData['color_image'] = $request->file("variants.{$index}.color_image")->store('variants', 'public');
                     }
                     $product->variants()->create($variantData);
                 }
@@ -142,9 +161,9 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => ['nullable', 'string', 'max:255'],
-            'name_fr' => ['required', 'string', 'max:255'],
+            'name_fr' => ['nullable', 'string', 'max:255'],
             'name_en' => ['nullable', 'string', 'max:255'],
-            'name_ar' => ['nullable', 'string', 'max:255'],
+            'name_ar' => ['required', 'string', 'max:255'],
             'sku' => ['required', 'string', 'max:255', 'unique:products,sku,' . $product->id],
             'description' => ['nullable', 'string'],
             'description_fr' => ['nullable', 'string'],
@@ -173,6 +192,20 @@ class ProductController extends Controller
 
         DB::beginTransaction();
         try {
+            // Fallback for primary name fields
+            if (empty($validated['name_fr'])) {
+                $validated['name_fr'] = $validated['name_ar'];
+            }
+            if (empty($validated['name'])) {
+                $validated['name'] = $validated['name_ar'];
+            }
+            if (empty($validated['description_fr'])) {
+                $validated['description_fr'] = $validated['description_ar'] ?? '';
+            }
+            if (empty($validated['description'])) {
+                $validated['description'] = $validated['description_ar'] ?? '';
+            }
+
             $product->update(\Illuminate\Support\Arr::except($validated, ['variants', 'remove_images']));
 
             // Handle image removal
@@ -205,12 +238,17 @@ class ProductController extends Controller
                 // Delete removed variants
                 $product->variants()->whereNotIn('id', $submittedVariantIds)->delete();
 
-                foreach ($request->variants as $variantData) {
+                foreach ($request->variants as $index => $variantData) {
                     $variantId = $variantData['id'] ?? null;
                     
+                    // Fallback to HEX code if color name is not provided
+                    if (empty($variantData['color']) && !empty($variantData['color_code'])) {
+                        $variantData['color'] = $variantData['color_code'];
+                    }
+                    
                     // Handle color image upload
-                    if (isset($variantData['color_image']) && $variantData['color_image'] instanceof \Illuminate\Http\UploadedFile) {
-                        $variantData['color_image'] = $variantData['color_image']->store('variants', 'public');
+                    if ($request->hasFile("variants.{$index}.color_image")) {
+                        $variantData['color_image'] = $request->file("variants.{$index}.color_image")->store('variants', 'public');
                     } elseif (isset($variantData['remove_image']) && $variantData['remove_image']) {
                         $variantData['color_image'] = null;
                     } else {

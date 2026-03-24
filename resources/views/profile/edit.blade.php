@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Profile')
+@section('title', __('Edit Profile'))
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/management.css') }}">
@@ -35,15 +35,15 @@
 
 @section('content')
 <div class="page-header">
-    <h1 class="page-title"><i class="fas fa-user-edit"></i> Edit Profile</h1>
-    <p class="page-subtitle">Update your account information and password</p>
+    <h1 class="page-title"><i class="fas fa-user-edit"></i> {{ __('Edit Profile') }}</h1>
+    <p class="page-subtitle">{{ __('Update your account information and password') }}</p>
 </div>
 
 @if($errors->any())
 <div class="alert alert-danger">
     <i class="fas fa-exclamation-circle"></i>
     <div>
-        <strong>Oops! Something went wrong:</strong>
+        <strong>{{ __('Oops! Something went wrong:') }}</strong>
         <ul style="margin: 8px 0 0 20px; padding: 0;">
             @foreach($errors->all() as $error)
                 <li>{{ $error }}</li>
@@ -55,7 +55,7 @@
 
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-user"></i> Profile Information</h3>
+        <h3 class="card-title"><i class="fas fa-user"></i> {{ __('Profile Information') }}</h3>
     </div>
     <div class="card-body">
         <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
@@ -72,14 +72,14 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="avatar" class="form-label">Profile Picture</label>
+                    <label for="avatar" class="form-label">{{ __('Profile Picture') }}</label>
                     <input type="file" 
                            id="avatar" 
                            name="avatar" 
                            class="form-control" 
                            accept="image/*"
                            onchange="previewAvatar(event)">
-                    <small class="text-muted">Max size: 2MB. Accepted: JPG, PNG, GIF</small>
+                    <small class="text-muted">{{ __('Max size: 2MB. Accepted: JPG, PNG, GIF') }}</small>
                 </div>
             </div>
             
@@ -88,7 +88,7 @@
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
                 <div class="form-group">
                     <label for="name" class="form-label">
-                        Full Name <span class="required">*</span>
+                        {{ __('Full Name') }} <span class="required">*</span>
                     </label>
                     <input type="text" 
                            id="name" 
@@ -100,7 +100,7 @@
 
                 <div class="form-group">
                     <label for="email" class="form-label">
-                        Email Address <span class="required">*</span>
+                        {{ __('Email Address') }} <span class="required">*</span>
                     </label>
                     <input type="email" 
                            id="email" 
@@ -113,10 +113,10 @@
 
             <div class="form-actions">
                 <a href="{{ route('profile.show') }}" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> Cancel
+                    <i class="fas fa-times"></i> {{ __('Cancel') }}
                 </a>
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Update Profile
+                    <i class="fas fa-save"></i> {{ __('Update Profile') }}
                 </button>
             </div>
         </form>
@@ -125,7 +125,7 @@
 
 <div class="card" style="margin-top: 24px;">
     <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-lock"></i> Change Password</h3>
+        <h3 class="card-title"><i class="fas fa-lock"></i> {{ __('Change Password') }}</h3>
     </div>
     <div class="card-body">
         <form action="{{ route('profile.password') }}" method="POST">
@@ -135,7 +135,7 @@
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
                 <div class="form-group">
                     <label for="current_password" class="form-label">
-                        Current Password <span class="required">*</span>
+                        {{ __('Current Password') }} <span class="required">*</span>
                     </label>
                     <input type="password" 
                            id="current_password" 
@@ -146,19 +146,19 @@
 
                 <div class="form-group">
                     <label for="password" class="form-label">
-                        New Password <span class="required">*</span>
+                        {{ __('New Password') }} <span class="required">*</span>
                     </label>
                     <input type="password" 
                            id="password" 
                            name="password" 
                            class="form-control" 
                            required>
-                    <small class="text-muted">Minimum 8 characters</small>
+                    <small class="text-muted">{{ __('Minimum 8 characters') }}</small>
                 </div>
 
                 <div class="form-group">
                     <label for="password_confirmation" class="form-label">
-                        Confirm New Password <span class="required">*</span>
+                        {{ __('Confirm New Password') }} <span class="required">*</span>
                     </label>
                     <input type="password" 
                            id="password_confirmation" 
@@ -170,7 +170,7 @@
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-key"></i> Change Password
+                    <i class="fas fa-key"></i> {{ __('Change Password') }}
                 </button>
             </div>
         </form>

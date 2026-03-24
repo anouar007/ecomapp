@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container-fluid">
-    <h1 class="h3 mb-4 text-gray-800">Returns Management</h1>
+    <h1 class="h3 mb-4 text-gray-800">{{ __('Returns Management') }}</h1>
     
     <div class="card shadow mb-4">
         <div class="card-body">
@@ -10,12 +10,12 @@
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th>Return #</th>
-                            <th>Order #</th>
-                            <th>Customer</th>
-                            <th>Reason</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>{{ __('Return #') }}</th>
+                            <th>{{ __('Order #') }}</th>
+                            <th>{{ __('Customer') }}</th>
+                            <th>{{ __('Reason') }}</th>
+                            <th>{{ __('Status') }}</th>
+                            <th>{{ __('Actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -25,8 +25,8 @@
                             <td>{{ $return->order->order_number }}</td>
                             <td>{{ $return->customer->name }}</td>
                             <td>{{ $return->reason }}</td>
-                            <td>{{ ucfirst($return->status) }}</td>
-                            <td>Actions</td>
+                            <td>{{ __($return->status) }}</td>
+                            <td>{{ __('Actions') }}</td>
                         </tr>
                         @endforeach
                     </tbody>

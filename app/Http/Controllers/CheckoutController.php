@@ -37,7 +37,6 @@ class CheckoutController extends Controller
     {
         $request->validate([
             'customer_name' => 'required|string|max:255',
-            'customer_email' => 'nullable|email|max:255',
             'customer_phone' => 'required|string|max:20',
             'shipping_address' => 'required|string|max:255',
             'shipping_city' => 'required|string|max:255',
@@ -59,11 +58,9 @@ class CheckoutController extends Controller
             'order_number' => 'ORD-' . strtoupper(Str::random(10)),
             'user_id' => Auth::id(), // Link to user if logged in
             'customer_name' => $request->customer_name,
-            'customer_email' => $request->customer_email,
             'customer_phone' => $request->customer_phone,
             'shipping_address' => $request->shipping_address,
             'shipping_city' => $request->shipping_city,
-            'shipping_state' => $request->shipping_state,
             'shipping_zip'   => 'N/A',
             'shipping_country' => 'Morocco',
             'subtotal' => $subtotal,
@@ -109,7 +106,7 @@ class CheckoutController extends Controller
             \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderConfirmation($order));
             \Illuminate\Support\Facades\Mail::to(setting('contact_email', 'admin@speed.com'))->send(new \App\Mail\NewOrderNotification($order));
         } catch (\Exception $e) {
-            \Log::error('Failed to send checkout emails: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Order creation failed: ' . $e->getMessage());
         }
 
         // Clear Cart

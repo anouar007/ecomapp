@@ -58,7 +58,12 @@ class ShopController extends Controller
             ->paginate(12)->withQueryString();
 
         if ($request->ajax()) {
-            return view('frontend.shop.partials.product-grid', compact('products'))->render();
+            $category = $request->category ? Category::where('slug', $request->category)->first() : null;
+            return response()->json([
+                'grid_html' => view('frontend.shop.partials.product-grid', compact('products'))->render(),
+                'total_count' => $products->total(),
+                'category_name' => $category ? $category->translated_name : 'جميع المنتجات',
+            ]);
         }
 
         $categories = Category::withCount('products')->get();

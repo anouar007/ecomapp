@@ -48,12 +48,7 @@ class OrderController extends Controller
      */
     public function create()
     {
-        $products = Product::where('status', 'active')
-            ->where('stock', '>', 0)
-            ->with('images')
-            ->get();
-
-        return view('orders.create', compact('products'));
+        return redirect()->route('pos.index');
     }
 
     /**
@@ -149,7 +144,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        $order->load(['items.product', 'user']);
+        $order->load(['items.product.images', 'items.variant', 'user']);
         return view('orders.show', compact('order'));
     }
 

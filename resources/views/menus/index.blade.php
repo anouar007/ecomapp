@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Navigation Management')
+@section('title', __('Navigation Management'))
 
 @section('content')
     <div class="brand-header">
@@ -9,12 +9,12 @@
                 <div class="brand-header-icon">
                     <i class="fas fa-compass"></i>
                 </div>
-                Navigation Menus
+                {{ __('Navigation Menus') }}
             </h1>
-            <p class="brand-subtitle">Manage your website's header and footer navigation</p>
+            <p class="brand-subtitle">{{ __("Manage your website's header and footer navigation") }}</p>
         </div>
         <button type="button" class="btn-brand-primary" data-bs-toggle="modal" data-bs-target="#createMenuModal">
-            <i class="fas fa-plus me-2"></i> Create New Menu
+            <i class="fas fa-plus me-2"></i> {{ __('Create New Menu') }}
         </button>
     </div>
 
@@ -27,7 +27,7 @@
                         <h5 class="fw-bold mb-0">{{ $menu->name }}</h5>
                         <code class="small text-primary">{{ $menu->location }}</code>
                     </div>
-                    <form action="{{ route('menus.destroy', $menu) }}" method="POST" onsubmit="return confirm('Delete this menu?')">
+                    <form action="{{ route('menus.destroy', $menu) }}" method="POST" onsubmit="return confirm('{{ __('Delete this menu?') }}')">
                         @csrf
                         @method('DELETE')
                         <button class="btn btn-sm btn-outline-danger border-0">
@@ -45,10 +45,10 @@
                             @foreach($menu->items as $index => $item)
                                 <div class="row g-2 mb-3 align-items-center menu-item-row">
                                     <div class="col-md-5">
-                                        <input type="text" name="items[{{ $index }}][label]" class="form-control form-control-sm" value="{{ $item->label }}" placeholder="Label">
+                                        <input type="text" name="items[{{ $index }}][label]" class="form-control form-control-sm" value="{{ $item->label }}" placeholder="{{ __('Label') }}">
                                     </div>
                                     <div class="col-md-5">
-                                        <input type="text" name="items[{{ $index }}][link]" class="form-control form-control-sm" value="{{ $item->link }}" placeholder="URL (e.g. /about or https://...)">
+                                        <input type="text" name="items[{{ $index }}][link]" class="form-control form-control-sm" value="{{ $item->link }}" placeholder="{{ __('URL') }} (e.g. /about or https://...)">
                                     </div>
                                     <div class="col-md-2">
                                         <button type="button" class="btn btn-sm btn-light text-danger w-100" onclick="this.closest('.menu-item-row').remove()">
@@ -60,13 +60,13 @@
                         </div>
                         
                         <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addMenuItem({{ $menu->id }})">
-                            <i class="fas fa-plus me-1"></i> Add Link
+                            <i class="fas fa-plus me-1"></i> {{ __('Add Link') }}
                         </button>
                     </div>
                     
                     <div class="p-4 bg-light border-top text-end">
                         <button type="submit" class="btn-brand-primary btn-sm">
-                            <i class="fas fa-save me-1"></i> Save Items
+                            <i class="fas fa-save me-1"></i> {{ __('Save Items') }}
                         </button>
                     </div>
                 </form>
@@ -82,28 +82,28 @@
                 <form action="{{ route('menus.store') }}" method="POST">
                     @csrf
                     <div class="modal-header border-0 p-4 pb-0">
-                        <h5 class="fw-bold">New Navigation Menu</h5>
+                        <h5 class="fw-bold">{{ __('New Navigation Menu') }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body p-4">
                         <div class="mb-3">
-                            <label class="form-label small fw-bold text-muted">MENU NAME</label>
+                            <label class="form-label small fw-bold text-muted">{{ __('MENU NAME') }}</label>
                             <input type="text" name="name" class="form-control" placeholder="e.g. Main Navigation" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small fw-bold text-muted">LOCATION IDENTIFIER</label>
+                            <label class="form-label small fw-bold text-muted">{{ __('LOCATION IDENTIFIER') }}</label>
                             <select name="location" class="form-select" required>
-                                <option value="header">Header</option>
-                                <option value="footer_main">Footer Main</option>
-                                <option value="footer_links">Footer Quick Links</option>
-                                <option value="social_sidebar">Social Sidebar</option>
+                                <option value="header">{{ __('Header') }}</option>
+                                <option value="footer_main">{{ __('Footer Main') }}</option>
+                                <option value="footer_links">{{ __('Footer Quick Links') }}</option>
+                                <option value="social_sidebar">{{ __('Social Sidebar') }}</option>
                             </select>
-                            <div class="form-text small">This ID is used to fetch the menu in the frontend code.</div>
+                            <div class="form-text small">{{ __('This ID is used to fetch the menu in the frontend code.') }}</div>
                         </div>
                     </div>
                     <div class="modal-footer border-0 p-4 pt-0">
-                        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary rounded-pill px-4">Create Menu</button>
+                        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">{{ __('Create Menu') }}</button>
                     </div>
                 </form>
             </div>
@@ -119,10 +119,10 @@
             const html = `
                 <div class="row g-2 mb-3 align-items-center menu-item-row">
                     <div class="col-md-5">
-                        <input type="text" name="items[${index}][label]" class="form-control form-control-sm" placeholder="Label">
+                        <input type="text" name="items[${index}][label]" class="form-control form-control-sm" placeholder="{{ __('Label') }}">
                     </div>
                     <div class="col-md-5">
-                        <input type="text" name="items[${index}][link]" class="form-control form-control-sm" placeholder="URL">
+                        <input type="text" name="items[${index}][link]" class="form-control form-control-sm" placeholder="{{ __('URL') }}">
                     </div>
                     <div class="col-md-2">
                         <button type="button" class="btn btn-sm btn-light text-danger w-100" onclick="this.closest('.menu-item-row').remove()">

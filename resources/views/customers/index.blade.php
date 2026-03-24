@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Customer Management')
+@section('title', __('Customer Management'))
 
 @section('content')
     <!-- Page Header -->
@@ -10,12 +10,12 @@
                 <div class="brand-header-icon">
                     <i class="fas fa-users"></i>
                 </div>
-                Customer Management
+                {{ __('Customer Management') }}
             </h1>
-            <p class="brand-subtitle">Manage your customer relationships, groups, and revenue tracking</p>
+            <p class="brand-subtitle">{{ __('Manage your customer relationships, groups, and revenue tracking') }}</p>
         </div>
         <a href="{{ route('customers.create') }}" class="btn-brand-primary">
-            <i class="fas fa-plus me-2"></i> Add Customer
+            <i class="fas fa-plus me-2"></i> {{ __('Add Customer') }}
         </a>
     </div>
 
@@ -25,10 +25,10 @@
             <div class="brand-stat-icon primary">
                 <i class="fas fa-user-friends"></i>
             </div>
-            <div class="brand-stat-label">Total Customers</div>
+            <div class="brand-stat-label">{{ __('Total Customers') }}</div>
             <div class="brand-stat-value">{{ number_format($stats['total_customers']) }}</div>
             <div class="brand-stat-desc">
-                <i class="fas fa-info-circle"></i> Registered in system
+                <i class="fas fa-info-circle"></i> {{ __('Registered in system') }}
             </div>
         </div>
         
@@ -36,10 +36,10 @@
             <div class="brand-stat-icon success">
                 <i class="fas fa-user-check"></i>
             </div>
-            <div class="brand-stat-label">Active Customers</div>
+            <div class="brand-stat-label">{{ __('Active Customers') }}</div>
             <div class="brand-stat-value">{{ number_format($stats['active_customers']) }}</div>
             <div class="brand-stat-desc">
-                <i class="fas fa-toggle-on"></i> Currently active accounts
+                <i class="fas fa-toggle-on"></i> {{ __('Currently active accounts') }}
             </div>
         </div>
         
@@ -47,10 +47,10 @@
             <div class="brand-stat-icon info">
                 <i class="fas fa-hand-holding-usd"></i>
             </div>
-            <div class="brand-stat-label">Total Revenue</div>
+            <div class="brand-stat-label">{{ __('Total Revenue') }}</div>
             <div class="brand-stat-value">{{ currency($stats['total_revenue']) }}</div>
             <div class="brand-stat-desc">
-                <i class="fas fa-chart-line"></i> Total sales from customers
+                <i class="fas fa-chart-line"></i> {{ __('Total sales from customers') }}
             </div>
         </div>
         
@@ -58,10 +58,10 @@
             <div class="brand-stat-icon warning">
                 <i class="fas fa-shopping-bag"></i>
             </div>
-            <div class="brand-stat-label">Avg Order Value</div>
+            <div class="brand-stat-label">{{ __('Avg Order Value') }}</div>
             <div class="brand-stat-value">{{ currency($stats['avg_order_value'] ?? 0) }}</div>
             <div class="brand-stat-desc">
-                <i class="fas fa-calculator"></i> Average spend per order
+                <i class="fas fa-calculator"></i> {{ __('Average spend per order') }}
             </div>
         </div>
     </div>
@@ -73,23 +73,23 @@
                 <i class="fas fa-search"></i>
                 <input type="text" name="search" class="form-control" 
                        value="{{ request('search') }}" 
-                       placeholder="Search name, email, phone, code...">
+                       placeholder="{{ __('Search name, email, phone, code...') }}">
             </div>
             
             <div style="min-width: 160px;">
-                <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;">Status</label>
+                <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;">{{ __('Status') }}</label>
                 <select name="status" class="form-select">
-                    <option value="">All Statuses</option>
-                    <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
-                    <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
-                    <option value="blocked" {{ request('status') === 'blocked' ? 'selected' : '' }}>Blocked</option>
+                    <option value="">{{ __('All Statuses') }}</option>
+                    <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>{{ __('Active') }}</option>
+                    <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>{{ __('Inactive') }}</option>
+                    <option value="blocked" {{ request('status') === 'blocked' ? 'selected' : '' }}>{{ __('Blocked') }}</option>
                 </select>
             </div>
 
             <div style="min-width: 160px;">
-                <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;">Customer Group</label>
+                <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;">{{ __('Customer Group') }}</label>
                 <select name="customer_group_id" class="form-select">
-                    <option value="">All Groups</option>
+                    <option value="">{{ __('All Groups') }}</option>
                     @foreach($customerGroups as $group)
                         <option value="{{ $group->id }}" {{ request('customer_group_id') == $group->id ? 'selected' : '' }}>{{ $group->name }}</option>
                     @endforeach
@@ -98,7 +98,7 @@
 
             <div class="d-flex gap-2">
                 <button type="submit" class="btn-brand-primary">
-                    <i class="fas fa-filter me-1"></i> Filter
+                    <i class="fas fa-filter me-1"></i> {{ __('Filter') }}
                 </button>
                 <a href="{{ route('customers.index') }}" class="btn-brand-light" title="Reset">
                     <i class="fas fa-redo"></i>
@@ -113,13 +113,13 @@
             <table class="brand-table">
                 <thead>
                     <tr>
-                        <th style="padding-left: 1.5rem;">Customer</th>
-                        <th>Contact info</th>
-                        <th>Group</th>
-                        <th class="text-center">Orders</th>
-                        <th class="text-end">Total Spent</th>
-                        <th class="text-center">Status</th>
-                        <th class="text-end" style="padding-right: 1.5rem;">Actions</th>
+                        <th style="padding-left: 1.5rem;">{{ __('Customer') }}</th>
+                        <th>{{ __('Contact info') }}</th>
+                        <th>{{ __('Group') }}</th>
+                        <th class="text-center">{{ __('Orders') }}</th>
+                        <th class="text-end">{{ __('Total Spent') }}</th>
+                        <th class="text-center">{{ __('Status') }}</th>
+                        <th class="text-end" style="padding-right: 1.5rem;">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -143,7 +143,7 @@
                                     {{ $customer->customerGroup->name }}
                                 </span>
                             @else
-                                <span class="text-muted small">No Group</span>
+                                <span class="text-muted small">{{ __('No Group') }}</span>
                             @endif
                         </td>
                         <td class="text-center">
@@ -167,16 +167,16 @@
                         </td>
                         <td style="padding-right: 1.5rem;">
                             <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ route('customers.show', $customer) }}" class="btn-action-icon" title="View Customer">
+                                <a href="{{ route('customers.show', $customer) }}" class="btn-action-icon" title="{{ __('View Customer') }}">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{{ route('customers.edit', $customer) }}" class="btn-action-icon" title="Edit Customer">
+                                <a href="{{ route('customers.edit', $customer) }}" class="btn-action-icon" title="{{ __('Edit Customer') }}">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <form action="{{ route('customers.destroy', $customer) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this customer?');">
+                                <form action="{{ route('customers.destroy', $customer) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('Are you sure you want to delete this customer?') }}');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn-action-icon text-danger" title="Delete Customer">
+                                    <button type="submit" class="btn-action-icon text-danger" title="{{ __('Delete Customer') }}">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </form>
@@ -190,8 +190,8 @@
                                 <div class="brand-avatar mx-auto mb-3" style="width: 64px; height: 64px; font-size: 24px;">
                                     <i class="fas fa-users-slash"></i>
                                 </div>
-                                <h5 class="fw-bold text-dark">No customers found</h5>
-                                <p class="text-muted">No customer records matching your current filters.</p>
+                                <h5 class="fw-bold text-dark">{{ __('No customers found') }}</h5>
+                                <p class="text-muted">{{ __('No customer records matching your current filters.') }}</p>
                             </div>
                         </td>
                     </tr>

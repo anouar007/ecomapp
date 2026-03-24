@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Journal Entries')
+@section('title', __('Journal Entries'))
 
 @section('content')
     <!-- Page Header -->
@@ -10,12 +10,12 @@
                 <div class="brand-header-icon">
                     <i class="fas fa-receipt"></i>
                 </div>
-                Journal Entries
+                {{ __('Journal Entries') }}
             </h1>
-            <p class="brand-subtitle">Track all financial transactions and accounting entries</p>
+            <p class="brand-subtitle">{{ __('Track all financial transactions and accounting entries') }}</p>
         </div>
         <a href="{{ route('accounting.entries.create') }}" class="btn-brand-primary">
-            <i class="fas fa-plus me-2"></i> New Entry
+            <i class="fas fa-plus me-2"></i> {{ __('New Entry') }}
         </a>
     </div>
 
@@ -24,38 +24,38 @@
         <div class="p-4 border-bottom">
             <div class="d-flex align-items-center gap-2">
                 <i class="fas fa-filter text-primary"></i>
-                <h5 class="fw-bold text-dark m-0">Filter Entries</h5>
+                <h5 class="fw-bold text-dark m-0">{{ __('Filter Entries') }}</h5>
             </div>
         </div>
         <div class="p-4">
             <form method="GET" action="{{ route('accounting.entries') }}" class="row g-3">
                 <div class="col-md-3">
-                    <label class="form-label fw-semibold small text-muted">DATE FROM</label>
+                    <label class="form-label fw-semibold small text-muted">{{ __('DATE FROM') }}</label>
                     <input type="date" name="start_date" class="form-control" value="{{ request('start_date') }}" style="border-radius: 8px;">
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label fw-semibold small text-muted">DATE TO</label>
+                    <label class="form-label fw-semibold small text-muted">{{ __('DATE TO') }}</label>
                     <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}" style="border-radius: 8px;">
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label fw-semibold small text-muted">JOURNAL TYPE</label>
+                    <label class="form-label fw-semibold small text-muted">{{ __('JOURNAL TYPE') }}</label>
                     <select name="journal_type" class="form-select" style="border-radius: 8px;">
-                        <option value="">All Types</option>
+                        <option value="">{{ __('All Types') }}</option>
                         @foreach(['SALES', 'PURCHASES', 'BANK', 'CASH', 'OD', 'GENERAL'] as $type)
                             <option value="{{ $type }}" {{ request('journal_type') == $type ? 'selected' : '' }}>{{ $type }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label fw-semibold small text-muted">SEARCH</label>
-                    <input type="text" name="search" class="form-control" placeholder="Ref or Description" value="{{ request('search') }}" style="border-radius: 8px;">
+                    <label class="form-label fw-semibold small text-muted">{{ __('SEARCH') }}</label>
+                    <input type="text" name="search" class="form-control" placeholder="{{ __('Ref or Description') }}" value="{{ request('search') }}" style="border-radius: 8px;">
                 </div>
                 <div class="col-12 d-flex gap-2 justify-content-end">
                     <a href="{{ route('accounting.entries') }}" class="btn-brand-outline px-4">
-                        <i class="fas fa-redo me-2"></i> Reset
+                        <i class="fas fa-redo me-2"></i> {{ __('Reset') }}
                     </a>
                     <button type="submit" class="btn-brand-primary px-4">
-                        <i class="fas fa-search me-2"></i> Filter
+                        <i class="fas fa-search me-2"></i> {{ __('Filter') }}
                     </button>
                 </div>
             </form>
@@ -71,7 +71,7 @@
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <p class="text-white-50 mb-1 small">Total Entries</p>
+                            <p class="text-white-50 mb-1 small">{{ __('Total Entries') }}</p>
                             <h4 class="text-white fw-bold mb-0">{{ $entries->total() }}</h4>
                         </div>
                         <div class="brand-avatar" style="background: rgba(255,255,255,0.2); color: white; width: 48px; height: 48px; font-size: 20px;">
@@ -86,7 +86,7 @@
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <p class="text-white-50 mb-1 small">This Page</p>
+                            <p class="text-white-50 mb-1 small">{{ __('This Page') }}</p>
                             <h4 class="text-white fw-bold mb-0">{{ $entries->count() }}</h4>
                         </div>
                         <div class="brand-avatar" style="background: rgba(255,255,255,0.2); color: white; width: 48px; height: 48px; font-size: 20px;">
@@ -101,7 +101,7 @@
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <p class="text-white-50 mb-1 small">Current Page</p>
+                            <p class="text-white-50 mb-1 small">{{ __('Current Page') }}</p>
                             <h4 class="text-white fw-bold mb-0">{{ $entries->currentPage() }} / {{ $entries->lastPage() }}</h4>
                         </div>
                         <div class="brand-avatar" style="background: rgba(255,255,255,0.2); color: white; width: 48px; height: 48px; font-size: 20px;">
@@ -116,8 +116,8 @@
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <p class="text-white-50 mb-1 small">Filters Active</p>
-                            <h4 class="text-white fw-bold mb-0">{{ (request('start_date') || request('end_date') || request('journal_type') || request('search')) ? 'Yes' : 'No' }}</h4>
+                            <p class="text-white-50 mb-1 small">{{ __('Filters Active') }}</p>
+                            <h4 class="text-white fw-bold mb-0">{{ (request('start_date') || request('end_date') || request('journal_type') || request('search')) ? __('Yes') : __('No') }}</h4>
                         </div>
                         <div class="brand-avatar" style="background: rgba(255,255,255,0.2); color: white; width: 48px; height: 48px; font-size: 20px;">
                             <i class="fas fa-filter"></i>
@@ -140,12 +140,12 @@
                                 <i class="fas fa-chevron-down" id="toggleAllIcon"></i>
                             </button>
                         </th>
-                        <th style="width: 120px;">Date</th>
-                        <th style="width: 180px;">Reference</th>
-                        <th>Description</th>
-                        <th style="width: 110px;">Journal</th>
-                        <th style="width: 120px; text-align: center;">Balance</th>
-                        <th style="width: 140px; text-align: center; padding-right: 1.5rem;">Actions</th>
+                        <th style="width: 120px;">{{ __('Date') }}</th>
+                        <th style="width: 180px;">{{ __('Reference') }}</th>
+                        <th>{{ __('Description') }}</th>
+                        <th style="width: 110px;">{{ __('Journal') }}</th>
+                        <th style="width: 120px; text-align: center;">{{ __('Balance') }}</th>
+                        <th style="width: 140px; text-align: center; padding-right: 1.5rem;">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -172,7 +172,7 @@
                                 <span class="text-dark fw-semibold">{{ $entry->description }}</span>
                                 <span class="text-muted small">
                                     <i class="fas fa-list-ul me-1" style="font-size: 0.7rem;"></i>
-                                    {{ $entry->lines->count() }} line item{{ $entry->lines->count() > 1 ? 's' : '' }}
+                                    {{ $entry->lines->count() }} {{ $entry->lines->count() > 1 ? __('line items') : __('line item') }}
                                 </span>
                             </div>
                         </td>
@@ -221,11 +221,11 @@
                                         <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center;">
                                             <i class="fas fa-list-alt text-white" style="font-size: 0.75rem;"></i>
                                         </div>
-                                        <span>Transaction Details</span>
+                                        <span>{{ __('Transaction Details') }}</span>
                                     </h6>
                                     <span class="badge" style="background: linear-gradient(135deg, #f0f0ff 0%, #e8e8ff 100%); color: #6366f1; font-weight: 600; padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.75rem;">
                                         <i class="fas fa-layer-group me-1" style="font-size: 0.65rem;"></i>
-                                        {{ $entry->lines->count() }} Line{{ $entry->lines->count() > 1 ? 's' : '' }}
+                                        {{ $entry->lines->count() }} {{ $entry->lines->count() > 1 ? __('Lines') : __('Line') }}
                                     </span>
                                 </div>
                                 
@@ -234,13 +234,13 @@
                                         <thead style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-bottom: 2px solid #e2e8f0;">
                                             <tr>
                                                 <th style="padding: 0.85rem 1rem; font-weight: 700; color: #1e293b; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;">
-                                                    <i class="fas fa-building me-2" style="color: #6366f1; font-size: 0.65rem;"></i>Account
+                                                    <i class="fas fa-building me-2" style="color: #6366f1; font-size: 0.65rem;"></i>{{ __('Account') }}
                                                 </th>
                                                 <th class="text-end" style="padding: 0.85rem 1rem; font-weight: 700; color: #1e293b; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; width: 180px;">
-                                                    <i class="fas fa-arrow-up me-2" style="color: #059669; font-size: 0.65rem;"></i>Debit
+                                                    <i class="fas fa-arrow-up me-2" style="color: #059669; font-size: 0.65rem;"></i>{{ __('Debit') }}
                                                 </th>
                                                 <th class="text-end" style="padding: 0.85rem 1rem; font-weight: 700; color: #1e293b; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; width: 180px;">
-                                                    <i class="fas fa-arrow-down me-2" style="color: #dc2626; font-size: 0.65rem;"></i>Credit
+                                                    <i class="fas fa-arrow-down me-2" style="color: #dc2626; font-size: 0.65rem;"></i>{{ __('Credit') }}
                                                 </th>
                                             </tr>
                                         </thead>
@@ -290,7 +290,7 @@
                                                         <div style="width: 30px; height: 30px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(99,102,241,0.25);">
                                                             <i class="fas fa-calculator text-white" style="font-size: 0.7rem;"></i>
                                                         </div>
-                                                        <span style="font-weight: 700; font-size: 0.85rem;">TOTAL</span>
+                                                        <span style="font-weight: 700; font-size: 0.85rem;">{{ __('TOTAL') }}</span>
                                                     </div>
                                                 </td>
                                                 <td class="text-end fw-bold" style="padding: 0.85rem 1rem;">
@@ -317,10 +317,10 @@
                                 <div class="brand-avatar mx-auto mb-3" style="background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); color: #9ca3af; width: 80px; height: 80px; font-size: 32px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
                                     <i class="fas fa-receipt"></i>
                                 </div>
-                                <h6 class="fw-bold text-dark mb-2" style="font-size: 1.1rem;">No Entries Found</h6>
-                                <p class="text-muted small mb-4">There are no journal entries matching your criteria.<br>Create your first entry to start tracking transactions.</p>
+                                <h6 class="fw-bold text-dark mb-2" style="font-size: 1.1rem;">{{ __('No Entries Found') }}</h6>
+                                <p class="text-muted small mb-4">{!! __('There are no journal entries matching your criteria.<br>Create your first entry to start tracking transactions.') !!}</p>
                                 <a href="{{ route('accounting.entries.create') }}" class="btn-brand-primary shadow" style="padding: 0.65rem 1.5rem;">
-                                    <i class="fas fa-plus me-2"></i> Create First Entry
+                                    <i class="fas fa-plus me-2"></i> {{ __('Create First Entry') }}
                                 </a>
                             </div>
                         </td>
@@ -411,7 +411,7 @@
         }
 
         function confirmDelete(entryId) {
-            if (confirm('Are you sure you want to delete this journal entry? This action cannot be undone.')) {
+            if (confirm("{{ __('Are you sure you want to delete this journal entry? This action cannot be undone.') }}")) {
                 // Add your delete logic here
                 console.log('Deleting entry:', entryId);
                 // Example: window.location.href = '/accounting/entries/' + entryId + '/delete';

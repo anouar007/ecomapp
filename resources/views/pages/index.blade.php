@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Page Management')
+@section('title', __('Page Management'))
 
 @section('content')
     <div class="brand-header">
@@ -9,12 +9,12 @@
                 <div class="brand-header-icon">
                     <i class="fas fa-file-alt"></i>
                 </div>
-                Page Management
+                {{ __('Page Management') }}
             </h1>
-            <p class="brand-subtitle">Create and manage your client-facing website pages</p>
+            <p class="brand-subtitle">{{ __('Create and manage your client-facing website pages') }}</p>
         </div>
         <a href="{{ route('pages.create') }}" class="btn-brand-primary">
-            <i class="fas fa-plus me-2"></i> Create New Page
+            <i class="fas fa-plus me-2"></i> {{ __('Create New Page') }}
         </a>
     </div>
 
@@ -23,11 +23,11 @@
             <table class="brand-table">
                 <thead>
                     <tr>
-                        <th style="padding-left: 1.5rem;">Page Title</th>
-                        <th>Slug</th>
-                        <th class="text-center">Status</th>
-                        <th>Last Updated</th>
-                        <th class="text-end" style="padding-right: 1.5rem;">Actions</th>
+                        <th style="padding-left: 1.5rem;">{{ __('Page Title') }}</th>
+                        <th>{{ __('Slug') }}</th>
+                        <th class="text-center">{{ __('Status') }}</th>
+                        <th>{{ __('Last Updated') }}</th>
+                        <th class="text-end" style="padding-right: 1.5rem;">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -35,7 +35,7 @@
                     <tr>
                         <td style="padding-left: 1.5rem;">
                             <div class="fw-bold text-dark">{{ $page->title }}</div>
-                            <div class="text-muted small">Layout: {{ ucfirst($page->layout) }}</div>
+                            <div class="text-muted small">{{ __('Layout:') }} {{ ucfirst($page->layout) }}</div>
                         </td>
                         <td>
                             <a href="{{ url($page->slug) }}" target="_blank" class="text-primary text-decoration-none">
@@ -44,7 +44,7 @@
                         </td>
                         <td class="text-center">
                             <span class="brand-badge {{ $page->is_published ? 'success' : 'warning' }}">
-                                {{ $page->is_published ? 'Published' : 'Draft' }}
+                                {{ $page->is_published ? __('Published') : __('Draft') }}
                             </span>
                         </td>
                         <td>
@@ -76,10 +76,10 @@
                                 <div class="brand-avatar mx-auto mb-3" style="width: 64px; height: 64px; font-size: 24px;">
                                     <i class="fas fa-file-code text-muted"></i>
                                 </div>
-                                <h5 class="fw-bold text-dark">No pages created yet</h5>
-                                <p class="text-muted">Start by creating your first client-facing page.</p>
+                                <h5 class="fw-bold text-dark">{{ __('No pages created yet') }}</h5>
+                                <p class="text-muted">{{ __('Start by creating your first client-facing page.') }}</p>
                                 <a href="{{ route('pages.create') }}" class="btn-brand-primary mt-2">
-                                    Create First Page
+                                    {{ __('Create First Page') }}
                                 </a>
                             </div>
                         </td>
