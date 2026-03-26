@@ -94,25 +94,14 @@
             @csrf
             
             <div class="form-row">
-                <div class="form-group">
-                    <label for="name_fr" class="form-label">
-                        {{ __('Category Name (FR)') }} <span class="required">*</span>
-                    </label>
-                    <input type="text" id="name_fr" name="name_fr" class="form-control" value="{{ old('name_fr') }}" placeholder="Nom de la catégorie" required autofocus>
-                </div>
-                <div class="form-group">
-                    <label for="name_en" class="form-label">{{ __('Category Name (EN)') }}</label>
-                    <input type="text" id="name_en" name="name_en" class="form-control" value="{{ old('name_en') }}" placeholder="{{ __('Category Name (EN)') }}">
-                </div>
-                <div class="form-group">
-                    <label for="name_ar" class="form-label">{{ __('Category Name (AR)') }}</label>
-                    <input type="text" id="name_ar" name="name_ar" class="form-control" value="{{ old('name_ar') }}" placeholder="{{ __('Category Name (AR)') }}" dir="rtl">
-                </div>
-            </div>
-
-            <div class="form-row">
-                <!-- Keep the standard name field hidden as a fallback if needed by existing code, populated via JS or controller fallback -->
+                <input type="hidden" id="name_fr" name="name_fr" value="{{ old('name_fr') }}">
+                <input type="hidden" id="name_en" name="name_en" value="{{ old('name_en') }}">
                 <input type="hidden" name="name" id="name" value="{{ old('name', 'autofill') }}">
+
+                <div class="form-group">
+                    <label for="name_ar" class="form-label">{{ __('Category Name (AR)') }} <span class="required">*</span></label>
+                    <input type="text" id="name_ar" name="name_ar" class="form-control" value="{{ old('name_ar') }}" placeholder="{{ __('Category Name (AR)') }}" dir="rtl" required oninput="syncTranslations()">
+                </div>
 
                 <div class="form-group">
                     <label for="slug" class="form-label">{{ __('Slug') }}</label>
@@ -126,17 +115,13 @@
                 </div>
             </div>
 
-            <div class="form-group mt-3">
-                <label for="description_fr" class="form-label">{{ __('Description (FR)') }}</label>
-                <textarea id="description_fr" name="description_fr" class="form-control" rows="2" placeholder="{{ __('Description (FR)') }}...">{{ old('description_fr') }}</textarea>
-            </div>
-            <div class="form-group mt-3">
-                <label for="description_en" class="form-label">{{ __('Description (EN)') }}</label>
-                <textarea id="description_en" name="description_en" class="form-control" rows="2" placeholder="{{ __('Description (EN)') }}...">{{ old('description_en') }}</textarea>
-            </div>
+            <input type="hidden" id="description_fr" name="description_fr" value="{{ old('description_fr') }}">
+            <input type="hidden" id="description_en" name="description_en" value="{{ old('description_en') }}">
+            <input type="hidden" name="description" id="description" value="{{ old('description') }}">
+
             <div class="form-group mt-3">
                 <label for="description_ar" class="form-label">{{ __('Description (AR)') }}</label>
-                <textarea id="description_ar" name="description_ar" class="form-control" rows="2" placeholder="{{ __('Description (AR)') }}..." dir="rtl">{{ old('description_ar') }}</textarea>
+                <textarea id="description_ar" name="description_ar" class="form-control" rows="2" placeholder="{{ __('Description (AR)') }}..." dir="rtl" oninput="syncTranslations()">{{ old('description_ar') }}</textarea>
             </div>
 
             <div class="form-row mt-4">
@@ -262,6 +247,20 @@ function removeImage(event) {
     input.value = '';
     preview.style.display = 'none';
     placeholder.style.display = 'block';
+}
+function syncTranslations() {
+    const nameAr = document.getElementById('name_ar').value;
+    const descAr = document.getElementById('description_ar').value;
+    
+    // Sync names
+    document.getElementById('name_fr').value = nameAr;
+    document.getElementById('name_en').value = nameAr;
+    document.getElementById('name').value = nameAr;
+    
+    // Sync descriptions (checking if hidden fields exist)
+    if(document.getElementById('description_fr')) document.getElementById('description_fr').value = descAr;
+    if(document.getElementById('description_en')) document.getElementById('description_en').value = descAr;
+    if(document.getElementById('description')) document.getElementById('description').value = descAr;
 }
 </script>
 @endpush

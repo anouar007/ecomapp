@@ -105,24 +105,14 @@
             <?php echo method_field('PUT'); ?>
             
             <div class="form-row">
-                <div class="form-group">
-                    <label for="name_fr" class="form-label">
-                        <?php echo e(__('Category Name (FR)')); ?> <span class="required">*</span>
-                    </label>
-                    <input type="text" id="name_fr" name="name_fr" class="form-control" value="<?php echo e(old('name_fr', $category->name_fr ?: $category->name)); ?>" placeholder="Nom de la catégorie" required autofocus>
-                </div>
-                <div class="form-group">
-                    <label for="name_en" class="form-label"><?php echo e(__('Category Name (EN)')); ?></label>
-                    <input type="text" id="name_en" name="name_en" class="form-control" value="<?php echo e(old('name_en', $category->name_en)); ?>" placeholder="<?php echo e(__('Category Name (EN)')); ?>">
-                </div>
-                <div class="form-group">
-                    <label for="name_ar" class="form-label"><?php echo e(__('Category Name (AR)')); ?></label>
-                    <input type="text" id="name_ar" name="name_ar" class="form-control" value="<?php echo e(old('name_ar', $category->name_ar)); ?>" placeholder="<?php echo e(__('Category Name (AR)')); ?>" dir="rtl">
-                </div>
-            </div>
-
-            <div class="form-row">
+                <input type="hidden" id="name_fr" name="name_fr" value="<?php echo e(old('name_fr', $category->name_fr ?: $category->name)); ?>">
+                <input type="hidden" id="name_en" name="name_en" value="<?php echo e(old('name_en', $category->name_en)); ?>">
                 <input type="hidden" name="name" id="name" value="<?php echo e(old('name', $category->name)); ?>">
+                
+                <div class="form-group">
+                    <label for="name_ar" class="form-label"><?php echo e(__('Category Name (AR)')); ?> <span class="required">*</span></label>
+                    <input type="text" id="name_ar" name="name_ar" class="form-control" value="<?php echo e(old('name_ar', $category->name_ar)); ?>" placeholder="<?php echo e(__('Category Name (AR)')); ?>" dir="rtl" required oninput="syncTranslations()">
+                </div>
 
                 <div class="form-group">
                     <label for="slug" class="form-label"><?php echo e(__('Slug')); ?></label>
@@ -136,17 +126,13 @@
                 </div>
             </div>
 
-            <div class="form-group mt-3">
-                <label for="description_fr" class="form-label"><?php echo e(__('Description (FR)')); ?></label>
-                <textarea id="description_fr" name="description_fr" class="form-control" rows="2" placeholder="<?php echo e(__('Description (FR)')); ?>..."><?php echo e(old('description_fr', $category->description_fr ?: $category->description)); ?></textarea>
-            </div>
-            <div class="form-group mt-3">
-                <label for="description_en" class="form-label"><?php echo e(__('Description (EN)')); ?></label>
-                <textarea id="description_en" name="description_en" class="form-control" rows="2" placeholder="<?php echo e(__('Description (EN)')); ?>..."><?php echo e(old('description_en', $category->description_en)); ?></textarea>
-            </div>
+            <input type="hidden" id="description_fr" name="description_fr" value="<?php echo e(old('description_fr', $category->description_fr ?: $category->description)); ?>">
+            <input type="hidden" id="description_en" name="description_en" value="<?php echo e(old('description_en', $category->description_en)); ?>">
+            <input type="hidden" name="description" id="description" value="<?php echo e(old('description', $category->description)); ?>">
+
             <div class="form-group mt-3">
                 <label for="description_ar" class="form-label"><?php echo e(__('Description (AR)')); ?></label>
-                <textarea id="description_ar" name="description_ar" class="form-control" rows="2" placeholder="<?php echo e(__('Description (AR)')); ?>..." dir="rtl"><?php echo e(old('description_ar', $category->description_ar)); ?></textarea>
+                <textarea id="description_ar" name="description_ar" class="form-control" rows="2" placeholder="<?php echo e(__('Description (AR)')); ?>..." dir="rtl" oninput="syncTranslations()"><?php echo e(old('description_ar', $category->description_ar)); ?></textarea>
             </div>
 
             <div class="form-row mt-4">
@@ -295,6 +281,20 @@ function removeImage(event) {
     input.value = '';
     preview.style.display = 'none';
     placeholder.style.display = 'block';
+}
+function syncTranslations() {
+    const nameAr = document.getElementById('name_ar').value;
+    const descAr = document.getElementById('description_ar').value;
+    
+    // Sync names
+    document.getElementById('name_fr').value = nameAr;
+    document.getElementById('name_en').value = nameAr;
+    document.getElementById('name').value = nameAr;
+    
+    // Sync descriptions (checking if hidden fields exist)
+    if(document.getElementById('description_fr')) document.getElementById('description_fr').value = descAr;
+    if(document.getElementById('description_en')) document.getElementById('description_en').value = descAr;
+    if(document.getElementById('description')) document.getElementById('description').value = descAr;
 }
 </script>
 <?php $__env->stopPush(); ?>
