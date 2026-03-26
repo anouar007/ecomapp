@@ -71,7 +71,7 @@ class ProductController extends Controller
             'stock' => ['required', 'integer', 'min:0'],
             'min_stock' => ['required', 'integer', 'min:0'],
             'category_id' => ['nullable', 'exists:categories,id'],
-            'images.*' => ['nullable', 'image', 'max:2048'],
+            'images.*' => ['nullable', 'image', 'max:4096'],
             'status' => ['required', 'in:active,inactive'],
             'variants' => ['nullable', 'array'],
             'variants.*.size' => ['nullable', 'string', 'max:255'],
@@ -80,7 +80,7 @@ class ProductController extends Controller
             'variants.*.sku' => ['nullable', 'string', 'max:255'],
             'variants.*.price' => ['nullable', 'numeric', 'min:0'],
             'variants.*.stock' => ['required_with:variants', 'integer', 'min:0'],
-            'variants.*.color_image' => ['nullable', 'image', 'max:2048'],
+            'variants.*.color_image' => ['nullable', 'image', 'max:4096'],
         ]);
 
         DB::beginTransaction();
@@ -122,9 +122,22 @@ class ProductController extends Controller
                         $variantData['color'] = $variantData['color_code'];
                     }
 
+                    // Handle color image upload
                     if ($request->hasFile("variants.{$index}.color_image")) {
-                        $variantData['color_image'] = $request->file("variants.{$index}.color_image")->store('variants', 'public');
+                        $path = $request->file("variants.{$index}.color_image")->store('variants', 'public');
+                        if ($path) {
+                            $variantData['color_image'] = $path;
+                        } else {
+                            unset($variantData['color_image']);
+                            \Illuminate\Support\Facades\Log::error("Variant image store failed for index {$index} during creation");
+                        }
                     }
+
+                    // Final safety check to prevent legacy "0" from being saved
+                    if (isset($variantData['color_image']) && ($variantData['color_image'] === 0 || $variantData['color_image'] === "0" || $variantData['color_image'] === false)) {
+                        $variantData['color_image'] = null;
+                    }
+
                     $product->variants()->create($variantData);
                 }
                 // Sync main stock
@@ -159,6 +172,11 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
+        \Illuminate\Support\Facades\Log::info("UPDATE REQUEST v4", [
+            'variants' => $request->input('variants', []),
+            'files' => $request->allFiles()
+        ]);
+
         $validated = $request->validate([
             'name' => ['nullable', 'string', 'max:255'],
             'name_fr' => ['nullable', 'string', 'max:255'],
@@ -174,7 +192,7 @@ class ProductController extends Controller
             'stock' => ['required', 'integer', 'min:0'],
             'min_stock' => ['required', 'integer', 'min:0'],
             'category_id' => ['nullable', 'exists:categories,id'],
-            'images.*' => ['nullable', 'image', 'max:2048'],
+            'images.*' => ['nullable', 'image', 'max:4096'],
             'status' => ['required', 'in:active,inactive'],
             'remove_images' => ['nullable', 'array'],
             'remove_images.*' => ['exists:product_images,id'],
@@ -186,7 +204,7 @@ class ProductController extends Controller
             'variants.*.sku' => ['nullable', 'string', 'max:255'],
             'variants.*.price' => ['nullable', 'numeric', 'min:0'],
             'variants.*.stock' => ['required_with:variants', 'integer', 'min:0'],
-            'variants.*.color_image' => ['nullable', 'image', 'max:2048'],
+            'variants.*.color_image' => ['nullable', 'image', 'max:4096'],
             'variants.*.remove_image' => ['nullable', 'boolean'],
         ]);
 
@@ -248,12 +266,25 @@ class ProductController extends Controller
                     
                     // Handle color image upload
                     if ($request->hasFile("variants.{$index}.color_image")) {
-                        $variantData['color_image'] = $request->file("variants.{$index}.color_image")->store('variants', 'public');
+                        $path = $request->file("variants.{$index}.color_image")->store('product_variants', 'public');
+                        if ($path) {
+                            $variantData['color_image'] = $path;
+                        } else {
+                            unset($variantData['color_image']);
+                            \Illuminate\Support\Facades\Log::error("Variant image store failed for index {$index}");
+                        }
                     } elseif (isset($variantData['remove_image']) && $variantData['remove_image']) {
                         $variantData['color_image'] = null;
                     } else {
                         unset($variantData['color_image']);
                     }
+                    
+                    // Final safety check to intercept any legacy "0" that might slip through
+                    if (isset($variantData['color_image']) && ($variantData['color_image'] === 0 || $variantData['color_image'] === "0" || $variantData['color_image'] === false)) {
+                        unset($variantData['color_image']);
+                    }
+
+                    \Illuminate\Support\Facades\Log::info("VARIANT {$index} DATA BEFORE DB UPDATE", $variantData);
 
                     if ($variantId) {
                         $product->variants()->where('id', $variantId)->update(

@@ -58,7 +58,7 @@
                         </tr>
                         <tr>
                             <td class="text-end pe-4 py-2 border-0 small text-muted">التوصيل</td>
-                            <td class="text-end pe-4 py-2 border-0 text-gold fw-bold">مجاني</td>
+                            <td class="text-end pe-4 py-2 border-0 text-gold fw-bold">{{ currency($order->shipping_cost) }}</td>
                         </tr>
                         <tr>
                             <td class="text-end pe-4 py-3 border-0 h5 fw-bold text-dark">الإجمالي النهائي</td>

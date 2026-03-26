@@ -1,53 +1,40 @@
-@php $total = 0; @endphp
 @forelse(session('cart', []) as $key => $details)
-    @php $total += $details['price'] * $details['quantity']; @endphp
-    <div class="cart-item bg-white p-3 rounded-4 shadow-sm mb-3 position-relative border border-light" id="cart-item-{{ $key }}">
-        <div class="d-flex align-items-center">
-            <div class="flex-shrink-0 me-3 position-relative">
-                <img src="{{ !empty($details['image']) && strval($details['image']) !== '0' ? Storage::url($details['image']) : asset('images/placeholder-product.jpg') }}" alt="{{ $details['name'] }}" class="rounded-3 object-fit-cover" style="width: 80px; height: 100px;">
-                <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-primary text-white border-0 shadow-sm" style="font-size: 0.75rem;">{{ $details['quantity'] }}</span>
+    <div class="mc-item" id="cart-item-{{ $key }}">
+        <img src="{{ !empty($details['image']) && strval($details['image']) !== '0' ? Storage::url($details['image']) : asset('images/placeholder-product.jpg') }}"
+             alt="{{ $details['name'] }}" class="mc-item-img">
+        <div class="mc-item-info">
+            <div class="mc-item-name">{{ $details['name'] }}</div>
+            <div class="mc-tags">
+                @if(!empty($details['color']))
+                    <span class="mc-tag">{{ $details['color'] }}</span>
+                @endif
+                @if(!empty($details['size']))
+                    <span class="mc-tag">{{ $details['size'] }}</span>
+                @endif
             </div>
-            <div class="flex-grow-1 min-w-0">
-                <h6 class="fw-bold mb-1 pe-4" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" title="{{ $details['name'] }}">{{ $details['name'] }}</h6>
-                
-                <div class="d-flex gx-2 small text-muted mb-2">
-                    @if(isset($details['color']))
-                        <span class="me-2"><i class="fas fa-circle ms-1" style="font-size: 0.6rem; color: {{ $details['color'] }};"></i>اللون: {{ $details['color'] }}</span>
-                    @endif
-                    @if(isset($details['size']))
-                        <span>المقاس: {{ $details['size'] }}</span>
-                    @endif
-                    @if(!isset($details['color']) && !isset($details['size']))
-                        <span>{{ $details['category_name'] ?? 'منتج' }}</span>
-                    @endif
-                </div>
-                
-                <div class="d-flex align-items-center justify-content-between mt-2">
-                    <span class="text-primary fw-bold" style="font-size: 1.1rem;">{{ currency($details['price']) }}</span>
-                    
-                    <div class="quantity-control bg-light rounded-pill d-flex align-items-center px-1 border">
-                        <button class="btn btn-sm btn-link text-dark text-decoration-none p-1 border-0" onclick="updateQty('{{ $key }}', {{ $details['quantity'] - 1 }})">
-                            <i class="fas fa-minus" style="font-size: 0.7rem;"></i>
-                        </button>
-                        <input type="text" class="form-control form-control-sm border-0 bg-transparent text-center fw-bold p-0" value="{{ $details['quantity'] }}" readonly style="width: 30px;">
-                        <button class="btn btn-sm btn-link text-dark text-decoration-none p-1 border-0" onclick="updateQty('{{ $key }}', {{ $details['quantity'] + 1 }})">
-                            <i class="fas fa-plus" style="font-size: 0.7rem;"></i>
-                        </button>
-                    </div>
+            <div class="mc-item-bottom">
+                <span class="mc-price">{{ currency($details['price']) }}</span>
+                <div class="mc-qty">
+                    <button class="mc-qty-btn" onclick="updateQty('{{ $key }}', {{ $details['quantity'] - 1 }})">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <input class="mc-qty-val" value="{{ $details['quantity'] }}" readonly>
+                    <button class="mc-qty-btn" onclick="updateQty('{{ $key }}', {{ $details['quantity'] + 1 }})">
+                        <i class="fas fa-plus"></i>
+                    </button>
                 </div>
             </div>
         </div>
-        <button class="btn btn-sm text-danger position-absolute top-0 end-0 mt-2 me-2 opacity-50" onclick="removeItem('{{ $key }}')" title="حذف">
+        <button class="mc-delete" onclick="removeItem('{{ $key }}')" title="حذف">
             <i class="fas fa-times"></i>
         </button>
     </div>
 @empty
-    <div class="text-center py-5 mt-4">
-        <div class="mb-4 bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
-            <i class="fas fa-shopping-basket fa-3x text-muted opacity-25"></i>
-        </div>
-        <h5 class="fw-bold text-dark">السلة فارغة</h5>
-        <p class="text-muted small mb-4">لم تقومي بإضافة أي منتج بعد.</p>
-        <a href="{{ route('shop.index') }}" class="btn btn-primary rounded-pill px-5 shadow-sm">ابدئي التسوق</a>
+    <div class="mc-empty">
+        <div class="mc-empty-icon">🛍️</div>
+        <h5>سلتك فارغة</h5>
+        <p>لم تقومي بإضافة أي منتج بعد.</p>
+        <a href="{{ route('shop.index') }}" class="mc-shop-btn" data-bs-dismiss="offcanvas">ابدئي التسوق</a>
     </div>
 @endforelse
+

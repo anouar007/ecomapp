@@ -108,6 +108,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/inventory/{product}/adjust', [\App\Http\Controllers\InventoryController::class, 'adjust'])->name('inventory.adjust');
         Route::post('/inventory/{product}/adjust', [\App\Http\Controllers\InventoryController::class, 'processAdjustment'])->name('inventory.process-adjustment');
         Route::post('/inventory/alerts/{alert}/acknowledge', [\App\Http\Controllers\InventoryController::class, 'acknowledgeAlert'])->name('inventory.acknowledge-alert');
+        Route::post('/inventory/quick-update', [\App\Http\Controllers\InventoryController::class, 'quickUpdate'])->name('inventory.quick-update');
         Route::post('/inventory/alerts/bulk-acknowledge', [\App\Http\Controllers\InventoryController::class, 'bulkAcknowledge'])->name('inventory.bulk-acknowledge');
     });
     

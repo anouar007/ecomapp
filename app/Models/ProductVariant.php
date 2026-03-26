@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+
 
 class ProductVariant extends Model
 {
@@ -25,6 +27,18 @@ class ProductVariant extends Model
         'price' => 'decimal:2',
         'stock' => 'integer',
     ];
+
+    protected $appends = ['color_image_url'];
+
+    public function getColorImageUrlAttribute()
+    {
+        if (!$this->color_image || $this->color_image === '0' || $this->color_image === '') {
+            return null;
+        }
+        return Storage::url($this->color_image);
+    }
+
+
 
     public function product()
     {
@@ -87,5 +101,54 @@ class ProductVariant extends Model
         ];
 
         return $map[$color] ?? $this->color;
+    }
+
+    /**
+     * Get inventory movements for this variant.
+     */
+    public function inventoryMovements()
+    {
+        return $this->hasMany(InventoryMovement::class, 'product_variant_id');
+    }
+
+    /**
+     * Adjust stock quantity and record movement.
+     */
+    public function adjustStock(int $quantity, string $type, $userId, array $options = []): bool
+    {
+        $stockBefore = $this->stock ?? 0;
+        
+        // If type is 'adjustment', quantity is the NEW absolute stock
+        if ($type === 'adjustment') {
+            $newStock = $quantity;
+            $quantityDiff = abs($newStock - $stockBefore);
+            $movementType = $newStock >= $stockBefore ? 'in' : 'out';
+        } else {
+            $newStock = $stockBefore + ($type === 'in' ? $quantity : -$quantity);
+            $quantityDiff = abs($quantity);
+            $movementType = $type;
+        }
+
+        if ($newStock < 0) {
+            return false;
+        }
+
+        $this->update(['stock' => $newStock]);
+
+        // Record the movement
+        $this->inventoryMovements()->create([
+            'product_id' => $this->product_id,
+            'product_variant_id' => $this->id,
+            'type' => $movementType,
+            'quantity' => $quantityDiff,
+            'stock_before' => $stockBefore,
+            'stock_after' => $newStock,
+            'reference_type' => $options['reference_type'] ?? null,
+            'reference_id' => $options['reference_id'] ?? null,
+            'reason' => $options['reason'] ?? null,
+            'created_by' => $userId,
+        ]);
+
+        return true;
     }
 }

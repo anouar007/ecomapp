@@ -6,6 +6,8 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\ProductReview;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class ShopController extends Controller
 {
@@ -52,7 +54,7 @@ class ShopController extends Controller
                 break;
         }
 
-        $products = $query->with(['images', 'productCategory'])
+        $products = $query->with(['images', 'productCategory', 'variants'])
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')
             ->paginate(12)->withQueryString();
@@ -66,9 +68,10 @@ class ShopController extends Controller
             ]);
         }
 
-        $categories = Category::withCount('products')->get();
+        $allCategories = Category::where('status', 'active')->orderBy('sort_order', 'asc')->get();
+        $categories = $allCategories; // For backward compatibility if needed
 
-        return view('frontend.shop.index', compact('products', 'categories'));
+        return view('frontend.shop.index', compact('products', 'allCategories', 'categories'));
     }
 
     /**
@@ -86,14 +89,16 @@ class ShopController extends Controller
             ->paginate(5);
         
         // Related products — eager-load images so main_image accessor works in view
-        $relatedProducts = Product::with('images')
+        $relatedProducts = Product::with(['images', 'variants'])
             ->where('status', 'active')
             ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->take(4)
             ->get();
 
-        return view('frontend.shop.show', compact('product', 'relatedProducts', 'reviews'));
+        $allCategories = Category::where('status', 'active')->orderBy('sort_order', 'asc')->get();
+
+        return view('frontend.shop.show', compact('product', 'relatedProducts', 'reviews', 'allCategories'));
     }
 
     /**

@@ -30,23 +30,23 @@
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="<?php echo $__env->yieldContent('meta_type', 'website'); ?>">
-    <meta property="og:site_name" content="<?php echo e(setting('app_name', 'Speed Platform')); ?>">
+    <meta property="og:site_name" content="<?php echo e(setting('app_name', 'Hijab Princesses')); ?>">
     <meta property="og:url" content="<?php echo e(url()->current()); ?>">
-    <meta property="og:title" content="<?php echo $__env->yieldContent('meta_title', setting('app_name', 'Speed Platform')); ?>">
-    <meta property="og:description" content="<?php echo $__env->yieldContent('meta_description', setting('app_description', 'High performance e-commerce platform.')); ?>">
-    <meta property="og:image" content="<?php echo $__env->yieldContent('meta_image', setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/og-default.jpg')); ?>">
+    <meta property="og:title" content="<?php echo $__env->yieldContent('meta_title', setting('app_name', 'Hijab Princesses')); ?>">
+    <meta property="og:description" content="<?php echo $__env->yieldContent('meta_description', setting('app_description', 'أناقة الأميرة — متجر العبايات والخمارات الفاخرة بالمغرب.')); ?>">
+    <meta property="og:image" content="<?php echo $__env->yieldContent('meta_image', setting('app_logo') ? url(Storage::url(setting('app_logo'))) : asset('images/og-default.jpg')); ?>">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:locale" content="<?php echo e(setting('language', 'fr') === 'ar' ? 'ar_MA' : 'fr_MA'); ?>">
+    <meta property="og:locale" content="ar_MA">
     <meta property="og:updated_time" content="<?php echo e(now()->toIso8601String()); ?>">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="<?php echo e(url()->current()); ?>">
-    <meta name="twitter:title" content="<?php echo $__env->yieldContent('meta_title', setting('app_name', 'Speed Platform')); ?>">
-    <meta name="twitter:description" content="<?php echo $__env->yieldContent('meta_description', setting('app_description', 'High performance e-commerce platform.')); ?>">
-    <meta name="twitter:image" content="<?php echo $__env->yieldContent('twitter_image', setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/og-default.jpg')); ?>">    
-    <meta name="twitter:site" content="<?php echo $__env->yieldContent('twitter_site', '@' . str_replace(' ', '', setting('app_name', 'SpeedPlatform'))); ?>">
+    <meta name="twitter:title" content="<?php echo $__env->yieldContent('meta_title', setting('app_name', 'Hijab Princesses')); ?>">
+    <meta name="twitter:description" content="<?php echo $__env->yieldContent('meta_description', setting('app_description', 'أناقة الأميرة — متجر العبايات والخمارات الفاخرة بالمغرب.')); ?>">
+    <meta name="twitter:image" content="<?php echo $__env->yieldContent('meta_image', setting('app_logo') ? url(Storage::url(setting('app_logo'))) : asset('images/og-default.jpg')); ?>">    
+    <meta name="twitter:site" content="<?php echo $__env->yieldContent('twitter_site', '@HijabPrincesses'); ?>">
     
     <!-- JSON-LD Structured Data Schema -->
     <?php echo $__env->yieldContent('json_ld'); ?>
@@ -65,10 +65,24 @@
             --accent-hover: <?php echo e(setting('accent_hover_color', '#C5A028')); ?>;
             --accent-light: <?php echo e(setting('accent_light_color', 'rgba(212,175,55,.12)')); ?>;
         }
-        .text-primary { color: var(--accent) !important; }
-        .bg-primary { background-color: var(--accent) !important; }
-        .btn-primary { background-color: var(--accent) !important; border-color: var(--accent) !important; }
-        .btn-primary:hover { background-color: var(--accent-hover) !important; border-color: var(--accent-hover) !important; }
+        /* Mobile Viewport Lock */
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        /* High-Contrast Variant Highlights */
+        .variant-option.active[data-color], .pcard-color-dot.active {
+            outline: 2px solid var(--accent) !important;
+            outline-offset: 3px !important;
+            border-color: var(--accent) !important;
+        }
+        .variant-option.active[data-size], .pcard-size-pill.active {
+            background-color: var(--accent) !important;
+            color: #fff !important;
+            border-color: var(--accent) !important;
+            font-weight: 800 !important;
+        }
     </style>
     <link rel="stylesheet" href="<?php echo e(asset('css/frontend.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('css/brand.css')); ?>">
@@ -106,6 +120,7 @@
     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
 
+
     <!-- ── Main Header ────────────────────────────────────────────── -->
     <header class="main-header shadow-sm">
         <div class="container px-xl-5">
@@ -127,7 +142,7 @@
                 <div class="header-logo-container">
                     <a href="<?php echo e(url('/')); ?>" class="text-decoration-none">
                         <?php if(setting('app_logo')): ?>
-                            <img src="<?php echo e(asset('storage/' . setting('app_logo'))); ?>" alt="<?php echo e(setting('app_name')); ?>" style="height: 42px; object-fit: contain;">
+                            <img src="<?php echo e(asset('storage/' . setting('app_logo'))); ?>" alt="<?php echo e(setting('app_name')); ?>" class="rounded-circle shadow-sm" style="height: 44px; width: 44px; object-fit: cover; border: 1px solid rgba(0,0,0,0.05);">
                         <?php else: ?>
                             <div class="brand-logo-text">
                                 Hijab <span class="gold-part">Princesses</span>
@@ -463,66 +478,13 @@
 
             <!-- Items -->
             <div class="mc-items" id="mini-cart-items">
-                <?php $total = 0; ?>
-                <?php $__empty_1 = true; $__currentLoopData = session('cart', []); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $id => $details): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                    <?php $total += $details['price'] * $details['quantity']; ?>
-                    <div class="mc-item" id="cart-item-<?php echo e($id); ?>">
-                        <img src="<?php echo e(!empty($details['image']) && strval($details['image']) !== '0' ? Storage::url($details['image']) : asset('images/placeholder-product.jpg')); ?>"
-                             alt="<?php echo e($details['name']); ?>" class="mc-item-img">
-                        <div class="mc-item-info">
-                            <div class="mc-item-name"><?php echo e($details['name']); ?></div>
-                            <div class="mc-tags">
-                                <?php if(!empty($details['color'])): ?>
-                                    <span class="mc-tag"><?php echo e($details['color']); ?></span>
-                                <?php endif; ?>
-                                <?php if(!empty($details['size'])): ?>
-                                    <span class="mc-tag"><?php echo e($details['size']); ?></span>
-                                <?php endif; ?>
-                            </div>
-                            <div class="mc-item-bottom">
-                                <span class="mc-price"><?php echo e(currency($details['price'])); ?></span>
-                                <div class="mc-qty">
-                                    <button class="mc-qty-btn" onclick="updateQty(<?php echo e($id); ?>, <?php echo e($details['quantity'] - 1); ?>)">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                    <input class="mc-qty-val" value="<?php echo e($details['quantity']); ?>" readonly>
-                                    <button class="mc-qty-btn" onclick="updateQty(<?php echo e($id); ?>, <?php echo e($details['quantity'] + 1); ?>)">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="mc-delete" onclick="removeItem(<?php echo e($id); ?>)" title="حذف">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                    <div class="mc-empty">
-                        <div class="mc-empty-icon">🛍️</div>
-                        <h5>سلتك فارغة</h5>
-                        <p>لم تقومي بإضافة أي منتج بعد.</p>
-                        <a href="<?php echo e(route('shop.index')); ?>" class="mc-shop-btn" data-bs-dismiss="offcanvas">ابدئي التسوق</a>
-                    </div>
-                <?php endif; ?>
+                <?php echo $__env->make('frontend.cart.partials.mini-cart-items', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
             </div>
 
-            <!-- Footer (only when cart has items) -->
-            <?php if(count(session('cart', [])) > 0): ?>
-            <div class="mc-footer" id="mini-cart-footer">
-                <div class="mc-shipping">
-                    <i class="fas fa-truck me-1"></i> توصيل مجاني لجميع أنحاء المغرب 🇲🇦
-                </div>
-                <div class="mc-total-row">
-                    <span class="mc-total-label">الإجمالي</span>
-                    <span class="mc-total-val" id="mini-cart-total"><?php echo e(currency($total)); ?></span>
-                </div>
-                <a href="<?php echo e(route('checkout.index')); ?>" class="mc-checkout-btn">
-                    <i class="fas fa-check-circle"></i>
-                    <span>إتمام الطلب</span>
-                </a>
-                <a href="<?php echo e(route('cart.index')); ?>" class="mc-view-btn">عرض السلة كاملة</a>
+            <!-- Footer -->
+            <div id="mini-cart-footer">
+                <?php echo $__env->make('frontend.cart.partials.mini-cart-footer', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
             </div>
-            <?php endif; ?>
 
         </div>
     </div>
@@ -715,16 +677,27 @@
 
         // Refresh mini-cart content dynamically
         function refreshMiniCart() {
+            // Refresh Items
             fetch('<?php echo e(route('cart.mini')); ?>', {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
             .then(response => response.text())
             .then(html => {
                 const miniCartContainer = document.getElementById('mini-cart-items');
-                if(miniCartContainer) {
-                    miniCartContainer.innerHTML = html;
+                if(miniCartContainer) miniCartContainer.innerHTML = html;
+            })
+            .catch(console.error);
+
+            // Refresh Footer (Total & Checkout Button)
+            fetch('<?php echo e(route('cart.miniFooter')); ?>', {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(response => response.text())
+            .then(html => {
+                const miniCartFooter = document.getElementById('mini-cart-footer');
+                if(miniCartFooter) {
+                    miniCartFooter.innerHTML = html;
+                    miniCartFooter.style.display = html.trim() === '' ? 'none' : 'block';
                 }
             })
             .catch(console.error);
@@ -884,6 +857,15 @@
                 }
             });
         }
+        // Initialize all product cards availability on load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.pcard').forEach(card => {
+                const productId = card.dataset.productId;
+                if (!window.selectedCardOptions) window.selectedCardOptions = {};
+                if (!window.selectedCardOptions[productId]) window.selectedCardOptions[productId] = {};
+                updateCardAvailability(productId, card, window.selectedCardOptions[productId]);
+            });
+        });
     </script>
     <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>

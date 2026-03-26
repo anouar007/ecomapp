@@ -53,6 +53,12 @@ class CheckoutController extends Controller
             $subtotal += $details['price'] * $details['quantity'];
         }
 
+        // Calculate Shipping Cost
+        $city = $request->shipping_city;
+        $isCasablanca = Str::contains(strtolower($city), 'casablanca') || Str::contains($city, 'الدار البيضاء');
+        $shippingCost = $isCasablanca ? 15 : 40;
+        $total = $subtotal + $shippingCost;
+
         // Create Order
         $order = Order::create([
             'order_number' => 'ORD-' . strtoupper(Str::random(10)),
@@ -64,7 +70,8 @@ class CheckoutController extends Controller
             'shipping_zip'   => 'N/A',
             'shipping_country' => 'Morocco',
             'subtotal' => $subtotal,
-            'total' => $subtotal,
+            'shipping_cost' => $shippingCost,
+            'total' => $total,
             'status' => 'pending',
             'payment_status' => 'pending',
             'payment_method' => 'cod',

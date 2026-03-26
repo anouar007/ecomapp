@@ -54,10 +54,15 @@
     <!-- Navbar (Desktop) -->
     <nav class="navbar d-none d-lg-flex">
         <div class="navbar-container">
-            <button onclick="startTour()" class="btn btn-sm btn-outline-primary" style="margin-right: 12px; border-radius: 20px; display: flex; align-items: center; gap: 6px;">
-                <i class="fas fa-question-circle"></i>
-                <span class="d-none d-md-inline">{{ __('Help & Guide') }}</span>
-            </button>
+            <div class="d-flex align-items-center gap-3">
+                <button id="sidebar-toggle-desktop" class="sidebar-toggle d-none d-lg-flex">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <button onclick="startTour()" class="btn-help-guide">
+                    <i class="fas fa-question-circle"></i>
+                    <span class="d-none d-md-inline">{{ __('Help & Guide') }}</span>
+                </button>
+            </div>
 
             <div class="user-avatar" id="user-menu-trigger">
                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
@@ -280,6 +285,7 @@
         const mobileToggle = document.getElementById('mobile-sidebar-toggle');
         const sidebar = document.querySelector('.sidebar');
         const overlay = document.getElementById('sidebar-overlay');
+        const userMenuDesktop = document.getElementById('user-menu-trigger');
         const userMenuMobile = document.getElementById('user-menu-trigger-mobile');
         const userDropdown = document.querySelector('.user-dropdown');
 
@@ -297,12 +303,54 @@
             });
         }
 
+        if (userMenuDesktop) {
+            userMenuDesktop.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userDropdown.classList.toggle('active');
+            });
+        }
+
         if (userMenuMobile) {
             userMenuMobile.addEventListener('click', (e) => {
                 e.stopPropagation();
                 userDropdown.classList.toggle('active');
             });
         }
+
+        // Desktop Sidebar Toggle
+        // const sidebar = document.querySelector('.sidebar'); // Already defined above
+        const navbar = document.querySelector('.navbar');
+        const mainContent = document.querySelector('.main-content');
+        const desktopToggle = document.getElementById('sidebar-toggle-desktop');
+
+        if (desktopToggle) {
+            desktopToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                navbar.classList.toggle('expanded');
+                mainContent.classList.toggle('expanded');
+                
+                // Save preference
+                localStorage.setItem('sidebar-collapsed', sidebar.classList.contains('collapsed'));
+            });
+
+            // Restore preference
+            if (localStorage.getItem('sidebar-collapsed') === 'true') {
+                sidebar.classList.add('collapsed');
+                navbar.classList.add('expanded');
+                mainContent.classList.add('expanded');
+            }
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (userDropdown && !userDropdown.contains(e.target)) {
+                if (userMenuDesktop && !userMenuDesktop.contains(e.target)) {
+                    if (!userMenuMobile || !userMenuMobile.contains(e.target)) {
+                        userDropdown.classList.remove('active');
+                    }
+                }
+            }
+        });
     </script>
     @stack('scripts')
 

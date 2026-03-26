@@ -363,12 +363,9 @@ class Product extends Model
      */
     public function getAvailableSizesAttribute()
     {
-        return $this->variants->pluck('size')->unique()->filter()->values();
+        return $this->variants->where('status', 'active')->pluck('size')->unique()->filter()->values();
     }
 
-    /**
-     * Get all unique colors available for this product.
-     */
     public function getAvailableColorsAttribute()
     {
         return $this->variants->where('status', 'active')->unique('color')->values();

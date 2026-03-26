@@ -333,7 +333,7 @@
                     </button>
                 </div>
                 <div class="card-body p-3">
-                    <div id="variantsContainer" class="variants-container">
+                    <div id="variantsContainer" class="variants-container p-3">
                         @foreach($product->variants as $index => $variant)
                         <div class="variant-card" data-index="{{ $index }}">
                             <div class="variant-actions">
@@ -352,38 +352,39 @@
                                     @endif
                                     <input type="file" name="variants[{{ $index }}][color_image]" class="d-none" accept="image/*" onchange="previewVariantImage(this, {{ $index }})">
                                 </div>
-                                <div class="flex-grow-1">
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <div class="variant-input-group" style="width: 45%;">
-                                            <label>{{ __('Color') }}</label>
-                                            <input type="color" name="variants[{{ $index }}][color_code]" class="form-control form-control-color w-100" value="{{ $variant->color_code ?: '#000000' }}">
-                                            <input type="hidden" name="variants[{{ $index }}][color]" value="{{ $variant->color }}">
-                                        </div>
-                                        <div class="variant-input-group" style="width: 45%;">
-                                            <label>{{ __('Size') }}</label>
-                                            <input type="text" name="variants[{{ $index }}][size]" class="form-control" value="{{ $variant->size }}" placeholder="{{ __('e.g. XL') }}">
-                                        </div>
-                                    </div>
+                                <div class="variant-input-group">
+                                    <label>{{ __('Color') }}</label>
+                                    <input type="color" name="variants[{{ $index }}][color_code]" class="form-control form-control-color" value="{{ $variant->color_code ?: '#000000' }}">
+                                    <input type="hidden" name="variants[{{ $index }}][color]" value="{{ $variant->color }}">
+                                </div>
+                                <div class="variant-input-group">
+                                    <label>{{ __('Size') }}</label>
+                                    <input type="text" name="variants[{{ $index }}][size]" class="form-control" value="{{ $variant->size }}" placeholder="{{ __('e.g. XL') }}">
                                 </div>
                             </div>
 
-                            <div class="variant-grid-inputs mt-2">
+                            <div class="variant-grid-inputs">
                                 <div class="variant-input-group">
                                     <label>{{ __('SKU') }}</label>
-                                    <input type="text" name="variants[{{ $index }}][sku]" class="form-control font-inter" value="{{ $variant->sku }}" placeholder="{{ __('Unique SKU') }}">
+                                    <div class="input-group">
+                                        <input type="text" name="variants[{{ $index }}][sku]" class="form-control font-inter" value="{{ $variant->sku }}" placeholder="{{ __('Unique SKU') }}">
+                                        <button class="btn btn-outline-secondary" type="button" onclick="generateVariantSKU(this)" title="{{ __('Generate SKU') }}">
+                                            <i class="fas fa-magic"></i>
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="variant-input-group">
-                                    <label>{{ __('Price Override') }}</label>
+                                    <label>{{ __('Price Override ($)') }}</label>
                                     <div class="input-group">
                                         <span class="input-group-text">$</span>
                                         <input type="number" name="variants[{{ $index }}][price]" class="form-control font-inter" value="{{ $variant->price }}" step="0.01" placeholder="{{ $product->price }}">
                                     </div>
                                 </div>
-                                <div class="variant-input-group col-12">
+                                <div class="variant-input-group">
                                     <label>{{ __('Inventory Stock') }}</label>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <input type="number" name="variants[{{ $index }}][stock]" class="form-control text-center fw-bold font-inter" value="{{ $variant->stock }}" required min="0">
-                                        <span class="text-muted small">{{ __('units') }}</span>
+                                    <div class="variant-stock-wrapper">
+                                        <input type="number" name="variants[{{ $index }}][stock]" value="{{ $variant->stock }}" required min="0">
+                                        <span class="variant-stock-unit">{{ __('units') }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -441,6 +442,21 @@ function generateSKU() {
     setTimeout(() => { document.getElementById('sku').style.background = ''; }, 500);
 }
 
+// Variant SKU Auto-Generation
+function generateVariantSKU(btn) {
+    const card = btn.closest('.variant-card');
+    const skuInput = card.querySelector('input[name*="[sku]"]');
+    if (skuInput) {
+        const baseProductSku = document.getElementById('sku').value || 'PROD-' + Date.now().toString().slice(-4);
+        const randomNum = Math.floor(Math.random() * 900) + 100; // 3 digits
+        skuInput.value = `${baseProductSku}-V${randomNum}`;
+        
+        // Visual feedback
+        skuInput.style.background = '#f0f9ff';
+        setTimeout(() => { skuInput.style.background = ''; }, 500);
+    }
+}
+
 let imagesToRemove = [];
 let newFiles = [];
 
@@ -469,8 +485,33 @@ function markImageForRemoval(imageId, button) {
 function handleNewImages(event) {
     const container = document.getElementById('imagePreviewContainer');
     const files = Array.from(event.target.files);
+    const maxSize = 4 * 1024 * 1024; // 4MB
     
-    files.forEach((file, index) => {
+    let validFiles = [];
+    let errorMessages = [];
+
+    files.forEach(file => {
+        if (file.size > maxSize) {
+            errorMessages.push(`- ${file.name}: {{ __('The image is too large. Max size is 4MB.') }}`);
+        } else if (!file.type.match('image.*')) {
+            errorMessages.push(`- ${file.name}: {{ __('Please select a valid image file.') }}`);
+        } else {
+            validFiles.push(file);
+        }
+    });
+
+    if (errorMessages.length > 0) {
+        alert("{{ __('Please fix the following issues:') }}\n" + errorMessages.join('\n'));
+        // If all selected files are invalid, clear the input so nothing is submitted
+        if (validFiles.length === 0) {
+            event.target.value = '';
+            return;
+        }
+        // Ideally we would filter the FileList here, but FileList is read-only.
+        // We warn the user and let them decide, but the pre-submit check will catch it too.
+    }
+    
+    validFiles.forEach((file, index) => {
         const reader = new FileReader();
         reader.onload = function(e) {
             const box = document.createElement('div');
@@ -487,9 +528,10 @@ function handleNewImages(event) {
 }
 
 // ── Variations Management ───────────────────────
-let variantIndex = {{ $product->variants->count() }};
+let variantCounter = {{ $product->variants->count() + 100 }}; // Offset to avoid any collision with existing indices
 
 function addVariationRow() {
+    const vIndex = variantCounter++;
     const container = document.getElementById('variantsContainer');
     const noMsg = document.getElementById('noVariantsMsg');
     
@@ -497,7 +539,7 @@ function addVariationRow() {
     
     const div = document.createElement('div');
     div.className = 'variant-card';
-    div.dataset.index = variantIndex;
+    div.dataset.index = vIndex;
     div.innerHTML = `
         <div class="variant-actions">
             <button type="button" class="btn-remove-variant" onclick="removeVariationRow(this)" title="{{ __('Remove Variation') }}">
@@ -509,45 +551,49 @@ function addVariationRow() {
             <div class="variant-img-wrapper" onclick="this.querySelector('input').click()">
                 <i class="fas fa-camera"></i>
                 <span>{{ __('صورة') }}</span>
-                <input type="file" name="variants[${variantIndex}][color_image]" class="d-none" accept="image/*" onchange="previewVariantImage(this, ${variantIndex})">
+                <input type="file" name="variants[${vIndex}][color_image]" class="d-none" accept="image/*" onchange="previewVariantImage(this, ${vIndex})">
             </div>
-            <div class="flex-grow-1">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div class="variant-input-group" style="width: 45%;">
-                        <label>{{ __('اللون') }}</label>
-                        <input type="color" name="variants[${variantIndex}][color_code]" class="form-control form-control-color w-100" value="#000000">
-                    </div>
-                    <div class="variant-input-group" style="width: 45%;">
-                        <label>{{ __('الحجم') }}</label>
-                        <input type="text" name="variants[${variantIndex}][size]" class="form-control" placeholder="{{ __('مثال: XL') }}">
-                    </div>
-                </div>
+            <div class="variant-input-group">
+                <label>{{ __('Color') }}</label>
+                <input type="color" name="variants[${vIndex}][color_code]" class="form-control form-control-color" value="#000000">
+            </div>
+            <div class="variant-input-group">
+                <label>{{ __('Size') }}</label>
+                <input type="text" name="variants[${vIndex}][size]" class="form-control" placeholder="{{ __('e.g. XL') }}">
             </div>
         </div>
 
-        <div class="variant-grid-inputs mt-2">
+        <div class="variant-grid-inputs">
             <div class="variant-input-group">
-                <label>{{ __('رمز المنتج') }}</label>
-                <input type="text" name="variants[${variantIndex}][sku]" class="form-control font-inter" placeholder="{{ __('رمز المنتج') }}">
-            </div>
-            <div class="variant-input-group">
-                <label>{{ __('تجاوز السعر') }}</label>
+                <label>{{ __('SKU') }}</label>
                 <div class="input-group">
-                    <span class="input-group-text">$</span>
-                    <input type="number" name="variants[${variantIndex}][price]" class="form-control font-inter" step="0.01" placeholder="{{ __('السعر') }}">
+                    <input type="text" name="variants[${vIndex}][sku]" class="form-control font-inter" placeholder="{{ __('رمز المنتج') }}">
+                    <button class="btn btn-outline-secondary" type="button" onclick="generateVariantSKU(this)" title="{{ __('Generate SKU') }}">
+                        <i class="fas fa-magic"></i>
+                    </button>
                 </div>
             </div>
-            <div class="variant-input-group col-12">
-                <label>{{ __('المخزون') }}</label>
-                <div class="d-flex align-items-center gap-2">
-                    <input type="number" name="variants[${variantIndex}][stock]" class="form-control text-center fw-bold font-inter" value="10" required min="0">
-                    <span class="text-muted small">{{ __('وحدة') }}</span>
+            <div class="variant-input-group">
+                <label>{{ __('Price Override ($)') }}</label>
+                <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" name="variants[${vIndex}][price]" class="form-control font-inter" step="0.01" placeholder="0.00">
+                </div>
+            </div>
+            <div class="variant-input-group">
+                <label>{{ __('Inventory Stock') }}</label>
+                <div class="variant-stock-wrapper">
+                    <input type="number" name="variants[${vIndex}][stock]" value="10" required min="0">
+                    <span class="variant-stock-unit">{{ __('units') }}</span>
                 </div>
             </div>
         </div>
     `;
     container.appendChild(div);
-    variantIndex++;
+    
+    // Auto-generate SKU for the new variant
+    const addBtn = div.querySelector('.fa-magic')?.parentElement;
+    if (addBtn) generateVariantSKU(addBtn);
 }
 
 function removeVariationRow(btn) {
@@ -564,26 +610,89 @@ function removeVariationRow(btn) {
 
 function previewVariantImage(input, index) {
     if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const maxSize = 4 * 1024 * 1024; // 4MB
+        
+        // Size Check
+        if (file.size > maxSize) {
+            alert("{{ __('The image is too large. Max size is 4MB.') }}");
+            input.value = ''; // Reset input
+            return;
+        }
+
+        // Type Check
+        if (!file.type.match('image.*')) {
+            alert("{{ __('Please select a valid image file.') }}");
+            input.value = '';
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = function(e) {
-            let img = document.getElementById(`variant_img_preview_${index}`);
             const container = input.closest('.variant-img-wrapper');
+            let img = container.querySelector('img');
             
             if (!img) {
-                // Clear the icon and span
-                container.innerHTML = `<input type="file" name="variants[${index}][color_image]" class="d-none" accept="image/*" onchange="previewVariantImage(this, ${index})">`;
+                const icon = container.querySelector('i');
+                const span = container.querySelector('span');
+                if (icon) icon.remove();
+                if (span) span.remove();
                 
-                // Create and add img
                 img = document.createElement('img');
                 img.id = `variant_img_preview_${index}`;
-                img.onclick = () => container.querySelector('input').click();
                 container.appendChild(img);
             }
             img.src = e.target.result;
         };
-        reader.readAsDataURL(input.files[0]);
+        reader.readAsDataURL(file);
     }
 }
+
+// Pre-save Validation
+document.getElementById('productForm')?.addEventListener('submit', function(e) {
+    const variants = document.querySelectorAll('.variant-card');
+    let hasError = false;
+    let errorMessage = "";
+
+    variants.forEach((card, i) => {
+        const skuInput = card.querySelector('input[name*="[sku]"]');
+        const stockInput = card.querySelector('input[name*="[stock]"]');
+        const sizeInput = card.querySelector('input[name*="[size]"]');
+        const fileInput = card.querySelector('input[type="file"]');
+
+        // Basic variant validation
+        if (!skuInput.value.trim()) {
+            hasError = true;
+            errorMessage += `\n- ${'{{ __("Variant") }}'} ${i+1}: ${'{{ __("SKU is required") }}'}`;
+        }
+        if (stockInput.value < 0) {
+            hasError = true;
+            errorMessage += `\n- ${'{{ __("Variant") }}'} ${i+1}: ${'{{ __("Stock cannot be negative") }}'}`;
+        }
+
+        // Final File Size Check (double-check before submit)
+        if (fileInput && fileInput.files[0] && fileInput.files[0].size > 4 * 1024 * 1024) {
+            hasError = true;
+            errorMessage += `\n- ${'{{ __("Variant") }}'} ${i+1}: ${'{{ __("Image exceeds 4MB limit") }}'}`;
+        }
+    });
+
+    // Check main product images
+    const mainImagesInput = document.getElementById('images');
+    if (mainImagesInput && mainImagesInput.files.length > 0) {
+        Array.from(mainImagesInput.files).forEach((file, idx) => {
+            if (file.size > 4 * 1024 * 1024) {
+                hasError = true;
+                errorMessage += `\n- {{ __('Main Product Image') }} ${file.name}: {{ __('Image exceeds 4MB limit') }}`;
+            }
+        });
+    }
+
+    if (hasError) {
+        e.preventDefault();
+        alert("{{ __('Please fix the following issues before saving:') }}" + errorMessage);
+    }
+});
 </script>
 @endpush
 @endsection

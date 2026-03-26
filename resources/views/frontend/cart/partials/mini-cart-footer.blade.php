@@ -1,15 +1,25 @@
-<div class="border-top p-4 bg-white mt-auto shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
-    <div class="d-flex justify-content-between align-items-end mb-4">
-        <span class="text-muted small text-uppercase fw-bold ls-1">المجموع الفرعي</span>
-        <span class="h4 fw-bold text-dark mb-0 ls-tight" id="mini-cart-total">{{ currency($total) }}</span>
+@php
+    $cart = session('cart', []);
+    $total = 0;
+    foreach($cart as $details) {
+        $total += $details['price'] * $details['quantity'];
+    }
+@endphp
+@if(count($cart) > 0)
+
+<div class="mc-footer">
+    <div class="mc-shipping">
+        <i class="fas fa-truck me-1"></i> التوصيل: البيضاء 15 د.م. / باقي المدن 40 د.م.
     </div>
-    <div class="d-grid gap-2">
-        <a href="{{ route('checkout.index') }}" class="btn btn-primary py-3 rounded-pill fw-bold shadow-sm d-flex justify-content-between align-items-center px-4">
-            <span>إتمام الطلب</span>
-            <i class="fas fa-arrow-left"></i>
-        </a>
-        <a href="{{ route('cart.index') }}" class="btn btn-light py-2 rounded-pill fw-bold text-muted small">
-            عرض تفاصيل السلة
-        </a>
+    <div class="mc-total-row">
+        <span class="mc-total-label">الإجمالي</span>
+        <span class="mc-total-val" id="mini-cart-total">{{ currency($total) }}</span>
     </div>
+    <a href="{{ route('checkout.index') }}" class="mc-checkout-btn">
+        <i class="fas fa-check-circle"></i>
+        <span>إتمام الطلب</span>
+    </a>
+    <a href="{{ route('cart.index') }}" class="mc-view-btn">عرض السلة كاملة</a>
 </div>
+@endif
+

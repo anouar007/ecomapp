@@ -264,8 +264,8 @@
     color: #fff;
     border: none;
     border-radius: 1rem;
-    padding: 1rem;
-    font-size: 1.05rem;
+    padding: 1.25rem;
+    font-size: 1.1rem;
     font-weight: 800;
     letter-spacing: 0.02em;
     cursor: pointer;
@@ -312,11 +312,24 @@
 }
 .trust-item i { font-size: 1.25rem; color: #c5a059; }
 
+.checkout-grid {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 1.5rem;
+}
+
 /* ── Desktop: show order summary beside form ─────── */
-@media (min-width: 768px) {
+@media (min-width: 992px) {
     .checkout-page { padding: 3rem 0 4rem; }
-    .checkout-wrapper { max-width: 540px; }
-    .checkout-header h1 { font-size: 2rem; }
+    .checkout-wrapper { max-width: 1100px; }
+    .checkout-header h1 { font-size: 2.2rem; }
+    
+    .checkout-grid {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 2.5rem;
+        align-items: start;
+    }
 }
 </style>
 @endpush
@@ -328,123 +341,130 @@
         {{-- Header --}}
         <div class="checkout-header">
             <h1>تأكيد الطلب</h1>
-            <p>توصيل مجاني لجميع أنحاء المغرب 🇲🇦</p>
+            <p class="mb-2">شحن سريع لجميع مدن المغرب 🇲🇦</p>
+            <p class="small text-gold fw-bold mb-0"><i class="fas fa-info-circle me-1"></i> التوصيل: 15 د.م. بالدار البيضاء و 40 د.م. لباقي المدن</p>
         </div>
 
-        {{-- Order Summary --}}
-        <div class="summary-card">
-            <div class="summary-header">
-                <i class="fas fa-shopping-bag"></i> ملخص الطلب
-            </div>
-            <div class="summary-body">
-                @foreach($cart as $key => $details)
-                <div class="cart-row">
-                    <div class="cart-img-wrap">
-                        @if($details['image'])
-                            <img src="{{ Storage::url($details['image']) }}" alt="{{ $details['name'] }}" class="cart-img">
-                        @else
-                            <div class="cart-img-placeholder"><i class="fas fa-image"></i></div>
-                        @endif
-                        <div class="cart-qty-badge">{{ $details['quantity'] }}</div>
+        <div class="checkout-grid">
+            <div class="checkout-main">
+                {{-- Delivery Info Form --}}
+                <div class="form-card">
+                    <div class="form-header">
+                        <i class="fas fa-map-marker-alt text-primary"></i> معلومات التوصيل
                     </div>
-                    <div class="cart-info">
-                        <div class="cart-name">{{ $details['name'] }}</div>
-                        <div class="cart-variants">
-                            @if($details['color'] ?? null)
-                                <span class="variant-tag">{{ $details['color'] }}</span>
-                            @endif
-                            @if($details['size'] ?? null)
-                                <span class="variant-tag">{{ $details['size'] }}</span>
-                            @endif
+                    <div class="form-body">
+                        <form action="{{ route('checkout.store') }}" method="POST" id="checkout-form">
+                            @csrf
+
+                            <div class="field-group">
+                                <label class="field-label" for="customer_name">الاسم الكامل</label>
+                                <input type="text" id="customer_name" name="customer_name"
+                                       class="field-input" placeholder="مثال: فاطمة الزهراء" required
+                                       value="{{ old('customer_name') }}">
+                            </div>
+
+                            <div class="field-group">
+                                <label class="field-label" for="customer_phone">رقم الهاتف</label>
+                                <input type="tel" id="customer_phone" name="customer_phone"
+                                       class="field-input" placeholder="06 XX XX XX XX" required
+                                       value="{{ old('customer_phone') }}">
+                            </div>
+
+                            <div class="field-group">
+                                <label class="field-label" for="shipping_address">العنوان</label>
+                                <input type="text" id="shipping_address" name="shipping_address"
+                                       class="field-input" placeholder="الحي، الشارع، رقم المنزل..." required
+                                       value="{{ old('shipping_address') }}">
+                            </div>
+
+                            <div class="field-group">
+                                <label class="field-label" for="city-select">المدينة</label>
+                                <select name="shipping_city" id="city-select" required>
+                                    <option value="">ابحثي عن مدينتك...</option>
+                                </select>
+                            </div>
+                        </form>
+
+                        <button type="submit" form="checkout-form" class="btn-checkout">
+                            <i class="fas fa-check-circle"></i> تأكيد الطلب الآن
+                        </button>
+
+                        <a href="{{ route('cart.index') }}" class="back-link">
+                            <i class="fas fa-arrow-right me-1"></i> العودة للسلة
+                        </a>
+
+                        <div class="trust-row">
+                            <div class="trust-item">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>دفع آمن</span>
+                            </div>
+                            <div class="trust-item">
+                                <i class="fas fa-truck"></i>
+                                <span>توصيل سريع</span>
+                            </div>
+                            <div class="trust-item">
+                                <i class="fas fa-undo"></i>
+                                <span>إرجاع سهل</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="cart-price">{{ currency($details['price'] * $details['quantity']) }}</div>
-                </div>
-                @endforeach
-
-                <div class="totals-section">
-                    <div class="totals-row">
-                        <span>المجموع الفرعي</span>
-                        <span class="fw-bold">{{ currency($total) }}</span>
-                    </div>
-                    <div class="totals-row">
-                        <span>التوصيل</span>
-                        <span class="fw-bold text-success">مجاني</span>
-                    </div>
-                    <div class="totals-row grand">
-                        <span>الإجمالي</span>
-                        <span class="val">{{ currency($total) }}</span>
-                    </div>
                 </div>
             </div>
-        </div>
 
-        {{-- Payment Method --}}
-        <div class="payment-card">
-            <div class="payment-icon"><i class="fas fa-money-bill-wave"></i></div>
-            <div class="payment-label">الدفع عند الاستلام</div>
-            <div class="payment-note">سيتواصل معك فريقنا لتأكيد الطلب قبل الإرسال</div>
-        </div>
-
-        {{-- Delivery Info Form --}}
-        <div class="form-card">
-            <div class="form-header">
-                <i class="fas fa-map-marker-alt text-primary"></i> معلومات التوصيل
-            </div>
-            <div class="form-body">
-                <form action="{{ route('checkout.store') }}" method="POST" id="checkout-form">
-                    @csrf
-
-                    <div class="field-group">
-                        <label class="field-label" for="customer_name">الاسم الكامل</label>
-                        <input type="text" id="customer_name" name="customer_name"
-                               class="field-input" placeholder="مثال: فاطمة الزهراء" required
-                               value="{{ old('customer_name') }}">
+            <div class="checkout-side">
+                {{-- Order Summary --}}
+                <div class="summary-card">
+                    <div class="summary-header">
+                        <i class="fas fa-shopping-bag"></i> ملخص الطلب
                     </div>
+                    <div class="summary-body">
+                        @foreach($cart as $key => $details)
+                        <div class="cart-row">
+                            <div class="cart-img-wrap">
+                                @if($details['image'])
+                                    <img src="{{ Storage::url($details['image']) }}" alt="{{ $details['name'] }}" class="cart-img">
+                                @else
+                                    <div class="cart-img-placeholder"><i class="fas fa-image"></i></div>
+                                @endif
+                                <div class="cart-qty-badge">{{ $details['quantity'] }}</div>
+                            </div>
+                            <div class="cart-info">
+                                <div class="cart-name">{{ $details['name'] }}</div>
+                                <div class="cart-variants">
+                                    @if($details['color'] ?? null)
+                                        <span class="variant-tag">{{ $details['color'] }}</span>
+                                    @endif
+                                    @if($details['size'] ?? null)
+                                        <span class="variant-tag">{{ $details['size'] }}</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="cart-price">{{ currency($details['price'] * $details['quantity']) }}</div>
+                        </div>
+                        @endforeach
 
-                    <div class="field-group">
-                        <label class="field-label" for="customer_phone">رقم الهاتف</label>
-                        <input type="tel" id="customer_phone" name="customer_phone"
-                               class="field-input" placeholder="06 XX XX XX XX" required
-                               value="{{ old('customer_phone') }}">
+                        <div class="totals-section">
+                            <div class="totals-row">
+                                <span>المجموع الفرعي</span>
+                                <span class="fw-bold">{{ currency($total) }}</span>
+                            </div>
+                            <div class="totals-row">
+                                <span>التوصيل</span>
+                                <span class="fw-bold" id="shipping-cost-display">0.00 د.م.</span>
+                            </div>
+                            <div class="totals-row grand">
+                                <span>الإجمالي</span>
+                                <span class="val" id="grand-total-display">{{ currency($total) }}</span>
+                            </div>
+                        </div>
                     </div>
+                </div>
 
-                    <div class="field-group">
-                        <label class="field-label" for="shipping_address">العنوان</label>
-                        <input type="text" id="shipping_address" name="shipping_address"
-                               class="field-input" placeholder="الحي، الشارع، رقم المنزل..." required
-                               value="{{ old('shipping_address') }}">
-                    </div>
-
-                    <div class="field-group">
-                        <label class="field-label" for="city-select">المدينة</label>
-                        <select name="shipping_city" id="city-select" required>
-                            <option value="">ابحثي عن مدينتك...</option>
-                        </select>
-                    </div>
-                </form>
-
-                <button type="submit" form="checkout-form" class="btn-checkout">
-                    <i class="fas fa-check-circle"></i> تأكيد الطلب الآن
-                </button>
-
-                <a href="{{ route('cart.index') }}" class="back-link">
-                    <i class="fas fa-arrow-right me-1"></i> العودة للسلة
-                </a>
-
-                <div class="trust-row">
-                    <div class="trust-item">
-                        <i class="fas fa-shield-alt"></i>
-                        <span>دفع آمن</span>
-                    </div>
-                    <div class="trust-item">
-                        <i class="fas fa-truck"></i>
-                        <span>توصيل سريع</span>
-                    </div>
-                    <div class="trust-item">
-                        <i class="fas fa-undo"></i>
-                        <span>إرجاع سهل</span>
-                    </div>
+                {{-- Payment Method --}}
+                <div class="payment-card">
+                    <div class="payment-icon"><i class="fas fa-money-bill-wave"></i></div>
+                    <div class="payment-label">الدفع عند الاستلام</div>
+                    <div class="payment-note">سيتواصل معك فريقنا لتأكيد الطلب قبل الإرسال</div>
                 </div>
             </div>
         </div>
@@ -467,7 +487,11 @@ document.addEventListener('DOMContentLoaded', function () {
         text: c.ar + ' ' + c.fr,  // searchable text includes both languages
     }));
 
-    new TomSelect('#city-select', {
+    const subtotal = {{ $total }};
+    const shippingDisplay = document.getElementById('shipping-cost-display');
+    const totalDisplay = document.getElementById('grand-total-display');
+
+    const ts = new TomSelect('#city-select', {
         options: options,
         items: [],
         valueField: 'value',
@@ -477,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function () {
             option: function (data, escape) {
                 return '<div class="d-flex align-items-center justify-content-between gap-2">' +
                     '<span class="fw-bold">' + escape(data.label) + '</span>' +
-                    '<span class="text-muted small opacity-75">' + escape(data.fr) + '</span>' +
+                    '<span class="text-muted small opacity-75">' + escape(data.fr || '') + '</span>' +
                 '</div>';
             },
             item: function (data, escape) {
@@ -485,9 +509,32 @@ document.addEventListener('DOMContentLoaded', function () {
             },
         },
         placeholder: 'ابحثي... / Chercher...',
-        create: false,
+        create: true,
         maxOptions: 200,
+        onChange: function(value) {
+            updateShipping(value);
+        }
     });
+
+    function updateShipping(city) {
+        if (!city) {
+            shippingDisplay.textContent = '0.00 د.م.';
+            totalDisplay.textContent = subtotal.toFixed(2) + ' د.م.';
+            return;
+        }
+
+        // Normalize city: Casablanca or الدار البيضاء
+        const isCasablanca = city.toLowerCase().includes('casablanca') || city.includes('الدار البيضاء');
+        const cost = isCasablanca ? 15 : 40;
+        const total = subtotal + cost;
+
+        shippingDisplay.textContent = cost.toFixed(2) + ' د.م.';
+        totalDisplay.textContent = total.toFixed(2) + ' د.م.';
+        
+        // Add a nice animation or color highlight
+        shippingDisplay.classList.add('text-primary');
+        setTimeout(() => shippingDisplay.classList.remove('text-primary'), 500);
+    }
 });
 </script>
 @endpush

@@ -30,23 +30,23 @@
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="@yield('meta_type', 'website')">
-    <meta property="og:site_name" content="{{ setting('app_name', 'Speed Platform') }}">
+    <meta property="og:site_name" content="{{ setting('app_name', 'Hijab Princesses') }}">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('meta_title', setting('app_name', 'Speed Platform'))">
-    <meta property="og:description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
-    <meta property="og:image" content="@yield('meta_image', setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/og-default.jpg'))">
+    <meta property="og:title" content="@yield('meta_title', setting('app_name', 'Hijab Princesses'))">
+    <meta property="og:description" content="@yield('meta_description', setting('app_description', 'أناقة الأميرة — متجر العبايات والخمارات الفاخرة بالمغرب.'))">
+    <meta property="og:image" content="@yield('meta_image', setting('app_logo') ? url(Storage::url(setting('app_logo'))) : asset('images/og-default.jpg'))">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:locale" content="{{ setting('language', 'fr') === 'ar' ? 'ar_MA' : 'fr_MA' }}">
+    <meta property="og:locale" content="ar_MA">
     <meta property="og:updated_time" content="{{ now()->toIso8601String() }}">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ url()->current() }}">
-    <meta name="twitter:title" content="@yield('meta_title', setting('app_name', 'Speed Platform'))">
-    <meta name="twitter:description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
-    <meta name="twitter:image" content="@yield('twitter_image', setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/og-default.jpg'))">    
-    <meta name="twitter:site" content="@yield('twitter_site', '@' . str_replace(' ', '', setting('app_name', 'SpeedPlatform')))">
+    <meta name="twitter:title" content="@yield('meta_title', setting('app_name', 'Hijab Princesses'))">
+    <meta name="twitter:description" content="@yield('meta_description', setting('app_description', 'أناقة الأميرة — متجر العبايات والخمارات الفاخرة بالمغرب.'))">
+    <meta name="twitter:image" content="@yield('meta_image', setting('app_logo') ? url(Storage::url(setting('app_logo'))) : asset('images/og-default.jpg'))">    
+    <meta name="twitter:site" content="@yield('twitter_site', '@HijabPrincesses')">
     
     <!-- JSON-LD Structured Data Schema -->
     @yield('json_ld')
@@ -65,10 +65,24 @@
             --accent-hover: {{ setting('accent_hover_color', '#C5A028') }};
             --accent-light: {{ setting('accent_light_color', 'rgba(212,175,55,.12)') }};
         }
-        .text-primary { color: var(--accent) !important; }
-        .bg-primary { background-color: var(--accent) !important; }
-        .btn-primary { background-color: var(--accent) !important; border-color: var(--accent) !important; }
-        .btn-primary:hover { background-color: var(--accent-hover) !important; border-color: var(--accent-hover) !important; }
+        /* Mobile Viewport Lock */
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        /* High-Contrast Variant Highlights */
+        .variant-option.active[data-color], .pcard-color-dot.active {
+            outline: 2px solid var(--accent) !important;
+            outline-offset: 3px !important;
+            border-color: var(--accent) !important;
+        }
+        .variant-option.active[data-size], .pcard-size-pill.active {
+            background-color: var(--accent) !important;
+            color: #fff !important;
+            border-color: var(--accent) !important;
+            font-weight: 800 !important;
+        }
     </style>
     <link rel="stylesheet" href="{{ asset('css/frontend.css') }}">
     <link rel="stylesheet" href="{{ asset('css/brand.css') }}">
@@ -104,6 +118,7 @@
     @endforeach
 
 
+
     <!-- ── Main Header ────────────────────────────────────────────── -->
     <header class="main-header shadow-sm">
         <div class="container px-xl-5">
@@ -125,7 +140,7 @@
                 <div class="header-logo-container">
                     <a href="{{ url('/') }}" class="text-decoration-none">
                         @if(setting('app_logo'))
-                            <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="{{ setting('app_name') }}" style="height: 42px; object-fit: contain;">
+                            <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="{{ setting('app_name') }}" class="rounded-circle shadow-sm" style="height: 44px; width: 44px; object-fit: cover; border: 1px solid rgba(0,0,0,0.05);">
                         @else
                             <div class="brand-logo-text">
                                 Hijab <span class="gold-part">Princesses</span>
@@ -460,66 +475,13 @@
 
             <!-- Items -->
             <div class="mc-items" id="mini-cart-items">
-                @php $total = 0; @endphp
-                @forelse(session('cart', []) as $id => $details)
-                    @php $total += $details['price'] * $details['quantity']; @endphp
-                    <div class="mc-item" id="cart-item-{{ $id }}">
-                        <img src="{{ !empty($details['image']) && strval($details['image']) !== '0' ? Storage::url($details['image']) : asset('images/placeholder-product.jpg') }}"
-                             alt="{{ $details['name'] }}" class="mc-item-img">
-                        <div class="mc-item-info">
-                            <div class="mc-item-name">{{ $details['name'] }}</div>
-                            <div class="mc-tags">
-                                @if(!empty($details['color']))
-                                    <span class="mc-tag">{{ $details['color'] }}</span>
-                                @endif
-                                @if(!empty($details['size']))
-                                    <span class="mc-tag">{{ $details['size'] }}</span>
-                                @endif
-                            </div>
-                            <div class="mc-item-bottom">
-                                <span class="mc-price">{{ currency($details['price']) }}</span>
-                                <div class="mc-qty">
-                                    <button class="mc-qty-btn" onclick="updateQty({{ $id }}, {{ $details['quantity'] - 1 }})">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                    <input class="mc-qty-val" value="{{ $details['quantity'] }}" readonly>
-                                    <button class="mc-qty-btn" onclick="updateQty({{ $id }}, {{ $details['quantity'] + 1 }})">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="mc-delete" onclick="removeItem({{ $id }})" title="حذف">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                @empty
-                    <div class="mc-empty">
-                        <div class="mc-empty-icon">🛍️</div>
-                        <h5>سلتك فارغة</h5>
-                        <p>لم تقومي بإضافة أي منتج بعد.</p>
-                        <a href="{{ route('shop.index') }}" class="mc-shop-btn" data-bs-dismiss="offcanvas">ابدئي التسوق</a>
-                    </div>
-                @endforelse
+                @include('frontend.cart.partials.mini-cart-items')
             </div>
 
-            <!-- Footer (only when cart has items) -->
-            @if(count(session('cart', [])) > 0)
-            <div class="mc-footer" id="mini-cart-footer">
-                <div class="mc-shipping">
-                    <i class="fas fa-truck me-1"></i> توصيل مجاني لجميع أنحاء المغرب 🇲🇦
-                </div>
-                <div class="mc-total-row">
-                    <span class="mc-total-label">الإجمالي</span>
-                    <span class="mc-total-val" id="mini-cart-total">{{ currency($total) }}</span>
-                </div>
-                <a href="{{ route('checkout.index') }}" class="mc-checkout-btn">
-                    <i class="fas fa-check-circle"></i>
-                    <span>إتمام الطلب</span>
-                </a>
-                <a href="{{ route('cart.index') }}" class="mc-view-btn">عرض السلة كاملة</a>
+            <!-- Footer -->
+            <div id="mini-cart-footer">
+                @include('frontend.cart.partials.mini-cart-footer')
             </div>
-            @endif
 
         </div>
     </div>
@@ -712,16 +674,27 @@
 
         // Refresh mini-cart content dynamically
         function refreshMiniCart() {
+            // Refresh Items
             fetch('{{ route('cart.mini') }}', {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
             .then(response => response.text())
             .then(html => {
                 const miniCartContainer = document.getElementById('mini-cart-items');
-                if(miniCartContainer) {
-                    miniCartContainer.innerHTML = html;
+                if(miniCartContainer) miniCartContainer.innerHTML = html;
+            })
+            .catch(console.error);
+
+            // Refresh Footer (Total & Checkout Button)
+            fetch('{{ route('cart.miniFooter') }}', {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(response => response.text())
+            .then(html => {
+                const miniCartFooter = document.getElementById('mini-cart-footer');
+                if(miniCartFooter) {
+                    miniCartFooter.innerHTML = html;
+                    miniCartFooter.style.display = html.trim() === '' ? 'none' : 'block';
                 }
             })
             .catch(console.error);
@@ -881,6 +854,15 @@
                 }
             });
         }
+        // Initialize all product cards availability on load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.pcard').forEach(card => {
+                const productId = card.dataset.productId;
+                if (!window.selectedCardOptions) window.selectedCardOptions = {};
+                if (!window.selectedCardOptions[productId]) window.selectedCardOptions[productId] = {};
+                updateCardAvailability(productId, card, window.selectedCardOptions[productId]);
+            });
+        });
     </script>
     @stack('scripts')
 </body>

@@ -29,7 +29,11 @@ Route::get('/cart', [\App\Http\Controllers\CartController::class, 'index'])->nam
 Route::post('/cart/add/{id}', [\App\Http\Controllers\CartController::class, 'addToCart'])->name('cart.add');
 Route::patch('/cart/update', [\App\Http\Controllers\CartController::class, 'update'])->name('cart.update');
 Route::delete('/cart/remove', [\App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
+Route::get('/cart/items', [\App\Http\Controllers\CartController::class, 'fullCartItems'])->name('cart.full.items');
+Route::get('/cart/summary', [\App\Http\Controllers\CartController::class, 'fullCartSummary'])->name('cart.full.summary');
 Route::get('/cart/mini', [\App\Http\Controllers\CartController::class, 'miniCartItems'])->name('cart.mini');
+
+
 Route::get('/cart/mini-footer', [\App\Http\Controllers\CartController::class, 'miniCartFooter'])->name('cart.miniFooter');
 
 // Checkout

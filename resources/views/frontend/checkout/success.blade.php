@@ -39,16 +39,13 @@
                                 مواصلة التسوق <i class="fas fa-shopping-bag ms-2"></i>
                             </a>
                         </div>
-                        <div class="col-12">
-                            <a href="{{ route('dashboard.orders') }}" class="btn-brand-outline w-100 py-3 text-decoration-none small">
-                                تتبع حالة طلبي <i class="fas fa-truck ms-2"></i>
-                            </a>
-                        </div>
                     </div>
 
                     <div class="mt-5 pt-4 border-top border-light">
-                        <p class="small text-muted font-body mb-0">سنتواصل معكِ عبر الهاتف لتأكيد موعد التوصيل.</p>
+                        <p class="h5 text-dark fw-bold font-body mb-2">سنتواصل معكِ عبر الهاتف لتأكيد موعد التوصيل.</p>
+                        <p class="small text-muted font-body mb-0">يرجى إبقاء هاتفكِ متاحاً لاستلام المكالمة 📞</p>
                     </div>
+
                 </div>
             </div>
         </div>

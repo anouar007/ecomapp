@@ -178,4 +178,25 @@ class CartController extends Controller
         
         return view('frontend.cart.partials.mini-cart-footer', compact('total'));
     }
+
+    /**
+     * Return full cart items HTML for AJAX refresh.
+     */
+    public function fullCartItems()
+    {
+        $cart = session()->get('cart', []);
+        return view('frontend.cart.partials.full-cart-items', compact('cart'));
+    }
+
+    /**
+     * Return full cart summary HTML for AJAX refresh.
+     */
+    public function fullCartSummary()
+    {
+        $cart = session()->get('cart', []);
+        return view('frontend.cart.partials.full-cart-summary', compact('cart'));
+    }
 }
+
+
+

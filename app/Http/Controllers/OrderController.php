@@ -163,16 +163,26 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         $validated = $request->validate([
-            'status' => ['required', 'in:pending,processing,shipped,delivered,cancelled'],
-            'payment_status' => ['required', 'in:pending,paid,failed,refunded'],
+            'status' => ['sometimes', 'in:pending,processing,shipped,delivered,cancelled'],
+            'payment_status' => ['sometimes', 'in:pending,paid,failed,refunded'],
+
             'payment_method' => ['nullable', 'string', 'max:50'],
             'transaction_id' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string'],
         ]);
 
         $order->update($validated);
+        
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => __('Order updated successfully.'),
+                'order' => $order
+            ]);
+        }
 
         return redirect()->route('orders.show', $order)->with('success', 'Order updated successfully.');
+
     }
 
     /**

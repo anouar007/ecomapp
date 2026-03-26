@@ -32,22 +32,26 @@
 </section>
 
 {{-- =============================================
-     CIRCULAR CATEGORIES
+     EDITORIAL CATEGORY GRID
      ============================================= --}}
 <section class="section-py bg-white overflow-hidden">
     <div class="container px-xl-5">
         <div class="section-header mb-5 text-center" data-aos="fade-up">
-            <h2 class="brand-heading mb-0">تسوقي حسب الفئة</h2>
+            <h2 class="brand-heading mb-0">اكتشفي المجموعات</h2>
             <div class="bg-gold mt-3 rounded mx-auto" style="width: 50px; height: 3px;"></div>
         </div>
         
-        <div class="category-circle-grid" data-aos="fade-up" data-aos-delay="100">
+        <div class="editorial-category-grid" data-aos="fade-up" data-aos-delay="100">
             @foreach($allCategories as $category)
-            <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="category-circle-item text-decoration-none">
-                <div class="category-circle-img-wrap">
-                    <img src="{{ $category->image ? (Str::startsWith($category->image, 'http') ? $category->image : Storage::url($category->image)) : asset('images/placeholder-cat.jpg') }}" alt="{{ $category->translated_name }}">
+            <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="editorial-category-card">
+                <img src="{{ $category->image ? (Str::startsWith($category->image, 'http') ? $category->image : Storage::url($category->image)) : asset('images/placeholder-cat.jpg') }}" 
+                     alt="{{ $category->translated_name }} - {{ setting('app_name', 'Hijab Princesses') }}" 
+                     class="editorial-category-img">
+                <div class="editorial-category-overlay">
+                    <span class="editorial-category-badge">
+                        {{ $category->translated_name }}
+                    </span>
                 </div>
-                <span class="category-circle-name">{{ $category->translated_name }}</span>
             </a>
             @endforeach
         </div>

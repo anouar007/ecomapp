@@ -55,6 +55,41 @@ class DashboardController extends Controller
         // Low Stock Products (Less than 10)
         $lowStockProducts = \App\Models\Product::where('stock', '<=', 10)->take(5)->get();
 
-        return view('dashboard', compact('stats', 'user', 'recentOrders', 'lowStockProducts'));
+        // Top Selling Products (by quantity in order_items)
+        $topSellingProducts = \App\Models\OrderItem::select('product_id', \Illuminate\Support\Facades\DB::raw('SUM(quantity) as total_qty'))
+            ->groupBy('product_id')
+            ->orderByDesc('total_qty')
+            ->with('product')
+            ->take(5)
+            ->get();
+
+        // Daily Revenue for Last 7 Days
+        $revenueData = [];
+        $revenueLabels = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i);
+            $revenueLabels[] = $date->format('D');
+            $revenueData[] = \App\Models\Invoice::where('payment_status', 'paid')
+                ->whereDate('created_at', $date->toDateString())
+                ->sum('total_amount');
+        }
+
+        // Order Status Counts
+        $orderStatusCounts = [
+            'pending' => \App\Models\Order::where('status', 'pending')->count(),
+            'completed' => \App\Models\Order::where('status', 'completed')->count(),
+            'cancelled' => \App\Models\Order::where('status', 'cancelled')->count(),
+        ];
+
+        return view('dashboard', compact(
+            'stats', 
+            'user', 
+            'recentOrders', 
+            'lowStockProducts', 
+            'topSellingProducts', 
+            'revenueData', 
+            'revenueLabels', 
+            'orderStatusCounts'
+        ));
     }
 }

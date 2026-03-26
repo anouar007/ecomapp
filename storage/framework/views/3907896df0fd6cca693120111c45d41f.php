@@ -21,5 +21,6 @@ Disallow: /activity-logs/
 Disallow: /analytics/
 Disallow: /reports/
 
-Sitemap: http://localhost/sitemap.xml
+Sitemap: <?php echo e($sitemapUrl); ?>
 
+<?php /**PATH /Applications/XAMPP/xamppfiles/htdocs/speed/resources/views/robots.blade.php ENDPATH**/ ?>
