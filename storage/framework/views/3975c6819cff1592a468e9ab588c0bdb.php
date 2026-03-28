@@ -4,18 +4,14 @@
 <?php $__env->startSection('content'); ?>
 
 
-<section class="shop-hero shop-hero-animated pt-4 pt-lg-5 pb-2">
+<section class="shop-hero py-4 py-lg-5">
     <div class="container px-xl-5 text-center">
         <h1 class="display-4 brand-heading mb-2 text-dark soft-glow-text" data-aos="fade-down" style="font-size: 2.8rem; letter-spacing: -0.02em;">
             اكتشفي <span class="text-gold">مجموعتنا</span> الفاخرة
         </h1>
-        <p class="text-muted small mb-0 font-body opacity-75" data-aos="fade-up">انعمي بلمسة من الرقي المغربي الأصيل في كل تفصيل</p>
-    </div>
-</section>
+        <p class="text-muted small mb-4 font-body opacity-75" data-aos="fade-up">انعمي بلمسة من الرقي المغربي الأصيل في كل تفصيل</p>
 
-
-<div class="sticky-shop-nav py-3">
-    <div class="container px-xl-5">
+        
         <div class="category-story-track d-flex justify-content-lg-center" data-aos="fade-up">
             
             <a href="<?php echo e(route('shop.index')); ?>" class="category-story-pill <?php echo e(!request('category') ? 'active' : ''); ?>">
@@ -39,7 +35,7 @@
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
     </div>
-</div>
+</section>
 
 
 <section class="section-py bg-surface" style="border-top: 1px solid rgba(0,0,0,0.02);">

@@ -641,3 +641,88 @@ html, body {
     0% { transform: scale(0.9) translate(-5%, -5%); opacity: 0.3; }
     100% { transform: scale(1.1) translate(5%, 5%); opacity: 0.6; }
 }
+
+/* ── Category Section: Animated & Non-Fixed ── */
+.category-bg-animated {
+    background: linear-gradient(-45deg, #fffcf5, #f8f1e5, #ffffff, #fffcf5);
+    background-size: 400% 400%;
+    animation: categorySilk 12s ease infinite;
+    position: relative;
+    border-bottom: 
+    border-top: 1px solid rgba(0,0,0,0.02);
+    border-bottom: 1px solid rgba(0,0,0,0.02);
+}
+
+@keyframes categorySilk {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.sticky-shop-nav {
+    position: relative !important; /* Removed Stickiness as requested "i dont need it to be fix" */
+    top: auto !important;
+    z-index: 10 !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+}
+
+/* ── Noir Edition: Dark Mode Shop ── */
+.category-noir-silk {
+    background: linear-gradient(-45deg, #0f172a, #1e293b, #0a0a0a, #0f172a);
+    background-size: 400% 400%;
+    animation: categoryNoirSilk 15s ease infinite;
+    position: relative;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+@keyframes categoryNoirSilk {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Outlined Category Pills for Dark Background */
+.category-story-pill-noir .category-story-img-wrapper {
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.03);
+    padding: 4px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.category-story-pill-noir .category-story-label {
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 600;
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.category-story-pill-noir.active .category-story-img-wrapper {
+    border-color: var(--brand-gold);
+    border-width: 2px;
+    box-shadow: 0 0 20px rgba(197, 160, 89, 0.3);
+}
+
+.category-story-pill-noir.active .category-story-label {
+    color: var(--brand-gold);
+    font-weight: 800;
+}
+
+/* Pulsing Ring for Dark Mode */
+.category-story-pill-noir.active .category-story-img-wrapper::after {
+    border-color: var(--brand-gold);
+    opacity: 0.4;
+}
+
+/* Text Refinements for White-on-Black */
+.text-white-glow {
+    color: #ffffff;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+}
+
+.text-gold-noir {
+    color: var(--brand-gold);
+    text-shadow: 0 0 10px rgba(197, 160, 89, 0.2);
+}

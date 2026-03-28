@@ -68,7 +68,7 @@
         /* Mobile Viewport Lock */
         html, body {
             max-width: 100%;
-            overflow-x: clip;
+            overflow-x: hidden;
         }
 
         /* High-Contrast Variant Highlights */
@@ -440,11 +440,6 @@
         margin: 0 auto 1.25rem;
         font-size: 2rem;
         color: #cbd5e1;
-    }
-    .shop-hero {
-        background: linear-gradient(to bottom, #fffcf5, #fff);
-        border-bottom: 1px solid rgba(197, 160, 89, 0.1);
-        position: relative;
     }
     .mc-empty h5 { font-weight: 800; color: #1e293b; margin-bottom: 0.5rem; }
     .mc-empty p { color: #94a3b8; font-size: 0.875rem; margin-bottom: 1.5rem; }
