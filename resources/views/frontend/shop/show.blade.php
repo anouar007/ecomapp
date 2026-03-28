@@ -189,13 +189,16 @@
                         <div class="row g-2 align-items-stretch mb-5">
                             <div class="col-4 col-md-3">
                                 <div class="d-flex align-items-center border rounded h-100 bg-white">
-                                    <button type="button" class="btn btn-link text-muted p-3 px-4 text-decoration-none" onclick="pdpChangeQty(-1)">
-                                        <i class="fas fa-minus fs-5"></i>
+                                    <button type="button" class="btn btn-link text-muted p-3 px-2 text-decoration-none" onclick="pdpChangeQty(1)" title="زيادة">
+                                        <i class="fas fa-plus fs-5"></i>
                                     </button>
                                     <input type="number" name="quantity" id="pdpQty" value="1"
-                                           min="1" max="{{ $product->getTotalStockAttribute() }}" class="form-control border-0 text-center fw-bold p-0 font-body fs-5" style="background: transparent;">
-                                    <button type="button" class="btn btn-link text-muted p-3 px-4 text-decoration-none" onclick="pdpChangeQty(1)">
-                                        <i class="fas fa-plus fs-5"></i>
+                                           min="1" max="{{ $product->getTotalStockAttribute() }}" 
+                                           class="form-control border-0 text-center fw-bold px-1 font-body fs-5 flex-grow-1" 
+                                           style="background: transparent; min-width: 40px;"
+                                           oninput="if(Number(this.value) > Number(this.max)) this.value = this.max; if(Number(this.value) < 1 && this.value !== '') this.value = 1;">
+                                    <button type="button" class="btn btn-link text-muted p-3 px-2 text-decoration-none" onclick="pdpChangeQty(-1)" title="نقص">
+                                        <i class="fas fa-minus fs-5"></i>
                                     </button>
                                 </div>
                             </div>
@@ -254,22 +257,6 @@
 
     </div>
 </section>
-
-<div class="d-lg-none" style="height: 90px;"></div>
-
-{{-- ── STICKY MOBILE ADD TO CART BAR ── --}}
-<div class="d-lg-none position-fixed bottom-0 start-0 w-100 bg-white border-top p-3 z-3" style="box-shadow: 0 -10px 40px rgba(0,0,0,0.08); border-radius: 1.5rem 1.5rem 0 0;">
-    <div class="d-flex align-items-center justify-content-between gap-3">
-        <div>
-            <div class="small text-muted font-body fw-bold mb-1" style="font-size: 0.75rem;">الإجمالي:</div>
-            <div class="h5 fw-bold text-gold m-0 lh-1" id="stickyPriceDisplay">{{ $product->isOnSale() ? $product->formatted_sale_price : $product->formatted_price }}</div>
-        </div>
-        <button type="button" class="btn btn-brand-primary flex-grow-1 py-3 rounded-pill font-body shadow-sm" onclick="document.getElementById('addToCartBtn').click()">
-            أضيفي للسلة <i class="fas fa-cart-plus ms-2"></i>
-        </button>
-    </div>
-</div>
-
 @endsection
 
 @push('scripts')
@@ -472,7 +459,9 @@ function pdpChangeImage(src, thumb) {
 function pdpChangeQty(delta) {
     const inp = document.getElementById('pdpQty');
     const max = parseInt(inp.max) || 9999;
-    const val = Math.min(max, Math.max(1, parseInt(inp.value) + delta));
+    let current = parseInt(inp.value);
+    if (isNaN(current)) current = 1;
+    const val = Math.min(max, Math.max(1, current + delta));
     inp.value = val;
 }
 

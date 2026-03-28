@@ -3,8 +3,24 @@
     <a href="{{ route('shop.show', $product->id) }}" class="position-absolute top-0 start-0 w-100 h-100 z-1" aria-label="View {{ $product->translated_name }}"></a>
 
     {{-- Visual Image Area --}}
-    <div class="product-v2-image position-relative overflow-hidden" style="aspect-ratio: 4/5;">
-        <img src="{{ $product->main_image ? (Str::startsWith($product->main_image, 'http') ? $product->main_image : Storage::url($product->main_image)) : asset('images/placeholder-product.jpg') }}" alt="{{ $product->translated_name }}" class="w-100 h-100 object-fit-cover transition-hero">
+    <div class="product-v2-image pcard-img-reveal position-relative overflow-hidden" style="aspect-ratio: 4/5;">
+        {{-- Activity Badge (Random for demo or based on logic) --}}
+        @if($product->is_featured || $product->id % 3 == 0)
+            <span class="pcard-badge pcard-badge-trending"><i class="fas fa-fire me-1"></i>رائج الآن</span>
+        @elseif($product->created_at->diffInDays(now()) < 7)
+            <span class="pcard-badge pcard-badge-new">جديد</span>
+        @endif
+
+        @php
+            $secondaryImg = $product->images->where('is_primary', false)->first();
+            $mainImgPath = $product->main_image ? (Str::startsWith($product->main_image, 'http') ? $product->main_image : Storage::url($product->main_image)) : asset('images/placeholder-product.jpg');
+        @endphp
+
+        <img src="{{ $mainImgPath }}" alt="{{ $product->translated_name }}" class="w-100 h-100 object-fit-cover pcard-img-primary">
+        
+        @if($secondaryImg)
+            <img src="{{ Storage::url($secondaryImg->image_path) }}" alt="{{ $product->translated_name }} - View 2" class="pcard-img-secondary">
+        @endif
     </div>
 
     {{-- Content Body (Z-index 2 to allow interaction with variants/buttons) --}}

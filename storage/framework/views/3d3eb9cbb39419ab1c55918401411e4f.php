@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('meta_title', setting('app_name', 'Speed Platform'))</title>
-    <meta name="description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
-    <meta name="keywords" content="@yield('meta_keywords', setting('app_name', 'boutique') . ', e-commerce, Maroc, acheter en ligne, livraison Maroc')">
-    <meta name="robots" content="@yield('meta_robots', 'index, follow')">
-    <meta name="author" content="{{ setting('app_name', 'Hijab Princesses') }}">
+    <title><?php echo $__env->yieldContent('meta_title', setting('app_name', 'Speed Platform')); ?></title>
+    <meta name="description" content="<?php echo $__env->yieldContent('meta_description', setting('app_description', 'High performance e-commerce platform.')); ?>">
+    <meta name="keywords" content="<?php echo $__env->yieldContent('meta_keywords', setting('app_name', 'boutique') . ', e-commerce, Maroc, acheter en ligne, livraison Maroc'); ?>">
+    <meta name="robots" content="<?php echo $__env->yieldContent('meta_robots', 'index, follow'); ?>">
+    <meta name="author" content="<?php echo e(setting('app_name', 'Hijab Princesses')); ?>">
     <meta name="theme-color" content="#D4AF37">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="{{ url()->current() }}">
+    <link rel="canonical" href="<?php echo e(url()->current()); ?>">
 
     <!-- Preconnect to external resources for faster loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,35 +21,35 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
     <!-- Favicon -->
-    @if(setting('app_logo'))
-        <link rel="icon" href="{{ asset('storage/' . setting('app_logo')) }}" type="image/x-icon">
-        <link rel="apple-touch-icon" href="{{ asset('storage/' . setting('app_logo')) }}">
-    @else
-        <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
-    @endif
+    <?php if(setting('app_logo')): ?>
+        <link rel="icon" href="<?php echo e(asset('storage/' . setting('app_logo'))); ?>" type="image/x-icon">
+        <link rel="apple-touch-icon" href="<?php echo e(asset('storage/' . setting('app_logo'))); ?>">
+    <?php else: ?>
+        <link rel="icon" href="<?php echo e(asset('favicon.ico')); ?>" type="image/x-icon">
+    <?php endif; ?>
 
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="@yield('meta_type', 'website')">
-    <meta property="og:site_name" content="{{ setting('app_name', 'Hijab Princesses') }}">
-    <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('meta_title', setting('app_name', 'Hijab Princesses'))">
-    <meta property="og:description" content="@yield('meta_description', setting('app_description', 'أناقة الأميرة — متجر العبايات والخمارات الفاخرة بالمغرب.'))">
-    <meta property="og:image" content="@yield('meta_image', setting('app_logo') ? url(Storage::url(setting('app_logo'))) : asset('images/og-default.jpg'))">
+    <meta property="og:type" content="<?php echo $__env->yieldContent('meta_type', 'website'); ?>">
+    <meta property="og:site_name" content="<?php echo e(setting('app_name', 'Hijab Princesses')); ?>">
+    <meta property="og:url" content="<?php echo e(url()->current()); ?>">
+    <meta property="og:title" content="<?php echo $__env->yieldContent('meta_title', setting('app_name', 'Hijab Princesses')); ?>">
+    <meta property="og:description" content="<?php echo $__env->yieldContent('meta_description', setting('app_description', 'أناقة الأميرة — متجر العبايات والخمارات الفاخرة بالمغرب.')); ?>">
+    <meta property="og:image" content="<?php echo $__env->yieldContent('meta_image', setting('app_logo') ? url(Storage::url(setting('app_logo'))) : asset('images/og-default.jpg')); ?>">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:locale" content="ar_MA">
-    <meta property="og:updated_time" content="{{ now()->toIso8601String() }}">
+    <meta property="og:updated_time" content="<?php echo e(now()->toIso8601String()); ?>">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="{{ url()->current() }}">
-    <meta name="twitter:title" content="@yield('meta_title', setting('app_name', 'Hijab Princesses'))">
-    <meta name="twitter:description" content="@yield('meta_description', setting('app_description', 'أناقة الأميرة — متجر العبايات والخمارات الفاخرة بالمغرب.'))">
-    <meta name="twitter:image" content="@yield('meta_image', setting('app_logo') ? url(Storage::url(setting('app_logo'))) : asset('images/og-default.jpg'))">    
-    <meta name="twitter:site" content="@yield('twitter_site', '@HijabPrincesses')">
+    <meta name="twitter:url" content="<?php echo e(url()->current()); ?>">
+    <meta name="twitter:title" content="<?php echo $__env->yieldContent('meta_title', setting('app_name', 'Hijab Princesses')); ?>">
+    <meta name="twitter:description" content="<?php echo $__env->yieldContent('meta_description', setting('app_description', 'أناقة الأميرة — متجر العبايات والخمارات الفاخرة بالمغرب.')); ?>">
+    <meta name="twitter:image" content="<?php echo $__env->yieldContent('meta_image', setting('app_logo') ? url(Storage::url(setting('app_logo'))) : asset('images/og-default.jpg')); ?>">    
+    <meta name="twitter:site" content="<?php echo $__env->yieldContent('twitter_site', '@HijabPrincesses'); ?>">
     
     <!-- JSON-LD Structured Data Schema -->
-    @yield('json_ld')
+    <?php echo $__env->yieldContent('json_ld'); ?>
     
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -60,10 +60,10 @@
     <!-- Dynamic Theme CSS Variables -->
     <style>
         :root {
-            --primary: {{ setting('primary_color', '#000000') }};
-            --accent: {{ setting('accent_color', '#D4AF37') }};
-            --accent-hover: {{ setting('accent_hover_color', '#C5A028') }};
-            --accent-light: {{ setting('accent_light_color', 'rgba(212,175,55,.12)') }};
+            --primary: <?php echo e(setting('primary_color', '#000000')); ?>;
+            --accent: <?php echo e(setting('accent_color', '#D4AF37')); ?>;
+            --accent-hover: <?php echo e(setting('accent_hover_color', '#C5A028')); ?>;
+            --accent-light: <?php echo e(setting('accent_light_color', 'rgba(212,175,55,.12)')); ?>;
         }
         /* Mobile Viewport Lock */
         html, body {
@@ -84,38 +84,40 @@
             font-weight: 800 !important;
         }
     </style>
-    <link rel="stylesheet" href="{{ asset('css/frontend.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/brand.css') }}">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="<?php echo e(asset('css/frontend.css')); ?>">
+    <link rel="stylesheet" href="<?php echo e(asset('css/brand.css')); ?>">
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
     <!-- Custom Head Codes -->
-    @php
+    <?php
         $headCodes = \App\Models\CustomCode::where('is_active', true)
             ->where('position', 'head')
             ->orderBy('priority', 'desc')
             ->get();
-    @endphp
-    @foreach($headCodes as $code)
-        @if($code->type == 'css')
-            <style>{!! $code->content !!}</style>
-        @elseif($code->type == 'js')
-            <script>{!! $code->content !!}</script>
-        @else
-            {!! $code->content !!}
-        @endif
-    @endforeach
-    @stack('styles')
+    ?>
+    <?php $__currentLoopData = $headCodes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $code): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <?php if($code->type == 'css'): ?>
+            <style><?php echo $code->content; ?></style>
+        <?php elseif($code->type == 'js'): ?>
+            <script><?php echo $code->content; ?></script>
+        <?php else: ?>
+            <?php echo $code->content; ?>
+
+        <?php endif; ?>
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    <?php echo $__env->yieldPushContent('styles'); ?>
 </head>
 <body>
     <!-- Custom Body Start Codes -->
-    @php
+    <?php
         $bodyStartCodes = \App\Models\CustomCode::where('is_active', true)
             ->where('position', 'body_start')
             ->orderBy('priority', 'desc')
             ->get();
-    @endphp
-    @foreach($bodyStartCodes as $code)
-        {!! $code->content !!}
-    @endforeach
+    ?>
+    <?php $__currentLoopData = $bodyStartCodes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $code): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <?php echo $code->content; ?>
+
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
 
 
@@ -131,21 +133,21 @@
                     </button>
                     
                     <nav class="d-none d-lg-flex align-items-center gap-4">
-                        <a href="{{ route('home') }}" class="nav-link-custom text-decoration-none {{ request()->is('/') ? 'active' : '' }}">الرئيسية</a>
-                        <a href="{{ route('shop.index') }}" class="nav-link-custom text-decoration-none {{ request()->is('shop*') ? 'active' : '' }}">المتجر</a>
+                        <a href="<?php echo e(route('home')); ?>" class="nav-link-custom text-decoration-none <?php echo e(request()->is('/') ? 'active' : ''); ?>">الرئيسية</a>
+                        <a href="<?php echo e(route('shop.index')); ?>" class="nav-link-custom text-decoration-none <?php echo e(request()->is('shop*') ? 'active' : ''); ?>">المتجر</a>
                     </nav>
                 </div>
 
                 <!-- Center: Brand Logo -->
                 <div class="header-logo-container">
-                    <a href="{{ url('/') }}" class="text-decoration-none">
-                        @if(setting('app_logo'))
-                            <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="{{ setting('app_name') }}" class="header-logo shadow-sm">
-                        @else
+                    <a href="<?php echo e(url('/')); ?>" class="text-decoration-none">
+                        <?php if(setting('app_logo')): ?>
+                            <img src="<?php echo e(asset('storage/' . setting('app_logo'))); ?>" alt="<?php echo e(setting('app_name')); ?>" class="header-logo shadow-sm">
+                        <?php else: ?>
                             <div class="brand-logo-text" style="font-size: 1.8rem;">
                                 Hijab <span class="gold-part">Princesses</span>
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </a>
                 </div>
 
@@ -162,7 +164,8 @@
                         <button class="header-action-btn position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart">
                             <i class="fas fa-shopping-bag"></i>
                             <span id="header-cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style="font-size: 0.6rem; transform: translate(-35%, 25%);">
-                                {{ count(session('cart', [])) }}
+                                <?php echo e(count(session('cart', []))); ?>
+
                             </span>
                         </button>
                     </div>
@@ -172,10 +175,10 @@
             <!-- Collapsible Search -->
             <div class="collapse" id="searchCollapse">
                 <div class="pb-3 px-1">
-                    <form action="{{ route('shop.index') }}" method="GET" class="w-100" style="max-width: 600px; margin: 0 auto;">
+                    <form action="<?php echo e(route('shop.index')); ?>" method="GET" class="w-100" style="max-width: 600px; margin: 0 auto;">
                         <div class="input-group brand-card border-0">
                             <span class="input-group-text bg-white border-0 text-muted ps-3"><i class="fas fa-search"></i></span>
-                            <input class="form-control border-0 ps-0 text-muted py-2" type="search" name="q" placeholder="ماذا تبحثين عنه اليوم؟" value="{{ request('q') }}">
+                            <input class="form-control border-0 ps-0 text-muted py-2" type="search" name="q" placeholder="ماذا تبحثين عنه اليوم؟" value="<?php echo e(request('q')); ?>">
                         </div>
                     </form>
                 </div>
@@ -185,13 +188,13 @@
             <div class="collapse d-lg-none" id="navbarMain">
                 <div class="py-3 border-top mt-1 nav-mobile-v2">
                     <ul class="list-unstyled mb-0 d-flex flex-column gap-3 fs-5 fw-bold">
-                        <li><a href="{{ route('home') }}" class="text-dark text-decoration-none d-block py-1">الرئيسية</a></li>
-                        <li><a href="{{ route('shop.index') }}" class="text-dark text-decoration-none d-block py-1">المتجر</a></li>
-                        @auth
-                            <li><a href="{{ route('dashboard') }}" class="text-dark text-decoration-none d-block py-1">حسابي</a></li>
-                        @else
-                            <li><a href="{{ route('login') }}" class="text-dark text-decoration-none d-block py-1">تسجيل الدخول</a></li>
-                        @endauth
+                        <li><a href="<?php echo e(route('home')); ?>" class="text-dark text-decoration-none d-block py-1">الرئيسية</a></li>
+                        <li><a href="<?php echo e(route('shop.index')); ?>" class="text-dark text-decoration-none d-block py-1">المتجر</a></li>
+                        <?php if(auth()->guard()->check()): ?>
+                            <li><a href="<?php echo e(route('dashboard')); ?>" class="text-dark text-decoration-none d-block py-1">حسابي</a></li>
+                        <?php else: ?>
+                            <li><a href="<?php echo e(route('login')); ?>" class="text-dark text-decoration-none d-block py-1">تسجيل الدخول</a></li>
+                        <?php endif; ?>
                     </ul>
                 </div>
             </div>
@@ -200,7 +203,7 @@
 
 
     <main>
-        @yield('content')
+        <?php echo $__env->yieldContent('content'); ?>
     </main>
 
 
@@ -476,12 +479,12 @@
 
             <!-- Items -->
             <div class="mc-items" id="mini-cart-items">
-                @include('frontend.cart.partials.mini-cart-items')
+                <?php echo $__env->make('frontend.cart.partials.mini-cart-items', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
             </div>
 
             <!-- Footer -->
             <div id="mini-cart-footer">
-                @include('frontend.cart.partials.mini-cart-footer')
+                <?php echo $__env->make('frontend.cart.partials.mini-cart-footer', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
             </div>
 
         </div>
@@ -490,14 +493,14 @@
 
 
     <!-- Floating Checkout FAB (Persistent Link) -->
-    @unless(request()->routeIs('checkout.*'))
-        @php $cartCount = count(session('cart', [])); @endphp
-        <a href="{{ route('checkout.index') }}" id="checkout-fab" class="checkout-fab {{ $cartCount > 0 ? 'visible' : '' }}">
-            <div class="fab-count" id="fab-cart-count">{{ $cartCount }}</div>
+    <?php if (! (request()->routeIs('checkout.*'))): ?>
+        <?php $cartCount = count(session('cart', [])); ?>
+        <a href="<?php echo e(route('checkout.index')); ?>" id="checkout-fab" class="checkout-fab <?php echo e($cartCount > 0 ? 'visible' : ''); ?>">
+            <div class="fab-count" id="fab-cart-count"><?php echo e($cartCount); ?></div>
             <i class="fas fa-shopping-cart"></i>
             <span>إتمام الطلب</span>
         </a>
-    @endunless
+    <?php endif; ?>
 
     <footer class="footer-modern">
         <div class="container">
@@ -507,7 +510,7 @@
                     <p class="small lh-lg mb-4">
                         وجهتكم الفاخرة لكل ما يخص الأناقة المحتشمة في المغرب. عبايات راقية، خمارات متميزة، ومجموعات حصرية — مصممة للأميرة العصرية.
                     </p>
-                    @php
+                    <?php
                         $sfb  = setting('social_facebook',  '');
                         $stw  = setting('social_twitter',   '');
                         $sig  = setting('social_instagram', '');
@@ -515,47 +518,47 @@
                         $swa  = setting('social_whatsapp',  '');
                         // Only treat as valid if it's a real URL (not empty or bare '#')
                         $validUrl = fn($v) => $v && $v !== '#' && $v !== '/#';
-                    @endphp
+                    ?>
                     <div class="d-flex gap-3 flex-wrap">
-                        @if($validUrl($sfb))
-                        <a href="{{ $sfb }}" target="_blank" rel="noopener" class="footer-social-btn" title="Facebook">
+                        <?php if($validUrl($sfb)): ?>
+                        <a href="<?php echo e($sfb); ?>" target="_blank" rel="noopener" class="footer-social-btn" title="Facebook">
                             <i class="fab fa-facebook-f"></i>
                         </a>
-                        @endif
-                        @if($validUrl($stw))
-                        <a href="{{ $stw }}" target="_blank" rel="noopener" class="footer-social-btn" title="Twitter / X">
+                        <?php endif; ?>
+                        <?php if($validUrl($stw)): ?>
+                        <a href="<?php echo e($stw); ?>" target="_blank" rel="noopener" class="footer-social-btn" title="Twitter / X">
                             <i class="fab fa-twitter"></i>
                         </a>
-                        @endif
-                        @if($validUrl($sig))
-                        <a href="{{ $sig }}" target="_blank" rel="noopener" class="footer-social-btn" title="Instagram">
+                        <?php endif; ?>
+                        <?php if($validUrl($sig)): ?>
+                        <a href="<?php echo e($sig); ?>" target="_blank" rel="noopener" class="footer-social-btn" title="Instagram">
                             <i class="fab fa-instagram"></i>
                         </a>
-                        @endif
-                        @if($validUrl($sli))
-                        <a href="{{ $sli }}" target="_blank" rel="noopener" class="footer-social-btn" title="LinkedIn">
+                        <?php endif; ?>
+                        <?php if($validUrl($sli)): ?>
+                        <a href="<?php echo e($sli); ?>" target="_blank" rel="noopener" class="footer-social-btn" title="LinkedIn">
                             <i class="fab fa-linkedin-in"></i>
                         </a>
-                        @endif
-                        @if($validUrl($swa))
-                        @php
+                        <?php endif; ?>
+                        <?php if($validUrl($swa)): ?>
+                        <?php
                             $waFooterLink = 'https://wa.me/' . preg_replace('/[^0-9]/', '', $swa);
-                        @endphp
-                        <a href="{{ $waFooterLink }}" target="_blank" rel="noopener" class="footer-social-btn footer-social-btn--wa" title="WhatsApp">
+                        ?>
+                        <a href="<?php echo e($waFooterLink); ?>" target="_blank" rel="noopener" class="footer-social-btn footer-social-btn--wa" title="WhatsApp">
                             <i class="fab fa-whatsapp"></i>
                         </a>
-                        @endif
-                        {{-- If none configured, show placeholder text --}}
-                        @if(!$validUrl($sfb) && !$validUrl($stw) && !$validUrl($sig) && !$validUrl($sli) && !$validUrl($swa))
-                        <span class="text-muted small fst-italic">{{ __('Réseaux sociaux bientôt disponibles') }}</span>
-                        @endif
+                        <?php endif; ?>
+                        
+                        <?php if(!$validUrl($sfb) && !$validUrl($stw) && !$validUrl($sig) && !$validUrl($sli) && !$validUrl($swa)): ?>
+                        <span class="text-muted small fst-italic"><?php echo e(__('Réseaux sociaux bientôt disponibles')); ?></span>
+                        <?php endif; ?>
                     </div>
                 </div>
                 
                 <div class="col-lg-3 col-6">
                     <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">المتجر</h6>
                     <ul class="list-unstyled">
-                        <li><a href="{{ route('shop.index') }}" class="footer-link small">جميع المنتجات</a></li>
+                        <li><a href="<?php echo e(route('shop.index')); ?>" class="footer-link small">جميع المنتجات</a></li>
                         <li><a href="#" class="footer-link small">وصل حديثاً</a></li>
                         <li><a href="#" class="footer-link small">الأكثر مبيعاً</a></li>
                         <li><a href="#" class="footer-link small">تخفيضات</a></li>
@@ -578,7 +581,7 @@
             
             <div class="row align-items-center">
                 <div class="col-md-12 text-center text-md-start mb-3 mb-md-0">
-                    <p class="small text-center mb-0">&copy; {{ date('Y') }} {{ setting('app_name', 'Hijab Princesses') }}. جميع الحقوق محفوظة.</p>
+                    <p class="small text-center mb-0">&copy; <?php echo e(date('Y')); ?> <?php echo e(setting('app_name', 'Hijab Princesses')); ?>. جميع الحقوق محفوظة.</p>
                 </div>
             </div>
         </div>
@@ -589,13 +592,13 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        @if(setting('frontend_enable_animations'))
+        <?php if(setting('frontend_enable_animations')): ?>
         AOS.init({
             duration: 800,
             once: true,
             offset: 100
         });
-        @endif
+        <?php endif; ?>
 
         // Mini Cart Functions
         function updateQty(id, qty) {
@@ -604,11 +607,11 @@
                 return;
             }
             
-            fetch('{{ route('cart.update') }}', {
+            fetch('<?php echo e(route('cart.update')); ?>', {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({ id, quantity: qty })
@@ -632,7 +635,7 @@
                     toast: true,
                     position: 'top-end',
                     icon: 'error',
-                    title: '{{ __('Erreur lors de la mise à jour du panier') }}',
+                    title: '<?php echo e(__('Erreur lors de la mise à jour du panier')); ?>',
                     showConfirmButton: false,
                     timer: 2500
                 });
@@ -641,20 +644,20 @@
 
         function removeItem(id) {
             Swal.fire({
-                title: '{{ __('Retirer du panier ?') }}',
-                text: "{{ __('Voulez-vous supprimer cet article ?') }}",
+                title: '<?php echo e(__('Retirer du panier ?')); ?>',
+                text: "<?php echo e(__('Voulez-vous supprimer cet article ?')); ?>",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: '#6b7280',
-                confirmButtonText: '{{ __('Oui, supprimer !') }}'
+                confirmButtonText: '<?php echo e(__('Oui, supprimer !')); ?>'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    fetch('{{ route('cart.remove') }}', {
+                    fetch('<?php echo e(route('cart.remove')); ?>', {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
                             'Accept': 'application/json'
                         },
                         body: JSON.stringify({ id })
@@ -673,7 +676,7 @@
                             toast: true,
                             position: 'top-end',
                             icon: 'success',
-                            title: '{{ __('Article supprimé !') }}',
+                            title: '<?php echo e(__('Article supprimé !')); ?>',
                             showConfirmButton: false,
                             timer: 2000,
                             background: '#1a1a2e',
@@ -690,7 +693,7 @@
         // Refresh mini-cart content dynamically
         function refreshMiniCart() {
             // Refresh Items
-            fetch('{{ route('cart.mini') }}', {
+            fetch('<?php echo e(route('cart.mini')); ?>', {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
             .then(response => response.text())
@@ -701,7 +704,7 @@
             .catch(console.error);
 
             // Refresh Footer (Total & Checkout Button)
-            fetch('{{ route('cart.miniFooter') }}', {
+            fetch('<?php echo e(route('cart.miniFooter')); ?>', {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
             .then(response => response.text())
@@ -828,10 +831,10 @@
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             }
 
-            fetch(`{{ url('/cart/add') }}/${productId}`, {
+            fetch(`<?php echo e(url('/cart/add')); ?>/${productId}`, {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 },
@@ -902,6 +905,7 @@
             });
         });
     </script>
-    @stack('scripts')
+    <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 </html>
+<?php /**PATH /Applications/XAMPP/xamppfiles/htdocs/speed/resources/views/layouts/frontend.blade.php ENDPATH**/ ?>
