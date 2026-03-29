@@ -152,10 +152,10 @@ h1, h2, h3, h4, .brand-heading {
 
 /* ── Header Optimization ── */
 .main-header {
-    background: rgba(255, 255, 255, 0.95);
+    background: #020406; /* Requested Dark Color */
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(0,0,0,0.03);
+    border-bottom: 1px solid rgba(197, 160, 89, 0.1);
 }
 
 .header-logo-container {
@@ -168,7 +168,7 @@ h1, h2, h3, h4, .brand-heading {
     font-size: 1.35rem;
     font-weight: 900;
     letter-spacing: -0.02em;
-    color: var(--brand-dark);
+    color: #fff; /* High Contrast White */
 }
 
 .brand-logo-text .gold-part {
@@ -180,7 +180,7 @@ h1, h2, h3, h4, .brand-heading {
     width: 60px;
     object-fit: cover;
     border-radius: 50%;
-    border: 2px solid rgba(197, 160, 89, 0.1);
+    border: 2px solid rgba(197, 160, 89, 0.3);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -201,7 +201,7 @@ h1, h2, h3, h4, .brand-heading {
 .header-action-btn {
     width: 44px; height: 44px;
     display: flex; align-items: center; justify-content: center;
-    color: var(--brand-dark);
+    color: #fff; /* High Contrast White */
     font-size: 1.25rem;
     background: transparent;
     border: none;

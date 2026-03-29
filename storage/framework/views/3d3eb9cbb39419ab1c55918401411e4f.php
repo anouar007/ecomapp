@@ -153,12 +153,6 @@
 
                 <!-- Right: Actions -->
                 <div class="d-flex align-items-center justify-content-end gap-1 gap-lg-3 flex-1">
-                    <!-- Search Toggle -->
-                    <button class="header-action-btn" type="button" data-bs-toggle="collapse" data-bs-target="#searchCollapse">
-                        <i class="fas fa-search"></i>
-                    </button>
-
-
                     <!-- Cart -->
                     <div class="position-relative">
                         <button class="header-action-btn position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart">
@@ -169,18 +163,6 @@
                             </span>
                         </button>
                     </div>
-                </div>
-            </div>
-
-            <!-- Collapsible Search -->
-            <div class="collapse" id="searchCollapse">
-                <div class="pb-3 px-1">
-                    <form action="<?php echo e(route('shop.index')); ?>" method="GET" class="w-100" style="max-width: 600px; margin: 0 auto;">
-                        <div class="input-group brand-card border-0">
-                            <span class="input-group-text bg-white border-0 text-muted ps-3"><i class="fas fa-search"></i></span>
-                            <input class="form-control border-0 ps-0 text-muted py-2" type="search" name="q" placeholder="ماذا تبحثين عنه اليوم؟" value="<?php echo e(request('q')); ?>">
-                        </div>
-                    </form>
                 </div>
             </div>
 

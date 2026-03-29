@@ -1127,7 +1127,7 @@ a { text-decoration: none; }
 
 
 .nav-link-custom {
-    color: var(--text-body);
+    color: #fff; /* White text for dark background */
     font-weight: 500;
     font-size: 0.9rem;
     padding: 8px 14px;
@@ -1153,8 +1153,8 @@ a { text-decoration: none; }
 .action-btn-circle {
     width: 40px; height: 40px;
     border-radius: 50%;
-    background: var(--bg-surface);
-    color: var(--text-body);
+    background: rgba(255,255,255,0.08); /* Dark background compatible */
+    color: #fff;
     display: flex; align-items: center; justify-content: center;
     transition: all .2s;
     border: none;
