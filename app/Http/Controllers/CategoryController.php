@@ -50,12 +50,16 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        if (!$request->filled('slug')) {
+            $request->merge(['slug' => Str::slug($request->name_fr)]);
+        }
+
+        $rules = [
             'name' => ['nullable', 'string', 'max:255'],
-            'name_fr' => ['required', 'string', 'max:255'],
+            'name_fr' => ['required', 'string', 'max:255', 'unique:categories,name_fr'],
             'name_en' => ['nullable', 'string', 'max:255'],
             'name_ar' => ['nullable', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255', 'unique:categories,slug'],
+            'slug' => ['required', 'string', 'max:255', 'unique:categories,slug'],
             'description' => ['nullable', 'string'],
             'description_fr' => ['nullable', 'string'],
             'description_en' => ['nullable', 'string'],
@@ -65,12 +69,11 @@ class CategoryController extends Controller
             'image' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
-        ]);
+        ];
 
-        // Auto-generate slug if not provided
-        if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name_fr'] ?? $validated['name']);
-        }
+        $validated = $request->validate($rules);
+
+
 
         // Handle image upload
         if ($request->hasFile('image')) {
@@ -102,12 +105,16 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        $validated = $request->validate([
+        if (!$request->filled('slug') && $request->filled('name_fr')) {
+             $request->merge(['slug' => Str::slug($request->name_fr)]);
+        }
+
+        $rules = [
             'name' => ['nullable', 'string', 'max:255'],
-            'name_fr' => ['required', 'string', 'max:255'],
+            'name_fr' => ['required', 'string', 'max:255', 'unique:categories,name_fr,' . $category->id],
             'name_en' => ['nullable', 'string', 'max:255'],
             'name_ar' => ['nullable', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255', 'unique:categories,slug,' . $category->id],
+            'slug' => ['required', 'string', 'max:255', 'unique:categories,slug,' . $category->id],
             'description' => ['nullable', 'string'],
             'description_fr' => ['nullable', 'string'],
             'description_en' => ['nullable', 'string'],
@@ -117,7 +124,9 @@ class CategoryController extends Controller
             'image' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
-        ]);
+        ];
+
+        $validated = $request->validate($rules);
 
         // Prevent category from being its own parent
         if (isset($validated['parent_id']) && $validated['parent_id'] == $category->id) {
