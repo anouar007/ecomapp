@@ -220,8 +220,8 @@ h1, h2, h3, h4, .brand-heading {
 /* ── Featured Categories: Editorial 2.0 (Restored & Refined) ── */
 .editorial-category-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 columns on desktop for better space */
-    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* More compact columns */
+    gap: 1.5rem;
     padding: 0.5rem 0;
 }
 
@@ -251,7 +251,7 @@ h1, h2, h3, h4, .brand-heading {
     position: relative;
     border-radius: 12px;
     overflow: hidden;
-    aspect-ratio: 1/1; /* Square on desktop */
+    aspect-ratio: 4/3; /* More horizontal/shorter on desktop */
     display: block;
     box-shadow: 0 10px 30px rgba(0,0,0,0.05);
     border: 1px solid rgba(0,0,0,0.03);
@@ -277,7 +277,7 @@ h1, h2, h3, h4, .brand-heading {
     flex-direction: column;
     justify-content: flex-end;
     align-items: center;
-    padding: 1.25rem;
+    padding: 0.85rem; /* Tighter padding for smaller cards */
     background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 60%);
     z-index: 2;
 }
@@ -648,7 +648,6 @@ html, body {
     background-size: 400% 400%;
     animation: categorySilk 12s ease infinite;
     position: relative;
-    border-bottom: 
     border-top: 1px solid rgba(0,0,0,0.02);
     border-bottom: 1px solid rgba(0,0,0,0.02);
 }

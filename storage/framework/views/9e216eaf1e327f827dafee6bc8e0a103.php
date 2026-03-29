@@ -83,19 +83,19 @@
 
 
 <?php $__currentLoopData = $categoriesWithProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-<section class="section-py <?php echo e($loop->even ? 'bg-surface' : 'bg-white'); ?> overflow-hidden">
+<section class="section-py bg-white overflow-hidden" style="border-top: 1px solid rgba(0,0,0,0.05);">
     <div class="container px-xl-5">
-        <div class="d-flex justify-content-between align-items-center mb-5" data-aos="fade-up">
-            <div>
-                <h3 class="brand-heading m-0"><?php echo e($category->translated_name); ?></h3>
-                <div class="bg-gold mt-2 rounded" style="width: 30px; height: 3px;"></div>
+        <div class="d-flex justify-content-between align-items-end mb-4" data-aos="fade-up">
+            <div class="text-right">
+                <h3 class="brand-heading h2 mb-0 text-dark"><?php echo e($category->translated_name); ?></h3>
+                <p class="text-muted small font-body mb-0">مجموعتنا المختارة من <?php echo e($category->translated_name); ?></p>
             </div>
             <a href="<?php echo e(route('shop.index', ['category' => $category->slug])); ?>" class="text-gold fw-bold text-decoration-none font-body small hvr-forward">
-                عرض التشكيلة <i class="fas fa-arrow-left ms-1"></i>
+                عرض الكل <i class="fas fa-arrow-left ms-1"></i>
             </a>
         </div>
 
-        <div class="h-scroll-container pb-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="h-scroll-container pb-2" data-aos="fade-up" data-aos-delay="100">
             <?php $__currentLoopData = $category->products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <div class="h-scroll-item">
                 <?php echo $__env->make('frontend.partials.product_card_v2', ['product' => $product], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
