@@ -20,6 +20,9 @@ npm install
 npm run build
 
 # 5. Cache Clearing & Finalization
-
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
 ln -s ../storage/app/public public/storage
 php artisan make:admin hijab@dadda.com dadda007 --name="Admin"

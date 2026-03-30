@@ -2164,3 +2164,59 @@ a { text-decoration: none; }
     z-index: 10;
     pointer-events: none;
 }
+
+/* ── Product Detail Page: Disabled Variant Options ── */
+
+/* Size pills on PDP (variant-option with data-size) */
+#sizeOptions .variant-option.disabled {
+    opacity: 1 !important;
+    cursor: not-allowed !important;
+    pointer-events: none;
+    position: relative;
+    color: #ccc !important;
+    border-color: #e5e5e5 !important;
+    background: #f9f9f9 !important;
+    overflow: hidden;
+}
+
+/* Bold diagonal red strikethrough on disabled size pills */
+#sizeOptions .variant-option.disabled::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -4px;
+    width: calc(100% + 8px);
+    height: 1.5px;
+    background: rgba(180, 0, 0, 0.4);
+    transform: rotate(-35deg) translateY(-50%);
+    transform-origin: center;
+}
+
+/* Color swatches on PDP (variant-option with data-color) */
+#colorOptions .variant-option.disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    pointer-events: none;
+    position: relative;
+    filter: grayscale(60%);
+    overflow: visible;
+}
+
+/* Large red × centered over disabled color swatches */
+#colorOptions .variant-option.disabled::after {
+    content: '\00D7';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 42px;
+    font-weight: 900;
+    line-height: 1;
+    color: #e00;
+    text-shadow:
+        0 0 4px #fff,
+        0 0 8px #fff,
+        0 0 12px rgba(255,255,255,1);
+    z-index: 10;
+    pointer-events: none;
+}
