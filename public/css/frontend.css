@@ -2103,37 +2103,64 @@ a { text-decoration: none; }
 
 .size-pill.disabled-option {
     position: relative;
-    color: #999;
+    color: #bbb;
     border-color: #ddd;
+    background: #f9f9f9;
+    text-decoration: line-through;
+    cursor: not-allowed !important;
+    pointer-events: none;
 }
 
-.size-pill.disabled-option::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 10%;
-    width: 80%;
-    height: 1px;
-    background: #999;
-    transform: rotate(-25deg);
-}
-
-/* In-Card Variants Disabled States */
-.pcard-color-dot.disabled,
+/* In-Card Variants: Disabled Size Pills */
 .pcard-size-pill.disabled {
-    opacity: 0.25 !important;
+    opacity: 1 !important;          /* Keep visible, but clearly crossed out */
     cursor: not-allowed !important;
     pointer-events: none;
     position: relative;
+    color: #ccc !important;
+    border-color: #e5e5e5 !important;
+    background: #f9f9f9 !important;
+    overflow: hidden;
 }
 
+/* Bold diagonal strikethrough line on disabled size pills */
 .pcard-size-pill.disabled::after {
     content: '';
     position: absolute;
     top: 50%;
-    left: 10%;
-    width: 80%;
-    height: 1px;
-    background: #999;
-    transform: rotate(-15deg);
+    left: -4px;
+    width: calc(100% + 8px);
+    height: 1.5px;
+    background: rgba(180, 0, 0, 0.35);
+    transform: rotate(-35deg) translateY(-50%);
+    transform-origin: center;
+}
+
+/* In-Card Variants: Disabled Color Dots */
+.pcard-color-dot.disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    pointer-events: none;
+    position: relative;
+    filter: grayscale(60%);
+    overflow: visible; /* Let the X extend beyond the dot */
+}
+
+/* Red X — large, centered via transform so it exceeds the small dot */
+.pcard-color-dot.disabled::after {
+    content: '\00D7';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 36px;
+    font-weight: 900;
+    line-height: 1;
+    color: #e00;
+    text-shadow:
+        0 0 4px #fff,
+        0 0 8px #fff,
+        0 0 12px rgba(255,255,255,1);
+    z-index: 10;
+    pointer-events: none;
 }

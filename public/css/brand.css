@@ -725,3 +725,311 @@ html, body {
     color: var(--brand-gold);
     text-shadow: 0 0 10px rgba(197, 160, 89, 0.2);
 }
+
+/* ── Silk & Smooth: Luxe Refinements ── */
+.silk-mist-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 0%, transparent 70%);
+    background-size: 200% 200%;
+    animation: silkMistFlow 20s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+@keyframes silkMistFlow {
+    0%, 100% { background-position: 0% 50%; opacity: 0.3; }
+    50% { background-position: 100% 50%; opacity: 0.6; }
+}
+
+.section-divider-silk {
+    height: 100px;
+    background: linear-gradient(to bottom, transparent, rgba(197, 160, 89, 0.03), transparent);
+    margin: -50px 0;
+    position: relative;
+    z-index: 2;
+}
+
+/* Elite Testimonials */
+.testimonial-luxe-section {
+    background: #ffffff;
+    position: relative;
+}
+
+.testimonial-card-luxe {
+    background: #ffffff;
+    border: 1px solid rgba(197, 160, 89, 0.1);
+    border-radius: 24px;
+    padding: 3rem 2rem;
+    text-align: center;
+    transition: all 0.4s ease;
+}
+
+.testimonial-card-luxe:hover {
+    border-color: var(--brand-gold);
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(197, 160, 89, 0.08);
+}
+
+.quote-icon-gold {
+    color: var(--brand-gold);
+    font-size: 2rem;
+    opacity: 0.2;
+    margin-bottom: 1.5rem;
+}
+
+/* Newsletter Luxe */
+.newsletter-luxe-section {
+    background: var(--brand-dark);
+    border-radius: 40px;
+    margin: 4rem 1.5rem;
+    padding: 5rem 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.newsletter-luxe-content {
+    position: relative;
+    z-index: 2;
+}
+
+.newsletter-glass-input {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 50px;
+    padding: 1.25rem 2rem;
+    color: #ffffff;
+    width: 100%;
+    max-width: 500px;
+    transition: all 0.3s;
+}
+
+.newsletter-glass-input:focus {
+    background: rgba(255,255,255,0.1);
+    border-color: var(--brand-gold);
+    outline: none;
+    box-shadow: 0 0 20px rgba(197, 160, 89, 0.2);
+}
+
+/* ── Social Luxe Buttons ── */
+.social-luxe-btn {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    padding: 1.1rem 2rem;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 220px;
+}
+
+.social-luxe-btn:hover {
+    transform: translateY(-4px);
+    color: #fff;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+}
+
+.instagram-btn:hover {
+    background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+    border-color: transparent;
+}
+
+.tiktok-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ── Testimonials: Premium Redesign ── */
+.testimonial-card-luxe {
+    background: #fff;
+    border: 1px solid rgba(197, 160, 89, 0.1);
+    border-radius: 24px;
+    padding: 2.25rem;
+    text-align: right;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.testimonial-card-luxe::before {
+    content: '\201C';
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    font-size: 8rem;
+    color: rgba(197, 160, 89, 0.06);
+    font-family: Georgia, serif;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.testimonial-card-luxe:hover {
+    border-color: rgba(197, 160, 89, 0.35);
+    transform: translateY(-6px);
+    box-shadow: 0 24px 48px rgba(197, 160, 89, 0.1);
+}
+
+.tcard-stars {
+    color: #c5a059;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+}
+
+.tcard-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #c5a059, #a07840);
+    color: #fff;
+    font-weight: 800;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* ── Social Platform Cards: Premium Redesign ── */
+.social-invite-section {
+    background: #fafaf8;
+}
+
+.social-platform-card {
+    border-radius: 28px;
+    padding: 3rem 2.5rem;
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+}
+
+.social-platform-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0);
+    transition: background 0.3s;
+}
+
+.social-platform-card:hover {
+    transform: translateY(-8px);
+    color: #fff;
+}
+
+.social-platform-card:hover::after {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.instagram-card {
+    background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    box-shadow: 0 8px 32px rgba(220, 39, 67, 0.25);
+}
+
+.instagram-card:hover {
+    box-shadow: 0 20px 50px rgba(220, 39, 67, 0.4);
+}
+
+.tiktok-card {
+    background: linear-gradient(135deg, #010101 0%, #161616 100%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
+.tiktok-card:hover {
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+.social-platform-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1.25rem;
+    opacity: 0.95;
+    position: relative;
+    z-index: 1;
+}
+
+.social-platform-name {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-bottom: 0.35rem;
+    position: relative;
+    z-index: 1;
+}
+
+.social-platform-handle {
+    font-size: 1.5rem;
+    font-weight: 900;
+    font-family: var(--brand-heading-font, 'Playfair Display', serif);
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.social-platform-desc {
+    font-size: 0.875rem;
+    opacity: 0.8;
+    line-height: 1.6;
+    margin-bottom: 1.75rem;
+    max-width: 280px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    z-index: 1;
+}
+
+.social-platform-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    padding: 0.6rem 1.5rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: background 0.25s;
+    position: relative;
+    z-index: 1;
+}
+
+.social-platform-card:hover .social-platform-cta {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* ── Social Cards: Mobile Responsive ── */
+@media (max-width: 767px) {
+    .social-platform-card {
+        display: flex !important;
+        flex-direction: row;
+        align-items: center;
+        gap: 1.25rem;
+        padding: 1.25rem 1.5rem;
+        border-radius: 18px;
+        text-align: right;
+    }
+
+    .social-platform-icon {
+        font-size: 2.25rem;
+        margin-bottom: 0;
+        flex-shrink: 0;
+        width: 46px;
+        text-align: center;
+    }
+
+    .social-platform-name {
+        font-size: 0.65rem;
+        letter-spacing: 2px;
+        margin-bottom: 0.15rem;
+    }
+
+    .social-platform-handle {
+        font-size: 1rem;
+        margin-bottom: 0;
+    }
+}

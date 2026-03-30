@@ -8,8 +8,11 @@
 {{-- =============================================
      IMMERSIVE FASHION HERO
      ============================================= --}}
-<section class="hero-immersive bg-brand-fashion bg-brand-overlay d-flex align-items-center" style="min-height: 95vh;">
-    <div class="container px-xl-5">
+<section class="hero-immersive bg-brand-fashion bg-brand-overlay d-flex align-items-center position-relative" style="min-height: 95vh; overflow: hidden;">
+    {{-- Fluid Silk Overlay --}}
+    <div class="silk-mist-overlay"></div>
+    
+    <div class="container px-xl-5 position-relative" style="z-index: 2;">
         <div class="hero-content text-center py-5" data-aos="zoom-out" data-aos-duration="1500">
             <div class="glass-capsule-dark mb-4 mx-auto" style="max-width: 850px;">
                 <span class="text-uppercase tracking-widest text-gold fw-bold mb-3 d-block small" style="letter-spacing: 4px;">المجموعة الجديدة</span>
@@ -35,34 +38,63 @@
 {{-- =============================================
      BOUTIQUE INTERIOR (The Experience)
      ============================================= --}}
-<section class="section-py bg-brand-interior bg-brand-overlay d-flex align-items-center text-white" style="min-height: 600px;">
+        </div>
+    </div>
+</section>
+
+{{-- =============================================
+     ELITE TESTIMONIALS (Social Proof)
+     ============================================= --}}
+<section class="section-py testimonial-luxe-section overflow-hidden">
+    {{-- Smooth Section Transition --}}
+    <div class="section-divider-silk"></div>
+    
     <div class="container px-xl-5">
-        <div class="row align-items-center">
-            <div class="col-lg-7" data-aos="fade-left">
-                <div class="glass-capsule-dark p-lg-5 p-4 border-gold-subtle">
-                    <h2 class="brand-heading text-white display-5 mb-4">متعة التسوق في <span class="text-gold">بوتيك الأميرات</span></h2>
-                    <p class="lead opacity-90 mb-4 font-body">نحن لا نبيع مجرد ملابس، بل نقدم لكِ تجربة فريدة تعكس رُقيكِ وأناقتكِ. كل قطعة مختارة بعناية لتناسب ذوقكِ الرفيع.</p>
-                    <div class="d-flex gap-4">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="bg-gold-light text-gold rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-                                <i class="fas fa-gem h5 mb-0"></i>
+        <div class="section-header mb-5 text-center" data-aos="fade-up">
+            <span class="text-gold fw-bold small text-uppercase ls-2 mb-2 d-block">صدى الجمال</span>
+            <h2 class="brand-heading mb-0">كلمات من أميراتنا</h2>
+            <div class="bg-gold mt-3 rounded mx-auto" style="width: 40px; height: 2px;"></div>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            @php
+            $testimonials = [
+                ['name'=>'سارة ا.', 'city'=>'الرباط', 'text'=>'العباية التي طلبتها تجاوزت توقعاتي. جودة القماش واللمسات النهائية ملكية فعلاً.'],
+                ['name'=>'مريم ب.', 'city'=>'الدار البيضاء', 'text'=>'توصيل سريع وتغليف الفاخمر جعلني أشعر كأنها هدية لنفسي. شكراً بوتيك الأميرات.'],
+                ['name'=>'خديجة م.', 'city'=>'طنجة', 'text'=>'أناقة لا توصف. التصميم يجمع بين الحشمة والعصرنة بشكل فريد جداً.'],
+            ];
+            @endphp
+            @foreach($testimonials as $i => $item)
+            @php $initials = mb_substr($item['name'], 0, 1, 'UTF-8'); @endphp
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ $i * 100 }}">
+                <div class="testimonial-card-luxe">
+                    <div class="tcard-stars mb-3">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <blockquote class="font-body mb-4" style="font-size: 0.95rem; line-height: 1.85; color: #475569; border: none; padding: 0;">
+                        &ldquo;{{ $item['text'] }}&rdquo;
+                    </blockquote>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="tcard-avatar">{{ $initials }}</div>
+                        <div>
+                            <div class="fw-800 text-dark brand-heading" style="font-size: 0.95rem;">{{ $item['name'] }}</div>
+                            <div class="small text-muted d-flex align-items-center gap-1">
+                                <i class="fas fa-map-marker-alt" style="font-size: 0.65rem; color: #c5a059;"></i>
+                                {{ $item['city'] }}
                             </div>
-                            <span class="small fw-bold text-uppercase ls-1">جودة ملكية</span>
-                        </div>
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="bg-gold-light text-gold rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-                                <i class="fas fa-star h5 mb-0"></i>
-                            </div>
-                            <span class="small fw-bold text-uppercase ls-1">تصاميم حصرية</span>
                         </div>
                     </div>
                 </div>
             </div>
+            @endforeach
         </div>
     </div>
 </section>
 
 
+{{-- =============================================
+     SHOPPING PROCESS (Tactile Silk Texture)
+     ============================================= --}}
 {{-- =============================================
      SHOPPING PROCESS (Tactile Silk Texture)
      ============================================= --}}
@@ -96,6 +128,44 @@
                 </div>
             </div>
             @endforeach
+        </div>
+    </div>
+</section>
+
+{{-- =============================================
+     SOCIAL MEDIA INVITATION
+     ============================================= --}}
+<section class="section-py social-invite-section" data-aos="fade-up">
+    <div class="container px-xl-5">
+        <div class="text-center mb-5">
+            <span class="text-gold fw-bold small text-uppercase" style="letter-spacing: 3px;">تابعينا</span>
+            <h2 class="brand-heading mt-2 mb-0">انضمي إلى عالم الأميرات</h2>
+            <div class="bg-gold mt-3 rounded mx-auto" style="width: 40px; height: 2px;"></div>
+            <p class="text-muted mt-3 font-body mb-0" style="max-width: 500px; margin: auto;">إطلالات حصرية، مجموعات جديدة، وخلف الكواليس — كلها في انتظارك.</p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            {{-- Instagram Card --}}
+            <div class="col-12 col-md-5">
+                <a href="https://www.instagram.com/hijab_.princesses/" target="_blank" rel="noopener noreferrer" class="social-platform-card instagram-card d-block text-decoration-none">
+                    <div class="social-platform-icon">
+                        <i class="fab fa-instagram"></i>
+                    </div>
+                    <div class="social-platform-name">Instagram</div>
+                    <div class="social-platform-handle">@hijab_.princesses</div>
+                </a>
+            </div>
+
+            {{-- TikTok Card --}}
+            <div class="col-12 col-md-5">
+                <a href="https://www.tiktok.com/@hijab_princesses1" target="_blank" rel="noopener noreferrer" class="social-platform-card tiktok-card d-block text-decoration-none">
+                    <div class="social-platform-icon">
+                        <i class="fab fa-tiktok"></i>
+                    </div>
+                    <div class="social-platform-name">TikTok</div>
+                    <div class="social-platform-handle">@hijab_princesses1</div>
+                </a>
+            </div>
         </div>
     </div>
 </section>
