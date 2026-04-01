@@ -14,7 +14,7 @@ class SitemapController extends Controller
     public function index(): Response
     {
         $products = Product::where('status', 'active')
-            ->select(['id', 'name', 'updated_at'])
+            ->select(['id', 'name', 'main_image', 'updated_at'])
             ->latest('updated_at')
             ->get();
 

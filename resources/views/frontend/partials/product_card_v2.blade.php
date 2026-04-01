@@ -4,7 +4,7 @@
 
     {{-- Visual Image Area --}}
     <div class="product-v2-image position-relative overflow-hidden" style="aspect-ratio: 4/5;">
-        <img src="{{ $product->main_image ? (Str::startsWith($product->main_image, 'http') ? $product->main_image : Storage::url($product->main_image)) : asset('images/placeholder-product.jpg') }}" alt="{{ $product->translated_name }}" class="w-100 h-100 object-fit-cover transition-hero">
+        <img src="{{ $product->main_image ? (Str::startsWith($product->main_image, 'http') ? $product->main_image : Storage::url($product->main_image)) : asset('images/placeholder-product.jpg') }}" alt="{{ $product->translated_name }} - Hijab Princesses" class="w-100 h-100 object-fit-cover transition-hero">
     </div>
 
     {{-- Content Body (Z-index 2 to allow interaction with variants/buttons) --}}

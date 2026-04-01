@@ -3,6 +3,50 @@
 @section('meta_title', 'أناقة الأميرة — متجر العبايات والخمارات الفاخرة')
 @section('meta_description', 'اكتشفي تشكيلتنا الحصرية من العبايات الفاخرة والخمارات الأنيقة. جودة عالية وتوصيل لكل مدن المغرب.')
 
+@section('json_ld')
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "{{ url('/') }}/#organization",
+      "name": "{{ setting('app_name', 'Hijab Princesses — أناقة الأميرة') }}",
+      "url": "{{ url('/') }}",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "{{ setting('app_logo') ? url(Storage::url(setting('app_logo'))) : asset('images/logo.png') }}"
+      },
+      "sameAs": [
+        "https://www.facebook.com/hijabprincesses",
+        "https://www.instagram.com/hijabprincesses",
+        "https://www.tiktok.com/@hijabprincesses"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "{{ setting('app_phone', '+212-000-000000') }}",
+        "contactType": "customer service",
+        "areaServed": "MA",
+        "availableLanguage": ["Arabic", "French", "English"]
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "{{ url('/') }}/#website",
+      "url": "{{ url('/') }}",
+      "name": "Hijab Princesses",
+      "publisher": { "@id": "{{ url('/') }}/#organization" },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "{{ url('/shop?search={search_term_string}') }}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+  ]
+}
+</script>
+@endsection
+
 @section('content')
 
 {{-- =============================================

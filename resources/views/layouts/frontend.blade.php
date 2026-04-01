@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('meta_title', setting('app_name', 'Speed Platform'))</title>
+    <title>@yield('meta_title', setting('app_name', 'Hijab Princesses — أناقة الأميرة'))</title>
     <meta name="description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
     <meta name="keywords" content="@yield('meta_keywords', setting('app_name', 'boutique') . ', e-commerce, Maroc, acheter en ligne, livraison Maroc')">
     <meta name="robots" content="@yield('meta_robots', 'index, follow')">
@@ -13,6 +13,12 @@
 
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- International SEO: Hreflang Tags -->
+    <link rel="alternate" hreflang="ar" href="{{ url()->current() }}">
+    <link rel="alternate" hreflang="en" href="{{ url()->current() }}">
+    <link rel="alternate" hreflang="fr" href="{{ url()->current() }}">
+    <link rel="alternate" hreflang="x-default" href="{{ url('/') }}">
 
     <!-- Preconnect to external resources for faster loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

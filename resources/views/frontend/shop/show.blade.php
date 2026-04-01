@@ -8,25 +8,58 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org/",
-  "@type": "Product",
-  "name": "{{ $product->translated_name }}",
-  "image": [
-    "{{ $product->main_image ? url(Storage::url($product->main_image)) : '' }}"
-  ],
-  "description": "{{ Str::limit(strip_tags($product->translated_description), 160) }}",
-  "sku": "{{ $product->sku }}",
-  "brand": {
-    "@type": "Brand",
-    "name": "{{ setting('app_name', 'Hijab Princesses') }}"
-  },
-  "offers": {
-    "@type": "Offer",
-    "url": "{{ url()->current() }}",
-    "priceCurrency": "MAD",
-    "price": "{{ $product->sale_price ?? $product->price }}",
-    "itemCondition": "https://schema.org/NewCondition",
-    "availability": "https://schema.org/{{ $product->getTotalStockAttribute() > 0 ? 'InStock' : 'OutOfStock' }}"
-  }
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "{{ __('Home') }}",
+          "item": "{{ url('/') }}"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "{{ __('Shop') }}",
+          "item": "{{ route('shop.index') }}"
+        }
+        @if($product->productCategory),
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "{{ $product->productCategory->translated_name }}",
+          "item": "{{ route('shop.index', ['category' => $product->productCategory->slug]) }}"
+        }
+        @endif
+      ]
+    },
+    {
+      "@type": "Product",
+      "name": "{{ $product->translated_name }}",
+      "image": [
+        "{{ $product->main_image ? url(Storage::url($product->main_image)) : '' }}"
+      ],
+      "description": "{{ Str::limit(strip_tags($product->translated_description), 160) }}",
+      "sku": "{{ $product->sku }}",
+      "brand": {
+        "@type": "Brand",
+        "name": "{{ setting('app_name', 'Hijab Princesses') }}"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": "{{ url()->current() }}",
+        "priceCurrency": "MAD",
+        "price": "{{ $product->sale_price ?? $product->price }}",
+        "itemCondition": "https://schema.org/NewCondition",
+        "availability": "https://schema.org/{{ $product->getTotalStockAttribute() > 0 ? 'InStock' : 'OutOfStock' }}",
+        "seller": {
+            "@type": "Organization",
+            "name": "Hijab Princesses"
+        }
+      }
+    }
+  ]
 }
 </script>
 @endsection
