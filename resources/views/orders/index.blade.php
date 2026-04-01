@@ -267,6 +267,27 @@
             const orderId = el.dataset.orderId;
             const url = el.dataset.updateUrl;
             const value = el.value;
+            const payload = { [field]: value };
+            let dualUpdate = false;
+
+            // Smart Workflow: Sync Payment on Delivery
+            if (field === 'status' && value === 'delivered') {
+                const result = await Swal.fire({
+                    title: 'تحديث حالة الدفع؟',
+                    text: 'هل ترغب في وضع علامة على هذا الطلب كمدفوع أيضاً؟',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'نعم، مدفوع',
+                    cancelButtonText: 'لا، فقط موصول',
+                    confirmButtonColor: '#10b981',
+                    cancelButtonColor: '#64748b'
+                });
+
+                if (result.isConfirmed) {
+                    payload.payment_status = 'paid';
+                    dualUpdate = true;
+                }
+            }
             
             // Add loading state
             el.style.opacity = '0.5';
@@ -280,7 +301,7 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ [field]: value })
+                    body: JSON.stringify(payload)
                 });
 
                 const data = await response.json();
@@ -297,6 +318,11 @@
                         el.classList.add(value === 'delivered' ? 'success' : (value === 'cancelled' ? 'danger' : 'info'));
                     } else {
                         el.classList.add(value === 'paid' ? 'success' : (value === 'failed' ? 'danger' : 'warning'));
+                    }
+
+                    // Refresh if multiple fields were updated
+                    if (dualUpdate) {
+                        setTimeout(() => location.reload(), 1500);
                     }
                 } else {
                     throw new Error(data.message || 'Update failed');

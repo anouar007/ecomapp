@@ -461,6 +461,25 @@ document.addEventListener('DOMContentLoaded', function() {
         const orderId = el.dataset.orderId;
         const url = el.dataset.updateUrl;
         const value = el.value;
+        const payload = { [field]: value };
+
+        // Smart Workflow: Sync Payment on Delivery
+        if (field === 'status' && value === 'delivered') {
+            const result = await Swal.fire({
+                title: 'تحديث حالة الدفع؟',
+                text: 'هل ترغب في وضع علامة على هذا الطلب كمدفوع أيضاً؟',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'نعم، مدفوع',
+                cancelButtonText: 'لا، فقط موصول',
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#64748b'
+            });
+
+            if (result.isConfirmed) {
+                payload.payment_status = 'paid';
+            }
+        }
         
         // Add loading state
         el.style.opacity = '0.5';
@@ -474,7 +493,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     'Accept': 'application/json'
                 },
-                body: JSON.stringify({ [field]: value })
+                body: JSON.stringify(payload)
             });
 
             const data = await response.json();
