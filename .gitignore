@@ -7,6 +7,7 @@
 /storage/pail
 /vendor
 .env
+setup.text
 .htaccess
 .env.backup
 .env.production
