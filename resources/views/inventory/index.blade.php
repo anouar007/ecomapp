@@ -149,24 +149,33 @@
                                  data-product-id="{{ $product->id }}" 
                                  data-variant-id="{{ $variant->id }}">
                                 <div class="d-flex align-items-center gap-2 variant-info-wrapper">
-                                    @if($variant->size) <span class="variant-tag">{{ $variant->size }}</span> @endif
-                                    @if($variant->color) 
-                                        <div class="d-flex align-items-center gap-1">
-                                            <span class="color-dot shadow-sm" style="width: 12px; height: 12px; border-radius: 50%; background: {{ $variant->color }}"></span>
-                                            <span class="small text-muted text-truncate" style="max-width: 80px;">{{ $variant->color_name }}</span>
-                                        </div>
-                                    @endif
+                                    <div class="d-flex align-items-center gap-2">
+                                        @if($variant->color_image)
+                                            <img src="{{ $variant->color_image_url }}" class="variant-thumb" alt="">
+                                        @elseif($variant->color)
+                                            <span class="color-dot shadow-inner" style="width: 20px; height: 20px; border-radius: 50%; background: {{ $variant->color }}"></span>
+                                        @endif
+                                        
+                                        @if($variant->size)
+                                            <span class="text-dark fw-bold font-inter ms-1" style="font-size: 0.85rem;">{{ $variant->size }}</span>
+                                        @endif
+                                    </div>
+                                    <div class="text-muted mx-1">/</div>
+                                    <div class="text-muted font-monospace" style="font-size: 0.65rem;">{{ $variant->sku ?? ($product->sku . '-' . ($variant->size ?: $variant->color)) }}</div>
                                 </div>
-                                <div class="d-flex align-items-center gap-2 variant-actions-wrapper">
-                                    <button type="button" class="quick-adj-btn btn-minus" onclick="quickUpdate('{{ $product->id }}', '{{ $variant->id }}', -1)">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                    <span class="stock-pill font-inter variant-stock-display {{ ($variant->stock ?? 0) <= 0 ? 'out' : (($variant->stock ?? 0) <= 5 ? 'low' : 'in') }}">
-                                        {{ $variant->stock ?? 0 }}
-                                    </span>
-                                    <button type="button" class="quick-adj-btn btn-plus" onclick="quickUpdate('{{ $product->id }}', '{{ $variant->id }}', 1)">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
+                                <div class="variant-actions-wrapper">
+                                    <div class="stock-stepper">
+                                        <button type="button" class="quick-adj-btn" onclick="quickUpdate('{{ $product->id }}', '{{ $variant->id }}', 1)">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                        <input type="number" 
+                                               class="stock-input variant-stock-display {{ ($variant->stock ?? 0) <= 0 ? 'out' : (($variant->stock ?? 0) <= 5 ? 'low' : 'in') }}" 
+                                               value="{{ $variant->stock ?? 0 }}"
+                                               onchange="saveQuantity('{{ $product->id }}', '{{ $variant->id }}', this)">
+                                        <button type="button" class="quick-adj-btn" onclick="quickUpdate('{{ $product->id }}', '{{ $variant->id }}', -1)">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         @endforeach
@@ -174,15 +183,16 @@
                 @else
                     <div class="d-flex align-items-center justify-content-between p-2 rounded-3" style="background: #f8fafc;">
                         <span class="small fw-semibold text-muted">{{ __('Direct Stock Management') }}</span>
-                        <div class="d-flex align-items-center gap-2">
-                            <button type="button" class="quick-adj-btn btn-minus" onclick="quickUpdate('{{ $product->id }}', null, -1)">
-                                <i class="fas fa-minus"></i>
-                            </button>
-                            <span class="stock-pill font-inter {{ ($product->stock ?? 0) <= 0 ? 'out' : (($product->stock ?? 0) <= 5 ? 'low' : 'in') }} product-stock-display">
-                                {{ $product->stock ?? 0 }}
-                            </span>
-                            <button type="button" class="quick-adj-btn btn-plus" onclick="quickUpdate('{{ $product->id }}', null, 1)">
+                        <div class="stock-stepper">
+                            <button type="button" class="quick-adj-btn" onclick="quickUpdate('{{ $product->id }}', null, 1)">
                                 <i class="fas fa-plus"></i>
+                            </button>
+                            <input type="number" 
+                                   class="stock-input product-stock-display {{ ($product->stock ?? 0) <= 0 ? 'out' : (($product->stock ?? 0) <= 5 ? 'low' : 'in') }}" 
+                                   value="{{ $product->stock ?? 0 }}"
+                                   onchange="saveQuantity('{{ $product->id }}', null, this)">
+                            <button type="button" class="quick-adj-btn" onclick="quickUpdate('{{ $product->id }}', null, -1)">
+                                <i class="fas fa-minus"></i>
                             </button>
                         </div>
                     </div>
@@ -257,26 +267,27 @@
                         <td>
                             <div class="d-flex flex-column align-items-center">
                                 @if($product->track_inventory)
-                                    <div class="d-flex align-items-center gap-3 mb-2">
                                         @if($product->variants->count() == 0)
-                                            <button type="button" class="quick-adj-btn btn-minus" onclick="quickUpdate('{{ $product->id }}', null, -1)">
-                                                <i class="fas fa-minus"></i>
-                                            </button>
-                                        @endif
-                                        
-                                        <div class="text-center">
-                                            <div class="fw-bold fs-4 font-inter product-total-stock-display {{ ($product->total_stock <= ($product->low_stock_threshold ?? 10)) ? 'text-danger' : 'text-dark' }}">
-                                                {{ $product->total_stock }}
+                                            <div class="stock-stepper">
+                                                <button type="button" class="quick-adj-btn" onclick="quickUpdate('{{ $product->id }}', null, 1)">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                                <input type="number" 
+                                                       class="stock-input product-total-stock-display {{ ($product->total_stock <= ($product->low_stock_threshold ?? 10)) ? 'out' : 'in' }}" 
+                                                       value="{{ $product->total_stock }}"
+                                                       onchange="saveQuantity('{{ $product->id }}', null, this)">
+                                                <button type="button" class="quick-adj-btn" onclick="quickUpdate('{{ $product->id }}', null, -1)">
+                                                    <i class="fas fa-minus"></i>
+                                                </button>
                                             </div>
-                                            <div class="text-muted small text-uppercase" style="font-size: 0.6rem; letter-spacing: 1px;">{{ __('Total Units') }}</div>
-                                        </div>
-
-                                        @if($product->variants->count() == 0)
-                                            <button type="button" class="quick-adj-btn btn-plus" onclick="quickUpdate('{{ $product->id }}', null, 1)">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
+                                        @else
+                                            <div class="text-center">
+                                                <div class="fw-bold fs-4 font-inter product-total-stock-display {{ ($product->total_stock <= ($product->low_stock_threshold ?? 10)) ? 'text-danger' : 'text-dark' }}">
+                                                    {{ $product->total_stock }}
+                                                </div>
+                                                <div class="text-muted small text-uppercase" style="font-size: 0.6rem; letter-spacing: 1px;">{{ __('Total Units') }}</div>
+                                            </div>
                                         @endif
-                                    </div>
                                     
                                     @php
                                         $stock = $product->total_stock;
@@ -334,24 +345,31 @@
                                             <div class="variant-card d-flex align-items-center justify-content-between variant-container" 
                                                  data-product-id="{{ $product->id }}" 
                                                  data-variant-id="{{ $variant->id }}">
-                                                <div>
-                                                    <div class="d-flex align-items-center gap-2 mb-1">
-                                                        @if($variant->size) <span class="variant-tag">{{ $variant->size }}</span> @endif
-                                                        @if($variant->color) 
-                                                            <span class="color-dot shadow-inner" style="width: 12px; height: 12px; border-radius: 50%; background: {{ $variant->color }}"></span>
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        @if($variant->color_image)
+                                                            <img src="{{ $variant->color_image_url }}" class="variant-thumb" alt="">
+                                                        @elseif($variant->color)
+                                                            <span class="color-dot shadow-inner" style="width: 20px; height: 20px; border-radius: 50%; background: {{ $variant->color }}"></span>
+                                                        @endif
+                                                        
+                                                        @if($variant->size)
+                                                            <span class="text-dark fw-bold font-inter ms-1" style="font-size: 0.85rem;">{{ $variant->size }}</span>
                                                         @endif
                                                     </div>
+                                                    <div class="text-muted">/</div>
                                                     <div class="text-muted font-monospace" style="font-size: 0.65rem;">{{ $variant->sku ?? ($product->sku . '-' . ($variant->size ?: $variant->color)) }}</div>
                                                 </div>
-                                                <div class="d-flex align-items-center gap-2">
-                                                    <button type="button" class="quick-adj-btn btn-minus" onclick="quickUpdate('{{ $product->id }}', '{{ $variant->id }}', -1)">
-                                                        <i class="fas fa-minus"></i>
-                                                    </button>
-                                                    <span class="stock-pill font-inter {{ ($variant->stock ?? 0) <= 0 ? 'out' : (($variant->stock ?? 0) <= 5 ? 'low' : 'in') }} variant-stock-display">
-                                                        {{ $variant->stock ?? 0 }}
-                                                    </span>
-                                                    <button type="button" class="quick-adj-btn btn-plus" onclick="quickUpdate('{{ $product->id }}', '{{ $variant->id }}', 1)">
+                                                <div class="stock-stepper">
+                                                    <button type="button" class="quick-adj-btn" onclick="quickUpdate('{{ $product->id }}', '{{ $variant->id }}', 1)">
                                                         <i class="fas fa-plus"></i>
+                                                    </button>
+                                                    <input type="number" 
+                                                           class="stock-input variant-stock-display {{ ($variant->stock ?? 0) <= 0 ? 'out' : (($variant->stock ?? 0) <= 5 ? 'low' : 'in') }}" 
+                                                           value="{{ $variant->stock ?? 0 }}"
+                                                           onchange="saveQuantity('{{ $product->id }}', '{{ $variant->id }}', this)">
+                                                    <button type="button" class="quick-adj-btn" onclick="quickUpdate('{{ $product->id }}', '{{ $variant->id }}', -1)">
+                                                        <i class="fas fa-minus"></i>
                                                     </button>
                                                 </div>
                                             </div>
@@ -491,11 +509,17 @@
     }
 
     // AJAX Quick Update
+    // AJAX Quick Update (Relative)
     async function quickUpdate(productId, variantId, change) {
         const btn = event.currentTarget;
-        const originalHtml = btn.innerHTML;
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        
+        // Find the adjacent input to update local value immediately
+        const container = btn.closest('.stock-stepper');
+        const input = container.querySelector('.stock-input');
+        const originalVal = parseInt(input.value);
+        const newVal = Math.max(0, originalVal + change);
+        input.value = newVal;
 
         try {
             const response = await fetch("{{ route('inventory.quick-update') }}", {
@@ -512,60 +536,110 @@
             });
 
             const data = await response.json();
-
             if (data.success) {
-                // Find all containers that might need updating
-                const selectors = variantId 
-                    ? `.variant-container[data-variant-id="${variantId}"]`
-                    : `.product-container[data-product-id="${productId}"]`;
-                
-                document.querySelectorAll(selectors).forEach(container => {
-                    const display = container.querySelector(variantId ? '.variant-stock-display' : '.product-stock-display');
-                    if (display) {
-                        display.textContent = data.new_stock;
-                        // Update color based on level
-                        display.classList.remove('in', 'low', 'out');
-                        if (data.new_stock <= 0) display.classList.add('out');
-                        else if (data.new_stock <= 5) display.classList.add('low');
-                        else display.classList.add('in');
-                    }
-                });
+                updateUI(productId, variantId, data);
+            } else {
+                input.value = originalVal; // Revert
+                alert(data.message || "{{ __('Update failed') }}");
+            }
+        } catch (error) {
+            input.value = originalVal; // Revert
+            console.error(error);
+            alert("{{ __('Something went wrong') }}");
+        } finally {
+            btn.disabled = false;
+        }
+    }
 
-                // Always update the total stock display for the product
-                document.querySelectorAll(`.product-container[data-product-id="${productId}"]`).forEach(container => {
-                    const totalDisp = container.querySelector('.product-total-stock-display');
-                    if (totalDisp) {
-                        totalDisp.textContent = data.total_stock;
-                        totalDisp.classList.toggle('text-danger', data.total_stock <= 5);
-                    }
-                    
-                    const progressBar = container.querySelector('.product-stock-progress-bar');
-                    if (progressBar) {
-                        // Estimate percentage (simple logic for feedback)
-                        const percent = Math.min(100, (data.total_stock / 40) * 100);
-                        progressBar.style.width = percent + '%';
-                        progressBar.style.backgroundColor = data.total_stock <= 0 ? '#ef4444' : (data.total_stock <= 10 ? '#f59e0b' : '#10b981');
-                    }
-                });
-                
-                // Success feedback
-                const toast = document.createElement('div');
-                toast.className = 'toast align-items-center text-white bg-success border-0 show position-fixed bottom-0 end-0 m-3';
-                toast.style.zIndex = '9999';
-                toast.innerHTML = `<div class="d-flex"><div class="toast-body"><i class="fas fa-check-circle me-2"></i> ${"{{ __('Stock updated successfully') }}"}</div></div>`;
-                document.body.appendChild(toast);
-                setTimeout(() => toast.remove(), 2000);
+    // AJAX Save Quantity (Absolute)
+    async function saveQuantity(productId, variantId, input) {
+        const newVal = parseInt(input.value);
+        if (isNaN(newVal) || newVal < 0) {
+            alert("{{ __('Please enter a valid positive number') }}");
+            return;
+        }
 
+        input.disabled = true;
+        input.style.opacity = '0.5';
+
+        try {
+            const response = await fetch("{{ route('inventory.quick-update') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    variant_id: variantId,
+                    new_quantity: newVal
+                })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                updateUI(productId, variantId, data);
             } else {
                 alert(data.message || "{{ __('Update failed') }}");
+                // Revert to data state if possible or reload
             }
         } catch (error) {
             console.error(error);
             alert("{{ __('Something went wrong') }}");
         } finally {
-            btn.disabled = false;
-            btn.innerHTML = originalHtml;
+            input.disabled = false;
+            input.style.opacity = '1';
         }
+    }
+
+    function updateUI(productId, variantId, data) {
+        // Find all containers that might need updating
+        const selectors = variantId 
+            ? `.variant-stock-display[onchange*="'${variantId}'"]`
+            : `.product-stock-display[onchange*="'${productId}'"], .product-total-stock-display[onchange*="'${productId}'"]`;
+        
+        document.querySelectorAll(selectors).forEach(el => {
+            if (el.tagName === 'INPUT') {
+                el.value = data.new_stock;
+                // Update color classes
+                el.classList.remove('in', 'low', 'out');
+                if (data.new_stock <= 0) el.classList.add('out');
+                else if (data.new_stock <= 5) el.classList.add('low');
+                else el.classList.add('in');
+            } else {
+                el.textContent = data.new_stock;
+                el.classList.toggle('text-danger', data.new_stock <= 5);
+            }
+        });
+
+        // Update the non-editable total display if it exists
+        document.querySelectorAll(`.product-container[data-product-id="${productId}"]`).forEach(container => {
+            const totalDisp = container.querySelector('.product-total-stock-display');
+            if (totalDisp) {
+                if (totalDisp.tagName === 'INPUT') {
+                    totalDisp.value = data.total_stock;
+                    totalDisp.classList.toggle('out', data.total_stock <= 5);
+                } else {
+                    totalDisp.textContent = data.total_stock;
+                    totalDisp.classList.toggle('text-danger', data.total_stock <= 5);
+                }
+            }
+            
+            const progressBar = container.querySelector('.product-stock-progress-bar');
+            if (progressBar) {
+                const percent = Math.min(100, (data.total_stock / 40) * 100);
+                progressBar.style.width = percent + '%';
+                progressBar.style.backgroundColor = data.total_stock <= 0 ? '#ef4444' : (data.total_stock <= 10 ? '#f59e0b' : '#10b981');
+            }
+        });
+        
+        // Success feedback
+        const toast = document.createElement('div');
+        toast.className = 'toast align-items-center text-white bg-success border-0 show position-fixed bottom-0 end-0 m-3';
+        toast.style.zIndex = '9999';
+        toast.innerHTML = `<div class="d-flex"><div class="toast-body"><i class="fas fa-check-circle me-2"></i> ${"{{ __('Stock updated successfully') }}"}</div></div>`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2000);
     }
 </script>
 @endpush

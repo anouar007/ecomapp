@@ -2050,3 +2050,108 @@ h1, h2, h3, h4, h5, h6 {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(359deg); }
 }
+
+/* Inventory Refinements & Editable Quantities */
+.stock-stepper {
+    display: flex;
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: 30px;
+    padding: 2px;
+    transition: var(--transition-base);
+    width: fit-content;
+    min-width: 110px; /* Safe minimum to prevent leak */
+    margin: 0 auto;
+}
+
+.stock-stepper:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.stock-input {
+    flex: 1; /* Allow it to grow */
+    width: 40px;
+    min-width: 30px;
+    border: none !important;
+    background: transparent !important;
+    text-align: center;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-dark);
+    padding: 0;
+    margin: 0;
+    outline: none;
+    -moz-appearance: textfield;
+    font-size: 0.95rem;
+}
+
+.stock-input::-webkit-outer-spin-button,
+.stock-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.stock-input.out { color: #ef4444; }
+.stock-input.low { color: #f59e0b; }
+.stock-input.in { color: #10b981; }
+
+.quick-adj-btn {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0; /* Don't squash buttons */
+    border-radius: 50%;
+    border: none;
+    background: white;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-base);
+}
+
+.quick-adj-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: scale(1.1);
+}
+
+.variant-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    transition: var(--transition-base);
+    flex-wrap: wrap; /* Prevent leak on mobile */
+    gap: 12px;
+}
+
+.variant-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-light);
+}
+
+.variant-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+}
+
+[dir="rtl"] .stock-stepper {
+    flex-direction: row; /* Steppers remain LTR even in RTL usually for ease of use? No, let's keep it row */
+}
+
+/* Ensure variants expand nicely */
+.variant-row .collapse.show {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

@@ -702,7 +702,7 @@ ashed #cbd5e1;
                 <!-- Advanced Tab -->
                 <div class="tab-pane" id="advanced-tab">
                     <div class="settings-section">
-                        <h3 class="section-title">{{ __('Pagination') }}</h3>
+                        <h3 class="section-title">{{ __('Pagination Settings') }}</h3>
                         
                         <div class="form-group">
                             <label class="form-label">{{ __('Items Per Page') }}</label>

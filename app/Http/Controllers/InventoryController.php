@@ -292,18 +292,42 @@ class InventoryController extends Controller
         $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
             'variant_id' => 'nullable|exists:product_variants,id',
-            'change' => 'required|integer', // e.g. +1 or -1
+            'change' => 'nullable|integer', // e.g. +1 or -1
+            'new_quantity' => 'nullable|integer|min:0', // for absolute updates
             'reason' => 'nullable|string',
         ]);
 
-        $reason = $validated['reason'] ?? __('Quick update from inventory list');
-        $type = $validated['change'] > 0 ? 'in' : 'out';
-        $quantity = abs($validated['change']);
+        if (!isset($validated['change']) && !isset($validated['new_quantity'])) {
+            return response()->json(['success' => false, 'message' => __('Missing change or new_quantity.')], 422);
+        }
 
+        $reason = $validated['reason'] ?? __('Quick update from inventory list');
+        
         if (!empty($validated['variant_id'])) {
             $model = \App\Models\ProductVariant::findOrFail($validated['variant_id']);
         } else {
             $model = \App\Models\Product::findOrFail($validated['product_id']);
+        }
+
+        if (isset($validated['new_quantity'])) {
+            // Absolute adjustment
+            $currentStock = $model->stock ?? 0;
+            $targetQuantity = $validated['new_quantity'];
+            
+            if ($targetQuantity == $currentStock) {
+                return response()->json([
+                    'success' => true,
+                    'new_stock' => $currentStock,
+                    'total_stock' => $validated['variant_id'] ? $model->product->fresh()->total_stock : $currentStock
+                ]);
+            }
+            
+            $type = 'adjustment'; // Use the 'adjustment' type for absolute correction
+            $quantity = $targetQuantity;
+        } else {
+            // Relative change (+1 or -1)
+            $type = $validated['change'] > 0 ? 'in' : 'out';
+            $quantity = abs($validated['change']);
         }
 
         $success = $model->adjustStock($quantity, $type, Auth::id(), ['reason' => $reason]);
@@ -316,7 +340,7 @@ class InventoryController extends Controller
             ]);
         }
 
-        return response()->json(['success' => false, 'message' => 'Failed to adjust stock.'], 422);
+        return response()->json(['success' => false, 'message' => __('Failed to adjust stock.')], 422);
     }
 
     /**
