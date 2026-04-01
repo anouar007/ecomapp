@@ -401,5 +401,34 @@ class Product extends Model
             ];
         })->toJson();
     }
+
+    /**
+     * Get review count for approved reviews.
+     */
+    public function getReviewCountAttribute()
+    {
+        return $this->reviews()->where('status', 'approved')->count();
+    }
+
+    /**
+     * Get average rating for approved reviews.
+     */
+    public function getAverageRatingAttribute()
+    {
+        $avg = $this->reviews()->where('status', 'approved')->avg('rating');
+        return $avg ? round($avg, 1) : 0;
+    }
+
+    /**
+     * Get related products in the same category.
+     */
+    public function getRelatedProductsAttribute()
+    {
+        return self::where('category_id', $this->category_id)
+            ->where('id', '!=', $this->id)
+            ->where('status', 'active')
+            ->limit(4)
+            ->get();
+    }
 }
 

@@ -339,6 +339,10 @@ ashed #cbd5e1;
                 <i class="fas fa-cogs"></i>
                 <span>Advanced</span>
             </button>
+            <button class="settings-tab" onclick="switchTab('analytics')">
+                <i class="fas fa-chart-line"></i>
+                <span>Analytics & Ads</span>
+            </button>
         </div>
 
         <!-- Content -->
@@ -817,7 +821,84 @@ ashed #cbd5e1;
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label">Footer Biography / Tagline</label>
-                                <textarea name="settings[frontend_footer_text]" class="form-input" rows="3">{{ setting('frontend_footer_text') }}</textarea>
+                                <input type="text" name="settings[frontend_featured_title]" class="form-input" value="{{ setting('frontend_featured_title', 'Nos Créations à l\'Honneur') }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics & Ads Tab -->
+                <div class="tab-pane" id="analytics-tab">
+                    <div class="settings-section">
+                        <h3 class="section-title">Product Distribution (Feeds)</h3>
+                        <div class="p-4 bg-light rounded-4 border">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <h5 class="fw-bold mb-1">Google & Meta Product Feed</h5>
+                                    <p class="text-muted small mb-0">Use this URL to sync your products with Google Merchant Center and Facebook Catalog.</p>
+                                    <code class="mt-2 d-inline-block p-2 bg-white rounded border">{{ route('feed.products') }}</code>
+                                </div>
+                                <a href="{{ route('feed.products') }}" target="_blank" class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-external-link-alt me-1"></i> Preview Feed
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-section mt-5">
+                        <h3 class="section-title">Multi-Platform Tracking</h3>
+                        <p class="text-muted small mb-4">Enter your Pixel or Measurement IDs below to activate automated event tracking (ViewContent, AddToCart, Purchase).</p>
+                        
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label"><i class="fab fa-facebook text-primary me-1"></i> Meta Pixel ID</label>
+                                    <input type="text" name="settings[facebook_pixel_id]" class="form-input" value="{{ setting('facebook_pixel_id') }}" placeholder="e.g. 1234567890">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label"><i class="fas fa-key text-primary me-1"></i> Meta CAPI Access Token</label>
+                                    <input type="password" name="settings[meta_capi_access_token]" class="form-input" value="{{ setting('meta_capi_access_token') }}" placeholder="EAAG...">
+                                    <small class="text-muted" style="font-size: 11px;">Required for server-side tracking (iOS 14+ fix).</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label"><i class="fas fa-vial text-primary me-1"></i> Meta CAPI Test Event Code</label>
+                                    <input type="text" name="settings[meta_capi_test_event_code]" class="form-input" value="{{ setting('meta_capi_test_event_code') }}" placeholder="TEST12345">
+                                    <small class="text-muted" style="font-size: 11px;">Use only when testing in Events Manager.</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label"><i class="fab fa-google text-danger me-1"></i> Google Tag ID (GA4/Ads)</label>
+                                    <input type="text" name="settings[google_tag_id]" class="form-input" value="{{ setting('google_tag_id') }}" placeholder="e.g. G-XXXXXXX or AW-XXXXXXXX">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label"><i class="fab fa-tiktok text-dark me-1"></i> TikTok Pixel ID</label>
+                                    <input type="text" name="settings[tiktok_pixel_id]" class="form-input" value="{{ setting('tiktok_pixel_id') }}" placeholder="e.g. CXXXXXXXXXXXX">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label"><i class="fab fa-snapchat-ghost text-warning me-1"></i> Snapchat Pixel ID</label>
+                                    <input type="text" name="settings[snapchat_pixel_id]" class="form-input" value="{{ setting('snapchat_pixel_id') }}" placeholder="e.g. xxxxxxxx-xxxx-xxxx">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label"><i class="fab fa-pinterest text-danger me-1"></i> Pinterest Tag ID</label>
+                                    <input type="text" name="settings[pinterest_tag_id]" class="form-input" value="{{ setting('pinterest_tag_id') }}" placeholder="e.g. 26XXXXXXXXX">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label"><i class="fas fa-shopping-bag text-success me-1"></i> Merchant Center ID</label>
+                                    <input type="text" name="settings[google_merchant_center_id]" class="form-input" value="{{ setting('google_merchant_center_id') }}" placeholder="e.g. 123456789">
+                                </div>
                             </div>
                         </div>
                     </div>

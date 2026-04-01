@@ -18,6 +18,13 @@ use App\Http\Controllers\CustomerDashboardController;
 */
 
 // Guest routes
+Route::get('/locale/{lang}', function($lang) {
+    if (in_array($lang, ['en', 'fr', 'ar'])) {
+        session(['locale' => $lang]);
+    }
+    return back();
+})->name('locale.set');
+
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])
@@ -211,3 +218,7 @@ Route::middleware('auth')->group(function () {
 
 // Public routes - Reviews (accessible by guests)
 Route::post('/reviews', [\App\Http\Controllers\ProductReviewController::class, 'store'])->name('reviews.store');
+
+
+// Public Product Feed (Google/Meta)
+Route::get('/feed/products.xml', [\App\Http\Controllers\FeedController::class, 'products'])->name('feed.products');

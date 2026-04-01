@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use App\Services\MetaCapiService;
 
 class CheckoutController extends Controller
 {
@@ -109,11 +110,31 @@ class CheckoutController extends Controller
             \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderConfirmation($order));
             \Illuminate\Support\Facades\Mail::to(setting('contact_email', 'admin@speed.com'))->send(new \App\Mail\NewOrderNotification($order));
         } catch (\Exception $e) {
-            \Log::error('Failed to send checkout emails: ' . $e->getMessage());
+            Log::error('Failed to send checkout emails: ' . $e->getMessage());
         }
 
         // Clear Cart
         session()->forget('cart');
+
+        // Meta CAPI Server-Side Tracking
+        try {
+            $capi = app(MetaCapiService::class);
+            $capi->track('Purchase', [
+                'value' => (float)$order->total,
+                'currency' => 'MAD',
+                'content_ids' => $order->items->pluck('product_id')->map(fn($id) => (string)$id)->toArray(),
+                'content_type' => 'product',
+                'num_items' => $order->items->sum('quantity'),
+                'order_id' => (string)$order->order_number
+            ], [
+                'email' => $order->customer_email,
+                'phone' => $order->customer_phone,
+                'fn' => explode(' ', $order->customer_name)[0] ?? '',
+                'ln' => explode(' ', $order->customer_name)[1] ?? ''
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Meta CAPI Purchase tracking failed: ' . $e->getMessage());
+        }
 
         return redirect()->route('checkout.success', ['order' => $order->id]);
     }

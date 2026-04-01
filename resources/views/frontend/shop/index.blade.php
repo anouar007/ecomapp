@@ -3,14 +3,14 @@
 @php
     $activeCategory = $categories->where('slug', request('category'))->first();
     $pageTitle = $activeCategory
-        ? ($activeCategory->name . ' — ' . setting('app_name', 'Speed Platform'))
-        : (request('q') ? 'Résultats pour "' . request('q') . '" — ' . setting('app_name') : 'Boutique — ' . setting('app_name', 'Speed Platform'));
+        ? ($activeCategory->translated_name . ' — Moubdi3oun')
+        : (request('q') ? 'Résultats pour "' . request('q') . '" — Moubdi3oun' : 'Collections — Moubdi3oun');
     $pageDescription = $activeCategory
-        ? ('Découvrez notre gamme de ' . $activeCategory->name . '. Livraison partout au Maroc, installation et SAV inclus. ' . $activeCategory->products_count . ' produits disponibles.')
-        : 'Parcourez notre catalogue complet de machines d\'impression grand format, traceurs de découpe, encres et consommables. Livraison Maroc, devis gratuit.';
+        ? ('Découvrez notre collection de ' . $activeCategory->translated_name . '. Mobilier artisanal sur mesure, conçu au Maroc.')
+        : 'Parcourez nos collections de mobilier artisanal : menuiserie fine, métallurgie design et tapisserie de luxe.';
     $pageKeywords = $activeCategory
-        ? ($activeCategory->name . ', ' . setting('app_name', 'boutique') . ', acheter ' . $activeCategory->name . ' Maroc, prix ' . $activeCategory->name)
-        : setting('app_name', 'boutique') . ', machines impression, traceur découpe, encres, consommables, Maroc';
+        ? ($activeCategory->translated_name . ', mobilier, artisanat, Moubdi3oun, sur mesure')
+        : 'mobilier, artisanat, menuiserie, métallurgie, tapisserie, décoration Maroc, Moubdi3oun';
 @endphp
 
 @section('meta_title', $pageTitle)
@@ -75,32 +75,32 @@
 <section class="shop-hero">
     <div class="shop-hero-backdrop"></div>
     <div class="container position-relative">
-        <div class="shop-hero-content">
-            <div class="hero-eyebrow">
+        <div class="shop-hero-content" data-aos="fade-down">
+            <div class="hero-eyebrow text-white mb-3">
                 <span class="hero-eyebrow-dot"></span>
-                {{ request('q') ? 'Résultats de recherche' : (request('category') ? 'Catégorie' : 'Catalogue complet') }}
+                {{ request('q') ? 'Recherche' : (request('category') ? 'Collection' : 'Catalogue') }}
             </div>
             <h1 class="shop-hero-title">
                 @if(request('q'))
-                    Résultats pour <span class="text-gradient-primary">« {{ request('q') }} »</span>
+                    Résultats : <span style="color: var(--accent);">« {{ request('q') }} »</span>
                 @elseif(request('category'))
-                    <span class="text-gradient-primary">{{ $categories->where('slug', request('category'))->first()->name ?? 'Produits' }}</span>
+                    <span style="color: var(--accent);">{{ $categories->where('slug', request('category'))->first()->translated_name ?? 'Produits' }}</span>
                 @else
-                    Nos <span class="text-gradient-primary">équipements</span> & consommables
+                    Nos <span style="color: var(--accent);">Collections</span> Artisanales
                 @endif
             </h1>
-            <p class="shop-hero-sub">
-                Machines éco-solvant, traceurs de découpe, encres certifiées et accessoires — tout pour votre production.
+            <p class="lead opacity-75 mb-4" style="max-width: 600px;">
+                Des pièces uniques conçues avec passion dans nos ateliers. Design moderne et savoir-faire traditionnel.
             </p>
 
             {{-- Breadcrumb --}}
             <nav class="shop-breadcrumb" aria-label="breadcrumb">
-                <a href="{{ url('/') }}"><i class="fas fa-home"></i> Accueil</a>
-                <span class="shop-bc-sep">/</span>
-                <a href="{{ route('shop.index') }}">Catalogue</a>
+                <a href="{{ url('/') }}">Accueil</a>
+                <span class="text-white opacity-25">/</span>
+                <span class="text-white">Shop</span>
                 @if(request('category'))
-                    <span class="shop-bc-sep">/</span>
-                    <span>{{ $categories->where('slug', request('category'))->first()->name ?? 'Catégorie' }}</span>
+                    <span class="text-white opacity-25">/</span>
+                    <span class="text-white">{{ $categories->where('slug', request('category'))->first()->translated_name ?? 'Catégorie' }}</span>
                 @endif
             </nav>
         </div>
@@ -116,77 +116,57 @@
 
             {{-- ── SIDEBAR ── --}}
             <div class="col-lg-3">
-                <div class="shop-sidebar sticky-top" style="top: 90px;">
+<div class="shop-sidebar sticky-top" style="top: 100px;">
 
-                    {{-- Search --}}
-                    <div class="shop-filter-card mb-4">
-                        <h6 class="shop-filter-title"><i class="fas fa-search me-2"></i>Recherche</h6>
-                        <form id="searchForm">
-                            <div class="shop-search-wrap">
-                                <input type="text" name="q" class="shop-search-input"
-                                       placeholder="Nom du produit…" value="{{ request('q') }}">
-                                <button type="submit" class="shop-search-btn">
-                                    <i class="fas fa-arrow-right"></i>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+    {{-- Search --}}
+    <div class="shop-filter-card mb-4 border-0 shadow-sm">
+        <h6 class="shop-filter-title text-dark">Rechercher</h6>
+        <form id="searchForm">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control border-end-0 ps-3 py-2 small"
+                       placeholder="Modèle, bois, tissu..." value="{{ request('q') }}" style="border-radius: 30px 0 0 30px;">
+                <button type="submit" class="btn border border-start-0 ps-0 pe-3" style="border-radius: 0 30px 30px 0; background: white;">
+                    <i class="fas fa-search text-muted small"></i>
+                </button>
+            </div>
+        </form>
+    </div>
 
-                    {{-- Categories --}}
-                    <div class="shop-filter-card mb-4">
-                        <h6 class="shop-filter-title"><i class="fas fa-th-large me-2"></i>Catégories</h6>
-                        <ul class="shop-cat-list">
-                            <li>
-                                <a href="#" class="shop-cat-link category-filter {{ !request('category') ? 'active' : '' }}" data-slug="">
-                                    <span>Tous les produits</span>
-                                    <span class="shop-cat-count">{{ \App\Models\Product::where('status','active')->count() }}</span>
-                                </a>
-                            </li>
-                            @foreach($categories as $cat)
-                            <li>
-                                <a href="#" class="shop-cat-link category-filter {{ request('category') == $cat->slug ? 'active' : '' }}" data-slug="{{ $cat->slug }}">
-                                    <span>{{ $cat->name }}</span>
-                                    <span class="shop-cat-count">{{ $cat->products_count }}</span>
-                                </a>
-                            </li>
-                            @endforeach
-                        </ul>
-                    </div>
+    {{-- Categories --}}
+    <div class="shop-filter-card mb-4 border-0 shadow-sm">
+        <h6 class="shop-filter-title text-dark">Collections</h6>
+        <div class="shop-cat-list">
+            <a href="#" class="shop-cat-link category-filter {{ !request('category') ? 'active' : '' }} text-decoration-none" data-slug="">
+                <span>Tout voir</span>
+                <span class="badge bg-light text-dark rounded-pill">{{ \App\Models\Product::where('status','active')->count() }}</span>
+            </a>
+            @foreach($categories as $cat)
+            <a href="#" class="shop-cat-link category-filter {{ request('category') == $cat->slug ? 'active' : '' }} text-decoration-none" data-slug="{{ $cat->slug }}">
+                <span>{{ $cat->translated_name }}</span>
+                <span class="badge bg-light text-dark rounded-pill">{{ $cat->products_count }}</span>
+            </a>
+            @endforeach
+        </div>
+    </div>
 
-                    {{-- Price Range --}}
-                    <div class="shop-filter-card mb-4">
-                        <h6 class="shop-filter-title"><i class="fas fa-tag me-2"></i>Fourchette de prix</h6>
-                        <form id="priceFilterForm">
-                            <div class="shop-price-inputs">
-                                <input type="number" name="min_price" class="shop-price-input"
-                                       placeholder="Min" value="{{ request('min_price') }}" min="0">
-                                <span class="shop-price-sep">—</span>
-                                <input type="number" name="max_price" class="shop-price-input"
-                                       placeholder="Max" value="{{ request('max_price') }}" min="0">
-                            </div>
-                            <button type="submit" class="shop-apply-btn w-100 mt-3">
-                                <i class="fas fa-filter me-2"></i>Appliquer
-                            </button>
-                        </form>
-                    </div>
+    {{-- Price Range --}}
+    <div class="shop-filter-card mb-4 border-0 shadow-sm">
+        <h6 class="shop-filter-title text-dark">Prix (DH)</h6>
+        <form id="priceFilterForm">
+            <div class="d-flex gap-2 align-items-center">
+                <input type="number" name="min_price" class="form-control form-control-sm text-center"
+                       placeholder="Min" value="{{ request('min_price') }}" style="border-radius: 20px;">
+                <span class="text-muted">—</span>
+                <input type="number" name="max_price" class="form-control form-control-sm text-center"
+                       placeholder="Max" value="{{ request('max_price') }}" style="border-radius: 20px;">
+            </div>
+            <button type="submit" class="btn btn-dark w-100 mt-3 btn-sm fw-bold py-2" style="border-radius: 30px;">
+                Filtrer
+            </button>
+        </form>
+    </div>
 
-                    {{-- Quick Links --}}
-                    <div class="shop-filter-card">
-                        <h6 class="shop-filter-title"><i class="fas fa-bolt me-2"></i>Raccourcis</h6>
-                        <div class="d-flex flex-column gap-2">
-                            <a href="{{ route('shop.index') }}?sort=newest" class="shop-quick-link">
-                                <i class="fas fa-star me-2 text-accent"></i>Nouveautés
-                            </a>
-                            <a href="{{ route('shop.index') }}?sort=price_asc" class="shop-quick-link">
-                                <i class="fas fa-sort-amount-up me-2 text-accent"></i>Prix croissant
-                            </a>
-                            <a href="{{ route('shop.index') }}?sort=price_desc" class="shop-quick-link">
-                                <i class="fas fa-sort-amount-down me-2 text-accent"></i>Prix décroissant
-                            </a>
-                        </div>
-                    </div>
-
-                </div>
+</div>
             </div>
 
             {{-- ── PRODUCT GRID ── --}}

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Services\MetaCapiService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class CartController extends Controller
 {
@@ -85,6 +87,21 @@ class CartController extends Controller
             }
 
             session()->put('cart', $cart);
+
+            // Meta CAPI Server-Side Tracking for Ad Campaigns
+            try {
+                $capi = app(\App\Services\MetaCapiService::class);
+                $capi->track('AddToCart', [
+                    'content_name' => (string)$product->translated_name,
+                    'content_ids' => [(string)$id],
+                    'content_type' => 'product',
+                    'value' => (float)($variant ? ($variant->price ?? $product->price) : $product->price),
+                    'currency' => 'MAD'
+                ]);
+            } catch (\Exception $e) {
+                // Silently log CAPI errors to maintain customer experience
+                Log::error('Meta CAPI AddToCart failed: ' . $e->getMessage());
+            }
 
             if ($request->wantsJson()) {
                 $cartCount = array_sum(array_column($cart, 'quantity'));

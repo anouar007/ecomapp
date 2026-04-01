@@ -1,8 +1,8 @@
 @extends('layouts.frontend')
 
-@section('meta_title', setting('app_name') . ' — ' . setting('app_description', 'Équipements d\'impression grand format au Maroc'))
-@section('meta_description', 'Découvrez notre gamme d\'imprimantes éco-solvant, traceurs de découpe, encres et consommables. Livraison partout au Maroc, installation et formation incluses. Devis gratuit !')
-@section('meta_keywords', setting('app_name', 'boutique') . ', imprimantes grand format Maroc, traceur de découpe, éco-solvant, encres imprimante, consommables impression, équipement atelier impression Maroc')
+@section('meta_title', setting('app_name') . ' — ' . setting('app_description', 'Mobilier d\'Intérieur Artisanal & Sur-Mesure'))
+@section('meta_description', 'Découvrez notre gamme de mobilier artisanal, menuiserie, tapisserie, et métallurgie au Maroc. Installation et livraison incluses.')
+@section('meta_keywords', setting('app_name', 'Moubdi3oun') . ', mobilier, artisanat, canapés, tables, lits, décoration, ameublement Maroc')
 
 @section('json_ld')
 <script type="application/ld+json">
@@ -44,10 +44,18 @@
     "mainEntity": [
       {
         "@type": "Question",
-        "name": "Quelle est la différence entre éco-solvant et UV ?",
+        "name": "Faites-vous du mobilier sur-mesure ?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "L'éco-solvant utilise des encres à base de solvant doux, idéal pour les supports souples (bâche, vinyle). L'UV imprime directement sur des supports rigides (bois, verre, métal) et sèche instantanément par lampe ultraviolet."
+          "text": "Oui, nous concevons et fabriquons du mobilier 100% sur-mesure selon vos dimensions, matériaux et finitions souhaitées."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Quels matériaux utilisez-vous ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Nous utilisons des bois nobles, des métaux traités de haute qualité et des tissus premium sélectionnés pour leur durabilité et leur élégance."
         }
       },
       {
@@ -55,31 +63,15 @@
         "name": "Livrez-vous dans tout le Maroc ?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Oui. Nous livrons partout au Maroc avec notre propre réseau logistique. Les grandes villes bénéficient d'une livraison J+1 et d'une installation sur site incluse."
+          "text": "Oui, notre équipe assure la livraison et l'installation de vos meubles dans l'ensemble du territoire marocain."
         }
       },
       {
         "@type": "Question",
-        "name": "La formation est-elle incluse à l'achat ?",
+        "name": "Quel est le délai de fabrication ?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Oui, chaque machine est accompagnée d'une formation opérateur gratuite (1 à 2 jours selon la complexité) réalisée sur votre lieu de production par nos techniciens certifiés."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Proposez-vous des facilités de paiement ?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Oui, nous proposons des solutions de financement personnalisées (paiement en plusieurs fois, leasing) selon votre situation. Contactez-nous pour un devis adapté à votre budget."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Quels types d'encres compatibles sont disponibles ?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Nous stockons les encres d'origine pour toutes les marques (Roland, Epson, Mimaki...) ainsi que des encres compatibles certifiées offrant un excellent rapport qualité/prix sans altérer la tête d'impression."
+          "text": "Le délai de fabrication varie généralement entre 2 et 4 semaines selon la complexité et les matériaux choisis."
         }
       }
     ]
@@ -90,326 +82,221 @@
 
 @section('content')
 
-{{-- =============================================
-     HERO — Full-Width Cinematic Hero
-     ============================================= --}}
-<section class="print-hero-v2">
-    <div class="print-hero-backdrop"></div>
-    <div class="print-hero-grid-overlay"></div>
+<section id="home" class="hero-v3">
+    <video autoplay muted loop playsinline class="hero-video-bg">
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-handcrafted-wooden-furniture-making-worker-42010-large.mp4" type="video/mp4">
+    </video>
+    <div class="hero-overlay-dark"></div>
+    <div class="hero-v3-content" data-aos="zoom-out" data-aos-duration="1200">
+        <h1 class="text-white">{{ __('Hero Title 1') }} <span style="color: var(--accent);">{{ __('Hero Title 2') }}</span> <br> {{ __('Hero Title 3') }} <span style="color: var(--accent);">{{ __('Hero Title 4') }}</span></h1>
+        <p class="mb-4">{{ __('Hero Subtitle') }}</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="#departments" class="btn-cta-primary">{{ __('Our Workshops') }}</a>
+            <a href="#contact" class="btn-cta-outline border-white text-white">{{ __('Contact Us') }}</a>
+        </div>
+    </div>
+</section>
 
-    <div class="container position-relative py-0">
-        <div class="row align-items-center min-vh-90">
-            <div class="col-lg-6 pe-lg-5" data-aos="fade-right" data-aos-duration="900">
-
-                <div class="hero-eyebrow">
-                    <span class="hero-eyebrow-dot"></span>
-                    Spécialiste Solutions d'Impression
-                </div>
-
-                <h1 class="display-hero">
-                    Équipez votre<br>
-                    <span class="text-gradient-primary">atelier d'impression</span><br>
-                    pro
-                </h1>
-
-                <p class="hero-lead">
-                    Imprimantes grand format <strong>éco-solvant &amp; UV</strong>, traceurs de découpe,
-                    encres certifiées et consommables — livrés partout au Maroc avec installation et formation.
+{{-- NEWSLETTER SECTION --}}
+<section class="section-py bg-dark text-white position-relative overflow-hidden">
+    <div class="container py-5 text-center position-relative z-1" data-aos="fade-up">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <i class="fas fa-paper-plane fs-1 mb-4 opacity-25"></i>
+                <h2 class="fw-black text-uppercase ls-1 display-5 mb-4">{{ __('Newsletter Title') }}</h2>
+                <p class="opacity-75 mb-5">{{ __('Newsletter Sub') }}</p>
+                
+                <form action="{{ route('newsletter.subscribe') }}" method="POST" class="newsletter-form position-relative">
+                    @csrf
+                    <input type="email" name="email" class="form-control bg-white border-0 py-4 px-5 rounded-pill shadow" placeholder="{{ __('Email Placeholder') }}" required>
+                    <button type="submit" class="btn btn-dark rounded-pill py-3 px-5 position-absolute top-50 end-0 translate-middle-y me-2 h-75 fw-black text-uppercase ls-1">{{ __('Subscribe') }}</button>
+                </form>
+                <p class="small opacity-50 mt-4">{{ __('Newsletter Discount Note') }}</p>
+            </div>
+        </div>
+    </div>
+</section>
+<section id="about" class="section-py bg-white">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-9" data-aos="fade-up">
+                <span class="section-eyebrow">{{ __('Our Philosophy') }}</span>
+                <h2 class="display-5 fw-black mb-4" style="letter-spacing: -1.5px;">{{ __('Philosophy Title 1') }} <span style="color: var(--accent);">{{ __('Philosophy Title 2') }}</span></h2>
+                <p class="lead text-muted lh-lg">
+                    {{ __('Philosophy Description') }}
                 </p>
-
-                <div class="hero-actions">
-                    <a href="{{ route('shop.index') }}" class="btn-hero-primary">
-                        <i class="fas fa-print"></i>
-                        <span>Voir les machines</span>
-                    </a>
-                    <a href="mailto:{{ setting('company_email', 'contact@speedprint.ma') }}" class="btn-hero-ghost">
-                        <i class="fas fa-file-invoice"></i>
-                        <span>Demander un devis</span>
-                    </a>
-                </div>
-
-                {{-- Trust pills --}}
-                <div class="hero-trust-pills">
-                    <div class="trust-pill"><i class="fas fa-shipping-fast"></i> Livraison nationale</div>
-                    <div class="trust-pill"><i class="fas fa-tools"></i> SAV technique</div>
-                    <div class="trust-pill"><i class="fas fa-shield-alt"></i> Pièces d'origine</div>
-                </div>
-            </div>
-
-            <div class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center" data-aos="fade-left" data-aos-duration="900" data-aos-delay="150">
-                <div class="hero-image-stack">
-                    {{-- Main image --}}
-                    <div class="hero-img-main">
-                        @if(isset($heroSlides) && $heroSlides->count() > 0)
-                            <img src="{{ $heroSlides[0]->image_url ?? Storage::url($heroSlides[0]->main_image) }}" alt="Imprimante grand format" class="img-fluid">
-                        @else
-                            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=900" alt="Imprimante grand format éco-solvant" class="img-fluid">
-                        @endif
+                <div class="mt-5 d-flex justify-content-center gap-5">
+                    <div class="text-center">
+                        <h4 class="fw-black mb-0" style="color: var(--accent);">100%</h4>
+                        <span class="small text-uppercase fw-bold ls-1">{{ __('Custom Made') }}</span>
                     </div>
-
-                    {{-- Floating cards --}}
-                    <div class="hero-float-card hero-float-top">
-                        <div class="float-icon-wrap"><i class="fas fa-tachometer-alt"></i></div>
-                        <div>
-                            <div class="float-label">Vitesse max</div>
-                            <div class="float-value">42 m²/h</div>
-                        </div>
+                    <div class="text-center text-dark" style="width: 1px; height: 50px; background: #eee;"></div>
+                    <div class="text-center">
+                        <h4 class="fw-black mb-0" style="color: var(--accent);">Premium</h4>
+                        <span class="small text-uppercase fw-bold ls-1">{{ __('Materials') }}</span>
                     </div>
-                    <div class="hero-float-card hero-float-bottom">
-                        <div class="float-icon-wrap float-icon-green"><i class="fas fa-expand-arrows-alt"></i></div>
-                        <div>
-                            <div class="float-label">Largeur max</div>
-                            <div class="float-value">3.2 mètres</div>
-                        </div>
+                    <div class="text-center text-dark" style="width: 1px; height: 50px; background: #eee;"></div>
+                    <div class="text-center">
+                        <h4 class="fw-black mb-0" style="color: var(--accent);">SAV</h4>
+                        <span class="small text-uppercase fw-bold ls-1">{{ __('Guaranteed') }}</span>
                     </div>
-                    <div class="hero-float-badge">
-                        <i class="fas fa-star me-1"></i>Résolution 2400 dpi
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Bottom wave separator --}}
-    <div class="hero-wave">
-        <svg viewBox="0 0 1440 60" preserveAspectRatio="none"><path d="M0,40 C360,80 1080,0 1440,40 L1440,60 L0,60 Z" fill="#ffffff"/></svg>
-    </div>
-</section>
-
-{{-- =============================================
-     KEY METRICS STRIP
-     ============================================= --}}
-<section class="metrics-strip">
-    <div class="container">
-        <div class="row g-0 metrics-row">
-            <div class="col-6 col-md-3">
-                <div class="metric-item">
-                    <div class="metric-icon"><i class="fas fa-users"></i></div>
-                    <div class="metric-number">500<span>+</span></div>
-                    <div class="metric-label">Clients actifs</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="metric-item">
-                    <div class="metric-icon"><i class="fas fa-print"></i></div>
-                    <div class="metric-number">50<span>+</span></div>
-                    <div class="metric-label">Modèles disponibles</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="metric-item">
-                    <div class="metric-icon"><i class="fas fa-history"></i></div>
-                    <div class="metric-number">15<span> ans</span></div>
-                    <div class="metric-label">D'expérience</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="metric-item border-end-0">
-                    <div class="metric-icon"><i class="fas fa-headset"></i></div>
-                    <div class="metric-number">24<span>/7</span></div>
-                    <div class="metric-label">Support technique</div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-{{-- =============================================
-     CATEGORIES — Print Industry
-     ============================================= --}}
-<section id="categories" class="section-py bg-surface">
-    <div class="container">
-        <div class="section-header" data-aos="fade-up">
-            <span class="section-eyebrow">Notre offre</span>
-            <h2 class="section-title">Tout pour votre production</h2>
-            <p class="section-subtitle">Des équipements professionnels, des consommables d'origine, et un support expert — en un seul endroit</p>
+    {{-- BRANDS / MARQUEE STATEMENT --}}
+    <section class="py-4 bg-dark text-white border-top border-bottom border-secondary-subtle">
+        <div class="announcement-bar bg-transparent">
+            <div class="promo-marquee">
+                <div class="promo-item fw-black text-uppercase ls-2">L'Art de Vivre Moubdi3oun</div>
+                <div class="promo-item fw-black text-uppercase ls-2">Conception Artisanale</div>
+                <div class="promo-item fw-black text-uppercase ls-2">Matériaux Nobles</div>
+                <div class="promo-item fw-black text-uppercase ls-2">Expertise Sur-Mesure</div>
+                <!-- Loop -->
+                <div class="promo-item fw-black text-uppercase ls-2">L'Art de Vivre Moubdi3oun</div>
+                <div class="promo-item fw-black text-uppercase ls-2">Conception Artisanale</div>
+                <div class="promo-item fw-black text-uppercase ls-2">Matériaux Nobles</div>
+                <div class="promo-item fw-black text-uppercase ls-2">Expertise Sur-Mesure</div>
+            </div>
         </div>
+    </section>
 
-        @if($allCategories->count() > 0)
-        <div class="row g-4">
-            @foreach($allCategories->take(4) as $index => $category)
-            <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="{{ $index * 80 }}">
-                <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="cat-card-v2">
-                    <div class="cat-card-img">
-                        @if($category->image)
-                            @if(Str::startsWith($category->image, ['http://', 'https://']))
-                                <img src="{{ $category->image }}" alt="{{ $category->translated_name }}">
-                            @else
-                                <img src="{{ Storage::url($category->image) }}" alt="{{ $category->translated_name }}">
-                            @endif
-                        @else
-                            @php $catIcons = ['fa-print','fa-cut','fa-fill-drip','fa-scroll']; @endphp
-                            <div class="cat-icon-placeholder cat-icon-{{ $index }}">
-                                <i class="fas {{ $catIcons[$index % 4] }}"></i>
+    {{-- SHOPPABLE LOOKBOOK --}}
+    <section class="section-py bg-white overflow-hidden">
+        <div class="container">
+            <div class="row align-items-center mb-5" data-aos="fade-up">
+                <div class="col-lg-6">
+                    <span class="badge-new mb-3 d-inline-block">Inspiration</span>
+                    <h2 class="fw-black text-uppercase ls-1">Shop The Room</h2>
+                </div>
+                <div class="col-lg-6 text-lg-end">
+                    <p class="text-muted small mb-0">Cliquez sur les points pour découvrir les pièces.</p>
+                </div>
+            </div>
+            
+            <div class="position-relative rounded-5 overflow-hidden shadow-lg" data-aos="zoom-in">
+                <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80" alt="Lookbook" class="w-100">
+                
+                {{-- Hotspots mapped to seeded product slugs --}}
+                @php
+                    $h1 = \App\Models\Product::where('slug', 'canape-royal-atlas')->first();
+                    $h2 = \App\Models\Product::where('slug', 'table-basse-orion-metal')->first();
+                    $h3 = \App\Models\Product::where('slug', 'lampe-ambre-soufflee')->first();
+                @endphp
+
+                @if($h1)
+                <a href="{{ route('shop.show', $h1->id) }}" class="lookbook-pin" style="top: 30%; left: 45%;" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" title="{{ $h1->translated_name }}" data-bs-content="{{ Str::limit($h1->description, 50) }} - {{ $h1->formatted_price }}">
+                    <i class="fas fa-plus"></i>
+                </a>
+                @endif
+
+                @if($h2)
+                <a href="{{ route('shop.show', $h2->id) }}" class="lookbook-pin" style="top: 60%; left: 25%;" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" title="{{ $h2->translated_name }}" data-bs-content="{{ Str::limit($h2->description, 50) }} - {{ $h2->formatted_price }}">
+                    <i class="fas fa-plus"></i>
+                </a>
+                @endif
+
+                @if($h3)
+                <a href="{{ route('shop.show', $h3->id) }}" class="lookbook-pin" style="top: 15%; left: 75%;" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" title="{{ $h3->translated_name }}" data-bs-content="{{ Str::limit($h3->description, 50) }} - {{ $h3->formatted_price }}">
+                    <i class="fas fa-plus"></i>
+                </a>
+                @endif
+            </div>
+        </div>
+    </section>
+
+    {{-- FEATURED CATEGORIES GRID --}}
+    <section class="section-py bg-light">
+        <div class="container">
+            <h2 class="fw-black text-uppercase ls-1 text-center mb-5" data-aos="fade-up">Univers Collections</h2>
+            <div class="row g-4">
+                @foreach($allCategories->take(3) as $cat)
+                <div class="col-lg-4" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
+                    <a href="{{ route('shop.index', ['category' => $cat->slug]) }}" class="text-decoration-none">
+                        <div class="category-card shadow-sm rounded-5 overflow-hidden bg-white h-100 border-0 transition-all hover-translate-y">
+                            <div class="aspect-ratio-4-5 overflow-hidden">
+                                <img src="{{ $cat->image ? Storage::url($cat->image) : 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80' }}" alt="{{ $cat->name }}" class="w-100 h-100 object-fit-cover transition-all hover-scale-110">
                             </div>
-                        @endif
-                    </div>
-                    <div class="cat-card-body">
-                        <h3 class="cat-card-name">{{ $category->translated_name }}</h3>
-                        <span class="cat-card-count">{{ $category->products_count ?? $category->products()->count() }} produits</span>
-                        <div class="cat-card-arrow"><i class="fas fa-arrow-right"></i></div>
-                    </div>
-                </a>
-            </div>
-            @endforeach
-        </div>
-        @else
-        {{-- Fallback static industry categories --}}
-        @php
-        $staticCats = [
-            ['icon'=>'fa-print',     'color'=>'#e94560', 'bg'=>'rgba(233,69,96,.12)',    'name'=>'Imprimantes Éco-Solvant', 'sub'=>'Grand format · UV · Sublimation'],
-            ['icon'=>'fa-cut',       'color'=>'#0077ff', 'bg'=>'rgba(0,119,255,.12)',    'name'=>'Traceurs de découpe',      'sub'=>'Vinyle · Flex · Autocollant'],
-            ['icon'=>'fa-fill-drip', 'color'=>'#f59e0b', 'bg'=>'rgba(245,158,11,.12)',  'name'=>'Encres & consommables',    'sub'=>'Toutes marques · Origine'],
-            ['icon'=>'fa-scroll',    'color'=>'#10b981', 'bg'=>'rgba(16,185,129,.12)',   'name'=>'Médias & supports',        'sub'=>'Bâche · PVC · Bannière'],
-        ];
-        @endphp
-        <div class="row g-4">
-            @foreach($staticCats as $i => $cat)
-            <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="{{ $i * 80 }}">
-                <a href="{{ route('shop.index') }}" class="cat-card-v2">
-                    <div class="cat-card-img">
-                        <div class="cat-icon-placeholder" style="background: {{ $cat['bg'] }}; color: {{ $cat['color'] }};">
-                            <i class="fas {{ $cat['icon'] }}"></i>
+                            <div class="p-4 text-center">
+                                <h4 class="fw-black text-uppercase ls-1 h5 mb-2">{{ $cat->translated_name }}</h4>
+                                <span class="small text-muted text-uppercase fw-bold ls-1">{{ __('Discover') }} <i class="fas fa-chevron-{{ app()->getLocale() == 'ar' ? 'left' : 'right' }} ms-1" style="font-size: 0.6rem;"></i></span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="cat-card-body">
-                        <h3 class="cat-card-name">{{ $cat['name'] }}</h3>
-                        <span class="cat-card-count">{{ $cat['sub'] }}</span>
-                        <div class="cat-card-arrow"><i class="fas fa-arrow-right"></i></div>
-                    </div>
+                    </a>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+<section id="departments" class="section-py bg-surface overflow-hidden">
+    <div class="container">
+        <div class="section-header text-center mb-5" data-aos="fade-up">
+            <span class="section-eyebrow">Nos Ateliers</span>
+            <h2 class="section-title">L'Excellence de l'Artisanat</h2>
+            <p class="section-subtitle">Chaque département est dédié à la maîtrise d'un art spécifique.</p>
+        </div>
+
+        @php
+            $displayCats = $allCategories->count() > 0 ? $allCategories : collect([]);
+            $icons = ['fa-tree', 'fa-fire', 'fa-couch', 'fa-paint-roller', 'fa-box-open'];
+        @endphp
+        @foreach($displayCats as $index => $category)
+        <div class="dept-row" data-aos="{{ $index % 2 == 0 ? 'fade-right' : 'fade-left' }}">
+            <div class="dept-media-box">
+                @if(isset($category->image))
+                    <img src="{{ Str::startsWith($category->image, 'http') ? $category->image : Storage::url($category->image) }}" alt="{{ $category->translated_name }}">
+                @else
+                    <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=800" alt="Placeholder">
+                @endif
+            </div>
+            <div class="dept-content-box">
+                <div class="dept-pulse-icon">
+                    <i class="fas {{ $icons[$index % count($icons)] }}"></i>
+                </div>
+                <h3 class="fw-black h2 mb-3">{{ $category->translated_name }}</h3>
+                <p class="text-muted mb-4 lead">
+                    {{ $category->translated_description ?? 'Expertise et savoir-faire pour des créations qui durent toute une vie.' }}
+                </p>
+                <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="btn-cta-primary">
+                    Voir les réalisations <i class="fas fa-arrow-right ms-2"></i>
                 </a>
             </div>
-            @endforeach
         </div>
-        @endif
+        @endforeach
     </div>
 </section>
 
 {{-- =============================================
-     FEATURED MACHINES — Product Grid
+     PORTFOLIO SECTION
      ============================================= --}}
-<section id="featured" class="section-py bg-white">
+<section id="portfolio" class="section-py bg-white">
     <div class="container">
-        <div class="d-flex justify-content-between align-items-end mb-5" data-aos="fade-up">
-            <div>
-                <span class="section-eyebrow">Sélection</span>
-                <h2 class="section-title mb-0">Nos machines phares</h2>
-                <p class="section-subtitle mb-0 mt-2">Équipements testés, certifiés et plébiscités par nos ateliers partenaires</p>
-            </div>
-            <a href="{{ route('shop.index') }}" class="btn-link-arrow d-none d-md-inline-flex">
-                Voir tout <i class="fas fa-arrow-right ms-2"></i>
-            </a>
+        <div class="section-header text-center mb-5" data-aos="fade-up">
+            <span class="section-eyebrow">Portfolio</span>
+            <h2 class="section-title">Nos Plus Belles Créations</h2>
+            <p class="section-subtitle">Chaque pièce est une œuvre d'art unique conçue pour durer.</p>
         </div>
 
         <div class="row g-4">
             @foreach($featuredProducts as $index => $product)
-            <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="{{ ($index % 4) * 80 }}">
-                <div class="product-card-v2">
-                    <div class="product-v2-image">
-                        <img src="{{ $product->thumbnail ?? asset('images/placeholder-product.jpg') }}" alt="{{ $product->translated_name }}">
-
-                        <div class="product-v2-badges">
-                            @if($product->created_at->diffInDays(now()) < 7)
-                                <span class="badge-v2 badge-new">Nouveau</span>
-                            @endif
-                            @if($product->isOnSale())
-                                <span class="badge-v2 badge-sale">-{{ $product->discount_percentage }}%</span>
-                            @endif
-                        </div>
-
-                        <div class="product-v2-overlay">
-                            @if($product->isInStock())
-                            <button class="btn-overlay" onclick="addToCart({{ $product->id }})" title="Ajouter au panier">
-                                <i class="fas fa-cart-plus"></i> Ajouter
-                            </button>
-                            @else
-                            <span class="btn-overlay btn-overlay-disabled">
-                                <i class="fas fa-ban"></i> Rupture
-                            </span>
-                            @endif
-                            <a href="{{ route('shop.show', $product->id) }}" class="btn-overlay-icon" title="Voir la fiche">
-                                <i class="fas fa-eye"></i>
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}">
+                <div class="portfolio-card">
+                    <img src="{{ Str::startsWith($product->thumbnail, 'http') ? $product->thumbnail : Storage::url($product->thumbnail) }}" alt="{{ $product->translated_name }}">
+                    <div class="portfolio-mask">
+                        <span class="small text-uppercase fw-bold ls-1 mb-2 d-block" style="color: var(--accent);">{{ $product->productCategory->translated_name ?? 'Collection' }}</span>
+                        <h4 class="fw-black text-white h3 mb-3">{{ $product->translated_name }}</h4>
+                        <div class="d-flex align-items-center justify-content-between pt-3 border-top border-secondary">
+                            <span class="h4 mb-0 fw-bold">{{ $product->formatted_price }}</span>
+                            <a href="{{ route('shop.show', $product->id) }}" class="btn-cta-primary p-2 px-3">
+                                <i class="fas fa-eye me-1"></i> Détails
                             </a>
                         </div>
-                    </div>
-
-                    <div class="product-v2-body">
-                        @if($product->productCategory)
-                            <span class="product-v2-cat">{{ $product->productCategory->name }}</span>
-                        @endif
-                        <h4 class="product-v2-name">{{ Str::limit($product->translated_name, 40) }}</h4>
-                        <div class="product-v2-rating">
-                            @php $rating = round($product->reviews()->avg('rating') ?? 0); @endphp
-                            <div class="stars-row">
-                                @for($i = 0; $i < 5; $i++)
-                                    <i class="fas fa-star{{ $i < $rating ? '' : ' opacity-25' }}"></i>
-                                @endfor
-                            </div>
-                            <span class="reviews-count">({{ $product->reviews()->count() }})</span>
-                        </div>
-                        <div class="product-v2-price">
-                            @if($product->isOnSale())
-                                <span class="price-sale" id="pcard-price-v2-{{ $product->id }}">{{ $product->formatted_sale_price }}</span>
-                                <span class="price-old">{{ $product->formatted_price }}</span>
-                            @else
-                                <span class="price-sale" id="pcard-price-v2-{{ $product->id }}">{{ $product->formatted_price }}</span>
-                            @endif
-                        </div>
-
-                        {{-- Card Variations Selector --}}
-                        @if($product->variants->count() > 0)
-                        <div class="pcard-variants mt-2">
-                             @php 
-                                $sizes = $product->available_sizes;
-                                $colors = $product->available_colors;
-                            @endphp
-
-                            @if($colors->count() > 0)
-                            <div class="pcard-variant-row">
-                                <span class="pcard-variant-label">اللون:</span>
-                                @foreach($colors as $color)
-                                <div class="pcard-color-dot" 
-                                     style="background: {{ $color->color_code ?: '#eee' }}" 
-                                     onclick="selectCardVariant({{ $product->id }}, 'color', '{{ $color->color }}', this, 'v2')"
-                                     title="{{ $color->color }}">
-                                </div>
-                                @endforeach
-                            </div>
-                            @endif
-
-                            @if($sizes->count() > 0)
-                            <div class="pcard-variant-row">
-                                <span class="pcard-variant-label">المقاس:</span>
-                                @foreach($sizes as $size)
-                                <div class="pcard-size-pill" 
-                                     onclick="selectCardVariant({{ $product->id }}, 'size', '{{ $size }}', this, 'v2')">
-                                    {{ $size }}
-                                </div>
-                                @endforeach
-                            </div>
-                            @endif
-
-                            <input type="hidden" id="card-selected-variant-v2-{{ $product->id }}" value="">
-                            <script>
-                                if (typeof cardVariants === 'undefined') window.cardVariants = {};
-                                window.cardVariants[{{ $product->id }}] = {!! $product->variants_json !!};
-                            </script>
-                        </div>
-                        @endif
-
-                        @if(!$product->isInStock())
-                        <div class="out-of-stock-label mt-2"><i class="fas fa-exclamation-circle me-1"></i>Rupture de stock</div>
-                        @endif
                     </div>
                 </div>
             </div>
             @endforeach
-        </div>
-
-        <div class="text-center mt-5">
-            <a href="{{ route('shop.index') }}" class="btn-cta-outline">
-                Voir tous nos équipements <i class="fas fa-arrow-right ms-2"></i>
-            </a>
         </div>
     </div>
 </section>
@@ -420,19 +307,19 @@
 <section class="section-py bg-dark-gradient">
     <div class="container">
         <div class="section-header section-header-light" data-aos="fade-up">
-            <span class="section-eyebrow eyebrow-light">Applications</span>
-            <h2 class="section-title text-white">Ce que vous pouvez réaliser</h2>
-            <p class="section-subtitle" style="color: rgba(255,255,255,.65);">Des machines polyvalentes pour tous les secteurs de l'impression</p>
+            <span class="section-eyebrow eyebrow-light">Expertise</span>
+            <h2 class="section-title text-white">Pour Chaque Espace</h2>
+            <p class="section-subtitle" style="color: rgba(255,255,255,.65);">Nous transformons et aménageons chaque pièce de votre intérieur.</p>
         </div>
         <div class="row g-3 mt-2">
             @php
             $apps = [
-                ['icon'=>'fa-store',         'title'=>'Enseignes & signalétique', 'desc'=>'Bannières, roll-ups, panneaux PVC, signalétique intérieure/extérieure'],
-                ['icon'=>'fa-car',           'title'=>'Covering véhicule',        'desc'=>'Films adhésifs, covering complet, décoration de flotte'],
-                ['icon'=>'fa-tshirt',        'title'=>'Textile & habillement',    'desc'=>'Impression sur tissu, flex thermocollant, sublimation textile'],
-                ['icon'=>'fa-building',      'title'=>'Décoration intérieure',    'desc'=>'Papier peint, toile tendue, stickers déco, vitrophanie'],
-                ['icon'=>'fa-image',         'title'=>'Photo & fine art',         'desc'=>'Tirages haute résolution sur papier, toile, aluminium'],
-                ['icon'=>'fa-box-open',      'title'=>'Packaging & étiquettes',   'desc'=>'Étiquettes autocollantes, emballages personnalisés, codage couleur'],
+                ['icon'=>'fa-couch',         'title'=>'Salon',                'desc'=>'Canapés, tables basses, et meubles TV sur mesure.'],
+                ['icon'=>'fa-bed',           'title'=>'Chambre à Coucher',    'desc'=>'Lits complets, dressings, et coiffeuses élégantes.'],
+                ['icon'=>'fa-utensils',      'title'=>'Salle à Manger',       'desc'=>'Tables en bois massif, chaises tapissées, buffets.'],
+                ['icon'=>'fa-laptop-house',  'title'=>'Bureau',               'desc'=>'Bureaux ergonomiques, bibliothèques, et étagères murales.'],
+                ['icon'=>'fa-door-open',     'title'=>'Entrée & Couloirs',    'desc'=>'Consoles, miroirs, et portemanteaux design.'],
+                ['icon'=>'fa-chair',         'title'=>'Espaces Commerciaux',  'desc'=>'Aménagement de restaurants, hôtels, et boutiques luxueuses.'],
             ];
             @endphp
             @foreach($apps as $i => $app)
@@ -449,82 +336,64 @@
 </section>
 
 {{-- =============================================
-     HOW IT WORKS — 4-Step Process
+     PROCESS SECTION (VERTICAL TIMELINE)
      ============================================= --}}
-<section class="section-py bg-surface">
+<section id="process" class="section-py bg-surface overflow-hidden">
     <div class="container">
-        <div class="section-header" data-aos="fade-up">
-            <span class="section-eyebrow">Processus</span>
-            <h2 class="section-title">Comment ça marche ?</h2>
-            <p class="section-subtitle">De la commande à la mise en production, nous vous accompagnons à chaque étape</p>
+        <div class="section-header text-center mb-5" data-aos="fade-up">
+            <span class="section-eyebrow">Notre Savoir-Faire</span>
+            <h2 class="section-title">Comment Nous Créons Vos Pièces Uniques</h2>
+            <p class="section-subtitle">Chaque commande suit un processus rigoureux pour garantir l'excellence.</p>
         </div>
 
-        <div class="process-track" data-aos="fade-up" data-aos-delay="100">
-            <div class="process-line"></div>
-            <div class="row g-4 position-relative">
-                @php
-                $steps = [
-                    ['num'=>'01', 'icon'=>'fa-search', 'title'=>'Choisissez votre machine', 'desc'=>'Consultez notre catalogue, comparez les modèles ou appelez nos experts pour un conseil personnalisé.'],
-                    ['num'=>'02', 'icon'=>'fa-file-invoice',  'title'=>'Recevez votre devis', 'desc'=>'Devis détaillé sous 24h incluant machine, installation, formation et garantie.'],
-                    ['num'=>'03', 'icon'=>'fa-truck-moving',  'title'=>'Livraison & installation', 'desc'=>'Nos techniciens livrent, installent et configurent votre équipement sur site.'],
-                    ['num'=>'04', 'icon'=>'fa-graduation-cap','title'=>'Formation & suivi', 'desc'=>'Formation opérateur incluse. SAV réactif et stock de pièces en permanence.'],
+        <div class="timeline-track" data-aos="fade-up">
+            @php
+                $processSteps = [
+                    ['num' => '01', 'title' => 'Consultation & Mesures', 'desc' => 'Nous nous déplaçons pour analyser votre espace, comprendre vos besoins et prendre les mesures exactes.'],
+                    ['num' => '02', 'title' => 'Design & Modélisation', 'desc' => 'Nos designers créent des plans 3D détaillés pour vous permettre de visualiser le projet avant fabrication.'],
+                    ['num' => '03', 'title' => 'Fabrication Artisanale', 'desc' => 'Nos artisans sculptent, assemblent et finissent chaque meuble avec une attention méticuleuse portée aux détails.'],
+                    ['num' => '04', 'title' => 'Livraison & Pose', 'desc' => 'Nous assurons le transport sécurisé et l\'installation parfaite de vos créations par nos propres équipes.'],
                 ];
-                @endphp
-                @foreach($steps as $i => $step)
-                <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="{{ $i * 100 }}">
-                    <div class="process-step{{ $i == 1 ? ' process-step-accent' : '' }}">
-                        <div class="process-num">{{ $step['num'] }}</div>
-                        <div class="process-icon-wrap">
-                            <i class="fas {{ $step['icon'] }}"></i>
-                        </div>
-                        <h5 class="process-title">{{ $step['title'] }}</h5>
-                        <p class="process-desc">{{ $step['desc'] }}</p>
-                    </div>
+            @endphp
+
+            @foreach($processSteps as $step)
+            <div class="timeline-step">
+                <div class="step-marker">{{ $step['num'] }}</div>
+                <div class="step-card shadow-sm border-0">
+                    <h4 class="fw-black mb-2">{{ $step['title'] }}</h4>
+                    <p class="text-muted mb-0 small lh-base">{{ $step['desc'] }}</p>
                 </div>
-                @endforeach
             </div>
+            @endforeach
         </div>
     </div>
 </section>
 
 {{-- =============================================
-     WHY CHOOSE US — Expert USPs
+     REFINED USP SECTION
      ============================================= --}}
 <section class="section-py bg-white">
     <div class="container">
-        <div class="row align-items-center g-5">
-            <div class="col-lg-5" data-aos="fade-right">
-                <span class="section-eyebrow">Pourquoi nous</span>
-                <h2 class="section-title">Votre partenaire de confiance depuis 15 ans</h2>
-                <p class="section-subtitle text-start">
-                    Nous ne vendons pas juste des machines — nous construisons des relations à long terme avec nos clients. 
-                    Stock permanent, SAV réactif, et expertise technique inégalée.
-                </p>
-                <a href="{{ route('shop.index') }}" class="btn-cta-primary mt-3">
-                    Découvrir notre catalogue <i class="fas fa-arrow-right ms-2"></i>
-                </a>
+        <div class="row g-4 text-center">
+            <div class="col-md-4" data-aos="fade-up">
+                <div class="p-4">
+                    <i class="fas fa-award fa-3x mb-3" style="color: var(--accent);"></i>
+                    <h4 class="fw-black mb-2">Qualité Héritage</h4>
+                    <p class="text-muted small">Des matériaux sélectionnés pour traverser les générations.</p>
+                </div>
             </div>
-            <div class="col-lg-7" data-aos="fade-left" data-aos-delay="100">
-                <div class="row g-3">
-                    @php
-                    $usps = [
-                        ['icon'=>'fa-user-tie',      'color'=>'#e94560', 'title'=>'Experts certifiés',      'desc'=>'Nos conseillers maîtrisent chaque technologie: éco-solvant, UV, sublimation, découpe.'],
-                        ['icon'=>'fa-warehouse',     'color'=>'#0077ff', 'title'=>'Stock permanent',         'desc'=>'Pièces de rechange, têtes d\'impression, encres et médias disponibles immédiatement.'],
-                        ['icon'=>'fa-tools',         'color'=>'#f59e0b', 'title'=>'SAV en 24h',              'desc'=>'Intervention sur site sous 24h dans les grandes villes, téléassistance immédiate.'],
-                        ['icon'=>'fa-graduation-cap','color'=>'#10b981', 'title'=>'Formation incluse',       'desc'=>'Chaque machine est livrée avec une formation opérateur complète pour votre équipe.'],
-                        ['icon'=>'fa-tags',          'color'=>'#8b5cf6', 'title'=>'Meilleurs prix garantis', 'desc'=>'Tarifs compétitifs, financement disponible, devis personnalisé selon votre volume.'],
-                        ['icon'=>'fa-leaf',          'color'=>'#06b6d4', 'title'=>'Encres certifiées',       'desc'=>'Encres éco-solvant conformes aux normes environnementales, longue durée de vie.'],
-                    ];
-                    @endphp
-                    @foreach($usps as $i => $u)
-                    <div class="col-6" data-aos="zoom-in" data-aos-delay="{{ $i * 60 }}">
-                        <div class="usp-mini-card">
-                            <div class="usp-mini-icon" style="background: {{ $u['color'] }}20; color: {{ $u['color'] }};"><i class="fas {{ $u['icon'] }}"></i></div>
-                            <h6 class="usp-mini-title">{{ $u['title'] }}</h6>
-                            <p class="usp-mini-desc">{{ $u['desc'] }}</p>
-                        </div>
-                    </div>
-                    @endforeach
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="p-4">
+                    <i class="fas fa-pencil-ruler fa-3x mb-3" style="color: var(--accent);"></i>
+                    <h4 class="fw-black mb-2">Design Sur-Mesure</h4>
+                    <p class="text-muted small">Chaque détail est adapté à vos envies et votre espace.</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="p-4">
+                    <i class="fas fa-shipping-fast fa-3x mb-3" style="color: var(--accent);"></i>
+                    <h4 class="fw-black mb-2">Service National</h4>
+                    <p class="text-muted small">Livraison et installation professionnelles dans tout le Maroc.</p>
                 </div>
             </div>
         </div>
@@ -532,31 +401,29 @@
 </section>
 
 {{-- =============================================
-     PROMO BANNER — Quote CTA
+     BOLD RED CONTACT CTA
      ============================================= --}}
-<section class="quote-banner" data-aos="fade-up">
-    <div class="quote-banner-bg"></div>
-    <div class="container position-relative">
-        <div class="row align-items-center g-4">
-            <div class="col-lg-7">
-                <span class="quote-eyebrow">
-                    <i class="fas fa-file-invoice me-2"></i>Devis gratuit & sans engagement
-                </span>
-                <h2 class="quote-title">Besoin d'un équipement sur mesure ?</h2>
-                <p class="quote-sub">Dites-nous vos besoins (format, vitesse, budget) et nous vous proposons la machine idéale avec installation, formation et garantie.</p>
+<section id="contact" class="section-py" style="background: var(--accent); color: #fff;">
+    <div class="container py-4">
+        <div class="row align-items-center g-5 text-center text-lg-start">
+            <div class="col-lg-7" data-aos="fade-right">
+                <h2 class="display-4 fw-black mb-4">Donnons Vie à <br> Vos <span class="text-white border-bottom border-3">Projets</span></h2>
+                <p class="lead mb-0 opacity-90">Notre équipe est prête à vous accompagner dans la création de votre mobilier d'exception. Contactez-nous dès aujourd'hui pour un devis personnalisé.</p>
             </div>
-            <div class="col-lg-5 text-lg-end">
-                <div class="quote-actions">
-                    <a href="tel:{{ setting('company_phone', '+212600000000') }}" class="btn-quote-phone">
-                        <i class="fas fa-phone-alt"></i>
-                        <div class="btn-quote-text">
-                            <small>Appelez-nous</small>
-                            <strong>{{ setting('company_phone', '+212 6XX XX XX XX') }}</strong>
-                        </div>
+            <div class="col-lg-5" data-aos="fade-left">
+                <div class="d-flex flex-column gap-4 align-items-center align-items-lg-start mt-4 mt-lg-0">
+                    <a href="tel:{{ setting('company_phone') }}" class="text-white text-decoration-none d-flex align-items-center gap-3 h3 fw-black mb-0">
+                        <i class="fas fa-phone-alt p-3 bg-white text-danger rounded-circle" style="width: 60px; height: 60px; display:flex; align-items:center; justify-content:center; font-size: 1.2rem;"></i>
+                        {{ setting('company_phone', '+212 6XX XX XX XX') }}
                     </a>
-                    <a href="mailto:{{ setting('company_email', 'contact@speedprint.ma') }}" class="btn-quote-email">
-                        <i class="fas fa-envelope"></i> Envoyer un email
+                    <a href="mailto:{{ setting('company_email') }}" class="text-white text-decoration-none d-flex align-items-center gap-3 h3 fw-black mb-0">
+                        <i class="fas fa-envelope p-3 bg-white text-danger rounded-circle" style="width: 60px; height: 60px; display:flex; align-items:center; justify-content:center; font-size: 1.2rem;"></i>
+                        {{ setting('company_email', 'contact@moubdi3oun.com') }}
                     </a>
+                    <div class="text-white d-flex align-items-center gap-3 h5 fw-bold mb-0">
+                        <i class="fas fa-map-marker-alt p-3 bg-white text-danger rounded-circle" style="width: 60px; height: 60px; display:flex; align-items:center; justify-content:center; font-size: 1.2rem;"></i>
+                        {{ setting('company_address', 'Maroc, Casablanca') }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -566,16 +433,15 @@
 {{-- =============================================
      BRANDS STRIP
      ============================================= --}}
-<section class="brands-section">
+<section class="brands-section py-4">
     <div class="container">
-        <p class="brands-label">Marques et équipements disponibles</p>
         <div class="brands-ticker">
             @php
-            $brands = ['Epson', 'Roland', 'Mimaki', 'Mutoh', 'Graphtec', 'Summa', 'HP Latex', 'Flora', 'Allwin'];
+            $brands = ['Bois Massif', 'Marbre', 'Inox Doré', 'Laiton', 'Velours Premium', 'Cuir Véritable', 'Céramique'];
             @endphp
             @foreach($brands as $brand)
-            <div class="brand-chip">
-                <i class="fas fa-print me-2 opacity-50"></i>{{ $brand }}
+            <div class="brand-chip" style="font-weight: 600; font-size: 1.1rem; margin: 0 20px;">
+                <i class="fas fa-gem me-2" style="color: var(--accent);"></i>{{ $brand }}
             </div>
             @endforeach
         </div>
@@ -631,19 +497,17 @@
                 </a>
             </div>
             <div class="col-lg-8" data-aos="fade-left" data-aos-delay="100">
-                <div class="faq-list">
+                    <div class="faq-list">
                     @php
                     $faqs = [
-                        ['q'=>'Quelle est la différence entre échosolvant et UV ?',
-                         'a'=>'L\'éco-solvant utilise des encres à base de solvant doux, idéal pour les supports souples (bâche, vinyle). L\'UV imprime directement sur des supports rigides (bois, verre, métal) et sèche instantanément par lampe ultraviolet.'],
-                        ['q'=>'Livrez-vous dans tout le Maroc ?',
-                         'a'=>'Oui. Nous livrons partout au Maroc avec notre propre réseau logistique. Les grandes villes bénéficient d\'une livraison J+1 et d\'une installation sur site incluse.'],
-                        ['q'=>'La formation est-elle incluse à l\'achat ?',
-                         'a'=>'Oui, chaque machine est accompagnée d\'une formation opérateur gratuite (1 à 2 jours selon la complexité) réalisée sur votre lieu de production par nos techniciens certifiés.'],
-                        ['q'=>'Proposez-vous des facilités de paiement ?',
-                         'a'=>'Oui, nous proposons des solutions de financement personnalisées (paiement en plusieurs fois, leasing) selon votre situation. Contactez-nous pour un devis adapté à votre budget.'],
-                        ['q'=>'Quels types d\'encres compatibles sont disponibles ?',
-                         'a'=>'Nous stockons les encres d\'origine pour toutes les marques (Roland, Epson, Mimaki...) ainsi que des encres compatibles certifiées offrant un excellent rapport qualité/prix sans altérer la tête d\'impression.'],
+                        ['q'=>'Modifiez-vous le design pour s\'adapter à nos espaces ?',
+                         'a'=>'Absolument. Chaque meuble est conçu pour répondre précisément à vos contraintes d\'espace, vos goûts, et l\'ambiance générale de votre intérieur.'],
+                        ['q'=>'Quels types de finition proposez-vous ?',
+                         'a'=>'Nous proposons une gamme extrêmement variée: mates, brillantes, laquées, brossées et naturelles, pour les bois comme pour les métaux.'],
+                        ['q'=>'Vos tissus sont-ils résistants aux taches ?',
+                         'a'=>'Oui, certains de nos tissus premium (type velours et lin traités) bénéficient de traitements antitaches de dernière technologie pour une durabilité maximale.'],
+                        ['q'=>'Livrez-vous dans toutes les villes ?',
+                         'a'=>'Oui, nous assurons la logistique, l\'acheminement et l\'installation par nos artisans professionnels dans tout le Maroc.']
                     ];
                     @endphp
                     @foreach($faqs as $fi => $faq)
@@ -673,7 +537,7 @@
 @endphp
 
 @if($waLink)
-<a href="{{ $waLink }}?text=Bonjour%2C%20je%20suis%20intéressé%20par%20vos%20machines%20d'impression." 
+<a href="{{ $waLink }}?text=Bonjour%2C%20je%20suis%20intéressé%20par%20votre%20mobilier%20sur-mesure." 
    class="whatsapp-float" 
    target="_blank" 
    rel="noopener noreferrer"

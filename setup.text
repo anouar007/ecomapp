@@ -3,8 +3,8 @@
 3 : composer install --no-dev --optimize-autoloader
 4 : php artisan key:generate
 5 : php artisan migrate --force
-6 : php artisan db:seed --class=RolePermissionSeeder
-7 : php artisan db:seed --class=SettingsSeeder
+php artisan db:seed --class=RolePermissionSeeder
+php artisan db:seed --class=SettingsSeeder
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 export NVM_DIR="$HOME/.nvm" [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 nvm install --lts

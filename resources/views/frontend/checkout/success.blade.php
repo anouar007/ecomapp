@@ -41,3 +41,19 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof trackAdEvent === 'function') {
+            trackAdEvent('Purchase', {
+                content_ids: [ @foreach($order->items as $item) '{{ $item->product_id }}', @endforeach ],
+                content_type: 'product',
+                value: {{ $order->total }},
+                currency: 'MAD',
+                order_id: '{{ $order->order_number }}'
+            });
+        }
+    });
+</script>
+@endpush

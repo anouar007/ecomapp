@@ -71,4 +71,25 @@ class HomeController extends Controller
             'testimonials'
         ));
     }
+
+    public function about()
+    {
+        return view('frontend.about');
+    }
+
+    public function contact()
+    {
+        return view('frontend.contact');
+    }
+
+    public function portfolio()
+    {
+        $categories = Category::where('status', 'active')->orderBy('sort_order', 'asc')->get();
+        $products = Product::where('status', 'active')
+            ->with(['productCategory', 'primaryImage'])
+            ->latest()
+            ->get();
+            
+        return view('frontend.portfolio', compact('categories', 'products'));
+    }
 }
