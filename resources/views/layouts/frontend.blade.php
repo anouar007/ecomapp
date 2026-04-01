@@ -139,20 +139,20 @@
             <div class="d-flex align-items-center justify-content-between py-2 py-lg-3">
                 
                 <!-- Left: Burger Menu (Mobile) / Nav (Desktop) -->
-                <div class="d-flex align-items-center flex-1">
-                    <button class="header-action-btn d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-expanded="false" aria-label="Menu">
+                <div class="d-flex align-items-center flex-1" style="pointer-events: none;">
+                    <button class="header-action-btn d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-expanded="false" aria-label="Menu" style="position: relative; z-index: 1020; pointer-events: auto;">
                         <i class="fas fa-bars"></i>
                     </button>
                     
-                    <nav class="d-none d-lg-flex align-items-center gap-4">
+                    <nav class="d-none d-lg-flex align-items-center gap-4" style="pointer-events: auto;">
                         <a href="{{ route('home') }}" class="nav-link-custom text-decoration-none {{ request()->is('/') ? 'active' : '' }}">الرئيسية</a>
                         <a href="{{ route('shop.index') }}" class="nav-link-custom text-decoration-none {{ request()->is('shop*') ? 'active' : '' }}">المتجر</a>
                     </nav>
                 </div>
 
                 <!-- Center: Brand Logo -->
-                <div class="header-logo-container">
-                    <a href="{{ url('/') }}" class="text-decoration-none">
+                <div class="header-logo-container" style="pointer-events: none;">
+                    <a href="{{ url('/') }}" class="text-decoration-none" style="pointer-events: auto;">
                         @if(setting('app_logo'))
                             <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="Hijab Princesses — أناقة الأميرة" class="header-logo shadow-sm">
                         @else
@@ -164,9 +164,9 @@
                 </div>
 
                 <!-- Right: Actions -->
-                <div class="d-flex align-items-center justify-content-end gap-1 gap-lg-3 flex-1">
+                <div class="d-flex align-items-center justify-content-end gap-1 gap-lg-3 flex-1" style="pointer-events: none;">
                     <!-- Cart -->
-                    <div class="position-relative">
+                    <div class="position-relative" style="pointer-events: auto;">
                         <button class="header-action-btn position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart">
                             <i class="fas fa-shopping-bag"></i>
                             <span id="header-cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style="font-size: 0.6rem; transform: translate(-35%, 25%);">
@@ -185,8 +185,6 @@
                         <li><a href="{{ route('shop.index') }}" class="text-dark text-decoration-none d-block py-1">المتجر</a></li>
                         @auth
                             <li><a href="{{ route('dashboard') }}" class="text-dark text-decoration-none d-block py-1">حسابي</a></li>
-                        @else
-                            <li><a href="{{ route('login') }}" class="text-dark text-decoration-none d-block py-1">تسجيل الدخول</a></li>
                         @endauth
                     </ul>
                 </div>

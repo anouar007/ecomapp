@@ -3,16 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $__env->yieldContent('meta_title', setting('app_name', 'Speed Platform')); ?></title>
-    <meta name="description" content="<?php echo $__env->yieldContent('meta_description', setting('app_description', 'High performance e-commerce platform.')); ?>">
-    <meta name="keywords" content="<?php echo $__env->yieldContent('meta_keywords', setting('app_name', 'boutique') . ', e-commerce, Maroc, acheter en ligne, livraison Maroc'); ?>">
+    <title><?php echo $__env->yieldContent('meta_title', setting('app_name', 'Hijab Princesses — أناقة الأميرة')); ?></title>
+    <meta name="google-site-verification" content="S-Gl89li8kbi-OvEDDQMQEPWh17GCfJ-Ehkrhj7" />
+    <meta name="description" content="<?php echo $__env->yieldContent('meta_description', setting('app_description', 'Hijab Princesses — أناقة الأميرة: وجهتكم الفاخرة للعبايات والخمارات الراقية بالمغرب. جودة ملكية وتوصيل سريع.')); ?>">
+    <meta name="keywords" content="<?php echo $__env->yieldContent('meta_keywords', 'hijabprincesses, hijab princesses, hijabprincesses.com, أناقة الأميرة, hijab princesses shop, abaya maroc, khimar maroc, hijab luxe, boutique hijab, عبايات راقية, خمارات مغربية, ملابس محجبات, متجر أميرة'); ?>">
     <meta name="robots" content="<?php echo $__env->yieldContent('meta_robots', 'index, follow'); ?>">
     <meta name="author" content="<?php echo e(setting('app_name', 'Hijab Princesses')); ?>">
     <meta name="theme-color" content="#D4AF37">
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    
+    <!-- DNS Prefetching for Speed -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="//unpkg.com">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="<?php echo e(url()->current()); ?>">
+
+    <!-- International SEO: Hreflang Tags -->
+    <link rel="alternate" hreflang="ar" href="<?php echo e(url()->current()); ?>">
+    <link rel="alternate" hreflang="en" href="<?php echo e(url()->current()); ?>">
+    <link rel="alternate" hreflang="fr" href="<?php echo e(url()->current()); ?>">
+    <link rel="alternate" hreflang="x-default" href="<?php echo e(url('/')); ?>">
 
     <!-- Preconnect to external resources for faster loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -127,22 +141,22 @@
             <div class="d-flex align-items-center justify-content-between py-2 py-lg-3">
                 
                 <!-- Left: Burger Menu (Mobile) / Nav (Desktop) -->
-                <div class="d-flex align-items-center flex-1">
-                    <button class="header-action-btn d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-expanded="false" aria-label="Menu">
+                <div class="d-flex align-items-center flex-1" style="pointer-events: none;">
+                    <button class="header-action-btn d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-expanded="false" aria-label="Menu" style="position: relative; z-index: 1020; pointer-events: auto;">
                         <i class="fas fa-bars"></i>
                     </button>
                     
-                    <nav class="d-none d-lg-flex align-items-center gap-4">
+                    <nav class="d-none d-lg-flex align-items-center gap-4" style="pointer-events: auto;">
                         <a href="<?php echo e(route('home')); ?>" class="nav-link-custom text-decoration-none <?php echo e(request()->is('/') ? 'active' : ''); ?>">الرئيسية</a>
                         <a href="<?php echo e(route('shop.index')); ?>" class="nav-link-custom text-decoration-none <?php echo e(request()->is('shop*') ? 'active' : ''); ?>">المتجر</a>
                     </nav>
                 </div>
 
                 <!-- Center: Brand Logo -->
-                <div class="header-logo-container">
-                    <a href="<?php echo e(url('/')); ?>" class="text-decoration-none">
+                <div class="header-logo-container" style="pointer-events: none;">
+                    <a href="<?php echo e(url('/')); ?>" class="text-decoration-none" style="pointer-events: auto;">
                         <?php if(setting('app_logo')): ?>
-                            <img src="<?php echo e(asset('storage/' . setting('app_logo'))); ?>" alt="<?php echo e(setting('app_name')); ?>" class="header-logo shadow-sm">
+                            <img src="<?php echo e(asset('storage/' . setting('app_logo'))); ?>" alt="Hijab Princesses — أناقة الأميرة" class="header-logo shadow-sm">
                         <?php else: ?>
                             <div class="brand-logo-text" style="font-size: 1.8rem;">
                                 Hijab <span class="gold-part">Princesses</span>
@@ -152,9 +166,9 @@
                 </div>
 
                 <!-- Right: Actions -->
-                <div class="d-flex align-items-center justify-content-end gap-1 gap-lg-3 flex-1">
+                <div class="d-flex align-items-center justify-content-end gap-1 gap-lg-3 flex-1" style="pointer-events: none;">
                     <!-- Cart -->
-                    <div class="position-relative">
+                    <div class="position-relative" style="pointer-events: auto;">
                         <button class="header-action-btn position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart">
                             <i class="fas fa-shopping-bag"></i>
                             <span id="header-cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style="font-size: 0.6rem; transform: translate(-35%, 25%);">
@@ -174,8 +188,6 @@
                         <li><a href="<?php echo e(route('shop.index')); ?>" class="text-dark text-decoration-none d-block py-1">المتجر</a></li>
                         <?php if(auth()->guard()->check()): ?>
                             <li><a href="<?php echo e(route('dashboard')); ?>" class="text-dark text-decoration-none d-block py-1">حسابي</a></li>
-                        <?php else: ?>
-                            <li><a href="<?php echo e(route('login')); ?>" class="text-dark text-decoration-none d-block py-1">تسجيل الدخول</a></li>
                         <?php endif; ?>
                     </ul>
                 </div>
@@ -484,8 +496,8 @@
             <div class="row g-5">
                 <div class="col-lg-6">
                     <h5 class="brand-heading text-white mb-4 text-uppercase ls-1" style="font-size: 1.5rem;">Hijab <span class="text-gold">Princesses</span></h5>
-                    <p class="small lh-lg mb-4">
-                        وجهتكم الفاخرة لكل ما يخص الأناقة المحتشمة في المغرب. عبايات راقية، خمارات متميزة، ومجموعات حصرية — مصممة للأميرة العصرية.
+                    <p class="small lh-lg mb-4 text-white opacity-75">
+                        Hijab Princesses — أناقة الأميرة: وجهتكم الفاخرة لكل ما يخص الأناقة المحتشمة في المغرب. نقدم مجموعات حصرية من العبايات الراقية، الخمارات المتميزة، والشالات الفاخرة — المصممة خصيصاً للأميرة العصرية التي تبحث عن الجودة والجمال. شعارنا الجودة الملكية والتوصيل لكل مدن المغرب.
                     </p>
                     <?php
                         $sfb  = setting('social_facebook',  '');

@@ -1,8 +1,6 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', __('Dashboard')); ?>
 
-@section('title', __('Dashboard'))
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <!-- Page Header -->
     <div class="brand-header px-1">
         <div>
@@ -10,13 +8,15 @@
                 <div class="brand-header-icon">
                     <i class="fas fa-th-large"></i>
                 </div>
-                {{ __('Administrative Control') }}
+                <?php echo e(__('Administrative Control')); ?>
+
             </h1>
-            <p class="brand-subtitle">{{ __('Welcome back') }}, {{ auth()->user()->name }}. {{ __('Overview of your business performance.') }}</p>
+            <p class="brand-subtitle"><?php echo e(__('Welcome back')); ?>, <?php echo e(auth()->user()->name); ?>. <?php echo e(__('Overview of your business performance.')); ?></p>
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ route('orders.index') }}" class="btn btn-brand-primary font-inter">
-                <i class="fas fa-plus-circle me-1"></i> {{ __('Manage Orders') }}
+            <a href="<?php echo e(route('orders.index')); ?>" class="btn btn-brand-primary font-inter">
+                <i class="fas fa-plus-circle me-1"></i> <?php echo e(__('Manage Orders')); ?>
+
             </a>
         </div>
     </div>
@@ -28,15 +28,15 @@
         <div class="col-12 col-md-4">
             <div class="stat-card glass-card">
                 <div class="stat-card-header">
-                    <div class="stat-card-title">{{ __('Today\'s Revenue') }}</div>
+                    <div class="stat-card-title"><?php echo e(__('Today\'s Revenue')); ?></div>
                     <div class="stat-card-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
                         <i class="fas fa-money-bill-trend-up"></i>
                     </div>
                 </div>
-                <div class="stat-card-value font-inter">{{ currency($stats['today_revenue']) }}</div>
+                <div class="stat-card-value font-inter"><?php echo e(currency($stats['today_revenue'])); ?></div>
                 <div class="stat-card-desc">
                     <span class="text-success fw-bold"><i class="fas fa-calendar-day me-1"></i></span>
-                    <span class="ms-1 text-muted small">{{ __('today') }}</span>
+                    <span class="ms-1 text-muted small"><?php echo e(__('today')); ?></span>
                 </div>
             </div>
         </div>
@@ -45,15 +45,15 @@
         <div class="col-12 col-md-4">
             <div class="stat-card glass-card">
                 <div class="stat-card-header">
-                    <div class="stat-card-title">{{ __('Pending Orders') }}</div>
+                    <div class="stat-card-title"><?php echo e(__('Pending Orders')); ?></div>
                     <div class="stat-card-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
                         <i class="fas fa-clock-rotate-left"></i>
                     </div>
                 </div>
-                <div class="stat-card-value font-inter text-warning">{{ number_format($stats['pending_orders']) }}</div>
+                <div class="stat-card-value font-inter text-warning"><?php echo e(number_format($stats['pending_orders'])); ?></div>
                 <div class="stat-card-desc">
                     <span class="text-warning fw-bold"><i class="fas fa-exclamation-circle me-1"></i></span>
-                    <span class="ms-1 text-muted small">{{ __('unprocessed items') }}</span>
+                    <span class="ms-1 text-muted small"><?php echo e(__('unprocessed items')); ?></span>
                 </div>
             </div>
         </div>
@@ -62,18 +62,18 @@
         <div class="col-12 col-md-4">
             <div class="stat-card glass-card">
                 <div class="stat-card-header">
-                    <div class="stat-card-title">{{ __('Total Revenue') }}</div>
+                    <div class="stat-card-title"><?php echo e(__('Total Revenue')); ?></div>
                     <div class="stat-card-icon primary">
                         <i class="fas fa-wallet"></i>
                     </div>
                 </div>
-                <div class="stat-card-value font-inter">{{ currency($stats['total_revenue']) }}</div>
+                <div class="stat-card-value font-inter"><?php echo e(currency($stats['total_revenue'])); ?></div>
                 <div class="stat-card-desc">
-                    <span class="{{ $stats['revenue_growth'] >= 0 ? 'text-success' : 'text-danger' }} fw-bold">
-                        <i class="fas fa-arrow-{{ $stats['revenue_growth'] >= 0 ? 'up' : 'down' }} me-1"></i>
-                        {{ abs($stats['revenue_growth']) }}%
+                    <span class="<?php echo e($stats['revenue_growth'] >= 0 ? 'text-success' : 'text-danger'); ?> fw-bold">
+                        <i class="fas fa-arrow-<?php echo e($stats['revenue_growth'] >= 0 ? 'up' : 'down'); ?> me-1"></i>
+                        <?php echo e(abs($stats['revenue_growth'])); ?>%
                     </span>
-                    <span class="ms-1 text-muted small">{{ __('this month') }}</span>
+                    <span class="ms-1 text-muted small"><?php echo e(__('this month')); ?></span>
                 </div>
             </div>
         </div>
@@ -83,46 +83,46 @@
     <div class="dashboard-stats mb-4">
         <div class="stat-card glass-card">
             <div class="stat-card-header">
-                <div class="stat-card-title">{{ __('Total Orders') }}</div>
+                <div class="stat-card-title"><?php echo e(__('Total Orders')); ?></div>
                 <div class="stat-card-icon success">
                     <i class="fas fa-shopping-cart"></i>
                 </div>
             </div>
-            <div class="stat-card-value font-inter">{{ number_format($stats['total_orders']) }}</div>
+            <div class="stat-card-value font-inter"><?php echo e(number_format($stats['total_orders'])); ?></div>
             <div class="stat-card-desc">
-                <span class="{{ $stats['orders_growth'] >= 0 ? 'text-success' : 'text-danger' }} fw-bold">
-                    <i class="fas fa-arrow-{{ $stats['orders_growth'] >= 0 ? 'up' : 'down' }} me-1"></i>
-                    {{ abs($stats['orders_growth']) }}%
+                <span class="<?php echo e($stats['orders_growth'] >= 0 ? 'text-success' : 'text-danger'); ?> fw-bold">
+                    <i class="fas fa-arrow-<?php echo e($stats['orders_growth'] >= 0 ? 'up' : 'down'); ?> me-1"></i>
+                    <?php echo e(abs($stats['orders_growth'])); ?>%
                 </span>
-                <span class="ms-1 text-muted small">{{ __('this month') }}</span>
+                <span class="ms-1 text-muted small"><?php echo e(__('this month')); ?></span>
             </div>
         </div>
 
         <div class="stat-card glass-card">
             <div class="stat-card-header">
-                <div class="stat-card-title">{{ __('Active Products') }}</div>
+                <div class="stat-card-title"><?php echo e(__('Active Products')); ?></div>
                 <div class="stat-card-icon warning">
                     <i class="fas fa-tags"></i>
                 </div>
             </div>
-            <div class="stat-card-value font-inter">{{ number_format($stats['total_products']) }}</div>
+            <div class="stat-card-value font-inter"><?php echo e(number_format($stats['total_products'])); ?></div>
             <div class="stat-card-desc">
-                <span class="text-success fw-bold">+{{ $stats['products_growth'] }}%</span>
-                <span class="ms-1 text-muted small">{{ __('new additions') }}</span>
+                <span class="text-success fw-bold">+<?php echo e($stats['products_growth']); ?>%</span>
+                <span class="ms-1 text-muted small"><?php echo e(__('new additions')); ?></span>
             </div>
         </div>
 
         <div class="stat-card glass-card">
             <div class="stat-card-header">
-                <div class="stat-card-title">{{ __('Total Customers') }}</div>
+                <div class="stat-card-title"><?php echo e(__('Total Customers')); ?></div>
                 <div class="stat-card-icon info">
                     <i class="fas fa-users"></i>
                 </div>
             </div>
-            <div class="stat-card-value font-inter">{{ number_format($stats['total_users']) }}</div>
+            <div class="stat-card-value font-inter"><?php echo e(number_format($stats['total_users'])); ?></div>
             <div class="stat-card-desc">
-                <span class="text-success fw-bold">+{{ $stats['users_growth'] }}%</span>
-                <span class="ms-1 text-muted small">{{ __('growth') }}</span>
+                <span class="text-success fw-bold">+<?php echo e($stats['users_growth']); ?>%</span>
+                <span class="ms-1 text-muted small"><?php echo e(__('growth')); ?></span>
             </div>
         </div>
     </div>
@@ -133,8 +133,8 @@
         <div class="col-lg-8">
             <div class="brand-table-card h-100 p-4">
                 <div class="dashboard-card-header d-flex justify-content-between align-items-center">
-                    <h5 class="dashboard-card-title">{{ __('Revenue Trend') }}</h5>
-                    <div class="small text-muted font-inter">{{ __('Last 7 Days') }}</div>
+                    <h5 class="dashboard-card-title"><?php echo e(__('Revenue Trend')); ?></h5>
+                    <div class="small text-muted font-inter"><?php echo e(__('Last 7 Days')); ?></div>
                 </div>
                 <div style="height: 350px;">
                     <canvas id="revenueTrendChart"></canvas>
@@ -146,19 +146,19 @@
         <div class="col-lg-4">
             <div class="brand-table-card h-100 p-4">
                 <div class="dashboard-card-header">
-                    <h5 class="dashboard-card-title">{{ __('Order Distribution') }}</h5>
+                    <h5 class="dashboard-card-title"><?php echo e(__('Order Distribution')); ?></h5>
                 </div>
                 <div style="height: 280px;">
                     <canvas id="orderStatusChart"></canvas>
                 </div>
                 <div class="mt-4 pt-3 border-top">
                     <div class="d-flex justify-content-between mb-2">
-                        <span class="small text-muted"><i class="fas fa-circle text-warning me-2"></i> {{ __('Pending') }}</span>
-                        <span class="fw-bold font-inter">{{ $orderStatusCounts['pending'] }}</span>
+                        <span class="small text-muted"><i class="fas fa-circle text-warning me-2"></i> <?php echo e(__('Pending')); ?></span>
+                        <span class="fw-bold font-inter"><?php echo e($orderStatusCounts['pending']); ?></span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
-                        <span class="small text-muted"><i class="fas fa-circle text-success me-2"></i> {{ __('Completed') }}</span>
-                        <span class="fw-bold font-inter">{{ $orderStatusCounts['completed'] }}</span>
+                        <span class="small text-muted"><i class="fas fa-circle text-success me-2"></i> <?php echo e(__('Completed')); ?></span>
+                        <span class="fw-bold font-inter"><?php echo e($orderStatusCounts['completed']); ?></span>
                     </div>
                 </div>
             </div>
@@ -171,52 +171,54 @@
             <div class="brand-table-card h-100 overflow-hidden">
                 <div class="recent-activity-header p-4 border-bottom d-flex justify-content-between align-items-center bg-white">
                     <h5 class="dashboard-card-title">
-                        <i class="fas fa-history text-primary me-2"></i> {{ __('Recent Activity') }}
+                        <i class="fas fa-history text-primary me-2"></i> <?php echo e(__('Recent Activity')); ?>
+
                     </h5>
-                    <a href="{{ route('orders.index') }}" class="btn btn-link btn-sm text-primary text-decoration-none p-0">{{ __('View All') }}</a>
+                    <a href="<?php echo e(route('orders.index')); ?>" class="btn btn-link btn-sm text-primary text-decoration-none p-0"><?php echo e(__('View All')); ?></a>
                 </div>
                 <div class="responsive-table-container">
                     <table class="brand-table d-none d-lg-table mb-0">
                         <thead>
                             <tr>
-                                <th class="ps-4">{{ __('Order') }}</th>
-                                <th>{{ __('Customer') }}</th>
-                                <th>{{ __('Status') }}</th>
-                                <th class="pe-4 text-end">{{ __('Total') }}</th>
+                                <th class="ps-4"><?php echo e(__('Order')); ?></th>
+                                <th><?php echo e(__('Customer')); ?></th>
+                                <th><?php echo e(__('Status')); ?></th>
+                                <th class="pe-4 text-end"><?php echo e(__('Total')); ?></th>
                             </tr>
                         </thead>
                         <tbody class="font-inter">
-                            @foreach($recentOrders as $order)
-                            <tr style="cursor: pointer;" onclick="window.location='{{ route('orders.show', $order) }}'">
+                            <?php $__currentLoopData = $recentOrders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <tr style="cursor: pointer;" onclick="window.location='<?php echo e(route('orders.show', $order)); ?>'">
                                 <td class="ps-4">
-                                    <span class="fw-bold text-primary">#{{ $order->order_number }}</span>
+                                    <span class="fw-bold text-primary">#<?php echo e($order->order_number); ?></span>
                                 </td>
                                 <td>
-                                    <div class="small fw-semibold text-dark">{{ $order->customer_name }}</div>
-                                    <div class="text-muted" style="font-size: 0.75rem;">{{ $order->created_at->diffForHumans() }}</div>
+                                    <div class="small fw-semibold text-dark"><?php echo e($order->customer_name); ?></div>
+                                    <div class="text-muted" style="font-size: 0.75rem;"><?php echo e($order->created_at->diffForHumans()); ?></div>
                                 </td>
                                 <td>
-                                    <span class="badge rounded-pill {{ $order->status === 'completed' ? 'bg-success' : ($order->status === 'pending' ? 'bg-warning' : 'bg-danger') }} bg-opacity-10 {{ $order->status === 'completed' ? 'text-success' : ($order->status === 'pending' ? 'text-warning' : 'text-danger') }} px-2">
-                                        {{ __($order->status) }}
+                                    <span class="badge rounded-pill <?php echo e($order->status === 'completed' ? 'bg-success' : ($order->status === 'pending' ? 'bg-warning' : 'bg-danger')); ?> bg-opacity-10 <?php echo e($order->status === 'completed' ? 'text-success' : ($order->status === 'pending' ? 'text-warning' : 'text-danger')); ?> px-2">
+                                        <?php echo e(__($order->status)); ?>
+
                                     </span>
                                 </td>
-                                <td class="pe-4 text-end fw-bold">{{ currency($order->total) }}</td>
+                                <td class="pe-4 text-end fw-bold"><?php echo e(currency($order->total)); ?></td>
                             </tr>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </tbody>
                     </table>
                     
                     <!-- Mobile View -->
                     <div class="d-lg-none p-3">
-                        @foreach($recentOrders as $order)
-                        <div class="p-3 border-bottom border-light" onclick="window.location='{{ route('orders.show', $order) }}'">
+                        <?php $__currentLoopData = $recentOrders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <div class="p-3 border-bottom border-light" onclick="window.location='<?php echo e(route('orders.show', $order)); ?>'">
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="fw-bold">#{{ $order->order_number }}</span>
-                                <span class="fw-bold text-primary">{{ currency($order->total) }}</span>
+                                <span class="fw-bold">#<?php echo e($order->order_number); ?></span>
+                                <span class="fw-bold text-primary"><?php echo e(currency($order->total)); ?></span>
                             </div>
-                            <div class="text-muted small">{{ $order->customer_name }} • {{ __($order->status) }}</div>
+                            <div class="text-muted small"><?php echo e($order->customer_name); ?> • <?php echo e(__($order->status)); ?></div>
                         </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
                 </div>
             </div>
@@ -226,27 +228,27 @@
         <div class="col-lg-3">
             <div class="brand-table-card h-100 p-0 overflow-hidden">
                 <div class="p-4 border-bottom bg-white">
-                    <h5 class="dashboard-card-title">{{ __('Top Performance') }}</h5>
+                    <h5 class="dashboard-card-title"><?php echo e(__('Top Performance')); ?></h5>
                 </div>
                 <div class="scroll-y-300">
-                    @forelse($topSellingProducts as $item)
+                    <?php $__empty_1 = true; $__currentLoopData = $topSellingProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <div class="top-product-item d-flex align-items-center gap-3">
                         <div class="brand-avatar" style="width: 40px; height: 40px; border-radius: 8px;">
-                            @if($item->product && $item->product->image)
-                                <img src="{{ asset('storage/' . $item->product->image) }}" alt="" style="width:100%; height:100%; object-fit:cover; border-radius: 8px;">
-                            @else
+                            <?php if($item->product && $item->product->image): ?>
+                                <img src="<?php echo e(asset('storage/' . $item->product->image)); ?>" alt="" style="width:100%; height:100%; object-fit:cover; border-radius: 8px;">
+                            <?php else: ?>
                                 <i class="fas fa-box text-muted"></i>
-                            @endif
+                            <?php endif; ?>
                         </div>
                         <div class="flex-grow-1 min-width-0">
-                            <div class="fw-bold text-dark small text-truncate">{{ $item->product ? $item->product->translated_name : __('Unknown') }}</div>
-                            <div class="text-muted" style="font-size: 10px;">{{ __('Sales qty') }}: {{ $item->total_qty }}</div>
+                            <div class="fw-bold text-dark small text-truncate"><?php echo e($item->product ? $item->product->translated_name : __('Unknown')); ?></div>
+                            <div class="text-muted" style="font-size: 10px;"><?php echo e(__('Sales qty')); ?>: <?php echo e($item->total_qty); ?></div>
                         </div>
-                        <span class="qty-pill font-inter">{{ $item->total_qty }}</span>
+                        <span class="qty-pill font-inter"><?php echo e($item->total_qty); ?></span>
                     </div>
-                    @empty
-                    <div class="p-4 text-center text-muted small">{{ __('No sales data yet') }}</div>
-                    @endforelse
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                    <div class="p-4 text-center text-muted small"><?php echo e(__('No sales data yet')); ?></div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -256,28 +258,29 @@
             <div class="brand-table-card alert-glass-card h-100 overflow-hidden" style="background: rgba(254, 242, 242, 0.4);">
                 <div class="p-4 border-bottom d-flex align-items-center justify-content-between bg-white bg-opacity-50">
                     <h5 class="dashboard-card-title text-danger">
-                        <i class="fas fa-exclamation-triangle pulse-slow me-1"></i> {{ __('Low Stock') }}
+                        <i class="fas fa-exclamation-triangle pulse-slow me-1"></i> <?php echo e(__('Low Stock')); ?>
+
                     </h5>
-                    <span class="badge bg-danger text-white font-inter">{{ count($lowStockProducts) }}</span>
+                    <span class="badge bg-danger text-white font-inter"><?php echo e(count($lowStockProducts)); ?></span>
                 </div>
                 <div class="p-3">
-                    @forelse($lowStockProducts as $product)
+                    <?php $__empty_1 = true; $__currentLoopData = $lowStockProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <div class="d-flex align-items-center gap-3 mb-3 pb-2 border-bottom border-danger border-opacity-10">
                         <div class="flex-grow-1 min-width-0">
-                            <div class="text-dark fw-bold small text-truncate">{{ $product->translated_name }}</div>
-                            <div class="text-muted" style="font-size: 10px;">SKU: {{ $product->sku }}</div>
+                            <div class="text-dark fw-bold small text-truncate"><?php echo e($product->translated_name); ?></div>
+                            <div class="text-muted" style="font-size: 10px;">SKU: <?php echo e($product->sku); ?></div>
                         </div>
                         <div class="text-end">
-                            <div class="text-danger fw-bold font-inter">{{ $product->stock }}</div>
+                            <div class="text-danger fw-bold font-inter"><?php echo e($product->stock); ?></div>
                         </div>
                     </div>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <div class="text-center py-4">
                         <i class="fas fa-check-circle text-success fs-3 mb-2"></i>
-                        <div class="small fw-bold">{{ __('Stock Healthy') }}</div>
+                        <div class="small fw-bold"><?php echo e(__('Stock Healthy')); ?></div>
                     </div>
-                    @endforelse
-                    <a href="{{ route('inventory.index') }}" class="btn btn-outline-danger btn-sm w-100 mt-2 font-inter fw-bold">{{ __('Manage Stock') }}</a>
+                    <?php endif; ?>
+                    <a href="<?php echo e(route('inventory.index')); ?>" class="btn btn-outline-danger btn-sm w-100 mt-2 font-inter fw-bold"><?php echo e(__('Manage Stock')); ?></a>
                 </div>
             </div>
         </div>
@@ -299,10 +302,10 @@
             new Chart(revenueTrendCtx, {
                 type: 'line',
                 data: {
-                    labels: {!! json_encode($revenueLabels) !!},
+                    labels: <?php echo json_encode($revenueLabels); ?>,
                     datasets: [{
-                        label: '{{ __('Daily Revenue') }}',
-                        data: {!! json_encode($revenueData) !!},
+                        label: '<?php echo e(__('Daily Revenue')); ?>',
+                        data: <?php echo json_encode($revenueData); ?>,
                         borderColor: '#6366f1',
                         backgroundColor: (context) => {
                             const ctx = context.chart.ctx;
@@ -341,12 +344,13 @@
             new Chart(statusCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['{{ __('Pending') }}', '{{ __('Completed') }}', '{{ __('Cancelled') }}'],
+                    labels: ['<?php echo e(__('Pending')); ?>', '<?php echo e(__('Completed')); ?>', '<?php echo e(__('Cancelled')); ?>'],
                     datasets: [{
                         data: [
-                            {{ $orderStatusCounts['pending'] }}, 
-                            {{ $orderStatusCounts['completed'] }}, 
-                            {{ $orderStatusCounts['cancelled'] }}
+                            <?php echo e($orderStatusCounts['pending']); ?>, 
+                            <?php echo e($orderStatusCounts['completed']); ?>, 
+                            <?php echo e($orderStatusCounts['cancelled']); ?>
+
                         ],
                         backgroundColor: ['#f59e0b', '#10b981', '#ef4444'],
                         borderWidth: 0,
@@ -371,4 +375,6 @@
             });
         });
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Applications/XAMPP/xamppfiles/htdocs/speed/resources/views/dashboard.blade.php ENDPATH**/ ?>

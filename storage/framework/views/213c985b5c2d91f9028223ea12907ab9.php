@@ -3,29 +3,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', __('Dashboard')) - {{ setting('app_name', 'E-commerce') }}</title>
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <title><?php echo $__env->yieldContent('title', __('Dashboard')); ?> - <?php echo e(setting('app_name', 'E-commerce')); ?></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    <link rel="stylesheet" href="<?php echo e(asset('css/dashboard.css')); ?>">
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.7.32/sweetalert2.min.css">
     
     <!-- Dynamic Theme CSS Variables -->
     <style>
         :root {
-            --primary-color: {{ setting('primary_color', '#3b82f6') }};
-            --secondary-color: {{ setting('secondary_color', '#10b981') }};
-            --accent-color: {{ setting('accent_color', '#8b5cf6') }};
-            --success-color: {{ setting('success_color', '#10b981') }};
-            --warning-color: {{ setting('warning_color', '#f59e0b') }};
-            --danger-color: {{ setting('danger_color', '#ef4444') }};
-            --font-family: {{ setting('font_family', "'Cairo', 'Inter', system-ui, sans-serif") }};
-            --font-size-base: {{ setting('font_size_base', '14') }}px;
-            --border-radius: {{ setting('border_radius', '12') }}px;
+            --primary-color: <?php echo e(setting('primary_color', '#3b82f6')); ?>;
+            --secondary-color: <?php echo e(setting('secondary_color', '#10b981')); ?>;
+            --accent-color: <?php echo e(setting('accent_color', '#8b5cf6')); ?>;
+            --success-color: <?php echo e(setting('success_color', '#10b981')); ?>;
+            --warning-color: <?php echo e(setting('warning_color', '#f59e0b')); ?>;
+            --danger-color: <?php echo e(setting('danger_color', '#ef4444')); ?>;
+            --font-family: <?php echo e(setting('font_family', "'Cairo', 'Inter', system-ui, sans-serif")); ?>;
+            --font-size-base: <?php echo e(setting('font_size_base', '14')); ?>px;
+            --border-radius: <?php echo e(setting('border_radius', '12')); ?>px;
         }
         
         body {
@@ -45,7 +45,7 @@
     </style>
     
 
-    @stack('styles')
+    <?php echo $__env->yieldPushContent('styles'); ?>
 </head>
 <body>
     <!-- Mobile Header -->
@@ -54,10 +54,12 @@
             <i class="fas fa-bars"></i>
         </button>
         <div class="mobile-brand">
-            {{ setting('app_name', 'E-commerce') }}
+            <?php echo e(setting('app_name', 'E-commerce')); ?>
+
         </div>
         <div class="mobile-user" id="user-menu-trigger-mobile">
-            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+            <?php echo e(strtoupper(substr(auth()->user()->name, 0, 1))); ?>
+
         </div>
     </header>
 
@@ -71,7 +73,8 @@
             </div>
 
             <div class="user-avatar" id="user-menu-trigger">
-                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                <?php echo e(strtoupper(substr(auth()->user()->name, 0, 1))); ?>
+
             </div>
         </div>
     </nav>
@@ -79,22 +82,25 @@
     <!-- User Dropdown (Common) -->
     <div class="user-dropdown">
         <div class="user-dropdown-header">
-            <div class="user-dropdown-name">{{ auth()->user()->name }}</div>
-            <div class="user-dropdown-email">{{ auth()->user()->email }}</div>
+            <div class="user-dropdown-name"><?php echo e(auth()->user()->name); ?></div>
+            <div class="user-dropdown-email"><?php echo e(auth()->user()->email); ?></div>
         </div>
-        <a href="{{ route('profile.show') }}" class="user-dropdown-item">
+        <a href="<?php echo e(route('profile.show')); ?>" class="user-dropdown-item">
             <i class="fas fa-user"></i>
-            {{ __('My Profile') }}
+            <?php echo e(__('My Profile')); ?>
+
         </a>
-        <a href="{{ route('profile.edit') }}" class="user-dropdown-item">
+        <a href="<?php echo e(route('profile.edit')); ?>" class="user-dropdown-item">
             <i class="fas fa-edit"></i>
-            {{ __('Edit Profile') }}
+            <?php echo e(__('Edit Profile')); ?>
+
         </a>
-        <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
-            @csrf
+        <form method="POST" action="<?php echo e(route('logout')); ?>" style="margin: 0;">
+            <?php echo csrf_field(); ?>
             <button type="submit" class="user-dropdown-item" style="width: 100%;">
                 <i class="fas fa-sign-out-alt"></i>
-                {{ __('Logout') }}
+                <?php echo e(__('Logout')); ?>
+
             </button>
         </form>
     </div>
@@ -103,47 +109,47 @@
     <aside class="sidebar">
         <ul class="sidebar-menu">
             <li class="sidebar-menu-item">
-                <a href="{{ route('dashboard') }}" class="sidebar-menu-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                <a href="<?php echo e(route('dashboard')); ?>" class="sidebar-menu-link <?php echo e(request()->routeIs('dashboard') ? 'active' : ''); ?>">
                     <i class="fas fa-chart-pie"></i>
-                    <span>{{ __('Dashboard') }}</span>
+                    <span><?php echo e(__('Dashboard')); ?></span>
                 </a>
             </li>
 
-            @can('manage_products')
+            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage_products')): ?>
             <li class="sidebar-menu-item">
-                <a href="{{ route('products.index') }}" class="sidebar-menu-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
+                <a href="<?php echo e(route('products.index')); ?>" class="sidebar-menu-link <?php echo e(request()->routeIs('products.*') ? 'active' : ''); ?>">
                     <i class="fas fa-box"></i>
-                    <span>{{ __('Products') }}</span>
+                    <span><?php echo e(__('Products')); ?></span>
                 </a>
             </li>
-            @endcan
+            <?php endif; ?>
 
-            @can('manage_categories')
+            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage_categories')): ?>
             <li class="sidebar-menu-item">
-                <a href="{{ route('categories.index') }}" class="sidebar-menu-link {{ request()->routeIs('categories.*') ? 'active' : '' }}">
+                <a href="<?php echo e(route('categories.index')); ?>" class="sidebar-menu-link <?php echo e(request()->routeIs('categories.*') ? 'active' : ''); ?>">
                     <i class="fas fa-folder-tree"></i>
-                    <span>{{ __('Categories') }}</span>
+                    <span><?php echo e(__('Categories')); ?></span>
                 </a>
             </li>
-            @endcan
+            <?php endif; ?>
             
-            @can('manage_orders')
+            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage_orders')): ?>
             <li class="sidebar-menu-item">
-                <a href="{{ route('orders.index') }}" class="sidebar-menu-link {{ request()->routeIs('orders.*') ? 'active' : '' }}">
+                <a href="<?php echo e(route('orders.index')); ?>" class="sidebar-menu-link <?php echo e(request()->routeIs('orders.*') ? 'active' : ''); ?>">
                     <i class="fas fa-cart-shopping"></i>
-                    <span>{{ __('Orders') }}</span>
+                    <span><?php echo e(__('Orders')); ?></span>
                 </a>
             </li>
-            @endcan
+            <?php endif; ?>
 
-            @can('manage_inventory')
+            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage_inventory')): ?>
             <li class="sidebar-menu-item">
-                <a href="{{ route('inventory.index') }}" class="sidebar-menu-link {{ request()->routeIs('inventory.*') ? 'active' : '' }}">
+                <a href="<?php echo e(route('inventory.index')); ?>" class="sidebar-menu-link <?php echo e(request()->routeIs('inventory.*') ? 'active' : ''); ?>">
                     <i class="fas fa-boxes-stacked"></i>
-                    <span>{{ __('Inventory') }}</span>
+                    <span><?php echo e(__('Inventory')); ?></span>
                 </a>
             </li>
-            @endcan
+            <?php endif; ?>
         </ul>
     </aside>
     <!-- Sidebar Overlay -->
@@ -151,17 +157,17 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        @yield('content')
+        <?php echo $__env->yieldContent('content'); ?>
     </main>
 
     <!-- SweetAlert2 JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.7.32/sweetalert2.all.min.js"></script>
     <!-- SweetAlert Helpers -->
-    <script src="{{ asset('js/sweetalert-helpers.js') }}"></script>
+    <script src="<?php echo e(asset('js/sweetalert-helpers.js')); ?>"></script>
     <!-- Delete Confirmation Handler -->
-    <script src="{{ asset('js/delete-confirmation.js') }}"></script>
+    <script src="<?php echo e(asset('js/delete-confirmation.js')); ?>"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ asset('js/app.js') }}"></script>
+    <script src="<?php echo e(asset('js/app.js')); ?>"></script>
 
     <script>
         const Toast = Swal.mixin({
@@ -176,19 +182,19 @@
             }
         });
 
-        @if(session('success'))
+        <?php if(session('success')): ?>
             Toast.fire({
                 icon: 'success',
-                title: '{{ session('success') }}'
+                title: '<?php echo e(session('success')); ?>'
             });
-        @endif
+        <?php endif; ?>
 
-        @if(session('error'))
+        <?php if(session('error')): ?>
             Toast.fire({
                 icon: 'error',
-                title: '{{ session('error') }}'
+                title: '<?php echo e(session('error')); ?>'
             });
-        @endif
+        <?php endif; ?>
 
         // Mobile Sidebar Toggle
         const mobileToggle = document.getElementById('mobile-sidebar-toggle');
@@ -261,6 +267,7 @@
             }
         });
     </script>
-    @stack('scripts')
+    <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 </html>
+<?php /**PATH /Applications/XAMPP/xamppfiles/htdocs/speed/resources/views/layouts/app.blade.php ENDPATH**/ ?>

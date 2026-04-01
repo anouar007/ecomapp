@@ -6,25 +6,58 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org/",
-  "@type": "Product",
-  "name": "<?php echo e($product->translated_name); ?>",
-  "image": [
-    "<?php echo e($product->main_image ? url(Storage::url($product->main_image)) : ''); ?>"
-  ],
-  "description": "<?php echo e(Str::limit(strip_tags($product->translated_description), 160)); ?>",
-  "sku": "<?php echo e($product->sku); ?>",
-  "brand": {
-    "@type": "Brand",
-    "name": "<?php echo e(setting('app_name', 'Hijab Princesses')); ?>"
-  },
-  "offers": {
-    "@type": "Offer",
-    "url": "<?php echo e(url()->current()); ?>",
-    "priceCurrency": "MAD",
-    "price": "<?php echo e($product->sale_price ?? $product->price); ?>",
-    "itemCondition": "https://schema.org/NewCondition",
-    "availability": "https://schema.org/<?php echo e($product->getTotalStockAttribute() > 0 ? 'InStock' : 'OutOfStock'); ?>"
-  }
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "<?php echo e(__('Home')); ?>",
+          "item": "<?php echo e(url('/')); ?>"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "<?php echo e(__('Shop')); ?>",
+          "item": "<?php echo e(route('shop.index')); ?>"
+        }
+        <?php if($product->productCategory): ?>,
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "<?php echo e($product->productCategory->translated_name); ?>",
+          "item": "<?php echo e(route('shop.index', ['category' => $product->productCategory->slug])); ?>"
+        }
+        <?php endif; ?>
+      ]
+    },
+    {
+      "@type": "Product",
+      "name": "<?php echo e($product->translated_name); ?>",
+      "image": [
+        "<?php echo e($product->main_image ? url(Storage::url($product->main_image)) : ''); ?>"
+      ],
+      "description": "<?php echo e(Str::limit(strip_tags($product->translated_description), 160)); ?>",
+      "sku": "<?php echo e($product->sku); ?>",
+      "brand": {
+        "@type": "Brand",
+        "name": "<?php echo e(setting('app_name', 'Hijab Princesses')); ?>"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": "<?php echo e(url()->current()); ?>",
+        "priceCurrency": "MAD",
+        "price": "<?php echo e($product->sale_price ?? $product->price); ?>",
+        "itemCondition": "https://schema.org/NewCondition",
+        "availability": "https://schema.org/<?php echo e($product->getTotalStockAttribute() > 0 ? 'InStock' : 'OutOfStock'); ?>",
+        "seller": {
+            "@type": "Organization",
+            "name": "Hijab Princesses"
+        }
+      }
+    }
+  ]
 }
 </script>
 <?php $__env->stopSection(); ?>
@@ -35,7 +68,7 @@
 <section class="pdp-breadcrumb-bar py-3 bg-white border-bottom">
     <div class="container px-xl-5 small font-body">
         <nav class="pdp-breadcrumb" aria-label="breadcrumb">
-            <a href="<?php echo e(url('/')); ?>" class="text-muted text-decoration-none"><i class="fas fa-home"></i></a>
+            <a href="<?php echo e(url('/')); ?>" class="text-muted text-decoration-none fw-bold" style="letter-spacing: 0.5px;">HIJAB <span class="text-gold">PRINCESSES</span></a>
             <span class="mx-2 text-muted opacity-50">/</span>
             <a href="<?php echo e(route('shop.index')); ?>" class="text-muted text-decoration-none">المتجر</a>
             <?php if($product->productCategory): ?>

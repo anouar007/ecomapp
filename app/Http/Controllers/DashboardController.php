@@ -34,6 +34,14 @@ class DashboardController extends Controller
             ->sum('total_amount');
         $revenueGrowth = $lastMonthRevenue == 0 ? ($currentRevenue > 0 ? 100 : 0) : round((($currentRevenue - $lastMonthRevenue) / $lastMonthRevenue) * 100, 1);
 
+        // Today's Revenue
+        $todayRevenue = \App\Models\Invoice::where('payment_status', 'paid')
+            ->whereDate('created_at', now())
+            ->sum('total_amount');
+
+        // Pending Orders Count
+        $pendingOrdersCount = \App\Models\Order::where('status', 'pending')->count();
+
         // Get statistics
         $stats = [
             'total_users' => \App\Models\User::count(),
@@ -47,6 +55,9 @@ class DashboardController extends Controller
             
             'total_products' => \App\Models\Product::count(),
             'products_growth' => $calculateGrowth(\App\Models\Product::class),
+
+            'today_revenue' => $todayRevenue,
+            'pending_orders' => $pendingOrdersCount,
         ];
         
         // Recent orders

@@ -1,5 +1,5 @@
-<?php $__env->startSection('meta_title', 'المتجر — أناقة الأميرة'); ?>
-<?php $__env->startSection('meta_description', 'تسوقي أرقى العبايات والخمارات المغربية بأفضل الأسعار. توصيل سريع لكل المدن.'); ?>
+<?php $__env->startSection('meta_title', 'المتجر الرسمي — Hijab Princesses — أناقة الأميرة'); ?>
+<?php $__env->startSection('meta_description', 'Hijab Princesses: اكتشفي أرقى تشكيلة من العبايات والخمارات المغربية الراقية. جودة ملكية وتوصيل سريع لكل مدن المغرب. تسوقي الآن من أناقة الأميرة.'); ?>
 
 <?php $__env->startSection('content'); ?>
 
@@ -7,9 +7,9 @@
 <section class="shop-hero py-4 py-lg-5">
     <div class="container px-xl-5 text-center">
         <h1 class="display-4 brand-heading mb-2 text-dark soft-glow-text" data-aos="fade-down" style="font-size: 2.8rem; letter-spacing: -0.02em;">
-            اكتشفي <span class="text-gold">مجموعتنا</span> الفاخرة
+            مجموعة <span class="text-gold">Hijab Princesses</span> الفاخرة
         </h1>
-        <p class="text-muted small mb-4 font-body opacity-75" data-aos="fade-up">انعمي بلمسة من الرقي المغربي الأصيل في كل تفصيل</p>
+        <p class="text-muted small mb-4 font-body opacity-75" data-aos="fade-up">تمتعي بتجربة تسوق ملكية مع أرقى تصاميم أناقة الأميرة</p>
 
         
         <div class="category-story-track d-flex justify-content-lg-center" data-aos="fade-up">
