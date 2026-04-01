@@ -72,7 +72,7 @@
 <section class="pdp-breadcrumb-bar py-3 bg-white border-bottom">
     <div class="container px-xl-5 small font-body">
         <nav class="pdp-breadcrumb" aria-label="breadcrumb">
-            <a href="{{ url('/') }}" class="text-muted text-decoration-none"><i class="fas fa-home"></i></a>
+            <a href="{{ url('/') }}" class="text-muted text-decoration-none fw-bold" style="letter-spacing: 0.5px;">HIJAB <span class="text-gold">PRINCESSES</span></a>
             <span class="mx-2 text-muted opacity-50">/</span>
             <a href="{{ route('shop.index') }}" class="text-muted text-decoration-none">المتجر</a>
             @if($product->productCategory)

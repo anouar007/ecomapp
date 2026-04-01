@@ -61,8 +61,8 @@
             <div class="glass-capsule-dark mb-4 mx-auto" style="max-width: 850px;">
                 <span class="text-uppercase tracking-widest text-gold fw-bold mb-3 d-block small" style="letter-spacing: 4px;">المجموعة الجديدة</span>
                 <h1 class="display-2 fw-bold mb-4 text-white brand-heading" style="line-height:1.1;">
-                    تألقي كالأميرة مع<br>
-                    <span class="text-gold">أرقى العبايات</span>
+                    Hijab <span class="text-gold">Princesses</span><br>
+                    <span class="fs-2 d-block mt-2 opacity-90">تألقي بلمسة ملكية</span>
                 </h1>
                 <p class="lead mb-5 text-white opacity-90 mx-auto font-body" style="max-width: 650px; font-size: 1.15rem;">
                     اكتشفي تشكيلتنا الحصرية التي تمزج بين الأصالة المغربية واللمسة العصرية لكل مناسباتك الملكية.

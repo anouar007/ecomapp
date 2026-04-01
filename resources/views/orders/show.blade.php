@@ -120,6 +120,26 @@
         background: #f8fafc;
         border: 1px solid #f1f5f9;
     }
+    .brand-badge-select {
+        border: none;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.4rem 0.8rem;
+        border-radius: 99px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        outline: none;
+        appearance: none;
+        -webkit-appearance: none;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    .brand-badge-select.info { background: linear-gradient(135deg, #3b82f6, #2563eb) !important; color: #fff !important; }
+    .brand-badge-select.success { background: linear-gradient(135deg, #10b981, #059669) !important; color: #fff !important; }
+    .brand-badge-select.warning { background: linear-gradient(135deg, #f59e0b, #d97706) !important; color: #fff !important; }
+    .brand-badge-select.danger { background: linear-gradient(135deg, #ef4444, #dc2626) !important; color: #fff !important; }
+    .brand-badge-select option { background: white; color: #333; font-weight: normal; }
 </style>
 @endpush
 
@@ -135,9 +155,14 @@
         <div class="col-12 col-lg text-center text-lg-start">
             <div class="d-flex flex-column flex-lg-row align-items-center gap-2 mb-2">
                 <h1 class="h3 fw-bold mb-0 text-dark">#{{ $order->order_number }}</h1>
-                <span class="brand-badge {{ $order->status === 'delivered' ? 'success' : ($order->status === 'cancelled' ? 'danger' : 'info') }}">
-                    {{ __(ucfirst($order->status)) }}
-                </span>
+                <select class="brand-badge-select status-update-ajax {{ $order->status === 'delivered' ? 'success' : ($order->status === 'cancelled' ? 'danger' : 'info') }}" 
+                        data-order-id="{{ $order->id }}"
+                        data-update-url="{{ route('orders.update', $order) }}"
+                        style="width: 140px;">
+                    @foreach(['pending', 'processing', 'shipped', 'delivered', 'cancelled'] as $st)
+                        <option value="{{ $st }}" {{ $order->status === $st ? 'selected' : '' }}>{{ __(ucfirst($st)) }}</option>
+                    @endforeach
+                </select>
             </div>
             <p class="text-muted small mb-0">
                 <i class="far fa-calendar-alt me-1"></i> {{ $order->created_at->format('F d, Y') }} 
@@ -352,8 +377,15 @@
                         <span class="h3 fw-bolder text-primary mb-0">{{ currency($order->total) }}</span>
                     </div>
                     
-                    <div class="brand-badge {{ $order->payment_status === 'paid' ? 'success' : ($order->payment_status === 'failed' ? 'danger' : 'warning') }} w-100 justify-content-center py-3 fs-6 rounded-4">
-                        <i class="fas fa-wallet me-2"></i> {{ __('Payment:') }} {{ __(ucfirst($order->payment_status)) }}
+                    <div class="d-flex flex-column gap-2 mb-2">
+                        <label class="text-muted small fw-bold text-uppercase" style="font-size: 10px; letter-spacing: 0.5px;">{{ __('Payment Status') }}</label>
+                        <select class="brand-badge-select payment-update-ajax {{ $order->payment_status === 'paid' ? 'success' : ($order->payment_status === 'failed' ? 'danger' : 'warning') }} w-100 justify-content-center py-2 fs-6 rounded-4"
+                                data-order-id="{{ $order->id }}"
+                                data-update-url="{{ route('orders.update', $order) }}">
+                            @foreach(['pending', 'paid', 'failed', 'refunded'] as $pst)
+                                <option value="{{ $pst }}" {{ $order->payment_status === $pst ? 'selected' : '' }}>{{ __(ucfirst($pst)) }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
             </div>
@@ -423,5 +455,79 @@
 
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const updateStatus = async (el, field) => {
+        const orderId = el.dataset.orderId;
+        const url = el.dataset.updateUrl;
+        const value = el.value;
+        
+        // Add loading state
+        el.style.opacity = '0.5';
+        el.disabled = true;
+
+        try {
+            const response = await fetch(url, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ [field]: value })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Since this is the details page, we might want to refresh to update the timeline
+                // But for now, just show toast and update badge color
+                if (typeof Toast !== 'undefined') {
+                    Toast.fire({
+                        icon: 'success',
+                        title: data.message
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'success',
+                        title: data.message,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }
+                
+                // Update classes
+                el.classList.remove('info', 'success', 'warning', 'danger');
+                if (field === 'status') {
+                    el.classList.add(value === 'delivered' ? 'success' : (value === 'cancelled' ? 'danger' : 'info'));
+                    // Optional: auto-refresh after a delay to update the timeline
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    el.classList.add(value === 'paid' ? 'success' : (value === 'failed' ? 'danger' : 'warning'));
+                }
+            } else {
+                throw new Error(data.message || 'Update failed');
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: error.message
+            });
+            setTimeout(() => location.reload(), 1500);
+        } finally {
+            el.style.opacity = '1';
+            el.disabled = false;
+        }
+    };
+
+    document.querySelectorAll('.status-update-ajax').forEach(select => {
+        select.addEventListener('change', () => updateStatus(select, 'status'));
+    });
+
+    document.querySelectorAll('.payment-update-ajax').forEach(select => {
+        select.addEventListener('change', () => updateStatus(select, 'payment_status'));
+    });
+});
+</script>
 @endsection
 
