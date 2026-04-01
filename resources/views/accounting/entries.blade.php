@@ -411,11 +411,13 @@
         }
 
         function confirmDelete(entryId) {
-            if (confirm("{{ __('Are you sure you want to delete this journal entry? This action cannot be undone.') }}")) {
-                // Add your delete logic here
-                console.log('Deleting entry:', entryId);
-                // Example: window.location.href = '/accounting/entries/' + entryId + '/delete';
-            }
+            window.confirmAction("{{ __('Are you sure?') }}", "{{ __('Are you sure you want to delete this journal entry? This action cannot be undone.') }}").then(confirmed => {
+                if (confirmed) {
+                    // Add your delete logic here
+                    console.log('Deleting entry:', entryId);
+                    // Example: window.location.href = '/accounting/entries/' + entryId + '/delete';
+                }
+            });
         }
 
         // Keyboard shortcuts

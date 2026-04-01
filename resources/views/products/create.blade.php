@@ -355,7 +355,7 @@ function handleMultipleImages(event) {
     });
 
     if (errorMessages.length > 0) {
-        alert("{{ __('Please fix the following issues:') }}\n" + errorMessages.join('\n'));
+        showValidationErrors("{{ __('Images Issue') }}", errorMessages);
         if (validFiles.length === 0) {
             // No valid files in this selection batch, just return without displaying
             event.target.value = '';
@@ -580,15 +580,17 @@ function addVariationRow() {
 }
 
 function removeVariationRow(btn) {
-    if (confirm("{{ __('Are you sure you want to remove this variation?') }}")) {
-        const tr = btn.closest('.variant-card');
-        tr.remove();
-        
-        const container = document.getElementById('variantsContainer');
-        if (container.children.length === 0) {
-            document.getElementById('noVariantsMsg').classList.remove('d-none');
+    window.confirmAction("{{ __('Are you sure?') }}", "{{ __('Are you sure you want to remove this variation?') }}").then(confirmed => {
+        if (confirmed) {
+            const tr = btn.closest('.variant-card');
+            tr.remove();
+            
+            const container = document.getElementById('variantsContainer');
+            if (container.children.length === 0) {
+                document.getElementById('noVariantsMsg').classList.remove('d-none');
+            }
         }
-    }
+    });
 }
 
 function previewVariantImage(input, index) {
@@ -597,13 +599,13 @@ function previewVariantImage(input, index) {
         const maxSize = 4 * 1024 * 1024; // 4MB
         
         if (file.size > maxSize) {
-            alert("{{ __('The image is too large. Max size is 4MB.') }}");
+            showError("{{ __('Error') }}", "{{ __('The image is too large. Max size is 4MB.') }}");
             input.value = '';
             return;
         }
 
         if (!file.type.match('image.*')) {
-            alert("{{ __('Please select a valid image file.') }}");
+            showError("{{ __('Error') }}", "{{ __('Please select a valid image file.') }}");
             input.value = '';
             return;
         }
@@ -666,7 +668,10 @@ document.getElementById('productForm')?.addEventListener('submit', function(e) {
 
     if (hasError) {
         e.preventDefault();
-        alert("{{ __('Please fix the following issues before saving:') }}" + errorMessage);
+        
+        // Show validation errors as a list
+        const errors = errorMessage.split('\n').filter(e => e.trim().length > 0);
+        showValidationErrors("{{ __('Please fix the following issues before saving:') }}", errors);
     }
 });
 </script>

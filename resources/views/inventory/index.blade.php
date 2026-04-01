@@ -540,12 +540,12 @@
                 updateUI(productId, variantId, data);
             } else {
                 input.value = originalVal; // Revert
-                alert(data.message || "{{ __('Update failed') }}");
+                showError("{{ __('Update Failed') }}", data.message || "{{ __('Update failed') }}");
             }
         } catch (error) {
             input.value = originalVal; // Revert
             console.error(error);
-            alert("{{ __('Something went wrong') }}");
+            showError("{{ __('Error') }}", "{{ __('Something went wrong') }}");
         } finally {
             btn.disabled = false;
         }
@@ -555,7 +555,7 @@
     async function saveQuantity(productId, variantId, input) {
         const newVal = parseInt(input.value);
         if (isNaN(newVal) || newVal < 0) {
-            alert("{{ __('Please enter a valid positive number') }}");
+            showError("{{ __('Invalid Quantity') }}", "{{ __('Please enter a valid positive number') }}");
             return;
         }
 
@@ -580,12 +580,12 @@
             if (data.success) {
                 updateUI(productId, variantId, data);
             } else {
-                alert(data.message || "{{ __('Update failed') }}");
+                showError("{{ __('Update Failed') }}", data.message || "{{ __('Update failed') }}");
                 // Revert to data state if possible or reload
             }
         } catch (error) {
             console.error(error);
-            alert("{{ __('Something went wrong') }}");
+            showError("{{ __('Error') }}", "{{ __('Something went wrong') }}");
         } finally {
             input.disabled = false;
             input.style.opacity = '1';

@@ -450,11 +450,11 @@ function bulkEmail() {
         .map(cb => cb.value);
     
     if (selected.length === 0) {
-        alert('Please select at least one debtor');
+        showWarning("{{ __('No Selection') }}", "{{ __('Please select at least one debtor') }}");
         return;
     }
     
-    alert(`Bulk email feature coming soon! Selected: ${selected.length} debtors`);
+    showInfo("{{ __('Feature Coming Soon') }}", `Bulk email feature coming soon! Selected: ${selected.length} debtors`);
 }
 </script>
 @endpush

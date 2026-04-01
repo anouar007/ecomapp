@@ -540,17 +540,19 @@
 
     function removeBlock(id, e) {
         if(e) e.stopPropagation();
-        if(confirm('Delete this block?')) {
-            const res = findBlockParent(id);
-            if(res) {
-                res.list.splice(res.index, 1);
-                if(selectedBlockId === id) {
-                    selectedBlockId = null;
-                    renderProperties();
+        window.confirmAction("{{ __('Delete Block') }}", "{{ __('Delete this block?') }}").then(confirmed => {
+            if (confirmed) {
+                const res = findBlockParent(id);
+                if(res) {
+                    res.list.splice(res.index, 1);
+                    if(selectedBlockId === id) {
+                        selectedBlockId = null;
+                        renderProperties();
+                    }
+                    renderCanvas();
                 }
-                renderCanvas();
             }
-        }
+        });
     }
 
     function selectBlock(id) {

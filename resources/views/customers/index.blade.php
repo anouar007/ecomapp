@@ -173,7 +173,12 @@
                                 <a href="{{ route('customers.edit', $customer) }}" class="btn-action-icon" title="{{ __('Edit Customer') }}">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <form action="{{ route('customers.destroy', $customer) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('Are you sure you want to delete this customer?') }}');">
+                                <form action="{{ route('customers.destroy', $customer) }}" 
+                                      method="POST" 
+                                      class="d-inline" 
+                                      data-confirm-delete 
+                                      data-item-type="{{ __('customer') }}" 
+                                      data-item-name="{{ $customer->name }}">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn-action-icon text-danger" title="{{ __('Delete Customer') }}">

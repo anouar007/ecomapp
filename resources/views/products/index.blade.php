@@ -293,7 +293,12 @@
                                         <a href="{{ route('products.edit', $product) }}" class="dropdown-item">
                                             <i class="fas fa-edit me-2 text-primary"></i>{{ __('Edit') }}
                                         </a>
-                                        <form method="POST" action="{{ route('products.destroy', $product->id) }}" onsubmit="return confirm('{{ __('Are you sure?') }}')">
+                                        <form method="POST" 
+                                              action="{{ route('products.destroy', $product->id) }}" 
+                                              class="d-inline" 
+                                              data-confirm-delete 
+                                              data-item-type="product" 
+                                              data-item-name="{{ $product->translated_name }}">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="dropdown-item text-danger">
