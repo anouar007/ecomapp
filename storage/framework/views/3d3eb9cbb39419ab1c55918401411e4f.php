@@ -98,8 +98,8 @@
             font-weight: 800 !important;
         }
     </style>
-    <link rel="stylesheet" href="<?php echo e(asset('css/frontend.css')); ?>">
-    <link rel="stylesheet" href="<?php echo e(asset('css/brand.css')); ?>">
+    <link rel="stylesheet" href="<?php echo e(asset('css/frontend.css')); ?>?v=<?php echo e(filemtime(public_path('css/frontend.css'))); ?>">
+    <link rel="stylesheet" href="<?php echo e(asset('css/brand.css')); ?>?v=<?php echo e(filemtime(public_path('css/brand.css'))); ?>">
     <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
     <!-- Custom Head Codes -->
     <?php

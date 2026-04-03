@@ -98,8 +98,8 @@
             font-weight: 800 !important;
         }
     </style>
-    <link rel="stylesheet" href="{{ asset('css/frontend.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/brand.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/frontend.css') }}?v={{ filemtime(public_path('css/frontend.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/brand.css') }}?v={{ filemtime(public_path('css/brand.css')) }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Custom Head Codes -->
     @php
