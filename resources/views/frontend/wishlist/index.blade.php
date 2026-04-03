@@ -1,13 +1,13 @@
 @extends('layouts.frontend')
 
-@section('meta_title', 'قائمة أمنياتي الملكية — ' . setting('app_name', 'Hijab Princesses'))
+@section('meta_title', 'قائمة أمنياتي — ' . setting('app_name', 'Hijab Princesses'))
 
 @section('content')
 <div class="bg-surface section-py min-vh-100">
     <div class="container px-xl-5">
         
         <div class="d-flex flex-column mb-5" data-aos="fade-up">
-            <h1 class="brand-heading h2 mb-2">قائمة أمنياتكِ الملكية</h1>
+            <h1 class="brand-heading h2 mb-2">قائمة أمنياتكِ</h1>
             <div class="bg-gold rounded" style="width: 60px; height: 4px;"></div>
         </div>
 

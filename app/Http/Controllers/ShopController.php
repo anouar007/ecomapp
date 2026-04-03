@@ -68,7 +68,12 @@ class ShopController extends Controller
             ]);
         }
 
-        $allCategories = Category::where('status', 'active')->orderBy('sort_order', 'asc')->get();
+        $allCategories = Category::where('status', 'active')
+            ->with(['products' => function($q) {
+                $q->where('status', 'active')->with(['images', 'variants']);
+            }])
+            ->orderBy('sort_order', 'asc')
+            ->get();
         $categories = $allCategories; // For backward compatibility if needed
 
         return view('frontend.shop.index', compact('products', 'allCategories', 'categories'));
@@ -111,14 +116,14 @@ class ShopController extends Controller
         return response()->json([
             'id' => $product->id,
             'name' => $product->name,
-            'description' => \Str::limit($product->description, 150),
+            'description' => Str::limit($product->description, 150),
             'formatted_price' => $product->formatted_price,
             'sale_price' => $product->sale_price,
             'formatted_sale_price' => $product->formatted_sale_price,
             'is_on_sale' => $product->isOnSale(),
             'discount_percentage' => $product->discount_percentage,
             'category_name' => $product->category_name,
-            'main_image_url' => $product->main_image ? \Storage::url($product->main_image) : null,
+            'main_image_url' => $product->main_image ? Storage::url($product->main_image) : null,
             'url' => route('shop.show', $product->id)
         ]);
     }

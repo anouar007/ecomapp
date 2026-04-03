@@ -19,7 +19,7 @@
                             <i class="fas fa-columns opacity-50"></i> لوحة التحكم
                         </a>
                         <a href="{{ route('customer.orders') }}" class="list-group-item list-group-item-action p-3 border-0 d-flex align-items-center gap-3 {{ request()->routeIs('customer.orders*') ? 'bg-gold-light text-gold fw-bold border-start-gold' : 'text-muted' }}">
-                            <i class="fas fa-shopping-bag opacity-50"></i> طلباتي الملكية
+                            <i class="fas fa-shopping-bag opacity-50"></i> طلباتي
                         </a>
                         <a href="{{ route('customer.profile') }}" class="list-group-item list-group-item-action p-3 border-0 d-flex align-items-center gap-3 {{ request()->routeIs('customer.profile') ? 'bg-gold-light text-gold fw-bold border-start-gold' : 'text-muted' }}">
                             <i class="fas fa-user-crown opacity-50"></i> إعدادات الحساب
@@ -68,7 +68,7 @@
         
         <div class="ai-chat-body font-body" id="ai-chat-body">
             <div class="ai-msg ai-msg-bot">
-                مرحباً بكِ أميرتي {{ auth()->user()->name }}! 👋 أنا مساعدتكِ الشخصية في **{{ setting('app_name', 'Hijab Princesses') }}**. كيف يمكنني جعل تجربتكِ أكثر أناقة اليوم؟
+                مرحباً بكِ أميرتي {{ auth()->user()->name }}! 👋 أنا مساعدتكِ الشخصية في <span class="font-corsiva">**{{ setting('app_name', 'Hijab Princesses') }}**</span>. كيف يمكنني جعل تجربتكِ أكثر أناقة اليوم؟
             </div>
             
             <div class="ai-chat-suggestions mt-3" id="ai-chat-suggestions">

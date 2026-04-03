@@ -2,7 +2,7 @@
 
 @section('dashboard_content')
 <div class="d-flex flex-column mb-4" data-aos="fade-up">
-    <h3 class="brand-heading h2 mb-2">تاريخ طلباتكِ الملكية</h3>
+    <h3 class="brand-heading h2 mb-2">تاريخ طلباتكِ</h3>
     <div class="bg-gold rounded" style="width: 40px; height: 3px;"></div>
 </div>
 

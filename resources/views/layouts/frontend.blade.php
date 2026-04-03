@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('meta_title', setting('app_name', 'Hijab Princesses — أناقة الأميرة'))</title>
     <meta name="google-site-verification" content="S-Gl89li8kbi-OvEDDQMQEPWh17GCfJ-Ehkrhj7" />
-    <meta name="description" content="@yield('meta_description', setting('app_description', 'Hijab Princesses — أناقة الأميرة: وجهتكم الفاخرة للعبايات والخمارات الراقية بالمغرب. جودة ملكية وتوصيل سريع.'))">
+    <meta name="description" content="@yield('meta_description', setting('app_description', 'Hijab Princesses — أناقة الأميرة: وجهتكم الفاخرة للعبايات والخمارات الراقية بالمغرب. جودة فاخرة وتوصيل سريع.'))">
     <meta name="keywords" content="@yield('meta_keywords', 'hijabprincesses, hijab princesses, hijabprincesses.com, أناقة الأميرة, hijab princesses shop, abaya maroc, khimar maroc, hijab luxe, boutique hijab, عبايات راقية, خمارات مغربية, ملابس محجبات, متجر أميرة')">
     <meta name="robots" content="@yield('meta_robots', 'index, follow')">
     <meta name="author" content="{{ setting('app_name', 'Hijab Princesses') }}">
@@ -36,8 +36,8 @@
 
     <!-- Favicon -->
     @if(setting('app_logo'))
-        <link rel="icon" href="{{ asset('storage/' . setting('app_logo')) }}" type="image/x-icon">
-        <link rel="apple-touch-icon" href="{{ asset('storage/' . setting('app_logo')) }}">
+        <link rel="icon" href="{{ Storage::url(setting('app_logo')) }}" type="image/x-icon">
+        <link rel="apple-touch-icon" href="{{ Storage::url(setting('app_logo')) }}">
     @else
         <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     @endif
@@ -154,7 +154,7 @@
                 <div class="header-logo-container" style="pointer-events: none;">
                     <a href="{{ url('/') }}" class="text-decoration-none" style="pointer-events: auto;">
                         @if(setting('app_logo'))
-                            <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="Hijab Princesses — أناقة الأميرة" class="header-logo shadow-sm">
+                            <img src="{{ Storage::url(setting('app_logo')) }}" alt="Hijab Princesses — أناقة الأميرة" class="header-logo shadow-sm">
                         @else
                             <div class="brand-logo-text" style="font-size: 1.8rem;">
                                 Hijab <span class="gold-part">Princesses</span>
@@ -492,9 +492,9 @@
         <div class="container">
             <div class="row g-5">
                 <div class="col-lg-6">
-                    <h5 class="brand-heading text-white mb-4 text-uppercase ls-1" style="font-size: 1.5rem;">Hijab <span class="text-gold">Princesses</span></h5>
+                    <h5 class="brand-heading text-white mb-4 text-uppercase ls-1 font-corsiva" style="font-size: 1.5rem;">Hijab <span class="text-gold">Princesses</span></h5>
                     <p class="small lh-lg mb-4 text-white opacity-75">
-                        Hijab Princesses — أناقة الأميرة: وجهتكم الفاخرة لكل ما يخص الأناقة المحتشمة في المغرب. نقدم مجموعات حصرية من العبايات الراقية، الخمارات المتميزة، والشالات الفاخرة — المصممة خصيصاً للأميرة العصرية التي تبحث عن الجودة والجمال. شعارنا الجودة الملكية والتوصيل لكل مدن المغرب.
+                        Hijab Princesses — أناقة الأميرة: وجهتكم الفاخرة لكل ما يخص الأناقة المحتشمة في المغرب. نقدم مجموعات حصرية من العبايات الراقية، الخمارات المتميزة، والشالات الفاخرة — المصممة خصيصاً للأميرة العصرية التي تبحث عن الجودة والجمال. شعارنا الجودة الراقية والتوصيل لكل مدن المغرب.
                     </p>
                     @php
                         $sfb  = setting('social_facebook',  '');

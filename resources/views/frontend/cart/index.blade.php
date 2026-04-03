@@ -1,6 +1,7 @@
 @extends('layouts.frontend')
 
-@section('meta_title', 'سلة التسوق الملكية — ' . setting('app_name', 'Hijab Princesses'))
+@section('meta_title', 'سلة التسوق — ' . setting('app_name', 'Hijab Princesses'))
+@section('meta_description', 'Hijab Princesses: اكتشفي أرقى تشكيلة من العبايات والخمارات المغربية الراقية. جودة فاخرة وتوصيل سريع لكل مدن المغرب. تسوقي الآن من أناقة الأميرة.')
 
 @section('content')
 <div class="bg-surface section-py min-vh-100">
@@ -34,7 +35,7 @@
                         <i class="fas fa-shopping-bag fa-4x text-gold opacity-50"></i>
                     </div>
                     <h2 class="brand-heading mb-3">سلتكِ لا تزال بانتظارك</h2>
-                    <p class="text-muted mb-5 font-body">أضيفي لمسة من الأناقة لمشترياتك اليوم.</p>
+                    <p class="text-muted small mb-4 font-body opacity-75" data-aos="fade-up">تمتعي بتجربة تسوق استثنائية مع أرقى تصاميم أناقة الأميرة</p>
                     <a href="{{ route('shop.index') }}" class="btn-brand-primary px-5 py-3 text-decoration-none hvr-grow">اكتشفي التشكيلة الآن</a>
                 </div>
             @endif
@@ -77,7 +78,7 @@ function updateQty(id, qty) {
 function removeItem(id) {
     Swal.fire({
         title: 'هل تريدين الحذف؟',
-        text: "سوف يتم إزالة هذا المنتج من سلتكِ الملكية.",
+        text: "سوف يتم إزالة هذا المنتج من سلة التسوق الخاصة بكِ.",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#c5a059',
