@@ -1,10 +1,14 @@
-<div class="brand-card h-100 pcard border-0 position-relative" data-product-id="{{ $product->id }}">
+<div class="brand-card h-100 pcard border-0 position-relative" data-product-id="{{ $product->id }}" data-aos="fade-up" data-aos-delay="{{ (($loop->index ?? 0) % 4) * 50 }}">
     {{-- Main Clickable Area (Z-index 1) --}}
     <a href="{{ route('shop.show', $product->id) }}" class="position-absolute top-0 start-0 w-100 h-100 z-1" aria-label="View {{ $product->translated_name }}"></a>
 
     {{-- Visual Image Area --}}
     <div class="product-v2-image position-relative overflow-hidden" style="aspect-ratio: 4/5;">
-        <img src="{{ $product->main_image ? (Str::startsWith($product->main_image, 'http') ? $product->main_image : Storage::url($product->main_image)) : asset('images/placeholder-product.jpg') }}" alt="{{ $product->translated_name }} - Hijab Princesses" class="w-100 h-100 object-fit-cover transition-hero">
+        <img src="{{ $product->main_image ? (Str::startsWith($product->main_image, 'http') ? $product->main_image : Storage::url($product->main_image)) : asset('images/placeholder-product.jpg') }}" 
+             alt="{{ $product->translated_name }} - Hijab Princesses" 
+             class="w-100 h-100 object-fit-cover transition-hero"
+             loading="lazy"
+             decoding="async">
     </div>
 
     {{-- Content Body (Z-index 2 to allow interaction with variants/buttons) --}}

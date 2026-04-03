@@ -1,10 +1,14 @@
-<div class="brand-card h-100 pcard border-0 position-relative" data-product-id="<?php echo e($product->id); ?>">
+<div class="brand-card h-100 pcard border-0 position-relative" data-product-id="<?php echo e($product->id); ?>" data-aos="fade-up" data-aos-delay="<?php echo e((($loop->index ?? 0) % 4) * 50); ?>">
     
     <a href="<?php echo e(route('shop.show', $product->id)); ?>" class="position-absolute top-0 start-0 w-100 h-100 z-1" aria-label="View <?php echo e($product->translated_name); ?>"></a>
 
     
     <div class="product-v2-image position-relative overflow-hidden" style="aspect-ratio: 4/5;">
-        <img src="<?php echo e($product->main_image ? (Str::startsWith($product->main_image, 'http') ? $product->main_image : Storage::url($product->main_image)) : asset('images/placeholder-product.jpg')); ?>" alt="<?php echo e($product->translated_name); ?> - Hijab Princesses" class="w-100 h-100 object-fit-cover transition-hero">
+        <img src="<?php echo e($product->main_image ? (Str::startsWith($product->main_image, 'http') ? $product->main_image : Storage::url($product->main_image)) : asset('images/placeholder-product.jpg')); ?>" 
+             alt="<?php echo e($product->translated_name); ?> - Hijab Princesses" 
+             class="w-100 h-100 object-fit-cover transition-hero"
+             loading="lazy"
+             decoding="async">
     </div>
 
     
