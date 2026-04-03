@@ -1,4 +1,8 @@
-<div class="brand-card h-100 pcard border-0 position-relative" data-product-id="{{ $product->id }}" data-aos="fade-up" data-aos-delay="{{ (($loop->index ?? 0) % 4) * 50 }}">
+<div class="brand-card h-100 pcard pcard-reveal border-0 position-relative" 
+     data-product-id="{{ $product->id }}" 
+     data-aos="fade-up" 
+     data-aos-delay="{{ (($loop->index ?? 0) % 4) * 50 }}"
+     style="--reveal-delay: {{ (($loop->index ?? 0) % 8) * 0.1 }}s">
     {{-- Main Clickable Area (Z-index 1) --}}
     <a href="{{ route('shop.show', $product->id) }}" class="position-absolute top-0 start-0 w-100 h-100 z-1" aria-label="View {{ $product->translated_name }}"></a>
 

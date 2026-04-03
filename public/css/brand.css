@@ -38,7 +38,7 @@
     --radius-xl: 24px;
 
     /* Brand Specific Font */
-    --font-brand: "Monotype Corsiva", "Apple Chancery", "ITC Zapf Chancery", "URW Chancery L", cursive;
+
 }
 
 /* ── Brand Background Assets ── */
@@ -167,7 +167,7 @@ h1, h2, h3, h4, .brand-heading {
 }
 
 .brand-logo-text {
-    font-family: var(--font-brand);
+    font-family: "Monotype Corsiva", "Apple Chancery", "ITC Zapf Chancery", "URW Chancery L", cursive;
     font-size: 1.8rem;
     font-weight: normal; /* Corsiva is naturally bold/italic */
     letter-spacing: normal;
@@ -730,7 +730,7 @@ html, body {
 }
 
 .font-corsiva {
-    font-family: var(--font-brand) !important;
+    font-family: "Monotype Corsiva", "Apple Chancery", "ITC Zapf Chancery", "URW Chancery L", cursive !important;
 }
 
 /* ── Silk & Smooth: Luxe Refinements ── */
@@ -1049,7 +1049,7 @@ html, body {
 }
 
 .section-premium-title {
-    font-family: var(--font-brand);
+    font-family: "Monotype Corsiva", "Apple Chancery", "ITC Zapf Chancery", "URW Chancery L", cursive;
     font-size: 2.2rem;
     color: var(--brand-dark);
     margin-bottom: 0.5rem;
@@ -1090,3 +1090,23 @@ html, body {
         font-size: 3rem;
     }
 }
+
+/* ── Premium Product Reveal Animation ── */
+@keyframes revealUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.pcard-reveal {
+    opacity: 0;
+    will-change: transform, opacity;
+    animation: revealUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation-delay: var(--reveal-delay, 0s);
+}
+

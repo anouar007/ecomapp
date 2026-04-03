@@ -1,4 +1,8 @@
-<div class="brand-card h-100 pcard border-0 position-relative" data-product-id="<?php echo e($product->id); ?>" data-aos="fade-up" data-aos-delay="<?php echo e((($loop->index ?? 0) % 4) * 50); ?>">
+<div class="brand-card h-100 pcard pcard-reveal border-0 position-relative" 
+     data-product-id="<?php echo e($product->id); ?>" 
+     data-aos="fade-up" 
+     data-aos-delay="<?php echo e((($loop->index ?? 0) % 4) * 50); ?>"
+     style="--reveal-delay: <?php echo e((($loop->index ?? 0) % 8) * 0.1); ?>s">
     
     <a href="<?php echo e(route('shop.show', $product->id)); ?>" class="position-absolute top-0 start-0 w-100 h-100 z-1" aria-label="View <?php echo e($product->translated_name); ?>"></a>
 
