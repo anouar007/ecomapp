@@ -1895,6 +1895,7 @@ a { text-decoration: none; }
         height: 400px;
         min-height: 490px;
         max-height: 400px;
+        padding: 0px;
      }
 }
 /* ── Super Easy Version Styles ── */
