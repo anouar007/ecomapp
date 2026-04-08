@@ -356,7 +356,7 @@
                                     <?php endif; ?>
                                     <input type="file" name="variants[<?php echo e($index); ?>][color_image]" class="d-none" accept="image/*" onchange="previewVariantImage(this, <?php echo e($index); ?>)">
                                 </div>
-                                <div class="variant-input-group">
+                                <div class="variant-input-group d-none">
                                     <label><?php echo e(__('Color')); ?></label>
                                     <input type="color" name="variants[<?php echo e($index); ?>][color_code]" class="form-control form-control-color" value="<?php echo e($variant->color_code ?: '#000000'); ?>">
                                     <input type="hidden" name="variants[<?php echo e($index); ?>][color]" value="<?php echo e($variant->color); ?>">
@@ -368,7 +368,7 @@
                             </div>
 
                             <div class="variant-grid-inputs">
-                                <div class="variant-input-group">
+                                <div class="variant-input-group d-none">
                                     <label><?php echo e(__('SKU')); ?></label>
                                     <div class="input-group">
                                         <input type="text" name="variants[<?php echo e($index); ?>][sku]" class="form-control font-inter" value="<?php echo e($variant->sku); ?>" placeholder="<?php echo e(__('Unique SKU')); ?>">
@@ -557,7 +557,7 @@ function addVariationRow() {
                 <span><?php echo e(__('صورة')); ?></span>
                 <input type="file" name="variants[${vIndex}][color_image]" class="d-none" accept="image/*" onchange="previewVariantImage(this, ${vIndex})">
             </div>
-            <div class="variant-input-group">
+            <div class="variant-input-group d-none">
                 <label><?php echo e(__('Color')); ?></label>
                 <input type="color" name="variants[${vIndex}][color_code]" class="form-control form-control-color" value="#000000">
             </div>
@@ -568,7 +568,7 @@ function addVariationRow() {
         </div>
 
         <div class="variant-grid-inputs">
-            <div class="variant-input-group">
+            <div class="variant-input-group d-none">
                 <label><?php echo e(__('SKU')); ?></label>
                 <div class="input-group">
                     <input type="text" name="variants[${vIndex}][sku]" class="form-control font-inter" placeholder="<?php echo e(__('رمز المنتج')); ?>">

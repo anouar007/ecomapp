@@ -93,8 +93,8 @@ class CartController extends Controller
                     'quantity' => $quantity,
                     'price' => $variant ? ($variant->price ?? $product->price) : $product->price,
                     'image' => $imagePath,
-                    'color' => $variant ? $variant->color_name : null,
                     'size' => $variant ? $variant->size : null,
+                    'color' => $variant ? $variant->color : null,
                 ];
             }
 

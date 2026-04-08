@@ -1,9 +1,7 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', __('Add New Product')); ?>
 
-@section('title', __('Add New Product'))
-
-@push('styles')
-<link rel="stylesheet" href="{{ asset('css/management.css') }}">
+<?php $__env->startPush('styles'); ?>
+<link rel="stylesheet" href="<?php echo e(asset('css/management.css')); ?>">
 <style>
 .multi-image-upload {
     display: grid;
@@ -93,43 +91,43 @@
     height: 31px;
 }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="page-header">
-    <h1 class="page-title"><i class="fas fa-plus-circle"></i> {{ __('Add New Product') }}</h1>
-    <p class="page-subtitle">{{ __('Create a new product in your catalog') }}</p>
+    <h1 class="page-title"><i class="fas fa-plus-circle"></i> <?php echo e(__('Add New Product')); ?></h1>
+    <p class="page-subtitle"><?php echo e(__('Create a new product in your catalog')); ?></p>
 </div>
 
-@if($errors->any())
+<?php if($errors->any()): ?>
 <div class="alert alert-danger">
     <i class="fas fa-exclamation-circle"></i>
     <div>
-        <strong>{{ __('Oops! Something went wrong:') }}</strong>
+        <strong><?php echo e(__('Oops! Something went wrong:')); ?></strong>
         <ul style="margin: 8px 0 0 20px; padding: 0;">
-            @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
+            <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <li><?php echo e($error); ?></li>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </ul>
     </div>
 </div>
-@endif
+<?php endif; ?>
 
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-file-alt"></i> {{ __('Product Information') }}</h3>
+        <h3 class="card-title"><i class="fas fa-file-alt"></i> <?php echo e(__('Product Information')); ?></h3>
     </div>
     <div class="card-body">
-        <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data" id="productForm">
-            @csrf
+        <form action="<?php echo e(route('products.store')); ?>" method="POST" enctype="multipart/form-data" id="productForm">
+            <?php echo csrf_field(); ?>
             
             <div class="form-group">
-                <label class="form-label"><i class="fas fa-images"></i> {{ __('Product Images (Multiple)') }}</label>
+                <label class="form-label"><i class="fas fa-images"></i> <?php echo e(__('Product Images (Multiple)')); ?></label>
                 <div class="multi-image-upload" id="imagePreviewContainer">
                     <div class="image-upload-box" onclick="document.getElementById('images').click()">
                         <div>
                             <i class="fas fa-cloud-upload-alt" style="font-size: 24px; color: #94a3b8;"></i>
-                            <p style="margin-top: 6px; color: #64748b; font-size: 11px; text-align: center;">{{ __('Click to upload') }}</p>
+                            <p style="margin-top: 6px; color: #64748b; font-size: 11px; text-align: center;"><?php echo e(__('Click to upload')); ?></p>
                         </div>
                     </div>
                 </div>
@@ -140,113 +138,117 @@
                        multiple
                        style="display: none;" 
                        onchange="handleMultipleImages(event)">
-                <small class="form-help">{{ __('You can upload multiple images. First image will be the primary image. Max 2MB each.') }}</small>
+                <small class="form-help"><?php echo e(__('You can upload multiple images. First image will be the primary image. Max 2MB each.')); ?></small>
             </div>
 
             <div class="form-row d-none">
                 <div class="form-group">
                     <label for="name_fr" class="form-label">
-                        {{ __('Product Name (FR)') }}
+                        <?php echo e(__('Product Name (FR)')); ?>
+
                     </label>
-                    <input type="text" id="name_fr" name="name_fr" class="form-control" value="{{ old('name_fr') }}" placeholder="Nom du produit">
+                    <input type="text" id="name_fr" name="name_fr" class="form-control" value="<?php echo e(old('name_fr')); ?>" placeholder="Nom du produit">
                 </div>
                 <div class="form-group">
-                    <label for="name_en" class="form-label">{{ __('Product Name (EN)') }}</label>
-                    <input type="text" id="name_en" name="name_en" class="form-control" value="{{ old('name_en') }}" placeholder="Product Name">
+                    <label for="name_en" class="form-label"><?php echo e(__('Product Name (EN)')); ?></label>
+                    <input type="text" id="name_en" name="name_en" class="form-control" value="<?php echo e(old('name_en')); ?>" placeholder="Product Name">
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="name_ar" class="form-label">{{ __('Product Name (AR)') }} <span class="required">*</span></label>
-                <input type="text" id="name_ar" name="name_ar" class="form-control" value="{{ old('name_ar') }}" placeholder="اسم المنتج" dir="rtl" required autofocus>
+                <label for="name_ar" class="form-label"><?php echo e(__('Product Name (AR)')); ?> <span class="required">*</span></label>
+                <input type="text" id="name_ar" name="name_ar" class="form-control" value="<?php echo e(old('name_ar')); ?>" placeholder="اسم المنتج" dir="rtl" required autofocus>
             </div>
 
             <div class="form-row">
-                <input type="hidden" name="name" id="name" value="{{ old('name', 'autofill') }}">
+                <input type="hidden" name="name" id="name" value="<?php echo e(old('name', 'autofill')); ?>">
                 
                 <div class="form-group">
                     <label for="sku" class="form-label">
-                        {{ __('SKU') }} <span class="required">*</span>
+                        <?php echo e(__('SKU')); ?> <span class="required">*</span>
                     </label>
                     <div class="input-group">
                         <input type="text" 
                                id="sku" 
                                name="sku" 
                                class="form-control" 
-                               value="{{ old('sku') }}" 
-                               placeholder="{{ __('Auto-generated or custom') }}" 
+                               value="<?php echo e(old('sku')); ?>" 
+                               placeholder="<?php echo e(__('Auto-generated or custom')); ?>" 
                                required>
                         <button type="button" 
                                 onclick="generateSKU()" 
                                 class="btn btn-outline-primary">
-                            <i class="fas fa-magic"></i> {{ __('Generate') }}
+                            <i class="fas fa-magic"></i> <?php echo e(__('Generate')); ?>
+
                         </button>
                     </div>
                     <small class="form-help">
-                        <i class="fas fa-info-circle"></i> {{ __('Auto-generates on page load or click "Generate" for new SKU') }}
+                        <i class="fas fa-info-circle"></i> <?php echo e(__('Auto-generates on page load or click "Generate" for new SKU')); ?>
+
                     </small>
                 </div>
             </div>
 
             <div class="d-none">
                 <div class="form-group mt-3">
-                    <label for="description_fr" class="form-label">{{ __('Description (FR)') }}</label>
-                    <textarea id="description_fr" name="description_fr" class="form-control" rows="2" placeholder="Description en français...">{{ old('description_fr') }}</textarea>
+                    <label for="description_fr" class="form-label"><?php echo e(__('Description (FR)')); ?></label>
+                    <textarea id="description_fr" name="description_fr" class="form-control" rows="2" placeholder="Description en français..."><?php echo e(old('description_fr')); ?></textarea>
                 </div>
                 <div class="form-group mt-3">
-                    <label for="description_en" class="form-label">{{ __('Description (EN)') }}</label>
-                    <textarea id="description_en" name="description_en" class="form-control" rows="2" placeholder="English description...">{{ old('description_en') }}</textarea>
+                    <label for="description_en" class="form-label"><?php echo e(__('Description (EN)')); ?></label>
+                    <textarea id="description_en" name="description_en" class="form-control" rows="2" placeholder="English description..."><?php echo e(old('description_en')); ?></textarea>
                 </div>
             </div>
 
             <div class="form-group mt-3">
-                <label for="description_ar" class="form-label">{{ __('Description (AR)') }}</label>
-                <textarea id="description_ar" name="description_ar" class="form-control" rows="2" placeholder="وصف عربي..." dir="rtl">{{ old('description_ar') }}</textarea>
+                <label for="description_ar" class="form-label"><?php echo e(__('Description (AR)')); ?></label>
+                <textarea id="description_ar" name="description_ar" class="form-control" rows="2" placeholder="وصف عربي..." dir="rtl"><?php echo e(old('description_ar')); ?></textarea>
             </div>
 
             <div class="form-row mt-4">
                 <div class="form-group">
                     <label for="cost_price" class="form-label">
-                        <i class="fas fa-dollar-sign"></i> {{ __('Cost Price ($)') }}
+                        <i class="fas fa-dollar-sign"></i> <?php echo e(__('Cost Price ($)')); ?>
+
                     </label>
                     <input type="number" 
                            id="cost_price" 
                            name="cost_price" 
                            class="form-control" 
-                           value="{{ old('cost_price') }}" 
+                           value="<?php echo e(old('cost_price')); ?>" 
                            placeholder="0.00" 
                            step="0.01" 
                            min="0">
-                    <small class="form-help">{{ __('How much you pay for this product') }}</small>
+                    <small class="form-help"><?php echo e(__('How much you pay for this product')); ?></small>
                 </div>
 
                 <div class="form-group">
                     <label for="price" class="form-label">
-                        <i class="fas fa-tag"></i> {{ __('Selling Price ($)') }} <span class="required">*</span>
+                        <i class="fas fa-tag"></i> <?php echo e(__('Selling Price ($)')); ?> <span class="required">*</span>
                     </label>
                     <input type="number" 
                            id="price" 
                            name="price" 
                            class="form-control" 
-                           value="{{ old('price') }}" 
+                           value="<?php echo e(old('price')); ?>" 
                            placeholder="0.00" 
                            step="0.01" 
                            min="0" 
                            required>
-                    <small class="form-help">{{ __('Price you sell to customers') }}</small>
+                    <small class="form-help"><?php echo e(__('Price you sell to customers')); ?></small>
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label for="stock" class="form-label">
-                        <i class="fas fa-boxes"></i> {{ __('Current Stock') }} <span class="required">*</span>
+                        <i class="fas fa-boxes"></i> <?php echo e(__('Current Stock')); ?> <span class="required">*</span>
                     </label>
                     <input type="number" 
                            id="stock" 
                            name="stock" 
                            class="form-control" 
-                           value="{{ old('stock', 0) }}" 
+                           value="<?php echo e(old('stock', 0)); ?>" 
                            placeholder="0" 
                            min="0" 
                            required>
@@ -254,49 +256,51 @@
 
                 <div class="form-group">
                     <label for="min_stock" class="form-label">
-                        <i class="fas fa-exclamation-triangle"></i> {{ __('Minimum Stock Level') }} <span class="required">*</span>
+                        <i class="fas fa-exclamation-triangle"></i> <?php echo e(__('Minimum Stock Level')); ?> <span class="required">*</span>
                     </label>
                     <input type="number" 
                            id="min_stock" 
                            name="min_stock" 
                            class="form-control" 
-                           value="{{ old('min_stock', 10) }}" 
+                           value="<?php echo e(old('min_stock', 10)); ?>" 
                            placeholder="10" 
                            min="0" 
                            required>
-                    <small class="form-help">{{ __('Alert when stock falls below this level') }}</small>
+                    <small class="form-help"><?php echo e(__('Alert when stock falls below this level')); ?></small>
                 </div>
 
                 <div class="form-group">
-                    <label for="category_id" class="form-label"><i class="fas fa-folder"></i> {{ __('Category') }}</label>
+                    <label for="category_id" class="form-label"><i class="fas fa-folder"></i> <?php echo e(__('Category')); ?></label>
                     <select id="category_id" name="category_id" class="form-control">
-                        <option value="">{{ __('-- Select Category --') }}</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                {{ $category->breadcrumb }}
+                        <option value=""><?php echo e(__('-- Select Category --')); ?></option>
+                        <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($category->id); ?>" <?php echo e(old('category_id') == $category->id ? 'selected' : ''); ?>>
+                                <?php echo e($category->breadcrumb); ?>
+
                             </option>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
-                    <small class="form-help">{{ __('Select a category for this product') }}</small>
+                    <small class="form-help"><?php echo e(__('Select a category for this product')); ?></small>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="status" class="form-label">
-                    {{ __('Status') }} <span class="required">*</span>
+                    <?php echo e(__('Status')); ?> <span class="required">*</span>
                 </label>
                 <select id="status" name="status" class="form-control" required>
-                    <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>{{ __('Active') }}</option>
-                    <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>{{ __('Inactive') }}</option>
+                    <option value="active" <?php echo e(old('status', 'active') == 'active' ? 'selected' : ''); ?>><?php echo e(__('Active')); ?></option>
+                    <option value="inactive" <?php echo e(old('status') == 'inactive' ? 'selected' : ''); ?>><?php echo e(__('Inactive')); ?></option>
                 </select>
             </div>
 
             <!-- Product Variations Section -->
             <div class="card glass-card border-0 mb-4 overflow-hidden">
                 <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 fw-bold">{{ __('Product Variations') }}</h5>
+                    <h5 class="mb-0 fw-bold"><?php echo e(__('Product Variations')); ?></h5>
                     <button type="button" onclick="addVariationRow()" class="btn btn-brand-primary btn-sm">
-                        <i class="fas fa-plus"></i> {{ __('Add Variation') }}
+                        <i class="fas fa-plus"></i> <?php echo e(__('Add Variation')); ?>
+
                     </button>
                 </div>
                 <div class="card-body p-0">
@@ -307,25 +311,27 @@
                         <div class="mb-3">
                             <i class="fas fa-layer-group opacity-25" style="font-size: 48px;"></i>
                         </div>
-                        <h5 class="fw-bold">{{ __('No variations configured') }}</h5>
-                        <p class="small mb-0">{{ __('Add variations like size or color to this product.') }}</p>
+                        <h5 class="fw-bold"><?php echo e(__('No variations configured')); ?></h5>
+                        <p class="small mb-0"><?php echo e(__('Add variations like size or color to this product.')); ?></p>
                     </div>
                 </div>
             </div>
 
             <div class="form-actions">
-                <a href="{{ route('products.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> {{ __('Cancel') }}
+                <a href="<?php echo e(route('products.index')); ?>" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> <?php echo e(__('Cancel')); ?>
+
                 </a>
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> {{ __('Create Product') }}
+                    <i class="fas fa-save"></i> <?php echo e(__('Create Product')); ?>
+
                 </button>
             </div>
         </form>
     </div>
 </div>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 let selectedFiles = [];
 
@@ -338,16 +344,16 @@ function handleMultipleImages(event) {
 
     files.forEach(file => {
         if (file.size > maxSize) {
-            errorMessages.push(`- ${file.name}: {{ __('The image is too large. Max size is 4MB.') }}`);
+            errorMessages.push(`- ${file.name}: <?php echo e(__('The image is too large. Max size is 4MB.')); ?>`);
         } else if (!file.type.match('image.*')) {
-            errorMessages.push(`- ${file.name}: {{ __('Please select a valid image file.') }}`);
+            errorMessages.push(`- ${file.name}: <?php echo e(__('Please select a valid image file.')); ?>`);
         } else {
             validFiles.push(file);
         }
     });
 
     if (errorMessages.length > 0) {
-        showValidationErrors("{{ __('Images Issue') }}", errorMessages);
+        showValidationErrors("<?php echo e(__('Images Issue')); ?>", errorMessages);
         if (validFiles.length === 0) {
             // No valid files in this selection batch, just return without displaying
             event.target.value = '';
@@ -501,7 +507,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ── Variations Management ───────────────────────
-let variantCounter = {{ count(old('variants', [])) }};
+let variantCounter = <?php echo e(count(old('variants', []))); ?>;
 
 function addVariationRow() {
     const vIndex = variantCounter++;
@@ -516,7 +522,7 @@ function addVariationRow() {
     
     div.innerHTML = `
         <div class="variant-actions">
-            <button type="button" class="btn-remove-variant" onclick="removeVariationRow(this)" title="{{ __('Remove Variation') }}">
+            <button type="button" class="btn-remove-variant" onclick="removeVariationRow(this)" title="<?php echo e(__('Remove Variation')); ?>">
                 <i class="fas fa-trash-alt"></i>
             </button>
         </div>
@@ -524,42 +530,42 @@ function addVariationRow() {
         <div class="variant-header-modern">
             <div class="variant-img-wrapper" onclick="this.querySelector('input').click()">
                 <i class="fas fa-camera"></i>
-                <span>{{ __('صورة') }}</span>
+                <span><?php echo e(__('صورة')); ?></span>
                 <input type="file" name="variants[${vIndex}][color_image]" class="d-none" accept="image/*" onchange="previewVariantImage(this, ${vIndex})">
             </div>
             
             <div class="variant-input-group d-none">
-                <label>{{ __('Color') }}</label>
+                <label><?php echo e(__('Color')); ?></label>
                 <input type="color" name="variants[${vIndex}][color_code]" class="form-control form-control-color" value="#000000">
             </div>
             <div class="variant-input-group">
-                <label>{{ __('Size') }}</label>
-                <input type="text" name="variants[${vIndex}][size]" class="form-control" placeholder="{{ __('e.g. XL') }}">
+                <label><?php echo e(__('Size')); ?></label>
+                <input type="text" name="variants[${vIndex}][size]" class="form-control" placeholder="<?php echo e(__('e.g. XL')); ?>">
             </div>
         </div>
 
         <div class="variant-grid-inputs">
-            <div class="variant-input-group d-none">
-                <label>{{ __('SKU') }}</label>
+            <div class="variant-input-group">
+                <label><?php echo e(__('SKU')); ?></label>
                 <div class="input-group">
-                    <input type="text" name="variants[${vIndex}][sku]" class="form-control font-inter" placeholder="{{ __('Auto-generated') }}">
-                    <button class="btn btn-outline-secondary" type="button" onclick="generateVariantSKU(this)" title="{{ __('Generate SKU') }}">
+                    <input type="text" name="variants[${vIndex}][sku]" class="form-control font-inter" placeholder="<?php echo e(__('Auto-generated')); ?>">
+                    <button class="btn btn-outline-secondary" type="button" onclick="generateVariantSKU(this)" title="<?php echo e(__('Generate SKU')); ?>">
                         <i class="fas fa-magic"></i>
                     </button>
                 </div>
             </div>
             <div class="variant-input-group">
-                <label>{{ __('Price Override ($)') }}</label>
+                <label><?php echo e(__('Price Override ($)')); ?></label>
                 <div class="input-group">
                     <span class="input-group-text">$</span>
                     <input type="number" name="variants[${vIndex}][price]" class="form-control font-inter" step="0.01" placeholder="0.00">
                 </div>
             </div>
             <div class="variant-input-group">
-                <label>{{ __('Inventory Stock') }}</label>
+                <label><?php echo e(__('Inventory Stock')); ?></label>
                 <div class="variant-stock-wrapper">
                     <input type="number" name="variants[${vIndex}][stock]" value="10" required min="0">
-                    <span class="variant-stock-unit">{{ __('units') }}</span>
+                    <span class="variant-stock-unit"><?php echo e(__('units')); ?></span>
                 </div>
             </div>
         </div>
@@ -572,7 +578,7 @@ function addVariationRow() {
 }
 
 function removeVariationRow(btn) {
-    window.confirmAction("{{ __('Are you sure?') }}", "{{ __('Are you sure you want to remove this variation?') }}").then(confirmed => {
+    window.confirmAction("<?php echo e(__('Are you sure?')); ?>", "<?php echo e(__('Are you sure you want to remove this variation?')); ?>").then(confirmed => {
         if (confirmed) {
             const tr = btn.closest('.variant-card');
             tr.remove();
@@ -591,13 +597,13 @@ function previewVariantImage(input, index) {
         const maxSize = 4 * 1024 * 1024; // 4MB
         
         if (file.size > maxSize) {
-            showError("{{ __('Error') }}", "{{ __('The image is too large. Max size is 4MB.') }}");
+            showError("<?php echo e(__('Error')); ?>", "<?php echo e(__('The image is too large. Max size is 4MB.')); ?>");
             input.value = '';
             return;
         }
 
         if (!file.type.match('image.*')) {
-            showError("{{ __('Error') }}", "{{ __('Please select a valid image file.') }}");
+            showError("<?php echo e(__('Error')); ?>", "<?php echo e(__('Please select a valid image file.')); ?>");
             input.value = '';
             return;
         }
@@ -636,15 +642,15 @@ document.getElementById('productForm')?.addEventListener('submit', function(e) {
 
         if (!skuInput.value.trim()) {
             hasError = true;
-            errorMessage += `\n- ${'{{ __("Variant") }}'} ${i+1}: ${'{{ __("SKU is required") }}'}`;
+            errorMessage += `\n- ${'<?php echo e(__("Variant")); ?>'} ${i+1}: ${'<?php echo e(__("SKU is required")); ?>'}`;
         }
         if (stockInput.value < 0) {
             hasError = true;
-            errorMessage += `\n- ${'{{ __("Variant") }}'} ${i+1}: ${'{{ __("Stock cannot be negative") }}'}`;
+            errorMessage += `\n- ${'<?php echo e(__("Variant")); ?>'} ${i+1}: ${'<?php echo e(__("Stock cannot be negative")); ?>'}`;
         }
         if (fileInput && fileInput.files[0] && fileInput.files[0].size > 4 * 1024 * 1024) {
             hasError = true;
-            errorMessage += `\n- ${'{{ __("Variant") }}'} ${i+1}: ${'{{ __("Image exceeds 4MB limit") }}'}`;
+            errorMessage += `\n- ${'<?php echo e(__("Variant")); ?>'} ${i+1}: ${'<?php echo e(__("Image exceeds 4MB limit")); ?>'}`;
         }
     });
 
@@ -653,7 +659,7 @@ document.getElementById('productForm')?.addEventListener('submit', function(e) {
         selectedFiles.forEach((file) => {
             if (file.size > 4 * 1024 * 1024) {
                 hasError = true;
-                errorMessage += `\n- {{ __('Main Product Image') }} ${file.name}: {{ __('Image exceeds 4MB limit') }}`;
+                errorMessage += `\n- <?php echo e(__('Main Product Image')); ?> ${file.name}: <?php echo e(__('Image exceeds 4MB limit')); ?>`;
             }
         });
     }
@@ -663,9 +669,11 @@ document.getElementById('productForm')?.addEventListener('submit', function(e) {
         
         // Show validation errors as a list
         const errors = errorMessage.split('\n').filter(e => e.trim().length > 0);
-        showValidationErrors("{{ __('Please fix the following issues before saving:') }}", errors);
+        showValidationErrors("<?php echo e(__('Please fix the following issues before saving:')); ?>", errors);
     }
 });
 </script>
-@endpush
-@endsection
+<?php $__env->stopPush(); ?>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Applications/XAMPP/xamppfiles/htdocs/speed/resources/views/products/create.blade.php ENDPATH**/ ?>

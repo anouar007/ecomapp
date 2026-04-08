@@ -15,9 +15,11 @@
                 <h5 class="fw-bold mb-1">
                     <a href="{{ route('shop.show', $pId) }}" class="text-decoration-none text-dark hover-gold transition-300">{{ $details['name'] }}</a>
                 </h5>
-                <div class="d-flex flex-wrap gap-2 mt-2">
-                    @if(!empty($details['color']))
-                        <span class="small text-muted py-1 px-2 bg-light border rounded-pill">اللون: {{ $details['color'] }}</span>
+                <div class="d-flex align-items-center flex-wrap gap-2 mt-2">
+                    @if(!empty($details['image']))
+                        <div class="rounded-circle border border-gold-light overflow-hidden shadow-sm d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                            <img src="{{ Storage::url($details['image']) }}" alt="Style" class="w-100 h-100 object-fit-cover">
+                        </div>
                     @endif
                     @if(!empty($details['size']))
                         <span class="small text-muted py-1 px-2 bg-light border rounded-pill">المقاس: {{ $details['size'] }}</span>

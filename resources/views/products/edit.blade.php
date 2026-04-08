@@ -352,7 +352,7 @@
                                     @endif
                                     <input type="file" name="variants[{{ $index }}][color_image]" class="d-none" accept="image/*" onchange="previewVariantImage(this, {{ $index }})">
                                 </div>
-                                <div class="variant-input-group">
+                                <div class="variant-input-group d-none">
                                     <label>{{ __('Color') }}</label>
                                     <input type="color" name="variants[{{ $index }}][color_code]" class="form-control form-control-color" value="{{ $variant->color_code ?: '#000000' }}">
                                     <input type="hidden" name="variants[{{ $index }}][color]" value="{{ $variant->color }}">
@@ -364,7 +364,7 @@
                             </div>
 
                             <div class="variant-grid-inputs">
-                                <div class="variant-input-group">
+                                <div class="variant-input-group d-none">
                                     <label>{{ __('SKU') }}</label>
                                     <div class="input-group">
                                         <input type="text" name="variants[{{ $index }}][sku]" class="form-control font-inter" value="{{ $variant->sku }}" placeholder="{{ __('Unique SKU') }}">
@@ -551,7 +551,7 @@ function addVariationRow() {
                 <span>{{ __('صورة') }}</span>
                 <input type="file" name="variants[${vIndex}][color_image]" class="d-none" accept="image/*" onchange="previewVariantImage(this, ${vIndex})">
             </div>
-            <div class="variant-input-group">
+            <div class="variant-input-group d-none">
                 <label>{{ __('Color') }}</label>
                 <input type="color" name="variants[${vIndex}][color_code]" class="form-control form-control-color" value="#000000">
             </div>
@@ -562,7 +562,7 @@ function addVariationRow() {
         </div>
 
         <div class="variant-grid-inputs">
-            <div class="variant-input-group">
+            <div class="variant-input-group d-none">
                 <label>{{ __('SKU') }}</label>
                 <div class="input-group">
                     <input type="text" name="variants[${vIndex}][sku]" class="form-control font-inter" placeholder="{{ __('رمز المنتج') }}">

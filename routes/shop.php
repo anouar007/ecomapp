@@ -15,12 +15,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
 Route::get('/robots.txt', [\App\Http\Controllers\SitemapController::class, 'robots'])->name('robots');
 
-// Home & Newsletter
+// Shop & Products (Consolidated to Home)
+Route::get('/shop', function() {
+    return redirect()->route('home');
+});
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', [\App\Http\Controllers\HomeController::class, 'index'])->name('shop.index'); // For backward compatibility
 Route::post('/newsletter', [\App\Http\Controllers\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
-
-// Shop & Products
-Route::get('/shop', [\App\Http\Controllers\ShopController::class, 'index'])->name('shop.index');
 Route::get('/shop/{id}', [\App\Http\Controllers\ShopController::class, 'show'])->name('shop.show');
 Route::get('/products/{id}/json', [\App\Http\Controllers\ShopController::class, 'json'])->name('product.json');
 

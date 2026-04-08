@@ -29,67 +29,9 @@
             <?php endif; ?>
         </div>
 
-        
-        <?php 
-            $sizes = $product->available_sizes;
-            $colors = $product->available_colors;
-        ?>
-
-        <?php if($product->variants->count() > 0 && ($colors->count() > 0 || $sizes->count() > 0)): ?>
-        <div class="pcard-variants mb-4" style="pointer-events: auto;">
-            <?php if($colors->count() > 0): ?>
-            <div class="d-flex align-items-center gap-2 mb-2 pcard-variant-row">
-                <?php $__currentLoopData = $colors->take(5); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $color): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <?php if($color->color_image_url): ?>
-                        <div class="pcard-color-dot border shadow-sm" 
-                             style="width: 34px; height: 34px; cursor: pointer; border-radius: 4px; overflow: hidden;"
-                             onclick="selectCardVariant(<?php echo e($product->id); ?>, 'color', '<?php echo e($color->color); ?>', this, false); event.stopPropagation();"
-                             title="<?php echo e($color->color); ?>">
-                         <img src="<?php echo e($color->color_image_url); ?>" style="width: 100%; height: 100%; object-fit: cover;" alt="<?php echo e($product->translated_name); ?> - <?php echo e($color->color); ?>">
-                        </div>
-                    <?php else: ?>
-                        <div class="pcard-color-dot border shadow-sm" 
-                             style="background: <?php echo e($color->color_code ?: '#eee'); ?>; width: 24px; height: 24px; cursor: pointer; border-radius: 4px;" 
-                             onclick="selectCardVariant(<?php echo e($product->id); ?>, 'color', '<?php echo e($color->color); ?>', this, false); event.stopPropagation();"
-                             title="<?php echo e($color->color); ?>">
-                        </div>
-                    <?php endif; ?>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                <?php if($colors->count() > 5): ?> <span class="text-muted small">+<?php echo e($colors->count() - 5); ?></span> <?php endif; ?>
-            </div>
-            <?php endif; ?>
-
-            <?php if($sizes->count() > 0): ?>
-            <div class="d-flex flex-wrap gap-1 pcard-variant-row">
-                <?php $__currentLoopData = $sizes->take(4); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $size): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <div class="pcard-size-pill border px-2 py-0 small text-muted rounded-pill" 
-                     style="font-size: 0.65rem; cursor: pointer;"
-                     onclick="selectCardVariant(<?php echo e($product->id); ?>, 'size', '<?php echo e($size); ?>', this, false); event.stopPropagation();">
-                    <?php echo e($size); ?>
-
-                </div>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                <?php if($sizes->count() > 4): ?> <span class="text-muted small" style="font-size: 0.65rem;">+</span> <?php endif; ?>
-            </div>
-            <?php endif; ?>
-
-            <input type="hidden" id="card-selected-variant-<?php echo e($product->id); ?>" value="">
-        </div>
-        <script>
-            if (typeof window.cardVariants === 'undefined') window.cardVariants = {};
-            window.cardVariants[<?php echo e($product->id); ?>] = <?php echo $product->variants_json; ?>;
-        </script>
-        <?php endif; ?>
-
         <?php if(!$product->isInStock()): ?>
-        <div class="text-danger small mb-2"><i class="fas fa-exclamation-circle me-1"></i>نفذ من المخزن</div>
+        <div class="text-danger small mt-2"><i class="fas fa-exclamation-circle me-1"></i>نفذ من المخزن</div>
         <?php endif; ?>
-
-        <div style="pointer-events: auto;" class="mt-auto">
-            <button onclick="addToCart(<?php echo e($product->id); ?>); event.stopPropagation();" class="btn btn-brand-primary w-100 btn-sm py-2 rounded-pill d-flex align-items-center justify-content-center">
-                أضيفي للسلة <i class="fas fa-cart-plus ms-2"></i>
-            </button>
-        </div>
     </div>
 </div>
 <?php /**PATH /Applications/XAMPP/xamppfiles/htdocs/speed/resources/views/frontend/partials/product_card_v2.blade.php ENDPATH**/ ?>

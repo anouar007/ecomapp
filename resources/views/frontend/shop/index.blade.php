@@ -16,7 +16,7 @@
         {{-- Visual Category Navigator (Story Pills) --}}
         <div class="category-story-track d-flex justify-content-lg-center" data-aos="fade-up">
             {{-- All (Story Pill) --}}
-            <a href="{{ route('shop.index') }}" class="category-story-pill {{ !request('category') ? 'active' : '' }}">
+            <a href="{{ route('shop.index') }}" class="category-story-pill d-none {{ !request('category') ? 'active' : '' }}" style="display: none !important;">
                 <div class="category-story-img-wrapper">
                     <div class="category-story-img d-flex align-items-center justify-content-center bg-white border border-gold-light" style="font-size: 1.25rem;">
                        <i class="fas fa-border-all text-gold"></i>

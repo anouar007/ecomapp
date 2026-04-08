@@ -4,9 +4,10 @@
              alt="{{ $details['name'] }}" class="mc-item-img">
         <div class="mc-item-info">
             <div class="mc-item-name">{{ $details['name'] }}</div>
-            <div class="mc-tags">
-                @if(!empty($details['color']))
-                    <span class="mc-tag">{{ $details['color'] }}</span>
+            <div class="mc-tags d-flex align-items-center gap-2">
+                @if(!empty($details['image']))
+                    <img src="{{ Storage::url($details['image']) }}" alt="Style" 
+                         style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1.5px solid #c5a059;">
                 @endif
                 @if(!empty($details['size']))
                     <span class="mc-tag">{{ $details['size'] }}</span>

@@ -4,9 +4,10 @@
              alt="<?php echo e($details['name']); ?>" class="mc-item-img">
         <div class="mc-item-info">
             <div class="mc-item-name"><?php echo e($details['name']); ?></div>
-            <div class="mc-tags">
-                <?php if(!empty($details['color'])): ?>
-                    <span class="mc-tag"><?php echo e($details['color']); ?></span>
+            <div class="mc-tags d-flex align-items-center gap-2">
+                <?php if(!empty($details['image'])): ?>
+                    <img src="<?php echo e(Storage::url($details['image'])); ?>" alt="Style" 
+                         style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1.5px solid #c5a059;">
                 <?php endif; ?>
                 <?php if(!empty($details['size'])): ?>
                     <span class="mc-tag"><?php echo e($details['size']); ?></span>

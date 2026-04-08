@@ -14,6 +14,36 @@ class Product extends Model
         return $this->hasMany(ProductVariant::class);
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($product) {
+            if (empty($product->slug)) {
+                $product->slug = static::generateUniqueSlug($product->name ?? $product->name_ar);
+            }
+        });
+
+        static::updating(function ($product) {
+            if ($product->isDirty('name') && empty($product->slug)) {
+                $product->slug = static::generateUniqueSlug($product->name);
+            }
+        });
+    }
+
+    protected static function generateUniqueSlug($name)
+    {
+        $slug = \Illuminate\Support\Str::slug($name);
+        $originalSlug = $slug;
+        $count = 1;
+
+        while (static::where('slug', $slug)->exists()) {
+            $slug = "{$originalSlug}-" . $count++;
+        }
+
+        return $slug;
+    }
+
     protected $fillable = [
         'name',
         'name_en',
@@ -372,6 +402,14 @@ class Product extends Model
     }
 
     /**
+     * Get unique variant images (Styles) for selection.
+     */
+    public function getAvailableStylesAttribute()
+    {
+        return $this->variants->where('status', 'active')->unique('color_image')->values();
+    }
+
+    /**
      * Get total stock across all variants.
      */
     public function getTotalStockAttribute()
@@ -394,7 +432,7 @@ class Product extends Model
                 'color' => $v->color,
                 'price' => $v->price ?: $this->price,
                 'stock' => $v->stock,
-                'color_image' => $v->color_image && strval($v->color_image) !== "0" ? \Illuminate\Support\Facades\Storage::url($v->color_image) : null,
+                'image' => $v->color_image && strval($v->color_image) !== "0" ? \Illuminate\Support\Facades\Storage::url($v->color_image) : null,
                 'formatted_price' => currency($v->price ?: $this->price)
             ];
         })->toJson();

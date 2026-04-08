@@ -429,6 +429,7 @@ class ProductController extends Controller
                         $newProduct = $product->replicate();
                         $newProduct->name = $product->name . ' (Copy)';
                         $newProduct->sku = $product->sku . '-COPY-' . time() . rand(100, 999);
+                        $newProduct->slug = null; // Let the boot method generate a unique slug
                         $newProduct->save();
                         
                         // Duplicate the product images

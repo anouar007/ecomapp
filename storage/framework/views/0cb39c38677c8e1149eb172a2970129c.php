@@ -152,11 +152,6 @@
                         </span>
                     </div>
 
-                    
-                    <div class="text-muted mb-4 font-body lh-lg" style="font-size: 0.95rem;">
-                        <?php echo nl2br(e($product->translated_description)); ?>
-
-                    </div>
 
                     <div class="bg-gold-light opacity-50 my-4" style="height: 1px;"></div>
 
@@ -164,24 +159,21 @@
                     <?php if($product->variants->count() > 0): ?>
                         <div class="pdp-variants mb-5 font-body">
                             
-                            <?php $colors = $product->getAvailableColorsAttribute(); ?>
-                            <?php if($colors->count() > 0): ?>
+                            <?php $styles = $product->getAvailableStylesAttribute(); ?>
+                            <?php if($styles->count() > 0): ?>
                                 <div class="mb-4">
-                                    <label class="fw-bold mb-2 d-block small text-muted text-uppercase">اللون المختار:</label>
-                                    <div class="d-flex flex-wrap gap-3" id="colorOptions">
-                                        <?php $__currentLoopData = $colors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $color): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <label class="fw-bold mb-2 d-block small text-muted text-uppercase">اختر الشكل:</label>
+                                    <div class="d-flex flex-wrap gap-3" id="styleOptions">
+                                        <?php $__currentLoopData = $styles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $style): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div class="variant-option border rounded p-1" 
-                                                 data-color="<?php echo e($color->color); ?>" 
+                                                 data-image="<?php echo e($style->color_image && strval($style->color_image) !== '0' ? \Illuminate\Support\Facades\Storage::url($style->color_image) : ''); ?>" 
                                                  style="cursor: pointer; transition: 0.3s;"
-                                                 onclick="selectColor(this)"
-                                                 title="<?php echo e($color->color); ?>">
-                                                <?php if($color->color_image_url): ?>
-                                                    <div class="rounded bg-light" style="width: 52px; height: 52px; overflow: hidden; border: 1px solid rgba(0,0,0,0.1);">
-                                                        <img src="<?php echo e($color->color_image_url); ?>" alt="<?php echo e($color->color); ?>" style="width: 100%; height: 100%; object-fit: cover;">
-                                                    </div>
-                                                <?php else: ?>
-                                                    <div class="rounded" style="width: 44px; height: 44px; background-color: <?php echo e($color->color_code ?: '#eee'); ?>; border: 1px solid rgba(0,0,0,0.1);"></div>
-                                                <?php endif; ?>
+                                                 onclick="selectStyle(this)"
+                                                 title="Style">
+                                                <?php $imgUrl = $style->color_image && strval($style->color_image) !== '0' ? \Illuminate\Support\Facades\Storage::url($style->color_image) : asset('images/placeholder-product.jpg'); ?>
+                                                <div class="rounded bg-light" style="width: 80px; height: 106px; overflow: hidden; border: 1px solid rgba(0,0,0,0.1);">
+                                                    <img src="<?php echo e($imgUrl); ?>" alt="Style" style="width: 100%; height: 100%; object-fit: cover;">
+                                                </div>
                                             </div>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </div>
@@ -266,6 +258,24 @@
         </div>
 
         
+        <div class="mt-5 pt-5 border-top">
+            <div class="d-flex justify-content-between align-items-end mb-4">
+                <div>
+                    <h3 class="brand-heading m-0">تفاصيل المنتج</h3>
+                    <div class="bg-gold mt-2 rounded" style="width: 40px; height: 3px;"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="text-muted font-body lh-lg" style="font-size: 1.05rem;">
+                        <?php echo nl2br(e($product->translated_description)); ?>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
         <?php if($relatedProducts->count() > 0): ?>
         <div class="mt-5 pt-5 border-top">
             <div class="d-flex justify-content-between align-items-end mb-4">
@@ -289,50 +299,68 @@
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startPush('scripts'); ?>
+<style>
+    .variant-option.disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+        pointer-events: none;
+        position: relative;
+        filter: grayscale(0.6);
+        border-color: #dc3545 !important;
+        background-color: rgba(220, 53, 69, 0.05);
+    }
+    .variant-option.disabled::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to top right, transparent 48%, #dc3545 48%, #dc3545 52%, transparent 52%);
+        opacity: 0.9;
+        border-radius: inherit;
+    }
+</style>
 <script>
 // ── Variants Logic ───────────────────────────────
-const variants = <?php echo json_encode($product->variants, 15, 512) ?>;
-let selectedColor = null;
+const variants = <?php echo json_encode(json_decode($product->variants_json), 15, 512) ?>;
+let selectedImage = null;
 let selectedSize = null;
 const basePrice = "<?php echo e($product->isOnSale() ? $product->formatted_sale_price : $product->formatted_price); ?>";
 const mainImageSrc = "<?php echo e($product->main_image ? Storage::url($product->main_image) : ''); ?>";
 
-function selectColor(el) {
+function selectStyle(el) {
+    if (el.classList.contains('disabled')) return;
     if (el.classList.contains('active')) {
         el.classList.remove('active');
         el.style.borderColor = 'rgba(0,0,0,0.1)';
-        selectedColor = null;
+        selectedImage = null;
     } else {
-        document.querySelectorAll('.color-pill, .variant-option').forEach(p => {
-            if(p.dataset.color) {
-                p.classList.remove('active');
-                p.style.borderColor = 'rgba(0,0,0,0.1)';
-            }
+        document.querySelectorAll('#styleOptions .variant-option').forEach(p => {
+            p.classList.remove('active');
+            p.style.borderColor = 'rgba(0,0,0,0.1)';
         });
         el.classList.add('active');
         el.style.borderColor = 'var(--brand-gold)';
-        selectedColor = el.dataset.color;
+        selectedImage = el.dataset.image;
+        if (selectedImage) pdpChangeImage(selectedImage, null);
     }
     updateVariantSelection();
 }
 
 function selectSize(el) {
+    if (el.classList.contains('disabled')) return;
     if (el.classList.contains('active')) {
         el.classList.remove('active');
         el.style.borderColor = 'rgba(0,0,0,0.1)';
-        el.style.color = 'inherit';
         selectedSize = null;
     } else {
-        document.querySelectorAll('.size-pill, .variant-option').forEach(p => {
-            if(p.dataset.size) {
-                p.classList.remove('active');
-                p.style.borderColor = 'rgba(0,0,0,0.1)';
-                p.style.color = 'inherit';
-            }
+        document.querySelectorAll('#sizeOptions .variant-option').forEach(p => {
+            p.classList.remove('active');
+            p.style.borderColor = 'rgba(0,0,0,0.1)';
         });
         el.classList.add('active');
         el.style.borderColor = 'var(--brand-gold)';
-        el.style.color = 'var(--brand-gold)';
         selectedSize = el.dataset.size;
     }
     updateVariantSelection();
@@ -347,7 +375,7 @@ function updateVariantSelection() {
     input.value = '';
 
     const match = variants.find(v => 
-        (v.color === selectedColor) && 
+        ((v.image || '') === (selectedImage || '')) && 
         (v.size === selectedSize)
     );
 
@@ -365,38 +393,22 @@ function updateVariantSelection() {
         }
         if (match.price) {
             priceDisplay.textContent = match.formatted_price;
-            const stickyPrice = document.getElementById('stickyPriceDisplay');
-            if (stickyPrice) stickyPrice.textContent = match.formatted_price;
         }
-        if (match.color_image_url) {
-            pdpChangeImage(match.color_image_url, null);
-        } else if (mainImageSrc) {
-            pdpChangeImage(mainImageSrc, null);
+        if (match.image) {
+            pdpChangeImage(match.image, null);
         }
     } else {
-        btn.disabled = (variants.length > 0); 
-        
-        // Image Fallback: if color is selected, show its image even if no size match
-        if (selectedColor) {
-            const colorMatch = variants.find(v => v.color === selectedColor && v.color_image_url);
-            if (colorMatch) {
-                pdpChangeImage(colorMatch.color_image_url, null);
-            } else if (mainImageSrc) {
-                pdpChangeImage(mainImageSrc, null);
-            }
-        } else if (mainImageSrc) {
-             pdpChangeImage(mainImageSrc, null);
-        }
-        
-        if (selectedColor && selectedSize) {
+        if (selectedImage && selectedSize) {
+            btn.disabled = true;
             stockBadge.innerHTML = '<i class="fas fa-times me-1"></i> غير متوفر بهذا الخيار';
             stockBadge.className = 'small px-3 py-1 rounded-pill fw-bold font-body bg-light text-muted';
         } else {
+            btn.disabled = false;
             const totalStock = <?php echo e($product->getTotalStockAttribute()); ?>;
             stockBadge.innerHTML = totalStock > 0 ? '<i class="fas fa-crown me-1 small"></i> متوفر في المتجر' : '<i class="fas fa-times me-1"></i> غير متوفر حالياً';
             stockBadge.className = totalStock > 0 ? 'small px-3 py-1 rounded-pill fw-bold font-body bg-gold-light text-dark' : 'small px-3 py-1 rounded-pill fw-bold font-body bg-light text-muted';
             
-            if (!selectedColor && !selectedSize) {
+            if (!selectedImage && !selectedSize) {
                 priceDisplay.textContent = basePrice;
                 if (mainImageSrc) pdpChangeImage(mainImageSrc, document.querySelector('.thumb-item'));
             }
@@ -411,24 +423,24 @@ function updateAvailability() {
     document.querySelectorAll('#sizeOptions .variant-option').forEach(pill => {
         const size = pill.dataset.size;
         let isAvailable = false;
-        if (selectedColor) {
-            isAvailable = variants.some(v => v.color == selectedColor && v.size == size && v.stock > 0);
+        if (selectedImage) {
+            isAvailable = variants.some(v => ((v.image || '') === (selectedImage || '')) && v.size == size && v.stock > 0);
         } else {
             isAvailable = variants.some(v => v.size == size && v.stock > 0);
         }
         pill.classList.toggle('disabled', !isAvailable);
     });
 
-    // Update Color Dots
-    document.querySelectorAll('#colorOptions .variant-option').forEach(dot => {
-        const color = dot.dataset.color;
+    // Update Style Options
+    document.querySelectorAll('#styleOptions .variant-option').forEach(opt => {
+        const image = opt.dataset.image;
         let isAvailable = false;
         if (selectedSize) {
-            isAvailable = variants.some(v => v.size == selectedSize && v.color == color && v.stock > 0);
+            isAvailable = variants.some(v => v.size == selectedSize && ((v.image || '') === (image || '')) && v.stock > 0);
         } else {
-            isAvailable = variants.some(v => v.color == color && v.stock > 0);
+            isAvailable = variants.some(v => ((v.image || '') === (image || '')) && v.stock > 0);
         }
-        dot.classList.toggle('disabled', !isAvailable);
+        opt.classList.toggle('disabled', !isAvailable);
     });
 }
 
@@ -437,9 +449,9 @@ function executeAutoSelect() {
         // Find the first variant that has stock
         const firstAvailable = variants.find(v => v.stock > 0);
         if (firstAvailable) {
-            // Auto Select Color
-            const colorPill = document.querySelector(`.variant-option[data-color="${firstAvailable.color}"]`);
-            if (colorPill && !colorPill.classList.contains('active')) selectColor(colorPill);
+            // Auto Select Image/Style
+            const stylePill = document.querySelector(`.variant-option[data-image="${firstAvailable.image}"]`);
+            if (stylePill && !stylePill.classList.contains('active')) selectStyle(stylePill);
             
             // Auto Select Size
             const sizePill = document.querySelector(`.variant-option[data-size="${firstAvailable.size}"]`);
@@ -450,7 +462,7 @@ function executeAutoSelect() {
 
 // Initial call
 updateAvailability();
-document.addEventListener('DOMContentLoaded', () => { setTimeout(executeAutoSelect, 150); });
+// document.addEventListener('DOMContentLoaded', () => { setTimeout(executeAutoSelect, 150); });
 
 
 function pdpZoom(e) {
@@ -502,7 +514,23 @@ function pdpAddToCart(event) {
     const variantId = document.getElementById('selectedVariantId').value;
 
     if (variants.length > 0 && !variantId) {
-        Swal.fire({ icon:'warning', title:'تنبيه', text:'الرجاء اختيار اللون والمقاس أولاً', confirmButtonColor: '#c5a059' });
+        const hasStyles = document.getElementById('styleOptions');
+        const hasSizes = document.getElementById('sizeOptions');
+        let msg = 'الرجاء اختيار الشكل والمقاس أولاً';
+
+        if (hasStyles && hasSizes) {
+            if (!selectedImage && selectedSize) {
+                msg = 'الرجاء تحديد الشكل المفضل';
+            } else if (selectedImage && !selectedSize) {
+                msg = 'الرجاء تحديد المقاس المطلوب';
+            }
+        } else if (hasStyles && !selectedImage) {
+            msg = 'الرجاء تحديد الشكل المفضل';
+        } else if (hasSizes && !selectedSize) {
+            msg = 'الرجاء تحديد المقاس المطلوب';
+        }
+
+        Swal.fire({ icon:'warning', title:'تنبيه', text: msg, confirmButtonColor: '#c5a059' });
         return;
     }
 

@@ -142,13 +142,14 @@
                 
                 <!-- Left: Burger Menu (Mobile) / Nav (Desktop) -->
                 <div class="d-flex align-items-center flex-1" style="pointer-events: none;">
+                    <?php if(auth()->guard()->check()): ?>
                     <button class="header-action-btn d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-expanded="false" aria-label="Menu" style="position: relative; z-index: 1020; pointer-events: auto;">
                         <i class="fas fa-bars"></i>
                     </button>
+                    <?php endif; ?>
                     
                     <nav class="d-none d-lg-flex align-items-center gap-4" style="pointer-events: auto;">
-                        <a href="<?php echo e(route('home')); ?>" class="nav-link-custom text-decoration-none <?php echo e(request()->is('/') ? 'active' : ''); ?>">الرئيسية</a>
-                        <a href="<?php echo e(route('shop.index')); ?>" class="nav-link-custom text-decoration-none <?php echo e(request()->is('shop*') ? 'active' : ''); ?>">المتجر</a>
+                        <!-- Navigation items removed for single-page layout -->
                     </nav>
                 </div>
 
@@ -184,8 +185,6 @@
             <div class="collapse d-lg-none" id="navbarMain">
                 <div class="py-3 border-top mt-1 nav-mobile-v2">
                     <ul class="list-unstyled mb-0 d-flex flex-column gap-3 fs-5 fw-bold">
-                        <li><a href="<?php echo e(route('home')); ?>" class="text-dark text-decoration-none d-block py-1">الرئيسية</a></li>
-                        <li><a href="<?php echo e(route('shop.index')); ?>" class="text-dark text-decoration-none d-block py-1">المتجر</a></li>
                         <?php if(auth()->guard()->check()): ?>
                             <li><a href="<?php echo e(route('dashboard')); ?>" class="text-dark text-decoration-none d-block py-1">حسابي</a></li>
                         <?php endif; ?>
@@ -495,7 +494,7 @@
         <div class="container">
             <div class="row g-5">
                 <div class="col-lg-6">
-                    <h5 class="brand-heading text-white mb-4 text-uppercase ls-1 font-corsiva" style="font-size: 1.5rem;">Hijab <span class="text-gold">Princesses</span></h5>
+                    <h5 class="brand-heading text-gold mb-4 text-uppercase ls-1 font-corsiva" style="font-size: 1.5rem;">Hijab Princesses</h5>
                     <p class="small lh-lg mb-4 text-white opacity-75">
                         Hijab Princesses — أناقة الأميرة: وجهتكم الفاخرة لكل ما يخص الأناقة المحتشمة في المغرب. نقدم مجموعات حصرية من العبايات الراقية، الخمارات المتميزة، والشالات الفاخرة — المصممة خصيصاً للأميرة العصرية التي تبحث عن الجودة والجمال. شعارنا الجودة الراقية والتوصيل لكل مدن المغرب.
                     </p>
@@ -547,7 +546,7 @@
                 <div class="col-lg-3 col-6">
                     <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">المتجر</h6>
                     <ul class="list-unstyled">
-                        <li><a href="<?php echo e(route('shop.index')); ?>" class="footer-link small">جميع المنتجات</a></li>
+                        <li><a href="<?php echo e(route('home')); ?>#catalog" class="footer-link small">جميع المنتجات</a></li>
                         <li><a href="#" class="footer-link small">وصل حديثاً</a></li>
                         <li><a href="#" class="footer-link small">الأكثر مبيعاً</a></li>
                         <li><a href="#" class="footer-link small">تخفيضات</a></li>
@@ -895,6 +894,51 @@
         });
     </script>
     <?php echo $__env->yieldPushContent('scripts'); ?>
+
+<!-- Go to Top Button -->
+<button id="goTopBtn" class="go-top-btn d-none" title="<?php echo e(__('العودة إلى الأعلى')); ?>">
+    <i class="fas fa-arrow-up"></i>
+</button>
+<style>
+    .go-top-btn {
+        position: fixed;
+        bottom: 80px;
+        right: 30px;
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        cursor: pointer;
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    .go-top-btn.show { opacity: 1; }
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const goTopBtn = document.getElementById('goTopBtn');
+        if (!goTopBtn) return;
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > 300) {
+                goTopBtn.classList.add('show');
+                goTopBtn.classList.remove('d-none');
+            } else {
+                goTopBtn.classList.remove('show');
+                setTimeout(() => goTopBtn.classList.add('d-none'), 300);
+            }
+        });
+        goTopBtn.addEventListener('click', function () {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    });
+</script>
 </body>
 </html>
 <?php /**PATH /Applications/XAMPP/xamppfiles/htdocs/speed/resources/views/layouts/frontend.blade.php ENDPATH**/ ?>

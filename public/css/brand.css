@@ -171,7 +171,7 @@ h1, h2, h3, h4, .brand-heading {
     font-size: 1.8rem;
     font-weight: normal; /* Corsiva is naturally bold/italic */
     letter-spacing: normal;
-    color: #fff; /* High Contrast White */
+    color: var(--brand-gold); /* Consistent Gold instead of White */
 }
 
 .brand-logo-text .gold-part {

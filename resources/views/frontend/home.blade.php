@@ -60,15 +60,15 @@
         <div class="hero-content text-center py-5" data-aos="zoom-out" data-aos-duration="1500">
             <div class="glass-capsule-dark mb-4 mx-auto" style="max-width: 850px;">
                 <span class="text-uppercase tracking-widest text-gold fw-bold mb-3 d-block small" style="letter-spacing: 4px;">المجموعة الجديدة</span>
-                <h1 class="display-2 fw-bold mb-4 text-white brand-heading font-corsiva" style="line-height:1.1;">
-                    Hijab <span class="text-gold">Princesses</span><br>
-                    <span class="fs-2 d-block mt-2 opacity-90">تألقي بلمسة راقية</span>
+                <h1 class="display-2 fw-bold mb-4 text-gold brand-heading font-corsiva" style="line-height:1.1;">
+                    Hijab Princesses<br>
+                    <span class="fs-2 d-block mt-2 opacity-90 text-white">تألقي بلمسة راقية</span>
                 </h1>
                 <p class="lead mb-5 text-white opacity-90 mx-auto font-body" style="max-width: 650px; font-size: 1.15rem;">
                     اكتشفي تشكيلتنا الحصرية التي تمزج بين الأصالة المغربية واللمسة العصرية لأجمل مناسباتكِ.
                 </p>
                 <div class="d-flex gap-3 justify-content-center">
-                    <a href="{{ route('shop.index') }}" class="btn-brand-primary px-5 py-3 text-decoration-none shadow-lg">
+                    <a href="#catalog" class="btn-brand-primary px-5 py-3 text-decoration-none shadow-lg">
                         تسوقي الآن
                         <i class="fas fa-shopping-bag ms-2"></i>
                     </a>
@@ -78,6 +78,53 @@
     </div>
 </section>
 
+{{-- ── SHOP HERO & VISUAL CATEGORY NAVIGATOR ──────────────────── --}}
+<section id="catalog" class="shop-hero py-4 py-lg-5 bg-white">
+    <div class="container px-xl-5 text-center">
+        <h2 class="display-6 brand-heading mb-2 text-dark soft-glow-text font-corsiva" data-aos="fade-down">
+            اكتشفي تشكيلة <span class="text-gold">Hijab Princesses</span>
+        </h2>
+        
+        {{-- Visual Category Navigator (Story Pills) --}}
+        <div class="category-story-track d-flex justify-content-lg-center" data-aos="fade-up">
+            {{-- All (Story Pill) --}}
+            <a href="#catalog" class="category-story-pill d-none" data-slug="" style="display: none !important;">
+                <div class="category-story-img-wrapper">
+                    <div class="category-story-img d-flex align-items-center justify-content-center bg-white border border-gold-light" style="font-size: 1.25rem;">
+                       <i class="fas fa-border-all text-gold"></i>
+                    </div>
+                </div>
+                <span class="category-story-label">عرض الكل</span>
+            </a>
+
+            @foreach($allCategories as $cat)
+                <a href="#category-{{ $cat->slug }}" 
+                   class="category-story-pill"
+                   data-slug="{{ $cat->slug }}">
+                    <div class="category-story-img-wrapper">
+                        <img src="{{ $cat->image ? (Str::startsWith($cat->image, 'http') ? $cat->image : Storage::url($cat->image)) : asset('images/placeholder-cat.jpg') }}" 
+                             class="category-story-img" alt="{{ $cat->translated_name }}">
+                    </div>
+                    <span class="category-story-label">{{ $cat->translated_name }}</span>
+                </a>
+            @endforeach
+        </div>
+    </div>
+</section>
+
+{{-- ── PRODUCT CATALOG ────────────────────────────────────────── --}}
+<section class="section-py bg-surface position-relative" style="border-top: 1px solid rgba(0,0,0,0.02);">
+    {{-- Loading Overlay --}}
+    <div id="catalog-loader" class="position-absolute top-0 start-0 w-100 h-100 bg-white-50 d-none align-items-center justify-content-center" style="z-index: 10; backdrop-filter: blur(2px);">
+        <div class="spinner-border text-gold" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <div class="container px-xl-5" id="catalog-container">
+        @include('frontend.partials.catalog-content')
+    </div>
+</section>
 
 {{-- =============================================
      BOUTIQUE INTERIOR (The Experience)
@@ -218,6 +265,9 @@
 
 @push('styles')
 <style>
+    .bg-white-50 {
+        background: rgba(255,255,255,0.7) !important;
+    }
     .hero-immersive {
         background-attachment: fixed;
     }
@@ -242,4 +292,75 @@
         .display-2 { font-size: 2.5rem; }
     }
 </style>
+@endpush
+@push('scripts')
+<script>
+    // Smooth scroll for category pills
+    document.querySelectorAll('.category-story-pill').forEach(pill => {
+        pill.addEventListener('click', function(e) {
+            const targetId = this.getAttribute('href');
+            if (targetId.startsWith('#')) {
+                e.preventDefault();
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    const offset = 100; // Account for header height
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+
+                    // Update active class
+                    document.querySelectorAll('.category-story-pill').forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            }
+        });
+    });
+
+    function loadCategory(slug) {
+        // This function is now mostly used for search/sort AJAX
+        // and can be simplified or used for jump-to logic.
+        const targetElement = document.getElementById('category-' + slug);
+        if (targetElement) {
+            const offset = 100;
+            const elementPosition = targetElement.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - offset;
+            window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+        }
+    }
+
+    // Handle pagination links
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.brand-pagination a')) {
+            e.preventDefault();
+            const url = e.target.closest('a').href;
+            const container = document.getElementById('catalog-container');
+            const loader = document.getElementById('catalog-loader');
+
+            loader.classList.remove('d-none');
+            loader.classList.add('d-flex');
+
+            window.history.pushState({}, '', url);
+
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                container.innerHTML = data.html;
+                if (window.AOS) window.AOS.refreshHard();
+                document.getElementById('catalog').scrollIntoView({ behavior: 'smooth' });
+            })
+            .finally(() => {
+                loader.classList.add('d-none');
+                loader.classList.remove('d-flex');
+            });
+        }
+    });
+</script>
 @endpush
