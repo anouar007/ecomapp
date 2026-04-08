@@ -52,7 +52,7 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 body {
-    font-family: 'math';
+    font-family:'Courier New', Courier, monospace;
     font-size: 15px;
     color: var(--text-body);
     background: var(--bg-white);
