@@ -313,9 +313,7 @@ const mainImageSrc = "<?php echo e($product->main_image ? Storage::url($product-
 function selectStyle(el) {
     if (el.classList.contains('disabled')) return;
     if (el.classList.contains('active')) {
-        el.classList.remove('active');
-        el.style.borderColor = 'rgba(0,0,0,0.1)';
-        selectedImage = null;
+        // Prevent deselecting style if needed, or keep as is
     } else {
         document.querySelectorAll('#styleOptions .variant-option').forEach(p => {
             p.classList.remove('active');
@@ -326,7 +324,7 @@ function selectStyle(el) {
         selectedImage = el.dataset.image;
         if (selectedImage) pdpChangeImage(selectedImage, null);
     }
-    updateVariantSelection();
+    updateVariantSelection(true); 
 }
 
 function selectSize(el) {
@@ -344,10 +342,10 @@ function selectSize(el) {
         el.style.borderColor = 'var(--brand-gold)';
         selectedSize = el.dataset.size;
     }
-    updateVariantSelection();
+    updateVariantSelection(false); // DO NOT update colors available or not when changing size
 }
 
-function updateVariantSelection() {
+function updateVariantSelection(updateColors = true) {
     const btn = document.getElementById('addToCartBtn');
     const input = document.getElementById('selectedVariantId');
     const stockBadge = document.getElementById('stockBadge');
@@ -357,37 +355,33 @@ function updateVariantSelection() {
 
     const match = variants.find(v => 
         ((v.image || '') === (selectedImage || '')) && 
-        (v.size === selectedSize)
+        (String(v.size) === String(selectedSize))
     );
 
     if (match) {
         input.value = match.id;
         if (match.stock > 0) {
             btn.disabled = false;
-            //stockBadge.innerHTML = '<i class="fas fa-crown me-1 small"></i> متوفر في المتجر';
-            //stockBadge.className = 'small px-3 py-1 rounded-pill fw-bold font-body bg-gold-light text-dark';
             document.getElementById('pdpQty').max = match.stock;
         } else {
             btn.disabled = true;
-            //stockBadge.innerHTML = '<i class="fas fa-times me-1"></i> غير متوفر حالياً';
-            //stockBadge.className = 'small px-3 py-1 rounded-pill fw-bold font-body bg-light text-muted';
         }
         if (match.price) {
             priceDisplay.textContent = match.formatted_price;
         }
-        if (match.image) {
-            pdpChangeImage(match.image, null);
-        }
     } else {
         if (selectedImage && selectedSize) {
             btn.disabled = true;
-            stockBadge.innerHTML = '<i class="fas fa-times me-1"></i> غير متوفر بهذا الخيار';
-            stockBadge.className = 'small px-3 py-1 rounded-pill fw-bold font-body bg-light text-muted';
+            if (stockBadge) {
+                stockBadge.innerHTML = '<i class="fas fa-times me-1"></i> غير متوفر بهذا الخيار';
+                stockBadge.className = 'small px-3 py-1 rounded-pill fw-bold font-body bg-light text-muted';
+            }
         } else {
             btn.disabled = false;
             const totalStock = <?php echo e($product->getTotalStockAttribute()); ?>;
-            //stockBadge.innerHTML = totalStock > 0 ? '<i class="fas fa-crown me-1 small"></i> متوفر في المتجر' : '<i class="fas fa-times me-1"></i> غير متوفر حالياً';
-            stockBadge.className = totalStock > 0 ? 'small px-3 py-1 rounded-pill fw-bold font-body bg-gold-light text-dark' : 'small px-3 py-1 rounded-pill fw-bold font-body bg-light text-muted';
+            if (stockBadge) {
+                stockBadge.className = totalStock > 0 ? 'small px-3 py-1 rounded-pill fw-bold font-body bg-gold-light text-dark' : 'small px-3 py-1 rounded-pill fw-bold font-body bg-light text-muted';
+            }
             
             if (!selectedImage && !selectedSize) {
                 priceDisplay.textContent = basePrice;
@@ -395,16 +389,15 @@ function updateVariantSelection() {
             }
         }
     }
-    // Update availability of other pills
-    updateAvailability();
+    // Update availability
+    updateAvailability(updateColors);
 }
 
-function updateAvailability() {
-    // Collect all displayed size values to filter out stock in hidden sizes
+function updateAvailability(shoudUpdateColors = true) {
     const visibleSizePills = document.querySelectorAll('#sizeOptions .variant-option');
     const visibleSizes = Array.from(visibleSizePills).map(p => String(p.dataset.size));
 
-    // Update Size Pills
+    // 1. Update Size Pills (Depends on selected color)
     visibleSizePills.forEach(pill => {
         const size = pill.dataset.size;
         let isAvailable = false;
@@ -416,52 +409,33 @@ function updateAvailability() {
         pill.classList.toggle('disabled', !isAvailable);
     });
 
-    // Update Style Options
-    document.querySelectorAll('#styleOptions .variant-option').forEach(opt => {
-        const image = opt.dataset.image;
-        let isAvailable = false;
-        
-        if (selectedSize) {
-            isAvailable = variants.some(v => ((v.image || '') === (image || '')) && String(v.size) === String(selectedSize) && v.stock > 0);
-        } else {
-            // Check if this style has ANY variant in stock that corresponds to a VISIBLE size
-            isAvailable = variants.some(v => {
+    // 2. Update Style Options (General availability across all sizes)
+    if (shoudUpdateColors) {
+        document.querySelectorAll('#styleOptions .variant-option').forEach(opt => {
+            const image = opt.dataset.image;
+            const isAvailable = variants.some(v => {
                 const matchesImage = (v.image || '') === (image || '');
                 const hasStock = v.stock > 0;
                 const hasValidSize = visibleSizes.length > 0 ? visibleSizes.includes(String(v.size)) : true;
                 return matchesImage && hasStock && hasValidSize;
             });
-        }
-        opt.classList.toggle('disabled', !isAvailable);
-    });
+            opt.classList.toggle('disabled', !isAvailable);
+        });
+    }
 }
 
 function executeAutoSelect() {
-    if (variants.length > 0) {
-        const visibleSizes = Array.from(document.querySelectorAll('#sizeOptions .variant-option')).map(p => String(p.dataset.size));
-        
-        // Find the first variant that has stock AND a visible size
-        const firstAvailable = variants.find(v => 
-            v.stock > 0 && 
-            (visibleSizes.length > 0 ? visibleSizes.includes(String(v.size)) : true)
-        );
-
-        if (firstAvailable) {
-            // Auto Select Image/Style
-            const styleImgSource = firstAvailable.image || '';
-            const stylePill = document.querySelector(`.variant-option[data-image="${styleImgSource}"]`);
-            if (stylePill && !stylePill.classList.contains('active')) selectStyle(stylePill);
-            
-            // Auto Select Size
-            const sizePill = document.querySelector(`.variant-option[data-size="${firstAvailable.size}"]`);
-            if (sizePill && !sizePill.classList.contains('active')) selectSize(sizePill);
-        }
+    updateAvailability(true);
+    const firstValidStyle = document.querySelector('#styleOptions .variant-option:not(.disabled)');
+    if (firstValidStyle) {
+        selectStyle(firstValidStyle);
     }
 }
 
 // Initial call
-updateAvailability();
-// document.addEventListener('DOMContentLoaded', () => { setTimeout(executeAutoSelect, 150); });
+document.addEventListener('DOMContentLoaded', () => { 
+    executeAutoSelect(); 
+});
 
 
 function pdpZoom(e) {

@@ -277,7 +277,7 @@
     @media (max-width: 991px) {
         .hero-immersive {
             background-attachment: scroll;
-            min-height: 60vh !important;
+            min-height: 55vh !important;
         }
         .glass-capsule-dark {
             padding: 1.5rem;
