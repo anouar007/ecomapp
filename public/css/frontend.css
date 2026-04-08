@@ -1891,7 +1891,12 @@ a { text-decoration: none; }
         border-bottom: 1px solid var(--border);
     }
     .pdp-info-panel { padding: 28px 24px; }
-    .pdp-main-image-wrap { height: 300px; min-height: 240px; max-height: 360px; padding: 20px; }
+    .pdp-main-image-wrap {
+        height: 400px;
+        min-height: 400px;
+        max-height: 400px;
+        padding: 10px;
+     }
 }
 /* ── Super Easy Version Styles ── */
 

@@ -543,25 +543,6 @@
                     </div>
                 </div>
                 
-                <div class="col-lg-3 col-6">
-                    <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">المتجر</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="<?php echo e(route('home')); ?>#catalog" class="footer-link small">جميع المنتجات</a></li>
-                        <li><a href="#" class="footer-link small">وصل حديثاً</a></li>
-                        <li><a href="#" class="footer-link small">الأكثر مبيعاً</a></li>
-                        <li><a href="#" class="footer-link small">تخفيضات</a></li>
-                    </ul>
-                </div>
-
-                <div class="col-lg-3 col-6">
-                    <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">الدعم والمساعدة</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="footer-link small">مركز المساعدة</a></li>
-                        <li><a href="#" class="footer-link small">تتبع طلبي</a></li>
-                        <li><a href="#" class="footer-link small">سياسة الاسترجاع</a></li>
-                        <li><a href="#" class="footer-link small">الضمان</a></li>
-                    </ul>
-                </div>
 
             </div>
             

@@ -52,43 +52,41 @@
 {{-- =============================================
      IMMERSIVE FASHION HERO
      ============================================= --}}
-<section class="hero-immersive bg-brand-fashion bg-brand-overlay d-flex align-items-center position-relative" style="min-height: 95vh; overflow: hidden;">
-    {{-- Fluid Silk Overlay --}}
-    <div class="silk-mist-overlay"></div>
-    
-    <div class="container px-xl-5 position-relative" style="z-index: 2;">
-        <div class="hero-content text-center py-5" data-aos="zoom-out" data-aos-duration="1500">
-            <div class="glass-capsule-dark mb-4 mx-auto" style="max-width: 850px;">
-                <span class="text-uppercase tracking-widest text-gold fw-bold mb-3 d-block small" style="letter-spacing: 4px;">المجموعة الجديدة</span>
-                <h1 class="display-2 fw-bold mb-4 text-gold brand-heading font-corsiva" style="line-height:1.1;">
-                    Hijab Princesses<br>
-                    <span class="fs-2 d-block mt-2 opacity-90 text-white">تألقي بلمسة راقية</span>
-                </h1>
-                <p class="lead mb-5 text-white opacity-90 mx-auto font-body" style="max-width: 650px; font-size: 1.15rem;">
-                    اكتشفي تشكيلتنا الحصرية التي تمزج بين الأصالة المغربية واللمسة العصرية لأجمل مناسباتكِ.
-                </p>
-                <div class="d-flex gap-3 justify-content-center">
-                    <a href="#catalog" class="btn-brand-primary px-5 py-3 text-decoration-none shadow-lg">
-                        تسوقي الآن
-                        <i class="fas fa-shopping-bag ms-2"></i>
-                    </a>
+<section class="hero-immersive bg-brand-fashion d-flex align-items-center position-relative" style="min-height: 90vh; overflow: hidden;">
+    <div class="container px-xl-5 text-center hero-fade-in">
+        {{-- Logo Section --}}
+        <div class="mb-3">
+            @if(setting('app_logo'))
+                <img src="{{ Storage::url(setting('app_logo')) }}" alt="{{ setting('app_name', 'Hijab Princesses') }}" class="hero-logo-elegant">
+            @else
+                <div class="brand-logo-text hero-luxury-text">
+                    Hijab <span class="gold-part">Princesses</span>
                 </div>
-            </div>
+            @endif
+        </div>
+
+        {{-- CTA --}}
+        <div>
+            <a href="#catalog" class="btn-elegant-gold">
+                <span>تسوقي الآن</span>
+                <i class="fas fa-chevron-down bold small opacity-50"></i>
+            </a>
         </div>
     </div>
 </section>
 
 {{-- ── SHOP HERO & VISUAL CATEGORY NAVIGATOR ──────────────────── --}}
 <section id="catalog" class="shop-hero py-4 py-lg-5 bg-white">
+    {{-- Welcome Header (Moved Below Logo) --}}
+    <div class="mb-3 text-center">
+        <span class="hero-welcome-label" data-aos="fade-up" data-aos-delay="400">مرحبا بكم</span>
+    </div>
     <div class="container px-xl-5 text-center">
-        <h2 class="display-6 brand-heading mb-2 text-dark soft-glow-text font-corsiva" data-aos="fade-down">
-            اكتشفي تشكيلة <span class="text-gold">Hijab Princesses</span>
-        </h2>
         
         {{-- Visual Category Navigator (Story Pills) --}}
         <div class="category-story-track d-flex justify-content-lg-center" data-aos="fade-up">
             {{-- All (Story Pill) --}}
-            <a href="#catalog" class="category-story-pill d-none" data-slug="" style="display: none !important;">
+            <a href="#catalog" class="category-story-pill active" data-slug="">
                 <div class="category-story-img-wrapper">
                     <div class="category-story-img d-flex align-items-center justify-content-center bg-white border border-gold-light" style="font-size: 1.25rem;">
                        <i class="fas fa-border-all text-gold"></i>
@@ -123,6 +121,14 @@
 
     <div class="container px-xl-5" id="catalog-container">
         @include('frontend.partials.catalog-content')
+    </div>
+
+    {{-- Load More Action --}}
+    <div class="text-center mt-5 mb-5 {{ $hasMore ? '' : 'd-none' }}" id="load-more-container" data-aos="fade-up">
+        <button id="load-more-btn" class="btn btn-brand-outline px-5 py-3 rounded-pill fw-bold shadow-sm transition-all">
+            <span>عرض المزيد من الموديلات</span>
+            <i class="fas fa-plus ms-2"></i>
+        </button>
     </div>
 </section>
 
@@ -189,7 +195,7 @@
 {{-- =============================================
      SHOPPING PROCESS (Tactile Silk Texture)
      ============================================= --}}
-<section class="section-py bg-silk bg-brand-overlay-light">
+<section class="section-py bg-silk bg-brand-overlay-light d-none">
     <div class="container text-center px-xl-5">
         <div class="section-header mb-5" data-aos="fade-up">
             <div class="glass-capsule mb-2">
@@ -284,7 +290,7 @@
     @media (max-width: 991px) {
         .hero-immersive {
             background-attachment: scroll;
-            min-height: 70vh !important;
+            min-height: 60vh !important;
         }
         .glass-capsule-dark {
             padding: 1.5rem;
@@ -295,72 +301,105 @@
 @endpush
 @push('scripts')
 <script>
-    // Smooth scroll for category pills
+    let currentCategory = '';
+    let currentPage = 1;
+
+    // 1. AJAX Category Filtering
     document.querySelectorAll('.category-story-pill').forEach(pill => {
         pill.addEventListener('click', function(e) {
-            const targetId = this.getAttribute('href');
-            if (targetId.startsWith('#')) {
-                e.preventDefault();
-                const targetElement = document.querySelector(targetId);
-                if (targetElement) {
-                    const offset = 100; // Account for header height
-                    const elementPosition = targetElement.getBoundingClientRect().top;
-                    const offsetPosition = elementPosition + window.pageYOffset - offset;
-
-                    window.scrollTo({
-                        top: offsetPosition,
-                        behavior: 'smooth'
-                    });
-
-                    // Update active class
-                    document.querySelectorAll('.category-story-pill').forEach(p => p.classList.remove('active'));
-                    this.classList.add('active');
-                }
-            }
+            e.preventDefault();
+            
+            // UI Updates
+            document.querySelectorAll('.category-story-pill').forEach(p => p.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Scroll to start of catalog
+            const catalogTop = document.getElementById('catalog').getBoundingClientRect().top + window.pageYOffset - 100;
+            window.scrollTo({ top: catalogTop, behavior: 'smooth' });
+            
+            // Reset State & Fetch
+            currentCategory = this.dataset.slug;
+            currentPage = 1;
+            fetchProducts(true);
         });
     });
 
-    function loadCategory(slug) {
-        // This function is now mostly used for search/sort AJAX
-        // and can be simplified or used for jump-to logic.
-        const targetElement = document.getElementById('category-' + slug);
-        if (targetElement) {
-            const offset = 100;
-            const elementPosition = targetElement.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.pageYOffset - offset;
-            window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-        }
+    // 2. AJAX Load More
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function() {
+            currentPage++;
+            fetchProducts(false);
+        });
     }
 
-    // Handle pagination links
-    document.addEventListener('click', function(e) {
-        if (e.target.closest('.brand-pagination a')) {
-            e.preventDefault();
-            const url = e.target.closest('a').href;
-            const container = document.getElementById('catalog-container');
-            const loader = document.getElementById('catalog-loader');
+    /**
+     * Fetch products via AJAX
+     * @param {Boolean} isNewFilter If true, replace container. Otherwise append to grid.
+     */
+    function fetchProducts(isNewFilter = false) {
+        const loader = document.getElementById('catalog-loader');
+        const container = document.getElementById('catalog-container');
+        const loadMoreContainer = document.getElementById('load-more-container');
+        const btn = document.getElementById('load-more-btn');
 
+        if (isNewFilter) {
             loader.classList.remove('d-none');
             loader.classList.add('d-flex');
+        } else {
+            btn.innerHTML = '<span>جاري التحميل...</span> <i class="fas fa-circle-notch fa-spin ms-2"></i>';
+            btn.disabled = true;
+        }
 
-            window.history.pushState({}, '', url);
+        const params = new URLSearchParams({
+            page: currentPage,
+            category: currentCategory || ''
+        });
 
-            fetch(url, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
+        const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+
+        fetch(url, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (isNewFilter) {
                 container.innerHTML = data.html;
-                if (window.AOS) window.AOS.refreshHard();
-                document.getElementById('catalog').scrollIntoView({ behavior: 'smooth' });
-            })
-            .finally(() => {
+            } else {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = data.html;
+                const newItems = tempDiv.querySelectorAll('#products-grid > div');
+                const grid = document.getElementById('products-grid');
+                if (grid) {
+                    newItems.forEach(item => grid.appendChild(item));
+                }
+            }
+
+            // Sync Button State
+            if (data.hasMore) {
+                loadMoreContainer.classList.remove('d-none');
+                btn.innerHTML = '<span>عرض المزيد</span> <i class="fas fa-plus ms-2"></i>';
+                btn.disabled = false;
+            } else {
+                loadMoreContainer.classList.add('d-none');
+            }
+
+            // Refresh animations
+            if (window.AOS) window.AOS.refreshHard();
+        })
+        .catch(err => {
+            console.error('Fetch error:', err);
+            if (!isNewFilter) {
+                btn.innerHTML = '<span>حاول مرة أخرى</span> <i class="fas fa-sync ms-2"></i>';
+                btn.disabled = false;
+            }
+        })
+        .finally(() => {
+            if (isNewFilter) {
                 loader.classList.add('d-none');
                 loader.classList.remove('d-flex');
-            });
-        }
-    });
+            }
+        });
+    }
 </script>
 @endpush

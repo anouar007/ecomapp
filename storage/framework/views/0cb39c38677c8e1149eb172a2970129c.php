@@ -88,7 +88,7 @@
 
             
             <div class="col-lg-6">
-                <div class="pdp-main-image-wrap rounded-4 overflow-hidden shadow-sm bg-white mb-3" id="zoomWrap" onmousemove="pdpZoom(event)" style="aspect-ratio: 1/1.2; position: relative; cursor: crosshair;">
+                <div class="pdp-main-image-wrap rounded-4 overflow-hidden shadow-sm bg-white mb-3" id="zoomWrap" onmousemove="pdpZoom(event)" style="aspect-ratio: 4/5; position: relative; cursor: crosshair;">
                     <?php if($product->main_image): ?>
                         <img id="mainImage" src="<?php echo e(Storage::url($product->main_image)); ?>"
                              alt="<?php echo e($product->translated_name); ?>" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
@@ -109,14 +109,19 @@
                 </div>
 
                 
-                <?php if($product->images->count() > 0): ?>
+                <?php
+                    $uniqueImages = collect([$product->main_image])
+                        ->merge($product->images->pluck('image_path'))
+                        ->filter()
+                        ->unique()
+                        ->values();
+                ?>
+
+                <?php if($uniqueImages->count() >= 1): ?>
                 <div class="d-flex gap-2 overflow-auto pdp-thumbs pb-2">
-                    <div class="thumb-item active border rounded overflow-hidden" onclick="pdpChangeImage('<?php echo e(Storage::url($product->main_image)); ?>', this)" style="width: 80px; height: 100px; flex-shrink: 0; cursor: pointer; transition: 0.3s;">
-                        <img src="<?php echo e(Storage::url($product->main_image)); ?>" style="width: 100%; height: 100%; object-fit: cover;">
-                    </div>
-                    <?php $__currentLoopData = $product->images; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $img): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <div class="thumb-item border rounded overflow-hidden" onclick="pdpChangeImage('<?php echo e(Storage::url($img->image_path)); ?>', this)" style="width: 80px; height: 100px; flex-shrink: 0; cursor: pointer; transition: 0.3s;">
-                        <img src="<?php echo e(Storage::url($img->image_path)); ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                    <?php $__currentLoopData = $uniqueImages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $imagePath): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <div class="thumb-item <?php echo e($loop->first ? 'active' : ''); ?> border rounded overflow-hidden" onclick="pdpChangeImage('<?php echo e(Storage::url($imagePath)); ?>', this)" style="width: 80px; height: 100px; flex-shrink: 0; cursor: pointer; transition: 0.3s;">
+                        <img src="<?php echo e(Storage::url($imagePath)); ?>" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
@@ -143,11 +148,9 @@
                             <?php endif; ?>
                         </div>
                         
-                        <span id="stockBadge" class="small px-3 py-1 rounded-pill fw-bold font-body <?php echo e($product->getTotalStockAttribute() > 0 ? 'bg-gold-light text-dark' : 'bg-light text-muted'); ?>">
+                        <span id="stockBadge" class="d-none small px-3 py-1 rounded-pill fw-bold font-body <?php echo e($product->getTotalStockAttribute() > 0 ? 'bg-gold-light text-dark' : 'bg-light text-muted'); ?>">
                             <?php if($product->getTotalStockAttribute() > 0): ?>
-                                <i class="fas fa-crown me-1 small"></i> متوفر في المتجر
                             <?php else: ?>
-                                <i class="fas fa-times me-1"></i> غير متوفر حالياً
                             <?php endif; ?>
                         </span>
                     </div>
@@ -162,7 +165,7 @@
                             <?php $styles = $product->getAvailableStylesAttribute(); ?>
                             <?php if($styles->count() > 0): ?>
                                 <div class="mb-4">
-                                    <label class="fw-bold mb-2 d-block small text-muted text-uppercase">اختر الشكل:</label>
+                                    <label class="fw-bold mb-2 d-block small text-muted text-uppercase">اختر اللون:</label>
                                     <div class="d-flex flex-wrap gap-3" id="styleOptions">
                                         <?php $__currentLoopData = $styles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $style): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div class="variant-option border rounded p-1" 
@@ -232,20 +235,14 @@
                     </form>
 
                     
-                    <div class="row g-3">
-                        <div class="col-4">
+                    <div class="row g-3 d-none">
+                        <div class="col-5">
                             <div class="brand-card p-3 border-0 bg-gold-light text-center h-100">
                                 <i class="fas fa-truck text-gold mb-2 d-block h4"></i>
                                 <span class="small fw-bold font-body" style="font-size: 0.7rem;">توصيل سريع</span>
                             </div>
                         </div>
-                        <div class="col-4">
-                            <div class="brand-card p-3 border-0 bg-gold-light text-center h-100">
-                                <i class="fas fa-undo text-gold mb-2 d-block h4"></i>
-                                <span class="small fw-bold font-body" style="font-size: 0.7rem;">استرجاع سهل</span>
-                            </div>
-                        </div>
-                        <div class="col-4">
+                        <div class="col-5">
                             <div class="brand-card p-3 border-0 bg-gold-light text-center h-100">
                                 <i class="fas fa-shield-alt text-gold mb-2 d-block h4"></i>
                                 <span class="small fw-bold font-body" style="font-size: 0.7rem;">دفع آمن</span>
@@ -258,7 +255,7 @@
         </div>
 
         
-        <div class="mt-5 pt-5 border-top">
+        <div class="pt-3 border-top">
             <div class="d-flex justify-content-between align-items-end mb-4">
                 <div>
                     <h3 class="brand-heading m-0">تفاصيل المنتج</h3>
@@ -276,23 +273,7 @@
         </div>
 
         
-        <?php if($relatedProducts->count() > 0): ?>
-        <div class="mt-5 pt-5 border-top">
-            <div class="d-flex justify-content-between align-items-end mb-4">
-                <div>
-                    <h3 class="brand-heading m-0">منتجات قد تعجبك</h3>
-                    <div class="bg-gold mt-2 rounded" style="width: 40px; height: 3px;"></div>
-                </div>
-            </div>
-            <div class="row g-3 g-lg-4">
-                <?php $__currentLoopData = $relatedProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $related): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <div class="col-6 col-md-3">
-                    <?php echo $__env->make('frontend.partials.product_card_v2', ['product' => $related], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
-                </div>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-            </div>
-        </div>
-        <?php endif; ?>
+        
 
     </div>
 </section>
@@ -383,13 +364,13 @@ function updateVariantSelection() {
         input.value = match.id;
         if (match.stock > 0) {
             btn.disabled = false;
-            stockBadge.innerHTML = '<i class="fas fa-crown me-1 small"></i> متوفر في المتجر';
-            stockBadge.className = 'small px-3 py-1 rounded-pill fw-bold font-body bg-gold-light text-dark';
+            //stockBadge.innerHTML = '<i class="fas fa-crown me-1 small"></i> متوفر في المتجر';
+            //stockBadge.className = 'small px-3 py-1 rounded-pill fw-bold font-body bg-gold-light text-dark';
             document.getElementById('pdpQty').max = match.stock;
         } else {
             btn.disabled = true;
-            stockBadge.innerHTML = '<i class="fas fa-times me-1"></i> غير متوفر حالياً';
-            stockBadge.className = 'small px-3 py-1 rounded-pill fw-bold font-body bg-light text-muted';
+            //stockBadge.innerHTML = '<i class="fas fa-times me-1"></i> غير متوفر حالياً';
+            //stockBadge.className = 'small px-3 py-1 rounded-pill fw-bold font-body bg-light text-muted';
         }
         if (match.price) {
             priceDisplay.textContent = match.formatted_price;
@@ -405,7 +386,7 @@ function updateVariantSelection() {
         } else {
             btn.disabled = false;
             const totalStock = <?php echo e($product->getTotalStockAttribute()); ?>;
-            stockBadge.innerHTML = totalStock > 0 ? '<i class="fas fa-crown me-1 small"></i> متوفر في المتجر' : '<i class="fas fa-times me-1"></i> غير متوفر حالياً';
+            //stockBadge.innerHTML = totalStock > 0 ? '<i class="fas fa-crown me-1 small"></i> متوفر في المتجر' : '<i class="fas fa-times me-1"></i> غير متوفر حالياً';
             stockBadge.className = totalStock > 0 ? 'small px-3 py-1 rounded-pill fw-bold font-body bg-gold-light text-dark' : 'small px-3 py-1 rounded-pill fw-bold font-body bg-light text-muted';
             
             if (!selectedImage && !selectedSize) {
@@ -419,14 +400,18 @@ function updateVariantSelection() {
 }
 
 function updateAvailability() {
+    // Collect all displayed size values to filter out stock in hidden sizes
+    const visibleSizePills = document.querySelectorAll('#sizeOptions .variant-option');
+    const visibleSizes = Array.from(visibleSizePills).map(p => String(p.dataset.size));
+
     // Update Size Pills
-    document.querySelectorAll('#sizeOptions .variant-option').forEach(pill => {
+    visibleSizePills.forEach(pill => {
         const size = pill.dataset.size;
         let isAvailable = false;
         if (selectedImage) {
-            isAvailable = variants.some(v => ((v.image || '') === (selectedImage || '')) && v.size == size && v.stock > 0);
+            isAvailable = variants.some(v => ((v.image || '') === (selectedImage || '')) && String(v.size) === String(size) && v.stock > 0);
         } else {
-            isAvailable = variants.some(v => v.size == size && v.stock > 0);
+            isAvailable = variants.some(v => String(v.size) === String(size) && v.stock > 0);
         }
         pill.classList.toggle('disabled', !isAvailable);
     });
@@ -435,10 +420,17 @@ function updateAvailability() {
     document.querySelectorAll('#styleOptions .variant-option').forEach(opt => {
         const image = opt.dataset.image;
         let isAvailable = false;
+        
         if (selectedSize) {
-            isAvailable = variants.some(v => v.size == selectedSize && ((v.image || '') === (image || '')) && v.stock > 0);
+            isAvailable = variants.some(v => ((v.image || '') === (image || '')) && String(v.size) === String(selectedSize) && v.stock > 0);
         } else {
-            isAvailable = variants.some(v => ((v.image || '') === (image || '')) && v.stock > 0);
+            // Check if this style has ANY variant in stock that corresponds to a VISIBLE size
+            isAvailable = variants.some(v => {
+                const matchesImage = (v.image || '') === (image || '');
+                const hasStock = v.stock > 0;
+                const hasValidSize = visibleSizes.length > 0 ? visibleSizes.includes(String(v.size)) : true;
+                return matchesImage && hasStock && hasValidSize;
+            });
         }
         opt.classList.toggle('disabled', !isAvailable);
     });
@@ -446,11 +438,18 @@ function updateAvailability() {
 
 function executeAutoSelect() {
     if (variants.length > 0) {
-        // Find the first variant that has stock
-        const firstAvailable = variants.find(v => v.stock > 0);
+        const visibleSizes = Array.from(document.querySelectorAll('#sizeOptions .variant-option')).map(p => String(p.dataset.size));
+        
+        // Find the first variant that has stock AND a visible size
+        const firstAvailable = variants.find(v => 
+            v.stock > 0 && 
+            (visibleSizes.length > 0 ? visibleSizes.includes(String(v.size)) : true)
+        );
+
         if (firstAvailable) {
             // Auto Select Image/Style
-            const stylePill = document.querySelector(`.variant-option[data-image="${firstAvailable.image}"]`);
+            const styleImgSource = firstAvailable.image || '';
+            const stylePill = document.querySelector(`.variant-option[data-image="${styleImgSource}"]`);
             if (stylePill && !stylePill.classList.contains('active')) selectStyle(stylePill);
             
             // Auto Select Size

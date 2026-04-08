@@ -342,7 +342,7 @@
         <div class="checkout-header">
             <h1>تأكيد الطلب</h1>
             <p class="mb-2">شحن سريع لجميع مدن المغرب 🇲🇦</p>
-            <p class="small text-gold fw-bold mb-0"><i class="fas fa-info-circle me-1"></i> التوصيل: 15 د.م. بالدار البيضاء و 40 د.م. لباقي المدن</p>
+            <p class="small text-gold fw-bold mb-0"><i class="fas fa-info-circle me-1"></i> التوصيل: 20 درهم الدار البيضاء و 30 درهم النواحي <br> و 40 درهم باقي المدن</p>
         </div>
 
         <div class="checkout-grid">
@@ -392,21 +392,6 @@
                         <a href="{{ route('cart.index') }}" class="back-link">
                             <i class="fas fa-arrow-right me-1"></i> العودة للسلة
                         </a>
-
-                        <div class="trust-row">
-                            <div class="trust-item">
-                                <i class="fas fa-shield-alt"></i>
-                                <span>دفع آمن</span>
-                            </div>
-                            <div class="trust-item">
-                                <i class="fas fa-truck"></i>
-                                <span>توصيل سريع</span>
-                            </div>
-                            <div class="trust-item">
-                                <i class="fas fa-undo"></i>
-                                <span>إرجاع سهل</span>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -439,9 +424,6 @@
                                     @if($details['size'] ?? null)
                                         <span class="variant-tag">{{ $details['size'] }}</span>
                                     @endif
-                                    @if($details['color'] ?? null)
-                                        <span class="variant-tag">{{ $details['color'] }}</span>
-                                    @endif
                                 </div>
                             </div>
                             <div class="cart-price">{{ currency($details['price'] * $details['quantity']) }}</div>
@@ -455,7 +437,7 @@
                             </div>
                             <div class="totals-row">
                                 <span>التوصيل</span>
-                                <span class="fw-bold" id="shipping-cost-display">15 - 40 د.م.</span>
+                                <span class="fw-bold" id="shipping-cost-display">20 - 30 - 40 د.م.</span>
                             </div>
                             <div class="totals-row grand">
                                 <span>الإجمالي</span>
