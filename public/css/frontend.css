@@ -1893,7 +1893,7 @@ a { text-decoration: none; }
     .pdp-info-panel { padding: 28px 24px; }
     .pdp-main-image-wrap {
         height: 400px;
-        min-height: 450px;
+        min-height: 470px;
         max-height: 400px;
         padding: 10px;
      }
