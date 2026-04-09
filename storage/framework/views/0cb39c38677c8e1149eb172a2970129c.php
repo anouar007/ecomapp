@@ -478,6 +478,21 @@ function pdpChangeQty(delta) {
     const max = parseInt(inp.max) || 9999;
     let current = parseInt(inp.value);
     if (isNaN(current)) current = 1;
+
+    if (delta > 0 && current >= max) {
+        Swal.fire({
+            toast: true,
+            position: 'top-start',
+            icon: 'warning',
+            title: `المتوفر في المخزن هو ${max} فقط`,
+            showConfirmButton: false,
+            timer: 2000,
+            background: '#1e293b',
+            color: '#fff'
+        });
+        return;
+    }
+
     const val = Math.min(max, Math.max(1, current + delta));
     inp.value = val;
 }
