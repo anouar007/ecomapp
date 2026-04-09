@@ -354,6 +354,8 @@ function updateVariantSelection(updateColors = true) {
     const priceDisplay = document.getElementById('displayPrice');
     
     input.value = '';
+    const qtyInp = document.getElementById('pdpQty');
+    if (qtyInp) qtyInp.value = 1;
 
     const match = variants.find(v => 
         (String(v.style_id) === String(selectedStyleId)) && 

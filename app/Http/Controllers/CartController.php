@@ -126,6 +126,26 @@ class CartController extends Controller
         if ($request->id && $request->quantity) {
             $cart = session()->get('cart', []);
             if (isset($cart[$request->id])) {
+                $parts = explode('_', $request->id);
+                $productId = $parts[0];
+                $variantId = isset($parts[1]) && $parts[1] !== '0' ? $parts[1] : null;
+
+                if ($variantId) {
+                    $variant = \App\Models\ProductVariant::find($variantId);
+                    $stock = $variant ? $variant->stock : 0;
+                } else {
+                    $product = \App\Models\Product::find($productId);
+                    $stock = $product ? $product->stock : 0;
+                }
+
+                if ($request->quantity > $stock) {
+                    $msg = $stock > 0 ? "المتوفر في المخزن هو {$stock} فقط" : "عذراً، هذا المنتج غير متوفر حالياً";
+                    return response()->json([
+                        'success' => false, 
+                        'message' => $msg
+                    ], 400);
+                }
+
                 $cart[$request->id]['quantity'] = $request->quantity;
                 session()->put('cart', $cart);
             }

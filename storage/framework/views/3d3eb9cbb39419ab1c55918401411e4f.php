@@ -585,18 +585,28 @@
                 },
                 body: JSON.stringify({ id, quantity: qty })
             })
-            .then(response => response.json())
             .then(data => {
-                // Update both desktop and mobile cart count badges
-                const updateCartBadges = (count) => {
-                    const el = document.getElementById('header-cart-count');
-                    if (el && count !== undefined) el.textContent = count;
-                };
-                updateCartBadges(data.cartCount);
-                // Refresh mini-cart content
-                refreshMiniCart();
-                // Update FAB visibility
-                updateFAB(data.cartCount);
+                if (data.success) {
+                    // Update both desktop and mobile cart count badges
+                    const updateCartBadges = (count) => {
+                        const el = document.getElementById('header-cart-count');
+                        if (el && count !== undefined) el.textContent = count;
+                    };
+                    updateCartBadges(data.cartCount);
+                    // Refresh mini-cart content
+                    refreshMiniCart();
+                } else {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'warning',
+                        title: data.message || '<?php echo e(__('Stock insuffisant')); ?>',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        background: '#1e293b',
+                        color: '#fff'
+                    });
+                }
             })
             .catch(error => {
                 console.error('Error:', error);

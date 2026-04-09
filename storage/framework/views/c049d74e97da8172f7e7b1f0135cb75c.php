@@ -65,9 +65,25 @@ function updateQty(id, qty) {
         if (data.success) {
             refreshFullPageCart();
             if(typeof refreshMiniCart === 'function') refreshMiniCart();
+        } else {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'warning',
+                title: data.message || 'المخزون غير كافٍ',
+                showConfirmButton: false,
+                timer: 3000,
+                background: '#1e293b',
+                color: '#fff'
+            });
+            // Reset quantity to what's in the session (refresh page or items)
+            refreshFullPageCart();
         }
     })
-    .catch(error => console.error('Error updating cart:', error));
+    .catch(error => {
+        console.error('Error updating cart:', error);
+        location.reload(); // Fallback to ensure UI is in sync
+    });
 }
 
 /**
