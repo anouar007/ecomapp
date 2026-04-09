@@ -24,8 +24,8 @@
     --border-subtle: #f1f5f9;
 
     /* Typography */
-    --font-heading: 'Playfair Display', serif;
-    --font-body: 'Inter', sans-serif;
+    --font-heading: 'Cairo', 'Playfair Display', serif;
+    --font-body: 'Cairo', 'Inter', sans-serif;
 
     /* Shadows */
     --shadow-premium: 0 10px 30px rgba(0,0,0,0.03);
@@ -576,6 +576,15 @@ h1, h2, h3, h4, .brand-heading {
     border-radius: 50%;
     object-fit: cover;
     background: #f1f5f9;
+}
+
+body {
+    font-family: 'Cairo', var(--font-body);
+    font-size: 15px;
+    color: var(--text-body);
+    background: var(--bg-white);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
 }
 
 .category-story-label {
