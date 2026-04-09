@@ -406,7 +406,9 @@ class Product extends Model
      */
     public function getAvailableStylesAttribute()
     {
-        return $this->variants->where('status', 'active')->unique('color_image')->values();
+        return $this->variants->where('status', 'active')->unique(function ($v) {
+            return $v->style_key ?: ($v->color_image ?: $v->color ?: 'default');
+        })->values();
     }
 
     /**
@@ -430,6 +432,7 @@ class Product extends Model
                 'id' => $v->id,
                 'size' => $v->size,
                 'color' => $v->color,
+                'style_id' => $v->style_key ?: ($v->color_image ?: $v->color ?: 'default'),
                 'price' => $v->price ?: $this->price,
                 'stock' => $v->stock,
                 'image' => $v->color_image && strval($v->color_image) !== "0" ? \Illuminate\Support\Facades\Storage::url($v->color_image) : null,

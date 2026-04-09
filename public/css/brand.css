@@ -164,11 +164,11 @@ h1, h2, h3, h4, .brand-heading {
 }
 
 .brand-logo-text {
-    font-family: "Monotype Corsiva", "Apple Chancery", "ITC Zapf Chancery", "URW Chancery L", cursive;
+    font-family: var(--font-corsiva);
     font-size: 1.8rem;
-    font-weight: normal; /* Corsiva is naturally bold/italic */
+    font-weight: normal; 
     letter-spacing: normal;
-    color: var(--brand-gold); /* Consistent Gold instead of White */
+    color: var(--brand-gold); 
 }
 
 .hero-logo-text {
@@ -831,7 +831,7 @@ html, body {
 }
 
 .font-corsiva {
-    font-family: "Monotype Corsiva", "Apple Chancery", "ITC Zapf Chancery", "URW Chancery L", cursive !important;
+    font-family: var(--font-corsiva) !important;
 }
 
 /* ── Silk & Smooth: Luxe Refinements ── */
@@ -1149,8 +1149,13 @@ html, body {
     position: relative;
 }
 
+:root {
+    /* Brand Specific Font */
+    --font-corsiva: "Monotype Corsiva", "Apple Chancery", cursive;
+}
+
 .section-premium-title {
-    font-family: "Monotype Corsiva", "Apple Chancery", "ITC Zapf Chancery", "URW Chancery L", cursive;
+    font-family: var(--font-corsiva);
     font-size: 2.2rem;
     color: var(--brand-dark);
     margin-bottom: 0.5rem;
@@ -1214,7 +1219,7 @@ html, body {
 /* ── Product Detail Page (PDP) Mobile Optimization ── */
 @media (max-width: 991px) {
     .pdp-main-image-wrap {
-        width: 90% !important;
+        width: 95% !important;
         margin-left: auto !important;
         margin-right: auto !important;
         border-radius: 1.5rem !important;
@@ -1224,7 +1229,7 @@ html, body {
     .pdp-thumbs {
         justify-content: center;
         width: 90% !important;
-        margin: 1.5rem auto !important;
+        margin: 0.5rem auto !important;
     }
 }
 

@@ -81,6 +81,7 @@ class ProductController extends Controller
             'variants.*.price' => ['nullable', 'numeric', 'min:0'],
             'variants.*.stock' => ['required_with:variants', 'integer', 'min:0'],
             'variants.*.color_image' => ['nullable', 'image', 'max:4096'],
+            'variants.*.style_key' => ['nullable', 'string', 'max:255'],
         ]);
 
         DB::beginTransaction();
@@ -123,14 +124,20 @@ class ProductController extends Controller
                     }
 
                     // Handle color image upload
-                    if ($request->hasFile("variants.{$index}.color_image")) {
-                        $path = $request->file("variants.{$index}.color_image")->store('variants', 'public');
+                    $variantFiles = $request->file('variants');
+                    if (isset($variantFiles[$index]['color_image'])) {
+                        $imageFile = $variantFiles[$index]['color_image'];
+                        $path = $imageFile->store('product_variants', 'public');
                         if ($path) {
                             $variantData['color_image'] = $path;
                         } else {
-                            unset($variantData['color_image']);
                             \Illuminate\Support\Facades\Log::error("Variant image store failed for index {$index} during creation");
+                            unset($variantData['color_image']);
                         }
+                    } else {
+                        // Crucial: remove the UploadedFile object from variantData if it exists 
+                        // to prevent Eloquent from saving the temp path string.
+                        unset($variantData['color_image']);
                     }
 
                     // Final safety check to prevent legacy "0" from being saved
@@ -205,6 +212,7 @@ class ProductController extends Controller
             'variants.*.price' => ['nullable', 'numeric', 'min:0'],
             'variants.*.stock' => ['required_with:variants', 'integer', 'min:0'],
             'variants.*.color_image' => ['nullable', 'image', 'max:4096'],
+            'variants.*.style_key' => ['nullable', 'string', 'max:255'],
             'variants.*.remove_image' => ['nullable', 'boolean'],
         ]);
 
@@ -265,20 +273,23 @@ class ProductController extends Controller
                     }
                     
                     // Handle color image upload
-                    if ($request->hasFile("variants.{$index}.color_image")) {
-                        $path = $request->file("variants.{$index}.color_image")->store('product_variants', 'public');
+                    $variantFiles = $request->file('variants');
+                    if (isset($variantFiles[$index]['color_image'])) {
+                        $imageFile = $variantFiles[$index]['color_image'];
+                        $path = $imageFile->store('product_variants', 'public');
                         if ($path) {
                             $variantData['color_image'] = $path;
                         } else {
-                            unset($variantData['color_image']);
                             \Illuminate\Support\Facades\Log::error("Variant image store failed for index {$index}");
+                            unset($variantData['color_image']);
                         }
                     } elseif (isset($variantData['remove_image']) && $variantData['remove_image']) {
                         $variantData['color_image'] = null;
                     } else {
+                        // Prevent the UploadedFile object from being string-casted to temp path
                         unset($variantData['color_image']);
                     }
-                    
+
                     // Final safety check to intercept any legacy "0" that might slip through
                     if (isset($variantData['color_image']) && ($variantData['color_image'] === 0 || $variantData['color_image'] === "0" || $variantData['color_image'] === false)) {
                         unset($variantData['color_image']);

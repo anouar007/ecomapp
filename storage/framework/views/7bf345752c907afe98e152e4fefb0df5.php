@@ -9,7 +9,8 @@
 
 <div class="mc-footer">
     <div class="mc-shipping">
-        <i class="fas fa-truck me-1"></i> التوصيل: البيضاء 15 د.م. / باقي المدن 40 د.م.
+        <i class="fas fa-truck me-1"></i> التوصيل: 20 درهم الدار البيضاء و 30 درهم النواحي
+و 40 درهم باقي المدن
     </div>
     <div class="mc-total-row">
         <span class="mc-total-label">المجموع الفرعي</span>

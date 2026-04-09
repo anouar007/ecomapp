@@ -17,6 +17,7 @@ class ProductVariant extends Model
         'color',
         'color_code',
         'color_image',
+        'style_key',
         'sku',
         'price',
         'stock',
@@ -39,6 +40,11 @@ class ProductVariant extends Model
     }
 
 
+
+    public function getStyleIdAttribute()
+    {
+        return $this->style_key ?: ($this->color_image ?: ($this->color ?: 'default'));
+    }
 
     public function product()
     {

@@ -1630,7 +1630,7 @@ a { text-decoration: none; }
 .pdp-bc-current { color: rgba(255,255,255,.85); }
 
 /* ── Body ── */
-.pdp-body { background: var(--bg-surface); padding: 40px 0 80px; }
+.pdp-body { background: var(--bg-surface); }
 
 /* ── Main Card ── */
 .pdp-card {
@@ -1663,7 +1663,6 @@ a { text-decoration: none; }
     height: 480px;
     min-height: 450px;
     max-height: 560px;
-    padding: 28px;
     position: relative;
     cursor: zoom-in;
     overflow: hidden;

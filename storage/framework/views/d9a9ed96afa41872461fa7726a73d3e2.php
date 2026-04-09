@@ -315,6 +315,12 @@
                         <p class="small mb-0"><?php echo e(__('Add variations like size or color to this product.')); ?></p>
                     </div>
                 </div>
+                <div class="card-footer bg-light py-3 border-0 d-flex justify-content-center">
+                    <button type="button" onclick="addVariationRow()" class="btn btn-outline-primary btn-sm rounded-pill px-4">
+                        <i class="fas fa-plus"></i> <?php echo e(__('Add Another Variation')); ?>
+
+                    </button>
+                </div>
             </div>
 
             <div class="form-actions">
@@ -542,10 +548,14 @@ function addVariationRow() {
                 <label><?php echo e(__('Size')); ?></label>
                 <input type="text" name="variants[${vIndex}][size]" class="form-control" placeholder="<?php echo e(__('e.g. XL')); ?>">
             </div>
+            <div class="variant-input-group">
+                <label><?php echo e(__('Style Key (Grouping)')); ?></label>
+                <input type="text" name="variants[${vIndex}][style_key]" class="form-control" placeholder="<?php echo e(__('e.g. Noir-Luxe')); ?>">
+            </div>
         </div>
 
         <div class="variant-grid-inputs">
-            <div class="variant-input-group">
+            <div class="variant-input-group d-none">
                 <label><?php echo e(__('SKU')); ?></label>
                 <div class="input-group">
                     <input type="text" name="variants[${vIndex}][sku]" class="form-control font-inter" placeholder="<?php echo e(__('Auto-generated')); ?>">
@@ -572,6 +582,9 @@ function addVariationRow() {
     `;
     container.appendChild(div);
     
+    // Smooth scroll to the new variant
+    div.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
     // Auto-generate SKU for the new variant
     const addBtn = div.querySelector('.fa-magic')?.parentElement;
     if (addBtn) generateVariantSKU(addBtn);

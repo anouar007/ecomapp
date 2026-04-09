@@ -365,6 +365,10 @@
                                     <label><?php echo e(__('Size')); ?></label>
                                     <input type="text" name="variants[<?php echo e($index); ?>][size]" class="form-control" value="<?php echo e($variant->size); ?>" placeholder="<?php echo e(__('e.g. XL')); ?>">
                                 </div>
+                                <div class="variant-input-group">
+                                    <label><?php echo e(__('Style Key (Grouping)')); ?></label>
+                                    <input type="text" name="variants[<?php echo e($index); ?>][style_key]" class="form-control" value="<?php echo e($variant->style_key); ?>" placeholder="<?php echo e(__('e.g. Noir-Luxe')); ?>">
+                                </div>
                             </div>
 
                             <div class="variant-grid-inputs">
@@ -403,6 +407,12 @@
                         <h5 class="fw-bold"><?php echo e(__('No variations configured')); ?></h5>
                         <p class="small mb-0"><?php echo e(__('Add variations like size or color to this product.')); ?></p>
                     </div>
+                </div>
+                <div class="card-footer bg-light py-3 border-0 d-flex justify-content-center">
+                    <button type="button" onclick="addVariationRow()" class="btn btn-outline-primary btn-sm rounded-pill px-4">
+                        <i class="fas fa-plus"></i> <?php echo e(__('Add Another Variation')); ?>
+
+                    </button>
                 </div>
             </div>
 
@@ -565,6 +575,10 @@ function addVariationRow() {
                 <label><?php echo e(__('Size')); ?></label>
                 <input type="text" name="variants[${vIndex}][size]" class="form-control" placeholder="<?php echo e(__('e.g. XL')); ?>">
             </div>
+            <div class="variant-input-group">
+                <label><?php echo e(__('Style Key (Grouping)')); ?></label>
+                <input type="text" name="variants[${vIndex}][style_key]" class="form-control" placeholder="<?php echo e(__('e.g. Noir-Luxe')); ?>">
+            </div>
         </div>
 
         <div class="variant-grid-inputs">
@@ -594,6 +608,9 @@ function addVariationRow() {
         </div>
     `;
     container.appendChild(div);
+
+    // Smooth scroll to the new variant
+    div.scrollIntoView({ behavior: 'smooth', block: 'center' });
     
     // Auto-generate SKU for the new variant
     const addBtn = div.querySelector('.fa-magic')?.parentElement;
