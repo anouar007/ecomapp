@@ -340,7 +340,7 @@
         <div class="checkout-header">
             <h1>تأكيد الطلب</h1>
             <p class="mb-2">شحن سريع لجميع مدن المغرب 🇲🇦</p>
-            <p class="small text-gold fw-bold mb-0"><i class="fas fa-info-circle me-1"></i> التوصيل: 20 درهم الدار البيضاء و 30 درهم النواحي <br> و 40 درهم باقي المدن</p>
+            <p class="small text-gold fw-bold mb-0"><i class="fas fa-info-circle me-1"></i> التوصيل: من 20 د.م. إلى 40 د.م. حسب المدينة</p>
         </div>
 
         <div class="checkout-grid">
@@ -433,9 +433,9 @@
                                 <span>المجموع الفرعي</span>
                                 <span class="fw-bold"><?php echo e(currency($total)); ?></span>
                             </div>
-                            <div class="totals-row">
+                             <div class="totals-row">
                                 <span>التوصيل</span>
-                                <span class="fw-bold" id="shipping-cost-display">20 - 30 - 40 د.م.</span>
+                                <span class="fw-bold" id="shipping-cost-display">حدد المدينة...</span>
                             </div>
                             <div class="totals-row grand">
                                 <span>الإجمالي</span>
@@ -460,16 +460,17 @@
 
 <?php $__env->startPush('scripts'); ?>
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
-<script src="<?php echo e(asset('js/morocco-cities.js')); ?>"></script>
 <script>
-
 document.addEventListener('DOMContentLoaded', function () {
-    // Each option has label (Arabic shown), value, and text (searchable: Arabic + French)
+    // Inject cities from PHP
+    const moroccanCities = <?php echo json_encode($cities, 15, 512) ?>;
+
     const options = moroccanCities.map(c => ({
-        value: c.ar,
-        label: c.ar,
-        fr: c.fr,
-        text: c.ar + ' ' + c.fr,  // searchable text includes both languages
+        value: c.arabic_name,
+        label: c.arabic_name,
+        fr: c.name,
+        price: parseFloat(c.price),
+        text: c.arabic_name + ' ' + c.name,
     }));
 
     const subtotal = <?php echo e($total); ?>;
@@ -481,44 +482,45 @@ document.addEventListener('DOMContentLoaded', function () {
         items: [],
         valueField: 'value',
         labelField: 'label',
-        searchField: ['text'],   // search in the combined Arabic+French field
+        searchField: ['text'],
         render: {
             option: function (data, escape) {
                 return '<div class="d-flex align-items-center justify-content-between gap-2">' +
-                    '<span class="fw-bold">' + escape(data.label) + '</span>' +
-                    '<span class="text-muted small opacity-75">' + escape(data.fr || '') + '</span>' +
+                    '<div>' +
+                        '<span class="fw-bold">' + escape(data.label) + '</span>' +
+                        '<span class="text-muted small ms-2 opacity-75">' + escape(data.fr || '') + '</span>' +
+                    '</div>' +
+                    '<span class="badge bg-light text-dark fw-normal" style="font-size: 0.75rem;">' + escape(data.price) + ' د.م.</span>' +
                 '</div>';
             },
             item: function (data, escape) {
                 return '<div>' + escape(data.label) + '</div>';
             },
         },
-        placeholder: 'ابحثي... / Chercher...',
-        create: true,
-        maxOptions: 200,
+        placeholder: 'ابحثي عن مدينتك... / Chercher...',
+        create: false, // Don't allow custom cities to ensure we have a price
+        maxOptions: 500,
         onChange: function(value) {
-            updateShipping(value);
+            const city = options.find(o => o.value === value);
+            updateShipping(city);
         }
     });
 
     function updateShipping(city) {
         if (!city) {
-            shippingDisplay.textContent = '15 - 40 د.م.';
+            shippingDisplay.textContent = 'حدد المدينة...';
             totalDisplay.textContent = 'يُحدد بعد اختيار المدينة';
             totalDisplay.classList.add('fs-6', 'text-muted', 'fw-normal');
             return;
         }
 
-        // Normalize city: Casablanca or الدار البيضاء
-        const isCasablanca = city.toLowerCase().includes('casablanca') || city.includes('الدار البيضاء');
-        const cost = isCasablanca ? 15 : 40;
+        const cost = city.price;
         const total = subtotal + cost;
 
         shippingDisplay.textContent = cost.toFixed(2) + ' د.م.';
         totalDisplay.textContent = total.toFixed(2) + ' د.م.';
         totalDisplay.classList.remove('fs-6', 'text-muted', 'fw-normal');
         
-        // Add a nice animation or color highlight
         shippingDisplay.classList.add('text-primary');
         setTimeout(() => shippingDisplay.classList.remove('text-primary'), 500);
     }

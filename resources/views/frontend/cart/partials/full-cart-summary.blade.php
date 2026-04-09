@@ -16,8 +16,8 @@
     <div class="d-flex justify-content-between mb-3 font-body">
         <span class="text-muted">التوصيل</span>
         <div class="text-end">
-            <span class="text-gold fw-bold">15 - 40 د.م.</span>
-            <div class="small text-muted mt-1 lh-base" style="font-size: 0.75rem;">البيضاء: 15 د.م.<br>باقي المدن: 40 د.م.</div>
+            <span class="text-gold fw-bold">من 20 إلى 40 د.م.</span>
+            <div class="small text-muted mt-1 lh-base" style="font-size: 0.75rem;">تُحدد التكلفة حسب مدينتك</div>
         </div>
     </div>
 

@@ -27,7 +27,8 @@ class CheckoutController extends Controller
             $total += $details['price'] * $details['quantity'];
         }
 
-        return view('frontend.checkout.index', compact('cart', 'total'));
+        $cities = \App\Models\City::orderBy('arabic_name')->get();
+        return view('frontend.checkout.index', compact('cart', 'total', 'cities'));
     }
 
     /**
@@ -53,10 +54,12 @@ class CheckoutController extends Controller
             $subtotal += $details['price'] * $details['quantity'];
         }
 
-        // Calculate Shipping Cost
-        $city = $request->shipping_city;
-        $isCasablanca = Str::contains(strtolower($city), 'casablanca') || Str::contains($city, 'الدار البيضاء');
-        $shippingCost = $isCasablanca ? 15 : 40;
+        // Calculate Shipping Cost from Database
+        $cityRow = \App\Models\City::where('arabic_name', $request->shipping_city)
+                                  ->orWhere('name', $request->shipping_city)
+                                  ->first();
+        
+        $shippingCost = $cityRow ? $cityRow->price : 40;
         $total = $subtotal + $shippingCost;
 
         // Create Order
