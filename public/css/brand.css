@@ -221,7 +221,6 @@ h1, h2, h3, h4, .brand-heading {
 /* ── Hero: Elegant Minimalism ── */
 .hero-welcome-label {
     font-size: 1.7rem;
-    letter-spacing: 0.8em;
     color: var(--brand-dark);
     text-transform: uppercase;
     font-weight: 700;
@@ -268,12 +267,10 @@ h1, h2, h3, h4, .brand-heading {
     padding: 7px 45px;
     border-radius: 0; /* Sharp corners for modern luxury */
     text-transform: uppercase;
-    letter-spacing: 5px;
     font-weight: 600;
     font-size: 0.85rem;
     position: relative;
     overflow: hidden;
-    transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
     text-decoration: none !important;
     display: inline-flex;
     align-items: center;
