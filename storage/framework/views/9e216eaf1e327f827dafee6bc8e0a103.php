@@ -49,7 +49,7 @@
 
 
 <section class="hero-immersive bg-brand-fashion d-flex align-items-center position-relative" style="min-height: 90vh; overflow: hidden;">
-    <div class="container px-xl-5 text-center hero-fade-in">
+    <div class="container px-xl-5 text-center">
         
         <div class="mb-3">
             <?php if(setting('app_logo')): ?>
@@ -75,7 +75,7 @@
 <section id="catalog" class="shop-hero py-0 py-lg-5 bg-white">
     
     <div class="mb-3 text-center">
-        <span class="hero-welcome-label" data-aos="fade-up" data-aos-delay="400">مرحبا بكم</span>
+        <span class="hero-welcome-label">مرحبا بكم</span>
     </div>
     <div class="container px-xl-5 text-center">
         
