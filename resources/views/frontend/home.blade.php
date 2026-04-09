@@ -69,14 +69,14 @@
         <div>
             <a href="#catalog" class="btn-elegant-gold">
                 <span>تسوقي الآن</span>
-                <i class="fas fa-chevron-down bold small opacity-50"></i>
+                <i class="fa-solid fa-cart-shopping bold small opacity-1"></i>
             </a>
         </div>
     </div>
 </section>
 
 {{-- ── SHOP HERO & VISUAL CATEGORY NAVIGATOR ──────────────────── --}}
-<section id="catalog" class="shop-hero py-4 py-lg-5 bg-white">
+<section id="catalog" class="shop-hero py-0 py-lg-5 bg-white">
     {{-- Welcome Header (Moved Below Logo) --}}
     <div class="mb-3 text-center">
         <span class="hero-welcome-label" data-aos="fade-up" data-aos-delay="400">مرحبا بكم</span>
@@ -111,7 +111,7 @@
 </section>
 
 {{-- ── PRODUCT CATALOG ────────────────────────────────────────── --}}
-<section class="section-py bg-surface position-relative" style="border-top: 1px solid rgba(0,0,0,0.02);">
+<section class="section-py bg-surface position-relative pt-2" style="border-top: 1px solid rgba(0,0,0,0.02);">
     {{-- Loading Overlay --}}
     <div id="catalog-loader" class="position-absolute top-0 start-0 w-100 h-100 bg-white-50 d-none align-items-center justify-content-center" style="z-index: 10; backdrop-filter: blur(2px);">
         <div class="spinner-border text-gold" role="status">
@@ -290,7 +290,7 @@
     @media (max-width: 991px) {
         .hero-immersive {
             background-attachment: scroll;
-            min-height: 60vh !important;
+            min-height: 50vh !important;
         }
         .glass-capsule-dark {
             padding: 1.5rem;

@@ -154,13 +154,9 @@
                 <!-- Center: Brand Logo -->
                 <div class="header-logo-container" style="pointer-events: none;">
                     <a href="{{ url('/') }}" class="text-decoration-none" style="pointer-events: auto;">
-                        @if(setting('app_logo'))
-                            <img src="{{ Storage::url(setting('app_logo')) }}" alt="Hijab Princesses — أناقة الأميرة" class="header-logo shadow-sm">
-                        @else
-                            <div class="brand-logo-text" style="font-size: 1.8rem;">
-                                Hijab <span class="gold-part">Princesses</span>
+                        <div class="brand-logo-text" style="font-size: 1.3rem;">
+                                <span class="gold-part">Hijab Princesses</span>
                             </div>
-                        @endif
                     </a>
                 </div>
 
@@ -169,7 +165,7 @@
                     <!-- Cart -->
                     <div class="position-relative" style="pointer-events: auto;">
                         <button class="header-action-btn position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart">
-                            <i class="fas fa-shopping-bag"></i>
+                            <i class="fa-solid fa-cart-shopping"></i>
                             <span id="header-cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style="font-size: 0.6rem; transform: translate(-35%, 25%);">
                                 {{ count(session('cart', [])) }}
                             </span>
@@ -452,7 +448,7 @@
         <!-- Header -->
         <div class="mc-header">
             <div class="mc-header-title">
-                <div class="mc-header-icon"><i class="fas fa-shopping-bag"></i></div>
+                <div class="mc-header-icon"><i class="fa-solid fa-cart-shopping"></i></div>
                 <span id="miniCartLabel">سلتي</span>
             </div>
             <button class="mc-close" data-bs-dismiss="offcanvas" aria-label="Close">

@@ -24,8 +24,8 @@
     --border-subtle: #f1f5f9;
 
     /* Typography */
-    --font-heading: 'Cairo', 'Playfair Display', serif;
-    --font-body: 'Cairo', 'Inter', sans-serif;
+    --font-heading: 'Cairo', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-body: 'Cairo', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
     /* Shadows */
     --shadow-premium: 0 10px 30px rgba(0,0,0,0.03);
@@ -160,7 +160,6 @@ h1, h2, h3, h4, .brand-heading {
 
 .header-logo-container {
     text-align: center;
-    flex: 1;
 }
 
 .brand-logo-text {
@@ -266,7 +265,7 @@ h1, h2, h3, h4, .brand-heading {
     background: transparent;
     border: 1px solid rgba(197, 160, 89, 0.5);
     color: var(--brand-gold) !important;
-    padding: 16px 45px;
+    padding: 7px 45px;
     border-radius: 0; /* Sharp corners for modern luxury */
     text-transform: uppercase;
     letter-spacing: 5px;

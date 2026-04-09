@@ -82,7 +82,7 @@
 </section>
 
 
-<section class="pdp-body section-py">
+<section class="pdp-body section-py pt-5">
     <div class="container px-xl-5">
         <div class="row g-4 g-lg-5">
 
