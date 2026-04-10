@@ -14,7 +14,12 @@
                 <?php endif; ?>
             </div>
             <div class="mc-item-bottom">
-                <span class="mc-price"><?php echo e(currency($details['price'])); ?></span>
+                <div class="d-flex flex-column">
+                    <span class="mc-price fw-bold text-gold"><?php echo e(currency($details['price'])); ?></span>
+                    <?php if(isset($details['original_price']) && $details['original_price'] > $details['price']): ?>
+                        <span class="text-danger small text-decoration-line-through" style="font-size: 0.7rem;"><?php echo e(currency($details['original_price'])); ?></span>
+                    <?php endif; ?>
+                </div>
                 <div class="mc-qty">
                     <button class="mc-qty-btn" onclick="updateQty('<?php echo e($key); ?>', <?php echo e($details['quantity'] - 1); ?>)">
                         <i class="fas fa-minus"></i>

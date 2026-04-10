@@ -1,8 +1,11 @@
 @php
     $total = 0;
+    $originalTotal = 0;
     foreach($cart as $details) {
         $total += $details['price'] * $details['quantity'];
+        $originalTotal += ($details['original_price'] ?? $details['price'] ?? 0) * $details['quantity'];
     }
+    $savings = $originalTotal - $total;
 @endphp
 
 <div class="brand-card p-4 border-0 shadow-sm bg-white sticky-top mb-4" style="top: 100px; z-index: 10;">
@@ -12,6 +15,13 @@
         <span class="text-muted">المجموع الفرعي</span>
         <span class="fw-bold">{{ currency($total) }}</span>
     </div>
+    
+    @if($savings > 0)
+    <div class="d-flex justify-content-between mb-3 font-body text-danger anim-fade-in">
+        <span>لقد وفرتِ:</span>
+        <span class="fw-bold">- {{ currency($savings) }}</span>
+    </div>
+    @endif
     
     <div class="d-flex justify-content-between mb-3 font-body">
         <span class="text-muted">التوصيل</span>

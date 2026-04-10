@@ -14,7 +14,12 @@
                 @endif
             </div>
             <div class="mc-item-bottom">
-                <span class="mc-price">{{ currency($details['price']) }}</span>
+                <div class="d-flex flex-column">
+                    <span class="mc-price fw-bold text-gold">{{ currency($details['price']) }}</span>
+                    @if(isset($details['original_price']) && $details['original_price'] > $details['price'])
+                        <span class="text-danger small text-decoration-line-through" style="font-size: 0.7rem;">{{ currency($details['original_price']) }}</span>
+                    @endif
+                </div>
                 <div class="mc-qty">
                     <button class="mc-qty-btn" onclick="updateQty('{{ $key }}', {{ $details['quantity'] - 1 }})">
                         <i class="fas fa-minus"></i>

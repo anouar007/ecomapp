@@ -76,24 +76,72 @@ class Product extends Model
     ];
 
     /**
-     * Check if the product is currently on sale.
+     * Check if the product or any of its variants are currently on sale.
      */
     public function isOnSale()
     {
-        return $this->sale_price 
+        // Check main product first
+        $onSale = $this->sale_price 
             && $this->sale_price < $this->price
             && (!$this->sale_end_date || $this->sale_end_date->isFuture());
+
+        if ($onSale) return true;
+
+        // Check if any active variant is on sale
+        return $this->variants()
+            ->where('status', 'active')
+            ->whereNotNull('sale_price')
+            ->exists();
+    }
+
+    /**
+     * Get the current display price (sale price if active, otherwise normal price).
+     */
+    public function getDisplayPriceAttribute()
+    {
+        if ($this->sale_price && $this->sale_price < $this->price) {
+            if (!$this->sale_end_date || $this->sale_end_date->isFuture()) {
+                return $this->sale_price;
+            }
+        }
+        return $this->price;
     }
 
     public function getDiscountPercentageAttribute()
     {
         if (!$this->isOnSale()) return 0;
-        return round((($this->price - $this->sale_price) / $this->price) * 100);
+        
+        // Use main product discount if available
+        if ($this->sale_price && $this->sale_price < $this->price) {
+            return round((($this->price - $this->sale_price) / $this->price) * 100);
+        }
+
+        // Use highest variant discount
+        $maxDiscount = $this->variants()
+            ->where('status', 'active')
+            ->whereNotNull('sale_price')
+            ->get()
+            ->map(function($v) {
+                $p = $v->price ?: $this->price;
+                return (($p - $v->sale_price) / $p) * 100;
+            })->max();
+
+        return round($maxDiscount ?? 0);
     }
 
     public function getFormattedSalePriceAttribute()
     {
-        return currency($this->sale_price);
+        if ($this->sale_price) {
+            return currency($this->sale_price);
+        }
+        
+        // Find best variant sale price
+        $minSalePrice = $this->variants()
+            ->where('status', 'active')
+            ->whereNotNull('sale_price')
+            ->min('sale_price');
+        
+        return $minSalePrice ? currency($minSalePrice) : currency($this->price);
     }
 
     /**
@@ -428,15 +476,22 @@ class Product extends Model
     public function getVariantsJsonAttribute()
     {
         return $this->variants->where('status', 'active')->map(function($v) {
+            $isOnSale = $v->isOnSale();
+            $originalPrice = $v->price ?: $this->price;
+            $currentPrice = $v->display_price;
+
             return [
                 'id' => $v->id,
                 'size' => $v->size,
                 'color' => $v->color,
                 'style_id' => $v->style_key ?: ($v->color_image ?: $v->color ?: 'default'),
-                'price' => $v->price ?: $this->price,
+                'price' => $originalPrice,
+                'sale_price' => $isOnSale ? $currentPrice : null,
+                'is_on_sale' => $isOnSale,
                 'stock' => $v->stock,
                 'image' => $v->color_image && strval($v->color_image) !== "0" ? \Illuminate\Support\Facades\Storage::url($v->color_image) : null,
-                'formatted_price' => currency($v->price ?: $this->price)
+                'formatted_price' => currency($currentPrice),
+                'formatted_original_price' => currency($originalPrice),
             ];
         })->toJson();
     }

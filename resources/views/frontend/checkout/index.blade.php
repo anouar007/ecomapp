@@ -426,7 +426,12 @@
                                     @endif
                                 </div>
                             </div>
-                            <div class="cart-price">{{ currency($details['price'] * $details['quantity']) }}</div>
+                            <div class="cart-price d-flex flex-column align-items-end">
+                                <span class="fw-bold text-gold">{{ currency($details['price'] * $details['quantity']) }}</span>
+                                @if(isset($details['original_price']) && $details['original_price'] > $details['price'])
+                                    <span class="text-danger small text-decoration-line-through" style="font-size: 0.75rem;">{{ currency($details['original_price'] * $details['quantity']) }}</span>
+                                @endif
+                            </div>
                         </div>
                         @endforeach
 

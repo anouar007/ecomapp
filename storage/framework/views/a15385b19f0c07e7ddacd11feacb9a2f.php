@@ -1,8 +1,11 @@
 <?php
     $total = 0;
+    $originalTotal = 0;
     foreach($cart as $details) {
         $total += $details['price'] * $details['quantity'];
+        $originalTotal += ($details['original_price'] ?? $details['price'] ?? 0) * $details['quantity'];
     }
+    $savings = $originalTotal - $total;
 ?>
 
 <div class="brand-card p-4 border-0 shadow-sm bg-white sticky-top mb-4" style="top: 100px; z-index: 10;">
@@ -13,11 +16,18 @@
         <span class="fw-bold"><?php echo e(currency($total)); ?></span>
     </div>
     
+    <?php if($savings > 0): ?>
+    <div class="d-flex justify-content-between mb-3 font-body text-danger anim-fade-in">
+        <span>لقد وفرتِ:</span>
+        <span class="fw-bold">- <?php echo e(currency($savings)); ?></span>
+    </div>
+    <?php endif; ?>
+    
     <div class="d-flex justify-content-between mb-3 font-body">
         <span class="text-muted">التوصيل</span>
         <div class="text-end">
-            <span class="text-gold fw-bold">15 - 40 د.م.</span>
-            <div class="small text-muted mt-1 lh-base" style="font-size: 0.75rem;">البيضاء: 15 د.م.<br>باقي المدن: 40 د.م.</div>
+            <span class="text-gold fw-bold">من 20 إلى 40 د.م.</span>
+            <div class="small text-muted mt-1 lh-base" style="font-size: 0.75rem;">تُحدد التكلفة حسب مدينتك</div>
         </div>
     </div>
 

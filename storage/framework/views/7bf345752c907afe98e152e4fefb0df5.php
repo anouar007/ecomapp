@@ -1,9 +1,12 @@
 <?php
     $cart = session('cart', []);
     $total = 0;
+    $originalTotal = 0;
     foreach($cart as $details) {
         $total += $details['price'] * $details['quantity'];
+        $originalTotal += ($details['original_price'] ?? $details['price']) * $details['quantity'];
     }
+    $savings = $originalTotal - $total;
 ?>
 <?php if(count($cart) > 0): ?>
 
@@ -16,6 +19,12 @@
         <span class="mc-total-label">المجموع الفرعي</span>
         <span class="mc-total-val" id="mini-cart-total"><?php echo e(currency($total)); ?></span>
     </div>
+    <?php if($savings > 0): ?>
+        <div class="mc-total-row text-danger" style="margin-top: -5px; font-size: 0.85rem;">
+            <span>لقد وفرتِ:</span>
+            <span class="fw-bold"><?php echo e(currency($savings)); ?></span>
+        </div>
+    <?php endif; ?>
     <a href="<?php echo e(route('checkout.index')); ?>" class="mc-checkout-btn">
         <i class="fas fa-check-circle"></i>
         <span>إتمام الطلب</span>

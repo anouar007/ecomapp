@@ -424,7 +424,12 @@
                                     <?php endif; ?>
                                 </div>
                             </div>
-                            <div class="cart-price"><?php echo e(currency($details['price'] * $details['quantity'])); ?></div>
+                            <div class="cart-price d-flex flex-column align-items-end">
+                                <span class="fw-bold text-gold"><?php echo e(currency($details['price'] * $details['quantity'])); ?></span>
+                                <?php if(isset($details['original_price']) && $details['original_price'] > $details['price']): ?>
+                                    <span class="text-danger small text-decoration-line-through" style="font-size: 0.75rem;"><?php echo e(currency($details['original_price'] * $details['quantity'])); ?></span>
+                                <?php endif; ?>
+                            </div>
                         </div>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 

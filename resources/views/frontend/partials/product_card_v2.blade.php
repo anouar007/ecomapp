@@ -13,6 +13,12 @@
              class="w-100 h-100 object-fit-cover transition-hero"
              loading="lazy"
              decoding="async">
+             
+        @if($product->isOnSale())
+            <div class="position-absolute shadow-sm" style="top: 10px; right: 10px; z-index: 5;">
+                <span class="badge bg-danger rounded-pill px-3 py-2 fw-bold font-body" style="font-size: 0.75rem; letter-spacing: 0.5px;">تخفيض {{ $product->discount_percentage }}%</span>
+            </div>
+        @endif
     </div>
 
     {{-- Content Body (Z-index 2 to allow interaction with variants/buttons) --}}
@@ -23,7 +29,7 @@
         <div class="product-v2-price mb-3" style="pointer-events: auto;">
              @if($product->isOnSale())
                 <span class="price-sale h5 fw-bold text-gold mb-0" id="pcard-price-{{ $product->id }}">{{ $product->formatted_sale_price }}</span>
-                <span class="price-old text-muted small text-decoration-line-through ms-2">{{ $product->formatted_price }}</span>
+                <span class="price-old text-danger small text-decoration-line-through ms-2">{{ $product->formatted_price }}</span>
             @else
                 <span class="price-sale h5 fw-bold text-gold mb-0" id="pcard-price-{{ $product->id }}">{{ $product->formatted_price }}</span>
             @endif

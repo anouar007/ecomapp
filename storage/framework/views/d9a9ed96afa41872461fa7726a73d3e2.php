@@ -237,6 +237,22 @@
                            required>
                     <small class="form-help"><?php echo e(__('Price you sell to customers')); ?></small>
                 </div>
+
+                <div class="form-group">
+                    <label for="sale_price" class="form-label">
+                        <i class="fas fa-percentage text-danger"></i> <?php echo e(__('Discount Price ($)')); ?>
+
+                    </label>
+                    <input type="number" 
+                           id="sale_price" 
+                           name="sale_price" 
+                           class="form-control border-danger-subtle" 
+                           value="<?php echo e(old('sale_price')); ?>" 
+                           placeholder="0.00" 
+                           step="0.01" 
+                           min="0">
+                    <small class="form-help text-danger"><?php echo e(__('If set, this will be the new price with the old one crossed out')); ?></small>
+                </div>
             </div>
 
             <div class="form-row">
@@ -569,6 +585,13 @@ function addVariationRow() {
                 <div class="input-group">
                     <span class="input-group-text">$</span>
                     <input type="number" name="variants[${vIndex}][price]" class="form-control font-inter" step="0.01" placeholder="0.00">
+                </div>
+            </div>
+            <div class="variant-input-group">
+                <label class="text-danger fw-bold"><?php echo e(__('Discount Price ($)')); ?></label>
+                <div class="input-group">
+                    <span class="input-group-text bg-danger-subtle text-danger border-danger-subtle">$</span>
+                    <input type="number" name="variants[${vIndex}][sale_price]" class="form-control font-inter border-danger-subtle" step="0.01" placeholder="0.00">
                 </div>
             </div>
             <div class="variant-input-group">

@@ -109,7 +109,7 @@
                         @if($product->getTotalStockAttribute() <= 0)
                             <span class="badge bg-danger rounded-pill px-3 py-2">نفذ من المخزن</span>
                         @elseif($product->isOnSale())
-                            <span class="badge bg-primary rounded-pill px-3 py-2">تخفيض {{ $product->discount_percentage }}%</span>
+                            <span class="badge bg-danger rounded-pill px-3 py-2">تخفيض {{ $product->discount_percentage }}%</span>
                         @endif
                     </div>
                 </div>
@@ -145,12 +145,13 @@
 
                     {{-- Price & Stock --}}
                     <div class="d-flex align-items-center gap-3 mb-2">
-                        <div class="pdp-price">
+                        <div class="pdp-price" id="priceContainer">
                             @if($product->isOnSale())
                                 <span class="h2 fw-bold text-gold m-0" id="displayPrice">{{ $product->formatted_sale_price }}</span>
-                                <span class="text-muted text-decoration-line-through ms-2 small font-body">{{ $product->formatted_price }}</span>
+                                <span class="text-danger text-decoration-line-through ms-2 h4 font-body" id="originalPrice">{{ $product->formatted_price }}</span>
                             @else
                                 <span class="h2 fw-bold text-gold m-0" id="displayPrice">{{ $product->formatted_price }}</span>
+                                <span class="text-danger text-decoration-line-through ms-2 h4 font-body d-none" id="originalPrice"></span>
                             @endif
                         </div>
                         
@@ -312,7 +313,9 @@
 const variants = @json(json_decode($product->variants_json));
 let selectedStyleId = null;
 let selectedSize = null;
-const basePrice = "{{ $product->isOnSale() ? $product->formatted_sale_price : $product->formatted_price }}";
+const baseIsOnSale = {{ $product->isOnSale() ? 'true' : 'false' }};
+const basePrice = "{{ $product->formatted_price }}";
+const baseSalePrice = "{{ $product->isOnSale() ? $product->formatted_sale_price : '' }}";
 const mainImageSrc = "{{ $product->main_image ? Storage::url($product->main_image) : '' }}";
 
 function selectStyle(el) {
@@ -374,15 +377,22 @@ function updateVariantSelection(updateColors = true) {
         } else {
             btn.disabled = true;
         }
-        if (match.price) {
+        
+        // Update Price with Sale Logic
+        const originalPriceEl = document.getElementById('originalPrice');
+        if (match.is_on_sale) {
             priceDisplay.textContent = match.formatted_price;
+            originalPriceEl.textContent = match.formatted_original_price;
+            originalPriceEl.classList.remove('d-none');
+        } else {
+            priceDisplay.textContent = match.formatted_price;
+            originalPriceEl.classList.add('d-none');
         }
     } else {
         if (selectedStyleId && selectedSize) {
             btn.disabled = true;
             if (stockBadge) {
-                stockBadge.innerHTML = '<i class="fas fa-times me-1"></i> غير متوفر بهذا الخيار';
-                stockBadge.className = 'small px-3 py-1 rounded-pill fw-bold font-body bg-light text-muted';
+                stockBadge.classList.add('d-none');
             }
         } else {
             btn.disabled = false;
@@ -392,7 +402,16 @@ function updateVariantSelection(updateColors = true) {
             }
             
             if (!selectedStyleId && !selectedSize) {
-                priceDisplay.textContent = basePrice;
+                const originalPriceEl = document.getElementById('originalPrice');
+                if (baseIsOnSale) {
+                    priceDisplay.textContent = baseSalePrice;
+                    originalPriceEl.textContent = basePrice;
+                    originalPriceEl.classList.remove('d-none');
+                } else {
+                    priceDisplay.textContent = basePrice;
+                    originalPriceEl.classList.add('d-none');
+                }
+                
                 if (mainImageSrc) pdpChangeImage(mainImageSrc, document.querySelector('.thumb-item'));
             }
         }

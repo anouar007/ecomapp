@@ -20,12 +20,14 @@ class ProductVariant extends Model
         'style_key',
         'sku',
         'price',
+        'sale_price',
         'stock',
         'status',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
+        'sale_price' => 'decimal:2',
         'stock' => 'integer',
     ];
 
@@ -57,7 +59,39 @@ class ProductVariant extends Model
      */
     public function getDisplayPriceAttribute()
     {
+        $salePrice = $this->sale_price;
+        
+        // Fallback to product sale price if variant has no discount
+        if (!$salePrice && $this->product->sale_price && $this->product->isOnSale()) {
+            $salePrice = $this->product->sale_price;
+        }
+
+        if ($salePrice) {
+            $basePrice = $this->price ?? $this->product->price;
+            if ($salePrice < $basePrice) {
+                return $salePrice;
+            }
+        }
+
         return $this->price ?? $this->product->price;
+    }
+
+    /**
+     * Check if the variant is currently on sale.
+     */
+    public function isOnSale()
+    {
+        $basePrice = $this->price ?: $this->product->price;
+        
+        // Direct variant sale price
+        if ($this->sale_price && $this->sale_price < $basePrice) {
+            return true;
+        }
+
+        // Fallback to product sale price
+        return $this->product->sale_price 
+            && $this->product->isOnSale() 
+            && $this->product->sale_price < $basePrice;
     }
 
     /**

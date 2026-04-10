@@ -13,6 +13,12 @@
              class="w-100 h-100 object-fit-cover transition-hero"
              loading="lazy"
              decoding="async">
+             
+        <?php if($product->isOnSale()): ?>
+            <div class="position-absolute shadow-sm" style="top: 10px; right: 10px; z-index: 5;">
+                <span class="badge bg-danger rounded-pill px-3 py-2 fw-bold font-body" style="font-size: 0.75rem; letter-spacing: 0.5px;">تخفيض <?php echo e($product->discount_percentage); ?>%</span>
+            </div>
+        <?php endif; ?>
     </div>
 
     
@@ -23,7 +29,7 @@
         <div class="product-v2-price mb-3" style="pointer-events: auto;">
              <?php if($product->isOnSale()): ?>
                 <span class="price-sale h5 fw-bold text-gold mb-0" id="pcard-price-<?php echo e($product->id); ?>"><?php echo e($product->formatted_sale_price); ?></span>
-                <span class="price-old text-muted small text-decoration-line-through ms-2"><?php echo e($product->formatted_price); ?></span>
+                <span class="price-old text-danger small text-decoration-line-through ms-2"><?php echo e($product->formatted_price); ?></span>
             <?php else: ?>
                 <span class="price-sale h5 fw-bold text-gold mb-0" id="pcard-price-<?php echo e($product->id); ?>"><?php echo e($product->formatted_price); ?></span>
             <?php endif; ?>

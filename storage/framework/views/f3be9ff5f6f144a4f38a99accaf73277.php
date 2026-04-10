@@ -25,13 +25,22 @@
                         <span class="small text-muted py-1 px-2 bg-light border rounded-pill">المقاس: <?php echo e($details['size']); ?></span>
                     <?php endif; ?>
                 </div>
-                <div class="d-md-none mt-2 fw-bold text-gold"><?php echo e(currency($details['price'])); ?></div>
+                <div class="d-md-none mt-2 d-flex align-items-center gap-2">
+                    <span class="fw-bold text-gold"><?php echo e(currency($details['price'])); ?></span>
+                    <?php if(isset($details['original_price']) && $details['original_price'] > $details['price']): ?>
+                        <span class="text-danger small text-decoration-line-through"><?php echo e(currency($details['original_price'])); ?></span>
+                    <?php endif; ?>
+                </div>
             </div>
 
             
             <div class="col-md-2 d-none d-md-block text-center fw-medium text-muted">
-                <?php echo e(currency($details['price'])); ?>
-
+                <div class="d-flex flex-column align-items-center">
+                    <span><?php echo e(currency($details['price'])); ?></span>
+                    <?php if(isset($details['original_price']) && $details['original_price'] > $details['price']): ?>
+                        <span class="text-danger small text-decoration-line-through" style="font-size: 0.8rem;"><?php echo e(currency($details['original_price'])); ?></span>
+                    <?php endif; ?>
+                </div>
             </div>
 
             

@@ -261,33 +261,29 @@
                         <?php $__currentLoopData = $order->items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <tr>
                             <td style="padding-left: 24px;">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="product-img-thumb" style="width: 50px; height: 50px; min-width: 50px; background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                                <div class="d-flex align-items-center gap-4">
+                                    <div class="product-img-thumb" style="width: 120px; height: 160px; min-width: 120px; background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
                                         <?php if($item->display_image): ?>
                                             <img src="<?php echo e(Storage::url($item->display_image)); ?>" alt="<?php echo e($item->product_name); ?>" style="width: 100%; height: 100%; object-fit: cover;">
                                         <?php else: ?>
-                                            <i class="fas fa-image text-muted opacity-30"></i>
+                                            <i class="fas fa-image text-muted opacity-30 fa-2x"></i>
                                         <?php endif; ?>
                                     </div>
-                                    <div>
-                                        <div class="fw-bold text-dark fs-6"><?php echo e($item->product_name); ?></div>
-                                        <div class="d-flex flex-wrap gap-2 mt-1">
-                                            <span class="text-muted small">#<?php echo e($item->product_sku); ?></span>
-                                            <?php if($item->color): ?>
-                                                <span class="badge bg-light text-muted border-0 py-1 px-2" style="font-size: 10px;"><?php echo e($item->color); ?></span>
-                                            <?php endif; ?>
+                                    <div class="py-2">
+                                        <div class="fw-bold text-dark fs-5 mb-2"><?php echo e($item->product_name); ?></div>
+                                        <div class="d-flex flex-wrap gap-2">
                                             <?php if($item->size): ?>
-                                                <span class="badge bg-light text-muted border-0 py-1 px-2" style="font-size: 10px;"><?php echo e($item->size); ?></span>
+                                                <span class="badge bg-primary text-white border-0 py-2 px-3 fs-6" style="border-radius: 8px;"><?php echo e(__('Size')); ?>: <?php echo e($item->size); ?></span>
                                             <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="text-end text-muted"><?php echo e(currency($item->price)); ?></td>
+                            <td class="text-end text-muted fs-5"><?php echo e(currency($item->price)); ?></td>
                             <td class="text-center">
-                                <span class="badge bg-light text-dark fw-bold px-3 py-2" style="border-radius: 8px;"><?php echo e($item->quantity); ?></span>
+                                <span class="badge bg-light text-dark fw-bold px-4 py-2 fs-5" style="border-radius: 10px;"><?php echo e($item->quantity); ?></span>
                             </td>
-                            <td class="text-end fw-bold text-dark" style="padding-right: 24px;">
+                            <td class="text-end fw-bold text-dark fs-5" style="padding-right: 24px;">
                                 <?php echo e(currency($item->price * $item->quantity)); ?>
 
                             </td>
@@ -300,29 +296,26 @@
             <!-- Items (Mobile Cards) -->
             <div class="d-lg-none p-3">
                 <?php $__currentLoopData = $order->items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <div class="mobile-item-card shadow-sm border-0">
-                    <div class="mobile-item-img d-flex align-items-center justify-content-center">
+                <div class="mobile-item-card shadow-sm border-0 align-items-center">
+                    <div class="mobile-item-img d-flex align-items-center justify-content-center" style="width: 100px; height: 130px;">
                         <?php if($item->display_image): ?>
                             <img src="<?php echo e(Storage::url($item->display_image)); ?>" class="rounded-3" style="width: 100%; height: 100%; object-fit: cover;">
                         <?php else: ?>
-                            <i class="fas fa-image opacity-30"></i>
+                            <i class="fas fa-image opacity-30 fa-lg"></i>
                         <?php endif; ?>
                     </div>
-                    <div class="flex-grow-1">
-                        <div class="fw-bold text-dark mb-1 d-flex justify-content-between align-items-start">
-                            <span><?php echo e($item->product_name); ?></span>
-                            <span class="text-primary small fw-bold"><?php echo e(currency($item->price * $item->quantity)); ?></span>
+                    <div class="flex-grow-1 py-1">
+                        <div class="fw-bold text-dark mb-2 fs-6">
+                            <?php echo e($item->product_name); ?>
+
                         </div>
-                        <div class="text-muted small mb-2 d-flex gap-2">
-                            <span>SKU: <?php echo e($item->product_sku); ?></span>
-                            <span>x<?php echo e($item->quantity); ?></span>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                             <div class="text-primary fw-bold"><?php echo e(currency($item->price * $item->quantity)); ?></div>
+                             <span class="badge bg-light text-dark fw-bold">x<?php echo e($item->quantity); ?></span>
                         </div>
                         <div class="d-flex gap-1 flex-wrap">
-                            <?php if($item->color): ?>
-                                <span class="badge bg-light text-secondary rounded-pill px-2" style="font-size: 10px;"><?php echo e($item->color); ?></span>
-                            <?php endif; ?>
                             <?php if($item->size): ?>
-                                <span class="badge bg-light text-secondary rounded-pill px-2" style="font-size: 10px;"><?php echo e($item->size); ?></span>
+                                <span class="badge bg-primary text-white rounded-pill px-3 py-1" style="font-size: 11px;"><?php echo e(__('Size')); ?>: <?php echo e($item->size); ?></span>
                             <?php endif; ?>
                         </div>
                     </div>

@@ -255,6 +255,21 @@
                            required>
                     <small class="form-help">{{ __('Price you sell to customers') }}</small>
                 </div>
+
+                <div class="form-group">
+                    <label for="sale_price" class="form-label">
+                        <i class="fas fa-percentage text-danger"></i> {{ __('Discount Price ($)') }}
+                    </label>
+                    <input type="number" 
+                           id="sale_price" 
+                           name="sale_price" 
+                           class="form-control border-danger-subtle" 
+                           value="{{ old('sale_price', $product->sale_price) }}" 
+                           placeholder="0.00" 
+                           step="0.01" 
+                           min="0">
+                    <small class="form-help text-danger">{{ __('If set, this will be the new price with the old one crossed out') }}</small>
+                </div>
             </div>
 
             @if($product->cost_price)
@@ -382,6 +397,13 @@
                                     <div class="input-group">
                                         <span class="input-group-text">$</span>
                                         <input type="number" name="variants[{{ $index }}][price]" class="form-control font-inter" value="{{ $variant->price }}" step="0.01" placeholder="{{ $product->price }}">
+                                    </div>
+                                </div>
+                                <div class="variant-input-group">
+                                    <label class="text-danger fw-bold">{{ __('Discount Price ($)') }}</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-danger-subtle text-danger border-danger-subtle">$</span>
+                                        <input type="number" name="variants[{{ $index }}][sale_price]" class="form-control font-inter border-danger-subtle" value="{{ $variant->sale_price }}" step="0.01" placeholder="0.00">
                                     </div>
                                 </div>
                                 <div class="variant-input-group">
@@ -589,6 +611,13 @@ function addVariationRow() {
                 <div class="input-group">
                     <span class="input-group-text">$</span>
                     <input type="number" name="variants[${vIndex}][price]" class="form-control font-inter" step="0.01" placeholder="0.00">
+                </div>
+            </div>
+            <div class="variant-input-group">
+                <label class="text-danger fw-bold">{{ __('Discount Price ($)') }}</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-danger-subtle text-danger border-danger-subtle">$</span>
+                    <input type="number" name="variants[${vIndex}][sale_price]" class="form-control font-inter border-danger-subtle" step="0.01" placeholder="0.00">
                 </div>
             </div>
             <div class="variant-input-group">
