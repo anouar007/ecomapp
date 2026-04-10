@@ -154,23 +154,7 @@
             {{ setting('maintenance_message', __('The store is currently undergoing maintenance. Please check back later.' )) }}
         </p>
 
-        <div class="social-links">
-            @if(setting('social_facebook') && setting('social_facebook') !== '#')
-                <a href="{{ setting('social_facebook') }}" class="social-link" target="_blank"><i class="fab fa-facebook-f"></i></a>
-            @endif
-            @if(setting('social_instagram') && setting('social_instagram') !== '#')
-                <a href="{{ setting('social_instagram') }}" class="social-link" target="_blank"><i class="fab fa-instagram"></i></a>
-            @endif
-            @if(setting('social_whatsapp'))
-                <a href="https://wa.me/{{ setting('social_whatsapp') }}" class="social-link" target="_blank"><i class="fab fa-whatsapp"></i></a>
-            @endif
-        </div>
-
-        <div class="contact-info">
-            @if(setting('company_email'))
-                <p><i class="far fa-envelope"></i> {{ setting('company_email') }}</p>
-            @endif
-        </div>
+        {{-- Social and Contact Info Removed --}}
     </div>
 </body>
 </html>
