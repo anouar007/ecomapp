@@ -844,10 +844,6 @@ ashed #cbd5e1;
     @method('DELETE')
 </form>
 
-<form id="logo-upload-form" action="{{ route('settings.logo') }}" method="POST" enctype="multipart/form-data" style="display: none;">
-    @csrf
-</form>
-
 <form id="reset-settings-form" action="{{ route('settings.reset') }}" method="POST" style="display: none;">
     @csrf
 </form>
@@ -856,19 +852,30 @@ ashed #cbd5e1;
 
 @push('scripts')
 <script>
-    function switchTab(tabName) {
-        // Update tab buttons
+    function switchTab(tabId) {
+        // Update tabs
         document.querySelectorAll('.settings-tab').forEach(tab => {
             tab.classList.remove('active');
+            if (tab.getAttribute('onclick').includes(tabId)) {
+                tab.classList.add('active');
+            }
         });
-        event.target.closest('.settings-tab').classList.add('active');
 
-        // Update tab panes
+        // Update content
         document.querySelectorAll('.tab-pane').forEach(pane => {
             pane.classList.remove('active');
         });
-        document.getElementById(tabName + '-tab').classList.add('active');
+        document.getElementById(tabId + '-tab').classList.add('active');
+
+        // Save active tab to localStorage
+        localStorage.setItem('activeSettingsTab', tabId);
     }
+
+    // Initialize active tab
+    document.addEventListener('DOMContentLoaded', () => {
+        const activeTab = localStorage.getItem('activeSettingsTab') || 'general';
+        switchTab(activeTab);
+    });
 
     // Update color value labels
     document.querySelectorAll('input[type="color"]').forEach(input => {

@@ -330,9 +330,9 @@ ashed #cbd5e1;
                 <i class="fas fa-desktop"></i>
                 <span><?php echo e(__('Frontend')); ?></span>
             </button>
-            <button class="settings-tab" onclick="switchTab('localization')">
-                <i class="fas fa-globe"></i>
-                <span><?php echo e(__('Localization')); ?></span>
+            <button class="settings-tab" onclick="switchTab('maintenance')">
+                <i class="fas fa-tools"></i>
+                <span><?php echo e(__('Maintenance')); ?></span>
             </button>
             <button class="settings-tab" onclick="switchTab('advanced')">
                 <i class="fas fa-cogs"></i>
@@ -793,6 +793,55 @@ ashed #cbd5e1;
                     </div>
                 </div>
 
+                <!-- Maintenance Tab -->
+                <div class="tab-pane" id="maintenance-tab">
+                    <div class="settings-section">
+                        <h3 class="section-title"><?php echo e(__('Maintenance Mode')); ?></h3>
+                        <p style="color: #64748b; font-size: 13px; margin-bottom: 24px;">
+                            <?php echo e(__('When active, visitors will see a "Coming Soon" page. Administrators can still access the dashboard.')); ?>
+
+                        </p>
+
+                        <div class="form-group">
+                            <label class="form-label"><?php echo e(__('Store Status')); ?></label>
+                            <select name="settings[maintenance_mode]" class="form-select">
+                                <option value="0" <?php echo e(!setting('maintenance_mode') ? 'selected' : ''); ?>><?php echo e(__('Active (Online)')); ?></option>
+                                <option value="1" <?php echo e(setting('maintenance_mode') ? 'selected' : ''); ?>><?php echo e(__('Maintenance (Offline)')); ?></option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label"><?php echo e(__('Maintenance Title')); ?></label>
+                            <input type="text" name="settings[maintenance_title]" class="form-input" 
+                                   value="<?php echo e(setting('maintenance_title', 'We\'ll be back soon!')); ?>">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label"><?php echo e(__('Maintenance Message')); ?></label>
+                            <textarea name="settings[maintenance_message]" class="form-input" rows="4"><?php echo e(setting('maintenance_message', 'The store is currently undergoing maintenance. Please check back later.')); ?></textarea>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3 class="section-title"><?php echo e(__('Maintenance Background Image')); ?></h3>
+                        
+                        <?php if(setting('maintenance_image')): ?>
+                            <div style="text-align: center; margin-bottom: 20px;">
+                                <img src="<?php echo e(asset('storage/' . setting('maintenance_image'))); ?>" alt="<?php echo e(__('Maintenance Image')); ?>" 
+                                     style="max-width: 100%; height: 200px; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                            </div>
+                        <?php endif; ?>
+
+                        <div class="logo-upload-area" onclick="document.getElementById('maintenance-image-input').click()">
+                            <i class="fas fa-image" style="font-size: 48px; color: #3b82f6; margin-bottom: 16px;"></i>
+                            <p style="margin: 0; color: #64748b;"><?php echo e(__('Click to upload maintenance image')); ?></p>
+                            <p style="margin: 4px 0 0 0; font-size: 12px; color: #94a3b8;"><?php echo e(__('High resolution image recommended')); ?></p>
+                            <input type="file" id="maintenance-image-input" form="maintenance-upload-form" name="maintenance_image" 
+                                   accept="image/*" style="display: none;" onchange="document.getElementById('maintenance-upload-form').submit()">
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Frontend Tab -->
                 <div class="tab-pane" id="frontend-tab">
                     <div class="settings-section">
@@ -847,11 +896,11 @@ ashed #cbd5e1;
     <?php echo method_field('DELETE'); ?>
 </form>
 
-<form id="logo-upload-form" action="<?php echo e(route('settings.logo')); ?>" method="POST" enctype="multipart/form-data" style="display: none;">
+<form id="reset-settings-form" action="<?php echo e(route('settings.reset')); ?>" method="POST" style="display: none;">
     <?php echo csrf_field(); ?>
 </form>
 
-<form id="reset-settings-form" action="<?php echo e(route('settings.reset')); ?>" method="POST" style="display: none;">
+<form id="maintenance-upload-form" action="<?php echo e(route('settings.upload-maintenance-image')); ?>" method="POST" enctype="multipart/form-data" style="display: none;">
     <?php echo csrf_field(); ?>
 </form>
 
@@ -859,19 +908,30 @@ ashed #cbd5e1;
 
 <?php $__env->startPush('scripts'); ?>
 <script>
-    function switchTab(tabName) {
-        // Update tab buttons
+    function switchTab(tabId) {
+        // Update tabs
         document.querySelectorAll('.settings-tab').forEach(tab => {
             tab.classList.remove('active');
+            if (tab.getAttribute('onclick').includes(tabId)) {
+                tab.classList.add('active');
+            }
         });
-        event.target.closest('.settings-tab').classList.add('active');
 
-        // Update tab panes
+        // Update content
         document.querySelectorAll('.tab-pane').forEach(pane => {
             pane.classList.remove('active');
         });
-        document.getElementById(tabName + '-tab').classList.add('active');
+        document.getElementById(tabId + '-tab').classList.add('active');
+
+        // Save active tab to localStorage
+        localStorage.setItem('activeSettingsTab', tabId);
     }
+
+    // Initialize active tab
+    document.addEventListener('DOMContentLoaded', () => {
+        const activeTab = localStorage.getItem('activeSettingsTab') || 'general';
+        switchTab(activeTab);
+    });
 
     // Update color value labels
     document.querySelectorAll('input[type="color"]').forEach(input => {

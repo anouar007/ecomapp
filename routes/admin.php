@@ -26,4 +26,12 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
         ->name('users.index');
     Route::put('users/{user}/roles', [\App\Http\Controllers\UserRoleController::class, 'updateRoles'])
         ->name('users.update-roles');
+
+    // Maintenance Manager
+    Route::get('maintenance-manager', [\App\Http\Controllers\SettingsController::class, 'maintenanceManager'])
+        ->name('settings.maintenance');
+
+    // Additional Settings functionality
+    Route::post('settings/maintenance-image', [\App\Http\Controllers\SettingsController::class, 'uploadMaintenanceImage'])
+        ->name('settings.upload-maintenance-image');
 });

@@ -38,6 +38,7 @@ body {
     color: var(--text-dark);
     -webkit-font-smoothing: antialiased;
     line-height: 1.6;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -320,6 +321,7 @@ h1, h2, h3, h4, h5, h6 {
     transition: var(--transition-base);
     min-height: 100vh;
     position: relative; /* Ensure it stays in flow */
+    overflow-x: hidden; /* Catch internal overflows */
 }
 
 /* Explicit Desktop Margins to prevent RTL overlap */

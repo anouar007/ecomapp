@@ -42,7 +42,10 @@ Route::get('/checkout', [\App\Http\Controllers\CheckoutController::class, 'index
 Route::post('/checkout', [\App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('/checkout/success/{order}', [\App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
 
+// Maintenance / Coming Soon
+Route::get('/maintenance-page', [\App\Http\Controllers\HomeController::class, 'maintenance'])->name('maintenance.page');
+
 // Dynamic Frontend Pages (Catch-all)
 Route::get('/{slug?}', [\App\Http\Controllers\FrontendController::class, 'show'])
-    ->where('slug', '^(?!api|dashboard|pos|products|categories|orders|invoices|customers|inventory|coupons|roles|permissions|users|activity-logs|settings|my-account|login|register|logout).*')
+    ->where('slug', '^(?!api|dashboard|pos|products|categories|orders|invoices|customers|inventory|coupons|roles|permissions|users|activity-logs|settings|maintenance-manager|my-account|login|register|logout).*')
     ->name('frontend.page');

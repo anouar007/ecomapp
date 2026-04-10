@@ -85,6 +85,13 @@
         grid-template-columns: 1fr 350px;
         gap: 24px;
     }
+    .main-column, .sidebar-column {
+        min-width: 0; /* Essential for CSS Grid + Tables */
+    }
+    
+    @media (max-width: 1200px) {
+        .order-grid { grid-template-columns: 1fr 300px; }
+    }
     @media (max-width: 1024px) {
         .order-grid { grid-template-columns: 1fr; }
     }

@@ -150,6 +150,13 @@
                 </a>
             </li>
             <?php endif; ?>
+
+            <li class="sidebar-menu-item">
+                <a href="<?php echo e(route('settings.maintenance')); ?>" class="sidebar-menu-link <?php echo e(request()->routeIs('settings.maintenance') ? 'active' : ''); ?>">
+                    <i class="fas fa-tools "></i>
+                    <span><?php echo e(__('Store Status')); ?></span>
+                </a>
+            </li>
         </ul>
     </aside>
     <!-- Sidebar Overlay -->

@@ -144,6 +144,13 @@
                 </a>
             </li>
             @endcan
+
+            <li class="sidebar-menu-item">
+                <a href="{{ route('settings.maintenance') }}" class="sidebar-menu-link {{ request()->routeIs('settings.maintenance') ? 'active' : '' }}">
+                    <i class="fas fa-tools "></i>
+                    <span>{{ __('Store Status') }}</span>
+                </a>
+            </li>
         </ul>
     </aside>
     <!-- Sidebar Overlay -->

@@ -94,10 +94,24 @@ class HomeController extends Controller
         }
 
         return view('frontend.home', compact(
-            'heroSlides', 
-            'allCategories', 
+            'heroSlides',
+            'allCategories',
             'products',
             'hasMore'
         ));
+    }
+
+    /**
+     * Show the maintenance page.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function maintenance()
+    {
+        if (!setting('maintenance_mode', false)) {
+            return redirect()->route('home');
+        }
+
+        return view('frontend.maintenance');
     }
 }
