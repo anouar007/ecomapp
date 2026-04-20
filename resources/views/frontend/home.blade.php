@@ -97,25 +97,7 @@
     </div>
 </section>
 
-{{-- NEWSLETTER SECTION --}}
-<section class="section-py bg-dark text-white position-relative overflow-hidden">
-    <div class="container py-5 text-center position-relative z-1" data-aos="fade-up">
-        <div class="row justify-content-center">
-            <div class="col-lg-6">
-                <i class="fas fa-paper-plane fs-1 mb-4 opacity-25"></i>
-                <h2 class="fw-black text-uppercase ls-1 display-5 mb-4">{{ __('Newsletter Title') }}</h2>
-                <p class="opacity-75 mb-5">{{ __('Newsletter Sub') }}</p>
-                
-                <form action="{{ route('newsletter.subscribe') }}" method="POST" class="newsletter-form position-relative">
-                    @csrf
-                    <input type="email" name="email" class="form-control bg-white border-0 py-4 px-5 rounded-pill shadow" placeholder="{{ __('Email Placeholder') }}" required>
-                    <button type="submit" class="btn btn-dark rounded-pill py-3 px-5 position-absolute top-50 end-0 translate-middle-y me-2 h-75 fw-black text-uppercase ls-1">{{ __('Subscribe') }}</button>
-                </form>
-                <p class="small opacity-50 mt-4">{{ __('Newsletter Discount Note') }}</p>
-            </div>
-        </div>
-    </div>
-</section>
+
 <section id="about" class="section-py bg-white">
     <div class="container">
         <div class="row justify-content-center text-center">
@@ -150,67 +132,25 @@
     <section class="py-4 bg-dark text-white border-top border-bottom border-secondary-subtle">
         <div class="announcement-bar bg-transparent">
             <div class="promo-marquee">
-                <div class="promo-item fw-black text-uppercase ls-2">L'Art de Vivre Moubdi3oun</div>
-                <div class="promo-item fw-black text-uppercase ls-2">Conception Artisanale</div>
-                <div class="promo-item fw-black text-uppercase ls-2">Matériaux Nobles</div>
-                <div class="promo-item fw-black text-uppercase ls-2">Expertise Sur-Mesure</div>
+                <div class="promo-item fw-black text-uppercase ls-2">{{ __('Art of Living Marquee') }}</div>
+                <div class="promo-item fw-black text-uppercase ls-2">{{ __('Artisanal Design Marquee') }}</div>
+                <div class="promo-item fw-black text-uppercase ls-2">{{ __('Noble Materials Marquee') }}</div>
+                <div class="promo-item fw-black text-uppercase ls-2">{{ __('Custom Expertise Marquee') }}</div>
                 <!-- Loop -->
-                <div class="promo-item fw-black text-uppercase ls-2">L'Art de Vivre Moubdi3oun</div>
-                <div class="promo-item fw-black text-uppercase ls-2">Conception Artisanale</div>
-                <div class="promo-item fw-black text-uppercase ls-2">Matériaux Nobles</div>
-                <div class="promo-item fw-black text-uppercase ls-2">Expertise Sur-Mesure</div>
+                <div class="promo-item fw-black text-uppercase ls-2">{{ __('Art of Living Marquee') }}</div>
+                <div class="promo-item fw-black text-uppercase ls-2">{{ __('Artisanal Design Marquee') }}</div>
+                <div class="promo-item fw-black text-uppercase ls-2">{{ __('Noble Materials Marquee') }}</div>
+                <div class="promo-item fw-black text-uppercase ls-2">{{ __('Custom Expertise Marquee') }}</div>
             </div>
         </div>
     </section>
 
-    {{-- SHOPPABLE LOOKBOOK --}}
-    <section class="section-py bg-white overflow-hidden">
-        <div class="container">
-            <div class="row align-items-center mb-5" data-aos="fade-up">
-                <div class="col-lg-6">
-                    <span class="badge-new mb-3 d-inline-block">Inspiration</span>
-                    <h2 class="fw-black text-uppercase ls-1">Shop The Room</h2>
-                </div>
-                <div class="col-lg-6 text-lg-end">
-                    <p class="text-muted small mb-0">Cliquez sur les points pour découvrir les pièces.</p>
-                </div>
-            </div>
-            
-            <div class="position-relative rounded-5 overflow-hidden shadow-lg" data-aos="zoom-in">
-                <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80" alt="Lookbook" class="w-100">
-                
-                {{-- Hotspots mapped to seeded product slugs --}}
-                @php
-                    $h1 = \App\Models\Product::where('slug', 'canape-royal-atlas')->first();
-                    $h2 = \App\Models\Product::where('slug', 'table-basse-orion-metal')->first();
-                    $h3 = \App\Models\Product::where('slug', 'lampe-ambre-soufflee')->first();
-                @endphp
 
-                @if($h1)
-                <a href="{{ route('shop.show', $h1->id) }}" class="lookbook-pin" style="top: 30%; left: 45%;" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" title="{{ $h1->translated_name }}" data-bs-content="{{ Str::limit($h1->description, 50) }} - {{ $h1->formatted_price }}">
-                    <i class="fas fa-plus"></i>
-                </a>
-                @endif
-
-                @if($h2)
-                <a href="{{ route('shop.show', $h2->id) }}" class="lookbook-pin" style="top: 60%; left: 25%;" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" title="{{ $h2->translated_name }}" data-bs-content="{{ Str::limit($h2->description, 50) }} - {{ $h2->formatted_price }}">
-                    <i class="fas fa-plus"></i>
-                </a>
-                @endif
-
-                @if($h3)
-                <a href="{{ route('shop.show', $h3->id) }}" class="lookbook-pin" style="top: 15%; left: 75%;" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" title="{{ $h3->translated_name }}" data-bs-content="{{ Str::limit($h3->description, 50) }} - {{ $h3->formatted_price }}">
-                    <i class="fas fa-plus"></i>
-                </a>
-                @endif
-            </div>
-        </div>
-    </section>
 
     {{-- FEATURED CATEGORIES GRID --}}
     <section class="section-py bg-light">
         <div class="container">
-            <h2 class="fw-black text-uppercase ls-1 text-center mb-5" data-aos="fade-up">Univers Collections</h2>
+            <h2 class="fw-black text-uppercase ls-1 text-center mb-5" data-aos="fade-up">{{ __('Collections Universe') }}</h2>
             <div class="row g-4">
                 @foreach($allCategories->take(3) as $cat)
                 <div class="col-lg-4" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
@@ -233,9 +173,9 @@
 <section id="departments" class="section-py bg-surface overflow-hidden">
     <div class="container">
         <div class="section-header text-center mb-5" data-aos="fade-up">
-            <span class="section-eyebrow">Nos Ateliers</span>
-            <h2 class="section-title">L'Excellence de l'Artisanat</h2>
-            <p class="section-subtitle">Chaque département est dédié à la maîtrise d'un art spécifique.</p>
+            <span class="section-eyebrow">{{ __('Our Workshops Title') }}</span>
+            <h2 class="section-title">{{ __('Craft Excellence Title') }}</h2>
+            <p class="section-subtitle">{{ __('Workshop Subtitle') }}</p>
         </div>
 
         @php
@@ -257,10 +197,10 @@
                 </div>
                 <h3 class="fw-black h2 mb-3">{{ $category->translated_name }}</h3>
                 <p class="text-muted mb-4 lead">
-                    {{ $category->translated_description ?? 'Expertise et savoir-faire pour des créations qui durent toute une vie.' }}
+                    {{ $category->translated_description ?? __('Workshop Default Desc') }}
                 </p>
                 <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="btn-cta-primary">
-                    Voir les réalisations <i class="fas fa-arrow-right ms-2"></i>
+                    {{ __('See Projects Button') }} <i class="fas fa-arrow-right ms-2"></i>
                 </a>
             </div>
         </div>
@@ -268,38 +208,7 @@
     </div>
 </section>
 
-{{-- =============================================
-     PORTFOLIO SECTION
-     ============================================= --}}
-<section id="portfolio" class="section-py bg-white">
-    <div class="container">
-        <div class="section-header text-center mb-5" data-aos="fade-up">
-            <span class="section-eyebrow">Portfolio</span>
-            <h2 class="section-title">Nos Plus Belles Créations</h2>
-            <p class="section-subtitle">Chaque pièce est une œuvre d'art unique conçue pour durer.</p>
-        </div>
 
-        <div class="row g-4">
-            @foreach($featuredProducts as $index => $product)
-            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}">
-                <div class="portfolio-card">
-                    <img src="{{ Str::startsWith($product->thumbnail, 'http') ? $product->thumbnail : Storage::url($product->thumbnail) }}" alt="{{ $product->translated_name }}">
-                    <div class="portfolio-mask">
-                        <span class="small text-uppercase fw-bold ls-1 mb-2 d-block" style="color: var(--accent);">{{ $product->productCategory->translated_name ?? 'Collection' }}</span>
-                        <h4 class="fw-black text-white h3 mb-3">{{ $product->translated_name }}</h4>
-                        <div class="d-flex align-items-center justify-content-between pt-3 border-top border-secondary">
-                            <span class="h4 mb-0 fw-bold">{{ $product->formatted_price }}</span>
-                            <a href="{{ route('shop.show', $product->id) }}" class="btn-cta-primary p-2 px-3">
-                                <i class="fas fa-eye me-1"></i> Détails
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @endforeach
-        </div>
-    </div>
-</section>
 
 {{-- =============================================
      APPLICATIONS — What Can You Print?
@@ -307,19 +216,19 @@
 <section class="section-py bg-dark-gradient">
     <div class="container">
         <div class="section-header section-header-light" data-aos="fade-up">
-            <span class="section-eyebrow eyebrow-light">Expertise</span>
-            <h2 class="section-title text-white">Pour Chaque Espace</h2>
-            <p class="section-subtitle" style="color: rgba(255,255,255,.65);">Nous transformons et aménageons chaque pièce de votre intérieur.</p>
+            <span class="section-eyebrow eyebrow-light">{{ __('Expertise Eyebrow') }}</span>
+            <h2 class="section-title text-white">{{ __('For Every Space Title') }}</h2>
+            <p class="section-subtitle" style="color: rgba(255,255,255,.65);">{{ __('Expertise Description') }}</p>
         </div>
         <div class="row g-3 mt-2">
             @php
             $apps = [
-                ['icon'=>'fa-couch',         'title'=>'Salon',                'desc'=>'Canapés, tables basses, et meubles TV sur mesure.'],
-                ['icon'=>'fa-bed',           'title'=>'Chambre à Coucher',    'desc'=>'Lits complets, dressings, et coiffeuses élégantes.'],
-                ['icon'=>'fa-utensils',      'title'=>'Salle à Manger',       'desc'=>'Tables en bois massif, chaises tapissées, buffets.'],
-                ['icon'=>'fa-laptop-house',  'title'=>'Bureau',               'desc'=>'Bureaux ergonomiques, bibliothèques, et étagères murales.'],
-                ['icon'=>'fa-door-open',     'title'=>'Entrée & Couloirs',    'desc'=>'Consoles, miroirs, et portemanteaux design.'],
-                ['icon'=>'fa-chair',         'title'=>'Espaces Commerciaux',  'desc'=>'Aménagement de restaurants, hôtels, et boutiques luxueuses.'],
+                ['icon'=>'fa-couch',         'title'=> __('Salon Title'),                'desc'=> __('Salon Desc')],
+                ['icon'=>'fa-bed',           'title'=> __('Bedroom Title'),              'desc'=> __('Bedroom Desc')],
+                ['icon'=>'fa-utensils',      'title'=> __('Dining Room Title'),           'desc'=> __('Dining Room Desc')],
+                ['icon'=>'fa-laptop-house',  'title'=> __('Office Title'),               'desc'=> __('Office Desc')],
+                ['icon'=>'fa-door-open',     'title'=> __('Entryway Title'),             'desc'=> __('Entryway Desc')],
+                ['icon'=>'fa-chair',         'title'=> __('Commercial Title'),           'desc'=> __('Commercial Desc')],
             ];
             @endphp
             @foreach($apps as $i => $app)
@@ -341,18 +250,18 @@
 <section id="process" class="section-py bg-surface overflow-hidden">
     <div class="container">
         <div class="section-header text-center mb-5" data-aos="fade-up">
-            <span class="section-eyebrow">Notre Savoir-Faire</span>
-            <h2 class="section-title">Comment Nous Créons Vos Pièces Uniques</h2>
-            <p class="section-subtitle">Chaque commande suit un processus rigoureux pour garantir l'excellence.</p>
+            <span class="section-eyebrow">{{ __('Know How Eyebrow') }}</span>
+            <h2 class="section-title">{{ __('How We Create Title') }}</h2>
+            <p class="section-subtitle">{{ __('Process Subtitle') }}</p>
         </div>
 
         <div class="timeline-track" data-aos="fade-up">
             @php
                 $processSteps = [
-                    ['num' => '01', 'title' => 'Consultation & Mesures', 'desc' => 'Nous nous déplaçons pour analyser votre espace, comprendre vos besoins et prendre les mesures exactes.'],
-                    ['num' => '02', 'title' => 'Design & Modélisation', 'desc' => 'Nos designers créent des plans 3D détaillés pour vous permettre de visualiser le projet avant fabrication.'],
-                    ['num' => '03', 'title' => 'Fabrication Artisanale', 'desc' => 'Nos artisans sculptent, assemblent et finissent chaque meuble avec une attention méticuleuse portée aux détails.'],
-                    ['num' => '04', 'title' => 'Livraison & Pose', 'desc' => 'Nous assurons le transport sécurisé et l\'installation parfaite de vos créations par nos propres équipes.'],
+                    ['num' => '01', 'title' => __('Process Step 1 Title'), 'desc' => __('Process Step 1 Desc')],
+                    ['num' => '02', 'title' => __('Process Step 2 Title'), 'desc' => __('Process Step 2 Desc')],
+                    ['num' => '03', 'title' => __('Process Step 3 Title'), 'desc' => __('Process Step 3 Desc')],
+                    ['num' => '04', 'title' => __('Process Step 4 Title'), 'desc' => __('Process Step 4 Desc')],
                 ];
             @endphp
 
@@ -378,22 +287,22 @@
             <div class="col-md-4" data-aos="fade-up">
                 <div class="p-4">
                     <i class="fas fa-award fa-3x mb-3" style="color: var(--accent);"></i>
-                    <h4 class="fw-black mb-2">Qualité Héritage</h4>
-                    <p class="text-muted small">Des matériaux sélectionnés pour traverser les générations.</p>
+                    <h4 class="fw-black mb-2">{{ __('Heritage Quality Title') }}</h4>
+                    <p class="text-muted small">{{ __('Heritage Quality Desc') }}</p>
                 </div>
             </div>
             <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
                 <div class="p-4">
                     <i class="fas fa-pencil-ruler fa-3x mb-3" style="color: var(--accent);"></i>
-                    <h4 class="fw-black mb-2">Design Sur-Mesure</h4>
-                    <p class="text-muted small">Chaque détail est adapté à vos envies et votre espace.</p>
+                    <h4 class="fw-black mb-2">{{ __('Custom Design Title') }}</h4>
+                    <p class="text-muted small">{{ __('Custom Design Desc') }}</p>
                 </div>
             </div>
             <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
                 <div class="p-4">
                     <i class="fas fa-shipping-fast fa-3x mb-3" style="color: var(--accent);"></i>
-                    <h4 class="fw-black mb-2">Service National</h4>
-                    <p class="text-muted small">Livraison et installation professionnelles dans tout le Maroc.</p>
+                    <h4 class="fw-black mb-2">{{ __('National Service Title') }}</h4>
+                    <p class="text-muted small">{{ __('National Service Desc') }}</p>
                 </div>
             </div>
         </div>
@@ -407,8 +316,8 @@
     <div class="container py-4">
         <div class="row align-items-center g-5 text-center text-lg-start">
             <div class="col-lg-7" data-aos="fade-right">
-                <h2 class="display-4 fw-black mb-4">Donnons Vie à <br> Vos <span class="text-white border-bottom border-3">Projets</span></h2>
-                <p class="lead mb-0 opacity-90">Notre équipe est prête à vous accompagner dans la création de votre mobilier d'exception. Contactez-nous dès aujourd'hui pour un devis personnalisé.</p>
+                <h2 class="display-4 fw-black mb-4">{{ __('Projects CTA Sub') }} <br> {{ app()->getLocale() == 'ar' ? '' : 'Your' }} <span class="text-white border-bottom border-3">{{ __('Projects CTA Projects') }}</span></h2>
+                <p class="lead mb-0 opacity-90">{{ __('Projects CTA Description') }}</p>
             </div>
             <div class="col-lg-5" data-aos="fade-left">
                 <div class="d-flex flex-column gap-4 align-items-center align-items-lg-start mt-4 mt-lg-0">
@@ -437,7 +346,9 @@
     <div class="container">
         <div class="brands-ticker">
             @php
-            $brands = ['Bois Massif', 'Marbre', 'Inox Doré', 'Laiton', 'Velours Premium', 'Cuir Véritable', 'Céramique'];
+            $brands = [__('Solid Wood'), __('Marble'), __('Gold Stainless'), __('Brass'), __('Premium Velvet'), __('Genuine Leather'), __('Ceramic')];
+            // Since these brands were hardcoded before, I'll update them in JSON or use literal if preferred. 
+            // Better to use keys. I'll update the JSON first.
             @endphp
             @foreach($brands as $brand)
             <div class="brand-chip" style="font-weight: 600; font-size: 1.1rem; margin: 0 20px;">
@@ -455,9 +366,9 @@
 <section class="section-py bg-surface">
     <div class="container">
         <div class="section-header" data-aos="fade-up">
-            <span class="section-eyebrow">Avis clients</span>
-            <h2 class="section-title">Ce que disent nos ateliers</h2>
-            <p class="section-subtitle">Des imprimeurs professionnels qui nous font confiance au quotidien</p>
+            <span class="section-eyebrow">{{ __('Customer Reviews Eyebrow') }}</span>
+            <h2 class="section-title">{{ __('What They Say Title') }}</h2>
+            <p class="section-subtitle">{{ __('Customer Testimonials Sub') }}</p>
         </div>
         <div class="row g-4">
             @foreach($testimonials->take(3) as $i => $t)
@@ -471,7 +382,7 @@
                         <div class="review-avatar">{{ strtoupper(substr($t->name, 0, 1)) }}</div>
                         <div>
                             <div class="review-name">{{ $t->name }}</div>
-                            <div class="review-role">Client vérifié</div>
+                            <div class="review-role">{{ __('Verified Client') }}</div>
                         </div>
                     </div>
                 </div>
@@ -489,25 +400,25 @@
     <div class="container">
         <div class="row g-5 align-items-start">
             <div class="col-lg-4" data-aos="fade-right">
-                <span class="section-eyebrow">FAQ</span>
-                <h2 class="section-title">Questions fréquentes</h2>
-                <p class="section-subtitle text-start">Vous avez d'autres questions ? Notre équipe est disponible 6j/7.</p>
+                <span class="section-eyebrow">{{ __('FAQ Eyebrow') }}</span>
+                <h2 class="section-title">{{ __('FAQ Title') }}</h2>
+                <p class="section-subtitle text-start">{{ __('FAQ Subtitle') }}</p>
                 <a href="tel:{{ setting('company_phone', '+212600000000') }}" class="btn-cta-outline mt-3">
-                    <i class="fas fa-phone-alt me-2"></i>Nous appeler
+                    <i class="fas fa-phone-alt me-2"></i>{{ __('Call Us Button') }}
                 </a>
             </div>
             <div class="col-lg-8" data-aos="fade-left" data-aos-delay="100">
                     <div class="faq-list">
                     @php
                     $faqs = [
-                        ['q'=>'Modifiez-vous le design pour s\'adapter à nos espaces ?',
-                         'a'=>'Absolument. Chaque meuble est conçu pour répondre précisément à vos contraintes d\'espace, vos goûts, et l\'ambiance générale de votre intérieur.'],
-                        ['q'=>'Quels types de finition proposez-vous ?',
-                         'a'=>'Nous proposons une gamme extrêmement variée: mates, brillantes, laquées, brossées et naturelles, pour les bois comme pour les métaux.'],
-                        ['q'=>'Vos tissus sont-ils résistants aux taches ?',
-                         'a'=>'Oui, certains de nos tissus premium (type velours et lin traités) bénéficient de traitements antitaches de dernière technologie pour une durabilité maximale.'],
-                        ['q'=>'Livrez-vous dans toutes les villes ?',
-                         'a'=>'Oui, nous assurons la logistique, l\'acheminement et l\'installation par nos artisans professionnels dans tout le Maroc.']
+                        ['q'=> __('FAQ Q1'),
+                         'a'=> __('FAQ A1')],
+                        ['q'=> __('FAQ Q2'),
+                         'a'=> __('FAQ A2')],
+                        ['q'=> __('FAQ Q3'),
+                         'a'=> __('FAQ A3')],
+                        ['q'=> __('FAQ Q4'),
+                         'a'=> __('FAQ A4')]
                     ];
                     @endphp
                     @foreach($faqs as $fi => $faq)
@@ -537,11 +448,11 @@
 @endphp
 
 @if($waLink)
-<a href="{{ $waLink }}?text=Bonjour%2C%20je%20suis%20intéressé%20par%20votre%20mobilier%20sur-mesure." 
+<a href="{{ $waLink }}?text={{ urlencode(__('WhatsApp Message')) }}" 
    class="whatsapp-float" 
    target="_blank" 
    rel="noopener noreferrer"
-   title="Contactez-nous sur WhatsApp">
+   title="{{ __('Contact Us') }}">
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
     </svg>

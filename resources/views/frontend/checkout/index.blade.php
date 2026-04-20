@@ -1,30 +1,30 @@
 @extends('layouts.frontend')
 
-@section('meta_title', 'Confirmation de commande — Moubdi3oun')
+@section('meta_title', __('Order Confirmation') . ' — ' . setting('app_name', 'Moubdi3oun'))
 
 @section('content')
 <div class="bg-light section-py min-vh-100">
     <div class="container">
-        <h1 class="fw-black mb-5 h2 border-start-primary ps-3 text-uppercase ls-1">Validation de Commande</h1>
+        <h1 class="fw-black mb-5 h2 border-start-primary ps-3 text-uppercase ls-1">{{ __('Checkout Title') }}</h1>
 
         <div class="row g-4">
             <div class="col-lg-7">
                 <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
                     <div class="card-body p-4 p-md-5">
-                        <h4 class="fw-black mb-4 h5 text-uppercase ls-1">1. Informations de livraison</h4>
+                        <h4 class="fw-black mb-4 h5 text-uppercase ls-1">{{ __('Shipping Info') }}</h4>
                         <form action="{{ route('checkout.store') }}" method="POST" id="checkout-form">
                             @csrf
                             <div class="row g-4">
                                 <div class="col-12">
-                                    <label class="form-label small fw-bold text-muted">Nom Complet</label>
-                                    <input type="text" name="customer_name" class="form-control bg-white border py-3 rounded-3" placeholder="Votre nom et prénom" required>
+                                    <label class="form-label small fw-bold text-muted">{{ __('Full Name') }}</label>
+                                    <input type="text" name="customer_name" class="form-control bg-white border py-3 rounded-3" placeholder="{{ __('Name and Surname') }}" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">Email (Optionnel)</label>
-                                    <input type="email" name="customer_email" class="form-control bg-white border py-3 rounded-3" placeholder="Pour le suivi">
+                                    <label class="form-label small fw-bold text-muted">{{ __('Email Label') }} ({{ __('Optional') }})</label>
+                                    <input type="email" name="customer_email" class="form-control bg-white border py-3 rounded-3" placeholder="{{ __('Optional Track') }}">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">Téléphone</label>
+                                    <label class="form-label small fw-bold text-muted">{{ __('Phone Label') }}</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-white border rounded-start-3" dir="ltr">+212</span>
                                         <input type="tel" name="customer_phone" class="form-control bg-white border py-3 rounded-end-3" 
@@ -34,13 +34,13 @@
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label small fw-bold text-muted">Adresse de livraison</label>
-                                    <input type="text" name="shipping_address" class="form-control bg-white border py-3 rounded-3" placeholder="Quartier, Rue, N° de maison..." required>
+                                    <label class="form-label small fw-bold text-muted">{{ __('Address Label') }}</label>
+                                    <input type="text" name="shipping_address" class="form-control bg-white border py-3 rounded-3" placeholder="{{ __('Address Placeholder') }}" required>
                                 </div>
                                 <div class="col-md-12">
-                                    <label class="form-label small fw-bold text-muted">Ville</label>
+                                    <label class="form-label small fw-bold text-muted">{{ __('City Label') }}</label>
                                     <select name="shipping_city" class="form-select bg-white border py-3 rounded-3" required>
-                                        <option value="">Sélectionnez votre ville</option>
+                                        <option value="">{{ __('Select Your City') }}</option>
                                         @foreach(['Casablanca', 'Rabat', 'Marrakech', 'Tanger', 'Fès', 'Agadir', 'Meknès', 'Oujda', 'Kénitra', 'Tétouan', 'Témara', 'Safi', 'Mohammédia', 'Béni Mellal', 'El Jadida', 'Nador', 'Settat', 'Taza', 'Khémisset', 'Larache', 'Laâyoune', 'Dakhla'] as $city)
                                             <option value="{{ $city }}">{{ $city }}</option>
                                         @endforeach
@@ -54,11 +54,11 @@
                 <div class="card border-0 shadow-sm rounded-4 overflow-hidden mt-4">
                     <div class="card-body p-4 p-md-5 text-center">
                         <i class="fas fa-wallet fa-3x text-dark mb-3 opacity-25"></i>
-                        <h4 class="fw-black mb-3 h5 text-uppercase ls-1">2. Mode de paiement</h4>
+                        <h4 class="fw-black mb-3 h5 text-uppercase ls-1">{{ __('Payment Method') }}</h4>
                         <div class="p-3 border rounded-4 bg-light d-inline-block px-5">
-                            <span class="fw-bold h6 m-0"><i class="fas fa-money-bill-wave me-2"></i> Paiement à la livraison</span>
+                            <span class="fw-bold h6 m-0"><i class="fas fa-money-bill-wave me-2"></i> {{ __('Cash on Delivery') }}</span>
                         </div>
-                        <p class="text-muted small mt-3">Un conseiller vous contactera pour valider votre commande personnalisée.</p>
+                        <p class="text-muted small mt-3">{{ __('COD Description') }}</p>
                     </div>
                 </div>
             </div>
@@ -66,7 +66,7 @@
             <div class="col-lg-5">
                 <div class="card border-0 shadow-sm rounded-4 overflow-hidden sticky-top" style="top: 100px;">
                     <div class="card-header bg-white p-4 border-bottom-0 pb-0">
-                        <h5 class="fw-black m-0 text-uppercase ls-1" style="font-size: 1rem;">Résumé de commande</h5>
+                        <h5 class="fw-black m-0 text-uppercase ls-1" style="font-size: 1rem;">{{ __('Order Summary') }}</h5>
                     </div>
                     <div class="card-body p-4 pt-2">
                         @foreach($cart as $key => $details)
@@ -95,26 +95,26 @@
                         
                         <div class="bg-light p-3 rounded-3 mt-4">
                             <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted small">Sous-total</span>
+                                <span class="text-muted small">{{ __('Sub-total') }}</span>
                                 <span class="fw-bold small">{{ currency($total) }}</span>
                             </div>
                             <div class="d-flex justify-content-between mb-3">
-                                <span class="text-muted small">Livraison</span>
-                                <span class="text-success fw-bold small">Gratuite</span>
+                                <span class="text-muted small">{{ __('Delivery') }}</span>
+                                <span class="text-success fw-bold small">{{ __('Free') }}</span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                                <span class="fw-black mb-0 text-uppercase ls-1">TOTAL</span>
+                                <span class="fw-black mb-0 text-uppercase ls-1">{{ __('TOTAL') }}</span>
                                 <span class="h4 fw-black mb-0" style="color: var(--accent);">{{ currency($total) }}</span>
                             </div>
                         </div>
 
                         <button type="submit" form="checkout-form" class="btn btn-dark btn-lg w-100 rounded-pill py-3 fw-black shadow mt-4 text-uppercase ls-1" style="font-size: 0.95rem;">
-                            Confirmer ma commande <i class="fas fa-check-circle ms-2"></i>
+                            {{ __('Confirm Order') }} <i class="fas fa-check-circle ms-2"></i>
                         </button>
                         
                         <div class="text-center mt-4">
                             <a href="{{ route('cart.index') }}" class="text-muted text-decoration-none small fw-bold">
-                                <i class="fas fa-arrow-left me-1"></i> Modifier le panier
+                                <i class="fas fa-arrow-left me-1"></i> {{ __('Modify Cart') }}
                             </a>
                         </div>
                     </div>

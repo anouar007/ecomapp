@@ -1,5 +1,9 @@
 @extends('layouts.frontend')
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/shop.css') }}">
+@endpush
+
 @section('meta_title', $product->translated_name . ' — Moubdi3oun')
 @section('meta_description', Str::limit(strip_tags($product->translated_description), 160))
 @section('meta_image', $product->main_image ? asset('storage/' . $product->main_image) : asset('images/og-default.jpg'))
@@ -9,307 +13,209 @@
     <meta property="og:price:currency" content="MAD">
     <meta property="og:availability" content="{{ $product->getTotalStockAttribute() > 0 ? 'instock' : 'oos' }}">
     <meta property="product:brand" content="{{ setting('app_name', 'Moubdi3oun') }}">
-    <meta property="product:condition" content="new">
-    <meta property="product:item_group_id" content="{{ $product->category_id }}">
-@endsection
-
-@section('json_ld')
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org/",
-  "@type": "Product",
-  "name": "{{ $product->translated_name }}",
-  "image": "{{ $product->main_image ? asset('storage/' . $product->main_image) : asset('images/placeholder.jpg') }}",
-  "description": "{{ Str::limit(strip_tags($product->translated_description), 300) }}",
-  "sku": "{{ $product->sku ?? $product->id }}",
-  "brand": {
-    "@type": "Brand",
-    "name": "{{ setting('app_name', 'Moubdi3oun') }}"
-  },
-  @if($product->review_count > 0)
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "{{ $product->average_rating }}",
-    "reviewCount": "{{ $product->review_count }}"
-  },
-  @endif
-  "offers": {
-    "@type": "Offer",
-    "url": "{{ url()->current() }}",
-    "priceCurrency": "MAD",
-    "price": "{{ $product->sale_price ?? $product->price }}",
-    "availability": "https://schema.org/{{ $product->getTotalStockAttribute() > 0 ? 'InStock' : 'OutOfStock' }}",
-    "itemCondition": "https://schema.org/NewCondition"
-  }
-}
-</script>
-
-{{-- Breadcrumb Schema --}}
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [{
-    "@type": "ListItem",
-    "position": 1,
-    "name": "{{ __('Home') }}",
-    "item": "{{ url('/') }}"
-  },{
-    "@type": "ListItem",
-    "position": 2,
-    "name": "{{ __('Shop') }}",
-    "item": "{{ route('shop.index') }}"
-  }
-  @if($product->productCategory)
-  ,{
-    "@type": "ListItem",
-    "position": 3,
-    "name": "{{ $product->productCategory->translated_name }}",
-    "item": "{{ route('shop.index', ['category' => $product->productCategory->slug]) }}"
-  }
-  @endif
-  ,{
-    "@type": "ListItem",
-    "position": {{ $product->productCategory ? 4 : 3 }},
-    "name": "{{ $product->translated_name }}",
-    "item": "{{ url()->current() }}"
-  }]
-}
-</script>
 @endsection
 
 @section('content')
 
-{{-- =============================================
-     BREADCRUMB
-     ============================================= --}}
-<section class="py-3 bg-white border-bottom">
-    <div class="container">
+{{-- ── Minimal Breadcrumb ── --}}
+<div class="py-4 bg-white border-bottom">
+    <div class="container text-center">
         <nav class="shop-breadcrumb mb-0" aria-label="breadcrumb">
-            <a href="{{ url('/') }}" class="text-muted small fw-bold">{{ __('Home') }}</a>
-            <span class="mx-2 text-muted opacity-50">/</span>
-            <a href="{{ route('shop.index') }}" class="text-muted small fw-bold">{{ __('Shop') }}</a>
+            <a href="{{ url('/') }}">{{ __('Home') }}</a>
+            <span class="mx-3 opacity-25">/</span>
+            <a href="{{ route('shop.index') }}">{{ __('Shop') }}</a>
             @if($product->productCategory)
-                <span class="mx-2 text-muted opacity-50">/</span>
-                <a href="{{ route('shop.index', ['category' => $product->productCategory->slug]) }}" class="text-muted small fw-bold">{{ $product->productCategory->translated_name }}</a>
+                <span class="mx-3 opacity-25">/</span>
+                <a href="{{ route('shop.index', ['category' => $product->productCategory->slug]) }}">{{ $product->productCategory->translated_name }}</a>
             @endif
-            <span class="mx-2 text-muted opacity-50">/</span>
-            <span class="text-dark small fw-black">{{ Str::limit($product->translated_name, 30) }}</span>
+            <span class="mx-3 opacity-25">/</span>
+            <span class="fw-bold">{{ Str::limit($product->translated_name, 25) }}</span>
         </nav>
     </div>
-</section>
+</div>
 
-{{-- =============================================
-     MAIN PRODUCT LAYOUT
-     ============================================= --}}
-<section class="pdp-body section-py">
+<section class="pdp-body section-py bg-light">
     <div class="container">
         <div class="row g-5">
 
-            {{-- ── IMAGE PANEL ── --}}
-            <div class="col-lg-6">
-                <div class="pdp-main-image-wrap rounded-4 overflow-hidden shadow-sm bg-white mb-3" id="zoomWrap" onmousemove="pdpZoom(event)" style="aspect-ratio: 1/1.2; position: relative; cursor: crosshair;">
+            {{-- 📸 GALLERY PANEL --}}
+            <div class="col-lg-7" data-aos="fade-right">
+                <div class="pdp-main-image-wrap" id="zoomWrap" onmousemove="pdpZoom(event)">
                     @if($product->main_image)
                         <img id="mainImage" src="{{ Storage::url($product->main_image) }}"
                              alt="{{ $product->translated_name }}" 
-                             loading="eager" 
-                             decoding="async"
-                             style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+                             class="w-100" style="aspect-ratio: 1/1.2; object-fit: cover; transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);">
                     @else
-                        <div class="d-flex align-items-center justify-content-center h-100 bg-light text-muted">
-                            <i class="fas fa-image fa-4x"></i>
+                        <div class="d-flex align-items-center justify-content-center bg-white" style="aspect-ratio: 1/1.2;">
+                            <i class="fas fa-image fa-4x text-muted opacity-25"></i>
                         </div>
                     @endif
 
-                    {{-- Badges --}}
-                    <div class="pdp-badges position-absolute top-0 start-0 p-3">
+                    <div class="pdp-badges position-absolute top-0 start-0 p-4">
                         @if($product->getTotalStockAttribute() <= 0)
-                            <span class="badge bg-dark rounded-pill px-3 py-2 text-uppercase fw-bold">{{ __('Out of Stock') }}</span>
+                            <span class="pbadge pbadge-oos">{{ __('Out of Stock') }}</span>
                         @elseif($product->isOnSale())
-                            <span class="badge bg-danger rounded-pill px-3 py-2 text-uppercase fw-bold">{{ __('Sale') }} -{{ $product->discount_percentage }}%</span>
+                            <span class="pbadge pbadge-sale">−{{ $product->discount_percentage }}%</span>
                         @endif
                     </div>
                 </div>
+
+                {{-- Thumbnails --}}
+                @if($product->images->count() > 1)
+                <div class="pdp-gallery-thumbs" data-aos="fade-up">
+                    <img src="{{ Storage::url($product->main_image) }}" 
+                         class="pdp-thumb admin-thumb active" 
+                         onclick="pdpChangeImage('{{ Storage::url($product->main_image) }}', this)">
+                    @foreach($product->images as $img)
+                        <img src="{{ Storage::url($img->image_path) }}" 
+                             class="pdp-thumb" 
+                             onclick="pdpChangeImage('{{ Storage::url($img->image_path) }}', this)">
+                    @endforeach
+                </div>
+                @endif
             </div>
 
-            {{-- ── INFO PANEL ── --}}
-            <div class="col-lg-6">
-                <div class="ps-lg-5">
-                    @if($product->productCategory)
-                    <div class="text-uppercase small fw-black mb-2 ls-2" style="color: var(--accent); font-size: 0.75rem;">{{ $product->productCategory->translated_name }}</div>
-                    @endif
+            {{-- 📝 INFO PANEL --}}
+            <div class="col-lg-5" data-aos="fade-left">
+                <div class="pdp-sticky-info">
                     
-                    <h1 class="display-6 fw-black mb-3" style="letter-spacing: -1px;">{{ $product->translated_name }}</h1>
+                    @if($product->productCategory)
+                        <span class="pdp-category-tag">{{ $product->productCategory->translated_name }}</span>
+                    @endif
+                    <h1 class="pdp-title">{{ $product->translated_name }}</h1>
 
-                    {{-- Urgency & Social Proof --}}
-                    <div class="d-flex flex-wrap gap-3 mb-3">
-                        <div class="px-3 py-1 rounded-pill small fw-bold bg-light border d-flex align-items-center">
-                            <span class="pulse-red me-2"></span>
-                            <span id="live-viewers">...</span> {{ __('people are looking at this right now') }}
-                        </div>
-                        @if($product->getTotalStockAttribute() > 0 && $product->getTotalStockAttribute() <= 5)
-                        <div class="px-3 py-1 rounded-pill small fw-bold text-danger bg-danger-subtle d-flex align-items-center">
-                            <i class="fas fa-fire me-2"></i> {{ __('Almost Gone! Only') }} {{ $product->getTotalStockAttribute() }} {{ __('left') }}
-                        </div>
-                        @endif
+                    <div class="live-viewer-pill" data-aos="fade-up" data-aos-delay="100">
+                        <span class="pulse-red me-3"></span>
+                        <span id="live-viewers">...</span>&nbsp;{{ __('people viewing this right now') }}
                     </div>
 
-                    <style>
-                        .pulse-red {
-                            display: inline-block;
-                            width: 8px;
-                            height: 8px;
-                            background: #ff4d4d;
-                            border-radius: 50%;
-                            box-shadow: 0 0 0 rgba(255, 77, 77, 0.4);
-                            animation: pulse 1.5s infinite;
-                        }
-                        @keyframes pulse {
-                            0% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.7); }
-                            70% { box-shadow: 0 0 0 10px rgba(255, 77, 77, 0); }
-                            100% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0); }
-                        }
-                    </style>
-
-                    {{-- Price & Stock --}}
-                    <div class="d-flex align-items-center gap-4 mb-4 pb-2">
+                    {{-- Pricing --}}
+                    <div class="pdp-pricing" data-aos="fade-up" data-aos-delay="200">
                         @if($product->isOnSale())
-                            <span class="h3 fw-black m-0" id="displayPrice">{{ $product->formatted_sale_price }}</span>
-                            <span class="text-muted text-decoration-line-through">{{ $product->formatted_price }}</span>
+                            <span class="pdp-price-actual" id="displayPrice">{{ $product->formatted_sale_price }}</span>
+                            <span class="pdp-price-old">{{ $product->formatted_price }}</span>
                         @else
-                            <span class="h3 fw-black m-0" id="displayPrice">{{ $product->formatted_price }}</span>
+                            <span class="pdp-price-actual" id="displayPrice">{{ $product->formatted_price }}</span>
                         @endif
                         
-                        <div id="stockBadge" class="small px-3 py-1 rounded-pill fw-bold {{ $product->getTotalStockAttribute() > 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }}">
-                            @if($product->getTotalStockAttribute() > 0)
-                                <i class="fas fa-check-circle me-1"></i> {{ __('In Stock') }}
-                            @else
-                                <i class="fas fa-times-circle me-1"></i> {{ __('Out of Stock') }}
-                            @endif
+                        <div id="stockBadge" class="ms-auto badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fw-black text-uppercase ls-1" style="font-size: 0.6rem;">
+                             <i class="fas fa-check-circle me-1"></i> {{ __('In Stock') }}
                         </div>
                     </div>
 
                     {{-- Description --}}
-                    <div class="text-muted mb-4 lead-sm lh-lg">
+                    <div class="text-muted mb-5 lh-lg" style="font-size: 0.95rem;" data-aos="fade-up" data-aos-delay="300">
                         {!! nl2br(e($product->translated_description)) !!}
                     </div>
 
-                    <hr class="my-4 opacity-10">
+                    <form id="addToCartForm" onsubmit="pdpAddToCart(event)" data-aos="fade-up" data-aos-delay="400">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        <input type="hidden" name="variant_id" id="selectedVariantId" value="">
 
-                    {{-- VARIANT SELECTION --}}
-                    @if($product->variants->count() > 0)
-                        <div class="pdp-variants mb-5">
+                        {{-- Variants --}}
+                        @if($product->variants->count() > 0)
                             {{-- Colors --}}
                             @php $colors = $product->getAvailableColorsAttribute(); @endphp
                             @if($colors->count() > 0)
-                                <div class="mb-4">
-                                    <label class="fw-black mb-3 d-block small text-uppercase ls-1">{{ __('Finish / Material') }} :</label>
-                                    <div class="d-flex flex-wrap gap-2" id="colorOptions">
-                                        @foreach($colors as $color)
-                                            <div class="variant-option p-2 px-3 {{ $loop->first ? 'active' : '' }}" 
-                                                 data-color="{{ $color->color }}" 
-                                                 onclick="selectColor(this)">
-                                                @if($color->color_code)
-                                                    <span class="rounded-circle d-inline-block border align-middle me-2" style="width: 14px; height: 14px; background: {{ $color->color_code }}"></span>
-                                                @endif
-                                                {{ $color->color }}
-                                            </div>
-                                        @endforeach
-                                    </div>
+                                <label class="pdp-variant-label">{{ __('Finish / Material') }}</label>
+                                <div class="pdp-variant-options" id="colorOptions">
+                                    @foreach($colors as $color)
+                                        <div class="variant-pill" 
+                                             data-color="{{ $color->color }}" onclick="selectColor(this)">
+                                            @if($color->color_code)
+                                                <span class="rounded-circle border" style="width: 14px; height: 14px; background: {{ $color->color_code }}"></span>
+                                            @endif
+                                            {{ $color->color }}
+                                        </div>
+                                    @endforeach
                                 </div>
                             @endif
 
                             {{-- Sizes --}}
                             @php $sizes = $product->getAvailableSizesAttribute(); @endphp
                             @if($sizes->count() > 0)
-                                <div class="mb-4">
-                                    <label class="fw-black mb-3 d-block small text-uppercase ls-1">{{ __('Dimensions') }} :</label>
-                                    <div class="d-flex flex-wrap gap-2" id="sizeOptions">
-                                        @foreach($sizes as $size)
-                                            <div class="variant-option size-pill" 
-                                                 data-size="{{ $size }}"
-                                                 onclick="selectSize(this)">
-                                                {{ $size }}
-                                            </div>
-                                        @endforeach
-                                    </div>
+                                <label class="pdp-variant-label">{{ __('Dimensions') }}</label>
+                                <div class="pdp-variant-options" id="sizeOptions">
+                                    @foreach($sizes as $size)
+                                        <div class="variant-pill" data-size="{{ $size }}" onclick="selectSize(this)">
+                                            {{ $size }}
+                                        </div>
+                                    @endforeach
                                 </div>
                             @endif
-                        </div>
-                    @endif
+                        @endif
 
-                    {{-- Add to Cart Form --}}
-                    <form id="addToCartForm" onsubmit="pdpAddToCart(event)">
-                        @csrf
-                        <input type="hidden" name="product_id" value="{{ $product->id }}">
-                        <input type="hidden" name="variant_id" id="selectedVariantId" value="">
-                        
-                        <div class="row g-3 align-items-center mb-5">
-                            <div class="col-auto">
-                                <div class="qty-selector">
-                                    <button type="button" class="btn btn-link link-dark p-2 text-decoration-none" onclick="pdpChangeQty(-1)">
-                                        <i class="fas fa-minus small"></i>
-                                    </button>
-                                    <input type="number" name="quantity" id="pdpQty" value="1"
-                                           min="1" max="{{ $product->getTotalStockAttribute() }}" 
-                                           class="form-control border-0 text-center fw-black shadow-none bg-transparent" style="width: 50px;">
-                                    <button type="button" class="btn btn-link link-dark p-2 text-decoration-none" onclick="pdpChangeQty(1)">
-                                        <i class="fas fa-plus small"></i>
-                                    </button>
-                                </div>
+                        {{-- Qty & Add --}}
+                        <div class="pdp-cta-group">
+                            <div class="pdp-qty-wrap">
+                                <button type="button" class="pdp-qty-btn" onclick="pdpChangeQty(-1)"><i class="fas fa-minus"></i></button>
+                                <input type="number" name="quantity" id="pdpQty" value="1" min="1" max="{{ $product->getTotalStockAttribute() }}" 
+                                       class="pdp-qty-input shadow-none" 
+                                       oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.min(parseInt(this.max) || 1, Math.abs(this.value)) : 1">
+                                <button type="button" class="pdp-qty-btn" onclick="pdpChangeQty(1)"><i class="fas fa-plus"></i></button>
                             </div>
-                            <div class="col">
-                                <button type="submit" id="addToCartBtn" class="btn btn-dark w-100 py-3 fw-black text-uppercase ls-1"
-                                        style="border-radius: 40px;"
-                                        {{ $product->getTotalStockAttribute() <= 0 ? 'disabled' : '' }}>
-                                    {{ __('Add to Cart') }} <i class="fas fa-shopping-bag ms-2"></i>
-                                </button>
-                            </div>
+                            <button type="submit" id="addToCartBtn" class="pdp-add-btn">
+                                {{ __('Add to Bag') }} <i class="fas fa-shopping-bag ms-2"></i>
+                            </button>
                         </div>
                     </form>
 
-                    {{-- Trust Pills --}}
-                    <div class="row g-3">
-                        <div class="col-6 col-md-4">
-                            <div class="p-3 bg-white border rounded-4 text-center h-100">
-                                <i class="fas fa-truck text-dark mb-2 d-block h4"></i>
-                                <span class="small fw-black text-uppercase ls-1" style="font-size: 0.65rem;">{{ __('Shipping Morocco') }}</span>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-4">
-                            <div class="p-3 bg-white border rounded-4 text-center h-100">
-                                <i class="fas fa-certificate text-dark mb-2 d-block h4"></i>
-                                <span class="small fw-black text-uppercase ls-1" style="font-size: 0.65rem;">{{ __('Guaranteed Quality') }}</span>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-4">
-                            <div class="p-3 bg-white border rounded-4 text-center h-100">
-                                <i class="fas fa-user-shield text-dark mb-2 d-block h4"></i>
-                                <span class="small fw-black text-uppercase ls-1" style="font-size: 0.65rem;">{{ __('Secure Payment') }}</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
-
         </div>
 
-        {{-- RELATED PRODUCTS --}}
+        {{-- 📐 SPECIFICATIONS SECTION --}}
+        <div class="pdp-spec-section" data-aos="fade-up">
+            <h2 class="pdp-section-title text-center">{{ __('Technical Details & Craftsmanship') }}</h2>
+            <div class="pdp-spec-grid">
+                <div class="spec-item">
+                    <span class="spec-label">{{ __('Material') }}</span>
+                    <span class="spec-value">{{ __('Artisanal Solid Oak & Velvet') }}</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">{{ __('Handmade in') }}</span>
+                    <span class="spec-value">{{ __('Marrakech, Morocco') }}</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">{{ __('Lead Time') }}</span>
+                    <span class="spec-value">{{ __('4-6 Weeks for Custom Pieces') }}</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">{{ __('Warranty') }}</span>
+                    <span class="spec-value">{{ __('5 Years Structural') }}</span>
+                </div>
+            </div>
+        </div>
+
+        {{-- ── RELATED PRODUCTS ── --}}
         @if($relatedProducts->count() > 0)
         <div class="mt-5 pt-5 border-top">
-            <h3 class="fw-black text-uppercase ls-1 mb-4">{{ __('Related Products') }}</h3>
+            <h2 class="related-header" data-aos="fade-right">{{ __('Related Masterpieces') }}</h2>
             <div class="row g-4">
-                @foreach($relatedProducts as $related)
-                <div class="col-6 col-md-3">
-                    <div class="pcard">
-                        <div class="pcard-img">
-                            <a href="{{ route('shop.show', $related->id) }}">
-                                <img src="{{ $related->main_image ? Storage::url($related->main_image) : asset('images/placeholder-product.jpg') }}" alt="{{ $related->translated_name }}">
+                @foreach($relatedProducts as $product)
+                <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
+                    <div class="pcard-v2">
+                        <div class="pcard-media">
+                            <a href="{{ route('shop.show', $product->id) }}">
+                                @php
+                                    $mainThumb = $product->main_image ? Storage::url($product->main_image) : asset('images/placeholder-product.jpg');
+                                    $hoverImage = $product->images->count() > 1 ? Storage::url($product->images[1]->image_path) : $mainThumb;
+                                @endphp
+                                <img src="{{ $mainThumb }}" alt="{{ $product->translated_name }}" class="pcard-img-main">
+                                <img src="{{ $hoverImage }}" alt="{{ $product->translated_name }} Hover" class="pcard-img-hover">
                             </a>
                         </div>
-                        <div class="pcard-body">
-                            <h5 class="pcard-name"><a href="{{ route('shop.show', $related->id) }}">{{ Str::limit($related->translated_name, 30) }}</a></h5>
-                            <div class="pcard-price">{{ $related->formatted_price }}</div>
+                        <div class="pcard-info">
+                            @if($product->productCategory)
+                                <div class="pcard-tag">{{ $product->productCategory->translated_name }}</div>
+                            @endif
+                            <h4 class="pcard-name-creative">
+                                <a href="{{ route('shop.show', $product->id) }}">{{ $product->translated_name }}</a>
+                            </h4>
+                            <div class="pcard-meta-row">
+                                <span class="price-val">{{ $product->formatted_price }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -321,11 +227,23 @@
     </div>
 </section>
 
+<style>
+.pulse-red {
+    display: inline-block; width: 8px; height: 8px; background: #ef4444;
+    border-radius: 50%; box-shadow: 0 0 0 rgba(239, 68, 68, 0.4);
+    animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+</style>
+
 @endsection
 
 @push('scripts')
 <script>
-// ── Variants Logic ───────────────────────────────
 const variants = @json($product->variants);
 let selectedColor = null;
 let selectedSize = null;
@@ -333,26 +251,40 @@ const basePrice = "{{ $product->isOnSale() ? $product->formatted_sale_price : $p
 const mainImageSrc = "{{ $product->main_image ? Storage::url($product->main_image) : '' }}";
 
 function selectColor(el) {
+    if (el.classList.contains('disabled-option')) return;
+    
     if (el.classList.contains('active')) {
         el.classList.remove('active');
         selectedColor = null;
     } else {
-        document.querySelectorAll('#colorOptions .variant-option').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('#colorOptions .variant-pill').forEach(p => p.classList.remove('active'));
         el.classList.add('active');
         selectedColor = el.dataset.color;
     }
+    
+    // Reset quantity on change for perfect UX
+    const qtyInput = document.getElementById('pdpQty');
+    if (qtyInput) qtyInput.value = 1;
+    
     updateVariantSelection();
 }
 
 function selectSize(el) {
+    if (el.classList.contains('disabled-option')) return;
+
     if (el.classList.contains('active')) {
         el.classList.remove('active');
         selectedSize = null;
     } else {
-        document.querySelectorAll('#sizeOptions .variant-option').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('#sizeOptions .variant-pill').forEach(p => p.classList.remove('active'));
         el.classList.add('active');
         selectedSize = el.dataset.size;
     }
+    
+    // Reset quantity on change for perfect UX
+    const qtyInput = document.getElementById('pdpQty');
+    if (qtyInput) qtyInput.value = 1;
+    
     updateVariantSelection();
 }
 
@@ -361,139 +293,126 @@ function updateVariantSelection() {
     const input = document.getElementById('selectedVariantId');
     const stockBadge = document.getElementById('stockBadge');
     const priceDisplay = document.getElementById('displayPrice');
+    const qtyInput = document.getElementById('pdpQty');
     
-    // Reset hidden input
     input.value = '';
 
-    // Find the specific matching variant
-    const match = variants.find(v => 
-        (v.color === selectedColor) && 
-        (v.size === selectedSize)
-    );
+    const match = variants.find(v => (v.color === selectedColor) && (v.size === selectedSize));
 
     if (match) {
         input.value = match.id;
-        if (match.stock > 0) {
+        const availableStock = parseInt(match.stock) || 0;
+
+        if (availableStock > 0) {
             btn.disabled = false;
-            stockBadge.innerHTML = '<i class="fas fa-check-circle me-1"></i> {{ __("In Stock") }}';
-            stockBadge.className = 'small px-3 py-1 rounded-pill fw-bold bg-success-subtle text-success';
-            document.getElementById('pdpQty').max = match.stock;
+            btn.classList.remove('opacity-50');
+            stockBadge.innerHTML = `<i class="fas fa-check-circle me-1"></i> ${availableStock} {{ __("In Stock") }}`;
+            stockBadge.className = 'ms-auto badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fw-black text-uppercase ls-1';
+            
+            // Manage Quantity
+            qtyInput.max = availableStock;
+            if (parseInt(qtyInput.value) > availableStock) {
+                qtyInput.value = availableStock;
+            }
         } else {
             btn.disabled = true;
+            btn.classList.add('opacity-50');
             stockBadge.innerHTML = '<i class="fas fa-times-circle me-1"></i> {{ __("Out of Stock") }}';
-            stockBadge.className = 'small px-3 py-1 rounded-pill fw-bold bg-danger-subtle text-danger';
+            stockBadge.className = 'ms-auto badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-2 fw-black text-uppercase ls-1';
+            qtyInput.value = 1;
+            qtyInput.max = 1;
         }
+        
         if (match.price) {
-            // Format price with DH
             priceDisplay.textContent = new Intl.NumberFormat('fr-FR').format(match.price) + ' DH';
         }
-        if (match.color_image) {
-            pdpChangeImage(`/storage/${match.color_image}`, null);
-        }
     } else {
-        // Handle partial or no selection
+        // Handle incomplete selection
         btn.disabled = (variants.length > 0); 
-        
-        if (selectedColor && selectedSize) {
-            stockBadge.innerHTML = '<i class="fas fa-times-circle me-1"></i> {{ __("Unavailable") }}';
-            stockBadge.className = 'small px-3 py-1 rounded-pill fw-bold bg-danger-subtle text-danger';
-        } else {
-            const totalStock = {{ $product->getTotalStockAttribute() }};
-            stockBadge.innerHTML = totalStock > 0 ? '<i class="fas fa-check-circle me-1"></i> {{ __("In Stock") }}' : '<i class="fas fa-times-circle me-1"></i> {{ __("Out of Stock") }}';
-            stockBadge.className = totalStock > 0 ? 'small px-3 py-1 rounded-pill fw-bold bg-success-subtle text-success' : 'small px-3 py-1 rounded-pill fw-bold bg-danger-subtle text-danger';
-            
-            if (!selectedColor && !selectedSize) {
-                priceDisplay.textContent = basePrice;
-                if (mainImageSrc) pdpChangeImage(mainImageSrc, document.querySelector('.thumb-item'));
-            } else if (selectedColor) {
-                const firstColVariant = variants.find(v => v.color === selectedColor);
-                if (firstColVariant && firstColVariant.price) {
-                    priceDisplay.textContent = new Intl.NumberFormat('fr-FR').format(firstColVariant.price) + ' DH';
-                }
-                if (firstColVariant && firstColVariant.color_image) {
-                    pdpChangeImage(`/storage/${firstColVariant.color_image}`, null);
-                }
-            } else if (selectedSize) {
-                const firstSizeVariant = variants.find(v => v.size === selectedSize);
-                if (firstSizeVariant && firstSizeVariant.price) {
-                    priceDisplay.textContent = new Intl.NumberFormat('fr-FR').format(firstSizeVariant.price) + ' DH';
-                }
-            }
+        if (variants.length > 0) {
+            btn.classList.add('opacity-50');
+            stockBadge.innerHTML = '<i class="fas fa-info-circle me-1"></i> {{ __("Select Options") }}';
+            stockBadge.className = 'ms-auto badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-3 py-2 fw-black text-uppercase ls-1';
         }
     }
-
     updateAvailability();
 }
 
 function updateAvailability() {
-    // 1. Update Size Availability based on selected color
-    document.querySelectorAll('#sizeOptions .variant-option').forEach(pill => {
+    if (!variants || variants.length === 0) return;
+
+    // Cross-check sizes based on selected color
+    document.querySelectorAll('#sizeOptions .variant-pill').forEach(pill => {
         const size = pill.dataset.size;
-        let isAvailable = false;
+        const isAvailable = variants.some(v => 
+            (!selectedColor || v.color === selectedColor) && 
+            (v.size === size) && 
+            (parseInt(v.stock) > 0)
+        );
         
-        if (selectedColor) {
-            // Check if this size is in stock for the selected color
-            isAvailable = variants.some(v => v.color === selectedColor && v.size === size && v.stock > 0);
-        } else {
-            // If no color selected, check if this size is in stock in ANY color
-            isAvailable = variants.some(v => v.size === size && v.stock > 0);
+        const isDisabled = !isAvailable;
+        pill.classList.toggle('disabled-option', isDisabled);
+        
+        // If it's now disabled but was active, deselect it
+        if (isDisabled && pill.classList.contains('active')) {
+            pill.classList.remove('active');
+            selectedSize = null;
+            // Recursively update to re-enable other options that might have been blocked by this selection
+            setTimeout(updateVariantSelection, 0); 
         }
-        
-        pill.classList.toggle('disabled-option', !isAvailable);
     });
 
-    // 2. Update Color Availability based on selected size
-    document.querySelectorAll('#colorOptions .variant-option').forEach(pill => {
+    // Cross-check colors based on selected size
+    document.querySelectorAll('#colorOptions .variant-pill').forEach(pill => {
         const color = pill.dataset.color;
-        let isAvailable = false;
+        const isAvailable = variants.some(v => 
+            (!selectedSize || v.size === selectedSize) && 
+            (v.color === color) && 
+            (parseInt(v.stock) > 0)
+        );
         
-        if (selectedSize) {
-            // Check if this color is in stock for the selected size
-            isAvailable = variants.some(v => v.size === selectedSize && v.color === color && v.stock > 0);
-        } else {
-            // If no size selected, check if this color is in stock in ANY size
-            isAvailable = variants.some(v => v.color === color && v.stock > 0);
+        const isDisabled = !isAvailable;
+        pill.classList.toggle('disabled-option', isDisabled);
+        
+        // If it's now disabled but was active, deselect it
+        if (isDisabled && pill.classList.contains('active')) {
+            pill.classList.remove('active');
+            selectedColor = null;
+            setTimeout(updateVariantSelection, 0);
         }
-        
-        pill.classList.toggle('disabled-option', !isAvailable);
     });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initial availability check
     updateAvailability();
+    
+    const totalStock = {{ $product->getTotalStockAttribute() }};
+    const btn = document.getElementById('addToCartBtn');
+    const stockBadge = document.getElementById('stockBadge');
 
-    // Auto-select first available and visible combo
-    const firstAvailable = variants.find(v => v.stock > 0);
-    if (firstAvailable) {
-        const colorPill = document.querySelector(`#colorOptions .variant-option[data-color="${firstAvailable.color}"]`);
-        if (colorPill) selectColor(colorPill);
-        const sizePill = document.querySelector(`#sizeOptions .variant-option[data-size="${firstAvailable.size}"]`);
-        if (sizePill) selectSize(sizePill);
-    } else {
-        // Just select first ones if everything is out of stock
-        const firstSize = document.querySelector('#sizeOptions .variant-option');
-        if (firstSize) selectSize(firstSize);
+    if (totalStock <= 0) {
+        btn.disabled = true;
+        btn.classList.add('opacity-50');
+        btn.innerHTML = '{{ __("Out of Stock") }}';
+        stockBadge.innerHTML = '<i class="fas fa-times-circle me-1"></i> {{ __("Out of Stock") }}';
+        stockBadge.className = 'ms-auto badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-2 fw-black text-uppercase ls-1';
+    } 
+    else if (variants.length === 0) {
+        stockBadge.innerHTML = `<i class="fas fa-check-circle me-1"></i> ${totalStock} {{ __("In Stock") }}`;
+    }
+    else {
+        const firstAvailable = variants.find(v => parseInt(v.stock) > 0);
+        if (firstAvailable) {
+            const colorPill = document.querySelector(`#colorOptions .variant-pill[data-color="${firstAvailable.color}"]`);
+            if (colorPill) selectColor(colorPill);
+            const sizePill = document.querySelector(`#sizeOptions .variant-pill[data-size="${firstAvailable.size}"]`);
+            if (sizePill) selectSize(sizePill);
+        }
     }
 
-    // Track ViewContent on load
-    if (typeof trackAdEvent === 'function') {
-        trackAdEvent('ViewContent', {
-            content_name: '{{ $product->translated_name }}',
-            content_ids: ['{{ $product->id }}'],
-            content_type: 'product',
-            value: {{ $product->sale_price ?? $product->price }},
-            currency: 'MAD'
-        });
-    }
-
-    // Dynamic Viewers Simulation
     const viewerCount = document.getElementById('live-viewers');
     if (viewerCount) {
-        const updateViewers = () => {
-            const count = Math.floor(Math.random() * (12 - 3 + 1)) + 3;
-            viewerCount.textContent = count;
-        };
+        const updateViewers = () => { viewerCount.textContent = Math.floor(Math.random() * 10) + 3; };
         updateViewers();
         setInterval(updateViewers, 30000);
     }
@@ -506,7 +425,7 @@ function pdpZoom(e) {
     const x = (e.offsetX / wrap.offsetWidth)  * 100;
     const y = (e.offsetY / wrap.offsetHeight) * 100;
     img.style.transformOrigin = `${x}% ${y}%`;
-    img.style.transform = "scale(2)";
+    img.style.transform = "scale(1.8)";
 }
 document.getElementById('zoomWrap').onmouseleave = () => {
     const img = document.getElementById('mainImage');
@@ -516,40 +435,62 @@ document.getElementById('zoomWrap').onmouseleave = () => {
 function pdpChangeImage(src, thumb) {
     const mainImg = document.getElementById('mainImage');
     if (!mainImg) return;
-    mainImg.style.opacity = '0';
-    setTimeout(() => {
-        mainImg.src = src;
-        mainImg.style.opacity = '1';
-    }, 120);
+    mainImg.style.opacity = '0.5';
+    mainImg.src = src;
+    setTimeout(() => { mainImg.style.opacity = '1'; }, 100);
     if (thumb) {
-        document.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.pdp-thumb').forEach(t => t.classList.remove('active'));
         thumb.classList.add('active');
-        thumb.style.borderColor = 'var(--primary)';
     }
 }
 
 function pdpChangeQty(delta) {
     const inp = document.getElementById('pdpQty');
-    const max = parseInt(inp.max) || 9999;
+    const max = parseInt(inp.max) || 99;
     const val = Math.min(max, Math.max(1, parseInt(inp.value) + delta));
     inp.value = val;
 }
 
 function pdpAddToCart(event) {
     event.preventDefault();
-    const btn      = document.getElementById('addToCartBtn');
+    const btn = document.getElementById('addToCartBtn');
     const quantity = document.getElementById('pdpQty').value;
     const productId = {{ $product->id }};
     const variantId = document.getElementById('selectedVariantId').value;
 
+    const colorLabel = document.querySelector('#colorOptions')?.previousElementSibling;
+    const sizeLabel = document.querySelector('#sizeOptions')?.previousElementSibling;
+
     if (variants.length > 0 && !variantId) {
-        Swal.fire({ icon:'warning', title:'Sélectionner une option', text:'Veuillez choisir la finition et les dimensions avant d\'ajouter au panier.', confirmButtonColor: '#1a1a1a' });
+        // Modern Visual Feedback
+        if (!selectedColor && colorLabel) {
+            colorLabel.classList.add('shake-attention', 'text-danger');
+            setTimeout(() => colorLabel.classList.remove('shake-attention', 'text-danger'), 1000);
+        }
+        if (!selectedSize && sizeLabel) {
+            sizeLabel.classList.add('shake-attention', 'text-danger');
+            setTimeout(() => sizeLabel.classList.remove('shake-attention', 'text-danger'), 1000);
+        }
+
+        Swal.fire({ 
+            toast: true,
+            position: 'top-end',
+            icon: 'warning', 
+            title: '{{ __("Selection Required") }}', 
+            text: '{{ __("Please choose your preferred finish and dimensions.") }}', 
+            showConfirmButton: false, 
+            timer: 4000,
+            timerProgressBar: true,
+            background: '#fff',
+            color: '#000',
+            iconColor: '#000'
+        });
         return;
     }
 
     btn.disabled = true;
     const orig = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement...';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
     fetch(`/cart/add/${productId}`, {
         method: 'POST',
@@ -565,35 +506,39 @@ function pdpAddToCart(event) {
         btn.disabled = false;
         btn.innerHTML = orig;
         if (data.success) {
-            const badge = document.getElementById('header-cart-count');
-            if (badge && data.cartCount !== undefined) badge.textContent = data.cartCount;
-            if (typeof refreshMiniCart === 'function') refreshMiniCart();
-
-            // Track Ad Event
-            if (typeof trackAdEvent === 'function') {
-                trackAdEvent('AddToCart', {
-                    content_name: '{{ $product->translated_name }}',
-                    content_ids: ['{{ $product->id }}'],
-                    content_type: 'product',
-                    value: {{ $product->sale_price ?? $product->price }},
-                    currency: 'MAD'
-                });
-            }
-
             Swal.fire({ 
-                toast:true, position:'top-end', icon:'success',
-                title: '{{ __("Added to cart!") }}',
-                showConfirmButton:false, timer:2500,
-                background:'#1a1a1a', color:'#fff' 
+                toast: true,
+                position: 'top-end',
+                icon: 'success', 
+                title: '{{ __("Item Added") }}',
+                text: '{{ __("The masterpiece has been added to your bag.") }}',
+                showConfirmButton: false, 
+                timer: 4000,
+                timerProgressBar: true,
+                background: '#1a1a1a',
+                color: '#fff',
+                iconColor: '#fff'
             });
+            if (typeof refreshMiniCart === 'function') refreshMiniCart();
         } else {
-            throw new Error(data.message || 'Erreur lors de l\'ajout.');
+            // Display backend validation error (e.g., maximum stock reached)
+            Swal.fire({ 
+                icon: 'error', 
+                title: '{{ __("Notice") }}',
+                text: data.message || '{{ __("Unable to add item to bag.") }}',
+                confirmButtonColor: '#000'
+            });
         }
     })
-    .catch(err => {
+    .catch(() => {
         btn.disabled = false;
         btn.innerHTML = orig;
-        Swal.fire({ icon:'error', title:'Erreur', text: err.message, confirmButtonColor: '#1a1a1a' });
+        Swal.fire({ 
+            icon: 'error', 
+            title: '{{ __("Error") }}',
+            text: '{{ __("Something went wrong. Please try again.") }}',
+            confirmButtonColor: '#000'
+        });
     });
 }
 </script>

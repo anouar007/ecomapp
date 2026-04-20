@@ -122,18 +122,46 @@ class CartController extends Controller
     }
 
     /**
-     * Update item quantity.
+     * Update item quantity with stock validation.
      */
     public function update(Request $request)
     {
         if ($request->id && $request->quantity) {
             $cart = session()->get('cart', []);
+            
             if (isset($cart[$request->id])) {
-                $cart[$request->id]['quantity'] = $request->quantity;
+                $newQty = (int)$request->quantity;
+                $details = $cart[$request->id];
+                
+                // Extract IDs from key (format: productID_variantID)
+                $keyParts = explode('_', $request->id);
+                $productId = $keyParts[0];
+                $variantId = (isset($keyParts[1]) && $keyParts[1] != '0') ? $keyParts[1] : null;
+
+                // Match stock
+                if ($variantId) {
+                    $variant = \App\Models\ProductVariant::find($variantId);
+                    $stock = $variant ? $variant->stock : 0;
+                } else {
+                    $product = \App\Models\Product::find($productId);
+                    $stock = $product ? $product->stock : 0;
+                }
+
+                // Strictly validate
+                if ($newQty > $stock) {
+                    return response()->json([
+                        'success' => false, 
+                        'message' => "Stock limit reached. Max available: {$stock}",
+                        'max' => $stock
+                    ], 400);
+                }
+
+                $cart[$request->id]['quantity'] = $newQty;
                 session()->put('cart', $cart);
+                
+                $cartCount = array_sum(array_column($cart, 'quantity'));
+                return response()->json(['success' => true, 'cartCount' => $cartCount]);
             }
-            $cartCount = array_sum(array_column($cart, 'quantity'));
-            return response()->json(['success' => true, 'cartCount' => $cartCount]);
         }
         return response()->json(['success' => false], 400);
     }

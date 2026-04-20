@@ -126,27 +126,28 @@ class Product extends Model
     }
 
     /**
-     * Check if product is in stock
+     * Check if product is in stock (handles variants)
      */
     public function isInStock()
     {
-        return $this->stock > 0;
+        return $this->getTotalStockAttribute() > 0;
     }
 
     /**
-     * Check if stock is low
+     * Check if product is out of stock (handles variants)
+     */
+    public function isOutOfStock(): bool
+    {
+        return $this->getTotalStockAttribute() <= 0;
+    }
+
+    /**
+     * Check if stock is low (handles variants)
      */
     public function isLowStock()
     {
-        return $this->stock > 0 && $this->stock <= $this->min_stock;
-    }
-
-    /**
-     * Check if product is active
-     */
-    public function isActive()
-    {
-        return $this->status === 'active';
+        $total = $this->getTotalStockAttribute();
+        return $total > 0 && $total <= ($this->min_stock ?? 5);
     }
 
     /**
@@ -295,13 +296,6 @@ class Product extends Model
                ($this->stock ?? 0) <= $this->low_stock_threshold;
     }
 
-    /**
-     * Check if product is out of stock.
-     */
-    public function isOutOfStock(): bool
-    {
-        return ($this->stock ?? 0) <= 0;
-    }
 
     /**
      * Get the main image path for the product.
@@ -380,7 +374,7 @@ class Product extends Model
     public function getTotalStockAttribute()
     {
         if ($this->variants->count() > 0) {
-            return $this->variants->sum('stock');
+            return $this->variants->where('status', 'active')->sum('stock');
         }
         return $this->stock;
     }

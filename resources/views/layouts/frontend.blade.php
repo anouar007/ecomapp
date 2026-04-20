@@ -92,12 +92,12 @@
     @endif
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
     <link rel="stylesheet" href="{{ asset('css/frontend.css') }}">
-    <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
-    <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/5.0.0/imagesloaded.pkgd.min.js"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Custom Head Codes -->
     @php
@@ -115,6 +115,7 @@
             {!! $code->content !!}
         @endif
     @endforeach
+    @stack('styles')
 </head>
 <body>
     <!-- Custom Body Start Codes -->
@@ -131,13 +132,13 @@
     <!-- 1. ANNOUNCEMENT BAR (MARQUEE) -->
     <div class="announcement-bar">
         <div class="promo-marquee">
-            <div class="promo-item">✨ Livraison gratuite partout au Maroc dès 5000 DH</div>
-            <div class="promo-item">🎨 Création sur-mesure : Bois, Métal & Tapisserie</div>
-            <div class="promo-item">⏳ -10% sur votre première commande avec le code MOUBDI10</div>
+            <div class="promo-item">{{ __('Promo 1') }}</div>
+            <div class="promo-item">{{ __('Promo 2') }}</div>
+            <div class="promo-item">{{ __('Promo 3') }}</div>
             <!-- Duplicate for seamless loop -->
-            <div class="promo-item">✨ Livraison gratuite partout au Maroc dès 5000 DH</div>
-            <div class="promo-item">🎨 Création sur-mesure : Bois, Métal & Tapisserie</div>
-            <div class="promo-item">⏳ -10% sur votre première commande avec le code MOUBDI10</div>
+            <div class="promo-item">{{ __('Promo 1') }}</div>
+            <div class="promo-item">{{ __('Promo 2') }}</div>
+            <div class="promo-item">{{ __('Promo 3') }}</div>
         </div>
     </div>
 
@@ -224,37 +225,18 @@
                                 <div class="megamenu">
                                     <div class="container">
                                         <div class="row">
-                                            <div class="col-lg-3">
-                                                <span class="megamenu-title">Salon & Séjour</span>
-                                                <a href="{{ route('shop.index', ['category' => 'salons']) }}" class="megamenu-link">Canapés sur mesure</a>
-                                                <a href="{{ route('shop.index', ['category' => 'tables']) }}" class="megamenu-link">Tables basses</a>
-                                                <a href="{{ route('shop.index', ['category' => 'meubles-tv']) }}" class="megamenu-link">Meubles TV</a>
-                                                <a href="{{ route('shop.index', ['category' => 'fauteuils']) }}" class="megamenu-link">Fauteuils</a>
+                                            @foreach($navbarCategories as $category)
+                                            <div class="col-lg-3 mb-4">
+                                                <span class="megamenu-title">
+                                                    <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="text-reset text-decoration-none">
+                                                        {{ $category->translated_name }}
+                                                    </a>
+                                                </span>
+                                                @foreach($category->children as $child)
+                                                <a href="{{ route('shop.index', ['category' => $child->slug]) }}" class="megamenu-link">{{ $child->translated_name }}</a>
+                                                @endforeach
                                             </div>
-                                            <div class="col-lg-3">
-                                                <span class="megamenu-title">Chambre à Coucher</span>
-                                                <a href="{{ route('shop.index', ['category' => 'lits']) }}" class="megamenu-link">Lits design</a>
-                                                <a href="{{ route('shop.index', ['category' => 'armoires']) }}" class="megamenu-link">Dressings & Armoires</a>
-                                                <a href="{{ route('shop.index', ['category' => 'chevets']) }}" class="megamenu-link">Tables de chevet</a>
-                                                <a href="{{ route('shop.index', ['category' => 'commodes']) }}" class="megamenu-link">Commodes</a>
-                                            </div>
-                                            <div class="col-lg-3">
-                                                <span class="megamenu-title">L'Atelier Moubdi3oun</span>
-                                                <a href="{{ url('/about') }}" class="megamenu-link">Notre Savoir-faire</a>
-                                                <a href="{{ url('/process') }}" class="megamenu-link">Le Processus Créatif</a>
-                                                <a href="{{ url('/materials') }}" class="megamenu-link">Nos Matériaux</a>
-                                                <a href="{{ url('/contact') }}" class="megamenu-link">Demande de Devis</a>
-                                            </div>
-                                            <div class="col-lg-3">
-                                                <div class="megamenu-featured-card">
-                                                    <img src="https://images.unsplash.com/photo-1616486338812-3dadae4b48ec?auto=format&fit=crop&q=80" alt="New Collection">
-                                                    <div class="megamenu-featured-content">
-                                                        <span class="badge-new mb-2 d-inline-block">Nouveau</span>
-                                                        <h6 class="fw-black text-uppercase ls-1">Collection Atlas 2024</h6>
-                                                        <a href="{{ route('shop.index') }}" class="btn btn-sm btn-outline-light rounded-0 text-uppercase fw-bold" style="font-size: 0.6rem;">Découvrir</a>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            @endforeach
                                         </div>
                                     </div>
                                 </div>
@@ -262,9 +244,7 @@
                             <li class="nav-item">
                                 <a class="nav-link fw-bold text-uppercase small ls-1" href="{{ url('/about') }}">{{ __('About') }}</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link fw-bold text-uppercase small ls-1" href="{{ url('/portfolio') }}">{{ __('Portfolio') }}</a>
-                            </li>
+
                             <li class="nav-item">
                                 <a class="nav-link fw-bold text-uppercase small ls-1" href="{{ url('/contact') }}">{{ __('Contact') }}</a>
                             </li>
@@ -368,12 +348,12 @@
                 </div>
                 <div class="d-grid gap-2">
                     <a href="{{ route('checkout.index') }}" class="btn btn-dark py-3 rounded-pill fw-black shadow-sm d-flex justify-content-between align-items-center px-4 text-uppercase ls-1">
-                        <span>Commander</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
-                    <a href="{{ route('cart.index') }}" class="btn btn-link py-2 fw-bold text-muted small text-decoration-none">
-                        Vérifier le panier
-                    </a>
+                                <span>{{ __('Check Out') }}</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                            <a href="{{ route('cart.index') }}" class="btn btn-link py-2 fw-bold text-muted small text-decoration-none">
+                                {{ __('Cart') }}
+                            </a>
                 </div>
             </div>
             @endif
@@ -406,51 +386,49 @@
                 </div>
 
                 <!-- Maison & Ateliers -->
-                <div class="col-lg-2 col-6">
-                    <h6 class="footer-column-title">Maison</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="{{ url('/about') }}" class="footer-link">L'Esprit</a></li>
-                        <li><a href="{{ url('/portfolio') }}" class="footer-link">Réalisations</a></li>
-                        <li><a href="{{ url('/contact') }}" class="footer-link">L'Atelier</a></li>
-                        <li><a href="{{ route('shop.index') }}" class="footer-link">Collections</a></li>
-                    </ul>
-                </div>
-
-                <!-- Services -->
-                <div class="col-lg-2 col-6">
-                    <h6 class="footer-column-title">Assistance</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="footer-link">Suivre ma commande</a></li>
-                        <li><a href="#" class="footer-link">FAQs</a></li>
-                        <li><a href="#" class="footer-link">Livraison & Pose</a></li>
-                        <li><a href="#" class="footer-link">Garantie</a></li>
-                    </ul>
+                                <h6 class="footer-column-title">{{ __('Maison Label') }}</h6>
+                                <ul class="list-unstyled">
+                                    <li><a href="{{ url('/about') }}" class="footer-link">{{ __('The Spirit') }}</a></li>
+            
+                                    <li><a href="{{ url('/contact') }}" class="footer-link">{{ __('The Atelier') }}</a></li>
+                                    <li><a href="{{ route('shop.index') }}" class="footer-link">{{ __('Collections') }}</a></li>
+                                </ul>
+                            </div>
+            
+                            <!-- Services -->
+                            <div class="col-lg-2 col-6">
+                                <h6 class="footer-column-title">{{ __('Assistance') }}</h6>
+                                <ul class="list-unstyled">
+                                    <li><a href="#" class="footer-link">{{ __('Track Order') }}</a></li>
+                                    <li><a href="#" class="footer-link">{{ __('FAQs') }}</a></li>
+                                    <li><a href="#" class="footer-link">{{ __('Delivery & Installation') }}</a></li>
+                                    <li><a href="#" class="footer-link">{{ __('Warranty') }}</a></li>
+                                </ul>
                 </div>
 
                 <!-- Contact -->
-                <div class="col-lg-4">
-                    <h6 class="footer-column-title">Contact</h6>
-                    <div class="footer-contact-item">
-                        <div class="footer-contact-icon"><i class="fas fa-map-marker-alt"></i></div>
-                        <div class="small">
-                            {{ setting('company_address', 'Casablanca, Maroc') }}<br>
-                            <span class="opacity-50">Siège social & Showroom</span>
-                        </div>
-                    </div>
-                    <div class="footer-contact-item">
-                        <div class="footer-contact-icon"><i class="fas fa-phone-alt"></i></div>
-                        <div class="small">
-                            {{ setting('company_phone', '+212 6XX XX XX XX') }}<br>
-                            <span class="opacity-50">Lun-Sam: 09h00 - 19h00</span>
-                        </div>
-                    </div>
-                    <div class="footer-contact-item">
-                        <div class="footer-contact-icon"><i class="fas fa-envelope"></i></div>
-                        <div class="small">
-                            {{ setting('company_email', 'contact@moubdi3oun.com') }}<br>
-                            <span class="opacity-50">Support Client & Devis</span>
-                        </div>
-                    </div>
+                                <h6 class="footer-column-title">{{ __('Contact') }}</h6>
+                                <div class="footer-contact-item">
+                                    <div class="footer-contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                                    <div class="small">
+                                        {{ setting('company_address', 'Casablanca, Maroc') }}<br>
+                                        <span class="opacity-50">{{ __('Headquarters') }}</span>
+                                    </div>
+                                </div>
+                                <div class="footer-contact-item">
+                                    <div class="footer-contact-icon"><i class="fas fa-phone-alt"></i></div>
+                                    <div class="small">
+                                        {{ setting('company_phone', '+212 6XX XX XX XX') }}<br>
+                                        <span class="opacity-50">{{ __('Working Hours') }}</span>
+                                    </div>
+                                </div>
+                                <div class="footer-contact-item">
+                                    <div class="footer-contact-icon"><i class="fas fa-envelope"></i></div>
+                                    <div class="small">
+                                        {{ setting('company_email', 'contact@moubdi3oun.com') }}<br>
+                                        <span class="opacity-50">{{ __('Customer Support') }}</span>
+                                    </div>
+                                </div>
                 </div>
             </div>
 
@@ -465,7 +443,7 @@
                             <i class="fab fa-cc-visa fs-4"></i>
                             <i class="fab fa-cc-mastercard fs-4"></i>
                             <i class="fab fa-cc-apple-pay fs-4"></i>
-                            <span class="small fw-bold border-start ps-3 border-secondary">PAIEMENT SÉCURISÉ</span>
+                            <span class="small fw-bold border-start ps-3 border-secondary">{{ __('SECURE PAYMENT') }}</span>
                         </div>
                     </div>
                 </div>
@@ -479,7 +457,7 @@
     </button>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
@@ -510,12 +488,19 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <script>
-        @if(setting('frontend_enable_animations'))
-        AOS.init({
-            duration: 800,
-            once: true,
-            offset: 100
-        });
+        function initAOS() {
+            if (typeof AOS !== 'undefined') {
+                AOS.init({
+                    duration: 800,
+                    once: true,
+                    offset: 100,
+                    disable: 'mobile' // Optional: performance boost on mobile
+                });
+            }
+        }
+        
+        @if(setting('frontend_enable_animations', true))
+            initAOS();
         @endif
 
         // Mini Cart Functions

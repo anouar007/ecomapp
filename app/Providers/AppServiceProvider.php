@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
+use App\Models\Category;
 
 use Illuminate\Pagination\Paginator;
 
@@ -52,5 +54,18 @@ class AppServiceProvider extends ServiceProvider
         } catch (\Exception $e) {
             // Fail silently during early setup/migrations
         }
+
+        // Share categories with the frontend layout
+        View::composer('layouts.frontend', function ($view) {
+            $navbarCategories = Category::whereNull('parent_id')
+                ->where('status', 'active')
+                ->with(['children' => function($q) {
+                    $q->where('status', 'active')->orderBy('sort_order');
+                }])
+                ->orderBy('sort_order')
+                ->get();
+            
+            $view->with('navbarCategories', $navbarCategories);
+        });
     }
 }

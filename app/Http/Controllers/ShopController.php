@@ -36,6 +36,20 @@ class ShopController extends Controller
             $query->where('price', '<=', $request->max_price);
         }
 
+        // Color Filter
+        if ($request->has('colors') && is_array($request->colors)) {
+            $query->whereHas('variants', function ($q) use ($request) {
+                $q->whereIn('color', $request->colors);
+            });
+        }
+
+        // Size Filter
+        if ($request->has('sizes') && is_array($request->sizes)) {
+            $query->whereHas('variants', function ($q) use ($request) {
+                $q->whereIn('size', $request->sizes);
+            });
+        }
+
         // Sort
         switch ($request->get('sort')) {
             case 'price_asc':
@@ -61,9 +75,24 @@ class ShopController extends Controller
             return view('frontend.shop.partials.product-grid', compact('products'))->render();
         }
 
-        $categories = Category::withCount('products')->get();
+        $categories = Category::withCount(['products' => function($q) {
+            $q->where('status', 'active');
+        }])->get();
 
-        return view('frontend.shop.index', compact('products', 'categories'));
+        // Get Available Filter Data
+        $availableColors = \App\Models\ProductVariant::where('status', 'active')
+            ->whereNotNull('color')
+            ->select('color', 'color_code')
+            ->distinct()
+            ->get();
+        
+        $availableSizes = \App\Models\ProductVariant::where('status', 'active')
+            ->whereNotNull('size')
+            ->select('size')
+            ->distinct()
+            ->pluck('size');
+
+        return view('frontend.shop.index', compact('products', 'categories', 'availableColors', 'availableSizes'));
     }
 
     /**
@@ -72,7 +101,7 @@ class ShopController extends Controller
     public function show($id)
     {
         // For now using ID, later can switch to slug if added
-        $product = Product::with(['images', 'productCategory', 'inventoryMovements'])->findOrFail($id);
+        $product = Product::with(['images', 'productCategory', 'inventoryMovements', 'variants'])->findOrFail($id);
         
         // Paginate approved reviews separately - 5 per page
         $reviews = ProductReview::where('product_id', $product->id)

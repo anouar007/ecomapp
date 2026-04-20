@@ -19,7 +19,7 @@ Route::get('/robots.txt', [\App\Http\Controllers\SitemapController::class, 'robo
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/about', [\App\Http\Controllers\HomeController::class, 'about'])->name('about');
 Route::get('/contact', [\App\Http\Controllers\HomeController::class, 'contact'])->name('contact');
-Route::get('/portfolio', [\App\Http\Controllers\HomeController::class, 'portfolio'])->name('portfolio');
+
 Route::post('/newsletter', [\App\Http\Controllers\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 
 // Shop & Products

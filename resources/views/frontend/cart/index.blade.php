@@ -1,11 +1,11 @@
 @extends('layouts.frontend')
 
-@section('meta_title', 'Mon Panier — Moubdi3oun')
+@section('meta_title', __('Cart') . ' — ' . setting('app_name', 'Moubdi3oun'))
 
 @section('content')
 <div class="bg-light section-py min-vh-100">
     <div class="container">
-        <h1 class="fw-black mb-5 h2 border-start-primary ps-3 text-uppercase ls-1">Votre Panier</h1>
+        <h1 class="fw-black mb-5 h2 border-start-primary ps-3 text-uppercase ls-1">{{ __('Cart') }}</h1>
 
         @if(session('cart') && count(session('cart')) > 0)
         <div class="row g-4">
@@ -16,10 +16,10 @@
                             <table class="table table-borderless align-middle mb-0">
                                 <thead class="bg-white border-bottom">
                                     <tr>
-                                        <th scope="col" class="py-3 px-4 text-muted small fw-bold">PRODUIT</th>
-                                        <th scope="col" class="py-3 px-4 text-muted small text-center fw-bold">PRIX</th>
-                                        <th scope="col" class="py-3 px-4 text-muted small text-center fw-bold" style="width: 150px;">QUANTITÉ</th>
-                                        <th scope="col" class="py-3 px-4 text-muted small text-end fw-bold">TOTAL</th>
+                                        <th scope="col" class="py-3 px-4 text-muted small fw-bold">{{ __('PRODUCT') }}</th>
+                                        <th scope="col" class="py-3 px-4 text-muted small text-center fw-bold">{{ __('PRICE') }}</th>
+                                        <th scope="col" class="py-3 px-4 text-muted small text-center fw-bold" style="width: 150px;">{{ __('QUANTITY') }}</th>
+                                        <th scope="col" class="py-3 px-4 text-muted small text-end fw-bold">{{ __('TOTAL') }}</th>
                                         <th scope="col" class="py-3 px-4"></th>
                                     </tr>
                                 </thead>
@@ -44,10 +44,10 @@
                                                     <h6 class="fw-bold mb-1"><a href="{{ route('shop.show', $pId) }}" class="text-decoration-none text-dark">{{ $details['name'] }}</a></h6>
                                                     <div class="d-flex gap-2 mt-2">
                                                         @if(($details['color'] ?? null))
-                                                            <span class="badge bg-light text-dark border fw-normal">Finition: {{ $details['color'] }}</span>
+                                                            <span class="badge bg-light text-dark border fw-normal">{{ __('Finish / Material') }}: {{ $details['color'] }}</span>
                                                         @endif
                                                         @if(($details['size'] ?? null))
-                                                            <span class="badge bg-light text-dark border fw-normal">Dimensions: {{ $details['size'] }}</span>
+                                                            <span class="badge bg-light text-dark border fw-normal">{{ __('Dimensions') }}: {{ $details['size'] }}</span>
                                                         @endif
                                                     </div>
                                                 </div>
@@ -67,7 +67,7 @@
                                         </td>
                                         <td class="text-end py-4 px-4 fw-black h5 mb-0 text-nowrap" style="color: var(--accent);">{{ currency($details['price'] * $details['quantity']) }}</td>
                                         <td class="text-end py-4 px-4">
-                                            <button class="btn btn-link text-danger p-2 opacity-50 rounded-circle" onclick="removeItem('{{ $key }}')" title="Supprimer">
+                                            <button class="btn btn-link text-danger p-2 opacity-50 rounded-circle" onclick="removeItem('{{ $key }}')" title="{{ __('Remove') }}">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </td>
@@ -80,31 +80,31 @@
                 </div>
                 
                 <a href="{{ route('shop.index') }}" class="btn btn-link text-muted text-decoration-none mt-3">
-                    <i class="fas fa-arrow-left me-2"></i> Continuer vos achats
+                    <i class="fas fa-arrow-left me-2"></i> {{ __('Continue Shopping') }}
                 </a>
             </div>
 
             <div class="col-lg-4">
                 <div class="card border-0 shadow-sm rounded-4 sticky-top" style="top: 100px; z-index: 1;">
                     <div class="card-body p-4">
-                        <h5 class="fw-black mb-4 text-uppercase ls-1" style="font-size: 1.1rem;">Résumé de la commande</h5>
+                        <h5 class="fw-black mb-4 text-uppercase ls-1" style="font-size: 1.1rem;">{{ __('Order Summary') }}</h5>
                         <div class="d-flex justify-content-between mb-4">
-                            <span class="text-muted">Sous-total</span>
+                            <span class="text-muted">{{ __('Sub-total') }}</span>
                             <span class="fw-bold h5 mb-0">{{ currency($total) }}</span>
                         </div>
                         <div class="d-flex justify-content-between mb-4">
-                            <span class="text-muted">Livraison</span>
-                            <span class="text-success fw-bold">Gratuite</span>
+                            <span class="text-muted">{{ __('Delivery') }}</span>
+                            <span class="text-success fw-bold">{{ __('Free') }}</span>
                         </div>
                         <hr class="my-4 opacity-10">
                         <div class="d-flex justify-content-between mb-5 align-items-center">
-                            <span class="h4 fw-black mb-0">TOTAL</span>
+                            <span class="h4 fw-black mb-0">{{ __('TOTAL') }}</span>
                             <span class="h3 fw-black mb-0" style="color: var(--accent);">{{ currency($total) }}</span>
                         </div>
                         <button class="btn btn-dark w-100 py-3 rounded-pill fw-black mb-3 shadow text-uppercase ls-1" onclick="location.href='{{ route('checkout.index') }}'">
-                            Passer à la caisse <i class="fas fa-arrow-right ms-2"></i>
+                            {{ __('Proceed to Checkout') }} <i class="fas fa-arrow-right ms-2"></i>
                         </button>
-                        <p class="small text-muted text-center mb-0">Paiement à la livraison disponible partout au Maroc</p>
+                        <p class="small text-muted text-center mb-0">{{ __('COD Note') }}</p>
                     </div>
                 </div>
             </div>
@@ -114,9 +114,9 @@
             <div class="mb-5 bg-white rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 150px; height: 150px;">
                 <i class="fas fa-shopping-bag fa-4x text-muted opacity-25"></i>
             </div>
-            <h3 class="fw-black mb-3 text-uppercase ls-1">Votre panier est vide</h3>
-            <p class="text-muted mb-5">Vous n'avez pas encore ajouté de mobilier à votre sélection.</p>
-            <a href="{{ route('shop.index') }}" class="btn btn-dark rounded-pill px-5 py-3 fw-black shadow text-uppercase ls-1">Découvrir nos collections</a>
+            <h3 class="fw-black mb-3 text-uppercase ls-1">{{ __('Your cart is empty') }}</h3>
+            <p class="text-muted mb-5">{{ __('Empty Cart Message') }}</p>
+            <a href="{{ route('shop.index') }}" class="btn btn-dark rounded-pill px-5 py-3 fw-black shadow text-uppercase ls-1">{{ __('Discover Our Collections') }}</a>
         </div>
         @endif
     </div>
@@ -144,14 +144,14 @@ function updateQty(id, qty) {
 
 function removeItem(id) {
     Swal.fire({
-        title: 'Êtes-vous sûr ?',
-        text: "Cet article sera retiré de votre panier.",
+        title: '{{ __("Are you sure?") }}',
+        text: '{{ __("Remove Item Confirmation") }}',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#1a1a1a',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Oui, supprimer',
-        cancelButtonText: 'Annuler'
+        confirmButtonText: '{{ __("Yes, remove") }}',
+        cancelButtonText: '{{ __("Cancel") }}'
     }).then((result) => {
         if (result.isConfirmed) {
             fetch('{{ route('cart.remove') }}', {

@@ -82,14 +82,5 @@ class HomeController extends Controller
         return view('frontend.contact');
     }
 
-    public function portfolio()
-    {
-        $categories = Category::where('status', 'active')->orderBy('sort_order', 'asc')->get();
-        $products = Product::where('status', 'active')
-            ->with(['productCategory', 'primaryImage'])
-            ->latest()
-            ->get();
-            
-        return view('frontend.portfolio', compact('categories', 'products'));
-    }
+
 }
