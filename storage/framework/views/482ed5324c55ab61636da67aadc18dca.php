@@ -19,7 +19,7 @@
     <!-- Filter Bar -->
     <div class="brand-filter-bar px-3 py-3">
         <form method="GET" action="<?php echo e(route('orders.index')); ?>" class="row g-3 align-items-end">
-            <div class="col-12 col-lg-4">
+            <div class="col-12 col-lg-3">
                 <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;"><?php echo e(__('Search')); ?></label>
                 <div class="brand-search-wrapper w-100">
                     <i class="fas fa-search"></i>
@@ -29,7 +29,7 @@
                 </div>
             </div>
             
-            <div class="col-6 col-lg-3">
+            <div class="col-6 col-lg-2">
                 <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;"><?php echo e(__('Status')); ?></label>
                 <select name="status" class="form-select custom-select-premium">
                     <option value=""><?php echo e(__('All Statuses')); ?></option>
@@ -39,7 +39,7 @@
                 </select>
             </div>
 
-            <div class="col-6 col-lg-3">
+            <div class="col-6 col-lg-2">
                 <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;"><?php echo e(__('Payment')); ?></label>
                 <select name="payment_status" class="form-select custom-select-premium">
                     <option value=""><?php echo e(__('All Statuses')); ?></option>
@@ -49,19 +49,51 @@
                 </select>
             </div>
 
-            <div class="col-12 col-lg-2">
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-brand-primary flex-grow-1">
-                        <i class="fas fa-filter me-2"></i> <?php echo e(__('Filter')); ?>
+            <div class="col-12 col-lg-4">
+                <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;"><?php echo e(__('Date Range')); ?></label>
+                <div class="brand-search-wrapper w-100">
+                    <i class="fas fa-calendar-alt"></i>
+                    <input type="text" name="date_range" id="date_range" class="form-control" 
+                           value="<?php echo e(request('date_range')); ?>" 
+                           placeholder="<?php echo e(__('Select date range...')); ?>">
+                </div>
+            </div>
 
+            <div class="col-12 col-lg-1">
+                <div class="d-flex gap-1">
+                    <button type="submit" class="btn btn-brand-primary flex-grow-1 px-1" title="<?php echo e(__('Filter')); ?>">
+                        <i class="fas fa-filter"></i>
                     </button>
-                    <a href="<?php echo e(route('orders.index')); ?>" class="btn btn-brand-light px-3" title="<?php echo e(__('Reset')); ?>">
+                    <a href="<?php echo e(route('orders.index')); ?>" class="btn btn-brand-light px-2" title="<?php echo e(__('Reset')); ?>">
                         <i class="fas fa-redo"></i>
                     </a>
                 </div>
             </div>
         </form>
     </div>
+
+    <?php $__env->startPush('styles'); ?>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        .brand-search-wrapper .flatpickr-input {
+            padding-inline-start: 40px !important;
+        }
+    </style>
+    <?php $__env->stopPush(); ?>
+
+    <?php $__env->startPush('scripts'); ?>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            flatpickr("#date_range", {
+                mode: "range",
+                dateFormat: "Y-m-d",
+                allowInput: true,
+                locale: "<?php echo e(app()->getLocale() == 'ar' ? 'ar' : 'en'); ?>"
+            });
+        });
+    </script>
+    <?php $__env->stopPush(); ?>
 
     <!-- Mobile Orders List -->
     <div class="d-lg-none mt-3 px-1">
@@ -143,8 +175,8 @@
     </div>
 
     <!-- Orders Table (Desktop) -->
-    <div class="brand-table-card d-none d-lg-block mt-4">
-        <div class="table-responsive">
+    <div class="brand-table-card mt-4">
+        <div class="table-responsive d-none d-lg-block">
             <table class="brand-table">
                 <thead>
                     <tr>

@@ -38,6 +38,17 @@ class OrderController extends Controller
             });
         }
 
+        // Filter by date range
+        if ($request->filled('date_range')) {
+            $dates = explode(' to ', $request->date_range);
+            if (count($dates) === 2) {
+                $query->whereDate('created_at', '>=', $dates[0])
+                      ->whereDate('created_at', '<=', $dates[1]);
+            } else {
+                $query->whereDate('created_at', $dates[0]);
+            }
+        }
+
         $orders = $query->latest()->paginate(15);
 
         return view('orders.index', compact('orders'));
