@@ -129,7 +129,7 @@
 </section>
 
     {{-- BRANDS / MARQUEE STATEMENT --}}
-    <section class="py-4 bg-dark text-white border-top border-bottom border-secondary-subtle">
+    <section class="py-4 bg-dark text-white border-top border-bottom border-secondary-subtle d-none">
         <div class="announcement-bar bg-transparent">
             <div class="promo-marquee">
                 <div class="promo-item fw-black text-uppercase ls-2">{{ __('Art of Living Marquee') }}</div>
@@ -147,16 +147,15 @@
 
 
 
-    {{-- FEATURED CATEGORIES GRID --}}
     <section class="section-py bg-light">
         <div class="container">
             <h2 class="fw-black text-uppercase ls-1 text-center mb-5" data-aos="fade-up">{{ __('Collections Universe') }}</h2>
-            <div class="row g-4">
+            <div class="row g-3 g-lg-4">
                 @foreach($allCategories->take(3) as $cat)
-                <div class="col-lg-4" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
+                <div class="col-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
                     <a href="{{ route('shop.index', ['category' => $cat->slug]) }}" class="text-decoration-none">
                         <div class="category-card shadow-sm rounded-5 overflow-hidden bg-white h-100 border-0 transition-all hover-translate-y">
-                            <div class="aspect-ratio-4-5 overflow-hidden">
+                            <div class="aspect-9-10 overflow-hidden">
                                 <img src="{{ $cat->image ? Storage::url($cat->image) : 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80' }}" alt="{{ $cat->name }}" class="w-100 h-100 object-fit-cover transition-all hover-scale-110">
                             </div>
                             <div class="p-4 text-center">

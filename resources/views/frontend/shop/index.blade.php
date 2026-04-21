@@ -21,10 +21,19 @@
      ============================================= --}}
 <section class="shop-body bg-light section-py">
     <div class="container">
+        
+        {{-- Mobile Filter Trigger --}}
+        <div class="d-lg-none mb-4">
+            <button class="btn btn-dark w-100 rounded-pill py-3 fw-black text-uppercase ls-1 d-flex align-items-center justify-content-center gap-2" 
+                    type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileFilters">
+                <i class="fas fa-filter"></i> {{ __('Filter') }}
+            </button>
+        </div>
+
         <div class="row g-4">
 
             {{-- ── SIDEBAR (Compact & Sticky) ── --}}
-            <div class="col-lg-3">
+            <div class="col-lg-3 d-none d-lg-block">
                 <div class="shop-sidebar">
                     
                     {{-- Price Filter (Pinned at top of sidebar) --}}
@@ -143,6 +152,64 @@
         </div>
     </div>
 </section>
+
+{{-- Mobile Filter Offcanvas --}}
+<div class="offcanvas offcanvas-start border-0" tabindex="-1" id="mobileFilters">
+    <div class="offcanvas-header bg-dark text-white py-4">
+        <h5 class="offcanvas-title fw-black text-uppercase ls-1">{{ __('Filter') }}</h5>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body p-4">
+        <div class="shop-sidebar">
+             {{-- Price Filter --}}
+             <div class="shop-filter-group mb-5">
+                <h6 class="filter-title">{{ __('Price Range') }}</h6>
+                <div class="d-flex gap-2 align-items-center">
+                    <input type="number" id="minPriceInputMobile" class="form-control border-0 bg-light rounded-pill px-3 py-2 text-center"
+                           placeholder="Min" value="{{ request('min_price') }}">
+                    <input type="number" id="maxPriceInputMobile" class="form-control border-0 bg-light rounded-pill px-3 py-2 text-center"
+                           placeholder="Max" value="{{ request('max_price') }}">
+                </div>
+                <button class="btn btn-dark w-100 mt-3 rounded-pill py-3 fw-black text-uppercase ls-1" id="applyPriceFilterMobile">
+                    {{ __('Apply Filter') }}
+                </button>
+            </div>
+
+            {{-- Color Filter --}}
+            @if($availableColors->count() > 0)
+            <div class="shop-filter-group mb-5">
+                <h6 class="filter-title">{{ __('Colors') }}</h6>
+                <div class="color-filter-grid">
+                    @foreach($availableColors as $color)
+                        <div class="color-swatch filter-checkbox color-filter-item" 
+                             data-type="colors"
+                             data-value="{{ $color->color }}"
+                             style="background: {{ $color->color_code ?: '#eee' }}">
+                            <i class="fas fa-check color-swatch-check"></i>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
+            {{-- Size Filter --}}
+            @if($availableSizes->count() > 0)
+            <div class="shop-filter-group mb-5">
+                <h6 class="filter-title">{{ __('Dimensions') }}</h6>
+                <div class="size-filter-grid">
+                    @foreach($availableSizes as $size)
+                        <div class="size-pill filter-checkbox size-filter-item"
+                             data-type="sizes"
+                             data-value="{{ $size }}">
+                            {{ $size }}
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+        </div>
+    </div>
+</div>
 
 @endsection
 
@@ -353,6 +420,14 @@
             filters.min_price = document.getElementById('minPriceInput').value;
             filters.max_price = document.getElementById('maxPriceInput').value;
             fetchProducts();
+        });
+
+        const priceBtnMobile = document.getElementById('applyPriceFilterMobile');
+        if (priceBtnMobile) priceBtnMobile.addEventListener('click', () => {
+            filters.min_price = document.getElementById('minPriceInputMobile').value;
+            filters.max_price = document.getElementById('maxPriceInputMobile').value;
+            fetchProducts();
+            bootstrap.Offcanvas.getInstance(document.getElementById('mobileFilters')).hide();
         });
 
         document.querySelectorAll('.toggle-btn').forEach(btn => {

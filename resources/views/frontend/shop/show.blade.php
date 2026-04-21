@@ -22,13 +22,13 @@
     <div class="container text-center">
         <nav class="shop-breadcrumb mb-0" aria-label="breadcrumb">
             <a href="{{ url('/') }}">{{ __('Home') }}</a>
-            <span class="mx-3 opacity-25">/</span>
+            <span class="mx-3">/</span>
             <a href="{{ route('shop.index') }}">{{ __('Shop') }}</a>
             @if($product->productCategory)
-                <span class="mx-3 opacity-25">/</span>
+                <span class="mx-3">/</span>
                 <a href="{{ route('shop.index', ['category' => $product->productCategory->slug]) }}">{{ $product->productCategory->translated_name }}</a>
             @endif
-            <span class="mx-3 opacity-25">/</span>
+            <span class="mx-3">/</span>
             <span class="fw-bold">{{ Str::limit($product->translated_name, 25) }}</span>
         </nav>
     </div>
@@ -44,9 +44,9 @@
                     @if($product->main_image)
                         <img id="mainImage" src="{{ Storage::url($product->main_image) }}"
                              alt="{{ $product->translated_name }}" 
-                             class="w-100" style="aspect-ratio: 1/1.2; object-fit: cover; transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);">
+                             class="w-100 shadow-sm aspect-9-10" style="transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);">
                     @else
-                        <div class="d-flex align-items-center justify-content-center bg-white" style="aspect-ratio: 1/1.2;">
+                        <div class="d-flex align-items-center justify-content-center bg-white aspect-9-10">
                             <i class="fas fa-image fa-4x text-muted opacity-25"></i>
                         </div>
                     @endif
@@ -121,7 +121,10 @@
                                 <label class="pdp-variant-label">{{ __('Finish / Material') }}</label>
                                 <div class="pdp-variant-options" id="colorOptions">
                                     @foreach($colors as $color)
-                                        <div class="variant-pill" 
+                                        @php
+                                            $isGloballyOOS = $product->variants->where('color', $color->color)->where('status', 'active')->sum('stock') <= 0;
+                                        @endphp
+                                        <div class="variant-pill {{ $isGloballyOOS ? 'disabled-option' : '' }}" 
                                              data-color="{{ $color->color }}" onclick="selectColor(this)">
                                             @if($color->color_code)
                                                 <span class="rounded-circle border" style="width: 14px; height: 14px; background: {{ $color->color_code }}"></span>
@@ -138,7 +141,11 @@
                                 <label class="pdp-variant-label">{{ __('Dimensions') }}</label>
                                 <div class="pdp-variant-options" id="sizeOptions">
                                     @foreach($sizes as $size)
-                                        <div class="variant-pill" data-size="{{ $size }}" onclick="selectSize(this)">
+                                        @php
+                                            $isGloballyOOS = $product->variants->where('size', $size)->where('status', 'active')->sum('stock') <= 0;
+                                        @endphp
+                                        <div class="variant-pill {{ $isGloballyOOS ? 'disabled-option' : '' }}" 
+                                             data-size="{{ $size }}" onclick="selectSize(this)">
                                             {{ $size }}
                                         </div>
                                     @endforeach
@@ -193,28 +200,28 @@
         <div class="mt-5 pt-5 border-top">
             <h2 class="related-header" data-aos="fade-right">{{ __('Related Masterpieces') }}</h2>
             <div class="row g-4">
-                @foreach($relatedProducts as $product)
+                @foreach($relatedProducts as $related)
                 <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
                     <div class="pcard-v2">
                         <div class="pcard-media">
-                            <a href="{{ route('shop.show', $product->id) }}">
+                            <a href="{{ route('shop.show', $related->id) }}">
                                 @php
-                                    $mainThumb = $product->main_image ? Storage::url($product->main_image) : asset('images/placeholder-product.jpg');
-                                    $hoverImage = $product->images->count() > 1 ? Storage::url($product->images[1]->image_path) : $mainThumb;
+                                    $mainThumb = $related->main_image ? Storage::url($related->main_image) : asset('images/placeholder-product.jpg');
+                                    $hoverImage = $related->images->count() > 1 ? Storage::url($related->images[1]->image_path) : $mainThumb;
                                 @endphp
-                                <img src="{{ $mainThumb }}" alt="{{ $product->translated_name }}" class="pcard-img-main">
-                                <img src="{{ $hoverImage }}" alt="{{ $product->translated_name }} Hover" class="pcard-img-hover">
+                                <img src="{{ $mainThumb }}" alt="{{ $related->translated_name }}" class="pcard-img-main">
+                                <img src="{{ $hoverImage }}" alt="{{ $related->translated_name }} Hover" class="pcard-img-hover">
                             </a>
                         </div>
                         <div class="pcard-info">
-                            @if($product->productCategory)
-                                <div class="pcard-tag">{{ $product->productCategory->translated_name }}</div>
+                            @if($related->productCategory)
+                                <div class="pcard-tag">{{ $related->productCategory->translated_name }}</div>
                             @endif
                             <h4 class="pcard-name-creative">
-                                <a href="{{ route('shop.show', $product->id) }}">{{ $product->translated_name }}</a>
+                                <a href="{{ route('shop.show', $related->id) }}">{{ $related->translated_name }}</a>
                             </h4>
                             <div class="pcard-meta-row">
-                                <span class="price-val">{{ $product->formatted_price }}</span>
+                                <span class="price-val">{{ $related->formatted_price }}</span>
                             </div>
                         </div>
                     </div>
@@ -244,7 +251,7 @@
 
 @push('scripts')
 <script>
-const variants = @json($product->variants);
+const variants = {!! $product->variants->where('status', 'active')->values()->toJson() !!};
 let selectedColor = null;
 let selectedSize = null;
 const basePrice = "{{ $product->isOnSale() ? $product->formatted_sale_price : $product->formatted_price }}";
@@ -481,9 +488,9 @@ function pdpAddToCart(event) {
             showConfirmButton: false, 
             timer: 4000,
             timerProgressBar: true,
-            background: '#fff',
-            color: '#000',
-            iconColor: '#000'
+            background: '#1a1a1a',
+            color: '#fff',
+            iconColor: '#f59e0b'
         });
         return;
     }
@@ -523,10 +530,17 @@ function pdpAddToCart(event) {
         } else {
             // Display backend validation error (e.g., maximum stock reached)
             Swal.fire({ 
-                icon: 'error', 
-                title: '{{ __("Notice") }}',
-                text: data.message || '{{ __("Unable to add item to bag.") }}',
-                confirmButtonColor: '#000'
+                toast: true,
+                position: 'top-end',
+                icon: 'warning', 
+                title: '{{ __("Stock Limit") }}',
+                text: data.message || '{{ __("Unable to add item.") }}',
+                showConfirmButton: false, 
+                timer: 4000,
+                timerProgressBar: true,
+                background: '#1a1a1a',
+                color: '#fff',
+                iconColor: '#f59e0b'
             });
         }
     })

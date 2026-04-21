@@ -229,7 +229,7 @@
 
 .pcard-media {
     position: relative;
-    height: 420px; /* Taller editorial aspect ratio */
+    aspect-ratio: 9/10;
     overflow: hidden;
     background: #f8f8f8;
 }
@@ -577,11 +577,6 @@
     transform: translateY(-2px);
 }
 
-.variant-pill.disabled-option {
-    opacity: 0.25;
-    pointer-events: none;
-    text-decoration: line-through;
-}
 
 .pdp-cta-group {
     display: grid;

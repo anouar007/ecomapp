@@ -130,7 +130,7 @@
     @endforeach
 
     <!-- 1. ANNOUNCEMENT BAR (MARQUEE) -->
-    <div class="announcement-bar">
+    <div class="announcement-bar d-none">
         <div class="promo-marquee">
             <div class="promo-item">{{ __('Promo 1') }}</div>
             <div class="promo-item">{{ __('Promo 2') }}</div>
@@ -295,155 +295,120 @@
             <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body p-0 d-flex flex-column h-100">
+            @php 
+                $total = array_reduce(session('cart', []), function($carry, $item) { 
+                    return $carry + ($item['price'] * $item['quantity']); 
+                }, 0); 
+            @endphp
             <div class="flex-grow-1 overflow-auto p-4" id="mini-cart-items">
-                @php $total = 0; @endphp
-                @forelse(session('cart', []) as $id => $details)
-                    @php $total += $details['price'] * $details['quantity']; @endphp
-                    <div class="cart-item bg-white p-3 rounded-4 shadow-sm mb-3 position-relative border border-light" id="cart-item-{{ $id }}">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-shrink-0 me-3 position-relative">
-                                <img src="{{ Storage::url($details['image']) }}" alt="{{ $details['name'] }}" class="rounded-3 object-fit-cover" style="width: 80px; height: 80px;">
-                                <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-light text-dark border shadow-sm" style="font-size: 0.7rem;">x{{ $details['quantity'] }}</span>
-                            </div>
-                            <div class="flex-grow-1 min-w-0">
-                                <h6 class="fw-bold mb-1 text-truncate pe-4" title="{{ $details['name'] }}">{{ $details['name'] }}</h6>
-                                <p class="mb-2 text-muted small">{{ $details['category_name'] ?? 'Produit' }}</p>
-                                
-                                <div class="d-flex align-items-center justify-content-between mt-2">
-                                    <span class="fw-black" style="font-size: 1.1rem; color: var(--accent);">{{ currency($details['price']) }}</span>
-                                    
-                                    <div class="qty-selector p-1" style="transform: scale(0.85); transform-origin: right;">
-                                        <button class="btn btn-link link-dark p-1 text-decoration-none border-0" onclick="updateQty({{ $id }}, {{ $details['quantity'] - 1 }})">
-                                            <i class="fas fa-minus" style="font-size: 0.7rem;"></i>
-                                        </button>
-                                        <input type="text" class="form-control form-control-sm border-0 bg-transparent text-center fw-bold p-0" value="{{ $details['quantity'] }}" readonly style="width: 25px;">
-                                        <button class="btn btn-link link-dark p-1 text-decoration-none border-0" onclick="updateQty({{ $id }}, {{ $details['quantity'] + 1 }})">
-                                            <i class="fas fa-plus" style="font-size: 0.7rem;"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="btn btn-sm text-danger position-absolute top-0 end-0 mt-2 me-2 opacity-50 hover-opacity-100 transition-all" onclick="removeItem({{ $id }})" title="Remove">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                @empty
-                    <div class="text-center py-5 mt-5">
-                        <div class="mb-4 bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
-                            <i class="fas fa-shopping-bag fa-3x text-muted opacity-25"></i>
-                        </div>
-                        <h5 class="fw-black text-uppercase ls-1">Panier vide</h5>
-                        <p class="text-muted small mb-4">Votre sélection est actuellement vide.</p>
-                        <a href="{{ route('shop.index') }}" class="btn btn-dark rounded-pill px-4 btn-sm text-uppercase fw-bold">Découvrir</a>
-                    </div>
-                @endforelse
+                @include('frontend.cart.partials.mini-cart-items')
             </div>
             
-            @if(count(session('cart', [])) > 0)
-            <div class="border-top p-4 bg-white mt-auto shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <span class="text-muted small text-uppercase fw-black ls-1">TOTAL</span>
-                    <span class="h4 fw-black text-dark mb-0" style="color: var(--accent) !important;">{{ currency($total) }}</span>
-                </div>
-                <div class="d-grid gap-2">
-                    <a href="{{ route('checkout.index') }}" class="btn btn-dark py-3 rounded-pill fw-black shadow-sm d-flex justify-content-between align-items-center px-4 text-uppercase ls-1">
-                                <span>{{ __('Check Out') }}</span>
-                                <i class="fas fa-arrow-right"></i>
-                            </a>
-                            <a href="{{ route('cart.index') }}" class="btn btn-link py-2 fw-bold text-muted small text-decoration-none">
-                                {{ __('Cart') }}
-                            </a>
-                </div>
+            <div id="mini-cart-footer-container">
+                @include('frontend.cart.partials.mini-cart-footer')
             </div>
-            @endif
         </div>
     </div>
 
     <footer class="footer-modern">
         <div class="container">
-            <div class="row g-5">
-                <!-- Brand & Social -->
-                <div class="col-lg-4">
-                    <img src="{{ setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/logo.png') }}" alt="{{ setting('app_name') }}" class="footer-logo">
-                    <p class="small lh-lg mb-4 opacity-75">
-                        Moubdi3oun incarne l'excellence de l'artisanat marocain. Nous transformons les matériaux les plus nobles en pièces uniques pour sublimer votre intérieur. Un héritage de passion et de précision.
-                    </p>
-                    @php
-                        $sfb  = setting('social_facebook',  '');
-                        $stw  = setting('social_twitter',   '');
-                        $sig  = setting('social_instagram', '');
-                        $sli  = setting('social_linkedin',  '');
-                        $swa  = setting('social_whatsapp',  '');
-                        $validUrl = fn($v) => $v && $v !== '#' && $v !== '/#';
-                    @endphp
-                    <div class="d-flex gap-2">
-                        @if($validUrl($sfb)) <a href="{{ $sfb }}" target="_blank" class="footer-social-btn"><i class="fab fa-facebook-f"></i></a> @endif
-                        @if($validUrl($sig)) <a href="{{ $sig }}" target="_blank" class="footer-social-btn"><i class="fab fa-instagram"></i></a> @endif
-                        @if($validUrl($stw)) <a href="{{ $stw }}" target="_blank" class="footer-social-btn"><i class="fab fa-twitter"></i></a> @endif
-                        @if($validUrl($swa)) <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $swa) }}" target="_blank" class="footer-social-btn"><i class="fab fa-whatsapp"></i></a> @endif
+            <div class="row g-4 g-lg-5">
+                <!-- Column 1: Heritage & Brand -->
+                <div class="col-lg-5 mb-5 mb-lg-0">
+                    <div class="footer-brand-section">
+                        @if(setting('app_logo'))
+                            <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="{{ setting('app_name') }}" class="footer-logo">
+                        @else
+                            <h3 class="m-0 fw-black text-uppercase mb-4" style="font-family: 'Inter', sans-serif; letter-spacing: -1.5px; color: #fff;">
+                                Moubdi3<span style="color: var(--accent);">{{ app()->getLocale() == 'ar' ? 'ون' : 'oun' }}</span>
+                            </h3>
+                        @endif
+                        
+                        <p class="footer-description pe-lg-5">
+                            {{ __('Maison Moubdi3oun embodies the excellence of Moroccan craftsmanship. We transform noble materials into unique masterpieces to sublimate your interior. A heritage of passion and artisanal precision.') }}
+                        </p>
+                        
+                        @php
+                            $sfb  = setting('social_facebook',  'https://facebook.com');
+                            $sig  = setting('social_instagram', 'https://instagram.com');
+                            $swa  = setting('social_whatsapp',  '');
+                            $validUrl = fn($v) => $v && $v !== '#' && $v !== '/#';
+                        @endphp
+                        
+                        <div class="d-flex gap-3 mt-4 mt-lg-5">
+                             <a href="{{ $validUrl($sfb) ? $sfb : '#' }}" target="_blank" class="footer-social-btn" title="Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </a> 
+                             <a href="{{ $validUrl($sig) ? $sig : '#' }}" target="_blank" class="footer-social-btn" title="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a> 
+                            @if($validUrl($swa)) 
+                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $swa) }}" target="_blank" class="footer-social-btn" title="WhatsApp">
+                                    <i class="fab fa-whatsapp"></i>
+                                </a> 
+                            @endif
+                        </div>
                     </div>
                 </div>
 
-                <!-- Maison & Ateliers -->
-                                <h6 class="footer-column-title">{{ __('Maison Label') }}</h6>
-                                <ul class="list-unstyled">
-                                    <li><a href="{{ url('/about') }}" class="footer-link">{{ __('The Spirit') }}</a></li>
-            
-                                    <li><a href="{{ url('/contact') }}" class="footer-link">{{ __('The Atelier') }}</a></li>
-                                    <li><a href="{{ route('shop.index') }}" class="footer-link">{{ __('Collections') }}</a></li>
-                                </ul>
-                            </div>
-            
-                            <!-- Services -->
-                            <div class="col-lg-2 col-6">
-                                <h6 class="footer-column-title">{{ __('Assistance') }}</h6>
-                                <ul class="list-unstyled">
-                                    <li><a href="#" class="footer-link">{{ __('Track Order') }}</a></li>
-                                    <li><a href="#" class="footer-link">{{ __('FAQs') }}</a></li>
-                                    <li><a href="#" class="footer-link">{{ __('Delivery & Installation') }}</a></li>
-                                    <li><a href="#" class="footer-link">{{ __('Warranty') }}</a></li>
-                                </ul>
+                <!-- Column 2: Artisanat (Collections) -->
+                <div class="col-6 col-lg-2 mb-4 mb-lg-0">
+                    <h6 class="footer-column-title">{{ __('Collections') }}</h6>
+                    <ul class="footer-links-list">
+                        @foreach($navbarCategories->take(5) as $category)
+                            <li><a href="{{ route('shop.index', ['category' => $category->slug]) }}">{{ $category->translated_name }}</a></li>
+                        @endforeach
+                        <li><a href="{{ route('shop.index') }}" class="fw-bold text-white small opacity-75 mt-2 d-inline-block">{{ __('View All') }}</a></li>
+                    </ul>
                 </div>
 
-                <!-- Contact -->
-                                <h6 class="footer-column-title">{{ __('Contact') }}</h6>
-                                <div class="footer-contact-item">
-                                    <div class="footer-contact-icon"><i class="fas fa-map-marker-alt"></i></div>
-                                    <div class="small">
-                                        {{ setting('company_address', 'Casablanca, Maroc') }}<br>
-                                        <span class="opacity-50">{{ __('Headquarters') }}</span>
-                                    </div>
-                                </div>
-                                <div class="footer-contact-item">
-                                    <div class="footer-contact-icon"><i class="fas fa-phone-alt"></i></div>
-                                    <div class="small">
-                                        {{ setting('company_phone', '+212 6XX XX XX XX') }}<br>
-                                        <span class="opacity-50">{{ __('Working Hours') }}</span>
-                                    </div>
-                                </div>
-                                <div class="footer-contact-item">
-                                    <div class="footer-contact-icon"><i class="fas fa-envelope"></i></div>
-                                    <div class="small">
-                                        {{ setting('company_email', 'contact@moubdi3oun.com') }}<br>
-                                        <span class="opacity-50">{{ __('Customer Support') }}</span>
-                                    </div>
-                                </div>
+                <!-- Column 3: La Maison -->
+                <div class="col-6 col-lg-2 mb-4 mb-lg-0">
+                    <h6 class="footer-column-title">{{ __('The Maison') }}</h6>
+                    <ul class="footer-links-list">
+                        <li><a href="{{ url('/about') }}">{{ __('Heritage') }}</a></li>
+                        <li><a href="{{ url('/about') }}">{{ __('Craftsmanship') }}</a></li>
+                        <li><a href="{{ url('/contact') }}">{{ __('Our Atelier') }}</a></li>
+                        <li><a href="{{ url('/contact') }}">{{ __('Contact Us') }}</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 4: Contact Core -->
+                <div class="col-lg-3">
+                    <h6 class="footer-column-title">{{ __('Contact') }}</h6>
+                    <ul class="footer-contact-list">
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>{{ setting('company_address', 'Casablanca, Morocco') }}</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone-alt"></i>
+                            <span>{{ setting('company_phone', '+212 6XX XX XX XX') }}</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <span>{{ setting('company_email', 'contact@moubdi3oun.com') }}</span>
+                        </li>
+                    </ul>
+                    
+                    <div class="mt-4 pt-2">
+                        <span class="small text-uppercase ls-2 opacity-50 fw-bold">{{ __('Handcrafted in Morocco') }}</span>
+                    </div>
                 </div>
             </div>
 
             <!-- Footer Bottom -->
             <div class="footer-bottom">
                 <div class="row align-items-center">
-                    <div class="col-md-6 mb-3 mb-md-0">
-                        <p class="small mb-0 opacity-50">&copy; {{ date('Y') }} {{ setting('app_name', 'Moubdi3oun') }}. Tous droits réservés.</p>
+                    <div class="col-md-6 mb-4 mb-md-0">
+                        <p class="small mb-0 opacity-40">
+                            &copy; {{ date('Y') }} {{ setting('app_name', 'Moubdi3oun') }}. {{ __('All Rights Reserved.') }}
+                        </p>
                     </div>
                     <div class="col-md-6 text-md-end">
-                        <div class="d-flex align-items-center justify-content-md-end gap-3 opacity-50">
-                            <i class="fab fa-cc-visa fs-4"></i>
-                            <i class="fab fa-cc-mastercard fs-4"></i>
-                            <i class="fab fa-cc-apple-pay fs-4"></i>
-                            <span class="small fw-bold border-start ps-3 border-secondary">{{ __('SECURE PAYMENT') }}</span>
+                        <div class="d-flex align-items-center justify-content-md-end gap-3 opacity-30 footer-payments">
+                            Cash on Delivery
+                            <span class="small fw-bold text-uppercase ls-1 ps-3 border-start border-secondary" style="font-size: 0.65rem;">{{ __('Secure Checkout') }}</span>
                         </div>
                     </div>
                 </div>
@@ -510,7 +475,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            fetch('{{ route('cart.update') }}', {
+            fetch('/cart/update', {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -519,44 +484,60 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify({ id, quantity: qty })
             })
-            .then(response => response.json())
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || 'RefreshRequired');
+                }
+                return data;
+            })
             .then(data => {
-                // Update both desktop and mobile cart count badges
-                const updateCartBadges = (count) => {
-                    ['header-cart-count', 'header-cart-count-mobile'].forEach(id => {
-                        const el = document.getElementById(id);
-                        if (el && count !== undefined) el.textContent = count;
-                    });
-                };
-                updateCartBadges(data.cartCount);
-                // Refresh mini-cart content
+                ['header-cart-count', 'header-cart-count-mobile'].forEach(cid => {
+                    const el = document.getElementById(cid);
+                    if (el && data.cartCount !== undefined) el.textContent = data.cartCount;
+                });
                 refreshMiniCart();
             })
             .catch(error => {
                 console.error('Error:', error);
+                
+                // If the error message is specifically "RefreshRequired", only then reload
+                if (error.message === 'RefreshRequired') {
+                    window.location.reload();
+                    return;
+                }
+
                 Swal.fire({
                     toast: true,
                     position: 'top-end',
-                    icon: 'error',
-                    title: 'Erreur lors de la mise à jour du panier',
+                    icon: 'warning',
+                    title: '{{ __("Stock Limit") }}',
+                    text: error.message,
                     showConfirmButton: false,
-                    timer: 2500
+                    timer: 3500,
+                    background: '#1a1a1a',
+                    color: '#fff',
+                    iconColor: '#f59e0b'
                 });
             });
         }
 
         function removeItem(id) {
             Swal.fire({
-                title: 'Retirer du panier ?',
-                text: "Voulez-vous supprimer cet article ?",
+                title: '{{ __("Remove Item?") }}',
+                text: '{{ __("Are you sure you want to remove this masterpiece?") }}',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#6b7280',
-                confirmButtonText: 'Oui, supprimer !'
+                confirmButtonColor: '#000',
+                cancelButtonColor: '#9ca3af',
+                confirmButtonText: '{{ __("Yes, remove") }}',
+                cancelButtonText: '{{ __("Cancel") }}',
+                background: '#fff',
+                color: '#000',
+                iconColor: '#000'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    fetch('{{ route('cart.remove') }}', {
+                    fetch('/cart/remove', {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
@@ -567,73 +548,49 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                     .then(response => response.json())
                     .then(data => {
-                        // Update both desktop and mobile cart count badges
-                        ['header-cart-count', 'header-cart-count-mobile'].forEach(id => {
-                            const el = document.getElementById(id);
+                        ['header-cart-count', 'header-cart-count-mobile'].forEach(cid => {
+                            const el = document.getElementById(cid);
                             if (el && data.cartCount !== undefined) el.textContent = data.cartCount;
                         });
-                        // Refresh mini-cart content
                         refreshMiniCart();
                         
                         Swal.fire({
                             toast: true,
                             position: 'top-end',
                             icon: 'success',
-                            title: 'Article supprimé !',
+                            title: '{{ __("Removed") }}',
                             showConfirmButton: false,
                             timer: 2000,
-                            background: '#1a1a2e',
-                            color: '#fff'
+                            background: '#1a1a1a',
+                            color: '#fff',
+                            iconColor: '#fff'
                         });
                     })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            icon: 'error',
-                            title: 'Erreur lors de la suppression',
-                            showConfirmButton: false,
-                            timer: 2500
-                        });
-                    });
+                    .catch(console.error);
                 }
             });
         }
 
         // Refresh mini-cart content dynamically
         function refreshMiniCart() {
-            fetch('{{ route('cart.mini') }}', {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
+            fetch('/cart/mini', {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
             .then(response => response.text())
             .then(html => {
-                const miniCartContainer = document.getElementById('mini-cart-items');
-                if(miniCartContainer) {
-                    miniCartContainer.innerHTML = html;
-                }
-                // Also update the footer section if cart has items
-                const cartOffcanvas = document.getElementById('miniCart');
-                if(cartOffcanvas) {
-                    const footerSection = cartOffcanvas.querySelector('.border-top.p-4');
-                    // Fetch full mini-cart to get updated footer
-                    fetch('{{ route('cart.miniFooter') }}', {
-                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                    })
-                    .then(r => r.text())
-                    .then(footerHtml => {
-                        const existingFooter = cartOffcanvas.querySelector('.border-top.p-4.bg-white');
-                        if(existingFooter && footerHtml.trim()) {
-                            existingFooter.outerHTML = footerHtml;
-                        } else if(!existingFooter && footerHtml.trim()) {
-                            // Append footer if it didn't exist before
-                            cartOffcanvas.querySelector('.offcanvas-body').insertAdjacentHTML('beforeend', footerHtml);
-                        }
-                    })
-                    .catch(console.error);
-                }
+                const miniCartItems = document.getElementById('mini-cart-items');
+                if(miniCartItems) miniCartItems.innerHTML = html;
+                
+                // Update Footer
+                fetch('/cart/mini-footer', {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(r => r.text())
+                .then(footerHtml => {
+                    const footerContainer = document.getElementById('mini-cart-footer-container');
+                    if(footerContainer) footerContainer.innerHTML = footerHtml;
+                })
+                .catch(console.error);
             })
             .catch(console.error);
         }
