@@ -1861,9 +1861,7 @@ a { text-decoration: none; }
 
 .footer-logo {
     height: 55px;
-    filter: brightness(0) invert(1);
     margin-bottom: 2.5rem;
-    opacity: 0.95;
 }
 
 .footer-description {
