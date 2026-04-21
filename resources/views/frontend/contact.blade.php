@@ -98,12 +98,7 @@
         </div>
 
         <!-- Map Section -->
-        <div class="mt-5 pt-5" data-aos="fade-up">
-            <div class="rounded-5 overflow-hidden shadow-lg" style="height: 450px;">
-                <!-- Placeholder for Google Map Embed -->
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d106399.76451634676!2d-7.666196232386229!3d33.55353594056262!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xda7cc6518134707%3A0xc3f1737e8c33979!2sSidi%20Ma%C3%A2rouf%2C%20Casablanca!5e0!3m2!1sfr!2sma!4v1711124567890!5m2!1sfr!2sma" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-            </div>
-        </div>
+        
     </div>
 </section>
 
