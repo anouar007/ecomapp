@@ -101,9 +101,70 @@
     color: #94a3b8;
     font-size: 12px;
 }
-.form-control-color {
-    padding: 0.2rem;
-    height: 31px;
+.variation-input {
+    height: 42px !important;
+    border-radius: 8px !important;
+    border: 1px solid #e2e8f0 !important;
+    font-size: 0.9rem !important;
+    background-color: #fff !important;
+    padding: 0.5rem 0.75rem !important;
+}
+.variant-img-upload {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 8px !important;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+.input-group {
+    height: 42px !important;
+}
+.input-group-text {
+    height: 42px !important;
+    background-color: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-right: none !important;
+    border-radius: 8px 0 0 8px !important;
+    padding: 0 12px !important;
+    color: #64748b !important;
+    display: flex !important;
+    align-items: center !important;
+}
+.input-group .variation-input {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+
+/* ── Mobile Variation Cards ── */
+@media (max-width: 576px) {
+    .variant-img-upload {
+        width: 56px !important;
+        height: 56px !important;
+        border-radius: 12px !important;
+        flex-shrink: 0 !important;
+    }
+    .no-img-placeholder {
+        font-size: 18px !important;
+    }
+    .variation-input {
+        height: 42px !important;
+        font-size: 14px !important;
+        border-radius: 10px !important;
+    }
+    .input-group {
+        height: auto !important;
+    }
+    .input-group-text {
+        height: 42px !important;
+        border-radius: 10px 0 0 10px !important;
+    }
 }
 </style>
 @endpush
@@ -163,7 +224,7 @@
                        multiple
                        style="display: none;" 
                        onchange="handleNewImages(event)">
-                <small class="form-help">Upload new images or remove existing ones. First image is the primary image.</small>
+                <small class="form-help">Upload new images or remove existing ones. First image is the primary image. Max 4MB each.</small>
             </div>
 
             <div class="form-row">
@@ -186,19 +247,7 @@
             <div class="form-row">
                 <input type="hidden" name="name" id="name" value="{{ old('name', $product->name) }}">
                 
-                <div class="form-group">
-                    <label for="sku" class="form-label">
-                        SKU <span class="required">*</span>
-                    </label>
-                    <input type="text" 
-                           id="sku" 
-                           name="sku" 
-                           class="form-control" 
-                           value="{{ old('sku', $product->sku) }}" 
-                           placeholder="e.g., PROD-001" 
-                           required>
-                    <small class="form-help">Unique product identifier</small>
-                </div>
+            <input type="hidden" name="sku" id="sku" value="{{ old('sku', $product->sku) }}">
             </div>
 
             <div class="form-group mt-3">
@@ -326,12 +375,10 @@
                             <thead class="bg-light">
                                 <tr>
                                     <th style="width: 80px; padding-left: 1.5rem;">Image</th>
-                                    <th>Color</th>
-                                    <th style="width: 100px;">Hex</th>
-                                    <th style="width: 120px;">Size</th>
-                                    <th>SKU</th>
-                                    <th style="width: 140px;">Price (Override)</th>
-                                    <th style="width: 100px;">Stock</th>
+                                    <th style="width: 25%;">Color / Material</th>
+                                    <th style="width: 25%;">Size</th>
+                                    <th style="width: 25%;">Price (Override)</th>
+                                    <th style="width: 25%;">Stock</th>
                                     <th style="width: 50px;"></th>
                                 </tr>
                             </thead>
@@ -340,35 +387,29 @@
                                 <tr data-index="{{ $index }}">
                                     <td style="padding-left: 1.5rem;">
                                         <input type="hidden" name="variants[{{ $index }}][id]" value="{{ $variant->id }}">
-                                        <div class="variant-img-upload" onclick="this.querySelector('input').click()">
+                                        <label class="variant-img-upload mb-0">
                                             @if($variant->color_image)
                                                 <img src="{{ asset('storage/' . $variant->color_image) }}" id="variant_img_preview_{{ $index }}">
                                             @else
                                                 <div class="no-img-placeholder"><i class="fas fa-camera"></i></div>
                                             @endif
                                             <input type="file" name="variants[{{ $index }}][color_image]" class="d-none" accept="image/*" onchange="previewVariantImage(this, {{ $index }})">
-                                        </div>
+                                        </label>
                                     </td>
                                     <td>
-                                        <input type="text" name="variants[{{ $index }}][color]" class="form-control form-control-sm" value="{{ $variant->color }}" placeholder="e.g. Red">
+                                        <input type="text" name="variants[{{ $index }}][color]" class="form-control variation-input" value="{{ $variant->color }}" placeholder="e.g. Red or #FF0000">
                                     </td>
                                     <td>
-                                        <input type="color" name="variants[{{ $index }}][color_code]" class="form-control form-control-color form-control-sm w-100" value="{{ $variant->color_code ?: '#000000' }}" title="Choose color">
+                                        <input type="text" name="variants[{{ $index }}][size]" class="form-control variation-input" value="{{ $variant->size }}" placeholder="e.g. XL">
                                     </td>
                                     <td>
-                                        <input type="text" name="variants[{{ $index }}][size]" class="form-control form-control-sm" value="{{ $variant->size }}" placeholder="e.g. XL">
-                                    </td>
-                                    <td>
-                                        <input type="text" name="variants[{{ $index }}][sku]" class="form-control form-control-sm" value="{{ $variant->sku }}" placeholder="Unique SKU">
-                                    </td>
-                                    <td>
-                                        <div class="input-group input-group-sm">
+                                        <div class="input-group">
                                             <span class="input-group-text">$</span>
-                                            <input type="number" name="variants[{{ $index }}][price]" class="form-control" value="{{ $variant->price }}" step="0.01" placeholder="{{ $product->price }}">
+                                            <input type="number" name="variants[{{ $index }}][price]" class="form-control variation-input" value="{{ $variant->price }}" step="0.01" placeholder="{{ $product->price }}">
                                         </div>
                                     </td>
                                     <td>
-                                        <input type="number" name="variants[{{ $index }}][stock]" class="form-control form-control-sm text-center" value="{{ $variant->stock }}" required min="0">
+                                        <input type="number" name="variants[{{ $index }}][stock]" class="form-control variation-input text-center" value="{{ $variant->stock }}" required min="0">
                                     </td>
                                     <td class="text-end pe-3">
                                         <button type="button" class="btn btn-link text-danger p-0" onclick="removeVariationRow(this)">
@@ -405,7 +446,6 @@
 @push('scripts')
 <script>
 let imagesToRemove = [];
-let newFiles = [];
 
 function markImageForRemoval(imageId, button) {
     if (!imagesToRemove.includes(imageId)) {
@@ -413,7 +453,6 @@ function markImageForRemoval(imageId, button) {
         button.parentElement.style.opacity = '0.3';
         button.innerHTML = '↺';
         
-        // Add hidden input
         const input = document.createElement('input');
         input.type = 'hidden';
         input.name = 'remove_images[]';
@@ -421,11 +460,11 @@ function markImageForRemoval(imageId, button) {
         input.id = 'remove_' + imageId;
         document.getElementById('productForm').appendChild(input);
     } else {
-        // Undo removal
         imagesToRemove = imagesToRemove.filter(id => id !== imageId);
         button.parentElement.style.opacity = '1';
         button.innerHTML = '×';
-        document.getElementById('remove_' + imageId).remove();
+        const el = document.getElementById('remove_' + imageId);
+        if(el) el.remove();
     }
 }
 
@@ -433,7 +472,14 @@ function handleNewImages(event) {
     const container = document.getElementById('imagePreviewContainer');
     const files = Array.from(event.target.files);
     
-    files.forEach((file, index) => {
+    // Validate size (4MB)
+    const oversized = files.filter(f => f.size > 4 * 1024 * 1024);
+    if (oversized.length > 0) {
+        Swal.fire({ icon: 'error', title: 'File too large', text: 'One or more images exceed 4MB.' });
+        return;
+    }
+    
+    files.forEach((file) => {
         const reader = new FileReader();
         reader.onload = function(e) {
             const box = document.createElement('div');
@@ -442,7 +488,6 @@ function handleNewImages(event) {
                 <img src="${e.target.result}" alt="New image">
                 <span class="image-remove-btn" onclick="this.parentElement.remove()">×</span>
             `;
-            // Insert before the "add more" button
             container.insertBefore(box, container.lastElementChild);
         };
         reader.readAsDataURL(file);
@@ -455,43 +500,28 @@ let variantIndex = {{ $product->variants->count() }};
 function addVariationRow() {
     const tbody = document.getElementById('variantsBody');
     const noMsg = document.getElementById('noVariantsMsg');
-    
     if (noMsg) noMsg.classList.add('d-none');
     
     const tr = document.createElement('tr');
     tr.dataset.index = variantIndex;
     tr.innerHTML = `
         <td style="padding-left: 1.5rem;">
-            <div class="variant-img-upload" onclick="this.querySelector('input').click()">
+            <label class="variant-img-upload mb-0">
                 <div class="no-img-placeholder"><i class="fas fa-camera"></i></div>
                 <input type="file" name="variants[${variantIndex}][color_image]" class="d-none" accept="image/*" onchange="previewVariantImage(this, ${variantIndex})">
-            </div>
+            </label>
         </td>
+        <td><input type="text" name="variants[${variantIndex}][color]" class="form-control variation-input" placeholder="e.g. Red or #FF0000"></td>
+        <td><input type="text" name="variants[${variantIndex}][size]" class="form-control variation-input" placeholder="e.g. XL"></td>
         <td>
-            <input type="text" name="variants[${variantIndex}][color]" class="form-control form-control-sm" placeholder="e.g. Red">
-        </td>
-        <td>
-            <input type="color" name="variants[${variantIndex}][color_code]" class="form-control form-control-color form-control-sm w-100" value="#000000" title="Choose color">
-        </td>
-        <td>
-            <input type="text" name="variants[${variantIndex}][size]" class="form-control form-control-sm" placeholder="e.g. XL">
-        </td>
-        <td>
-            <input type="text" name="variants[${variantIndex}][sku]" class="form-control form-control-sm" placeholder="SKU">
-        </td>
-        <td>
-            <div class="input-group input-group-sm">
+            <div class="input-group">
                 <span class="input-group-text">$</span>
-                <input type="number" name="variants[${variantIndex}][price]" class="form-control" step="0.01" placeholder="{{ $product->price }}">
+                <input type="number" name="variants[${variantIndex}][price]" class="form-control variation-input" step="0.01" placeholder="{{ $product->price }}">
             </div>
         </td>
-        <td>
-            <input type="number" name="variants[${variantIndex}][stock]" class="form-control form-control-sm text-center" value="10" required min="0">
-        </td>
+        <td><input type="number" name="variants[${variantIndex}][stock]" class="form-control variation-input text-center" value="10" required min="0"></td>
         <td class="text-end pe-3">
-            <button type="button" class="btn btn-link text-danger p-0" onclick="removeVariationRow(this)">
-                <i class="fas fa-trash-alt"></i>
-            </button>
+            <button type="button" class="btn btn-link text-danger p-0" onclick="removeVariationRow(this)"><i class="fas fa-trash-alt"></i></button>
         </td>
     `;
     tbody.appendChild(tr);
@@ -499,34 +529,93 @@ function addVariationRow() {
 }
 
 function removeVariationRow(btn) {
-    if (confirm('Are you sure you want to remove this variation?')) {
-        const tr = btn.closest('tr');
-        tr.remove();
-        
-        const tbody = document.getElementById('variantsBody');
-        if (tbody.children.length === 0) {
-            document.getElementById('noVariantsMsg').classList.remove('d-none');
+    window.confirmAction(
+        'Remove variation?',
+        'You will need to save the product to finalize removal.'
+    ).then((confirmed) => {
+        if (confirmed) {
+            const tr = btn.closest('tr');
+            tr.remove();
+            const tbody = document.getElementById('variantsBody');
+            if (tbody && tbody.children.length === 0) {
+                const msg = document.getElementById('noVariantsMsg');
+                if(msg) msg.classList.remove('d-none');
+            }
         }
-    }
+    });
 }
 
 function previewVariantImage(input, index) {
     if (input.files && input.files[0]) {
+        if (input.files[0].size > 4 * 1024 * 1024) {
+            Swal.fire({ icon: 'error', title: 'File too large', text: 'Variant image exceeds 4MB.' });
+            input.value = '';
+            return;
+        }
         const reader = new FileReader();
         reader.onload = function(e) {
-            let img = document.getElementById(`variant_img_preview_${index}`);
             const parent = input.parentElement;
-            
+            let img = parent.querySelector('img');
             if (!img) {
-                parent.innerHTML = `<img src="${e.target.result}" id="variant_img_preview_${index}">
-                                    <input type="file" name="variants[${index}][color_image]" class="d-none" accept="image/*" onchange="previewVariantImage(this, ${index})">`;
-            } else {
-                img.src = e.target.result;
+                // If no img exists, hide placeholder and add img
+                const placeholder = parent.querySelector('.no-img-placeholder');
+                if (placeholder) placeholder.style.display = 'none';
+                
+                img = document.createElement('img');
+                img.id = `variant_img_preview_${index}`;
+                parent.appendChild(img);
             }
+            img.src = e.target.result;
         };
         reader.readAsDataURL(input.files[0]);
     }
 }
+
+// SKU Auto-Generation
+function generateSKU() {
+    const nameInput = document.getElementById('name_fr') || document.getElementById('name_en') || document.getElementById('name_ar');
+    const name = nameInput ? nameInput.value : '';
+    const categorySelect = document.getElementById('category_id');
+    const categoryId = categorySelect ? categorySelect.value : '';
+    let categoryPrefix = 'PROD';
+    
+    if (categoryId && categorySelect.selectedIndex > 0) {
+        const categoryName = categorySelect.options[categorySelect.selectedIndex].text;
+        const words = categoryName.split(/[\s\->]+/).filter(w => w.length > 0);
+        if (words.length >= 2) {
+            categoryPrefix = (words[0].substring(0, 2) + words[1].substring(0, 2)).toUpperCase();
+        } else if (words.length === 1) {
+            categoryPrefix = words[0].substring(0, 4).toUpperCase();
+        }
+    } else if (name) {
+        const words = name.split(/\s+/).filter(w => w.length > 0);
+        if (words.length >= 2) {
+            categoryPrefix = (words[0].substring(0, 2) + words[1].substring(0, 2)).toUpperCase();
+        } else if (words.length === 1) {
+            categoryPrefix = words[0].substring(0, 4).toUpperCase();
+        }
+    }
+    
+    const randomNum = Math.floor(Math.random() * 90000) + 10000;
+    const timestamp = Date.now().toString().slice(-4);
+    const sku = `${categoryPrefix}-${timestamp}${randomNum}`.substring(0, 16);
+    
+    const skuField = document.getElementById('sku');
+    if(skuField) {
+        skuField.value = sku;
+        skuField.style.background = '#f0f9ff';
+        setTimeout(() => { skuField.style.background = ''; }, 500);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const catSelect = document.getElementById('category_id');
+    if (catSelect) {
+        catSelect.addEventListener('change', function() {
+            if (this.value) generateSKU();
+        });
+    }
+});
 </script>
 @endpush
 @endsection

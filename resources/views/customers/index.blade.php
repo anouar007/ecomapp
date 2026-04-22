@@ -173,7 +173,7 @@
                                 <a href="{{ route('customers.edit', $customer) }}" class="btn-action-icon" title="Edit Customer">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <form action="{{ route('customers.destroy', $customer) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this customer?');">
+                                <form action="{{ route('customers.destroy', $customer) }}" method="POST" class="d-inline delete-customer-form" data-name="{{ $customer->name }}">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn-action-icon text-danger" title="Delete Customer">
@@ -206,3 +206,19 @@
         @endif
     </div>
 @endsection
+
+@push('scripts')
+<script>
+document.querySelectorAll('.delete-customer-form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const name = this.dataset.name;
+        window.confirmDelete('customer', name).then(confirmed => {
+            if (confirmed) {
+                this.submit();
+            }
+        });
+    });
+});
+</script>
+@endpush

@@ -71,16 +71,15 @@ class ProductController extends Controller
             'stock' => ['required', 'integer', 'min:0'],
             'min_stock' => ['required', 'integer', 'min:0'],
             'category_id' => ['nullable', 'exists:categories,id'],
-            'images.*' => ['nullable', 'image', 'max:2048'],
+            'images.*' => ['nullable', 'image', 'max:4096'],
             'status' => ['required', 'in:active,inactive'],
             'variants' => ['nullable', 'array'],
             'variants.*.size' => ['nullable', 'string', 'max:255'],
             'variants.*.color' => ['nullable', 'string', 'max:255'],
-            'variants.*.color_code' => ['nullable', 'string', 'max:7'],
             'variants.*.sku' => ['nullable', 'string', 'max:255'],
             'variants.*.price' => ['nullable', 'numeric', 'min:0'],
             'variants.*.stock' => ['required_with:variants', 'integer', 'min:0'],
-            'variants.*.color_image' => ['nullable', 'image', 'max:2048'],
+            'variants.*.color_image' => ['nullable', 'image', 'max:4096'],
         ]);
 
         DB::beginTransaction();
@@ -101,11 +100,22 @@ class ProductController extends Controller
             }
 
             // Handle Variations
-            if ($request->has('variants')) {
-                foreach ($request->variants as $variantData) {
-                    if (isset($variantData['color_image'])) {
-                        $variantData['color_image'] = $variantData['color_image']->store('variants', 'public');
+            $variants = $request->input('variants', []);
+            
+            if (!empty($variants)) {
+                foreach ($variants as $index => $variantData) {
+                    // Auto-detect hex code from color field
+                    if (isset($variantData['color']) && preg_match('/^#([A-Fa-f0-9]{3}){1,2}$/', $variantData['color'])) {
+                        $variantData['color_code'] = $variantData['color'];
                     }
+
+                    // Explicitly handle color image from files bag
+                    if ($request->hasFile("variants.{$index}.color_image")) {
+                        $variantData['color_image'] = $request->file("variants.{$index}.color_image")->store('product_variants', 'public');
+                    } else {
+                        unset($variantData['color_image']);
+                    }
+
                     $product->variants()->create($variantData);
                 }
                 // Sync main stock
@@ -155,19 +165,17 @@ class ProductController extends Controller
             'stock' => ['required', 'integer', 'min:0'],
             'min_stock' => ['required', 'integer', 'min:0'],
             'category_id' => ['nullable', 'exists:categories,id'],
-            'images.*' => ['nullable', 'image', 'max:2048'],
+            'images.*' => ['nullable', 'image', 'max:4096'],
             'status' => ['required', 'in:active,inactive'],
             'remove_images' => ['nullable', 'array'],
             'remove_images.*' => ['exists:product_images,id'],
             'variants' => ['nullable', 'array'],
-            'variants.*.id' => ['nullable', 'exists:product_variants,id'],
             'variants.*.size' => ['nullable', 'string', 'max:255'],
             'variants.*.color' => ['nullable', 'string', 'max:255'],
-            'variants.*.color_code' => ['nullable', 'string', 'max:7'],
             'variants.*.sku' => ['nullable', 'string', 'max:255'],
             'variants.*.price' => ['nullable', 'numeric', 'min:0'],
             'variants.*.stock' => ['required_with:variants', 'integer', 'min:0'],
-            'variants.*.color_image' => ['nullable', 'image', 'max:2048'],
+            'variants.*.color_image' => ['nullable', 'image', 'max:4096'],
             'variants.*.remove_image' => ['nullable', 'boolean'],
         ]);
 
@@ -199,21 +207,29 @@ class ProductController extends Controller
             }
 
             // Handle variations
-            if ($request->has('variants')) {
-                $submittedVariantIds = collect($request->variants)->pluck('id')->filter()->toArray();
+            $variants = $request->input('variants', []);
+
+            if (!empty($variants)) {
+                $submittedVariantIds = collect($variants)->pluck('id')->filter()->toArray();
                 
                 // Delete removed variants
                 $product->variants()->whereNotIn('id', $submittedVariantIds)->delete();
 
-                foreach ($request->variants as $variantData) {
+                foreach ($variants as $index => $variantData) {
                     $variantId = $variantData['id'] ?? null;
+
+                    // Auto-detect hex code from color field
+                    if (isset($variantData['color']) && preg_match('/^#([A-Fa-f0-9]{3}){1,2}$/', $variantData['color'])) {
+                        $variantData['color_code'] = $variantData['color'];
+                    }
                     
-                    // Handle color image upload
-                    if (isset($variantData['color_image']) && $variantData['color_image'] instanceof \Illuminate\Http\UploadedFile) {
-                        $variantData['color_image'] = $variantData['color_image']->store('variants', 'public');
+                    // Explicitly handle color image from files bag
+                    if ($request->hasFile("variants.{$index}.color_image")) {
+                        $variantData['color_image'] = $request->file("variants.{$index}.color_image")->store('product_variants', 'public');
                     } elseif (isset($variantData['remove_image']) && $variantData['remove_image']) {
                         $variantData['color_image'] = null;
                     } else {
+                        // Don't touch color_image if no new file and not removed
                         unset($variantData['color_image']);
                     }
 
@@ -229,7 +245,7 @@ class ProductController extends Controller
                 // Sync main stock with variants total
                 $product->update(['stock' => $product->variants()->sum('stock')]);
             } else {
-                // If variants was submitted as empty array but was present, it means all were removed
+                // If variants was submitted but empty, delete all
                 if ($request->exists('variants')) {
                     $product->variants()->delete();
                 }

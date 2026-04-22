@@ -126,8 +126,14 @@
                                         @endphp
                                         <div class="variant-pill {{ $isGloballyOOS ? 'disabled-option' : '' }}" 
                                              data-color="{{ $color->color }}" onclick="selectColor(this)">
-                                            @if($color->color_code)
-                                                <span class="rounded-circle border" style="width: 14px; height: 14px; background: {{ $color->color_code }}"></span>
+                                            @php
+                                                $displayColor = $color->color_code;
+                                                if (!$displayColor && preg_match('/^#([A-Fa-f0-9]{3}){1,2}$/', $color->color)) {
+                                                    $displayColor = $color->color;
+                                                }
+                                            @endphp
+                                            @if($displayColor)
+                                                <span class="rounded-circle border" style="width: 14px; height: 14px; background: {{ $displayColor }}"></span>
                                             @endif
                                             {{ $color->color }}
                                         </div>
