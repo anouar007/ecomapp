@@ -1,394 +1,346 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice {{ $invoice->invoice_number }}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ __('Invoice') }} {{ $invoice->invoice_number }}</title>
     <style>
-        * {
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #1e293b;
+            line-height: 1.4;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+            background: #f8fafc;
+            -webkit-print-color-adjust: exact;
         }
-        
-        body {
-            font-family: 'Arial', sans-serif;
-            color: #333;
-            line-height: 1.6;
+
+        .invoice-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f1f5f9;
+            overflow: hidden;
+            max-width: 950px;
+            margin: 0 auto;
+            position: relative;
+            page-break-inside: avoid;
+        }
+
+        .invoice-accent-bar {
+            height: 6px;
+            background: linear-gradient(90deg, #6366f1 0%, #a855f7 100%);
+        }
+
+        .invoice-content {
             padding: 40px;
         }
-        
-        .invoice-container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #3b82f6;
-        }
-        
-        .company-info h1 {
-            font-size: 28px;
+
+        .company-name {
+            font-size: 42px;
+            font-weight: 800;
             color: #1e293b;
-            margin-bottom: 10px;
+            margin: 0 0 16px 0;
+            letter-spacing: -2px;
+            line-height: 1;
         }
-        
+
         .company-info p {
+            margin: 2px 0;
             color: #64748b;
-            font-size: 14px;
+            font-size: 15px;
         }
-        
+
+        .fiscal-ids {
+            margin-top: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 11px;
+            color: #94a3b8;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .fiscal-tag {
+            background: #f8fafc;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid #f1f5f9;
+        }
+
         .invoice-details {
             text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 32px;
         }
-        
-        .invoice-status {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
-            margin-bottom: 10px;
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: auto auto;
+            gap: 12px 32px;
         }
-        
-        .status-paid {
-            background: #dcfce7;
-            color: #166534;
-        }
-        
-        .status-unpaid {
-            background: #fef3c7;
-            color: #92400e;
-        }
-        
-        .status-partial {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-        
-        .status-cancelled {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-        
-        .invoice-details .label {
-            font-size: 11px;
-            color: #64748b;
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-        
-        .invoice-details .value {
-            font-size: 16px;
-            color: #1e293b;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-        
-        .customer-section {
-            background: #f8fafc;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            border: 1px solid #e2e8f0;
-        }
-        
-        .customer-section .label {
-            font-size: 11px;
-            color: #64748b;
-            text-transform: uppercase;
+
+        .label-sm {
+            color: #94a3b8;
             font-weight: 700;
-            margin-bottom: 8px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
         }
-        
-        .customer-section h3 {
-            font-size: 18px;
+
+        .value-md {
             color: #1e293b;
-            margin-bottom: 8px;
+            font-weight: 800;
+            font-size: 18px;
         }
-        
-        .customer-section p {
-            color: #475569;
-            font-size: 14px;
-            margin: 4px 0;
+
+        .value-sm {
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 15px;
         }
-        
+
+        .section-title {
+            color: #6366f1;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
         .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 30px;
+            margin: 30px 0;
+            border: 1px solid #f1f5f9;
+            border-radius: 12px;
+            overflow: hidden;
         }
-        
-        .items-table thead {
-            background: #f8fafc;
-            border-bottom: 2px solid #e2e8f0;
-        }
-        
+
         .items-table th {
-            padding: 12px;
-            text-align: left;
-            font-size: 11px;
-            color: #64748b;
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-        
-        .items-table th.text-center {
-            text-align: center;
-        }
-        
-        .items-table th.text-right {
-            text-align: right;
-        }
-        
-        .items-table tbody tr {
-            border-bottom: 1px solid #f1f5f9;
-        }
-        
-        .items-table td {
-            padding: 16px 12px;
-        }
-        
-        .items-table td.text-center {
-            text-align: center;
-        }
-        
-        .items-table td.text-right {
-            text-align: right;
-        }
-        
-        .product-name {
-            font-weight: 600;
-            color: #1e293b;
-        }
-        
-        .product-sku {
-            font-size: 12px;
-            color: #64748b;
-            margin-top: 2px;
-        }
-        
-        .totals-section {
-            margin-left: auto;
-            width: 350px;
-        }
-        
-        .totals-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #f1f5f9;
-        }
-        
-        .totals-row .label {
-            color: #64748b;
-            font-weight: 600;
-        }
-        
-        .totals-row .value {
-            color: #1e293b;
-            font-weight: 700;
-        }
-        
-        .totals-total {
-            border-top: 2px solid #e2e8f0;
-            margin-top: 10px;
-            padding-top: 16px !important;
-        }
-        
-        .totals-total .label {
-            font-size: 18px;
-            color: #1e293b;
-        }
-        
-        .totals-total .value {
-            font-size: 22px;
-            color: #3b82f6;
-        }
-        
-        .footer-section {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .footer-section h4 {
-            font-size: 11px;
-            color: #64748b;
-            text-transform: uppercase;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-        
-        .footer-section p {
+            background: #f8fafc;
             color: #475569;
-            font-size: 14px;
-            margin: 4px 0;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
         }
-        
-        .footer-note {
+
+        .items-table td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: top;
+        }
+
+        .totals-card {
+            background: #f8fafc;
+            padding: 24px;
+            border-radius: 20px;
+            border: 1px solid #f1f5f9;
+            width: 320px;
+            margin-left: auto;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .grand-total {
+            border-top: 2px dashed #e2e8f0;
+            margin-top: 24px;
+            padding-top: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .words-card {
+            background: #f8fafc;
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid #f1f5f9;
+            margin-bottom: 32px;
+        }
+
+        .footer {
+            background: #f8fafc;
+            padding: 24px;
             text-align: center;
-            margin-top: 40px;
-            padding-top: 20px;
             border-top: 1px solid #e2e8f0;
+            font-size: 12px;
             color: #94a3b8;
-            font-size: 13px;
+            line-height: 1.6;
         }
-        
+
         @media print {
-            body {
+            body { 
+                background: white;
                 padding: 0;
             }
-            
-            .no-print {
-                display: none !important;
+            .invoice-card {
+                box-shadow: none;
+                border: none;
+                max-width: 100%;
             }
-            
-            @page {
-                margin: 1cm;
+            .invoice-content {
+                padding: 40px;
             }
         }
+
+        [dir="rtl"] .items-table th { text-align: right; }
+        [dir="rtl"] .invoice-details { align-items: flex-start; text-align: left; }
+        [dir="rtl"] .totals-card { margin-left: 0; margin-right: auto; }
     </style>
 </head>
-<body>
-    <div class="invoice-container">
-        <!-- Header -->
-        <div class="header">
-            <div class="company-info">
-                <h1>{{ setting('company_name', setting('app_name')) }}</h1>
-                <p>{{ setting('company_address') }}<br>
-                @if(setting('company_email'))
-                    Email: {{ setting('company_email') }}<br>
-                @endif
-                @if(setting('company_phone'))
-                    Phone: {{ setting('company_phone') }}<br>
-                @endif
-                <br>
-                @if(setting('company_tax_id'))
-                    ICE: {{ setting('company_tax_id') }}<br>
-                @endif
-                @if(setting('company_registry_id'))
-                    RC: {{ setting('company_registry_id') }}
-                @endif
-                </p>
-            </div>
-            <div class="invoice-details">
-                <span class="invoice-status status-{{ $invoice->payment_status }}">
-                    {{ $invoice->status_label }}
-                </span>
-                <div style="margin-top: 15px;">
-                    <div class="label">Invoice Number</div>
-                    <div class="value">{{ $invoice->invoice_number }}</div>
-                    
-                    <div class="label" style="margin-top: 10px;">Issue Date</div>
-                    <div class="value">{{ $invoice->issued_at->format('F d, Y') }}</div>
-                    
-                    @if($invoice->due_date)
-                    <div class="label" style="margin-top: 10px;">Due Date</div>
-                    <div class="value">{{ $invoice->due_date->format('F d, Y') }}</div>
+<body dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
+    <div class="invoice-card">
+        <div class="invoice-accent-bar"></div>
+        <div class="invoice-content">
+            <!-- Header Section -->
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 30px;">
+                <!-- Company Info -->
+                <div style="flex: 1;">
+                    <h1 class="company-name" style="font-size: 32px;">{{ setting('company_name', setting('app_name')) }}</h1>
+                    <div style="color: #64748b; line-height: 1.4; font-size: 14px;">
+                        {{ setting('company_address') }}<br>
+                        <div style="margin-top: 8px; display: flex; gap: 15px;">
+                            @if(setting('company_phone')) <span>{{ setting('company_phone') }}</span> @endif
+                            @if(setting('company_email')) <span>{{ setting('company_email') }}</span> @endif
+                        </div>
+                        <div class="fiscal-ids" style="margin-top: 15px;">
+                            @if(setting('company_tax_id')) <span class="fiscal-tag">{{ __('ICE') }}: {{ setting('company_tax_id') }}</span> @endif
+                            @if(setting('company_registry_id')) <span class="fiscal-tag">{{ __('RC') }}: {{ setting('company_registry_id') }}</span> @endif
+                            @if(setting('company_patente')) <span class="fiscal-tag">{{ __('Patente') }}: {{ setting('company_patente') }}</span> @endif
+                            @if(setting('company_fiscal_id')) <span class="fiscal-tag">{{ __('IF') }}: {{ setting('company_fiscal_id') }}</span> @endif
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logo & Details -->
+                <div class="invoice-details" style="gap: 20px;">
+                    @if(setting('app_logo'))
+                        <div style="background: white; padding: 8px; border-radius: 12px; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                            <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="Logo" style="max-width: 140px; height: auto;">
+                        </div>
                     @endif
+                    <div class="details-grid" style="gap: 8px 24px;">
+                        <span class="label-sm">{{ $invoice->getNumberLabel() }}</span>
+                        <span class="value-md" style="font-size: 16px;">#{{ $invoice->invoice_number }}</span>
+                        <span class="label-sm">{{ __('Issue Date') }}</span>
+                        <span class="value-sm" style="font-size: 14px;">{{ $invoice->issued_at->translatedFormat('d M, Y') }}</span>
+                        @if($invoice->due_date)
+                        <span class="label-sm">{{ __('Due Date') }}</span>
+                        <span class="value-sm" style="font-size: 14px; color: #ef4444;">{{ $invoice->due_date->translatedFormat('d M, Y') }}</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Client Info -->
+            <div style="margin-bottom: 40px;">
+                <p class="section-title">{{ $invoice->getBillToLabel() }}</p>
+                <h3 style="font-size: 22px; font-weight: 800; color: #1e293b; margin: 0 0 8px 0;">{{ $invoice->customer_name }}</h3>
+                <div style="color: #475569; font-size: 14px; line-height: 1.5;">
+                    @php
+                        $address = $invoice->customer_address ?: ($invoice->order->shipping_address ?? null);
+                    @endphp
+                    @if($address) <div>{{ $address }}</div> @endif
+                    @if($invoice->customer_phone) <div>{{ $invoice->customer_phone }}</div> @endif
+                    @if($invoice->customer_email) <div>{{ $invoice->customer_email }}</div> @endif
+                </div>
+            </div>
+
+            <!-- Table -->
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th style="width: 50%;">{{ __('Description') }}</th>
+                        <th style="width: 10%; text-align: center;">{{ __('Qty') }}</th>
+                        <th style="width: 20%; text-align: {{ app()->getLocale() === 'ar' ? 'left' : 'right' }};">{{ __('Unit Price') }}</th>
+                        <th style="width: 20%; text-align: {{ app()->getLocale() === 'ar' ? 'left' : 'right' }};">{{ __('Total') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($invoice->items as $item)
+                    <tr>
+                        <td>
+                            <div style="font-weight: 700; color: #1e293b; font-size: 16px; margin-bottom: 4px;">{{ $item->product_name }}</div>
+                            @if($item->product_sku)
+                            <div class="product-sku">{{ __('SKU') }}: {{ $item->product_sku }}</div>
+                            @endif
+                        </td>
+                        <td style="text-align: center; font-weight: 500;">{{ $item->quantity }}</td>
+                        <td style="text-align: {{ app()->getLocale() === 'ar' ? 'left' : 'right' }}; font-weight: 500;">{{ $item->formatted_unit_price }}</td>
+                        <td style="text-align: {{ app()->getLocale() === 'ar' ? 'left' : 'right' }}; font-weight: 800; color: #1e293b;">{{ $item->formatted_total_price }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+            <!-- Summary -->
+            <div style="display: flex; gap: 60px;">
+                <div style="flex: 1;">
+                    <div class="words-card">
+                        <p class="label-sm" style="color: #6366f1; margin-bottom: 8px;">{{ __('Total in Words') }}</p>
+                        <p style="color: #475569; font-style: italic; font-size: 15px; margin: 0; line-height: 1.5;">
+                            {{ __('Stopped this invoice at the sum of') }}: <strong style="color: #1e293b;">{{ $invoice->total_in_words }} {{ setting('currency_code', 'USD') }}</strong>
+                        </p>
+                    </div>
+                    @if($invoice->notes)
+                    <div style="padding: 0 24px;">
+                        <p class="label-sm" style="margin-bottom: 8px;">{{ __('Notes') }}</p>
+                        <p style="color: #475569; font-size: 14px; line-height: 1.6; margin: 0;">{{ $invoice->notes }}</p>
+                    </div>
+                    @endif
+                </div>
+
+                <div class="totals-card">
+                    <div class="total-row">
+                        <span style="color: #64748b; font-weight: 500; font-size: 15px;">{{ __('Subtotal') }} (HT)</span>
+                        <span style="font-weight: 700; color: #1e293b; font-size: 15px;">{{ $invoice->formatted_subtotal }}</span>
+                    </div>
+                    <div class="total-row">
+                        <span style="color: #64748b; font-weight: 500; font-size: 15px;">{{ __('Tax') }} ({{ $invoice->tax_rate }}%)</span>
+                        <span style="font-weight: 700; color: #1e293b; font-size: 15px;">{{ $invoice->formatted_tax_amount }}</span>
+                    </div>
+                    @if($invoice->discount_amount > 0)
+                    <div class="total-row">
+                        <span style="color: #10b981; font-weight: 500; font-size: 15px;">{{ __('Discount') }}</span>
+                        <span style="font-weight: 700; color: #10b981; font-size: 15px;">-{{ $invoice->formatted_discount_amount }}</span>
+                    </div>
+                    @endif
+                    <div class="grand-total">
+                        <div>
+                            <span class="label-sm" style="display: block; margin-bottom: 4px;">{{ __('Total') }} (TTC)</span>
+                            <span style="font-size: 38px; font-weight: 900; color: #6366f1; letter-spacing: -1.5px; line-height: 1;">{{ $invoice->formatted_total_amount }}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Customer Section -->
-        <div class="customer-section">
-            <div class="label">Bill To</div>
-            <h3>{{ $invoice->customer_name }}</h3>
-            @if($invoice->customer_email)
-            <p>{{ $invoice->customer_email }}</p>
-            @endif
-            @if($invoice->customer_phone)
-            <p>{{ $invoice->customer_phone }}</p>
-            @endif
-            @if($invoice->customer_address)
-            <p>{{ $invoice->customer_address }}</p>
-            @endif
-        </div>
-        
-        <!-- Items Table -->
-        <table class="items-table">
-            <thead>
-                <tr>
-                    <th>Description</th>
-                    <th class="text-center" style="width: 100px;">Quantity</th>
-                    <th class="text-right" style="width: 120px;">Unit Price</th>
-                    <th class="text-right" style="width: 120px;">Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($invoice->items as $item)
-                <tr>
-                    <td>
-                        <div class="product-name">{{ $item->product_name }}</div>
-                        @if($item->product_sku)
-                        <div class="product-sku">SKU: {{ $item->product_sku }}</div>
-                        @endif
-                    </td>
-                    <td class="text-center">{{ $item->quantity }}</td>
-                    <td class="text-right">{{ $item->formatted_unit_price }}</td>
-                    <td class="text-right">{{ $item->formatted_total_price }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-        
-        <!-- Totals Section -->
-        <div class="totals-section">
-            <div class="totals-row">
-                <span class="label">Subtotal:</span>
-                <span class="value">{{ $invoice->formatted_subtotal }}</span>
-            </div>
-            <div class="totals-row">
-                <span class="label">Tax ({{ $invoice->tax_rate }}%):</span>
-                <span class="value">{{ $invoice->formatted_tax_amount }}</span>
-            </div>
-            @if($invoice->discount_amount > 0)
-            <div class="totals-row">
-                <span class="label">Discount:</span>
-                <span class="value">-{{ $invoice->formatted_discount_amount }}</span>
-            </div>
-            @endif
-            <div class="totals-row totals-total">
-                <span class="label">Total:</span>
-                <span class="value">{{ $invoice->formatted_total_amount }}</span>
-            </div>
-        </div>
-        
-        <!-- Footer Section -->
-        <div class="footer-section">
-            <div>
-                <h4>Payment Information</h4>
-                <p><strong>Method:</strong> {{ ucfirst(str_replace('_', ' ', $invoice->payment_method)) }}</p>
-                <p><strong>Created by:</strong> {{ $invoice->creator->name ?? 'N/A' }}</p>
-            </div>
-            @if($invoice->notes)
-            <div style="max-width: 45%;">
-                <h4>Notes</h4>
-                <p>{{ $invoice->notes }}</p>
-            </div>
-            @endif
-        </div>
-        
-        <!-- Footer Note -->
-        <div class="footer-note">
-            Thank you for your business!
+        <div class="footer">
+            <p style="margin: 0;">{{ setting('company_name') }} - {{ setting('company_address') }}</p>
+            <p style="margin-top: 8px; font-weight: 600; color: #6366f1;">{{ __('Thank you for your business!') }}</p>
         </div>
     </div>
-    
+
     <script>
-        // Auto-print when page loads
         window.onload = function() {
-            window.print();
+            setTimeout(function() {
+                window.print();
+            }, 500);
         };
     </script>
 </body>

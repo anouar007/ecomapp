@@ -124,6 +124,7 @@
             </p>
         </div>
         <div style="display: flex; gap: 10px;">
+            <!-- Invoice Button -->
             @if(!$order->invoice)
             <form action="{{ route('orders.generate-invoice', $order) }}" method="POST">
                 @csrf
@@ -136,6 +137,21 @@
                 <i class="fas fa-file-invoice"></i> Invoice
             </a>
             @endif
+
+            <!-- Quote Button -->
+            @if(!$order->quote)
+            <form action="{{ route('orders.generate-quote', $order) }}" method="POST">
+                @csrf
+                <button type="submit" class="btn btn-warning" style="color: #92400e; background-color: #fef3c7; border-color: #fde68a;">
+                    <i class="fas fa-file-alt"></i> Generate Quote
+                </button>
+            </form>
+            @else
+            <a href="{{ route('invoices.show', $order->quote) }}" class="btn btn-outline-warning" style="color: #92400e; border-color: #fde68a;">
+                <i class="fas fa-file-alt"></i> Quote
+            </a>
+            @endif
+
             <a href="{{ route('orders.edit', $order) }}" class="btn btn-primary">
                 <i class="fas fa-edit"></i> Edit Order
             </a>

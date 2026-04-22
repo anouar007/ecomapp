@@ -77,6 +77,15 @@
             </div>
             
             <div style="min-width: 140px;">
+                <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;">Type</label>
+                <select name="type" class="form-select">
+                    <option value="">All Types</option>
+                    <option value="invoice" {{ request('type') === 'invoice' ? 'selected' : '' }}>Invoice</option>
+                    <option value="quote" {{ request('type') === 'quote' ? 'selected' : '' }}>Quote</option>
+                </select>
+            </div>
+            
+            <div style="min-width: 140px;">
                 <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;">Status</label>
                 <select name="status" class="form-select">
                     <option value="">All Statuses</option>
@@ -127,8 +136,11 @@
                     @forelse($invoices as $invoice)
                     <tr>
                         <td style="padding-left: 1.5rem;">
-                            <a href="{{ route('invoices.show', $invoice) }}" class="fw-bold text-primary text-decoration-none">
+                            <a href="{{ route('invoices.show', $invoice) }}" class="fw-bold text-primary text-decoration-none d-flex align-items-center gap-2">
                                 {{ $invoice->invoice_number }}
+                                @if($invoice->isQuote())
+                                    <span style="background: #fef3c7; color: #d97706; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; text-transform: uppercase;">{{ __('Quote') }}</span>
+                                @endif
                             </a>
                         </td>
                         <td>

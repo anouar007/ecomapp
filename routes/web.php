@@ -81,6 +81,7 @@ Route::middleware('auth')->group(function () {
         Route::get('invoices/{invoice}/print', [\App\Http\Controllers\InvoiceController::class, 'print'])->name('invoices.print');
         Route::post('invoices/{invoice}/email', [\App\Http\Controllers\InvoiceController::class, 'email'])->name('invoices.email');
         Route::post('orders/{order}/generate-invoice', [\App\Http\Controllers\InvoiceController::class, 'generateFromOrder'])->name('orders.generate-invoice');
+        Route::post('orders/{order}/generate-quote', [\App\Http\Controllers\InvoiceController::class, 'generateFromOrder'])->name('orders.generate-quote');
         Route::post('invoices/{invoice}/payments', [\App\Http\Controllers\PaymentController::class, 'store'])->name('payments.store');
     });
     

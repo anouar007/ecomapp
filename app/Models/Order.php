@@ -75,7 +75,15 @@ class Order extends Model
      */
     public function invoice()
     {
-        return $this->hasOne(Invoice::class);
+        return $this->hasOne(Invoice::class)->where('type', 'invoice');
+    }
+
+    /**
+     * Get the quote associated with the order.
+     */
+    public function quote()
+    {
+        return $this->hasOne(Invoice::class)->where('type', 'quote');
     }
 
     /**

@@ -61,11 +61,19 @@
                 </div>
             </div>
 
-            <!-- Payment & Invoice Details -->
+            <!-- Document & Payment Details -->
             <div style="margin-bottom: 32px;">
-                <h3 style="font-size: 18px; font-weight: 700; color: #1e293b; margin: 0 0 20px 0; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0;">Invoice Details</h3>
+                <h3 style="font-size: 18px; font-weight: 700; color: #1e293b; margin: 0 0 20px 0; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0;">Document & Payment Details</h3>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-bottom: 20px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div>
+                        <label style="display: block; font-size: 14px; font-weight: 600; color: #64748b; margin-bottom: 8px;">Document Type <span style="color: #ef4444;">*</span></label>
+                        <select name="type" required
+                                style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; background: white;">
+                            <option value="invoice" {{ old('type', $invoice->type) == 'invoice' ? 'selected' : '' }}>{{ __('Invoice') }}</option>
+                            <option value="quote" {{ old('type', $invoice->type) == 'quote' ? 'selected' : '' }}>{{ __('Quote') }}</option>
+                        </select>
+                    </div>
                     <div>
                         <label style="display: block; font-size: 14px; font-weight: 600; color: #64748b; margin-bottom: 8px;">Payment Method <span style="color: #ef4444;">*</span></label>
                         <select name="payment_method" required

@@ -118,11 +118,11 @@ class InvoiceService
             foreach ($order->items as $item) {
                 $invoice->items()->create([
                     'product_id' => $item->product_id,
-                    'product_name' => $item->product->name ?? 'Unknown',
-                    'product_sku' => $item->product->sku ?? 'N/A',
+                    'product_name' => $item->product_name ?? ($item->product->name ?? 'Unknown'),
+                    'product_sku' => $item->product_sku ?? ($item->product->sku ?? 'N/A'),
                     'quantity' => $item->quantity,
-                    'unit_price' => $item->unit_price,
-                    'total_price' => $item->unit_price * $item->quantity,
+                    'unit_price' => $item->price ?? $item->unit_price,
+                    'total_price' => ($item->price ?? $item->unit_price) * $item->quantity,
                 ]);
             }
 

@@ -12,6 +12,7 @@ use App\Models\JournalEntryLine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class InvoiceController extends Controller
@@ -38,6 +39,11 @@ class InvoiceController extends Controller
             $query->byStatus($request->status);
         }
 
+        // Filter by type
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
         // Filter by payment method
         if ($request->filled('payment_method')) {
             $query->where('payment_method', $request->payment_method);
@@ -52,10 +58,11 @@ class InvoiceController extends Controller
 
         // Calculate summary statistics
         $stats = [
-            'total_invoices' => Invoice::count(),
-            'paid_amount' => Invoice::byStatus('paid')->sum('total_amount'),
-            'unpaid_amount' => Invoice::byStatus('unpaid')->sum('total_amount'),
-            'total_revenue' => Invoice::where('payment_status', '!=', 'cancelled')->sum('total_amount'),
+            'total_invoices' => Invoice::where('type', 'invoice')->count(),
+            'total_quotes' => Invoice::where('type', 'quote')->count(),
+            'paid_amount' => Invoice::where('type', 'invoice')->byStatus('paid')->sum('total_amount'),
+            'unpaid_amount' => Invoice::where('type', 'invoice')->byStatus('unpaid')->sum('total_amount'),
+            'total_revenue' => Invoice::where('type', 'invoice')->where('payment_status', '!=', 'cancelled')->sum('total_amount'),
         ];
 
         return view('invoices.index', compact('invoices', 'stats'));
@@ -81,7 +88,8 @@ class InvoiceController extends Controller
             'customer_email' => 'nullable|email|max:255',
             'customer_phone' => 'nullable|string|max:20',
             'customer_address' => 'nullable|string',
-            'payment_method' => 'required|in:cash,card,bank_transfer,other',
+            'type' => 'required|in:invoice,quote',
+            'payment_method' => 'required|in:cash,card,bank_transfer,cod,other',
             'payment_status' => 'required|in:paid,unpaid,partial,cancelled',
             'notes' => 'nullable|string',
             'due_date' => 'nullable|date',
@@ -121,6 +129,7 @@ class InvoiceController extends Controller
             // Create invoice
             $invoice = Invoice::create([
                 'invoice_number' => Invoice::generateInvoiceNumber(),
+                'type' => $validated['type'],
                 'customer_name' => $validated['customer_name'],
                 'customer_email' => $validated['customer_email'] ?? null,
                 'customer_phone' => $validated['customer_phone'] ?? null,
@@ -203,7 +212,8 @@ class InvoiceController extends Controller
             'customer_email' => 'nullable|email|max:255',
             'customer_phone' => 'nullable|string|max:20',
             'customer_address' => 'nullable|string',
-            'payment_method' => 'required|in:cash,card,bank_transfer,other',
+            'type' => 'required|in:invoice,quote',
+            'payment_method' => 'required|in:cash,card,bank_transfer,cod,other',
             'payment_status' => 'required|in:paid,unpaid,partial,cancelled',
             'notes' => 'nullable|string',
             'due_date' => 'nullable|date',
@@ -220,7 +230,7 @@ class InvoiceController extends Controller
         }
 
         return redirect()->route('invoices.show', $invoice)
-            ->with('success', 'Invoice updated successfully!');
+            ->with('success', __('Invoice updated successfully!'));
     }
 
     /**
@@ -229,7 +239,7 @@ class InvoiceController extends Controller
     public function destroy(Invoice $invoice)
     {
         if ($invoice->isPaid()) {
-            return back()->with('error', 'Paid invoices cannot be deleted.');
+            return back()->with('error', __('Paid invoices cannot be deleted.'));
         }
 
         $customerEmail = $invoice->customer_email;
@@ -244,7 +254,7 @@ class InvoiceController extends Controller
         }
 
         return redirect()->route('invoices.index')
-            ->with('success', 'Invoice deleted successfully!');
+            ->with('success', __('Invoice deleted successfully!'));
     }
 
     /**
@@ -252,11 +262,20 @@ class InvoiceController extends Controller
      */
     public function download(Invoice $invoice)
     {
-        $invoice->load(['items.product', 'creator']);
-        
-        $pdf = Pdf::loadView('invoices.pdf', compact('invoice'));
-        
-        return $pdf->download($invoice->invoice_number . '.pdf');
+        $invoice->load(['items.product', 'creator', 'order']);
+
+        try {
+            $pdf = Pdf::loadView('invoices.pdf', compact('invoice'))
+                ->setPaper('a4', 'portrait');
+
+            $filename = 'Invoice-' . str_replace(['#', '/', '\\', ' '], '-', $invoice->invoice_number) . '.pdf';
+
+            $filename = 'Invoice-' . str_replace(['#', '/', '\\', ' '], '-', $invoice->invoice_number) . '.pdf';
+            return $pdf->download($filename);
+        } catch (\Exception $e) {
+            \Log::error('PDF generation failed: ' . $e->getMessage());
+            return back()->with('error', 'Unable to generate PDF.');
+        }
     }
 
     /**
@@ -264,7 +283,7 @@ class InvoiceController extends Controller
      */
     public function print(Invoice $invoice)
     {
-        $invoice->load(['items.product', 'creator']);
+        $invoice->load(['items.product', 'creator', 'order']);
         return view('invoices.print', compact('invoice'));
     }
 
@@ -291,12 +310,20 @@ class InvoiceController extends Controller
     /**
      * Generate invoice from an existing order.
      */
-    public function generateFromOrder(Order $order)
+    public function generateFromOrder(Request $request, Order $order)
     {
-        // Check if invoice already exists for this order
-        if ($order->invoice) {
-            return redirect()->route('invoices.show', $order->invoice)
-                ->with('info', 'Invoice already exists for this order.');
+        $type = $request->get('type');
+        
+        // If type is not in request, check route name
+        if (!$type) {
+            $type = Route::currentRouteName() === 'orders.generate-quote' ? 'quote' : 'invoice';
+        }
+
+        // Check if invoice/quote already exists for this order
+        $existing = Invoice::where('order_id', $order->id)->where('type', $type)->first();
+        if ($existing) {
+            return redirect()->route('invoices.show', $existing)
+                ->with('info', ucfirst($type) . ' already exists for this order.');
         }
 
         try {
@@ -307,11 +334,12 @@ class InvoiceController extends Controller
             // Create invoice
             $invoice = Invoice::create([
                 'invoice_number' => Invoice::generateInvoiceNumber(),
+                'type' => $type,
                 'order_id' => $order->id,
                 'customer_name' => $order->customer_name ?? 'Walk-in Customer',
                 'customer_email' => $order->customer_email ?? null,
                 'customer_phone' => $order->customer_phone ?? null,
-                'customer_address' => null,
+                'customer_address' => $order->shipping_address ?? null,
                 'subtotal' => $order->subtotal,
                 'tax_amount' => $order->tax,
                 'tax_rate' => $taxRate,
@@ -330,7 +358,7 @@ class InvoiceController extends Controller
                 $invoice->items()->create([
                     'product_id' => $orderItem->product_id,
                     'product_name' => $orderItem->product_name,
-                    'product_sku' => $orderItem->product->sku ?? null,
+                    'product_sku' => $orderItem->product_sku ?? ($orderItem->product->sku ?? null),
                     'quantity' => $orderItem->quantity,
                     'unit_price' => $orderItem->price,
                     'total_price' => $orderItem->price * $orderItem->quantity,
@@ -412,14 +440,14 @@ class InvoiceController extends Controller
             $bankAccount = Account::where('code', '5141')->first();
             $cashAccount = Account::where('code', '5161')->first();
             
-            $debitAccount = ($invoice->payment_method === 'cash') ? $cashAccount : $bankAccount;
+            $debitAccount = in_array($invoice->payment_method, ['cash', 'cod']) ? $cashAccount : $bankAccount;
 
             if ($debitAccount) {
                 $paymentEntry = JournalEntry::create([
                     'date' => $invoice->issued_at,
                     'reference' => 'PAY-' . $invoice->invoice_number,
                     'description' => 'Payment for ' . $invoice->invoice_number,
-                    'journal_type' => ($invoice->payment_method === 'cash') ? 'CASH' : 'BANK',
+                    'journal_type' => in_array($invoice->payment_method, ['cash', 'cod']) ? 'CASH' : 'BANK',
                     'fiscal_year' => $year,
                 ]);
 

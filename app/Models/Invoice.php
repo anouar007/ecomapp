@@ -12,6 +12,7 @@ class Invoice extends Model
 
     protected $fillable = [
         'invoice_number',
+        'type',
         'order_id',
         'customer_name',
         'customer_email',
@@ -98,6 +99,46 @@ class Invoice extends Model
     public function scopeByStatus($query, $status)
     {
         return $query->where('payment_status', $status);
+    }
+
+    /**
+     * Check if the document is a quote.
+     */
+    public function isQuote()
+    {
+        return $this->type === 'quote';
+    }
+
+    /**
+     * Check if the document is an invoice.
+     */
+    public function isInvoice()
+    {
+        return $this->type === 'invoice';
+    }
+
+    /**
+     * Get the document type label.
+     */
+    public function getTypeLabel()
+    {
+        return $this->isQuote() ? __('Quote') : __('Invoice');
+    }
+
+    /**
+     * Get the document number label.
+     */
+    public function getNumberLabel()
+    {
+        return $this->isQuote() ? __('Quote No') : __('Invoice No');
+    }
+
+    /**
+     * Get the bill to label.
+     */
+    public function getBillToLabel()
+    {
+        return $this->isQuote() ? __('Quote To') : __('Bill To');
     }
 
     /**
@@ -238,7 +279,7 @@ class Invoice extends Model
     {
         try {
             if (class_exists('NumberFormatter')) {
-                $formatter = new \NumberFormatter('en', \NumberFormatter::SPELLOUT);
+                $formatter = new \NumberFormatter(app()->getLocale(), \NumberFormatter::SPELLOUT);
                 return ucfirst($formatter->format($this->total_amount));
             }
         } catch (\Exception $e) {
