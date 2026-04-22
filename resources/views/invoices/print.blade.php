@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ __('Invoice') }} {{ $invoice->invoice_number }}</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
@@ -216,8 +218,8 @@
                     <div style="color: #64748b; line-height: 1.4; font-size: 14px;">
                         {{ setting('company_address') }}<br>
                         <div style="margin-top: 8px; display: flex; gap: 15px;">
-                            @if(setting('company_phone')) <span>{{ setting('company_phone') }}</span> @endif
-                            @if(setting('company_email')) <span>{{ setting('company_email') }}</span> @endif
+                            @if(setting('company_phone')) <span style="display: flex; align-items: center; gap: 6px;"><i class="fas fa-phone" style="font-size: 11px; color: #6366f1;"></i> {{ setting('company_phone') }}</span> @endif
+                            @if(setting('company_email')) <span style="display: flex; align-items: center; gap: 6px;"><i class="fas fa-envelope" style="font-size: 11px; color: #6366f1;"></i> {{ setting('company_email') }}</span> @endif
                         </div>
                         <div class="fiscal-ids" style="margin-top: 15px;">
                             @if(setting('company_tax_id')) <span class="fiscal-tag">{{ __('ICE') }}: {{ setting('company_tax_id') }}</span> @endif
@@ -251,14 +253,34 @@
             <!-- Client Info -->
             <div style="margin-bottom: 40px;">
                 <p class="section-title">{{ $invoice->getBillToLabel() }}</p>
-                <h3 style="font-size: 22px; font-weight: 800; color: #1e293b; margin: 0 0 8px 0;">{{ $invoice->customer_name }}</h3>
+                <h3 style="font-size: 22px; font-weight: 800; color: #1e293b; margin: 0 0 5px 0;">{{ $invoice->customer_name }}</h3>
+                @if($invoice->ice)
+                <div style="margin-bottom: 8px;">
+                    <span style="background: #f1f5f9; color: #475569; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">{{ __('ICE') }}: {{ $invoice->ice }}</span>
+                </div>
+                @endif
                 <div style="color: #475569; font-size: 14px; line-height: 1.5;">
                     @php
                         $address = $invoice->customer_address ?: ($invoice->order->shipping_address ?? null);
                     @endphp
-                    @if($address) <div>{{ $address }}</div> @endif
-                    @if($invoice->customer_phone) <div>{{ $invoice->customer_phone }}</div> @endif
-                    @if($invoice->customer_email) <div>{{ $invoice->customer_email }}</div> @endif
+                    @if($address) 
+                    <div style="display: flex; align-items: start; gap: 10px; margin-bottom: 4px;">
+                        <i class="fas fa-map-marker-alt" style="margin-top: 3px; color: #94a3b8; font-size: 12px;"></i>
+                        <span>{{ $address }}</span>
+                    </div> 
+                    @endif
+                    @if($invoice->customer_phone) 
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                        <i class="fas fa-phone-alt" style="color: #94a3b8; font-size: 12px;"></i>
+                        <span>{{ $invoice->customer_phone }}</span>
+                    </div> 
+                    @endif
+                    @if($invoice->customer_email) 
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-envelope" style="color: #94a3b8; font-size: 12px;"></i>
+                        <span>{{ $invoice->customer_email }}</span>
+                    </div> 
+                    @endif
                 </div>
             </div>
 

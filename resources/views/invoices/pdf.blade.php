@@ -3,6 +3,8 @@
 <head>
     <meta charset="utf-8">
     <title>{{ __('Invoice') }} {{ $invoice->invoice_number }}</title>
+    <!-- Font Awesome 4.7 (better compatibility with DomPDF) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         @page {
             margin: 0;
@@ -156,9 +158,21 @@
                 <td style="width: 60%; vertical-align: top; text-align: {{ app()->getLocale() === 'ar' ? 'right' : 'left' }};">
                     <div class="company-info">
                         <h1 class="company-name">{{ setting('company_name', setting('app_name')) }}</h1>
-                        <p>{{ setting('company_address') }}</p>
-                        @if(setting('company_email')) <p>{{ setting('company_email') }}</p> @endif
-                        @if(setting('company_phone')) <p>{{ setting('company_phone') }}</p> @endif
+                        <p style="margin-bottom: 5px;">{{ setting('company_address') }}</p>
+                        <div style="margin-top: 8px;">
+                            @if(setting('company_email')) 
+                            <span style="margin-right: 15px; display: inline-block;">
+                                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNjM2NmYxIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTQgNGgxNmMxLjEgMCAyIC45IDIgMnYEyYzAgMS4xLS45IDItMiAyaC0xNmMtMS4xIDAtMi0uOS0yLTJWNmMwLTEuMS45LTIgMi0yeiIvPjxwb2x5bGluZSBwb2ludHM9IjIyLDYgMTIsMTMgMiw2Ii8+PC9zdmc+" style="width: 8px; height: 8px; vertical-align: middle; margin-right: 4px;">
+                                <span style="color: #64748b; font-size: 11px;">{{ setting('company_email') }}</span>
+                            </span> 
+                            @endif
+                            @if(setting('company_phone')) 
+                            <span style="display: inline-block;">
+                                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNjM2NmYxIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTIyIDE2LjkydjNhMiAyIDAgMCAxLTIuMTggMiAxOS43OSAxOS43OSIDAgMCAxLTguNjMtMy4wNyAxOS41IDE5LjUgMCAwIDEtNi02IDE5Ljc5IDE5Ljc5IDAgMCAxLTMuMDctOC42N0EyIDIgMCAwIDEgNC4xMSAyaDNhMiAyIDAgMCAxIDIgMS43MiAxMi44NCAxMi44NCAwIDAgMCAuNyAyLjgxIDIgMiAwIDAgMS0uNDUgMi4xMUw4LjA5IDkuOTFhMTYgMTYgMCAwIDAgNiA2bDEuMjctMS4yN2EyIDIgMCAwIDEgMi4xMS0uNDUgMTIuODQgMTIuODQgMCAwIDAgMi44MS43QTIgMiAwIDAgMSAyMiAxNi45MnoiLz48L3N2Zz4=" style="width: 8px; height: 8px; vertical-align: middle; margin-right: 4px;">
+                                <span style="color: #64748b; font-size: 11px;">{{ setting('company_phone') }}</span>
+                            </span> 
+                            @endif
+                        </div>
                         <div style="margin-top: 15px;">
                             @if(setting('company_tax_id')) <span class="fiscal-tag">{{ __('ICE') }}: {{ setting('company_tax_id') }}</span> @endif
                             @if(setting('company_registry_id')) <span class="fiscal-tag">{{ __('RC') }}: {{ setting('company_registry_id') }}</span> @endif
@@ -200,9 +214,26 @@
                 @php
                     $address = $invoice->customer_address ?: ($invoice->order->shipping_address ?? null);
                 @endphp
-                @if($address) <p>{{ $address }}</p> @endif
-                @if($invoice->customer_phone) <p>{{ $invoice->customer_phone }}</p> @endif
-                @if($invoice->customer_email) <p>{{ $invoice->customer_email }}</p> @endif
+                <div style="margin-top: 5px;">
+                    @if($address) 
+                    <div style="margin-bottom: 5px;">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOTRhM2I4IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTIxIDEwYzAgNy05IDEzLTkgMTNzLTktNi05LTEzYTkgOSAwIDAgMSAxOCAwemIvPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTAiIHI9IjMiLz48L3N2Zz4=" style="width: 8px; height: 8px; vertical-align: middle; margin-right: 6px;">
+                        <span style="color: #475569; font-size: 12px;">{{ $address }}</span>
+                    </div> 
+                    @endif
+                    @if($invoice->customer_phone) 
+                    <div style="margin-bottom: 5px;">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOTRhM2I4IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTIyIDE2LjkydjNhMiAyIDAgMCAxLTIuMTggMiAxOS43OSAxOS43OSIDAgMCAxLTguNjMtMy4wNyAxOS41IDE5LjUgMCAwIDEtNi02IDE5Ljc5IDE5Ljc5IDAgMCAxLTMuMDctOC42N0EyIDIgMCAwIDEgNC4xMSAyaDNhMiAyIDAgMCAxIDIgMS43MiAxMi44NCAxMi44NCAwIDAgMCAuNyAyLjgxIDIgMiAwIDAgMS0uNDUgMi4xMUw4LjA5IDkuOTFhMTYgMTYgMCAwIDAgNiA2bDEuMjctMS4yN2EyIDIgMCAwIDEgMi4xMS0uNDUgMTIuODQgMTIuODQgMCAwIDAgMi44MS43QTIgMiAwIDAgMSAyMiAxNi45MnoiLz48L3N2Zz4=" style="width: 8px; height: 8px; vertical-align: middle; margin-right: 6px;">
+                        <span style="color: #475569; font-size: 12px;">{{ $invoice->customer_phone }}</span>
+                    </div> 
+                    @endif
+                    @if($invoice->customer_email) 
+                    <div>
+                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOTRhM2I4IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTQgNGgxNmMxLjEgMCAyIDQuOSAyIDydjEyYzAgMS4xLS45IDItMiAyaC0xNmMtMS4xIDAtMi0uOS0yLTJWNmMwLTEuMS45LTIgMi0yeiIvPjxwb2x5bGluZSBwb2ludHM9IjIyLDYgMTIsMTMgMiw2Ii8+PC9zdmc+" style="width: 8px; height: 8px; vertical-align: middle; margin-right: 6px;">
+                        <span style="color: #475569; font-size: 12px;">{{ $invoice->customer_email }}</span>
+                    </div> 
+                    @endif
+                </div>
             </div>
         </div>
 
