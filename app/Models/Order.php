@@ -15,6 +15,7 @@ class Order extends Model
         'customer_name',
         'customer_email',
         'customer_phone',
+        'ice',
         'shipping_address',
         'shipping_city',
         'shipping_state',

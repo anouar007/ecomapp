@@ -16,7 +16,7 @@ class Invoice extends Model
         'order_id',
         'customer_name',
         'customer_email',
-        'customer_phone',
+        'customer_phone','ice',
         'customer_address',
         'subtotal',
         'tax_amount',

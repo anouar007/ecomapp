@@ -52,6 +52,10 @@ class CheckoutController extends Controller
             $subtotal += $details['price'] * $details['quantity'];
         }
 
+        $taxRateSetting = floatval(setting('tax_rate', 0));
+        $tax = ($subtotal * $taxRateSetting) / 100;
+        $total = $subtotal + $tax;
+
         // Create Order
         $order = Order::create([
             'order_number' => 'ORD-' . strtoupper(Str::random(10)),
@@ -59,13 +63,15 @@ class CheckoutController extends Controller
             'customer_name' => $request->customer_name,
             'customer_email' => $request->customer_email,
             'customer_phone' => $request->customer_phone,
+            'ice' => $request->ice,
             'shipping_address' => $request->shipping_address,
             'shipping_city' => $request->shipping_city,
             'shipping_state' => $request->shipping_state,
             'shipping_zip'   => 'N/A',
             'shipping_country' => 'Morocco',
             'subtotal' => $subtotal,
-            'total' => $subtotal,
+            'tax' => $tax,
+            'total' => $total,
             'status' => 'pending',
             'payment_status' => 'pending',
             'payment_method' => 'cod',

@@ -265,16 +265,20 @@ class InvoiceController extends Controller
         $invoice->load(['items.product', 'creator', 'order']);
 
         try {
+            // Clean any existing output buffers to prevent PDF corruption
+            if (ob_get_length()) {
+                ob_end_clean();
+            }
+
             $pdf = Pdf::loadView('invoices.pdf', compact('invoice'))
                 ->setPaper('a4', 'portrait');
 
-            $filename = 'Invoice-' . str_replace(['#', '/', '\\', ' '], '-', $invoice->invoice_number) . '.pdf';
+            $filename = ($invoice->isQuote() ? 'Quote-' : 'Invoice-') . str_replace(['#', '/', '\\', ' '], '-', $invoice->invoice_number) . '.pdf';
 
-            $filename = 'Invoice-' . str_replace(['#', '/', '\\', ' '], '-', $invoice->invoice_number) . '.pdf';
             return $pdf->download($filename);
         } catch (\Exception $e) {
             \Log::error('PDF generation failed: ' . $e->getMessage());
-            return back()->with('error', 'Unable to generate PDF.');
+            return back()->with('error', 'Unable to generate PDF: ' . $e->getMessage());
         }
     }
 
@@ -329,7 +333,10 @@ class InvoiceController extends Controller
         try {
             DB::beginTransaction();
 
-            $taxRate = floatval(setting('tax_rate', 10));
+            $taxRate = floatval(setting('tax_rate', 0));
+            $subtotal = $order->subtotal;
+            $taxAmount = ($subtotal * $taxRate) / 100;
+            $totalAmount = $subtotal + $taxAmount;
 
             // Create invoice
             $invoice = Invoice::create([
@@ -339,12 +346,13 @@ class InvoiceController extends Controller
                 'customer_name' => $order->customer_name ?? 'Walk-in Customer',
                 'customer_email' => $order->customer_email ?? null,
                 'customer_phone' => $order->customer_phone ?? null,
+                'ice' => $order->ice ?? null,
                 'customer_address' => $order->shipping_address ?? null,
-                'subtotal' => $order->subtotal,
-                'tax_amount' => $order->tax,
+                'subtotal' => $subtotal,
+                'tax_amount' => $taxAmount,
                 'tax_rate' => $taxRate,
                 'discount_amount' => 0,
-                'total_amount' => $order->total,
+                'total_amount' => $totalAmount,
                 'payment_method' => $order->payment_method ?? 'cash',
                 'payment_status' => $order->payment_status === 'paid' ? 'paid' : 'unpaid',
                 'notes' => null,

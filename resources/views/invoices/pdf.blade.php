@@ -194,6 +194,9 @@
             <div class="section-title">{{ $invoice->getBillToLabel() }}</div>
             <div class="client-info">
                 <h3 class="client-name">{{ $invoice->customer_name }}</h3>
+                @if($invoice->ice)
+                <p style="margin-bottom: 5px;"><span class="fiscal-tag" style="background: #f1f5f9; padding: 2px 6px; border-radius: 3px; font-size: 10px;">{{ __('ICE') }}: {{ $invoice->ice }}</span></p>
+                @endif
                 @php
                     $address = $invoice->customer_address ?: ($invoice->order->shipping_address ?? null);
                 @endphp

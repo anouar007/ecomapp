@@ -32,6 +32,10 @@
                                                required>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">ICE <span class="text-muted fw-normal">(optionnel)</span></label>
+                                    <input type="text" name="ice" class="form-control bg-light border-0 py-2" placeholder="Identifiant Commun de l'Entreprise">
+                                </div>
                                 <div class="col-12">
                                     <label class="form-label small fw-bold text-muted">ADRESSE</label>
                                     <input type="text" name="shipping_address" class="form-control bg-light border-0 py-2" required>

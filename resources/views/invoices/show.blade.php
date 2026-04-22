@@ -139,7 +139,12 @@
             <!-- Client Info Section -->
             <div style="margin-bottom: 60px;">
                 <p style="color: #6366f1; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px;">{{ $invoice->getBillToLabel() }}</p>
-                <h3 style="font-size: 26px; font-weight: 800; color: #1e293b; margin: 0 0 10px 0; line-height: 1.2;">{{ $invoice->customer_name }}</h3>
+                <h3 style="font-size: 26px; font-weight: 800; color: #1e293b; margin: 0 0 5px 0; line-height: 1.2;">{{ $invoice->customer_name }}</h3>
+                @if($invoice->ice)
+                <div style="margin-bottom: 10px;">
+                    <span style="background: #f1f5f9; color: #475569; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">{{ __('ICE') }}: {{ $invoice->ice }}</span>
+                </div>
+                @endif
                 <div style="color: #475569; font-size: 15px; line-height: 1.6;">
                     @php
                         $address = $invoice->customer_address ?: ($invoice->order->shipping_address ?? null);
