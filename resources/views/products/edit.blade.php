@@ -266,6 +266,81 @@
     <div class="row g-4">
         <!-- Main Column -->
         <div class="col-lg-8">
+            <!-- Media Gallery Card -->
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="form-section-title">
+                        <i class="fas fa-images"></i> {{ __('Media Gallery') }}
+                    </div>
+                    
+                    <div class="multi-image-upload" id="imagePreviewContainer">
+                        @foreach($product->images as $image)
+                        <div class="image-upload-box" data-image-id="{{ $image->id }}">
+                            <img src="{{ asset('storage/' . $image->image_path) }}">
+                            @if($image->is_primary)
+                                <span class="primary-badge">{{ __('PRIMARY') }}</span>
+                            @endif
+                            <span class="image-remove-btn" onclick="markImageForRemoval({{ $image->id }}, this)"><i class="fas fa-times"></i></span>
+                        </div>
+                        @endforeach
+                        <div class="image-upload-box" onclick="document.getElementById('images').click()">
+                            <div class="text-center">
+                                <i class="fas fa-cloud-arrow-up fs-3 text-primary mb-2"></i>
+                                <div class="x-small fw-bold">{{ __('Upload') }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="file" id="images" name="images[]" accept="image/*" multiple style="display: none;" onchange="handleNewImages(event)">
+                    
+                    <div class="mt-3 p-3 bg-light rounded-3 small text-muted">
+                        <i class="fas fa-info-circle me-1"></i> {{ __('First image will be used as the primary thumbnail.') }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status & Category Card -->
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="form-section-title">
+                        <i class="fas fa-cog"></i> {{ __('Status & Category') }}
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="form-group mb-0">
+                                <label class="form-label">{{ __('Product Status') }}</label>
+                                <select name="status" class="form-select">
+                                    <option value="active" {{ old('status', $product->status) == 'active' ? 'selected' : '' }}>{{ __('Active / Visible') }}</option>
+                                    <option value="inactive" {{ old('status', $product->status) == 'inactive' ? 'selected' : '' }}>{{ __('Hidden / Draft') }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-0">
+                                <label class="form-label">{{ __('Primary Category') }}</label>
+                                <select name="category_id" class="form-select" id="category_id">
+                                    <option value="">{{ __('-- Select Category --') }}</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
+                                            {{ $category->breadcrumb }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-0">
+                                <label class="form-label">{{ __('SKU / Identifier') }} <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input type="text" name="sku" id="sku" class="form-control font-monospace small" value="{{ old('sku', $product->sku) }}" placeholder="AUTOGEN" required>
+                                    <button type="button" onclick="generateSKU()" class="btn btn-light border"><i class="fas fa-sync-alt"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Basic Information Card -->
             <div class="card mb-4 border-0 shadow-sm">
                 <div class="card-body p-4">
@@ -455,74 +530,7 @@
         <!-- Sidebar Column -->
         <div class="col-lg-4">
             <div class="sticky-actions">
-                <!-- Status & Category Card -->
-                <div class="card mb-4 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="form-section-title">
-                            <i class="fas fa-cog"></i> {{ __('Status & Category') }}
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">{{ __('Product Status') }}</label>
-                            <select name="status" class="form-select">
-                                <option value="active" {{ old('status', $product->status) == 'active' ? 'selected' : '' }}>{{ __('Active / Visible') }}</option>
-                                <option value="inactive" {{ old('status', $product->status) == 'inactive' ? 'selected' : '' }}>{{ __('Hidden / Draft') }}</option>
-                            </select>
-                        </div>
 
-                        <div class="form-group">
-                            <label class="form-label">{{ __('Primary Category') }}</label>
-                            <select name="category_id" class="form-select" id="category_id">
-                                <option value="">{{ __('-- Select Category --') }}</option>
-                                @foreach($categories as $category)
-                                    <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
-                                        {{ $category->breadcrumb }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="form-group mb-0">
-                            <label class="form-label">{{ __('SKU / Identifier') }} <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <input type="text" name="sku" id="sku" class="form-control font-monospace small" value="{{ old('sku', $product->sku) }}" placeholder="AUTOGEN" required>
-                                <button type="button" onclick="generateSKU()" class="btn btn-light border"><i class="fas fa-sync-alt"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Media Gallery Card -->
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="form-section-title">
-                            <i class="fas fa-images"></i> {{ __('Media Gallery') }}
-                        </div>
-                        
-                        <div class="multi-image-upload" id="imagePreviewContainer">
-                            @foreach($product->images as $image)
-                            <div class="image-upload-box" data-image-id="{{ $image->id }}">
-                                <img src="{{ asset('storage/' . $image->image_path) }}">
-                                @if($image->is_primary)
-                                    <span class="primary-badge">{{ __('PRIMARY') }}</span>
-                                @endif
-                                <span class="image-remove-btn" onclick="markImageForRemoval({{ $image->id }}, this)"><i class="fas fa-times"></i></span>
-                            </div>
-                            @endforeach
-                            <div class="image-upload-box" onclick="document.getElementById('images').click()">
-                                <div class="text-center">
-                                    <i class="fas fa-cloud-arrow-up fs-3 text-primary mb-2"></i>
-                                    <div class="x-small fw-bold">{{ __('Upload') }}</div>
-                                </div>
-                            </div>
-                        </div>
-                        <input type="file" id="images" name="images[]" accept="image/*" multiple style="display: none;" onchange="handleNewImages(event)">
-                        
-                        <div class="mt-3 p-3 bg-light rounded-3 small text-muted">
-                            <i class="fas fa-info-circle me-1"></i> {{ __('First image will be used as the primary thumbnail.') }}
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

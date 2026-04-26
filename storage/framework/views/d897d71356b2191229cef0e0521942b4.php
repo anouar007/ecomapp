@@ -267,6 +267,85 @@
     <div class="row g-4">
         <!-- Main Column -->
         <div class="col-lg-8">
+            <!-- Media Gallery Card -->
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="form-section-title">
+                        <i class="fas fa-images"></i> <?php echo e(__('Media Gallery')); ?>
+
+                    </div>
+                    
+                    <div class="multi-image-upload" id="imagePreviewContainer">
+                        <?php $__currentLoopData = $product->images; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $image): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <div class="image-upload-box" data-image-id="<?php echo e($image->id); ?>">
+                            <img src="<?php echo e(asset('storage/' . $image->image_path)); ?>">
+                            <?php if($image->is_primary): ?>
+                                <span class="primary-badge"><?php echo e(__('PRIMARY')); ?></span>
+                            <?php endif; ?>
+                            <span class="image-remove-btn" onclick="markImageForRemoval(<?php echo e($image->id); ?>, this)"><i class="fas fa-times"></i></span>
+                        </div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        <div class="image-upload-box" onclick="document.getElementById('images').click()">
+                            <div class="text-center">
+                                <i class="fas fa-cloud-arrow-up fs-3 text-primary mb-2"></i>
+                                <div class="x-small fw-bold"><?php echo e(__('Upload')); ?></div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="file" id="images" name="images[]" accept="image/*" multiple style="display: none;" onchange="handleNewImages(event)">
+                    
+                    <div class="mt-3 p-3 bg-light rounded-3 small text-muted">
+                        <i class="fas fa-info-circle me-1"></i> <?php echo e(__('First image will be used as the primary thumbnail.')); ?>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status & Category Card -->
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="form-section-title">
+                        <i class="fas fa-cog"></i> <?php echo e(__('Status & Category')); ?>
+
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="form-group mb-0">
+                                <label class="form-label"><?php echo e(__('Product Status')); ?></label>
+                                <select name="status" class="form-select">
+                                    <option value="active" <?php echo e(old('status', $product->status) == 'active' ? 'selected' : ''); ?>><?php echo e(__('Active / Visible')); ?></option>
+                                    <option value="inactive" <?php echo e(old('status', $product->status) == 'inactive' ? 'selected' : ''); ?>><?php echo e(__('Hidden / Draft')); ?></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-0">
+                                <label class="form-label"><?php echo e(__('Primary Category')); ?></label>
+                                <select name="category_id" class="form-select" id="category_id">
+                                    <option value=""><?php echo e(__('-- Select Category --')); ?></option>
+                                    <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($category->id); ?>" <?php echo e(old('category_id', $product->category_id) == $category->id ? 'selected' : ''); ?>>
+                                            <?php echo e($category->breadcrumb); ?>
+
+                                        </option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-0">
+                                <label class="form-label"><?php echo e(__('SKU / Identifier')); ?> <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input type="text" name="sku" id="sku" class="form-control font-monospace small" value="<?php echo e(old('sku', $product->sku)); ?>" placeholder="AUTOGEN" required>
+                                    <button type="button" onclick="generateSKU()" class="btn btn-light border"><i class="fas fa-sync-alt"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Basic Information Card -->
             <div class="card mb-4 border-0 shadow-sm">
                 <div class="card-body p-4">
@@ -461,78 +540,7 @@
         <!-- Sidebar Column -->
         <div class="col-lg-4">
             <div class="sticky-actions">
-                <!-- Status & Category Card -->
-                <div class="card mb-4 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="form-section-title">
-                            <i class="fas fa-cog"></i> <?php echo e(__('Status & Category')); ?>
 
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label"><?php echo e(__('Product Status')); ?></label>
-                            <select name="status" class="form-select">
-                                <option value="active" <?php echo e(old('status', $product->status) == 'active' ? 'selected' : ''); ?>><?php echo e(__('Active / Visible')); ?></option>
-                                <option value="inactive" <?php echo e(old('status', $product->status) == 'inactive' ? 'selected' : ''); ?>><?php echo e(__('Hidden / Draft')); ?></option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label"><?php echo e(__('Primary Category')); ?></label>
-                            <select name="category_id" class="form-select" id="category_id">
-                                <option value=""><?php echo e(__('-- Select Category --')); ?></option>
-                                <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <option value="<?php echo e($category->id); ?>" <?php echo e(old('category_id', $product->category_id) == $category->id ? 'selected' : ''); ?>>
-                                        <?php echo e($category->breadcrumb); ?>
-
-                                    </option>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                            </select>
-                        </div>
-
-                        <div class="form-group mb-0">
-                            <label class="form-label"><?php echo e(__('SKU / Identifier')); ?> <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <input type="text" name="sku" id="sku" class="form-control font-monospace small" value="<?php echo e(old('sku', $product->sku)); ?>" placeholder="AUTOGEN" required>
-                                <button type="button" onclick="generateSKU()" class="btn btn-light border"><i class="fas fa-sync-alt"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Media Gallery Card -->
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="form-section-title">
-                            <i class="fas fa-images"></i> <?php echo e(__('Media Gallery')); ?>
-
-                        </div>
-                        
-                        <div class="multi-image-upload" id="imagePreviewContainer">
-                            <?php $__currentLoopData = $product->images; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $image): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <div class="image-upload-box" data-image-id="<?php echo e($image->id); ?>">
-                                <img src="<?php echo e(asset('storage/' . $image->image_path)); ?>">
-                                <?php if($image->is_primary): ?>
-                                    <span class="primary-badge"><?php echo e(__('PRIMARY')); ?></span>
-                                <?php endif; ?>
-                                <span class="image-remove-btn" onclick="markImageForRemoval(<?php echo e($image->id); ?>, this)"><i class="fas fa-times"></i></span>
-                            </div>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                            <div class="image-upload-box" onclick="document.getElementById('images').click()">
-                                <div class="text-center">
-                                    <i class="fas fa-cloud-arrow-up fs-3 text-primary mb-2"></i>
-                                    <div class="x-small fw-bold"><?php echo e(__('Upload')); ?></div>
-                                </div>
-                            </div>
-                        </div>
-                        <input type="file" id="images" name="images[]" accept="image/*" multiple style="display: none;" onchange="handleNewImages(event)">
-                        
-                        <div class="mt-3 p-3 bg-light rounded-3 small text-muted">
-                            <i class="fas fa-info-circle me-1"></i> <?php echo e(__('First image will be used as the primary thumbnail.')); ?>
-
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
