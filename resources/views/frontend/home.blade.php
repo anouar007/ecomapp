@@ -115,11 +115,9 @@
         @php $cats = $allCategories; @endphp
         @if($cats->count() > 0)
         <div class="cat-masonry-grid">
-            {{-- First category: large featured --}}
-            @if($cats->count() >= 1)
-            @php $c = $cats[0]; @endphp
-            <div class="cat-masonry-featured" data-aos="fade-right" data-aos-delay="0">
-                <a href="#" class="cat-masonry-card text-decoration-none" data-slug="{{ $c->slug }}">
+            @foreach($cats as $i => $c)
+            <div data-aos="fade-up" data-aos-delay="{{ $i * 100 }}">
+                <a href="{{ route('shop.index', ['category' => $c->slug]) }}" class="cat-masonry-card text-decoration-none" data-slug="{{ $c->slug }}">
                     <div class="cat-masonry-inner position-relative overflow-hidden rounded-4">
                         <img src="{{ $c->image ? (Str::startsWith($c->image,'http') ? $c->image : Storage::url($c->image)) : asset('images/placeholder-cat.jpg') }}"
                              class="cat-masonry-img w-100 h-100 object-fit-cover" alt="{{ $c->translated_name }}">
@@ -136,58 +134,11 @@
                             </div>
                         </div>
                         {{-- Number badge --}}
-                        <div class="position-absolute top-0 end-0 m-3" style="font-size:4rem;font-weight:900;color:rgba(255,255,255,.06);line-height:1;font-family:'Playfair Display',serif;">01</div>
+                        <div class="position-absolute top-0 end-0 m-3" style="font-size:3rem;font-weight:900;color:rgba(255,255,255,.06);line-height:1;font-family:'Playfair Display',serif;">{{ sprintf('%02d', $i + 1) }}</div>
                     </div>
                 </a>
             </div>
-            @endif
-
-            {{-- Right side: smaller grid --}}
-            <div class="cat-masonry-right">
-                @foreach($cats->skip(1)->take(3) as $i => $c)
-                <div data-aos="fade-left" data-aos-delay="{{ ($i + 1) * 100 }}">
-                    <a href="#" class="cat-masonry-card text-decoration-none" data-slug="{{ $c->slug }}">
-                        <div class="cat-masonry-inner position-relative overflow-hidden rounded-4">
-                            <img src="{{ $c->image ? (Str::startsWith($c->image,'http') ? $c->image : Storage::url($c->image)) : asset('images/placeholder-cat.jpg') }}"
-                                 class="cat-masonry-img w-100 h-100 object-fit-cover" alt="{{ $c->translated_name }}">
-                            <div class="cat-masonry-overlay position-absolute" style="inset:0;background:linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%);"></div>
-                            <div class="cat-masonry-content position-absolute w-100" style="bottom:0;left:0;padding:14px;">
-                                <h6 class="text-white fw-800 mb-1" style="font-size:0.85rem; line-height: 1.2;">{{ $c->translated_name }}</h6>
-                                <div class="d-flex align-items-center gap-1 opacity-75">
-                                    <span class="x-small text-white" style="font-size:0.6rem;">{{ __('Explore') }}</span>
-                                    <i class="fas fa-arrow-right" style="font-size:0.5rem;color:#3BB878;"></i>
-                                </div>
-                            </div>
-                            {{-- Number badge --}}
-                            <div class="position-absolute top-0 end-0 m-2" style="font-size:2.5rem;font-weight:900;color:rgba(255,255,255,.07);line-height:1;font-family:'Playfair Display',serif;">0{{ $i + 2 }}</div>
-                        </div>
-                    </a>
-                </div>
-                @endforeach
-            </div>
-
-            {{-- Extra categories below if more than 4 --}}
-            @if($cats->count() > 4)
-            <div class="cat-masonry-extra">
-                @foreach($cats->skip(4) as $i => $c)
-                <div data-aos="fade-up" data-aos-delay="{{ $i * 80 }}">
-                    <a href="#" class="cat-masonry-card text-decoration-none" data-slug="{{ $c->slug }}">
-                        <div class="cat-masonry-inner position-relative overflow-hidden rounded-4">
-                            <img src="{{ $c->image ? (Str::startsWith($c->image,'http') ? $c->image : Storage::url($c->image)) : asset('images/placeholder-cat.jpg') }}"
-                                 class="cat-masonry-img w-100 h-100 object-fit-cover" alt="{{ $c->translated_name }}">
-                            <div class="cat-masonry-overlay position-absolute" style="inset:0;background:linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%);"></div>
-                            <div class="cat-masonry-content position-absolute w-100" style="bottom:0;left:0;padding:14px;">
-                                <h6 class="text-white fw-800 mb-1" style="font-size:0.85rem; line-height: 1.2;">{{ $c->translated_name }}</h6>
-                                <div class="d-flex align-items-center gap-1 opacity-75">
-                                    <span class="x-small text-white" style="font-size:0.6rem;">{{ __('Explore') }} <span class="fa-arrow-right">→</span></span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                @endforeach
-            </div>
-            @endif
+            @endforeach
         </div>
         @endif
     </div>
@@ -195,27 +146,15 @@
 
 @push('styles')
 <style>
-/* Masonry Layout */
+/* Grid Layout */
 .cat-masonry-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
-    gap: 16px;
-}
-.cat-masonry-featured { grid-column: 1; grid-row: 1; }
-.cat-masonry-right {
-    grid-column: 2; grid-row: 1;
-    display: grid; grid-template-rows: repeat(3,1fr); gap: 16px;
-}
-.cat-masonry-extra {
-    grid-column: 1 / -1;
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
 }
 
 /* Card sizes */
-.cat-masonry-featured .cat-masonry-inner { height: 480px; }
-.cat-masonry-right .cat-masonry-inner { height: 148px; }
-.cat-masonry-extra .cat-masonry-inner { height: 160px; }
+.cat-masonry-inner { height: 280px; }
 
 /* Card base */
 .cat-masonry-inner {
@@ -234,12 +173,8 @@
 
 /* Mobile */
 @media(max-width:767px) {
-    .cat-masonry-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-    .cat-masonry-featured { grid-column: 1 / -1; }
-    .cat-masonry-featured .cat-masonry-inner { height: 180px !important; }
-    .cat-masonry-right { display: contents; }
-    .cat-masonry-right .cat-masonry-inner { height: 140px !important; }
-    .cat-masonry-extra { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .cat-masonry-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .cat-masonry-inner { height: 180px; }
     
     .section-title { font-size: 1.4rem !important; }
     .section-label { font-size: 0.7rem !important; padding: 4px 12px !important; }
@@ -380,38 +315,6 @@
     </div>
 </section>
 
-{{-- TESTIMONIALS --}}
-<section class="py-5 bg-white">
-    <div class="container py-3">
-        <div class="text-center mb-5" data-aos="fade-up">
-            <div class="section-label mx-auto">{{ __('Community Love') }}</div>
-            <h2 class="section-title">{{ __('What Customers Say') }}</h2>
-            <div class="section-divider mx-auto"></div>
-        </div>
-        <div class="row g-4">
-            @foreach([
-                [__('Sarah A.'),__('Rabat'),'⭐⭐⭐⭐⭐',__('The honey I ordered exceeded all expectations. Incredibly pure taste. I can feel the quality with every spoonful. This is the real thing — nothing like supermarket honey!')],
-                [__('Maryam B.'),__('Casablanca'),'⭐⭐⭐⭐⭐',__('Fast delivery, beautiful packaging, and the argan oil works wonders on my skin. The cooperative is extremely responsive. Ordering again soon!')],
-                [__('Khadija M.'),__('Tangier'),'⭐⭐⭐⭐⭐',__('The saffron is absolutely authentic — rich color and intense aroma. My whole family now orders from Ait Oumdis. Simply the best natural products in Morocco.')],
-            ] as $i => $t)
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ $i * 100 }}">
-                <div class="rounded-4 p-4 h-100 border-0 shadow-sm bg-white position-relative overflow-hidden" style="border-top: 3px solid #3BB878 !important;">
-                    <div class="position-absolute top-0 end-0 opacity-5" style="font-size:5rem;line-height:1;font-family:Georgia,serif;">"</div>
-                    <div class="mb-3">{{ $t[2] }}</div>
-                    <p class="text-muted small lh-lg mb-4">"{{ $t[3] }}"</p>
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="rounded-circle bg-green d-flex align-items-center justify-content-center fw-800 text-white" style="width:44px;height:44px;flex-shrink:0;">{{ mb_substr($t[0],0,1) }}</div>
-                        <div>
-                            <div class="fw-700 text-dark small">{{ $t[0] }}</div>
-                            <div class="x-small text-muted"><i class="fas fa-map-marker-alt me-1 text-green"></i>{{ $t[1] }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @endforeach
-        </div>
-    </div>
-</section>
 
 {{-- FAQ --}}
 <section class="py-5" style="background:#f9fafb;">

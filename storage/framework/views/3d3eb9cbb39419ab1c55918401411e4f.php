@@ -231,16 +231,28 @@
         /* ── Scroll to Top ── */
         #scrollTopBtn {
             position: fixed; bottom: 30px; right: 30px; z-index: 1100;
-            width: 50px; height: 50px; border-radius: 50%;
+            width: 54px; height: 54px; border-radius: 16px;
             background: #3BB878; color: #fff; border: none;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 8px 25px rgba(59,184,120,0.4);
-            opacity: 0; transform: translateY(20px);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer;
+            box-shadow: 0 10px 30px rgba(59,184,120,0.4);
+            opacity: 0; transform: translateY(30px) scale(0.8);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); cursor: pointer;
+            visibility: hidden;
         }
-        #scrollTopBtn.visible { opacity: 1; transform: translateY(0); }
-        #scrollTopBtn:hover { background: #2f9461; transform: translateY(-5px); box-shadow: 0 12px 30px rgba(59,184,120,0.5); }
-        #scrollTopBtn i { font-size: 1.1rem; font-weight: 900; }
+        #scrollTopBtn.visible { opacity: 1; transform: translateY(0) scale(1); visibility: visible; }
+        #scrollTopBtn:hover { 
+            background: #2f9461; transform: translateY(-8px) scale(1.05); 
+            box-shadow: 0 15px 40px rgba(59,184,120,0.5); 
+        }
+        #scrollTopBtn i { font-size: 1.2rem; transition: transform 0.3s; }
+        #scrollTopBtn:hover i { transform: translateY(-3px); }
+
+        @keyframes btnPulse {
+            0% { box-shadow: 0 0 0 0 rgba(59,184,120, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(59,184,120, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59,184,120, 0); }
+        }
+        #scrollTopBtn.visible { animation: btnPulse 2s infinite; }
 
         @media(max-width: 991px) {
             #scrollTopBtn { bottom: 85px; right: 20px; width: 44px; height: 44px; }
@@ -374,13 +386,13 @@
                 <a href="<?php echo e(url('/')); ?>" class="text-decoration-none logo-link">
                     <div class="d-flex align-items-center gap-2">
                         <?php if(setting('app_logo')): ?>
-                            <img src="<?php echo e(Storage::url(setting('app_logo'))); ?>" alt="<?php echo e(__('Logo')); ?>" style="height: 38px; width: auto; flex-shrink: 0;">
+                            <img src="<?php echo e(Storage::url(setting('app_logo'))); ?>" alt="<?php echo e(__('Logo')); ?>" style="height: 55px; width: auto; flex-shrink: 0;">
                         <?php else: ?>
-                            <div style="width: 38px; height: 38px; background: #3BB878; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                <i class="fas fa-leaf text-white"></i>
+                            <div style="width: 50px; height: 50px; background: #3BB878; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="fas fa-leaf text-white fs-4"></i>
                             </div>
                         <?php endif; ?>
-                        <span class="fs-4 fw-bold text-dark logo-text"><?php echo e(__('Ait')); ?> <span class="text-green"><?php echo e(__('Oumdis')); ?></span></span>
+                        <span class="fs-3 fw-bold text-dark logo-text"><?php echo e(__('Ait')); ?> <span class="text-green"><?php echo e(__('Oumdis')); ?></span></span>
                     </div>
                 </a>
 
@@ -388,7 +400,6 @@
                 <nav class="d-none d-lg-flex align-items-center gap-4">
                     <a href="<?php echo e(url('/')); ?>" class="text-decoration-none text-muted fw-500 small hover-green transition-all"><?php echo e(__('Home')); ?></a>
                     <a href="<?php echo e(route('shop.index')); ?>" class="text-decoration-none text-muted fw-500 small hover-green transition-all"><?php echo e(__('Shop')); ?></a>
-                    <a href="<?php echo e(url('/#about')); ?>" class="text-decoration-none text-muted fw-500 small hover-green transition-all"><?php echo e(__('About')); ?></a>
                 </nav>
 
                 <!-- Actions -->
@@ -447,14 +458,14 @@
                         <span class="text-white fw-bold fs-5"><?php echo e(__('Ait')); ?> <span class="text-green"><?php echo e(__('Oumdis')); ?></span></span>
                     </div>
                     <p class="small lh-lg mb-4" style="color: rgba(255,255,255,0.55);">
-                        <?php echo e(setting_trans('frontend_footer_text', __('A Moroccan cooperative dedicated to bringing you the finest natural products directly from the Atlas Mountains. Pure honey, argan oil, saffron, and more — harvested with tradition and love.'))); ?>
+                        <?php echo e(setting_trans('app_description', __('A Moroccan cooperative dedicated to bringing you the finest natural products directly from the Atlas Mountains. Pure honey, argan oil, saffron, and more — harvested with tradition and love.'))); ?>
 
                     </p>
                     <div class="d-flex gap-2">
-                        <a href="#" class="footer-social"><i class="fab fa-instagram small"></i></a>
-                        <a href="#" class="footer-social"><i class="fab fa-facebook-f small"></i></a>
-                        <a href="#" class="footer-social"><i class="fab fa-tiktok small"></i></a>
-                        <a href="#" class="footer-social"><i class="fab fa-whatsapp small"></i></a>
+                        <a href="<?php echo e(setting('social_instagram', '#')); ?>" class="footer-social" target="_blank"><i class="fab fa-instagram small"></i></a>
+                        <a href="<?php echo e(setting('social_facebook', '#')); ?>" class="footer-social" target="_blank"><i class="fab fa-facebook-f small"></i></a>
+                        <a href="<?php echo e(setting('social_tiktok', '#')); ?>" class="footer-social" target="_blank"><i class="fab fa-tiktok small"></i></a>
+                        <a href="https://wa.me/<?php echo e(str_replace(['+',' '],'',(setting('social_whatsapp', setting('app_phone','212600000000'))))); ?>" class="footer-social" target="_blank"><i class="fab fa-whatsapp small"></i></a>
                     </div>
                 </div>
 
@@ -464,7 +475,6 @@
                     <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
                         <li><a href="<?php echo e(url('/')); ?>" class="footer-link"><?php echo e(__('Home')); ?></a></li>
                         <li><a href="<?php echo e(route('shop.index')); ?>" class="footer-link"><?php echo e(__('Shop')); ?></a></li>
-                        <li><a href="#about" class="footer-link"><?php echo e(__('About')); ?></a></li>
                     </ul>
                 </div>
 
@@ -565,10 +575,6 @@
                     <i class="fas fa-shopping-bag text-muted"></i>
                     <span class="fw-600"><?php echo e(__('Shop')); ?></span>
                 </a>
-                <a href="<?php echo e(url('/#about')); ?>" class="list-group-item list-group-item-action py-3 px-4 border-0 d-flex align-items-center gap-3" data-bs-dismiss="offcanvas">
-                    <i class="fas fa-info-circle text-muted"></i>
-                    <span class="fw-600"><?php echo e(__('About')); ?></span>
-                </a>
                 <div class="p-4 mt-auto">
                     <div class="p-4 rounded-4 bg-light border border-light">
                         <div class="fw-bold text-dark mb-2"><?php echo e(__('Contact Support')); ?></div>
@@ -620,7 +626,7 @@
         window.addEventListener('scroll', () => {
             document.getElementById('mainHeader')?.classList.toggle('scrolled', window.scrollY > 20);
             const btn = document.getElementById('scrollTopBtn');
-            if(btn) btn.classList.toggle('visible', window.scrollY > 400);
+            if(btn) btn.classList.toggle('visible', window.scrollY > 200);
         });
 
         // Cart update
