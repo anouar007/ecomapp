@@ -411,7 +411,6 @@ ashed #cbd5e1;
                                 <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #3b82f6; margin-bottom: 16px;"></i>
                                 <p style="margin: 0; color: #64748b;">{{ __('Click to upload logo') }}</p>
                                 <p style="margin: 4px 0 0 0; font-size: 12px; color: #94a3b8;">{{ __('PNG, JPG, SVG up to 2MB') }}</p>
-                                <input type="file" id="logo-input" form="logo-upload-form" name="logo" accept="image/*" style="display: none;" onchange="document.getElementById('logo-upload-form').submit()">
                             </div>
                     </div>
 
@@ -876,6 +875,11 @@ ashed #cbd5e1;
 <form id="remove-logo-form" action="{{ route('settings.logo.remove') }}" method="POST" style="display: none;">
     @csrf
     @method('DELETE')
+</form>
+
+<form id="logo-upload-form" action="{{ route('settings.logo') }}" method="POST" enctype="multipart/form-data" style="display: none;">
+    @csrf
+    <input type="file" id="logo-input" name="logo" accept="image/*" onchange="this.form.submit()">
 </form>
 
 <form id="reset-settings-form" action="{{ route('settings.reset') }}" method="POST" style="display: none;">

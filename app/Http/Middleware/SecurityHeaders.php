@@ -36,7 +36,7 @@ class SecurityHeaders
             "script-src-elem 'self' 'unsafe-inline' https://*.cloudflare.com https://*.jsdelivr.net https://*.onesignal.com https://onesignal.com; " .
             "style-src 'self' 'unsafe-inline' https://*.cloudflare.com https://fonts.googleapis.com https://*.jsdelivr.net https://*.onesignal.com https://onesignal.com; " .
             "style-src-elem 'self' 'unsafe-inline' https://*.cloudflare.com https://fonts.googleapis.com https://*.jsdelivr.net https://*.onesignal.com https://onesignal.com; " .
-            "font-src 'self' https://*.cloudflare.com https://fonts.gstatic.com; " .
+            "font-src 'self' data: https://*.cloudflare.com https://fonts.gstatic.com; " .
             "img-src 'self' data: https:; " .
             "media-src 'self' data:; " .
             "connect-src 'self' https://*.cloudflare.com https://*.jsdelivr.net https://*.onesignal.com https://onesignal.com;"

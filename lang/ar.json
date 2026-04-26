@@ -1304,5 +1304,16 @@
     "Delete this item?": "هل تريد حذف هذا المنتج؟",
     "Yes, delete": "نعم، حذف",
     "Contact Support": "اتصل بالدعم",
-    "Need help with your order?": "هل تحتاج لمساعدة في طلبك؟"
+    "Need help with your order?": "هل تحتاج لمساعدة في طلبك؟",
+    "hero.label": "استمتع بجمال الطبيعة",
+    "hero.title1": "منتجات طبيعية",
+    "hero.title2": "بلمسة مغربية أصيلة",
+    "hero.title3": "مباشرة من التعاونية",
+    "hero.description": "اكتشف الطعم الأصيل والفوائد الصحية لعسلنا الطبيعي 100٪، وزيت الأركان النقي، والزعفران العضوي، الذي يتم حصاده بكل حب في قلب المغرب.",
+    "hero.stats1": "عملاء راضون",
+    "hero.stats2": "نقاء طبيعي",
+    "hero.stats3": "منتجات محلية",
+    "hero.badge1_title": "عضوي 100٪",
+    "hero.badge1_subtitle": "جودة مضمونة",
+    "hero.badge2_subtitle": "رضا العملاء"
 }
