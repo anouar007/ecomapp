@@ -96,13 +96,16 @@
 .stock-dot { width:7px; height:7px; border-radius:50%; }
 
 /* Breadcrumb */
-.pdp-breadcrumb { background:#fff; border-bottom:1px solid #f1f5f9; padding:14px 0; }
-.breadcrumb-item + .breadcrumb-item::before { color:#9CA3AF; }
+    .hover-green { transition: all 0.3s; }
+    .hover-green:hover { color: #3BB878 !important; }
 
-@media(max-width:991px) {
-    .pdp-info { padding:24px; border-radius:20px; }
-    .pdp-main-img { border-radius:20px; }
-}
+    /* Shake animation */
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+    .shake { animation: shake 0.2s ease-in-out 0s 2; }
 </style>
 <?php $__env->stopPush(); ?>
 
@@ -159,23 +162,23 @@
             <div class="col-lg-6">
                 <div class="pdp-info">
 
-                    
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <?php if($product->productCategory): ?>
-                            <span class="pdp-cat"><?php echo e($product->productCategory->translated_name); ?></span>
-                        <?php endif; ?>
-                        <?php if($product->isInStock()): ?>
-                            <span class="stock-badge text-success">
-                                <span class="stock-dot bg-success"></span><?php echo e(__('In Stock')); ?>
+                        <?php if($product->variants->count() == 0): ?>
+                            <?php if($product->isInStock()): ?>
+                                <span class="stock-badge text-success">
+                                    <span class="stock-dot bg-success"></span><?php echo e(__('In Stock')); ?>
 
-                            </span>
+                                </span>
+                            <?php else: ?>
+                                <span class="stock-badge text-danger">
+                                    <span class="stock-dot bg-danger"></span><?php echo e(__('Out of Stock')); ?>
+
+                                </span>
+                            <?php endif; ?>
                         <?php else: ?>
-                            <span class="stock-badge text-danger">
-                                <span class="stock-dot bg-danger"></span><?php echo e(__('Out of Stock')); ?>
-
+                            <span id="variantStockBadge" class="stock-badge">
+                                
                             </span>
                         <?php endif; ?>
-                    </div>
 
                     
                     <h1 class="pdp-title"><?php echo e($product->translated_name); ?></h1>
@@ -229,7 +232,7 @@
                         <?php endif; ?>
 
                         
-                        <div class="d-flex gap-3 mt-4 align-items-center">
+                        <div class="d-flex gap-3 mt-4 align-items-center" id="atc-wrapper">
                             
                             <div class="qty-wrap">
                                 <button type="button" class="qty-btn" onclick="updatePdpQty(-1)">
@@ -241,20 +244,26 @@
                                 </button>
                             </div>
                             
-                            <?php if($product->isInStock()): ?>
-                            <button type="submit" class="btn-atc">
-                                <i class="fas fa-shopping-bag"></i>
-                                <?php echo e(__('Add to Cart')); ?>
+                            <div id="atc-button-container" class="flex-grow-1">
+                                <?php if($product->isInStock()): ?>
+                                <button type="submit" class="btn-atc w-100">
+                                    <i class="fas fa-shopping-bag"></i>
+                                    <?php echo e(__('Add to Cart')); ?>
 
-                            </button>
-                            <?php else: ?>
-                            <button type="button" class="btn-atc" disabled style="background:#9CA3AF;box-shadow:none;cursor:not-allowed;">
-                                <i class="fas fa-times-circle"></i>
-                                <?php echo e(__('Out of Stock')); ?>
+                                </button>
+                                <?php else: ?>
+                                <button type="button" class="btn-atc w-100" disabled style="background:#9CA3AF;box-shadow:none;cursor:not-allowed;">
+                                    <i class="fas fa-times-circle"></i>
+                                    <?php echo e(__('Out of Stock')); ?>
 
-                            </button>
-                            <?php endif; ?>
+                                </button>
+                                <?php endif; ?>
+                            </div>
                         </div>
+                        <p id="stockLimitMsg" class="text-danger x-small fw-bold mt-2" style="display:none;">
+                            <i class="fas fa-exclamation-triangle me-1"></i> <?php echo e(__('Only {stock} available in stock')); ?>
+
+                        </p>
                     </form>
 
                     
@@ -315,6 +324,7 @@
 <script>
     const variants = <?php echo json_encode(json_decode($product->variants_json), 15, 512) ?>;
     let selectedSize = null;
+    let currentStockLimit = <?php echo e($product->stock ?? 0); ?>;
 
     function changeImage(src, el) {
         document.getElementById('mainImage').src = src;
@@ -334,21 +344,97 @@
         if (variant) {
             document.getElementById('selectedVariantId').value = variant.id;
             document.getElementById('displayPrice').innerText = variant.formatted_price;
+            
+            // Update stock info
+            currentStockLimit = variant.stock;
+            updateStockUI(variant.stock);
+            
+            // Reset qty to 1 on size change
+            const qtyInput = document.getElementById('pdpQty');
+            qtyInput.value = 1;
+            document.getElementById('stockLimitMsg').style.display = 'none';
+        }
+    }
+
+    function updateStockUI(stock) {
+        const badge = document.getElementById('variantStockBadge');
+        const atcContainer = document.getElementById('atc-button-container');
+        const qtyWrapper = document.querySelector('.qty-wrap');
+        const limitMsg = document.getElementById('stockLimitMsg');
+
+        if (!badge) return;
+
+        if (stock > 0) {
+            badge.innerHTML = `<span class="stock-dot bg-success"></span><span class="text-success"><?php echo e(__('In Stock')); ?> (${stock})</span>`;
+            atcContainer.innerHTML = `
+                <button type="submit" class="btn-atc w-100">
+                    <i class="fas fa-shopping-bag"></i>
+                    <?php echo e(__('Add to Cart')); ?>
+
+                </button>`;
+            qtyWrapper.style.opacity = '1';
+            qtyWrapper.style.pointerEvents = 'auto';
+            limitMsg.style.display = 'none';
+        } else {
+            badge.innerHTML = `<span class="stock-dot bg-danger"></span><span class="text-danger"><?php echo e(__('Out of Stock')); ?></span>`;
+            atcContainer.innerHTML = `
+                <button type="button" class="btn-atc w-100" disabled style="background:#9CA3AF;box-shadow:none;cursor:not-allowed;">
+                    <i class="fas fa-times-circle"></i>
+                    <?php echo e(__('Out of Stock')); ?>
+
+                </button>`;
+            qtyWrapper.style.opacity = '0.5';
+            qtyWrapper.style.pointerEvents = 'none';
+            limitMsg.style.display = 'none';
         }
     }
 
     function updatePdpQty(delta) {
         const inp = document.getElementById('pdpQty');
-        inp.value = Math.max(1, parseInt(inp.value) + delta);
+        let newVal = parseInt(inp.value) + delta;
+        const limitMsg = document.getElementById('stockLimitMsg');
+
+        if (newVal < 1) newVal = 1;
+        
+        if (newVal > currentStockLimit) {
+            newVal = currentStockLimit;
+            if (currentStockLimit > 0) {
+                limitMsg.innerHTML = `<i class="fas fa-exclamation-triangle me-1"></i> ${"<?php echo e(__('Only {stock} available in stock')); ?>".replace('{stock}', currentStockLimit)}`;
+                limitMsg.style.display = 'block';
+                
+                // Shake effect on the input
+                inp.classList.add('shake');
+                setTimeout(() => inp.classList.remove('shake'), 500);
+            }
+        } else {
+            limitMsg.style.display = 'none';
+        }
+        
+        inp.value = newVal;
     }
 
     function handleAddToCart(e) {
         e.preventDefault();
         const variantId = document.getElementById('selectedVariantId').value;
-        const qty = document.getElementById('pdpQty').value;
+        const qty = parseInt(document.getElementById('pdpQty').value);
 
         if (variants.length > 0 && !variantId) {
-            Swal.fire({ icon: 'warning', title: '<?php echo e(__('Please select a size')); ?>', text: '<?php echo e(__('Please choose a size before adding to cart.')); ?>' });
+            Swal.fire({ 
+                icon: 'warning', 
+                title: '<?php echo e(__('Please select a size')); ?>', 
+                text: '<?php echo e(__('Please choose a size before adding to cart.')); ?>',
+                confirmButtonColor: '#3BB878'
+            });
+            return;
+        }
+
+        if (qty > currentStockLimit) {
+            Swal.fire({ 
+                icon: 'error', 
+                title: '<?php echo e(__('Stock Limit')); ?>', 
+                text: '<?php echo e(__('Sorry, we only have {stock} items left in stock.')); ?>'.replace('{stock}', currentStockLimit),
+                confirmButtonColor: '#3BB878'
+            });
             return;
         }
 
@@ -361,11 +447,52 @@
                 Swal.fire({ icon: 'success', title: '<?php echo e(__('Added to cart!')); ?>', toast: true, position: 'top-end', showConfirmButton: false, timer: 2500 });
                 document.getElementById('header-cart-count').innerText = data.cartCount;
                 refreshMiniCart();
-                const miniCart = new bootstrap.Offcanvas(document.getElementById('miniCart'));
-                miniCart.show();
+                const miniCartElement = document.getElementById('miniCart');
+                if (miniCartElement) {
+                    const miniCart = new bootstrap.Offcanvas(miniCartElement);
+                    miniCart.show();
+                }
+            } else {
+                Swal.fire({ icon: 'error', title: '<?php echo e(__('Oops!')); ?>', text: data.message || '<?php echo e(__('Could not add item to cart.')); ?>' });
             }
+        }).catch(err => {
+            console.error('Cart Error:', err);
+            Swal.fire({ icon: 'error', title: '<?php echo e(__('Error')); ?>', text: '<?php echo e(__('Something went wrong. Please try again.')); ?>' });
         });
     }
+
+    // Initialize stock UI if no variants
+    document.addEventListener('DOMContentLoaded', () => {
+        if (variants.length === 0) {
+            updateStockUI(<?php echo e($product->stock ?? 0); ?>);
+        }
+    });
+</script>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": "<?php echo e($product->translated_name); ?>",
+  "image": [
+    "<?php echo e($product->main_image ? url(Storage::url($product->main_image)) : asset('images/placeholder-product.jpg')); ?>"
+  ],
+  "description": "<?php echo e(Str::limit(strip_tags($product->translated_description), 160)); ?>",
+  "sku": "<?php echo e($product->sku); ?>",
+  "brand": {
+    "@type": "Brand",
+    "name": "<?php echo e(setting('app_name', 'Coop Ait Oumdis')); ?>"
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": "<?php echo e(url()->current()); ?>",
+    "priceCurrency": "MAD",
+    "price": "<?php echo e($product->isOnSale() ? $product->sale_price : $product->price); ?>",
+    "availability": "<?php echo e($product->isInStock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'); ?>",
+    "itemCondition": "https://schema.org/NewCondition"
+  }
+}
 </script>
 <?php $__env->stopPush(); ?>
 

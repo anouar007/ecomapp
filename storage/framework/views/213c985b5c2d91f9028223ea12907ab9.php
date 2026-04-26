@@ -5,6 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <title><?php echo $__env->yieldContent('title', __('Dashboard')); ?> - <?php echo e(setting('app_name', 'E-commerce')); ?></title>
+    <?php if(setting('app_logo')): ?>
+        <link rel="icon" type="image/png" href="<?php echo e(Storage::url(setting('app_logo'))); ?>">
+    <?php endif; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

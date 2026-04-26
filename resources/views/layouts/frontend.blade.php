@@ -6,6 +6,71 @@
     <title>@yield('meta_title', setting_trans('app_name', 'Coop Ait Oumdis'))</title>
     <meta name="description" content="@yield('meta_description', setting_trans('app_description', 'Natural Products Cooperative'))">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <!-- Favicon -->
+    @if(setting('app_logo'))
+        <link rel="icon" type="image/png" href="{{ Storage::url(setting('app_logo')) }}">
+        <link rel="apple-touch-icon" href="{{ Storage::url(setting('app_logo')) }}">
+    @endif
+
+    <!-- SEO / AEO / GEO -->
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ url()->current() }}">
+    <meta name="author" content="{{ setting('app_name', 'Coop Ait Oumdis') }}">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="@yield('meta_title', setting_trans('app_name', 'Coop Ait Oumdis'))">
+    <meta property="og:description" content="@yield('meta_description', setting_trans('app_description', 'Natural Products Cooperative'))">
+    <meta property="og:image" content="@yield('meta_image', setting('app_logo') ? url(Storage::url(setting('app_logo'))) : asset('images/og-image.jpg'))">
+    <meta property="og:site_name" content="{{ setting('app_name', 'Coop Ait Oumdis') }}">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ url()->current() }}">
+    <meta name="twitter:title" content="@yield('meta_title', setting_trans('app_name', 'Coop Ait Oumdis'))">
+    <meta name="twitter:description" content="@yield('meta_description', setting_trans('app_description', 'Natural Products Cooperative'))">
+    <meta name="twitter:image" content="@yield('meta_image', setting('app_logo') ? url(Storage::url(setting('app_logo'))) : asset('images/og-image.jpg'))">
+
+    <!-- JSON-LD Structured Data (AEO/GEO Optimization) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "{{ setting('app_name', 'Coop Ait Oumdis') }}",
+      "url": "{{ url('/') }}",
+      "logo": "{{ setting('app_logo') ? url(Storage::url(setting('app_logo'))) : '' }}",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "{{ setting('app_phone', '') }}",
+        "contactType": "customer service",
+        "email": "{{ setting('app_email', '') }}"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Azilal",
+        "addressCountry": "MA"
+      },
+      "sameAs": [
+        "{{ setting('social_facebook', '#') }}",
+        "{{ setting('social_instagram', '#') }}",
+        "{{ setting('social_twitter', '#') }}"
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "{{ url('/') }}",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "{{ url('/shop?search={search_term_string}') }}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
@@ -165,16 +230,21 @@
 
         /* ── Scroll to Top ── */
         #scrollTopBtn {
-            position: fixed; bottom: 24px; right: 24px; z-index: 999;
-            width: 46px; height: 46px; border-radius: 50%;
+            position: fixed; bottom: 30px; right: 30px; z-index: 1100;
+            width: 50px; height: 50px; border-radius: 50%;
             background: #3BB878; color: #fff; border: none;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 6px 20px rgba(59,184,120,0.4);
+            box-shadow: 0 8px 25px rgba(59,184,120,0.4);
             opacity: 0; transform: translateY(20px);
-            transition: all 0.3s ease; cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer;
         }
         #scrollTopBtn.visible { opacity: 1; transform: translateY(0); }
-        #scrollTopBtn:hover { background: #2f9461; transform: translateY(-3px); }
+        #scrollTopBtn:hover { background: #2f9461; transform: translateY(-5px); box-shadow: 0 12px 30px rgba(59,184,120,0.5); }
+        #scrollTopBtn i { font-size: 1.1rem; font-weight: 900; }
+
+        @media(max-width: 991px) {
+            #scrollTopBtn { bottom: 85px; right: 20px; width: 44px; height: 44px; }
+        }
 
         /* ── Responsive ── */
         @media(max-width: 767px) { 

@@ -98,13 +98,16 @@
 .stock-dot { width:7px; height:7px; border-radius:50%; }
 
 /* Breadcrumb */
-.pdp-breadcrumb { background:#fff; border-bottom:1px solid #f1f5f9; padding:14px 0; }
-.breadcrumb-item + .breadcrumb-item::before { color:#9CA3AF; }
+    .hover-green { transition: all 0.3s; }
+    .hover-green:hover { color: #3BB878 !important; }
 
-@media(max-width:991px) {
-    .pdp-info { padding:24px; border-radius:20px; }
-    .pdp-main-img { border-radius:20px; }
-}
+    /* Shake animation */
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+    .shake { animation: shake 0.2s ease-in-out 0s 2; }
 </style>
 @endpush
 
@@ -161,21 +164,21 @@
             <div class="col-lg-6">
                 <div class="pdp-info">
 
-                    {{-- Category + Stock --}}
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        @if($product->productCategory)
-                            <span class="pdp-cat">{{ $product->productCategory->translated_name }}</span>
-                        @endif
-                        @if($product->isInStock())
-                            <span class="stock-badge text-success">
-                                <span class="stock-dot bg-success"></span>{{ __('In Stock') }}
-                            </span>
+                        @if($product->variants->count() == 0)
+                            @if($product->isInStock())
+                                <span class="stock-badge text-success">
+                                    <span class="stock-dot bg-success"></span>{{ __('In Stock') }}
+                                </span>
+                            @else
+                                <span class="stock-badge text-danger">
+                                    <span class="stock-dot bg-danger"></span>{{ __('Out of Stock') }}
+                                </span>
+                            @endif
                         @else
-                            <span class="stock-badge text-danger">
-                                <span class="stock-dot bg-danger"></span>{{ __('Out of Stock') }}
+                            <span id="variantStockBadge" class="stock-badge">
+                                {{-- Will be updated by JS --}}
                             </span>
                         @endif
-                    </div>
 
                     {{-- Title --}}
                     <h1 class="pdp-title">{{ $product->translated_name }}</h1>
@@ -227,7 +230,7 @@
                         @endif
 
                         {{-- Qty + Add to Cart --}}
-                        <div class="d-flex gap-3 mt-4 align-items-center">
+                        <div class="d-flex gap-3 mt-4 align-items-center" id="atc-wrapper">
                             {{-- Quantity --}}
                             <div class="qty-wrap">
                                 <button type="button" class="qty-btn" onclick="updatePdpQty(-1)">
@@ -239,18 +242,23 @@
                                 </button>
                             </div>
                             {{-- CTA --}}
-                            @if($product->isInStock())
-                            <button type="submit" class="btn-atc">
-                                <i class="fas fa-shopping-bag"></i>
-                                {{ __('Add to Cart') }}
-                            </button>
-                            @else
-                            <button type="button" class="btn-atc" disabled style="background:#9CA3AF;box-shadow:none;cursor:not-allowed;">
-                                <i class="fas fa-times-circle"></i>
-                                {{ __('Out of Stock') }}
-                            </button>
-                            @endif
+                            <div id="atc-button-container" class="flex-grow-1">
+                                @if($product->isInStock())
+                                <button type="submit" class="btn-atc w-100">
+                                    <i class="fas fa-shopping-bag"></i>
+                                    {{ __('Add to Cart') }}
+                                </button>
+                                @else
+                                <button type="button" class="btn-atc w-100" disabled style="background:#9CA3AF;box-shadow:none;cursor:not-allowed;">
+                                    <i class="fas fa-times-circle"></i>
+                                    {{ __('Out of Stock') }}
+                                </button>
+                                @endif
+                            </div>
                         </div>
+                        <p id="stockLimitMsg" class="text-danger x-small fw-bold mt-2" style="display:none;">
+                            <i class="fas fa-exclamation-triangle me-1"></i> {{ __('Only {stock} available in stock') }}
+                        </p>
                     </form>
 
                     {{-- Trust badges --}}
@@ -310,6 +318,7 @@
 <script>
     const variants = @json(json_decode($product->variants_json));
     let selectedSize = null;
+    let currentStockLimit = {{ $product->stock ?? 0 }};
 
     function changeImage(src, el) {
         document.getElementById('mainImage').src = src;
@@ -329,21 +338,95 @@
         if (variant) {
             document.getElementById('selectedVariantId').value = variant.id;
             document.getElementById('displayPrice').innerText = variant.formatted_price;
+            
+            // Update stock info
+            currentStockLimit = variant.stock;
+            updateStockUI(variant.stock);
+            
+            // Reset qty to 1 on size change
+            const qtyInput = document.getElementById('pdpQty');
+            qtyInput.value = 1;
+            document.getElementById('stockLimitMsg').style.display = 'none';
+        }
+    }
+
+    function updateStockUI(stock) {
+        const badge = document.getElementById('variantStockBadge');
+        const atcContainer = document.getElementById('atc-button-container');
+        const qtyWrapper = document.querySelector('.qty-wrap');
+        const limitMsg = document.getElementById('stockLimitMsg');
+
+        if (!badge) return;
+
+        if (stock > 0) {
+            badge.innerHTML = `<span class="stock-dot bg-success"></span><span class="text-success">{{ __('In Stock') }} (${stock})</span>`;
+            atcContainer.innerHTML = `
+                <button type="submit" class="btn-atc w-100">
+                    <i class="fas fa-shopping-bag"></i>
+                    {{ __('Add to Cart') }}
+                </button>`;
+            qtyWrapper.style.opacity = '1';
+            qtyWrapper.style.pointerEvents = 'auto';
+            limitMsg.style.display = 'none';
+        } else {
+            badge.innerHTML = `<span class="stock-dot bg-danger"></span><span class="text-danger">{{ __('Out of Stock') }}</span>`;
+            atcContainer.innerHTML = `
+                <button type="button" class="btn-atc w-100" disabled style="background:#9CA3AF;box-shadow:none;cursor:not-allowed;">
+                    <i class="fas fa-times-circle"></i>
+                    {{ __('Out of Stock') }}
+                </button>`;
+            qtyWrapper.style.opacity = '0.5';
+            qtyWrapper.style.pointerEvents = 'none';
+            limitMsg.style.display = 'none';
         }
     }
 
     function updatePdpQty(delta) {
         const inp = document.getElementById('pdpQty');
-        inp.value = Math.max(1, parseInt(inp.value) + delta);
+        let newVal = parseInt(inp.value) + delta;
+        const limitMsg = document.getElementById('stockLimitMsg');
+
+        if (newVal < 1) newVal = 1;
+        
+        if (newVal > currentStockLimit) {
+            newVal = currentStockLimit;
+            if (currentStockLimit > 0) {
+                limitMsg.innerHTML = `<i class="fas fa-exclamation-triangle me-1"></i> ${"{{ __('Only {stock} available in stock') }}".replace('{stock}', currentStockLimit)}`;
+                limitMsg.style.display = 'block';
+                
+                // Shake effect on the input
+                inp.classList.add('shake');
+                setTimeout(() => inp.classList.remove('shake'), 500);
+            }
+        } else {
+            limitMsg.style.display = 'none';
+        }
+        
+        inp.value = newVal;
     }
 
     function handleAddToCart(e) {
         e.preventDefault();
         const variantId = document.getElementById('selectedVariantId').value;
-        const qty = document.getElementById('pdpQty').value;
+        const qty = parseInt(document.getElementById('pdpQty').value);
 
         if (variants.length > 0 && !variantId) {
-            Swal.fire({ icon: 'warning', title: '{{ __('Please select a size') }}', text: '{{ __('Please choose a size before adding to cart.') }}' });
+            Swal.fire({ 
+                icon: 'warning', 
+                title: '{{ __('Please select a size') }}', 
+                text: '{{ __('Please choose a size before adding to cart.') }}',
+                confirmButtonColor: '#3BB878'
+            });
+            return;
+        }
+
+        if (qty > currentStockLimit) {
+            Swal.fire({ 
+                icon: 'error', 
+                title: '{{ __('Stock Limit') }}', 
+                text: '{{ __('Sorry, we only have {stock} items left in stock.') }}'.replace('{stock}', currentStockLimit),
+                confirmButtonColor: '#3BB878'
+            });
             return;
         }
 
@@ -356,10 +439,51 @@
                 Swal.fire({ icon: 'success', title: '{{ __('Added to cart!') }}', toast: true, position: 'top-end', showConfirmButton: false, timer: 2500 });
                 document.getElementById('header-cart-count').innerText = data.cartCount;
                 refreshMiniCart();
-                const miniCart = new bootstrap.Offcanvas(document.getElementById('miniCart'));
-                miniCart.show();
+                const miniCartElement = document.getElementById('miniCart');
+                if (miniCartElement) {
+                    const miniCart = new bootstrap.Offcanvas(miniCartElement);
+                    miniCart.show();
+                }
+            } else {
+                Swal.fire({ icon: 'error', title: '{{ __('Oops!') }}', text: data.message || '{{ __('Could not add item to cart.') }}' });
             }
+        }).catch(err => {
+            console.error('Cart Error:', err);
+            Swal.fire({ icon: 'error', title: '{{ __('Error') }}', text: '{{ __('Something went wrong. Please try again.') }}' });
         });
     }
+
+    // Initialize stock UI if no variants
+    document.addEventListener('DOMContentLoaded', () => {
+        if (variants.length === 0) {
+            updateStockUI({{ $product->stock ?? 0 }});
+        }
+    });
+</script>
+
+{{-- Product Schema (SEO/AEO/GEO) --}}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": "{{ $product->translated_name }}",
+  "image": [
+    "{{ $product->main_image ? url(Storage::url($product->main_image)) : asset('images/placeholder-product.jpg') }}"
+  ],
+  "description": "{{ Str::limit(strip_tags($product->translated_description), 160) }}",
+  "sku": "{{ $product->sku }}",
+  "brand": {
+    "@type": "Brand",
+    "name": "{{ setting('app_name', 'Coop Ait Oumdis') }}"
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": "{{ url()->current() }}",
+    "priceCurrency": "MAD",
+    "price": "{{ $product->isOnSale() ? $product->sale_price : $product->price }}",
+    "availability": "{{ $product->isInStock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
+    "itemCondition": "https://schema.org/NewCondition"
+  }
+}
 </script>
 @endpush

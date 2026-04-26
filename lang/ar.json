@@ -1315,5 +1315,11 @@
     "hero.stats3": "منتجات محلية",
     "hero.badge1_title": "عضوي 100٪",
     "hero.badge1_subtitle": "جودة مضمونة",
-    "hero.badge2_subtitle": "رضا العملاء"
+    "hero.badge2_subtitle": "رضا العملاء",
+    "Only {stock} available in stock": "متوفر {stock} فقط في المخزن",
+    "Please select a size": "يرجى اختيار المقاس",
+    "Please choose a size before adding to cart.": "يرجى اختيار المقاس قبل إضافة المنتج إلى السلة.",
+    "Added to cart!": "تمت الإضافة للسلة!",
+    "Stock Limit": "حد المخزون",
+    "Sorry, we only have {stock} items left in stock.": "عذراً، لا يتوفر سوى {stock} قطع في المخزن."
 }

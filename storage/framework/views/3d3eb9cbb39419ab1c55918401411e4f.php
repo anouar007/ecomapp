@@ -6,6 +6,71 @@
     <title><?php echo $__env->yieldContent('meta_title', setting_trans('app_name', 'Coop Ait Oumdis')); ?></title>
     <meta name="description" content="<?php echo $__env->yieldContent('meta_description', setting_trans('app_description', 'Natural Products Cooperative')); ?>">
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+
+    <!-- Favicon -->
+    <?php if(setting('app_logo')): ?>
+        <link rel="icon" type="image/png" href="<?php echo e(Storage::url(setting('app_logo'))); ?>">
+        <link rel="apple-touch-icon" href="<?php echo e(Storage::url(setting('app_logo'))); ?>">
+    <?php endif; ?>
+
+    <!-- SEO / AEO / GEO -->
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="<?php echo e(url()->current()); ?>">
+    <meta name="author" content="<?php echo e(setting('app_name', 'Coop Ait Oumdis')); ?>">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<?php echo e(url()->current()); ?>">
+    <meta property="og:title" content="<?php echo $__env->yieldContent('meta_title', setting_trans('app_name', 'Coop Ait Oumdis')); ?>">
+    <meta property="og:description" content="<?php echo $__env->yieldContent('meta_description', setting_trans('app_description', 'Natural Products Cooperative')); ?>">
+    <meta property="og:image" content="<?php echo $__env->yieldContent('meta_image', setting('app_logo') ? url(Storage::url(setting('app_logo'))) : asset('images/og-image.jpg')); ?>">
+    <meta property="og:site_name" content="<?php echo e(setting('app_name', 'Coop Ait Oumdis')); ?>">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="<?php echo e(url()->current()); ?>">
+    <meta name="twitter:title" content="<?php echo $__env->yieldContent('meta_title', setting_trans('app_name', 'Coop Ait Oumdis')); ?>">
+    <meta name="twitter:description" content="<?php echo $__env->yieldContent('meta_description', setting_trans('app_description', 'Natural Products Cooperative')); ?>">
+    <meta name="twitter:image" content="<?php echo $__env->yieldContent('meta_image', setting('app_logo') ? url(Storage::url(setting('app_logo'))) : asset('images/og-image.jpg')); ?>">
+
+    <!-- JSON-LD Structured Data (AEO/GEO Optimization) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "<?php echo e(setting('app_name', 'Coop Ait Oumdis')); ?>",
+      "url": "<?php echo e(url('/')); ?>",
+      "logo": "<?php echo e(setting('app_logo') ? url(Storage::url(setting('app_logo'))) : ''); ?>",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "<?php echo e(setting('app_phone', '')); ?>",
+        "contactType": "customer service",
+        "email": "<?php echo e(setting('app_email', '')); ?>"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Azilal",
+        "addressCountry": "MA"
+      },
+      "sameAs": [
+        "<?php echo e(setting('social_facebook', '#')); ?>",
+        "<?php echo e(setting('social_instagram', '#')); ?>",
+        "<?php echo e(setting('social_twitter', '#')); ?>"
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "<?php echo e(url('/')); ?>",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "<?php echo e(url('/shop?search={search_term_string}')); ?>",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
@@ -165,16 +230,21 @@
 
         /* ── Scroll to Top ── */
         #scrollTopBtn {
-            position: fixed; bottom: 24px; right: 24px; z-index: 999;
-            width: 46px; height: 46px; border-radius: 50%;
+            position: fixed; bottom: 30px; right: 30px; z-index: 1100;
+            width: 50px; height: 50px; border-radius: 50%;
             background: #3BB878; color: #fff; border: none;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 6px 20px rgba(59,184,120,0.4);
+            box-shadow: 0 8px 25px rgba(59,184,120,0.4);
             opacity: 0; transform: translateY(20px);
-            transition: all 0.3s ease; cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer;
         }
         #scrollTopBtn.visible { opacity: 1; transform: translateY(0); }
-        #scrollTopBtn:hover { background: #2f9461; transform: translateY(-3px); }
+        #scrollTopBtn:hover { background: #2f9461; transform: translateY(-5px); box-shadow: 0 12px 30px rgba(59,184,120,0.5); }
+        #scrollTopBtn i { font-size: 1.1rem; font-weight: 900; }
+
+        @media(max-width: 991px) {
+            #scrollTopBtn { bottom: 85px; right: 20px; width: 44px; height: 44px; }
+        }
 
         /* ── Responsive ── */
         @media(max-width: 767px) { 
@@ -245,6 +315,52 @@
         [dir="rtl"] .fa-arrow-left,
         [dir="rtl"] .fa-chevron-left {
             transform: scaleX(-1);
+        }
+        /* ── Mobile Bottom Nav ── */
+        .mobile-bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 65px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            z-index: 1050;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.03);
+            padding: 0 10px;
+        }
+        .nav-item-mobile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+            color: #9CA3AF;
+            font-weight: 700;
+            font-size: 0.65rem;
+            transition: all 0.3s;
+            flex: 1;
+        }
+        .nav-item-mobile.active { color: #3BB878; }
+        .nav-item-mobile i { font-size: 1.2rem; }
+        .nav-item-mobile .badge {
+            position: absolute;
+            top: 5px;
+            right: 25%;
+            padding: 3px 6px;
+            font-size: 0.55rem;
+        }
+
+        @media (min-width: 992px) {
+            .mobile-bottom-nav { display: none; }
+        }
+        @media (max-width: 991px) {
+            body { padding-bottom: 65px; } /* Space for bottom nav */
         }
     </style>
 </head>
@@ -461,9 +577,28 @@
                             <i class="fab fa-whatsapp me-1"></i> WhatsApp
                         </a>
                     </div>
-                </div>
-            </div>
         </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="mobile-bottom-nav d-lg-none">
+        <a href="<?php echo e(url('/')); ?>" class="nav-item-mobile <?php echo e(Request::is('/') ? 'active' : ''); ?>">
+            <i class="fas fa-home"></i>
+            <span><?php echo e(__('Home')); ?></span>
+        </a>
+        <a href="<?php echo e(route('shop.index')); ?>" class="nav-item-mobile <?php echo e(Request::routeIs('shop.*') ? 'active' : ''); ?>">
+            <i class="fas fa-shopping-bag"></i>
+            <span><?php echo e(__('Shop')); ?></span>
+        </a>
+        <a href="javascript:void(0)" class="nav-item-mobile position-relative" data-bs-toggle="offcanvas" data-bs-target="#miniCart">
+            <i class="fas fa-cart-shopping"></i>
+            <span class="badge rounded-pill bg-green"><?php echo e(count(session('cart', []))); ?></span>
+            <span><?php echo e(__('Cart')); ?></span>
+        </a>
+        <a href="https://wa.me/<?php echo e(str_replace(['+',' '],'',(setting('app_phone','212600000000')))); ?>" class="nav-item-mobile">
+            <i class="fab fa-whatsapp"></i>
+            <span><?php echo e(__('Contact')); ?></span>
+        </a>
     </div>
 
     <!-- Scroll to Top -->
