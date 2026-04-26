@@ -83,10 +83,9 @@
 @section('content')
 
 <section id="home" class="hero-v3">
-    <video autoplay muted loop playsinline class="hero-video-bg">
-        <source src="https://assets.mixkit.co/videos/preview/mixkit-handcrafted-wooden-furniture-making-worker-42010-large.mp4" type="video/mp4">
-    </video>
+    <img src="{{ asset('images/hero_furniture_luxury.png') }}" alt="Luxury Handcrafted Furniture" class="hero-image-bg">
     <div class="hero-overlay-dark"></div>
+
     <div class="hero-v3-content" data-aos="zoom-out" data-aos-duration="1200">
         <h1 class="text-white">{{ __('Hero Title 1') }} <span style="color: var(--accent);">{{ __('Hero Title 2') }}</span> <br> {{ __('Hero Title 3') }} <span style="color: var(--accent);">{{ __('Hero Title 4') }}</span></h1>
         <p class="mb-4">{{ __('Hero Subtitle') }}</p>
@@ -159,7 +158,7 @@
                                 <img src="{{ $cat->image ? Storage::url($cat->image) : 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80' }}" alt="{{ $cat->name }}" class="w-100 h-100 object-fit-cover transition-all hover-scale-110">
                             </div>
                             <div class="p-4 text-center">
-                                <h4 class="fw-black text-uppercase ls-1 h5 mb-2">{{ $cat->translated_name }}</h4>
+                                <h4 class="fw-black text-uppercase ls-1 h5 mb-2 text-danger">{{ $cat->translated_name }}</h4>
                                 <span class="small text-muted text-uppercase fw-bold ls-1">{{ __('Discover') }} <i class="fas fa-chevron-{{ app()->getLocale() == 'ar' ? 'left' : 'right' }} ms-1" style="font-size: 0.6rem;"></i></span>
                             </div>
                         </div>
@@ -257,23 +256,29 @@
         <div class="timeline-track" data-aos="fade-up">
             @php
                 $processSteps = [
-                    ['num' => '01', 'title' => __('Process Step 1 Title'), 'desc' => __('Process Step 1 Desc')],
-                    ['num' => '02', 'title' => __('Process Step 2 Title'), 'desc' => __('Process Step 2 Desc')],
-                    ['num' => '03', 'title' => __('Process Step 3 Title'), 'desc' => __('Process Step 3 Desc')],
-                    ['num' => '04', 'title' => __('Process Step 4 Title'), 'desc' => __('Process Step 4 Desc')],
+                    ['num' => '01', 'icon' => 'fa-pencil-ruler', 'title' => __('Process Step 1 Title'), 'desc' => __('Process Step 1 Desc')],
+                    ['num' => '02', 'icon' => 'fa-tree',         'title' => __('Process Step 2 Title'), 'desc' => __('Process Step 2 Desc')],
+                    ['num' => '03', 'icon' => 'fa-hammer',       'title' => __('Process Step 3 Title'), 'desc' => __('Process Step 3 Desc')],
+                    ['num' => '04', 'icon' => 'fa-box-open',     'title' => __('Process Step 4 Title'), 'desc' => __('Process Step 4 Desc')],
                 ];
             @endphp
 
-            @foreach($processSteps as $step)
+            @foreach($processSteps as $i => $step)
             <div class="timeline-step">
-                <div class="step-marker">{{ $step['num'] }}</div>
+                <div class="step-marker">
+                    <span class="step-number">{{ $step['num'] }}</span>
+                    <div class="step-icon-inner">
+                        <i class="fas {{ $step['icon'] }}"></i>
+                    </div>
+                </div>
                 <div class="step-card shadow-sm border-0">
-                    <h4 class="fw-black mb-2">{{ $step['title'] }}</h4>
-                    <p class="text-muted mb-0 small lh-base">{{ $step['desc'] }}</p>
+                    <h4 class="fw-black mb-3">{{ $step['title'] }}</h4>
+                    <p class="text-muted mb-0 lh-base">{{ $step['desc'] }}</p>
                 </div>
             </div>
             @endforeach
         </div>
+
     </div>
 </section>
 
