@@ -191,13 +191,13 @@
                         <span class="small text-muted fw-600">({{ $product->reviews_count ?? rand(8,40) }} {{ __('reviews') }})</span>
                     </div>
 
-                    {{-- Price --}}
-                    <div class="d-flex align-items-baseline gap-3 mb-3">
+                    {{-- Price Container --}}
+                    <div class="d-flex align-items-baseline gap-3 mb-3" id="priceContainer">
                         <div class="pdp-price" id="displayPrice">
                             {{ $product->isOnSale() ? $product->formatted_sale_price : $product->formatted_price }}
                         </div>
                         @if($product->isOnSale())
-                            <div class="pdp-price-old">{{ $product->formatted_price }}</div>
+                            <div class="pdp-price-old" id="displayOldPrice">{{ $product->formatted_price }}</div>
                         @endif
                     </div>
 
@@ -300,9 +300,9 @@
                 </div>
             </div>
             <div class="row g-3">
-                @foreach($relatedProducts as $product)
+                @foreach($relatedProducts as $rp)
                 <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="{{ $loop->index * 80 }}">
-                    @include('frontend.partials.product_card_v2', ['product' => $product])
+                    @include('frontend.partials.product_card_v2', ['product' => $rp])
                 </div>
                 @endforeach
             </div>
@@ -337,7 +337,26 @@
         const variant = variants.find(v => v.size == selectedSize);
         if (variant) {
             document.getElementById('selectedVariantId').value = variant.id;
-            document.getElementById('displayPrice').innerText = variant.formatted_price;
+            
+            // Update Price HTML
+            const priceDisplay = document.getElementById('displayPrice');
+            const priceContainer = document.getElementById('priceContainer');
+            
+            priceDisplay.innerText = variant.formatted_price;
+            
+            // Handle Old Price (Sale)
+            let oldPriceElem = document.getElementById('displayOldPrice');
+            if (variant.is_on_sale) {
+                if (!oldPriceElem) {
+                    oldPriceElem = document.createElement('div');
+                    oldPriceElem.id = 'displayOldPrice';
+                    oldPriceElem.className = 'pdp-price-old';
+                    priceContainer.appendChild(oldPriceElem);
+                }
+                oldPriceElem.innerText = variant.formatted_original_price;
+            } else if (oldPriceElem) {
+                oldPriceElem.remove();
+            }
             
             // Update stock info
             currentStockLimit = variant.stock;
@@ -453,10 +472,16 @@
         });
     }
 
-    // Initialize stock UI if no variants
+    // Initialize stock UI and default variant
     document.addEventListener('DOMContentLoaded', () => {
         if (variants.length === 0) {
             updateStockUI({{ $product->stock ?? 0 }});
+        } else {
+            // Auto-select the first variant pill
+            const firstPill = document.querySelector('.size-pill');
+            if (firstPill) {
+                firstPill.click();
+            }
         }
     });
 </script>

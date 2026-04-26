@@ -167,5 +167,8 @@
     "Delete this item?": "Supprimer cet article ?",
     "Yes, delete": "Oui, supprimer",
     "Contact Support": "Contactez le Support",
-    "Need help with your order?": "Besoin d'aide avec votre commande ?"
+    "Need help with your order?": "Besoin d'aide avec votre commande ?",
+    "Only {stock} available in stock": "Seulement {stock} disponibles en stock",
+    "Insufficient stock": "Stock insuffisant",
+    "Sorry, we only have {stock} items left in stock.": "Désolé, il ne reste que {stock} articles en stock."
 }
