@@ -40,39 +40,41 @@
 
             {{-- 📸 GALLERY PANEL --}}
             <div class="col-lg-7" data-aos="fade-right">
-                <div class="pdp-main-image-wrap" id="zoomWrap" onmousemove="pdpZoom(event)">
-                    @if($product->main_image)
-                        <img id="mainImage" src="{{ Storage::url($product->main_image) }}"
-                             alt="{{ $product->translated_name }}" 
-                             class="w-100 shadow-sm aspect-9-10" style="transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);">
-                    @else
-                        <div class="d-flex align-items-center justify-content-center bg-white aspect-9-10">
-                            <i class="fas fa-image fa-4x text-muted opacity-25"></i>
-                        </div>
-                    @endif
-
-                    <div class="pdp-badges position-absolute top-0 start-0 p-4">
-                        @if($product->getTotalStockAttribute() <= 0)
-                            <span class="pbadge pbadge-oos">{{ __('Out of Stock') }}</span>
-                        @elseif($product->isOnSale())
-                            <span class="pbadge pbadge-sale">−{{ $product->discount_percentage }}%</span>
+                <div class="pdp-gallery-sticky">
+                    <div class="pdp-main-image-wrap" id="zoomWrap" onmousemove="pdpZoom(event)">
+                        @if($product->main_image)
+                            <img id="mainImage" src="{{ Storage::url($product->main_image) }}"
+                                 alt="{{ $product->translated_name }}" 
+                                 class="w-100 shadow-sm aspect-9-10" style="transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);">
+                        @else
+                            <div class="d-flex align-items-center justify-content-center bg-white aspect-9-10">
+                                <i class="fas fa-image fa-4x text-muted opacity-25"></i>
+                            </div>
                         @endif
-                    </div>
-                </div>
 
-                {{-- Thumbnails --}}
-                @if($product->images->count() > 1)
-                <div class="pdp-gallery-thumbs" data-aos="fade-up">
-                    <img src="{{ Storage::url($product->main_image) }}" 
-                         class="pdp-thumb admin-thumb active" 
-                         onclick="pdpChangeImage('{{ Storage::url($product->main_image) }}', this)">
-                    @foreach($product->images as $img)
-                        <img src="{{ Storage::url($img->image_path) }}" 
-                             class="pdp-thumb" 
-                             onclick="pdpChangeImage('{{ Storage::url($img->image_path) }}', this)">
-                    @endforeach
+                        <div class="pdp-badges position-absolute top-0 start-0 p-4">
+                            @if($product->getTotalStockAttribute() <= 0)
+                                <span class="pbadge pbadge-oos">{{ __('Out of Stock') }}</span>
+                            @elseif($product->isOnSale())
+                                <span class="pbadge pbadge-sale">−{{ $product->discount_percentage }}%</span>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- Thumbnails --}}
+                    @if($product->images->count() > 1)
+                    <div class="pdp-gallery-thumbs" data-aos="fade-up">
+                        <img src="{{ Storage::url($product->main_image) }}" 
+                             class="pdp-thumb admin-thumb active" 
+                             onclick="pdpChangeImage('{{ Storage::url($product->main_image) }}', this)">
+                        @foreach($product->images as $img)
+                            <img src="{{ Storage::url($img->image_path) }}" 
+                                 class="pdp-thumb" 
+                                 onclick="pdpChangeImage('{{ Storage::url($img->image_path) }}', this)">
+                        @endforeach
+                    </div>
+                    @endif
                 </div>
-                @endif
             </div>
 
             {{-- 📝 INFO PANEL --}}
@@ -410,17 +412,9 @@ document.addEventListener('DOMContentLoaded', () => {
         stockBadge.innerHTML = '<i class="fas fa-times-circle me-1"></i> {{ __("Out of Stock") }}';
         stockBadge.className = 'ms-auto badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-2 fw-black text-uppercase ls-1';
     } 
-    else if (variants.length === 0) {
-        stockBadge.innerHTML = `<i class="fas fa-check-circle me-1"></i> ${totalStock} {{ __("In Stock") }}`;
-    }
     else {
-        const firstAvailable = variants.find(v => parseInt(v.stock) > 0);
-        if (firstAvailable) {
-            const colorPill = document.querySelector(`#colorOptions .variant-pill[data-color="${firstAvailable.color}"]`);
-            if (colorPill) selectColor(colorPill);
-            const sizePill = document.querySelector(`#sizeOptions .variant-pill[data-size="${firstAvailable.size}"]`);
-            if (sizePill) selectSize(sizePill);
-        }
+        // We no longer auto-select first available to let user choose
+        stockBadge.innerHTML = `<i class="fas fa-check-circle me-1"></i> ${totalStock} {{ __("In Stock") }}`;
     }
 
     const viewerCount = document.getElementById('live-viewers');

@@ -451,9 +451,12 @@
 }
 
 /* ── Product Detail Page (PDP) Redesign ── */
-.pdp-main-image-wrap {
+.pdp-gallery-sticky {
     position: sticky;
     top: 30px;
+}
+
+.pdp-main-image-wrap {
     border-radius: 32px;
     overflow: hidden;
     background: #fff;
@@ -461,6 +464,7 @@
     border: 1px solid rgba(0,0,0,0.03);
     margin-bottom: 2rem;
 }
+
 
 .pdp-gallery-thumbs {
     display: flex;

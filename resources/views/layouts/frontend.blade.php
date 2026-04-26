@@ -202,7 +202,7 @@
                     <!-- Logo -->
                     <a class="navbar-brand me-3 me-lg-5" href="{{ url('/') }}">
                         <h3 class="m-0 fw-black text-uppercase" style="font-family: 'Inter', sans-serif; letter-spacing: -1.5px; color: var(--accent);">
-                            Moubdi3<span style="color: var(--text-dark);">{{ app()->getLocale() == 'ar' ? 'ون' : 'oun' }}</span>
+                            Moubdi3<span style="color: var(--text-dark);">oun</span>
                         </h3>
                     </a>
 
@@ -240,9 +240,6 @@
                                         </div>
                                     </div>
                                 </div>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link fw-bold text-uppercase small ls-1" href="{{ url('/about') }}">{{ __('About') }}</a>
                             </li>
 
                             <li class="nav-item">
@@ -320,7 +317,7 @@
                             <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="{{ setting('app_name') }}" class="footer-logo">
                         @else
                             <h3 class="m-0 fw-black text-uppercase mb-4" style="font-family: 'Inter', sans-serif; letter-spacing: -1.5px; color: #fff;">
-                                Moubdi3<span style="color: var(--accent);">{{ app()->getLocale() == 'ar' ? 'ون' : 'oun' }}</span>
+                                Moubdi3<span style="color: var(--accent);">oun</span>
                             </h3>
                         @endif
                         
@@ -418,8 +415,12 @@
 
     <!-- Back to Top -->
     <button class="back-to-top" id="backToTop">
+        <svg class="progress-circle" width="100%" height="100%" viewBox="-1 -1 102 102">
+            <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" style="transition: stroke-dashoffset 10ms linear 0s; stroke-dasharray: 307.919, 307.919; stroke-dashoffset: 307.919;"></path>
+        </svg>
         <i class="fas fa-chevron-up"></i>
     </button>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
@@ -841,22 +842,43 @@ document.addEventListener('DOMContentLoaded', function() {
             return new bootstrap.Popover(popoverTriggerEl);
         });
 
-        // Back to Top Button
+        // Back to Top Button with Progress
         const backToTop = document.getElementById('backToTop');
-        window.addEventListener('scroll', () => {
-            if (window.pageYOffset > 300) {
-                backToTop.classList.add('visible');
-            } else {
-                backToTop.classList.remove('visible');
-            }
-        });
+        if (backToTop) {
+            const progressPath = backToTop.querySelector('path');
+            const pathLength = progressPath.getTotalLength();
 
-        backToTop.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
+            progressPath.style.transition = progressPath.style.WebkitTransition = 'none';
+            progressPath.style.strokeDasharray = pathLength + ' ' + pathLength;
+            progressPath.style.strokeDashoffset = pathLength;
+            progressPath.getBoundingClientRect();
+            progressPath.style.transition = progressPath.style.WebkitTransition = 'stroke-dashoffset 10ms linear';
+
+            const updateProgress = () => {
+                const scroll = window.scrollY;
+                const height = document.documentElement.scrollHeight - window.innerHeight;
+                const progress = pathLength - (scroll * pathLength / height);
+                progressPath.style.strokeDashoffset = progress;
+
+                if (scroll > 400) {
+                    backToTop.classList.add('visible');
+                } else {
+                    backToTop.classList.remove('visible');
+                }
+            };
+
+            window.addEventListener('scroll', updateProgress);
+            updateProgress();
+
+            backToTop.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
             });
-        });
+        }
+
 
         // Newsletter Popup Delay
         if (!localStorage.getItem('newsletter_popup_shown')) {
