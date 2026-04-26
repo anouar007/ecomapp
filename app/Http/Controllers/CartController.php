@@ -27,43 +27,75 @@ class CartController extends Controller
      */
     public function addToCart(Request $request, $id)
     {
+        $p = Product::with(['images'])->find($id);
+        @file_put_contents(storage_path('debug.txt'), "ID: $id, Main: " . ($p ? $p->main_image : 'NONE') . ", Count: " . ($p ? $p->images->count() : 0) . "\n", FILE_APPEND);
         try {
-            $product = Product::with(['images', 'primaryImage', 'productCategory'])->findOrFail($id);
-            
-            // Check if product is in stock
-            if (!$product->isInStock()) {
-                if ($request->wantsJson()) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'This product is out of stock'
-                    ], 400);
+            $product = Product::with(['variants', 'images', 'primaryImage'])->findOrFail($id);
+            $variantId = $request->get('variant_id');
+            $variant = null;
+
+            if ($variantId) {
+                $variant = \App\Models\ProductVariant::where('product_id', $id)->find($variantId);
+                if (!$variant) {
+                    throw new \Exception('Variant not found.');
                 }
-                return back()->with('error', 'This product is out of stock');
             }
-            
+
+            // Check stock
+            $stock = $variant ? $variant->stock : $product->stock;
+            if ($product->variants->count() > 0 && !$variant) {
+                throw new \Exception('Please select a size and color.');
+            }
+
+            if ($stock <= 0) {
+                $msg = 'هذا المنتج غير متوفر حالياً';
+                if ($request->wantsJson()) {
+                    return response()->json(['success' => false, 'message' => $msg], 400);
+                }
+                return back()->with('error', $msg);
+            }
+
             $cart = session()->get('cart', []);
             $quantity = $request->integer('quantity', 1);
             
+            // Unique key for cart items: productID_variantID
+            $cartKey = $id . ($variantId ? '_' . $variantId : '_0');
+
             // Check if requested quantity exceeds available stock
-            $currentQty = isset($cart[$id]) ? $cart[$id]['quantity'] : 0;
-            if (($currentQty + $quantity) > $product->stock) {
+            $currentQty = isset($cart[$cartKey]) ? $cart[$cartKey]['quantity'] : 0;
+            if (($currentQty + $quantity) > $stock) {
+                $msg = "المتوفر في المخزن هو {$stock} فقط";
                 if ($request->wantsJson()) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => "Only {$product->stock} items available in stock"
-                    ], 400);
+                    return response()->json(['success' => false, 'message' => $msg], 400);
                 }
-                return back()->with('error', "Only {$product->stock} items available in stock");
+                return back()->with('error', $msg);
             }
 
-            if (isset($cart[$id])) {
-                $cart[$id]['quantity'] += $quantity;
+            // Always use the product's main image (never the variant color swatch)
+            if ($product->main_image) {
+                $imagePath = $product->main_image;
+            } elseif ($product->primaryImage) {
+                $imagePath = $product->primaryImage->image_path;
+            } elseif ($product->images->count() > 0) {
+                $imagePath = $product->images->first()->image_path;
             } else {
-                $cart[$id] = [
-                    'name' => $product->name,
+                $imagePath = $product->image; // Legacy column
+            }
+
+            if (isset($cart[$cartKey])) {
+                $cart[$cartKey]['quantity'] += $quantity;
+                $cart[$cartKey]['image'] = $imagePath; // Update image in case it was missing
+            } else {
+                $cart[$cartKey] = [
+                    'product_id' => $id,
+                    'variant_id' => $variantId,
+                    'name' => $product->translated_name,
                     'quantity' => $quantity,
-                    'price' => $product->price,
-                    'image' => $product->main_image
+                    'price' => $variant ? $variant->display_price : $product->display_price,
+                    'original_price' => $variant ? ($variant->price ?? $product->price) : $product->price,
+                    'image' => $imagePath,
+                    'size' => $variant ? $variant->size : null,
+                    'color' => $variant ? $variant->color : null,
                 ];
             }
 
@@ -73,17 +105,17 @@ class CartController extends Controller
                 $cartCount = array_sum(array_column($cart, 'quantity'));
                 return response()->json([
                     'success' => true, 
-                    'message' => 'Product added to cart!',
+                    'message' => 'تمت الإضافة للسلة!',
                     'cartCount' => $cartCount
                 ]);
             }
 
-            return redirect()->back()->with('success', 'Product added to cart!');
+            return redirect()->back()->with('success', 'تمت الإضافة للسلة!');
         } catch (\Exception $e) {
             if ($request->wantsJson()) {
                 return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
             }
-            return redirect()->back()->with('error', 'Error adding to cart: ' . $e->getMessage());
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
@@ -95,6 +127,26 @@ class CartController extends Controller
         if ($request->id && $request->quantity) {
             $cart = session()->get('cart', []);
             if (isset($cart[$request->id])) {
+                $parts = explode('_', $request->id);
+                $productId = $parts[0];
+                $variantId = isset($parts[1]) && $parts[1] !== '0' ? $parts[1] : null;
+
+                if ($variantId) {
+                    $variant = \App\Models\ProductVariant::find($variantId);
+                    $stock = $variant ? $variant->stock : 0;
+                } else {
+                    $product = \App\Models\Product::find($productId);
+                    $stock = $product ? $product->stock : 0;
+                }
+
+                if ($request->quantity > $stock) {
+                    $msg = $stock > 0 ? "المتوفر في المخزن هو {$stock} فقط" : "عذراً، هذا المنتج غير متوفر حالياً";
+                    return response()->json([
+                        'success' => false, 
+                        'message' => $msg
+                    ], 400);
+                }
+
                 $cart[$request->id]['quantity'] = $request->quantity;
                 session()->put('cart', $cart);
             }
@@ -147,4 +199,25 @@ class CartController extends Controller
         
         return view('frontend.cart.partials.mini-cart-footer', compact('total'));
     }
+
+    /**
+     * Return full cart items HTML for AJAX refresh.
+     */
+    public function fullCartItems()
+    {
+        $cart = session()->get('cart', []);
+        return view('frontend.cart.partials.full-cart-items', compact('cart'));
+    }
+
+    /**
+     * Return full cart summary HTML for AJAX refresh.
+     */
+    public function fullCartSummary()
+    {
+        $cart = session()->get('cart', []);
+        return view('frontend.cart.partials.full-cart-summary', compact('cart'));
+    }
 }
+
+
+

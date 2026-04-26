@@ -57,21 +57,52 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['nullable', 'string', 'max:255'],
+            'name_fr' => ['nullable', 'string', 'max:255'],
+            'name_en' => ['nullable', 'string', 'max:255'],
+            'name_ar' => ['required', 'string', 'max:255'],
             'sku' => ['required', 'string', 'max:255', 'unique:products,sku'],
             'description' => ['nullable', 'string'],
+            'description_fr' => ['nullable', 'string'],
+            'description_en' => ['nullable', 'string'],
+            'description_ar' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
+            'sale_price' => ['nullable', 'numeric', 'min:0', 'lt:price'],
             'cost_price' => ['nullable', 'numeric', 'min:0'],
             'stock' => ['required', 'integer', 'min:0'],
             'min_stock' => ['required', 'integer', 'min:0'],
             'category_id' => ['nullable', 'exists:categories,id'],
-            'images.*' => ['nullable', 'image', 'max:2048'],
+            'images.*' => ['nullable', 'image', 'max:4096'],
             'status' => ['required', 'in:active,inactive'],
+            'variants' => ['nullable', 'array'],
+            'variants.*.size' => ['nullable', 'string', 'max:255'],
+            'variants.*.color' => ['nullable', 'string', 'max:255'],
+            'variants.*.color_code' => ['nullable', 'string', 'max:7'],
+            'variants.*.sku' => ['nullable', 'string', 'max:255'],
+            'variants.*.price' => ['nullable', 'numeric', 'min:0'],
+            'variants.*.sale_price' => ['nullable', 'numeric', 'min:0'],
+            'variants.*.stock' => ['required_with:variants', 'integer', 'min:0'],
+            'variants.*.color_image' => ['nullable', 'image', 'max:4096'],
+            'variants.*.style_key' => ['nullable', 'string', 'max:255'],
         ]);
 
         DB::beginTransaction();
         try {
-            $product = Product::create($validated);
+            // Fallback for primary name fields if hidden ones are empty
+            if (empty($validated['name_fr'])) {
+                $validated['name_fr'] = $validated['name_ar'];
+            }
+            if (empty($validated['name'])) {
+                $validated['name'] = $validated['name_ar'];
+            }
+            if (empty($validated['description_fr'])) {
+                $validated['description_fr'] = $validated['description_ar'] ?? '';
+            }
+            if (empty($validated['description'])) {
+                $validated['description'] = $validated['description_ar'] ?? '';
+            }
+
+            $product = Product::create(\Illuminate\Support\Arr::except($validated, ['variants']));
 
             // Handle multiple image uploads
             if ($request->hasFile('images')) {
@@ -84,6 +115,42 @@ class ProductController extends Controller
                         'is_primary' => $index === 0, // First image is primary
                     ]);
                 }
+            }
+
+            // Handle Variations
+            if ($request->has('variants')) {
+                foreach ($request->variants as $index => $variantData) {
+                    // Fallback to HEX code if color name is not provided
+                    if (empty($variantData['color']) && !empty($variantData['color_code'])) {
+                        $variantData['color'] = $variantData['color_code'];
+                    }
+
+                    // Handle color image upload
+                    $variantFiles = $request->file('variants');
+                    if (isset($variantFiles[$index]['color_image'])) {
+                        $imageFile = $variantFiles[$index]['color_image'];
+                        $path = $imageFile->store('product_variants', 'public');
+                        if ($path) {
+                            $variantData['color_image'] = $path;
+                        } else {
+                            \Illuminate\Support\Facades\Log::error("Variant image store failed for index {$index} during creation");
+                            unset($variantData['color_image']);
+                        }
+                    } else {
+                        // Crucial: remove the UploadedFile object from variantData if it exists 
+                        // to prevent Eloquent from saving the temp path string.
+                        unset($variantData['color_image']);
+                    }
+
+                    // Final safety check to prevent legacy "0" from being saved
+                    if (isset($variantData['color_image']) && ($variantData['color_image'] === 0 || $variantData['color_image'] === "0" || $variantData['color_image'] === false)) {
+                        $variantData['color_image'] = null;
+                    }
+
+                    $product->variants()->create($variantData);
+                }
+                // Sync main stock
+                $product->update(['stock' => $product->variants()->sum('stock')]);
             }
 
             DB::commit();
@@ -101,7 +168,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $product->load('images', 'productCategory');
+        $product->load(['images', 'productCategory', 'variants']);
         $categories = \App\Models\Category::where('status', 'active')
             ->orderBy('name')
             ->get();
@@ -114,24 +181,62 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
+        \Illuminate\Support\Facades\Log::info("UPDATE REQUEST v4", [
+            'variants' => $request->input('variants', []),
+            'files' => $request->allFiles()
+        ]);
+
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['nullable', 'string', 'max:255'],
+            'name_fr' => ['nullable', 'string', 'max:255'],
+            'name_en' => ['nullable', 'string', 'max:255'],
+            'name_ar' => ['required', 'string', 'max:255'],
             'sku' => ['required', 'string', 'max:255', 'unique:products,sku,' . $product->id],
             'description' => ['nullable', 'string'],
+            'description_fr' => ['nullable', 'string'],
+            'description_en' => ['nullable', 'string'],
+            'description_ar' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
+            'sale_price' => ['nullable', 'numeric', 'min:0', 'lt:price'],
             'cost_price' => ['nullable', 'numeric', 'min:0'],
             'stock' => ['required', 'integer', 'min:0'],
             'min_stock' => ['required', 'integer', 'min:0'],
             'category_id' => ['nullable', 'exists:categories,id'],
-            'images.*' => ['nullable', 'image', 'max:2048'],
+            'images.*' => ['nullable', 'image', 'max:4096'],
             'status' => ['required', 'in:active,inactive'],
             'remove_images' => ['nullable', 'array'],
             'remove_images.*' => ['exists:product_images,id'],
+            'variants' => ['nullable', 'array'],
+            'variants.*.id' => ['nullable', 'exists:product_variants,id'],
+            'variants.*.size' => ['nullable', 'string', 'max:255'],
+            'variants.*.color' => ['nullable', 'string', 'max:255'],
+            'variants.*.color_code' => ['nullable', 'string', 'max:7'],
+            'variants.*.sku' => ['nullable', 'string', 'max:255'],
+            'variants.*.price' => ['nullable', 'numeric', 'min:0'],
+            'variants.*.sale_price' => ['nullable', 'numeric', 'min:0'],
+            'variants.*.stock' => ['required_with:variants', 'integer', 'min:0'],
+            'variants.*.color_image' => ['nullable', 'image', 'max:4096'],
+            'variants.*.style_key' => ['nullable', 'string', 'max:255'],
+            'variants.*.remove_image' => ['nullable', 'boolean'],
         ]);
 
         DB::beginTransaction();
         try {
-            $product->update($validated);
+            // Fallback for primary name fields
+            if (empty($validated['name_fr'])) {
+                $validated['name_fr'] = $validated['name_ar'];
+            }
+            if (empty($validated['name'])) {
+                $validated['name'] = $validated['name_ar'];
+            }
+            if (empty($validated['description_fr'])) {
+                $validated['description_fr'] = $validated['description_ar'] ?? '';
+            }
+            if (empty($validated['description'])) {
+                $validated['description'] = $validated['description_ar'] ?? '';
+            }
+
+            $product->update(\Illuminate\Support\Arr::except($validated, ['variants', 'remove_images']));
 
             // Handle image removal
             if ($request->has('remove_images')) {
@@ -153,6 +258,64 @@ class ProductController extends Controller
                         'sort_order' => $currentMaxOrder + $index + 1,
                         'is_primary' => $product->images()->count() === 0 && $index === 0,
                     ]);
+                }
+            }
+
+            // Handle variations
+            if ($request->has('variants')) {
+                $submittedVariantIds = collect($request->variants)->pluck('id')->filter()->toArray();
+                
+                // Delete removed variants
+                $product->variants()->whereNotIn('id', $submittedVariantIds)->delete();
+
+                foreach ($request->variants as $index => $variantData) {
+                    $variantId = $variantData['id'] ?? null;
+                    
+                    // Fallback to HEX code if color name is not provided
+                    if (empty($variantData['color']) && !empty($variantData['color_code'])) {
+                        $variantData['color'] = $variantData['color_code'];
+                    }
+                    
+                    // Handle color image upload
+                    $variantFiles = $request->file('variants');
+                    if (isset($variantFiles[$index]['color_image'])) {
+                        $imageFile = $variantFiles[$index]['color_image'];
+                        $path = $imageFile->store('product_variants', 'public');
+                        if ($path) {
+                            $variantData['color_image'] = $path;
+                        } else {
+                            \Illuminate\Support\Facades\Log::error("Variant image store failed for index {$index}");
+                            unset($variantData['color_image']);
+                        }
+                    } elseif (isset($variantData['remove_image']) && $variantData['remove_image']) {
+                        $variantData['color_image'] = null;
+                    } else {
+                        // Prevent the UploadedFile object from being string-casted to temp path
+                        unset($variantData['color_image']);
+                    }
+
+                    // Final safety check to intercept any legacy "0" that might slip through
+                    if (isset($variantData['color_image']) && ($variantData['color_image'] === 0 || $variantData['color_image'] === "0" || $variantData['color_image'] === false)) {
+                        unset($variantData['color_image']);
+                    }
+
+                    \Illuminate\Support\Facades\Log::info("VARIANT {$index} DATA BEFORE DB UPDATE", $variantData);
+
+                    if ($variantId) {
+                        $product->variants()->where('id', $variantId)->update(
+                            \Illuminate\Support\Arr::except($variantData, ['id', 'remove_image'])
+                        );
+                    } else {
+                        $product->variants()->create($variantData);
+                    }
+                }
+
+                // Sync main stock with variants total
+                $product->update(['stock' => $product->variants()->sum('stock')]);
+            } else {
+                // If variants was submitted as empty array but was present, it means all were removed
+                if ($request->exists('variants')) {
+                    $product->variants()->delete();
                 }
             }
 
@@ -281,6 +444,7 @@ class ProductController extends Controller
                         $newProduct = $product->replicate();
                         $newProduct->name = $product->name . ' (Copy)';
                         $newProduct->sku = $product->sku . '-COPY-' . time() . rand(100, 999);
+                        $newProduct->slug = null; // Let the boot method generate a unique slug
                         $newProduct->save();
                         
                         // Duplicate the product images

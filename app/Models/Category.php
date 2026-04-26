@@ -12,8 +12,14 @@ class Category extends Model
 
     protected $fillable = [
         'name',
+        'name_en',
+        'name_fr',
+        'name_ar',
         'slug',
         'description',
+        'description_en',
+        'description_fr',
+        'description_ar',
         'parent_id',
         'icon',
         'image',
@@ -110,10 +116,44 @@ class Category extends Model
     }
 
     /**
-     * Get breadcrumb path.
+     * Get breadcrumb path based on translated names.
      */
     public function getBreadcrumbAttribute()
     {
-        return $this->ancestors()->pluck('name')->push($this->name)->implode(' > ');
+        return $this->ancestors()->map(function($ancestor) {
+            return $ancestor->translated_name;
+        })->push($this->translated_name)->implode(' > ');
+    }
+
+    /**
+     * Get the translated name based on current application locale.
+     */
+    public function getTranslatedNameAttribute()
+    {
+        $locale = app()->getLocale();
+        $nameField = 'name_' . $locale;
+        
+        if (!empty($this->{$nameField})) {
+            return $this->{$nameField};
+        }
+        
+        // Fallbacks
+        return $this->name_fr ?: $this->name_en ?: $this->name_ar ?: $this->name;
+    }
+
+    /**
+     * Get the translated description based on current application locale.
+     */
+    public function getTranslatedDescriptionAttribute()
+    {
+        $locale = app()->getLocale();
+        $descField = 'description_' . $locale;
+        
+        if (!empty($this->{$descField})) {
+            return $this->{$descField};
+        }
+        
+        // Fallbacks
+        return $this->description_fr ?: $this->description_en ?: $this->description_ar ?: $this->description;
     }
 }

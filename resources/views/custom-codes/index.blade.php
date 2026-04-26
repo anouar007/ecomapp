@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Costom Code Manager')
+@section('title', __('Custom Code Manager'))
 
 @section('content')
 @extends('layouts.app')
@@ -15,12 +15,12 @@
                 <div class="brand-header-icon">
                     <i class="fas fa-code"></i>
                 </div>
-                Custom Code Manager
+                {{ __('Custom Code Manager') }}
             </h1>
-            <p class="brand-subtitle">Manage custom CSS, JS, and HTML snippets</p>
+            <p class="brand-subtitle">{{ __('Manage custom CSS, JS, and HTML snippets') }}</p>
         </div>
         <a href="{{ route('custom-codes.create') }}" class="btn-brand-primary">
-            <i class="fas fa-plus me-2"></i> Add New Snippet
+            <i class="fas fa-plus me-2"></i> {{ __('Add New Snippet') }}
         </a>
     </div>
 
@@ -37,12 +37,12 @@
             <table class="brand-table">
                 <thead>
                     <tr>
-                        <th style="padding-left: 1.5rem;">Snippet Details</th>
-                        <th>Type</th>
-                        <th>Position</th>
-                        <th>Priority</th>
-                        <th>Status</th>
-                        <th class="text-end" style="padding-right: 1.5rem;">Actions</th>
+                        <th style="padding-left: 1.5rem;">{{ __('Snippet Details') }}</th>
+                        <th>{{ __('Type') }}</th>
+                        <th>{{ __('Position') }}</th>
+                        <th>{{ __('Priority') }}</th>
+                        <th>{{ __('Status') }}</th>
+                        <th class="text-end" style="padding-right: 1.5rem;">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -78,18 +78,18 @@
                         </td>
                         <td>
                             <span class="brand-badge {{ $code->is_active ? 'success' : 'danger' }}">
-                                {{ $code->is_active ? 'Active' : 'Inactive' }}
+                                {{ $code->is_active ? __('Active') : __('Inactive') }}
                             </span>
                         </td>
                         <td style="padding-right: 1.5rem;">
                             <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ route('custom-codes.edit', $code) }}" class="btn-action-icon" title="Edit Snippet">
+                                <a href="{{ route('custom-codes.edit', $code) }}" class="btn-action-icon" title="{{ __('Edit Snippet') }}">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <form action="{{ route('custom-codes.destroy', $code) }}" method="POST" class="d-inline delete-form">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn-action-icon danger" onclick="return confirm('Are you sure you want to delete this snippet?')" title="Delete Snippet">
+                                    <button type="submit" class="btn-action-icon danger" onclick="return confirm('{{ __('Are you sure you want to delete this snippet?') }}')" title="{{ __('Delete Snippet') }}">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </form>
@@ -103,10 +103,10 @@
                                 <div class="brand-avatar mx-auto mb-3" style="width: 64px; height: 64px; font-size: 24px;">
                                     <i class="fas fa-code"></i>
                                 </div>
-                                <h5 class="fw-bold text-dark">No custom codes found</h5>
-                                <p class="text-muted">Start by adding your first custom snippet.</p>
+                                <h5 class="fw-bold text-dark">{{ __('No custom codes found') }}</h5>
+                                <p class="text-muted">{{ __('Start by adding your first custom snippet.') }}</p>
                                 <a href="{{ route('custom-codes.create') }}" class="btn-brand-primary mt-3">
-                                    Add New Snippet
+                                    {{ __('Add New Snippet') }}
                                 </a>
                             </div>
                         </td>

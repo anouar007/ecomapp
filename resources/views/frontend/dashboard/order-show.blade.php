@@ -1,53 +1,68 @@
 @extends('layouts.customer')
 
 @section('dashboard_content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h3 class="fw-bold m-0">Order #{{ $order->order_number }}</h3>
-    <a href="{{ route('customer.orders') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-        &larr; Retour aux commandes
+<div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-up">
+    <div>
+        <h3 class="brand-heading h2 mb-1">{{ __('Order Details') }} #{{ $order->order_number }}</h3>
+        <div class="bg-gold rounded" style="width: 40px; height: 3px;"></div>
+    </div>
+    <a href="{{ route('customer.orders') }}" class="btn-brand-outline py-1 px-3 small text-decoration-none hvr-backward">
+        <i class="fas fa-arrow-right me-1 small"></i> {{ __('Back to my orders') }}
     </a>
 </div>
 
-<div class="row g-4">
-    <div class="col-lg-8">
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
-            <div class="card-header bg-white p-4 border-bottom">
-                <h5 class="fw-bold m-0">Articles commandés</h5>
+<div class="row g-4 font-body">
+    <div class="col-lg-8" data-aos="fade-up" data-aos-delay="100">
+        <div class="brand-card border-0 shadow-sm overflow-hidden mb-4 bg-white">
+            <div class="card-header bg-gold-light p-4 border-bottom border-gold-subtle">
+                <h5 class="fw-bold m-0 small text-uppercase ls-1">{{ __('Ordered Products') }}</h5>
             </div>
             <div class="table-responsive">
                 <table class="table align-middle mb-0">
                     <tbody>
                         @foreach($order->items as $item)
-                        <tr>
-                            <td class="ps-4 py-3">
+                        <tr class="border-bottom border-light">
+                            <td class="ps-4 py-4">
                                 <div class="d-flex align-items-center">
-                                    <div class="bg-light rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
-                                        <i class="fas fa-cube text-muted opacity-50"></i>
+                                    <div class="bg-gold-light rounded shadow-sm d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 75px;">
+                                        @if($item->product && $item->product->main_image)
+                                            <img src="{{ Storage::url($item->product->main_image) }}" class="rounded h-100 w-100 object-fit-cover">
+                                        @else
+                                            <i class="fas fa-crown text-gold opacity-50"></i>
+                                        @endif
                                     </div>
                                     <div>
-                                        <h6 class="fw-bold mb-0">{{ $item->product_name }}</h6>
-                                        <small class="text-muted">Qté : {{ $item->quantity }}</small>
+                                        <h6 class="fw-bold mb-1 text-dark">{{ $item->product_name }}</h6>
+                                        <div class="small text-muted">
+                                            <span>{{ __('Quantity:') }} {{ $item->quantity }}</span>
+                                            @if($item->variant_id)
+                                                @php $v = \App\Models\ProductVariant::find($item->variant_id); @endphp
+                                                @if($v)
+                                                    <span class="ms-2">| {{ $v->color }} - {{ $v->size }}</span>
+                                                @endif
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="text-end pe-4 fw-bold">
+                            <td class="text-end pe-4 fw-bold text-dark">
                                 {{ currency($item->subtotal) }}
                             </td>
                         </tr>
                         @endforeach
                     </tbody>
-                    <tfoot class="bg-light">
+                    <tfoot class="bg-gold-light border-top border-gold-subtle">
                         <tr>
-                            <td class="text-end pe-4 py-3 border-0">Sous-total</td>
-                            <td class="text-end pe-4 py-3 border-0 fw-bold">{{ currency($order->subtotal) }}</td>
+                            <td class="text-end pe-4 py-3 border-0 small text-muted">{{ __('Subtotal') }}</td>
+                            <td class="text-end pe-4 py-3 border-0 fw-bold text-dark">{{ currency($order->subtotal) }}</td>
                         </tr>
                         <tr>
-                            <td class="text-end pe-4 py-2 border-0">Livraison</td>
-                            <td class="text-end pe-4 py-2 border-0">{{ currency($order->shipping_cost) }}</td>
+                            <td class="text-end pe-4 py-2 border-0 small text-muted">{{ __('Delivery') }}</td>
+                            <td class="text-end pe-4 py-2 border-0 text-gold fw-bold">{{ currency($order->shipping_cost) }}</td>
                         </tr>
                         <tr>
-                            <td class="text-end pe-4 py-3 border-0 h5 fw-bold text-dark">Total</td>
-                            <td class="text-end pe-4 py-3 border-0 h5 fw-bold text-primary">{{ $order->formatted_total }}</td>
+                            <td class="text-end pe-4 py-3 border-0 h5 fw-bold text-dark">{{ __('Final Total') }}</td>
+                            <td class="text-end pe-4 py-3 border-0 h4 fw-bold text-gold">{{ $order->formatted_total }}</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -55,31 +70,42 @@
         </div>
     </div>
 
-    <div class="col-lg-4">
-        <div class="card border-0 shadow-sm rounded-4 mb-4">
-            <div class="card-body p-4">
-                <h6 class="fw-bold text-muted mb-3">ADRESSE DE LIVRAISON</h6>
-                <p class="mb-0 fw-bold">{{ $order->shipping_address }}</p>
-                <p class="mb-0">{{ $order->shipping_city }}, {{ $order->shipping_state }} {{ $order->shipping_zip }}</p>
-                <p class="mb-0 text-muted">{{ $order->shipping_country }}</p>
+    <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="brand-card border-0 shadow-sm mb-4 bg-white p-4">
+            <h6 class="fw-bold text-muted mb-4 small text-uppercase ls-2">{{ __('Delivery Address') }}</h6>
+            <div class="d-flex gap-3">
+                <i class="fas fa-map-marker-alt text-gold mt-1"></i>
+                <div>
+                    <p class="mb-1 fw-bold text-dark">{{ $order->shipping_address }}</p>
+                    <p class="mb-0 text-muted">{{ $order->shipping_city }}</p>
+                    <p class="mb-0 text-muted">{{ $order->shipping_state }} {{ $order->shipping_zip }}</p>
+                </div>
             </div>
         </div>
 
-        <div class="card border-0 shadow-sm rounded-4">
-            <div class="card-body p-4">
-                <h6 class="fw-bold text-muted mb-3">INFO COMMANDE</h6>
-                <div class="d-flex justify-content-between mb-2">
-                    <span>État</span>
-                    <span class="badge {{ $order->status_badge_class }}">{{ ucfirst($order->status) }}</span>
-                </div>
-                <div class="d-flex justify-content-between mb-2">
-                    <span>Paiement</span>
-                    <span class="badge {{ $order->payment_status_badge_class }}">{{ ucfirst($order->payment_status) }}</span>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <span>Date</span>
-                    <span class="fw-bold">{{ $order->created_at->format('d M Y') }}</span>
-                </div>
+        <div class="brand-card border-0 shadow-sm bg-white p-4">
+            <h6 class="fw-bold text-muted mb-4 small text-uppercase ls-2">{{ __('Order Information') }}</h6>
+            <div class="d-flex justify-content-between mb-3 align-items-center">
+                <span class="text-muted small">{{ __('Order Status') }}</span>
+                @php
+                    $statusMap = [
+                        'pending' => ['bg' => 'bg-warning-subtle text-warning', 'text' => __('Pending')],
+                        'confirmed' => ['bg' => 'bg-info-subtle text-info', 'text' => __('Confirmed')],
+                        'shipping' => ['bg' => 'bg-primary-subtle text-primary', 'text' => __('Shipping')],
+                        'delivered' => ['bg' => 'bg-success-subtle text-success', 'text' => __('Delivered')],
+                        'cancelled' => ['bg' => 'bg-danger-subtle text-danger', 'text' => __('Cancelled')],
+                    ];
+                    $s = $statusMap[$order->status] ?? ['bg' => 'bg-secondary-subtle text-secondary', 'text' => $order->status];
+                @endphp
+                <span class="badge {{ $s['bg'] }} rounded-pill px-3 py-1 fw-normal" style="font-size: 0.7rem;">{{ $s['text'] }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-3 align-items-center">
+                <span class="text-muted small">{{ __('Payment Method') }}</span>
+                <span class="badge bg-gold-light text-dark rounded-pill px-3 py-1 fw-normal text-uppercase" style="font-size: 0.7rem;">{{ __('Cash on Delivery') }}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted small">{{ __('Order Date') }}</span>
+                <span class="fw-bold text-dark small">{{ $order->created_at->format('d M Y') }}</span>
             </div>
         </div>
     </div>

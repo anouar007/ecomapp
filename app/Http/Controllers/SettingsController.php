@@ -6,6 +6,8 @@ use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Artisan;
 
 class SettingsController extends Controller
 {
@@ -20,6 +22,31 @@ class SettingsController extends Controller
         $currencies = $this->getCurrencies();
         
         return view('settings.index', compact('settings', 'currencies'));
+    }
+
+    /**
+     * Display the standalone maintenance management page
+     *
+     * @return \Illuminate\View\View
+     */
+    public function maintenanceManager()
+    {
+        $settings = Setting::getAllGrouped();
+        return view('settings.maintenance', compact('settings'));
+    }
+
+    /**
+     * Display the maintenance page
+     *
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     */
+    public function maintenance()
+    {
+        if (!setting('maintenance_mode', false)) {
+            return redirect()->route('home');
+        }
+
+        return view('frontend.maintenance');
     }
 
     /**
@@ -139,7 +166,7 @@ class SettingsController extends Controller
             'settings' => 'required|array',
         ]);
 
-        \Log::info('Settings update attempt', ['user_id' => auth()->id(), 'data' => $request->settings]);
+        Log::info('Settings update attempt', ['user_id' => \Illuminate\Support\Facades\Auth::id(), 'data' => $request->settings]);
 
         $updatedCount = 0;
         foreach ($request->settings as $key => $value) {
@@ -155,16 +182,16 @@ class SettingsController extends Controller
                 $type = $this->inferSettingType($key, $value);
                 Setting::set($key, $value, $type, $group);
                 $updatedCount++;
-                \Log::info("Created new setting: {$key} in group {$group}");
+                Log::info("Created new setting: {$key} in group {$group}");
             }
         }
 
-        \Log::info("Settings updated successfully. Count: {$updatedCount}");
+        Log::info("Settings updated successfully. Count: {$updatedCount}");
 
         // Clear all settings cache
         Setting::clearCache();
-        \Artisan::call('cache:clear');
-        \Artisan::call('config:clear');
+        Artisan::call('cache:clear');
+        Artisan::call('config:clear');
 
         return back()->with('success', 'Settings updated successfully!');
     }
@@ -202,6 +229,8 @@ class SettingsController extends Controller
             'default_order_' => 'advanced',
             'default_payment_' => 'advanced',
             'cache_' => 'advanced',
+            'maintenance_' => 'maintenance',
+            'store_enabled' => 'maintenance',
         ];
 
         foreach ($prefixGroups as $prefix => $group) {
@@ -222,7 +251,7 @@ class SettingsController extends Controller
         if (str_contains($key, 'color')) {
             return 'string';
         }
-        if (str_contains($key, 'enabled') || str_contains($key, 'sticky')) {
+        if (str_contains($key, 'enabled') || str_contains($key, 'sticky') || $key === 'maintenance_mode') {
             return 'boolean';
         }
         if (is_numeric($value) && !str_contains($value, '.')) {
@@ -290,11 +319,39 @@ class SettingsController extends Controller
     public function reset()
     {
         // Re-run the seeder
-        \Artisan::call('db:seed', ['--class' => 'SettingsSeeder']);
+        Artisan::call('db:seed', ['--class' => 'SettingsSeeder']);
         
         // Clear cache
         Setting::clearCache();
 
         return back()->with('success', 'Settings reset to default values!');
+    }
+
+    /**
+     * Upload maintenance screen image
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function uploadMaintenanceImage(Request $request)
+    {
+        $request->validate([
+            'maintenance_image' => 'required|image|mimes:jpeg,png,jpg,svg,webp|max:5120'
+        ]);
+
+        // Delete old image if exists
+        $oldImage = setting('maintenance_image');
+        if ($oldImage && Storage::disk('public')->exists($oldImage)) {
+            Storage::disk('public')->delete($oldImage);
+        }
+
+        // Store new image
+        $path = $request->file('maintenance_image')->store('maintenance', 'public');
+        Setting::set('maintenance_image', $path, 'file', 'maintenance');
+
+        // Clear cache
+        Cache::forget('setting_maintenance_image');
+
+        return back()->with('success', 'Maintenance image uploaded successfully!');
     }
 }

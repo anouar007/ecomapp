@@ -34,6 +34,14 @@ class DashboardController extends Controller
             ->sum('total_amount');
         $revenueGrowth = $lastMonthRevenue == 0 ? ($currentRevenue > 0 ? 100 : 0) : round((($currentRevenue - $lastMonthRevenue) / $lastMonthRevenue) * 100, 1);
 
+        // Today's Revenue
+        $todayRevenue = \App\Models\Invoice::where('payment_status', 'paid')
+            ->whereDate('created_at', now())
+            ->sum('total_amount');
+
+        // Pending Orders Count
+        $pendingOrdersCount = \App\Models\Order::where('status', 'pending')->count();
+
         // Get statistics
         $stats = [
             'total_users' => \App\Models\User::count(),
@@ -47,6 +55,9 @@ class DashboardController extends Controller
             
             'total_products' => \App\Models\Product::count(),
             'products_growth' => $calculateGrowth(\App\Models\Product::class),
+
+            'today_revenue' => $todayRevenue,
+            'pending_orders' => $pendingOrdersCount,
         ];
         
         // Recent orders
@@ -55,6 +66,76 @@ class DashboardController extends Controller
         // Low Stock Products (Less than 10)
         $lowStockProducts = \App\Models\Product::where('stock', '<=', 10)->take(5)->get();
 
-        return view('dashboard', compact('stats', 'user', 'recentOrders', 'lowStockProducts'));
+        // Top Selling Products (by quantity in order_items)
+        $topSellingProducts = \App\Models\OrderItem::select('product_id', \Illuminate\Support\Facades\DB::raw('SUM(quantity) as total_qty'))
+            ->groupBy('product_id')
+            ->orderByDesc('total_qty')
+            ->with('product')
+            ->take(5)
+            ->get();
+
+        // Daily Revenue for Last 7 Days
+        $revenueData = [];
+        $revenueLabels = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i);
+            $revenueLabels[] = $date->format('D');
+            $revenueData[] = \App\Models\Invoice::where('payment_status', 'paid')
+                ->whereDate('created_at', $date->toDateString())
+                ->sum('total_amount');
+        }
+
+        // Order Status Counts
+        $orderStatusCounts = [
+            'pending' => \App\Models\Order::where('status', 'pending')->count(),
+            'completed' => \App\Models\Order::where('status', 'completed')->count(),
+            'cancelled' => \App\Models\Order::where('status', 'cancelled')->count(),
+        ];
+
+        return view('dashboard', compact(
+            'stats', 
+            'user', 
+            'recentOrders', 
+            'lowStockProducts', 
+            'topSellingProducts', 
+            'revenueData', 
+            'revenueLabels', 
+            'orderStatusCounts'
+        ));
+    }
+
+    /**
+     * Check for new orders (for real-time alerts).
+     */
+    public function checkNewOrders(Request $request)
+    {
+        $lastCheckedId = $request->input('last_id');
+        $query = \App\Models\Order::query();
+
+        if ($lastCheckedId) {
+            $query->where('id', '>', $lastCheckedId);
+        } else {
+            // If first time, just get the latest ID to start from
+            return response()->json([
+                'count' => 0,
+                'last_id' => \App\Models\Order::max('id') ?? 0,
+            ]);
+        }
+
+        $newOrders = $query->latest()->get();
+        
+        return response()->json([
+            'count' => $newOrders->count(),
+            'last_id' => \App\Models\Order::max('id') ?? $lastCheckedId,
+            'orders' => $newOrders->map(function($order) {
+                return [
+                    'id' => $order->id,
+                    'number' => $order->order_number,
+                    'customer' => $order->customer_name,
+                    'total' => number_format($order->total, 2) . ' DH',
+                    'url' => route('orders.show', $order->id),
+                ];
+            })
+        ]);
     }
 }

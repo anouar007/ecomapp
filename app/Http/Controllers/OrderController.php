@@ -38,6 +38,17 @@ class OrderController extends Controller
             });
         }
 
+        // Filter by date range
+        if ($request->filled('date_range')) {
+            $dates = explode(' to ', $request->date_range);
+            if (count($dates) === 2) {
+                $query->whereDate('created_at', '>=', $dates[0])
+                      ->whereDate('created_at', '<=', $dates[1]);
+            } else {
+                $query->whereDate('created_at', $dates[0]);
+            }
+        }
+
         $orders = $query->latest()->paginate(15);
 
         return view('orders.index', compact('orders'));
@@ -48,12 +59,7 @@ class OrderController extends Controller
      */
     public function create()
     {
-        $products = Product::where('status', 'active')
-            ->where('stock', '>', 0)
-            ->with('images')
-            ->get();
-
-        return view('orders.create', compact('products'));
+        return redirect()->route('pos.index');
     }
 
     /**
@@ -149,7 +155,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        $order->load(['items.product', 'user']);
+        $order->load(['items.product.images', 'items.variant', 'user']);
         return view('orders.show', compact('order'));
     }
 
@@ -168,16 +174,26 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         $validated = $request->validate([
-            'status' => ['required', 'in:pending,processing,shipped,delivered,cancelled'],
-            'payment_status' => ['required', 'in:pending,paid,failed,refunded'],
+            'status' => ['sometimes', 'in:pending,processing,shipped,delivered,cancelled'],
+            'payment_status' => ['sometimes', 'in:pending,paid,failed,refunded'],
+
             'payment_method' => ['nullable', 'string', 'max:50'],
             'transaction_id' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string'],
         ]);
 
         $order->update($validated);
+        
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => __('Order updated successfully.'),
+                'order' => $order
+            ]);
+        }
 
         return redirect()->route('orders.show', $order)->with('success', 'Order updated successfully.');
+
     }
 
     /**

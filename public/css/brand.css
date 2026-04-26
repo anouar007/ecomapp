@@ -1,0 +1,162 @@
+/* 
+   Coop Ait Oumdis — Premium Bio & Natural Design System
+   Modern, Clean, and Vibrant Green
+*/
+
+:root {
+    /* Brand Colors (Pure Green & White) */
+    --brand-primary: #3BB878;
+    --brand-primary-dark: #2f9461;
+    --brand-primary-light: #e8f7ef;
+    --brand-secondary: #2D3436;
+    --brand-accent: #3BB878;
+    --brand-cream: #FFFFFF;
+    --brand-beige: #F9FAFB;
+    --brand-white: #FFFFFF;
+    
+    /* Text Colors */
+    --text-dark: #1F2937;
+    --text-medium: #4B5563;
+    --text-light: #9CA3AF;
+    
+    /* Layout */
+    --font-main: 'Tajawal', sans-serif;
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-full: 50%;
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 10px rgba(59, 184, 120, 0.05);
+    --shadow-md: 0 4px 20px rgba(59, 184, 120, 0.08);
+    --shadow-lg: 0 10px 40px rgba(59, 184, 120, 0.12);
+}
+
+/* ── Global Styles ── */
+body {
+    font-family: var(--font-main);
+    background-color: var(--brand-white);
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+/* ── Modern Animations ── */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.anim-fade-up { animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+.anim-scale-in { animation: scaleIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+
+/* ── Typography ── */
+.text-green { color: var(--brand-primary) !important; }
+
+/* ── Premium Buttons ── */
+.btn-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 32px;
+    border-radius: 100px; /* Modern Pill shape */
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: none;
+}
+
+.btn-brand-primary {
+    background: var(--brand-primary);
+    color: var(--brand-white) !important;
+    box-shadow: 0 10px 20px rgba(59, 184, 120, 0.2);
+}
+
+.btn-brand-primary:hover {
+    background: var(--brand-primary-dark);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(59, 184, 120, 0.3);
+}
+
+.btn-brand-outline {
+    background: transparent;
+    border: 2px solid var(--brand-primary);
+    color: var(--brand-primary) !important;
+}
+
+.btn-brand-outline:hover {
+    background: var(--brand-primary);
+    color: var(--brand-white) !important;
+    transform: translateY(-4px);
+}
+
+/* ── Product Cards ── */
+.product-card {
+    background: var(--brand-white);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid #f1f5f9;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product-card:hover {
+    transform: translateY(-12px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--brand-primary-light);
+}
+
+.product-image-wrapper {
+    position: relative;
+    padding-top: 125%; /* 4:5 aspect ratio */
+    overflow: hidden;
+}
+
+.product-image-wrapper img {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product-card:hover .product-image-wrapper img {
+    transform: scale(1.1);
+}
+
+/* ── Hero Section ── */
+.hero-section {
+    position: relative;
+    padding: 120px 0;
+    background: var(--brand-white);
+    overflow: hidden;
+}
+
+.hero-gradient {
+    position: absolute;
+    top: -20%; right: -10%;
+    width: 60%; height: 60%;
+    background: radial-gradient(circle, rgba(59, 184, 120, 0.08) 0%, rgba(255,255,255,0) 70%);
+    z-index: 0;
+}
+
+/* ── Header ── */
+.main-header {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0,0,0,0.03);
+}
+
+/* ── Category Story Pills ── */
+.category-story-pill .category-img-container {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.category-story-pill:hover .category-img-container {
+    transform: scale(1.1);
+    border-color: var(--brand-primary) !important;
+}

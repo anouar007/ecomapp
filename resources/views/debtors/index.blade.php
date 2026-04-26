@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Debtors Dashboard')
+@section('title', __('Debtors Dashboard'))
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/management.css') }}">
@@ -161,18 +161,18 @@
     <div class="d-flex justify-content-between align-items-start">
         <div>
             <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">
-                <i class="fas fa-chart-line me-2"></i> Debtors Management
+                <i class="fas fa-chart-line me-2"></i> {{ __('Debtors Management') }}
             </h1>
             <p style="opacity: 0.9; font-size: 1rem; margin: 0;">
-                Track, manage, and collect outstanding payments efficiently
+                {{ __('Track, manage, and collect outstanding payments efficiently') }}
             </p>
         </div>
         <div class="d-flex gap-2">
             <a href="{{ route('debtors.download') }}" class="btn btn-light">
-                <i class="fas fa-download me-2"></i> Export PDF
+                <i class="fas fa-download me-2"></i> {{ __('Export PDF') }}
             </a>
             <button class="btn btn-light" onclick="window.print()">
-                <i class="fas fa-print me-2"></i> Print
+                <i class="fas fa-print me-2"></i> {{ __('Print') }}
             </button>
         </div>
     </div>
@@ -185,10 +185,10 @@
             <div class="stat-icon-pro" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
                 <i class="fas fa-users"></i>
             </div>
-            <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">Total Debtors</div>
+            <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">{{ __('Total Debtors') }}</div>
             <div style="font-size: 2rem; font-weight: 700; color: #1f2937;">{{ $stats['total_debtors'] }}</div>
             <div style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.5rem;">
-                <i class="fas fa-info-circle"></i> Customers with outstanding balance
+                <i class="fas fa-info-circle"></i> {{ __('Customers with outstanding balance') }}
             </div>
         </div>
     </div>
@@ -198,10 +198,10 @@
             <div class="stat-icon-pro" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
                 <i class="fas fa-coins"></i>
             </div>
-            <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">Total Outstanding</div>
+            <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">{{ __('Total Outstanding') }}</div>
             <div style="font-size: 2rem; font-weight: 700; color: #1f2937;">{{ currency($stats['total_outstanding']) }}</div>
             <div style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.5rem;">
-                <i class="fas fa-trending-up"></i> Amount to collect
+                <i class="fas fa-trending-up"></i> {{ __('Amount to collect') }}
             </div>
         </div>
     </div>
@@ -211,10 +211,10 @@
             <div class="stat-icon-pro" style="background: rgba(220, 38, 38, 0.1); color: #dc2626;">
                 <i class="fas fa-exclamation-triangle"></i>
             </div>
-            <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">Over Credit Limit</div>
+            <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">{{ __('Over Credit Limit') }}</div>
             <div style="font-size: 2rem; font-weight: 700; color: #1f2937;">{{ $stats['over_limit_count'] }}</div>
             <div style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.5rem;">
-                <i class="fas fa-ban"></i> Requires immediate action
+                <i class="fas fa-ban"></i> {{ __('Requires immediate action') }}
             </div>
         </div>
     </div>
@@ -224,12 +224,12 @@
             <div class="stat-icon-pro" style="background: rgba(102, 126, 234, 0.1); color: #667eea;">
                 <i class="fas fa-percentage"></i>
             </div>
-            <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">Collection Rate</div>
+            <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">{{ __('Collection Rate') }}</div>
             <div style="font-size: 2rem; font-weight: 700; color: #1f2937;">
                 {{ $stats['total_debtors'] > 0 ? number_format(($stats['total_debtors'] - $stats['over_limit_count']) / $stats['total_debtors'] * 100, 1) : 0 }}%
             </div>
             <div style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.5rem;">
-                <i class="fas fa-chart-pie"></i> Within credit limits
+                <i class="fas fa-chart-pie"></i> {{ __('Within credit limits') }}
             </div>
         </div>
     </div>
@@ -241,20 +241,20 @@
         <form action="{{ route('debtors.index') }}" method="GET">
             <div class="row g-3">
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small text-uppercase text-muted">Search</label>
+                    <label class="form-label fw-semibold small text-uppercase text-muted">{{ __('Search') }}</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light border-end-0">
                             <i class="fas fa-search text-muted"></i>
                         </span>
                         <input type="text" name="search" class="form-control border-start-0" 
-                               placeholder="Name, email, phone..." value="{{ request('search') }}">
+                               placeholder="{{ __('Name, email, phone...') }}" value="{{ request('search') }}">
                     </div>
                 </div>
                 
                 <div class="col-md-2">
-                    <label class="form-label fw-semibold small text-uppercase text-muted">Balance Range</label>
+                    <label class="form-label fw-semibold small text-uppercase text-muted">{{ __('Balance Range') }}</label>
                     <select name="balance_range" class="form-select">
-                        <option value="">All Amounts</option>
+                        <option value="">{{ __('All Amounts') }}</option>
                         <option value="0-500" {{ request('balance_range') == '0-500' ? 'selected' : '' }}>$0 - $500</option>
                         <option value="500-1000" {{ request('balance_range') == '500-1000' ? 'selected' : '' }}>$500 - $1,000</option>
                         <option value="1000-5000" {{ request('balance_range') == '1000-5000' ? 'selected' : '' }}>$1,000 - $5,000</option>
@@ -263,27 +263,27 @@
                 </div>
                 
                 <div class="col-md-2">
-                    <label class="form-label fw-semibold small text-uppercase text-muted">Risk Level</label>
+                    <label class="form-label fw-semibold small text-uppercase text-muted">{{ __('Risk Level') }}</label>
                     <select name="risk" class="form-select">
-                        <option value="">All Risks</option>
-                        <option value="high" {{ request('risk') == 'high' ? 'selected' : '' }}>High Risk</option>
-                        <option value="medium" {{ request('risk') == 'medium' ? 'selected' : '' }}>Medium Risk</option>
-                        <option value="low" {{ request('risk') == 'low' ? 'selected' : '' }}>Low Risk</option>
+                        <option value="">{{ __('All Risks') }}</option>
+                        <option value="high" {{ request('risk') == 'high' ? 'selected' : '' }}>{{ __('High Risk') }}</option>
+                        <option value="medium" {{ request('risk') == 'medium' ? 'selected' : '' }}>{{ __('Medium Risk') }}</option>
+                        <option value="low" {{ request('risk') == 'low' ? 'selected' : '' }}>{{ __('Low Risk') }}</option>
                     </select>
                 </div>
                 
                 <div class="col-md-2">
-                    <label class="form-label fw-semibold small text-uppercase text-muted">Sort By</label>
+                    <label class="form-label fw-semibold small text-uppercase text-muted">{{ __('Sort By') }}</label>
                     <select name="sort" class="form-select">
-                        <option value="balance_desc" {{ request('sort') == 'balance_desc' ? 'selected' : '' }}>Balance: High to Low</option>
-                        <option value="balance_asc" {{ request('sort') == 'balance_asc' ? 'selected' : '' }}>Balance: Low to High</option>
-                        <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Name: A-Z</option>
+                        <option value="balance_desc" {{ request('sort') == 'balance_desc' ? 'selected' : '' }}>{{ __('Balance: High to Low') }}</option>
+                        <option value="balance_asc" {{ request('sort') == 'balance_asc' ? 'selected' : '' }}>{{ __('Balance: Low to High') }}</option>
+                        <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>{{ __('Name: A-Z') }}</option>
                     </select>
                 </div>
                 
                 <div class="col-md-2 d-flex align-items-end gap-2">
                     <button type="submit" class="btn btn-primary flex-grow-1">
-                        <i class="fas fa-filter"></i> Filter
+                        <i class="fas fa-filter"></i> {{ __('Filter') }}
                     </button>
                     <a href="{{ route('debtors.index') }}" class="btn btn-outline-secondary">
                         <i class="fas fa-redo"></i>
@@ -298,13 +298,13 @@
 <div class="card" style="border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
     <div class="card-header bg-white border-bottom" style="padding: 1.25rem 1.5rem;">
         <div class="d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-bold">Outstanding Accounts ({{ $debtors->total() }})</h5>
+            <h5 class="mb-0 fw-bold">{{ __('Outstanding Accounts') }} ({{ $debtors->total() }})</h5>
             <div class="d-flex gap-2">
                 <button class="btn btn-sm btn-outline-primary" onclick="selectAll()">
-                    <i class="fas fa-check-square"></i> Select All
+                    <i class="fas fa-check-square"></i> {{ __('Select All') }}
                 </button>
                 <button class="btn btn-sm btn-outline-secondary" onclick="bulkEmail()">
-                    <i class="fas fa-envelope"></i> Bulk Email
+                    <i class="fas fa-envelope"></i> {{ __('Bulk Email') }}
                 </button>
             </div>
         </div>
@@ -316,13 +316,13 @@
                     <th style="width: 40px; padding-left: 1.5rem;">
                         <input type="checkbox" id="select-all-checkbox" class="form-check-input">
                     </th>
-                    <th>Customer</th>
-                    <th>Contact</th>
-                    <th class="text-end">Credit Limit</th>
-                    <th class="text-end">Outstanding</th>
-                    <th class="text-center">Utilization</th>
-                    <th class="text-center">Risk</th>
-                    <th class="text-end" style="padding-right: 1.5rem;">Actions</th>
+                    <th>{{ __('Customer') }}</th>
+                    <th>{{ __('Contact') }}</th>
+                    <th class="text-end">{{ __('Credit Limit') }}</th>
+                    <th class="text-end">{{ __('Outstanding') }}</th>
+                    <th class="text-center">{{ __('Utilization') }}</th>
+                    <th class="text-center">{{ __('Risk') }}</th>
+                    <th class="text-end" style="padding-right: 1.5rem;">{{ __('Actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -355,7 +355,7 @@
                             @if($debtor->phone)
                                 <i class="fas fa-phone text-muted me-1"></i> {{ $debtor->phone }}
                             @else
-                                <span class="text-muted">No phone</span>
+                                <span class="text-muted">{{ __('No phone') }}</span>
                             @endif
                         </div>
                     </td>
@@ -363,7 +363,7 @@
                         @if($debtor->credit_limit > 0)
                             <span class="fw-semibold">{{ currency($debtor->credit_limit) }}</span>
                         @else
-                            <span class="badge bg-secondary">Unlimited</span>
+                            <span class="badge bg-secondary">{{ __('Unlimited') }}</span>
                         @endif
                     </td>
                     <td class="text-end">
@@ -385,13 +385,13 @@
                     <td class="text-center">
                         <span class="risk-badge {{ $riskClass }}">
                             <i class="fas fa-{{ $riskLevel == 'high' ? 'exclamation-circle' : ($riskLevel == 'medium' ? 'exclamation-triangle' : 'check-circle') }}"></i>
-                            {{ ucfirst($riskLevel) }}
+                            {{ __(ucfirst($riskLevel)) }}
                         </span>
                     </td>
                     <td style="padding-right: 1.5rem;">
                         <div class="d-flex justify-content-end gap-2">
                             <a href="{{ route('customers.show', $debtor) }}" 
-                               class="btn btn-sm btn-outline-primary" title="View Details">
+                               class="btn btn-sm btn-outline-primary" title="{{ __('View Details') }}">
                                 <i class="fas fa-eye"></i>
                             </a>
                             <a href="mailto:{{ $debtor->email }}" 
@@ -410,8 +410,8 @@
                     <td colspan="8" class="text-center py-5">
                         <div style="opacity: 0.5;">
                             <i class="fas fa-inbox fa-3x mb-3 text-muted"></i>
-                            <h5 class="text-muted">No Debtors Found</h5>
-                            <p class="text-muted small">All customers have cleared their balances!</p>
+                            <h5 class="text-muted">{{ __('No Debtors Found') }}</h5>
+                            <p class="text-muted small">{{ __('All customers have cleared their balances!') }}</p>
                         </div>
                     </td>
                 </tr>
@@ -423,7 +423,7 @@
     <div class="card-footer bg-white border-top">
         <div class="d-flex justify-content-between align-items-center">
             <div class="text-muted small">
-                Showing {{ $debtors->firstItem() }} to {{ $debtors->lastItem() }} of {{ $debtors->total() }} debtors
+                {{ __('Showing') }} {{ $debtors->firstItem() }} {{ __('to') }} {{ $debtors->lastItem() }} {{ __('of') }} {{ $debtors->total() }} {{ __('debtors') }}
             </div>
             {{ $debtors->links() }}
         </div>
@@ -450,11 +450,11 @@ function bulkEmail() {
         .map(cb => cb.value);
     
     if (selected.length === 0) {
-        alert('Please select at least one debtor');
+        showWarning("{{ __('No Selection') }}", "{{ __('Please select at least one debtor') }}");
         return;
     }
     
-    alert(`Bulk email feature coming soon! Selected: ${selected.length} debtors`);
+    showInfo("{{ __('Feature Coming Soon') }}", `Bulk email feature coming soon! Selected: ${selected.length} debtors`);
 }
 </script>
 @endpush

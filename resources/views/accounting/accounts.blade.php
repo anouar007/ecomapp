@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Chart of Accounts')
+@section('title', __('Chart of Accounts'))
 
 @section('content')
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Chart of Accounts</h1>
+        <h1 class="h3 mb-0 text-gray-800">{{ __('Chart of Accounts') }}</h1>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAccountModal">
-            <i class="fas fa-plus me-2"></i> New Account
+            <i class="fas fa-plus me-2"></i> {{ __('New Account') }}
         </button>
     </div>
 
@@ -21,11 +21,11 @@
                 <table class="table table-bordered table-striped" id="accountsTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Code</th>
-                            <th>Name</th>
-                            <th>Type</th>
-                            <th>Class</th>
-                            <th>Status</th>
+                            <th>{{ __('Code') }}</th>
+                            <th>{{ __('Name') }}</th>
+                            <th>{{ __('Type') }}</th>
+                            <th>{{ __('Class') }}</th>
+                            <th>{{ __('Status') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -42,15 +42,15 @@
                                     @elseif($account->type == 'Expense') bg-danger
                                     @else bg-secondary
                                     @endif">
-                                    {{ $account->type }}
+                                    {{ __($account->type) }}
                                 </span>
                             </td>
                             <td>{{ $account->class }}</td>
                             <td>
                                 @if($account->is_active)
-                                    <span class="badge bg-success">Active</span>
+                                    <span class="badge bg-success">{{ __('Active') }}</span>
                                 @else
-                                    <span class="badge bg-secondary">Inactive</span>
+                                    <span class="badge bg-secondary">{{ __('Inactive') }}</span>
                                 @endif
                             </td>
                         </tr>
@@ -72,45 +72,45 @@
             <form action="{{ route('accounting.accounts.store') }}" method="POST">
                 @csrf
                 <div class="modal-header">
-                    <h5 class="modal-title">New Account</h5>
+                    <h5 class="modal-title">{{ __('New Account') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Code</label>
+                        <label class="form-label">{{ __('Code') }}</label>
                         <input type="text" name="code" class="form-control" required placeholder="e.g. 5141">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Name</label>
+                        <label class="form-label">{{ __('Name') }}</label>
                         <input type="text" name="name" class="form-control" required placeholder="e.g. Banque Populaire">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Type</label>
+                        <label class="form-label">{{ __('Type') }}</label>
                         <select name="type" class="form-select" required>
-                            <option value="Asset">Asset</option>
-                            <option value="Liability">Liability</option>
-                            <option value="Equity">Equity</option>
-                            <option value="Revenue">Revenue</option>
-                            <option value="Expense">Expense</option>
+                            <option value="Asset">{{ __('Asset') }}</option>
+                            <option value="Liability">{{ __('Liability') }}</option>
+                            <option value="Equity">{{ __('Equity') }}</option>
+                            <option value="Revenue">{{ __('Revenue') }}</option>
+                            <option value="Expense">{{ __('Expense') }}</option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Class (PCGM)</label>
+                        <label class="form-label">{{ __('Class (PCGM)') }}</label>
                         <select name="class" class="form-select" required>
-                            <option value="1">1 - Financement Permanent</option>
-                            <option value="2">2 - Actif Immobilisé</option>
-                            <option value="3">3 - Actif Circulant</option>
-                            <option value="4">4 - Passif Circulant</option>
-                            <option value="5">5 - Trésorerie</option>
-                            <option value="6">6 - Charges</option>
-                            <option value="7">7 - Produits</option>
-                            <option value="8">8 - Résultat</option>
+                            <option value="1">1 - {{ __('Financement Permanent') }}</option>
+                            <option value="2">2 - {{ __('Actif Immobilisé') }}</option>
+                            <option value="3">3 - {{ __('Actif Circulant') }}</option>
+                            <option value="4">4 - {{ __('Passif Circulant') }}</option>
+                            <option value="5">5 - {{ __('Trésorerie') }}</option>
+                            <option value="6">6 - {{ __('Charges') }}</option>
+                            <option value="7">7 - {{ __('Produits') }}</option>
+                            <option value="8">8 - {{ __('Résultat') }}</option>
                         </select>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Create Account</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ __('Create Account') }}</button>
                 </div>
             </form>
         </div>

@@ -23,8 +23,8 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [LoginController::class, 'login'])
         ->middleware('throttle:5,1');
     
-    Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-    Route::post('/register', [RegisterController::class, 'register'])
+    Route::get('/register', [LoginController::class, 'showLoginForm'])->name('register');
+    Route::post('/register', [LoginController::class, 'showLoginForm'])
         ->middleware('throttle:3,1');
 });
 
@@ -45,6 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/chatbot/ask', [\App\Http\Controllers\ChatbotController::class, 'ask'])->name('chatbot.ask');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/check-new-orders', [DashboardController::class, 'checkNewOrders'])->name('dashboard.check-new-orders');
     
     // Profile Management
     Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
@@ -108,6 +109,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/inventory/{product}/adjust', [\App\Http\Controllers\InventoryController::class, 'adjust'])->name('inventory.adjust');
         Route::post('/inventory/{product}/adjust', [\App\Http\Controllers\InventoryController::class, 'processAdjustment'])->name('inventory.process-adjustment');
         Route::post('/inventory/alerts/{alert}/acknowledge', [\App\Http\Controllers\InventoryController::class, 'acknowledgeAlert'])->name('inventory.acknowledge-alert');
+        Route::post('/inventory/quick-update', [\App\Http\Controllers\InventoryController::class, 'quickUpdate'])->name('inventory.quick-update');
         Route::post('/inventory/alerts/bulk-acknowledge', [\App\Http\Controllers\InventoryController::class, 'bulkAcknowledge'])->name('inventory.bulk-acknowledge');
     });
     
@@ -209,5 +211,8 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-// Public routes - Reviews (accessible by guests)
-Route::post('/reviews', [\App\Http\Controllers\ProductReviewController::class, 'store'])->name('reviews.store');
+// Public Page routes
+Route::get('/p/{slug}', [\App\Http\Controllers\PageController::class, 'showPublic'])->name('pages.show.public');
+
+// Language Switcher
+Route::get('/lang/{locale}', [\App\Http\Controllers\LanguageController::class, 'switchLang'])->name('lang.switch');

@@ -1,512 +1,614 @@
 <!DOCTYPE html>
-<html lang="{{ setting('language', 'fr') }}" dir="{{ setting('text_direction', 'ltr') }}">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('meta_title', 'Coopérative Ait Oumdis' . ' — ' . 'Produits du terroir & Santé naturelle')</title>
-    <meta name="description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
-    <meta name="keywords" content="@yield('meta_keywords', setting('app_name', 'boutique') . ', e-commerce, Maroc, acheter en ligne, livraison Maroc')">
-    <meta name="robots" content="@yield('meta_robots', 'index, follow')">
-    <meta name="author" content="{{ setting('app_name', 'Cooperative Ait Oumdis') }}">
-    <meta name="theme-color" content="#00b878">
+    <title>@yield('meta_title', setting_trans('app_name', 'Coop Ait Oumdis'))</title>
+    <meta name="description" content="@yield('meta_description', setting_trans('app_description', 'Natural Products Cooperative'))">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <!-- Canonical URL -->
-    <link rel="canonical" href="{{ url()->current() }}">
-
-    <!-- Preconnect to external resources for faster loading -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-
-    <!-- Favicon -->
-    @if(setting('app_logo'))
-        <link rel="icon" href="{{ asset('storage/' . setting('app_logo')) }}" type="image/x-icon">
-        <link rel="apple-touch-icon" href="{{ asset('storage/' . setting('app_logo')) }}">
-    @else
-        <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
-    @endif
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="@yield('meta_type', 'website')">
-    <meta property="og:site_name" content="Coopérative Ait Oumdis">
-    <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('meta_title', 'Coopérative Ait Oumdis')">
-    <meta property="og:description" content="@yield('meta_description', 'Découvrez les trésors de la province d\'Azilal : miel pur, huile d\'argan, amlou artisanal et recettes naturelles.')">
-    <meta property="og:image" content="@yield('meta_image', setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/og-default.jpg'))">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:locale" content="{{ setting('language', 'fr') === 'ar' ? 'ar_MA' : 'fr_MA' }}">
-    <meta property="og:updated_time" content="{{ now()->toIso8601String() }}">
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="{{ url()->current() }}">
-    <meta name="twitter:title" content="@yield('meta_title', setting('app_name', 'Speed Platform'))">
-    <meta name="twitter:description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
-    <meta name="twitter:image" content="@yield('meta_image', setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/og-default.jpg'))">    
-    <meta name="twitter:site" content="@yield('twitter_site', '@' . str_replace(' ', '', setting('app_name', 'SpeedPlatform')))">
     
-    <!-- JSON-LD Structured Data Schema -->
-    @yield('json_ld')
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
     
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
-    <link rel="stylesheet" href="{{ asset('css/frontend.css') }}">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <!-- Custom Head Codes -->
-    @php
-        $headCodes = \App\Models\CustomCode::where('is_active', true)
-            ->where('position', 'head')
-            ->orderBy('priority', 'desc')
-            ->get();
-    @endphp
-    @foreach($headCodes as $code)
-        @if($code->type == 'css')
-            <style>{!! $code->content !!}</style>
-        @elseif($code->type == 'js')
-            <script>{!! $code->content !!}</script>
-        @else
-            {!! $code->content !!}
-        @endif
-    @endforeach
+    
+    <link rel="stylesheet" href="{{ asset('css/frontend.css') }}?v={{ filemtime(public_path('css/frontend.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/brand.css') }}?v={{ filemtime(public_path('css/brand.css')) }}">
+    
+    @stack('styles')
+
+    <style>
+        :root {
+            --green: #3BB878;
+            --green-dark: #2f9461;
+            --green-light: #e8f7ef;
+            --primary: #3BB878;
+            --accent: #3BB878;
+        }
+        
+        /* ── Global Resets ── */
+        * { box-sizing: border-box; }
+        html, body { overflow-x: hidden; width: 100%; position: relative; scroll-behavior: smooth; }
+        body { font-family: 'Tajawal', sans-serif; background: #fff; color: #1F2937; -webkit-font-smoothing: antialiased; }
+        
+        .text-green { color: #3BB878 !important; }
+        .text-gold  { color: #3BB878 !important; }
+        .bg-green   { background-color: #3BB878 !important; }
+        .bg-green-light { background-color: #e8f7ef !important; }
+        .bg-brand-primary { background-color: #3BB878 !important; }
+        .border-green { border-color: #3BB878 !important; }
+        .x-small { font-size: 0.75rem; }
+
+        /* ── Header ── */
+        .main-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            transition: box-shadow 0.3s;
+        }
+        .main-header.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+
+        /* ── Buttons ── */
+        .btn-brand {
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 13px 28px; border-radius: 100px; font-weight: 700;
+            font-family: 'Tajawal', sans-serif; border: none; cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-decoration: none;
+        }
+        .btn-brand-primary {
+            background: #3BB878; color: #fff !important;
+            box-shadow: 0 8px 24px rgba(59,184,120,0.25);
+        }
+        .btn-brand-primary:hover {
+            background: #2f9461; transform: translateY(-3px);
+            box-shadow: 0 16px 32px rgba(59,184,120,0.35); color: #fff !important;
+        }
+        .btn-brand-outline {
+            background: transparent; border: 2px solid #3BB878; color: #3BB878 !important;
+        }
+        .btn-brand-outline:hover {
+            background: #3BB878; color: #fff !important; transform: translateY(-3px);
+        }
+        .btn-brand-white {
+            background: #fff; color: #1F2937 !important;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+        .btn-brand-white:hover {
+            background: #f9fafb; transform: translateY(-3px);
+        }
+
+        /* ── Section Utilities ── */
+        .section-label {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: #e8f7ef; color: #3BB878; border-radius: 100px;
+            padding: 6px 16px; font-size: 0.82rem; font-weight: 700;
+            letter-spacing: 0.5px; margin-bottom: 16px;
+        }
+        .section-label::before {
+            content: ''; display: block; width: 6px; height: 6px;
+            background: #3BB878; border-radius: 50%;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+        }
+        .section-title {
+            font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 800;
+            line-height: 1.15; color: #1F2937; margin-bottom: 16px;
+        }
+        .section-divider {
+            width: 50px; height: 4px; border-radius: 2px;
+            background: linear-gradient(135deg, #3BB878, #2f9461); margin: 0 auto;
+        }
+
+        /* ── Product Cards ── */
+        .product-card {
+            background: #fff; border-radius: 20px; overflow: hidden;
+            border: 1px solid #f1f5f9;
+            transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+        }
+        .product-card:hover { transform: translateY(-10px); box-shadow: 0 20px 50px rgba(59,184,120,0.12); border-color: #c6f0d8; }
+        .product-image-wrapper { position: relative; padding-top: 120%; overflow: hidden; }
+        .product-image-wrapper img {
+            position: absolute; inset: 0; width: 100%; height: 100%;
+            object-fit: cover; transition: transform 0.7s cubic-bezier(0.4,0,0.2,1);
+        }
+        .product-card:hover .product-image-wrapper img { transform: scale(1.08); }
+        .product-card-overlay {
+            position: absolute; inset: 0; background: rgba(59,184,120,0.12);
+            backdrop-filter: blur(3px); opacity: 0;
+            transition: opacity 0.35s ease;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .product-card:hover .product-card-overlay { opacity: 1; }
+        .btn-add-to-cart {
+            width: 44px; height: 44px; border-radius: 50%;
+            background: #3BB878; color: #fff; border: none;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 4px 12px rgba(59,184,120,0.35);
+        }
+        .btn-add-to-cart:hover { transform: scale(1.15) rotate(90deg); background: #2f9461; }
+
+        /* ── Animations ── */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+        @keyframes shimmer { from { transform: translateX(-100%); } to { transform: translateX(200%); } }
+        .float-anim { animation: float 4s ease-in-out infinite; }
+
+        /* ── Mini-Cart ── */
+        .mc-qty-btn {
+            width: 28px; height: 28px; border: none; background: #f1f5f9;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .mc-qty-btn:hover { background: #e2e8f0; }
+
+        /* ── Footer ── */
+        .footer-main { background: #0F1F16; color: rgba(255,255,255,0.75); }
+        .footer-link { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+        .footer-link:hover { color: #3BB878; }
+        .footer-social { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: all 0.3s; }
+        .footer-social:hover { background: #3BB878; color: #fff; transform: translateY(-3px); }
+
+        /* ── Scroll to Top ── */
+        #scrollTopBtn {
+            position: fixed; bottom: 24px; right: 24px; z-index: 999;
+            width: 46px; height: 46px; border-radius: 50%;
+            background: #3BB878; color: #fff; border: none;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 6px 20px rgba(59,184,120,0.4);
+            opacity: 0; transform: translateY(20px);
+            transition: all 0.3s ease; cursor: pointer;
+        }
+        #scrollTopBtn.visible { opacity: 1; transform: translateY(0); }
+        #scrollTopBtn:hover { background: #2f9461; transform: translateY(-3px); }
+
+        /* ── Responsive ── */
+        @media(max-width: 767px) { 
+            .section-title { font-size: 1.6rem; } 
+            .main-header .fs-4 { font-size: 1.15rem !important; }
+            .main-header .container { padding-left: 12px; padding-right: 12px; }
+        }
+        @media(max-width: 380px) {
+            .main-header .fs-4 { font-size: 1rem !important; }
+            .gap-2 { gap: 0.4rem !important; }
+        }
+
+        /* ── RTL Fixes ── */
+        [dir="rtl"] {
+            text-align: right;
+            direction: rtl;
+        }
+        
+        /* RTL Helpers for LTR Bootstrap */
+        [dir="rtl"] .text-start { text-align: right !important; }
+        [dir="rtl"] .text-end { text-align: left !important; }
+        [dir="rtl"] .ms-auto { margin-right: auto !important; margin-left: 0 !important; }
+        [dir="rtl"] .me-auto { margin-left: auto !important; margin-right: 0 !important; }
+        [dir="rtl"] .me-3 { margin-right: 0 !important; margin-left: 1rem !important; }
+        [dir="rtl"] .ms-3 { margin-left: 0 !important; margin-right: 1rem !important; }
+        [dir="rtl"] .me-1 { margin-right: 0 !important; margin-left: 0.25rem !important; }
+        [dir="rtl"] .ms-1 { margin-left: 0 !important; margin-right: 0.25rem !important; }
+        [dir="rtl"] .me-2 { margin-right: 0 !important; margin-left: 0.5rem !important; }
+        [dir="rtl"] .ms-2 { margin-left: 0 !important; margin-right: 0.5rem !important; }
+        [dir="rtl"] .ps-5 { padding-right: 3rem !important; padding-left: 0.75rem !important; }
+        [dir="rtl"] .pe-4 { padding-left: 1.5rem !important; padding-right: 0.75rem !important; }
+        [dir="rtl"] .accordion-button::after { margin-right: auto; margin-left: 0; transform: rotate(180deg); }
+        [dir="rtl"] .accordion-button:not(.collapsed)::after { transform: rotate(0deg); }
+        [dir="rtl"] .accordion-button { text-align: right !important; }
+        [dir="rtl"] .position-relative > .position-absolute[style*="left:14px"] { left: auto !important; right: 14px !important; }
+        [dir="rtl"] .fa-arrow-right { transform: rotate(180deg); display: inline-block; }
+        [dir="rtl"] .fa-arrow-left { transform: rotate(180deg); display: inline-block; }
+        
+        [dir="rtl"] .pe-5 { padding-left: 3rem !important; padding-right: 0.75rem !important; }
+        
+        [dir="rtl"] .dropdown-menu-end { left: 0 !important; right: auto !important; }
+        
+        [dir="rtl"] .end-0 { right: auto !important; left: 0 !important; }
+        [dir="rtl"] .start-0 { left: auto !important; right: 0 !important; }
+        [dir="rtl"] .me-1, [dir="rtl"] .me-2, [dir="rtl"] .me-3, [dir="rtl"] .me-4, [dir="rtl"] .me-5 { margin-right: 0 !important; }
+        [dir="rtl"] .ms-1, [dir="rtl"] .ms-2, [dir="rtl"] .ms-3, [dir="rtl"] .ms-4, [dir="rtl"] .ms-5 { margin-left: 0 !important; }
+        
+        /* Stop AOS from causing horizontal scroll */
+        [data-aos] { pointer-events: none; }
+        .aos-animate { pointer-events: auto; }
+        
+        /* Prevent overflow from rows */
+        .row { --bs-gutter-x: 1.5rem; }
+        .container { overflow: visible; }
+        main { overflow-x: hidden; width: 100%; position: relative; }
+        
+        /* Header Squashing Fix */
+        .main-header .container > div { flex-wrap: nowrap; }
+        .main-header .logo-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
+        @media(max-width: 360px) { .main-header .logo-text { max-width: 100px; } }
+        
+        /* TomSelect RTL */
+        [dir="rtl"] .ts-control > input { text-align: right; }
+        
+        /* Flip directional icons in RTL */
+        [dir="rtl"] .fa-arrow-right, 
+        [dir="rtl"] .fa-chevron-right,
+        [dir="rtl"] .fa-arrow-left,
+        [dir="rtl"] .fa-chevron-left {
+            transform: scaleX(-1);
+        }
+        /* ── Mobile Bottom Nav ── */
+        .mobile-bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 65px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            z-index: 1050;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.03);
+            padding: 0 10px;
+        }
+        .nav-item-mobile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+            color: #9CA3AF;
+            font-weight: 700;
+            font-size: 0.65rem;
+            transition: all 0.3s;
+            flex: 1;
+        }
+        .nav-item-mobile.active { color: #3BB878; }
+        .nav-item-mobile i { font-size: 1.2rem; }
+        .nav-item-mobile .badge {
+            position: absolute;
+            top: 5px;
+            right: 25%;
+            padding: 3px 6px;
+            font-size: 0.55rem;
+        }
+
+        @media (min-width: 992px) {
+            .mobile-bottom-nav { display: none; }
+        }
+        @media (max-width: 991px) {
+            body { padding-bottom: 65px; } /* Space for bottom nav */
+        }
+    </style>
 </head>
 <body>
-    <!-- Custom Body Start Codes -->
-    @php
-        $bodyStartCodes = \App\Models\CustomCode::where('is_active', true)
-            ->where('position', 'body_start')
-            ->orderBy('priority', 'desc')
-            ->get();
-    @endphp
-    @foreach($bodyStartCodes as $code)
-        {!! $code->content !!}
-    @endforeach
 
-    <!-- Main Header -->
-    <div class="header-main sticky-top shadow-sm w-100 z-50">
+    <!-- Header -->
+    <header class="main-header" id="mainHeader">
         <div class="container">
-            <nav class="navbar navbar-expand-lg navbar-light py-2">
-                <div class="container-fluid px-0">
-                    <!-- Logo -->
-                    <a class="navbar-brand me-3 me-lg-5" href="{{ url('/') }}">
-                        {{-- Force Text Logo for Ait Oumdis Branding --}}
-                        <h3 class="m-0 fw-bold text-uppercase position-relative" style="font-family: 'Nunito'; letter-spacing: 0.5px; color: var(--primary);">
-                            Ait<span class="text-accent">Oumdis</span>
-                            <i class="fas fa-leaf text-primary position-absolute top-0 start-100 translate-middle ms-2" style="font-size: 0.8em;"></i>
-                        </h3>
-                    </a>
+            <div class="d-flex align-items-center justify-content-between py-3">
+                <!-- Logo -->
+                <a href="{{ url('/') }}" class="text-decoration-none logo-link">
+                    <div class="d-flex align-items-center gap-2">
+                        @if(setting('app_logo'))
+                            <img src="{{ Storage::url(setting('app_logo')) }}" alt="{{ __('Logo') }}" style="height: 38px; width: auto; flex-shrink: 0;">
+                        @else
+                            <div style="width: 38px; height: 38px; background: #3BB878; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="fas fa-leaf text-white"></i>
+                            </div>
+                        @endif
+                        <span class="fs-4 fw-bold text-dark logo-text">{{ __('Ait') }} <span class="text-green">{{ __('Oumdis') }}</span></span>
+                    </div>
+                </a>
 
-                    <!-- Mobile: always-visible actions (cart + user) + toggler -->
-                    <div class="d-flex align-items-center gap-2 ms-auto d-lg-none">
-                        @auth
-                            <a href="{{ route('dashboard') }}" class="action-btn-circle text-decoration-none" title="Mon compte">
-                                <i class="far fa-user"></i>
-                            </a>
-                        @endauth
-                        <div class="position-relative">
-                            <button class="action-btn-circle bg-transparent" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart">
-                                <i class="fas fa-shopping-bag"></i>
-                            </button>
-                            <span id="header-cart-count-mobile" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style="font-size: 0.6rem;">
-                                {{ count(session('cart', [])) }}
-                            </span>
-                        </div>
-                        <button class="navbar-toggler border-0 p-1" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-expanded="false" aria-label="Menu">
-                            <span class="navbar-toggler-icon"></span>
+                <!-- Desktop Nav -->
+                <nav class="d-none d-lg-flex align-items-center gap-4">
+                    <a href="{{ url('/') }}" class="text-decoration-none text-muted fw-500 small hover-green transition-all">{{ __('Home') }}</a>
+                    <a href="{{ route('shop.index') }}" class="text-decoration-none text-muted fw-500 small hover-green transition-all">{{ __('Shop') }}</a>
+                    <a href="{{ url('/#about') }}" class="text-decoration-none text-muted fw-500 small hover-green transition-all">{{ __('About') }}</a>
+                </nav>
+
+                <!-- Actions -->
+                <div class="d-flex align-items-center gap-2 gap-lg-3">
+                    <!-- Language -->
+                    <div class="dropdown">
+                        <button class="btn btn-link text-muted text-decoration-none p-2 dropdown-toggle small fw-bold" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-globe me-1"></i> {{ strtoupper(app()->getLocale()) }}
                         </button>
-                    </div>
-
-                    <!-- Collapsible section -->
-                    <div class="collapse navbar-collapse" id="navbarMain">
-                        <!-- Navigation links -->
-                        <ul class="navbar-nav me-auto mb-0 gap-1 mb-3 mb-lg-0">
-                            <li class="nav-item">
-                                <a class="nav-link-custom {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Accueil</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link-custom {{ request()->routeIs('shop.index') ? 'active' : '' }}" href="{{ route('shop.index') }}">Boutique</a>
-                            </li>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-3">
+                            <li><a class="dropdown-item small" href="{{ route('lang.switch', 'ar') }}">🇲🇦 العربية</a></li>
+                            <li><a class="dropdown-item small" href="{{ route('lang.switch', 'fr') }}">🇫🇷 Français</a></li>
+                            <li><a class="dropdown-item small" href="{{ route('lang.switch', 'en') }}">🇬🇧 English</a></li>
                         </ul>
-
-                        <!-- Search -->
-                        <form action="{{ route('shop.index') }}" method="GET" class="d-flex mx-lg-4 flex-grow-1 flex-lg-grow-0 mb-3 mb-lg-0" style="max-width: 380px;">
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0 text-muted ps-3"><i class="fas fa-search"></i></span>
-                                <input class="form-control bg-light border-start-0 ps-0 text-muted" type="search" name="q" placeholder="Rechercher des produits..." aria-label="Rechercher" value="{{ request('q') }}">
-                            </div>
-                        </form>
-
-                        <!-- Desktop-only actions -->
-                        <div class="d-none d-lg-flex align-items-center gap-3 ms-3">
-                            @auth
-                                <a href="{{ route('dashboard') }}" class="action-btn-circle text-decoration-none" title="Mon compte">
-                                    <i class="far fa-user"></i>
-                                </a>
-                            @endauth
-
-                            <div class="position-relative">
-                                <button class="action-btn-circle bg-transparent" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart">
-                                    <i class="fas fa-shopping-bag"></i>
-                                </button>
-                                <span id="header-cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style="font-size: 0.6rem;">
-                                    {{ count(session('cart', [])) }}
-                                </span>
-                            </div>
-                        </div>
                     </div>
-                </div>
-            </nav>
-        </div>
-    </div>
 
+                    @auth
+                    <a href="{{ route('dashboard') }}" class="btn btn-link text-muted text-decoration-none p-2 d-none d-lg-block">
+                        <i class="fas fa-user-circle fs-5"></i>
+                    </a>
+                    @endauth
+
+                    <!-- Cart Toggle -->
+                    <button class="position-relative p-2 border-0 bg-green rounded-3 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart" style="width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fa-solid fa-bag-shopping fs-6"></i>
+                        <span id="header-cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark border border-white" style="font-size: 0.55rem; transform: translate(-60%, 20%);">
+                            {{ count(session('cart', [])) }}
+                        </span>
+                    </button>
+
+                    <!-- Mobile Toggle -->
+                    <button class="d-lg-none p-2 border-0 bg-light rounded-3 text-dark" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu" style="width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fa-solid fa-bars-staggered fs-5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
 
     <main>
         @yield('content')
     </main>
 
-    <!-- Offcanvas Mini Cart -->
-    <div class="offcanvas offcanvas-end border-0 shadow-lg" tabindex="-1" id="miniCart" aria-labelledby="miniCartLabel" style="width: 450px; background: #f8fafc;">
-        <div class="offcanvas-header bg-white border-bottom py-3">
-            <h5 class="offcanvas-title fw-bold font-heading" id="miniCartLabel">
-                <i class="fas fa-shopping-bag me-2 text-primary"></i>Mon Panier
-            </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body p-0 d-flex flex-column h-100">
-            <div class="flex-grow-1 overflow-auto p-4" id="mini-cart-items">
-                @php $total = 0; @endphp
-                @forelse(session('cart', []) as $id => $details)
-                    @php $total += $details['price'] * $details['quantity']; @endphp
-                    <div class="cart-item bg-white p-3 rounded-4 shadow-sm mb-3 position-relative border border-light" id="cart-item-{{ $id }}">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-shrink-0 me-3 position-relative">
-                                <img src="{{ Storage::url($details['image']) }}" alt="{{ $details['name'] }}" class="rounded-3 object-fit-cover" style="width: 80px; height: 80px;">
-                                <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-light text-dark border shadow-sm" style="font-size: 0.7rem;">x{{ $details['quantity'] }}</span>
-                            </div>
-                            <div class="flex-grow-1 min-w-0">
-                                <h6 class="fw-bold mb-1 text-truncate pe-4" title="{{ $details['name'] }}">{{ $details['name'] }}</h6>
-                                <p class="mb-2 text-muted small">{{ $details['category_name'] ?? 'Produit' }}</p>
-                                
-                                <div class="d-flex align-items-center justify-content-between mt-2">
-                                    <span class="text-primary fw-bold" style="font-size: 1.1rem;">{{ currency($details['price']) }}</span>
-                                    
-                                    <div class="quantity-control bg-light rounded-pill d-flex align-items-center px-1 border">
-                                        <button class="btn btn-sm btn-link text-dark text-decoration-none p-1 border-0" onclick="updateQty({{ $id }}, {{ $details['quantity'] - 1 }})">
-                                            <i class="fas fa-minus" style="font-size: 0.7rem;"></i>
-                                        </button>
-                                        <input type="text" class="form-control form-control-sm border-0 bg-transparent text-center fw-bold p-0" value="{{ $details['quantity'] }}" readonly style="width: 30px;">
-                                        <button class="btn btn-sm btn-link text-dark text-decoration-none p-1 border-0" onclick="updateQty({{ $id }}, {{ $details['quantity'] + 1 }})">
-                                            <i class="fas fa-plus" style="font-size: 0.7rem;"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="btn btn-sm text-danger position-absolute top-0 end-0 mt-2 me-2 opacity-50 hover-opacity-100 transition-all" onclick="removeItem({{ $id }})" title="Remove">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                @empty
-                    <div class="text-center py-5 mt-5">
-                        <div class="mb-4 bg-white rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 100px; height: 100px;">
-                            <i class="fas fa-shopping-basket fa-3x text-muted opacity-25"></i>
-                        </div>
-                        <h5 class="fw-bold text-dark">Votre panier est vide</h5>
-                        <p class="text-muted small mb-4">Vous n'avez encore rien ajouté à votre panier.</p>
-                        <a href="{{ route('shop.index') }}" class="btn btn-primary rounded-pill px-5 shadow-sm">Commencer les achats</a>
-                    </div>
-                @endforelse
-            </div>
-            
-            @if(count(session('cart', [])) > 0)
-            <div class="border-top p-4 bg-white mt-auto shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
-                <div class="d-flex justify-content-between align-items-end mb-4">
-                    <span class="text-muted small text-uppercase fw-bold ls-1">Sous-total</span>
-                    <span class="h4 fw-bold text-dark mb-0 ls-tight" id="mini-cart-total">{{ currency($total) }}</span>
-                </div>
-                <div class="d-grid gap-2">
-                    <a href="{{ route('checkout.index') }}" class="btn btn-primary py-3 rounded-pill fw-bold shadow-sm d-flex justify-content-between align-items-center px-4">
-                        <span>Commander</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
-                    <a href="{{ route('cart.index') }}" class="btn btn-light py-2 rounded-pill fw-bold text-muted small">
-                        Voir le panier complet
-                    </a>
-                </div>
-            </div>
-            @endif
-        </div>
-    </div>
-
-    <footer class="footer-modern bg-white pt-5 pb-4 border-top">
+    <!-- Footer -->
+    <footer class="footer-main pt-5 pb-4 mt-0">
         <div class="container">
             <div class="row g-5">
+                <!-- Brand Column -->
                 <div class="col-lg-4">
-                    <div class="footer-brand mb-4">
-                        <img src="{{ Storage::url(setting('site_logo')) }}" alt="Ait Oumdis" height="40" class="mb-4">
-                        <p class="text-muted small lh-lg">Plongez au cœur de l'Atlas marocain avec les produits authentiques de la Coopérative Ait Oumdis. Miel pur, huile d'Argan, et remèdes naturels d'Azilal.</p>
+                    <div class="d-flex align-items-center gap-2 mb-4">
+                        <div style="width: 36px; height: 36px; background: #3BB878; border-radius: 9px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-leaf text-white small"></i>
+                        </div>
+                        <span class="text-white fw-bold fs-5">{{ __('Ait') }} <span class="text-green">{{ __('Oumdis') }}</span></span>
                     </div>
-                    @php
-                        $sfb  = setting('social_facebook',  '');
-                        $stw  = setting('social_twitter',   '');
-                        $sig  = setting('social_instagram', '');
-                        $sli  = setting('social_linkedin',  '');
-                        $swa  = setting('social_whatsapp',  '');
-                        // Only treat as valid if it's a real URL (not empty or bare '#')
-                        $validUrl = fn($v) => $v && $v !== '#' && $v !== '/#';
-                    @endphp
-                    <div class="d-flex gap-3 flex-wrap">
-                        @if($validUrl($sfb))
-                        <a href="{{ $sfb }}" target="_blank" rel="noopener" class="footer-social-btn text-muted hover-primary transition-all" title="Facebook">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        @endif
-                        @if($validUrl($stw))
-                        <a href="{{ $stw }}" target="_blank" rel="noopener" class="footer-social-btn text-muted hover-primary transition-all" title="Twitter">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        @endif
-                        @if($validUrl($sig))
-                        <a href="{{ $sig }}" target="_blank" rel="noopener" class="footer-social-btn text-muted hover-primary transition-all" title="Instagram">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        @endif
-                        @if($validUrl($sli))
-                        <a href="{{ $sli }}" target="_blank" rel="noopener" class="footer-social-btn text-muted hover-primary transition-all" title="LinkedIn">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
-                        @endif
-                        @if($validUrl($swa))
-                        <a href="{{ $swa }}" target="_blank" rel="noopener" class="footer-social-btn text-muted hover-primary transition-all" title="WhatsApp">
-                            <i class="fab fa-whatsapp"></i>
-                        </a>
-                        @endif
+                    <p class="small lh-lg mb-4" style="color: rgba(255,255,255,0.55);">
+                        {{ setting_trans('frontend_footer_text', __('A Moroccan cooperative dedicated to bringing you the finest natural products directly from the Atlas Mountains. Pure honey, argan oil, saffron, and more — harvested with tradition and love.')) }}
+                    </p>
+                    <div class="d-flex gap-2">
+                        <a href="#" class="footer-social"><i class="fab fa-instagram small"></i></a>
+                        <a href="#" class="footer-social"><i class="fab fa-facebook-f small"></i></a>
+                        <a href="#" class="footer-social"><i class="fab fa-tiktok small"></i></a>
+                        <a href="#" class="footer-social"><i class="fab fa-whatsapp small"></i></a>
                     </div>
                 </div>
-                
-                <div class="col-lg-2">
-                    <h6 class="footer-title fw-bold text-dark mb-4">Boutique</h6>
-                    <ul class="footer-links list-unstyled">
-                        <li class="mb-2"><a href="{{ route('shop.index') }}" class="text-muted text-decoration-none hover-primary transition-all small">Tous les produits</a></li>
-                        <li class="mb-2"><a href="{{ route('shop.index', ['category' => 'miel-pur']) }}" class="text-muted text-decoration-none hover-primary transition-all small">Miel Pur</a></li>
-                        <li class="mb-2"><a href="{{ route('shop.index', ['category' => 'huile-dargan']) }}" class="text-muted text-decoration-none hover-primary transition-all small">Huile d'Argan</a></li>
-                        <li class="mb-2"><a href="{{ route('shop.index', ['category' => 'plantes-medicinales']) }}" class="text-muted text-decoration-none hover-primary transition-all small">Plantes</a></li>
-                    </ul>
-                </div>
-                
-                <div class="col-lg-3">
-                    <h6 class="footer-title fw-bold text-dark mb-4">Informations</h6>
-                    <ul class="footer-links list-unstyled">
-                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-primary transition-all small">À propos de nous</a></li>
-                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-primary transition-all small">Notre coopérative</a></li>
-                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-primary transition-all small">Expédition & Livraison</a></li>
-                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-primary transition-all small">Contact</a></li>
+
+                <!-- Quick Links -->
+                <div class="col-6 col-lg-2">
+                    <h6 class="text-white fw-bold mb-4">{{ __('Quick Links') }}</h6>
+                    <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
+                        <li><a href="{{ url('/') }}" class="footer-link">{{ __('Home') }}</a></li>
+                        <li><a href="{{ route('shop.index') }}" class="footer-link">{{ __('Shop') }}</a></li>
+                        <li><a href="#about" class="footer-link">{{ __('About') }}</a></li>
                     </ul>
                 </div>
 
-                <div class="col-lg-3">
-                    <h6 class="footer-title fw-bold text-dark mb-4">Contact</h6>
-                    <ul class="footer-links footer-contact list-unstyled">
-                        <li class="mb-3 d-flex align-items-start text-muted small">
-                            <i class="fas fa-map-marker-alt mt-1 me-2 text-primary"></i>
-                            <span>Ait Oumdis, Province d'Azilal<br>Maroc</span>
+                <!-- Contact -->
+                <div class="col-6 col-lg-3">
+                    <h6 class="text-white fw-bold mb-4">{{ __('Contact') }}</h6>
+                    <ul class="list-unstyled d-flex flex-column gap-3 mb-0">
+                        <li class="d-flex align-items-start gap-2 small" style="color: rgba(255,255,255,0.55);">
+                            <i class="fas fa-map-marker-alt text-green mt-1"></i>
+                            {{ __('Ait Oumdis, Azilal, Morocco') }}
                         </li>
-                        <li class="mb-3 d-flex align-items-start text-muted small">
-                            <i class="fas fa-envelope mt-1 me-2 text-primary"></i>
-                            <a href="mailto:{{ setting('company_email', 'contact@aitoumdis.com') }}" class="text-muted text-decoration-none hover-primary transition-all">{{ setting('company_email', 'contact@aitoumdis.com') }}</a>
+                        <li class="d-flex align-items-center gap-2 small" style="color: rgba(255,255,255,0.55);">
+                            <i class="fas fa-phone text-green"></i>
+                            {{ setting('app_phone', '+212 600 000 000') }}
                         </li>
-                        <li class="mb-3 d-flex align-items-start text-muted small">
-                            <i class="fas fa-phone mt-1 me-2 text-primary"></i>
-                            <a href="tel:{{ setting('company_phone', '+212600000000') }}" class="text-muted text-decoration-none hover-primary transition-all">{{ setting('company_phone', '+212600000000') }}</a>
+                        <li class="d-flex align-items-center gap-2 small" style="color: rgba(255,255,255,0.55);">
+                            <i class="fas fa-envelope text-green"></i>
+                            {{ setting('app_email', 'contact@aitoumdis.ma') }}
                         </li>
                     </ul>
                 </div>
-            </div>
-            
-            <hr class="my-4 text-muted opacity-25">
-            
-            <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                    <p class="text-muted small mb-0">&copy; {{ date('Y') }} Coopérative Ait Oumdis. Tous droits réservés.</p>
+
+                <!-- Trust Badges -->
+                <div class="col-lg-3">
+                    <h6 class="text-white fw-bold mb-4">{{ __('Why Trust Us?') }}</h6>
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex align-items-center gap-2 small" style="color: rgba(255,255,255,0.55);">
+                            {{ __('100% Certified Organic') }}
+                        </div>
+                        <div class="d-flex align-items-center gap-2 small" style="color: rgba(255,255,255,0.55);">
+                            {{ __('Delivery to all Morocco') }}
+                        </div>
+                        <div class="d-flex align-items-center gap-2 small" style="color: rgba(255,255,255,0.55);">
+                            {{ __('Pay on Delivery') }}
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <img src="{{ asset('images/payments.png') }}" alt="Paiement Sécurisé" height="24" onerror="this.style.display='none'">
+            </div>
+
+            <hr class="my-5" style="border-color: rgba(255,255,255,0.06);">
+            <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
+                <p class="small mb-0" style="color: rgba(255,255,255,0.35);">
+                    &copy; {{ date('Y') }} {{ setting_trans('app_name', 'Coop Ait Oumdis') }}. {{ __('All rights reserved.') }}
+                </p>
+                <div class="d-flex gap-3">
+                    <span class="x-small" style="color: rgba(255,255,255,0.25);">{{ __('Crafted with') }} ❤️ {{ __('in Morocco') }}</span>
                 </div>
             </div>
         </div>
     </footer>
 
+    <!-- Mini-Cart Drawer -->
+    <div class="offcanvas offcanvas-end border-0 shadow-lg" tabindex="-1" id="miniCart" style="max-width: 420px; width: 100%;">
+        <div class="offcanvas-header" style="background: #f9fafb; border-bottom: 1px solid #f1f5f9;">
+            <div class="d-flex align-items-center gap-2">
+                <div style="width: 36px; height: 36px; background: #3BB878; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-bag-shopping text-white small"></i>
+                </div>
+                <h5 class="offcanvas-title fw-bold mb-0">{{ __('My Cart') }}</h5>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body p-0 d-flex flex-column">
+            <div class="flex-grow-1 overflow-auto p-3" id="mini-cart-items">
+                @include('frontend.cart.partials.mini-cart-items')
+            </div>
+            <div id="mini-cart-footer" class="border-top p-3" style="background: #f9fafb;">
+                @include('frontend.cart.partials.mini-cart-footer')
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Menu Offcanvas -->
+    <div class="offcanvas offcanvas-{{ app()->getLocale() == 'ar' ? 'end' : 'start' }} border-0 shadow-lg" tabindex="-1" id="mobileMenu" style="width: 280px; background: #fff;">
+        <div class="offcanvas-header border-bottom py-4">
+            <div class="d-flex align-items-center gap-2">
+                <div style="width: 32px; height: 32px; background: #3BB878; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-leaf text-white small"></i>
+                </div>
+                <span class="fw-bold text-dark fs-5">{{ __('Ait') }} <span class="text-green">{{ __('Oumdis') }}</span></span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <div class="list-group list-group-flush">
+                <a href="{{ url('/') }}" class="list-group-item list-group-item-action py-3 px-4 border-0 d-flex align-items-center gap-3">
+                    <i class="fas fa-home text-muted"></i>
+                    <span class="fw-600">{{ __('Home') }}</span>
+                </a>
+                <a href="{{ route('shop.index') }}" class="list-group-item list-group-item-action py-3 px-4 border-0 d-flex align-items-center gap-3">
+                    <i class="fas fa-shopping-bag text-muted"></i>
+                    <span class="fw-600">{{ __('Shop') }}</span>
+                </a>
+                <a href="{{ url('/#about') }}" class="list-group-item list-group-item-action py-3 px-4 border-0 d-flex align-items-center gap-3" data-bs-dismiss="offcanvas">
+                    <i class="fas fa-info-circle text-muted"></i>
+                    <span class="fw-600">{{ __('About') }}</span>
+                </a>
+                <div class="p-4 mt-auto">
+                    <div class="p-4 rounded-4 bg-light border border-light">
+                        <div class="fw-bold text-dark mb-2">{{ __('Contact Support') }}</div>
+                        <div class="small text-muted mb-3">{{ __('Need help with your order?') }}</div>
+                        <a href="https://wa.me/{{ str_replace(['+',' '],'',(setting('app_phone','212600000000'))) }}" class="btn btn-brand btn-brand-primary w-100 py-2 rounded-pill">
+                            <i class="fab fa-whatsapp me-1"></i> WhatsApp
+                        </a>
+                    </div>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="mobile-bottom-nav d-lg-none">
+        <a href="{{ url('/') }}" class="nav-item-mobile {{ Request::is('/') ? 'active' : '' }}">
+            <i class="fas fa-home"></i>
+            <span>{{ __('Home') }}</span>
+        </a>
+        <a href="{{ route('shop.index') }}" class="nav-item-mobile {{ Request::routeIs('shop.*') ? 'active' : '' }}">
+            <i class="fas fa-shopping-bag"></i>
+            <span>{{ __('Shop') }}</span>
+        </a>
+        <a href="javascript:void(0)" class="nav-item-mobile position-relative" data-bs-toggle="offcanvas" data-bs-target="#miniCart">
+            <i class="fas fa-cart-shopping"></i>
+            <span class="badge rounded-pill bg-green">{{ count(session('cart', [])) }}</span>
+            <span>{{ __('Cart') }}</span>
+        </a>
+        <a href="https://wa.me/{{ str_replace(['+',' '],'',(setting('app_phone','212600000000'))) }}" class="nav-item-mobile">
+            <i class="fab fa-whatsapp"></i>
+            <span>{{ __('Contact') }}</span>
+        </a>
+    </div>
+
+    <!-- Scroll to Top -->
+    <button id="scrollTopBtn" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+        <i class="fas fa-arrow-up small"></i>
+    </button>
+
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script>
-        @if(setting('frontend_enable_animations'))
-        AOS.init({
-            duration: 800,
-            once: true,
-            offset: 100
-        });
-        @endif
 
-        // Mini Cart Functions
+    <script>
+        // Init AOS
+        AOS.init({ duration: 700, once: true, offset: 60, easing: 'ease-out-cubic' });
+
+        // Sticky Header shadow
+        window.addEventListener('scroll', () => {
+            document.getElementById('mainHeader')?.classList.toggle('scrolled', window.scrollY > 20);
+            const btn = document.getElementById('scrollTopBtn');
+            if(btn) btn.classList.toggle('visible', window.scrollY > 400);
+        });
+
+        // Cart update
         function updateQty(id, qty) {
-            if(qty < 1) {
-                removeItem(id);
-                return;
-            }
-            
+            if(qty < 1) { removeItem(id); return; }
             fetch('{{ route('cart.update') }}', {
                 method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
                 body: JSON.stringify({ id, quantity: qty })
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Update both desktop and mobile cart count badges
-                const updateCartBadges = (count) => {
-                    ['header-cart-count', 'header-cart-count-mobile'].forEach(id => {
-                        const el = document.getElementById(id);
-                        if (el && count !== undefined) el.textContent = count;
-                    });
-                };
-                updateCartBadges(data.cartCount);
-                // Refresh mini-cart content
-                refreshMiniCart();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'error',
-                    title: 'Erreur lors de la mise à jour du panier',
-                    showConfirmButton: false,
-                    timer: 2500
-                });
+            }).then(r => r.json()).then(data => {
+                if(data.success) {
+                    document.getElementById('header-cart-count').innerText = data.cartCount;
+                    refreshMiniCart();
+                } else {
+                    Swal.fire({ icon: 'warning', title: data.message || '{{ __('Insufficient stock') }}', toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+                }
             });
         }
 
         function removeItem(id) {
             Swal.fire({
-                title: 'Retirer du panier ?',
-                text: "Voulez-vous supprimer cet article ?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#6b7280',
-                confirmButtonText: 'Oui, supprimer !'
-            }).then((result) => {
-                if (result.isConfirmed) {
+                title: '{{ __('Remove this item?') }}',
+                icon: 'warning', showCancelButton: true,
+                confirmButtonColor: '#3BB878', cancelButtonText: '{{ __('Keep') }}',
+                confirmButtonText: '{{ __('Remove') }}'
+            }).then((r) => {
+                if (r.isConfirmed) {
                     fetch('{{ route('cart.remove') }}', {
                         method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json'
-                        },
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
                         body: JSON.stringify({ id })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        // Update both desktop and mobile cart count badges
-                        ['header-cart-count', 'header-cart-count-mobile'].forEach(id => {
-                            const el = document.getElementById(id);
-                            if (el && data.cartCount !== undefined) el.textContent = data.cartCount;
-                        });
-                        // Refresh mini-cart content
+                    }).then(r => r.json()).then(data => {
+                        document.getElementById('header-cart-count').innerText = data.cartCount;
                         refreshMiniCart();
-                        
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            icon: 'success',
-                            title: 'Article supprimé !',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            background: '#1a1a2e',
-                            color: '#fff'
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            icon: 'error',
-                            title: 'Erreur lors de la suppression',
-                            showConfirmButton: false,
-                            timer: 2500
-                        });
                     });
                 }
             });
         }
 
-        // Refresh mini-cart content dynamically
         function refreshMiniCart() {
-            fetch('{{ route('cart.mini') }}', {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+            fetch('{{ route('cart.mini') }}', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(r => r.text()).then(html => document.getElementById('mini-cart-items').innerHTML = html);
+            fetch('{{ route('cart.miniFooter') }}', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(r => r.text()).then(html => document.getElementById('mini-cart-footer').innerHTML = html);
+        }
+
+        function addToCart(productId, variantId = null) {
+            const btn = event?.currentTarget;
+            const orig = btn?.innerHTML;
+            if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; }
+
+            fetch(`{{ url('/cart/add') }}/${productId}`, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({ quantity: 1, variant_id: variantId })
+            }).then(r => r.json()).then(data => {
+                if(btn) { btn.disabled = false; btn.innerHTML = orig; }
+                if(data.success) {
+                    Swal.fire({ icon: 'success', title: '{{ __('Added to cart!') }}', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+                    document.getElementById('header-cart-count').innerText = data.cartCount;
+                    refreshMiniCart();
+                    new bootstrap.Offcanvas(document.getElementById('miniCart')).show();
+                } else {
+                    Swal.fire({ icon: 'error', title: '{{ __('Error') }}', text: data.message });
                 }
-            })
-            .then(response => response.text())
-            .then(html => {
-                const miniCartContainer = document.getElementById('mini-cart-items');
-                if(miniCartContainer) {
-                    miniCartContainer.innerHTML = html;
-                }
-                // Also update the footer section if cart has items
-                const cartOffcanvas = document.getElementById('miniCart');
-                if(cartOffcanvas) {
-                    const footerSection = cartOffcanvas.querySelector('.border-top.p-4');
-                    // Fetch full mini-cart to get updated footer
-                    fetch('{{ route('cart.miniFooter') }}', {
-                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                    })
-                    .then(r => r.text())
-                    .then(footerHtml => {
-                        const existingFooter = cartOffcanvas.querySelector('.border-top.p-4.bg-white');
-                        if(existingFooter && footerHtml.trim()) {
-                            existingFooter.outerHTML = footerHtml;
-                        } else if(!existingFooter && footerHtml.trim()) {
-                            // Append footer if it didn't exist before
-                            cartOffcanvas.querySelector('.offcanvas-body').insertAdjacentHTML('beforeend', footerHtml);
-                        }
-                    })
-                    .catch(console.error);
-                }
-            })
-            .catch(console.error);
+            }).catch(() => { if(btn) { btn.disabled = false; btn.innerHTML = orig; }});
         }
     </script>
     @stack('scripts')
-
-    <!-- Custom Body End Codes -->
-    @php
-        $bodyEndCodes = \App\Models\CustomCode::where('is_active', true)
-            ->where('position', 'body_end')
-            ->orderBy('priority', 'desc')
-            ->get();
-    @endphp
-    @foreach($bodyEndCodes as $code)
-        @if($code->type == 'css')
-            <style>{!! $code->content !!}</style>
-        @elseif($code->type == 'js')
-            <script>{!! $code->content !!}</script>
-        @else
-            {!! $code->content !!}
-        @endif
-    @endforeach
 </body>
 </html>

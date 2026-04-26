@@ -1,42 +1,34 @@
-@php $total = 0; @endphp
-@forelse(session('cart', []) as $id => $details)
-    @php $total += $details['price'] * $details['quantity']; @endphp
-    <div class="cart-item bg-white p-3 rounded-4 shadow-sm mb-3 position-relative border border-light" id="cart-item-{{ $id }}">
-        <div class="d-flex align-items-center">
-            <div class="flex-shrink-0 me-3 position-relative">
-                <img src="{{ Storage::url($details['image']) }}" alt="{{ $details['name'] }}" class="rounded-3 object-fit-cover" style="width: 80px; height: 80px;">
-                <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-light text-dark border shadow-sm" style="font-size: 0.7rem;">x{{ $details['quantity'] }}</span>
+@forelse(session('cart', []) as $key => $details)
+    <div class="d-flex gap-3 mb-4 p-3 bg-white rounded-3 shadow-sm border border-light position-relative">
+        <div class="rounded-3 overflow-hidden" style="width: 70px; height: 90px; flex-shrink: 0;">
+            <img src="{{ !empty($details['image']) ? Storage::url($details['image']) : asset('images/placeholder-product.jpg') }}" class="w-100 h-100 object-fit-cover">
+        </div>
+        <div class="flex-grow-1">
+            <h6 class="fw-bold text-dark small mb-1 pe-4">{{ $details['name'] }}</h6>
+            <div class="d-flex gap-2 mb-2">
+                @if(!empty($details['size']))
+                    <span class="badge bg-light text-muted border fw-normal">{{ $details['size'] }}</span>
+                @endif
             </div>
-            <div class="flex-grow-1 min-w-0">
-                <h6 class="fw-bold mb-1 text-truncate pe-4" title="{{ $details['name'] }}">{{ $details['name'] }}</h6>
-                <p class="mb-2 text-muted small">{{ $details['category_name'] ?? 'Produit' }}</p>
+            <div class="d-flex align-items-center justify-content-between">
+                <span class="text-gold fw-bold">{{ currency($details['price']) }}</span>
                 
-                <div class="d-flex align-items-center justify-content-between mt-2">
-                    <span class="text-primary fw-bold" style="font-size: 1.1rem;">{{ currency($details['price']) }}</span>
-                    
-                    <div class="quantity-control bg-light rounded-pill d-flex align-items-center px-1 border">
-                        <button class="btn btn-sm btn-link text-dark text-decoration-none p-1 border-0" onclick="updateQty({{ $id }}, {{ $details['quantity'] - 1 }})">
-                            <i class="fas fa-minus" style="font-size: 0.7rem;"></i>
-                        </button>
-                        <input type="text" class="form-control form-control-sm border-0 bg-transparent text-center fw-bold p-0" value="{{ $details['quantity'] }}" readonly style="width: 30px;">
-                        <button class="btn btn-sm btn-link text-dark text-decoration-none p-1 border-0" onclick="updateQty({{ $id }}, {{ $details['quantity'] + 1 }})">
-                            <i class="fas fa-plus" style="font-size: 0.7rem;"></i>
-                        </button>
-                    </div>
+                <div class="d-flex align-items-center border rounded-pill bg-light">
+                    <button class="btn btn-sm px-2" onclick="updateQty('{{ $key }}', {{ $details['quantity'] - 1 }})"><i class="fas fa-minus x-small"></i></button>
+                    <span class="small fw-bold px-2">{{ $details['quantity'] }}</span>
+                    <button class="btn btn-sm px-2" onclick="updateQty('{{ $key }}', {{ $details['quantity'] + 1 }})"><i class="fas fa-plus x-small"></i></button>
                 </div>
             </div>
         </div>
-        <button class="btn btn-sm text-danger position-absolute top-0 end-0 mt-2 me-2 opacity-50 hover-opacity-100 transition-all" onclick="removeItem({{ $id }})" title="Supprimer">
-            <i class="fas fa-times"></i>
+        <button class="btn btn-link text-danger p-0 position-absolute top-0 end-0 m-2" onclick="removeItem('{{ $key }}')">
+            <i class="fas fa-times small"></i>
         </button>
     </div>
 @empty
-    <div class="text-center py-5 mt-5">
-        <div class="mb-4 bg-white rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 100px; height: 100px;">
-            <i class="fas fa-shopping-basket fa-3x text-muted opacity-25"></i>
-        </div>
-        <h5 class="fw-bold text-dark">Votre panier est vide</h5>
-        <p class="text-muted small mb-4">Vous n'avez encore rien ajouté à votre panier.</p>
-        <a href="{{ route('shop.index') }}" class="btn btn-primary rounded-pill px-5 shadow-sm">Commencer les achats</a>
+    <div class="text-center py-5">
+        <div class="fs-1 mb-3">🛒</div>
+        <h6 class="fw-bold text-dark">{{ __('Your cart is empty') }}</h6>
+        <p class="small text-muted mb-4">{{ __('Browse our products and add something special!') }}</p>
+        <a href="{{ route('shop.index') }}" class="btn btn-brand-primary rounded-pill px-4" data-bs-dismiss="offcanvas">{{ __('Start Shopping') }}</a>
     </div>
 @endforelse

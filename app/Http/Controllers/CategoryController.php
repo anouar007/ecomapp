@@ -51,9 +51,15 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['nullable', 'string', 'max:255'],
+            'name_fr' => ['nullable', 'string', 'max:255'],
+            'name_en' => ['nullable', 'string', 'max:255'],
+            'name_ar' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', 'unique:categories,slug'],
             'description' => ['nullable', 'string'],
+            'description_fr' => ['nullable', 'string'],
+            'description_en' => ['nullable', 'string'],
+            'description_ar' => ['nullable', 'string'],
             'parent_id' => ['nullable', 'exists:categories,id'],
             'icon' => ['nullable', 'string', 'max:50'],
             'image' => ['nullable', 'image', 'max:2048'],
@@ -61,9 +67,18 @@ class CategoryController extends Controller
             'sort_order' => ['nullable', 'integer', 'min:0'],
         ]);
 
+        // Fallbacks
+        if (empty($validated['name_fr'])) $validated['name_fr'] = $validated['name_ar'];
+        if (empty($validated['name_en'])) $validated['name_en'] = $validated['name_ar'];
+        if (empty($validated['name'])) $validated['name'] = $validated['name_ar'];
+        
+        if (empty($validated['description_fr'])) $validated['description_fr'] = $validated['description_ar'];
+        if (empty($validated['description_en'])) $validated['description_en'] = $validated['description_ar'];
+        if (empty($validated['description'])) $validated['description'] = $validated['description_ar'];
+
         // Auto-generate slug if not provided
         if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']);
+            $validated['slug'] = Str::slug($validated['name_en'] ?? $validated['name_fr'] ?? $validated['name']);
         }
 
         // Handle image upload
@@ -97,9 +112,15 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['nullable', 'string', 'max:255'],
+            'name_fr' => ['nullable', 'string', 'max:255'],
+            'name_en' => ['nullable', 'string', 'max:255'],
+            'name_ar' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', 'unique:categories,slug,' . $category->id],
             'description' => ['nullable', 'string'],
+            'description_fr' => ['nullable', 'string'],
+            'description_en' => ['nullable', 'string'],
+            'description_ar' => ['nullable', 'string'],
             'parent_id' => ['nullable', 'exists:categories,id'],
             'icon' => ['nullable', 'string', 'max:50'],
             'image' => ['nullable', 'image', 'max:2048'],
@@ -124,6 +145,15 @@ class CategoryController extends Controller
             }
             $validated['image'] = $request->file('image')->store('categories', 'public');
         }
+
+        // Fallbacks
+        if (empty($validated['name_fr'])) $validated['name_fr'] = $validated['name_ar'];
+        if (empty($validated['name_en'])) $validated['name_en'] = $validated['name_ar'];
+        if (empty($validated['name'])) $validated['name'] = $validated['name_ar'];
+        
+        if (empty($validated['description_fr'])) $validated['description_fr'] = $validated['description_ar'];
+        if (empty($validated['description_en'])) $validated['description_en'] = $validated['description_ar'];
+        if (empty($validated['description'])) $validated['description'] = $validated['description_ar'];
 
         $category->update($validated);
 

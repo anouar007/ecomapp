@@ -1,258 +1,270 @@
 @extends('layouts.app')
 
-@section('title','Create Category')
+@section('title', __('Create Category'))
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/management.css') }}">
 <style>
-.icon-picker {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-    gap: 8px;
-    max-height: 200px;
-    overflow-y: auto;
-    padding: 12px;
-    background: #f8fafc;
-    border-radius: 10px;
-    border: 2px solid #e2e8f0;
-}
-
-.icon-option {
-    width: 60px;
-    height: 60px;
-    border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    background: white;
-}
-
-.icon-option:hover, .icon-option.selected {
-    border-color: #667eea;
-    background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
-    transform: scale(1.1);
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-}
-
-.image-upload-area {
-    border: 2px dashed #e2e8f0;
-    border-radius: 12px;
-    padding: 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: #f8fafc;
-}
-
-.image-upload-area:hover {
-    border-color: #667eea;
-    background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
-}
-
-.image-preview-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+    .icon-picker-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+        gap: 8px;
+        padding: 10px;
+        background: #f8fafc;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+    }
+    .icon-option {
+        width: 45px;
+        height: 45px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        background: white;
+        transition: all 0.2s;
+    }
+    .icon-option:hover, .icon-option.selected {
+        border-color: var(--primary-color);
+        background: #f0f4ff;
+        transform: translateY(-2px);
+    }
+    .image-preview-wrapper {
+        position: relative;
+        width: 100%;
+        padding-top: 60%;
+        background: #f8fafc;
+        border: 2px dashed #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+        cursor: pointer;
+    }
+    .image-preview-wrapper img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .image-placeholder {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+    }
 </style>
 @endpush
 
 @section('content')
-<div class="page-header">
-    <h1 class="page-title"><i class="fas fa-plus-circle"></i> Create New Category</h1>
-    <p class="page-subtitle">Add a new category to organize your products</p>
-</div>
-
-@if($errors->any())
-<div class="alert alert-danger">
-    <i class="fas fa-exclamation-circle"></i>
+<div class="brand-header">
     <div>
-        <strong>Oops! Something went wrong:</strong>
-        <ul style="margin: 8px 0 0 20px; padding: 0;">
-            @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
+        <h1 class="brand-title">
+            <div class="brand-header-icon">
+                <i class="fas fa-folder-plus"></i>
+            </div>
+            {{ __('Create New Category') }}
+        </h1>
+        <p class="brand-subtitle">{{ __('Add a new category to organize your products') }}</p>
+    </div>
+    <div class="d-flex gap-2 d-none d-lg-flex">
+        <a href="{{ route('categories.index') }}" class="btn-brand-light">
+            {{ __('Cancel') }}
+        </a>
+        <button type="submit" form="createCategoryForm" class="btn-brand-primary">
+            <i class="fas fa-save me-2"></i> {{ __('Create Category') }}
+        </button>
     </div>
 </div>
-@endif
 
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-file-alt"></i> Category Information</h3>
-    </div>
-    <div class="card-body">
-        <form action="{{ route('categories.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="name" class="form-label">
-                        Category Name <span class="required">*</span>
-                    </label>
-                    <input type="text" 
-                           id="name" 
-                           name="name" 
-                           class="form-control" 
-                           value="{{ old('name') }}" 
-                           placeholder="e.g., Electronics" 
-                           required 
-                           autofocus>
+<form id="createCategoryForm" action="{{ route('categories.store') }}" method="POST" enctype="multipart/form-data">
+    @csrf
+    
+    <div class="row g-4">
+        <!-- Main Content Column -->
+        <div class="col-lg-8">
+            <div class="brand-card h-100">
+                <div class="brand-card-header">
+                    <h5 class="brand-card-title">
+                        <i class="fas fa-info-circle me-2" style="color: var(--primary-color)"></i>
+                        {{ __('Category Details') }}
+                    </h5>
                 </div>
+                <div class="brand-card-body">
+                    <!-- Language Tabs -->
+                    <ul class="nav nav-tabs nav-tabs-custom mb-4" id="langTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="ar-tab" data-bs-toggle="tab" data-bs-target="#ar-content" type="button" role="tab">
+                                🇲🇦 {{ __('Arabic') }}
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="en-tab" data-bs-toggle="tab" data-bs-target="#en-content" type="button" role="tab">
+                                🇬🇧 {{ __('English') }}
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="fr-tab" data-bs-toggle="tab" data-bs-target="#fr-content" type="button" role="tab">
+                                🇫🇷 {{ __('French') }}
+                            </button>
+                        </li>
+                    </ul>
 
-                <div class="form-group">
-                    <label for="slug" class="form-label">Slug</label>
-                    <input type="text" 
-                           id="slug" 
-                           name="slug" 
-                           class="form-control" 
-                           value="{{ old('slug') }}" 
-                           placeholder="auto-generated from name">
-                    <small class="form-help">Leave empty to auto-generate</small>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="description" class="form-label">Description</label>
-                <textarea id="description" 
-                          name="description" 
-                          class="form-control" 
-                          rows="3" 
-                          placeholder="Category description...">{{ old('description') }}</textarea>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="parent_id" class="form-label">Parent Category</label>
-                    <select id="parent_id" name="parent_id" class="form-control">
-                        <option value="">-- No Parent (Top Level) --</option>
-                        @foreach($parentCategories as $parent)
-                            <option value="{{ $parent->id }}" {{ old('parent_id') == $parent->id ? 'selected' : '' }}>
-                                {{ $parent->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <small class="form-help">Create a subcategory by selecting a parent</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="status" class="form-label">
-                        Status <span class="required">*</span>
-                    </label>
-                    <select id="status" name="status" class="form-control" required>
-                        <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>Active</option>
-                        <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="sort_order" class="form-label">Sort Order</label>
-                    <input type="number" 
-                           id="sort_order" 
-                           name="sort_order" 
-                           class="form-control" 
-                           value="{{ old('sort_order', 0) }}" 
-                           min="0">
-                    <small class="form-help">Lower numbers appear first</small>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Icon (FontAwesome)</label>
-                <input type="text" 
-                       id="icon" 
-                       name="icon" 
-                       class="form-control" 
-                       value="{{ old('icon') }}" 
-                       placeholder="e.g., fas fa-laptop">
-                <small class="form-help">Enter FontAwesome class or select from popular icons:</small>
-                <div class="icon-picker" style="margin-top: 12px;">
-                    @foreach(['fas fa-laptop', 'fas fa-mobile', 'fas fa-tshirt', 'fas fa-book', 'fas fa-utensils', 'fas fa-home', 'fas fa-car', 'fas fa-gamepad', 'fas fa-music', 'fas fa-camera', 'fas fa-toolbox', 'fas fa-heart'] as $iconClass)
-                        <div class="icon-option" onclick="selectIcon('{{ $iconClass }}')">
-                            <i class="{{ $iconClass }}" style="font-size: 24px; color: #667eea;"></i>
+                    <div class="tab-content" id="langTabsContent">
+                        <!-- Arabic Content -->
+                        <div class="tab-pane fade show active" id="ar-content" role="tabpanel">
+                            <div class="mb-4">
+                                <label class="brand-label">{{ __('Category Name (Arabic)') }} <span class="text-danger">*</span></label>
+                                <input type="text" name="name_ar" id="name_ar" class="brand-input @error('name_ar') is-invalid @enderror" 
+                                       value="{{ old('name_ar') }}" dir="rtl" placeholder="{{ __('اسم الفئة...') }}" required>
+                                @error('name_ar') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="mb-0">
+                                <label class="brand-label">{{ __('Description (Arabic)') }}</label>
+                                <textarea name="description_ar" class="brand-input @error('description_ar') is-invalid @enderror" 
+                                          rows="4" dir="rtl" placeholder="{{ __('وصف الفئة...') }}">{{ old('description_ar') }}</textarea>
+                                @error('description_ar') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
                         </div>
-                    @endforeach
+
+                        <!-- English Content -->
+                        <div class="tab-pane fade" id="en-content" role="tabpanel">
+                            <div class="mb-4">
+                                <label class="brand-label">{{ __('Category Name (English)') }}</label>
+                                <input type="text" name="name_en" class="brand-input" value="{{ old('name_en') }}" placeholder="{{ __('Category Name in English...') }}">
+                            </div>
+                            <div class="mb-0">
+                                <label class="brand-label">{{ __('Description (English)') }}</label>
+                                <textarea name="description_en" class="brand-input" rows="4" placeholder="{{ __('Category Description in English...') }}">{{ old('description_en') }}</textarea>
+                            </div>
+                        </div>
+
+                        <!-- French Content -->
+                        <div class="tab-pane fade" id="fr-content" role="tabpanel">
+                            <div class="mb-4">
+                                <label class="brand-label">{{ __('Category Name (French)') }}</label>
+                                <input type="text" name="name_fr" class="brand-input" value="{{ old('name_fr') }}" placeholder="{{ __('Category Name in French...') }}">
+                            </div>
+                            <div class="mb-0">
+                                <label class="brand-label">{{ __('Description (French)') }}</label>
+                                <textarea name="description_fr" class="brand-input" rows="4" placeholder="{{ __('Category Description in French...') }}">{{ old('description_fr') }}</textarea>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label class="form-label">Category Image</label>
-                <div class="image-upload-area" id="imageUploadArea" onclick="document.getElementById('image').click()">
-                    <input type="file" 
-                           id="image" 
-                           name="image" 
-                           class="d-none" 
-                           accept="image/*"
-                           onchange="previewImage(this)">
-                    <div id="imagePreview" class="image-preview-container" style="display: none;">
-                        <img id="previewImg" src="" alt="Preview" style="max-width: 100%; max-height: 180px; border-radius: 8px;">
-                        <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeImage(event)">
-                            <i class="fas fa-times me-1"></i> Remove
-                        </button>
+        <!-- Sidebar Column -->
+        <div class="col-lg-4">
+            <div class="d-flex flex-column gap-4">
+                <!-- Status & Parent -->
+                <div class="brand-card">
+                    <div class="brand-card-header">
+                        <h5 class="brand-card-title">
+                            <i class="fas fa-cog me-2 text-primary"></i>
+                            {{ __('Settings') }}
+                        </h5>
                     </div>
-                    <div id="uploadPlaceholder" class="text-center py-4">
-                        <i class="fas fa-cloud-upload-alt" style="font-size: 2.5rem; color: #667eea; opacity: 0.6;"></i>
-                        <p class="mb-0 mt-2 text-muted">Click to upload or drag and drop</p>
-                        <small class="text-muted">PNG, JPG up to 2MB</small>
+                    <div class="brand-card-body">
+                        <div class="mb-4">
+                            <label class="brand-label">{{ __('Status') }}</label>
+                            <select name="status" class="brand-input">
+                                <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>{{ __('Active') }}</option>
+                                <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>{{ __('Inactive') }}</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="brand-label">{{ __('Parent Category') }}</label>
+                            <select name="parent_id" class="brand-input">
+                                <option value="">-- {{ __('No Parent (Top Level)') }} --</option>
+                                @foreach($parentCategories as $parent)
+                                    <option value="{{ $parent->id }}" {{ old('parent_id') == $parent->id ? 'selected' : '' }}>
+                                        {{ $parent->translated_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-0">
+                            <label class="brand-label">{{ __('Sort Order') }}</label>
+                            <input type="number" name="sort_order" class="brand-input" value="{{ old('sort_order', 0) }}" min="0">
+                        </div>
                     </div>
                 </div>
-                <small class="form-help">Optional image to represent this category</small>
-            </div>
 
-            <div class="form-actions">
-                <a href="{{ route('categories.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> Cancel
-                </a>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Create Category
-                </button>
+                <!-- Appearance (Icon & Image) -->
+                <div class="brand-card">
+                    <div class="brand-card-header">
+                        <h5 class="brand-card-title">
+                            <i class="fas fa-palette me-2 text-primary"></i>
+                            {{ __('Appearance') }}
+                        </h5>
+                    </div>
+                    <div class="brand-card-body">
+                        <div class="mb-4">
+                            <label class="brand-label">{{ __('Category Icon') }}</label>
+                            <input type="text" name="icon" id="icon_input" class="brand-input mb-3" 
+                                   value="{{ old('icon', 'fas fa-folder') }}" placeholder="e.g. fas fa-leaf">
+                            <div class="icon-picker-grid">
+                                @foreach(['fas fa-leaf', 'fas fa-seedling', 'fas fa-flask', 'fas fa-box', 'fas fa-tag', 'fas fa-star', 'fas fa-home', 'fas fa-shopping-basket', 'fas fa-spray-can', 'fas fa-wine-bottle'] as $iconClass)
+                                    <div class="icon-option {{ old('icon') == $iconClass ? 'selected' : '' }}" onclick="selectIcon('{{ $iconClass }}')">
+                                        <i class="{{ $iconClass }}"></i>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div class="mb-0">
+                            <label class="brand-label">{{ __('Category Image') }}</label>
+                            <div class="image-preview-wrapper" onclick="document.getElementById('category_image').click()">
+                                <input type="file" name="image" id="category_image" class="d-none" accept="image/*" onchange="previewImage(this)">
+                                <img id="preview_img" src="" alt="" style="display: none;">
+                                <div id="upload_placeholder" class="image-placeholder">
+                                    <i class="fas fa-cloud-upload-alt fs-2 mb-2"></i>
+                                    <span class="small">{{ __('Click to upload') }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </form>
+        </div>
     </div>
-</div>
+
+    <!-- Sticky Mobile Actions -->
+    <div class="sticky-mobile-actions d-lg-none">
+        <a href="{{ route('categories.index') }}" class="btn btn-secondary">
+            {{ __('Cancel') }}
+        </a>
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save me-2"></i> {{ __('Save') }}
+        </button>
+    </div>
+</form>
 
 @push('scripts')
 <script>
-function selectIcon(iconClass) {
-    document.getElementById('icon').value = iconClass;
-    document.querySelectorAll('.icon-option').forEach(el => el.classList.remove('selected'));
-    event.currentTarget.classList.add('selected');
-}
-
-function previewImage(input) {
-    const preview = document.getElementById('imagePreview');
-    const previewImg = document.getElementById('previewImg');
-    const placeholder = document.getElementById('uploadPlaceholder');
-    
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            previewImg.src = e.target.result;
-            preview.style.display = 'flex';
-            placeholder.style.display = 'none';
-        };
-        reader.readAsDataURL(input.files[0]);
+    function selectIcon(iconClass) {
+        document.getElementById('icon_input').value = iconClass;
+        document.querySelectorAll('.icon-option').forEach(el => el.classList.remove('selected'));
+        event.currentTarget.classList.add('selected');
     }
-}
 
-function removeImage(event) {
-    event.stopPropagation();
-    const input = document.getElementById('image');
-    const preview = document.getElementById('imagePreview');
-    const placeholder = document.getElementById('uploadPlaceholder');
-    
-    input.value = '';
-    preview.style.display = 'none';
-    placeholder.style.display = 'block';
-}
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('preview_img').src = e.target.result;
+                document.getElementById('preview_img').style.display = 'block';
+                document.getElementById('upload_placeholder').style.display = 'none';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
 </script>
 @endpush
 @endsection

@@ -12,8 +12,11 @@ class OrderItem extends Model
     protected $fillable = [
         'order_id',
         'product_id',
+        'variant_id',
         'product_name',
         'product_sku',
+        'color',
+        'size',
         'price',
         'quantity',
         'subtotal',
@@ -39,6 +42,28 @@ class OrderItem extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * Get the variant.
+     */
+    public function variant()
+    {
+        return $this->belongsTo(ProductVariant::class, 'variant_id');
+    }
+
+    /**
+     * Get the display image for the item (priority to variant).
+     */
+    public function getDisplayImageAttribute()
+    {
+        if ($this->variant && $this->variant->color_image) {
+            return $this->variant->color_image;
+        }
+        if ($this->product) {
+            return $this->product->main_image;
+        }
+        return null;
     }
 
     /**

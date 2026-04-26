@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Product Reviews')
+@section('title', __('Product Reviews'))
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/management.css') }}">
@@ -10,8 +10,8 @@
 <div class="page-header">
     <div style="display: flex; justify-content: space-between; align-items: center;">
         <div>
-            <h1 class="page-title"><i class="fas fa-star"></i> Product Reviews</h1>
-            <p class="page-subtitle">Manage customer feedback and ratings</p>
+            <h1 class="page-title"><i class="fas fa-star"></i> {{ __('Product Reviews') }}</h1>
+            <p class="page-subtitle">{{ __('Manage customer feedback and ratings') }}</p>
         </div>
     </div>
 </div>
@@ -36,7 +36,7 @@
                 <i class="fas fa-star" style="color: white; font-size: 28px;"></i>
             </div>
             <div>
-                <p style="color: #64748b; font-size: 13px; margin: 0 0 4px 0; font-weight: 600;">Total Reviews</p>
+                <p style="color: #64748b; font-size: 13px; margin: 0 0 4px 0; font-weight: 600;">{{ __('Total Reviews') }}</p>
                 <p style="font-size: 28px; font-weight: 700; color: #1e293b; margin: 0;" data-stat="total">{{ number_format($stats['total_reviews']) }}</p>
             </div>
         </div>
@@ -48,7 +48,7 @@
                 <i class="fas fa-clock" style="color: white; font-size: 28px;"></i>
             </div>
             <div>
-                <p style="color: #92400e; font-size: 13px; margin: 0 0 4px 0; font-weight: 600;">Pending Reviews</p>
+                <p style="color: #92400e; font-size: 13px; margin: 0 0 4px 0; font-weight: 600;">{{ __('Pending Reviews') }}</p>
                 <p style="font-size: 28px; font-weight: 700; color: #b45309; margin: 0;" data-stat="pending">{{ number_format($stats['pending_reviews']) }}</p>
             </div>
         </div>
@@ -60,7 +60,7 @@
                 <i class="fas fa-check-circle" style="color: white; font-size: 28px;"></i>
             </div>
             <div>
-                <p style="color: #166534; font-size: 13px; margin: 0 0 4px 0; font-weight: 600;">Approved Reviews</p>
+                <p style="color: #166534; font-size: 13px; margin: 0 0 4px 0; font-weight: 600;">{{ __('Approved Reviews') }}</p>
                 <p style="font-size: 28px; font-weight: 700; color: #15803d; margin: 0;" data-stat="approved">{{ number_format($stats['approved_reviews']) }}</p>
             </div>
         </div>
@@ -72,7 +72,7 @@
                 <i class="fas fa-chart-line" style="color: white; font-size: 28px;"></i>
             </div>
             <div>
-                <p style="color: #5b21b6; font-size: 13px; margin: 0 0 4px 0; font-weight: 600;">Average Rating</p>
+                <p style="color: #5b21b6; font-size: 13px; margin: 0 0 4px 0; font-weight: 600;">{{ __('Average Rating') }}</p>
                 <p style="font-size: 28px; font-weight: 700; color: #6d28d9; margin: 0;" data-stat="average">{{ $stats['average_rating'] }} <span style="font-size: 16px;">/ 5</span></p>
             </div>
         </div>
@@ -82,40 +82,40 @@
 <!-- Filters -->
 <div class="card" style="margin-bottom: 24px;">
     <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-filter"></i> Filters</h3>
+        <h3 class="card-title"><i class="fas fa-filter"></i> {{ __('Filters') }}</h3>
     </div>
     <div class="card-body">
         <form method="GET" action="{{ route('reviews.index') }}" style="display: flex; gap: 12px; flex-wrap: wrap;">
             <input type="text" name="search" class="form-control" style="flex: 1; min-width: 200px;" 
-                   placeholder="Search reviews..." value="{{ request('search') }}">
+                   placeholder="{{ __('Search reviews...') }}" value="{{ request('search') }}">
             
             <select name="status" class="form-control" style="width: auto; min-width: 150px;">
-                <option value="">All Status</option>
-                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
-                <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                <option value="">{{ __('All Status') }}</option>
+                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
+                <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>{{ __('Approved') }}</option>
+                <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>{{ __('Rejected') }}</option>
             </select>
             
             <select name="rating" class="form-control" style="width: auto; min-width: 150px;">
-                <option value="">All Ratings</option>
-                <option value="5" {{ request('rating') == '5' ? 'selected' : '' }}>★★★★★ (5 stars)</option>
-                <option value="4" {{ request('rating') == '4' ? 'selected' : '' }}>★★★★☆ (4 stars)</option>
-                <option value="3" {{ request('rating') == '3' ? 'selected' : '' }}>★★★☆☆ (3 stars)</option>
-                <option value="2" {{ request('rating') == '2' ? 'selected' : '' }}>★★☆☆☆ (2 stars)</option>
-                <option value="1" {{ request('rating') == '1' ? 'selected' : '' }}>★☆☆☆☆ (1 star)</option>
+                <option value="">{{ __('All Ratings') }}</option>
+                <option value="5" {{ request('rating') == '5' ? 'selected' : '' }}>★★★★★ (5 {{ __('stars') }})</option>
+                <option value="4" {{ request('rating') == '4' ? 'selected' : '' }}>★★★★☆ (4 {{ __('stars') }})</option>
+                <option value="3" {{ request('rating') == '3' ? 'selected' : '' }}>★★★☆☆ (3 {{ __('stars') }})</option>
+                <option value="2" {{ request('rating') == '2' ? 'selected' : '' }}>★★☆☆☆ (2 {{ __('stars') }})</option>
+                <option value="1" {{ request('rating') == '1' ? 'selected' : '' }}>★☆☆☆☆ (1 {{ __('star') }})</option>
             </select>
             
             <select name="product_id" class="form-control" style="width: auto; min-width: 200px;">
-                <option value="">All Products</option>
+                <option value="">{{ __('All Products') }}</option>
                 @foreach($products as $product)
                     <option value="{{ $product->id }}" {{ request('product_id') == $product->id ? 'selected' : '' }}>
-                        {{ $product->name }}
+                        {{ $product->translated_name }}
                     </option>
                 @endforeach
             </select>
             
-            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Filter</button>
-            <a href="{{ route('reviews.index') }}" class="btn btn-secondary"><i class="fas fa-redo"></i> Reset</a>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> {{ __('Filter') }}</button>
+            <a href="{{ route('reviews.index') }}" class="btn btn-secondary"><i class="fas fa-redo"></i> {{ __('Reset') }}</a>
         </form>
     </div>
 </div>
@@ -123,19 +123,19 @@
 <!-- Reviews Table -->
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-list"></i> Reviews ({{ $reviews->total() }})</h3>
+        <h3 class="card-title"><i class="fas fa-list"></i> {{ __('Reviews') }} ({{ $reviews->total() }})</h3>
     </div>
     <div class="table-responsive">
         <table class="table">
             <thead>
                 <tr>
-                    <th>Product</th>
-                    <th>Customer</th>
-                    <th>Rating</th>
-                    <th>Review</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Actions</th>
+                    <th>{{ __('Product') }}</th>
+                    <th>{{ __('Customer') }}</th>
+                    <th>{{ __('Rating') }}</th>
+                    <th>{{ __('Review') }}</th>
+                    <th>{{ __('Date') }}</th>
+                    <th>{{ __('Status') }}</th>
+                    <th>{{ __('Actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -165,11 +165,11 @@
                     </td>
                     <td data-status>
                         @if($review->status == 'approved')
-                            <span class="badge badge-success"><i class="fas fa-check-circle"></i> Approved</span>
+                            <span class="badge badge-success"><i class="fas fa-check-circle"></i> {{ __('Approved') }}</span>
                         @elseif($review->status == 'pending')
-                            <span class="badge badge-warning"><i class="fas fa-clock"></i> Pending</span>
+                            <span class="badge badge-warning"><i class="fas fa-clock"></i> {{ __('Pending') }}</span>
                         @else
-                            <span class="badge badge-danger"><i class="fas fa-times-circle"></i> Rejected</span>
+                            <span class="badge badge-danger"><i class="fas fa-times-circle"></i> {{ __('Rejected') }}</span>
                         @endif
                     </td>
                     <td>
@@ -177,13 +177,13 @@
                             @if($review->status == 'pending')
                             <form action="{{ route('reviews.approve', $review) }}" method="POST" style="display: inline;" onsubmit="event.preventDefault(); approveReview({{ $review->id }});">
                                 @csrf
-                                <button type="submit" class="btn-action btn-action-success" title="Approve Review">
+                                <button type="submit" class="btn-action btn-action-success" title="{{ __('Approve Review') }}">
                                     <i class="fas fa-check"></i>
                                 </button>
                             </form>
                             <form action="{{ route('reviews.reject', $review) }}" method="POST" style="display: inline;" onsubmit="event.preventDefault(); rejectReview({{ $review->id }});">
                                 @csrf
-                                <button type="submit" class="btn-action btn-action-warning" title="Reject Review">
+                                <button type="submit" class="btn-action btn-action-warning" title="{{ __('Reject Review') }}">
                                     <i class="fas fa-times"></i>
                                 </button>
                             </form>
@@ -191,7 +191,7 @@
                             <form action="{{ route('reviews.destroy', $review) }}" method="POST" style="display: inline;" onsubmit="event.preventDefault(); deleteReview({{ $review->id }});">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn-action btn-action-delete" title="Delete Review">
+                                <button type="submit" class="btn-action btn-action-delete" title="{{ __('Delete Review') }}">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
@@ -202,8 +202,8 @@
                 <tr>
                     <td colspan="7" class="empty-state">
                         <i class="fas fa-star"></i>
-                        <p>No reviews found</p>
-                        <small class="text-muted">Customer reviews will appear here once submitted</small>
+                        <p>{{ __('No reviews found') }}</p>
+                        <small class="text-muted">{{ __('Customer reviews will appear here once submitted') }}</small>
                     </td>
                 </tr>
                 @endforelse
@@ -250,7 +250,7 @@ function approveReview(reviewId) {
             
             // Update status badge
             const statusCell = row.querySelector('[data-status]');
-            statusCell.innerHTML = '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Approved</span>';
+            statusCell.innerHTML = '<span class="badge badge-success"><i class="fas fa-check-circle"></i> {{ __('Approved') }}</span>';
             
             // Update actions - remove approve/reject buttons
             const actionsCell = row.querySelector('.action-buttons');
@@ -260,7 +260,7 @@ function approveReview(reviewId) {
             // Show success message
             Swal.fire({
                 icon: 'success',
-                title: 'Success!',
+                title: '{{ __('Success!') }}',
                 text: data.message,
                 timer: 2000,
                 showConfirmButton: false,
@@ -273,8 +273,8 @@ function approveReview(reviewId) {
         console.error('Error:', error);
         Swal.fire({
             icon: 'error',
-            title: 'Error!',
-            text: 'Failed to approve review',
+            title: '{{ __('Error!') }}',
+            text: '{{ __('Failed to approve review') }}',
             toast: true,
             position: 'top-end',
             timer: 3000,
@@ -304,7 +304,7 @@ function rejectReview(reviewId) {
             
             // Update status badge
             const statusCell = row.querySelector('[data-status]');
-            statusCell.innerHTML = '<span class="badge badge-danger"><i class="fas fa-times-circle"></i> Rejected</span>';
+            statusCell.innerHTML = '<span class="badge badge-danger"><i class="fas fa-times-circle"></i> {{ __('Rejected') }}</span>';
             
             // Update actions - remove approve/reject buttons
             const actionsCell = row.querySelector('.action-buttons');
@@ -314,7 +314,7 @@ function rejectReview(reviewId) {
             // Show success message
             Swal.fire({
                 icon: 'success',
-                title: 'Success!',
+                title: '{{ __('Success!') }}',
                 text: data.message,
                 timer: 2000,
                 showConfirmButton: false,
@@ -327,8 +327,8 @@ function rejectReview(reviewId) {
         console.error('Error:', error);
         Swal.fire({
             icon: 'error',
-            title: 'Error!',
-            text: 'Failed to reject review',
+            title: '{{ __('Error!') }}',
+            text: '{{ __('Failed to reject review') }}',
             toast: true,
             position: 'top-end',
             timer: 3000,
@@ -340,14 +340,14 @@ function rejectReview(reviewId) {
 // Delete review
 function deleteReview(reviewId) {
     Swal.fire({
-        title: 'Delete Review?',
-        text: "This action cannot be undone!",
+        title: '{{ __('Delete Review?') }}',
+        text: "{{ __('This action cannot be undone!') }}",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#ef4444',
         cancelButtonColor: '#6b7280',
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'Cancel'
+        confirmButtonText: '{{ __('Yes, delete it!') }}',
+        cancelButtonText: '{{ __('Cancel') }}'
     }).then((result) => {
         if (result.isConfirmed) {
             fetch(`/reviews/${reviewId}`, {
@@ -378,8 +378,8 @@ function deleteReview(reviewId) {
                                 <tr>
                                     <td colspan="7" class="empty-state">
                                         <i class="fas fa-star"></i>
-                                        <p>No reviews found</p>
-                                        <small class="text-muted">Customer reviews will appear here once submitted</small>
+                                        <p>{{ __('No reviews found') }}</p>
+                                        <small class="text-muted">{{ __('Customer reviews will appear here once submitted') }}</small>
                                     </td>
                                 </tr>
                             `;
@@ -389,7 +389,7 @@ function deleteReview(reviewId) {
                     // Show success message
                     Swal.fire({
                         icon: 'success',
-                        title: 'Deleted!',
+                        title: '{{ __('Deleted!') }}',
                         text: data.message,
                         timer: 2000,
                         showConfirmButton: false,
@@ -402,8 +402,8 @@ function deleteReview(reviewId) {
                 console.error('Error:', error);
                 Swal.fire({
                     icon: 'error',
-                    title: 'Error!',
-                    text: 'Failed to delete review',
+                    title: '{{ __('Error!') }}',
+                    text: '{{ __('Failed to delete review') }}',
                     toast: true,
                     position: 'top-end',
                     timer: 3000,

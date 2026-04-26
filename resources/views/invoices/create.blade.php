@@ -183,7 +183,7 @@
                    style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none;">
                 <option value="">Select Product</option>
                 @foreach($products as $product)
-                    <option value="{{ $product->id }}" data-price="{{ $product->price }}">{{ $product->name }} ({{ number_format($product->price, 2) }})</option>
+                    <option value="{{ $product->id }}" data-price="{{ $product->price }}">{{ $product->translated_name }} ({{ number_format($product->price, 2) }})</option>
                 @endforeach
             </select>
         </td>

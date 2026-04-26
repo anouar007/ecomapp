@@ -32,11 +32,12 @@ class SecurityHeaders
         // Content Security Policy
         $response->headers->set('Content-Security-Policy', 
             "default-src 'self'; " .
-            "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; " .
-            "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://cdn.jsdelivr.net; " .
+            "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.onesignal.com; " .
+            "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdn.onesignal.com; " .
             "font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; " .
             "img-src 'self' data: https:; " .
-            "connect-src 'self';"
+            "media-src 'self' data:; " .
+            "connect-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://onesignal.com;"
         );
         
         // Permissions Policy (formerly Feature Policy)

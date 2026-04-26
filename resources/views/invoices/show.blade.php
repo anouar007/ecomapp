@@ -8,25 +8,25 @@
             <div>
                 <a href="{{ route('invoices.index') }}" style="color: #64748b; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 12px; font-weight: 600;">
                     <i class="fas fa-arrow-left"></i>
-                    Back to Invoices
+                    {{ __('Back to Invoices') }}
                 </a>
-                <h1 style="font-size: 32px; font-weight: 700; color: #1e293b; margin: 0;">Invoice #{{ $invoice->invoice_number }}</h1>
+                <h1 style="font-size: 32px; font-weight: 700; color: #1e293b; margin: 0;">{{ __('Invoice') }} #{{ $invoice->invoice_number }}</h1>
             </div>
             <div style="display: flex; gap: 12px;">
                 <a href="{{ route('invoices.download', $invoice) }}" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px;">
-                    <i class="fas fa-download"></i> Download PDF
+                    <i class="fas fa-download"></i> {{ __('Download PDF') }}
                 </a>
                 <a href="{{ route('invoices.print', $invoice) }}" target="_blank" class="btn btn-secondary" style="display: inline-flex; align-items: center; gap: 8px;">
-                    <i class="fas fa-print"></i> Print
+                    <i class="fas fa-print"></i> {{ __('Print') }}
                 </a>
                 @if($invoice->canEdit())
                 <a href="{{ route('invoices.edit', $invoice) }}" class="btn btn-secondary" style="display: inline-flex; align-items: center; gap: 8px;">
-                    <i class="fas fa-edit"></i> Edit
+                    <i class="fas fa-edit"></i> {{ __('Edit') }}
                 </a>
                 @endif
                 @if($invoice->remaining_balance > 0)
                 <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#recordPaymentModal" style="display: inline-flex; align-items: center; gap: 8px; background-color: #10b981; border-color: #10b981; color: white;">
-                    <i class="fas fa-money-bill-wave"></i> Record Payment
+                    <i class="fas fa-money-bill-wave"></i> {{ __('Record Payment') }}
                 </button>
                 @endif
             </div>
@@ -41,7 +41,7 @@
                 <!-- Company Info (Left) -->
                 <div>
                     @if(setting('app_logo'))
-                        <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="Company Logo" style="max-height: 80px; margin-bottom: 16px;">
+                        <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="{{ __('Company Logo') }}" style="max-height: 80px; margin-bottom: 16px;">
                     @else
                         <h2 style="font-size: 32px; font-weight: 800; color: #1e293b; margin: 0 0 16px 0;">{{ setting('company_name', setting('app_name')) }}</h2>
                     @endif
@@ -49,8 +49,8 @@
                     <div style="color: #64748b; line-height: 1.6; font-size: 14px;">
                         <strong>{{ setting('company_name', setting('app_name')) }}</strong><br>
                         {{ setting('company_address') }}<br>
-                        @if(setting('company_phone')) Phone: {{ setting('company_phone') }}<br> @endif
-                        @if(setting('company_email')) Email: {{ setting('company_email') }}<br> @endif
+                        @if(setting('company_phone')) {{ __('Phone:') }} {{ setting('company_phone') }}<br> @endif
+                        @if(setting('company_email')) {{ __('Email:') }} {{ setting('company_email') }}<br> @endif
                         <div style="margin-top: 8px; font-size: 13px; color: #475569;">
                             @if(setting('company_tax_id')) <span>ICE: {{ setting('company_tax_id') }}</span><br> @endif
                             @if(setting('company_registry_id')) <span>RC: {{ setting('company_registry_id') }}</span><br> @endif
@@ -76,14 +76,14 @@
                     </span>
                     
                     <div style="display: grid; grid-template-columns: auto auto; gap: 8px 24px; text-align: right;">
-                        <span style="color: #64748b; font-weight: 600; font-size: 13px;">Invoice No:</span>
+                        <span style="color: #64748b; font-weight: 600; font-size: 13px;">{{ __('Invoice No:') }}</span>
                         <span style="color: #1e293b; font-weight: 700;">{{ $invoice->invoice_number }}</span>
                         
-                        <span style="color: #64748b; font-weight: 600; font-size: 13px;">Date:</span>
+                        <span style="color: #64748b; font-weight: 600; font-size: 13px;">{{ __('Date:') }}</span>
                         <span style="color: #1e293b; font-weight: 600;">{{ $invoice->issued_at->format('M d, Y') }}</span>
                         
                         @if($invoice->due_date)
-                        <span style="color: #64748b; font-weight: 600; font-size: 13px;">Due Date:</span>
+                        <span style="color: #64748b; font-weight: 600; font-size: 13px;">{{ __('Due Date:') }}</span>
                         <span style="color: #ef4444; font-weight: 600;">{{ $invoice->due_date->format('M d, Y') }}</span>
                         @endif
                     </div>
@@ -92,7 +92,7 @@
 
             <!-- Client Info -->
             <div style="margin-bottom: 48px;">
-                <p style="color: #64748b; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Bill To</p>
+                <p style="color: #64748b; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">{{ __('Bill To') }}</p>
                 <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; display: inline-block; min-width: 300px;">
                     <h3 style="font-size: 18px; font-weight: 700; color: #1e293b; margin: 0 0 8px 0;">{{ $invoice->customer_name }}</h3>
                     <div style="color: #475569; font-size: 14px; line-height: 1.5;">
@@ -108,10 +108,10 @@
                 <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
                     <thead>
                         <tr style="background: #f1f5f9;">
-                            <th style="padding: 12px 16px; text-align: left; color: #475569; font-size: 12px; font-weight: 700; text-transform: uppercase; border-radius: 8px 0 0 8px;">Description</th>
-                            <th style="padding: 12px 16px; text-align: center; color: #475569; font-size: 12px; font-weight: 700; text-transform: uppercase; width: 100px;">Qty</th>
-                            <th style="padding: 12px 16px; text-align: right; color: #475569; font-size: 12px; font-weight: 700; text-transform: uppercase; width: 150px;">Unit Price</th>
-                            <th style="padding: 12px 16px; text-align: right; color: #475569; font-size: 12px; font-weight: 700; text-transform: uppercase; width: 150px; border-radius: 0 8px 8px 0;">Total</th>
+                            <th style="padding: 12px 16px; text-align: left; color: #475569; font-size: 12px; font-weight: 700; text-transform: uppercase; border-radius: 8px 0 0 8px;">{{ __('Description') }}</th>
+                            <th style="padding: 12px 16px; text-align: center; color: #475569; font-size: 12px; font-weight: 700; text-transform: uppercase; width: 100px;">{{ __('Qty') }}</th>
+                            <th style="padding: 12px 16px; text-align: right; color: #475569; font-size: 12px; font-weight: 700; text-transform: uppercase; width: 150px;">{{ __('Unit Price') }}</th>
+                            <th style="padding: 12px 16px; text-align: right; color: #475569; font-size: 12px; font-weight: 700; text-transform: uppercase; width: 150px; border-radius: 0 8px 8px 0;">{{ __('Total') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -120,7 +120,7 @@
                             <td style="padding: 16px; border-bottom: 1px solid #f1f5f9;">
                                 <div style="font-weight: 600; color: #1e293b;">{{ $item->product_name }}</div>
                                 @if($item->product_sku)
-                                <div style="font-size: 12px; color: #94a3b8;">SKU: {{ $item->product_sku }}</div>
+                                <div style="font-size: 12px; color: #94a3b8;">{{ __('SKU') }}: {{ $item->product_sku }}</div>
                                 @endif
                             </td>
                             <td style="padding: 16px; text-align: center; color: #475569; border-bottom: 1px solid #f1f5f9;">{{ $item->quantity }}</td>
@@ -137,15 +137,15 @@
                 <div style="flex: 1;">
                     <!-- Amounts in Words & Notes -->
                     <div style="margin-bottom: 24px;">
-                        <p style="color: #64748b; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">Total in Words</p>
+                        <p style="color: #64748b; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">{{ __('Total in Words') }}</p>
                         <p style="background: #f8fafc; padding: 12px; border-radius: 8px; color: #334155; font-style: italic; border: 1px solid #e2e8f0;">
-                            Stopped this invoice at the sum of: <strong>{{ $invoice->total_in_words }} {{ setting('currency_code', 'USD') }}</strong>
+                            {{ __('Stopped this invoice at the sum of:') }} <strong>{{ $invoice->total_in_words }} {{ setting('currency_code', 'USD') }}</strong>
                         </p>
                     </div>
 
                     @if($invoice->notes)
                     <div style="margin-bottom: 24px;">
-                        <p style="color: #64748b; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">Notes</p>
+                        <p style="color: #64748b; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">{{ __('Notes') }}</p>
                         <p style="color: #475569; font-size: 14px;">{{ $invoice->notes }}</p>
                     </div>
                     @endif
@@ -158,21 +158,21 @@
 
                 <div style="width: 350px;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 12px; color: #64748b;">
-                        <span>Subtotal (HT)</span>
+                        <span>{{ __('Subtotal (HT)') }}</span>
                         <span style="font-weight: 600; color: #1e293b;">{{ $invoice->formatted_subtotal }}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 12px; color: #64748b;">
-                        <span>Tax ({{ $invoice->tax_rate }}%)</span>
+                        <span>{{ __('Tax') }} ({{ $invoice->tax_rate }}%)</span>
                         <span style="font-weight: 600; color: #1e293b;">{{ $invoice->formatted_tax_amount }}</span>
                     </div>
                     @if($invoice->discount_amount > 0)
                     <div style="display: flex; justify-content: space-between; margin-bottom: 12px; color: #10b981;">
-                        <span>Discount</span>
+                        <span>{{ __('Discount') }}</span>
                         <span style="font-weight: 600;">-{{ $invoice->formatted_discount_amount }}</span>
                     </div>
                     @endif
                     <div style="border-top: 2px solid #e2e8f0; margin-top: 16px; padding-top: 16px; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 18px; font-weight: 800; color: #1e293b;">Total (TTC)</span>
+                        <span style="font-size: 18px; font-weight: 800; color: #1e293b;">{{ __('Total (TTC)') }}</span>
                         <span style="font-size: 24px; font-weight: 800; color: #3b82f6;">{{ $invoice->formatted_total_amount }}</span>
                     </div>
                 </div>
@@ -182,16 +182,16 @@
 @if($invoice->payments->count() > 0)
             <!-- Payment History -->
             <div style="margin-top: 48px; border-top: 2px solid #f1f5f9; padding-top: 32px;">
-                <h3 style="font-size: 18px; font-weight: 700; color: #1e293b; margin-bottom: 16px;">Payment History</h3>
+                <h3 style="font-size: 18px; font-weight: 700; color: #1e293b; margin-bottom: 16px;">{{ __('Payment History') }}</h3>
                 
                 <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
                     <thead>
                         <tr style="background: #f8fafc;">
-                            <th style="padding: 12px 16px; text-align: left; color: #475569; font-size: 12px; font-weight: 700; text-transform: uppercase;">Date</th>
-                            <th style="padding: 12px 16px; text-align: left; color: #475569; font-size: 12px; font-weight: 700; text-transform: uppercase;">Method</th>
-                            <th style="padding: 12px 16px; text-align: left; color: #475569; font-size: 12px; font-weight: 700; text-transform: uppercase;">Reference</th>
-                            <th style="padding: 12px 16px; text-align: right; color: #475569; font-size: 12px; font-weight: 700; text-transform: uppercase;">Amount</th>
-                            <th style="padding: 12px 16px; text-align: center; color: #475569; font-size: 12px; font-weight: 700; text-transform: uppercase;">Proof</th>
+                            <th style="padding: 12px 16px; text-align: left; color: #475569; font-size: 12px; font-weight: 700; text-transform: uppercase;">{{ __('Date') }}</th>
+                            <th style="padding: 12px 16px; text-align: left; color: #475569; font-size: 12px; font-weight: 700; text-transform: uppercase;">{{ __('Method') }}</th>
+                            <th style="padding: 12px 16px; text-align: left; color: #475569; font-size: 12px; font-weight: 700; text-transform: uppercase;">{{ __('Reference') }}</th>
+                            <th style="padding: 12px 16px; text-align: right; color: #475569; font-size: 12px; font-weight: 700; text-transform: uppercase;">{{ __('Amount') }}</th>
+                            <th style="padding: 12px 16px; text-align: center; color: #475569; font-size: 12px; font-weight: 700; text-transform: uppercase;">{{ __('Proof') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -204,7 +204,7 @@
                             <td style="padding: 16px; border-bottom: 1px solid #f1f5f9; text-align: center;">
                                 @if($payment->proof_file_path)
                                 <a href="{{ asset('storage/' . $payment->proof_file_path) }}" target="_blank" style="color: #3b82f6; text-decoration: none;">
-                                    <i class="fas fa-file-alt"></i> View
+                                    <i class="fas fa-file-alt"></i> {{ __('View') }}
                                 </a>
                                 @else
                                 <span style="color: #94a3b8;">-</span>
@@ -239,55 +239,55 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Record Payment</h5>
+                <h5 class="modal-title">{{ __('Record Payment') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{{ route('payments.store', $invoice) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Payment Amount</label>
+                        <label class="form-label">{{ __('Payment Amount') }}</label>
                         <div class="input-group">
                             <span class="input-group-text">$</span>
                             <input type="number" step="0.01" name="amount" class="form-control" value="{{ $invoice->remaining_balance }}" max="{{ $invoice->remaining_balance }}" required>
                         </div>
-                        <small class="text-muted">Remaining Balance: {{ $invoice->formatted_remaining_balance }}</small>
+                        <small class="text-muted">{{ __('Remaining Balance:') }} {{ $invoice->formatted_remaining_balance }}</small>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Payment Date</label>
+                        <label class="form-label">{{ __('Payment Date') }}</label>
                         <input type="date" name="payment_date" class="form-control" value="{{ date('Y-m-d') }}" required>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Payment Method</label>
+                        <label class="form-label">{{ __('Payment Method') }}</label>
                         <select name="payment_method" class="form-control" required>
-                            <option value="cash">Cash</option>
-                            <option value="card">Card</option>
-                            <option value="bank_transfer">Bank Transfer</option>
-                            <option value="check">Check</option>
-                            <option value="other">Other</option>
+                            <option value="cash">{{ __('Cash') }}</option>
+                            <option value="card">{{ __('Card') }}</option>
+                            <option value="bank_transfer">{{ __('Bank Transfer') }}</option>
+                            <option value="check">{{ __('Check') }}</option>
+                            <option value="other">{{ __('Other') }}</option>
                         </select>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Transaction Reference</label>
-                        <input type="text" name="transaction_reference" class="form-control" placeholder="e.g. Check Number, Transaction ID">
+                        <label class="form-label">{{ __('Transaction Reference') }}</label>
+                        <input type="text" name="transaction_reference" class="form-control" placeholder="{{ __('e.g. Check Number, Transaction ID') }}">
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Proof of Payment</label>
+                        <label class="form-label">{{ __('Proof of Payment') }}</label>
                         <input type="file" name="proof_file" class="form-control" accept="image/*,application/pdf">
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Notes</label>
+                        <label class="form-label">{{ __('Notes') }}</label>
                         <textarea name="notes" class="form-control" rows="2"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Record Payment</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ __('Record Payment') }}</button>
                 </div>
             </form>
         </div>

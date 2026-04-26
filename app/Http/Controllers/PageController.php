@@ -49,6 +49,14 @@ class PageController extends Controller
     }
 
     /**
+     * Display the specified page (Admin).
+     */
+    public function show(Page $page)
+    {
+        return view('frontend.page', compact('page'));
+    }
+
+    /**
      * Show the form for editing the specified page.
      */
     public function edit(Page $page)
@@ -85,5 +93,14 @@ class PageController extends Controller
     {
         $page->delete();
         return redirect()->route('pages.index')->with('success', 'Page deleted successfully!');
+    }
+
+    /**
+     * Display the specified page on the frontend (Public).
+     */
+    public function showPublic($slug)
+    {
+        $page = Page::where('slug', $slug)->where('is_published', true)->firstOrFail();
+        return view('frontend.page', compact('page'));
     }
 }

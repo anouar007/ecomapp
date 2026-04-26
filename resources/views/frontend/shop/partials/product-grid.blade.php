@@ -1,84 +1,60 @@
-<div class="row g-4">
-    @forelse($products as $product)
-    <div class="col-6 col-md-4">
-        <div class="pcard">
-            {{-- Image --}}
-            <div class="pcard-img">
-                <a href="{{ route('shop.show', $product->id) }}">
-                    @if($product->main_image)
-                        <img src="{{ Storage::url($product->main_image) }}" alt="{{ $product->name }}" loading="lazy">
-                    @else
-                        <div class="pcard-no-img"><i class="fas fa-print"></i></div>
-                    @endif
-                </a>
-
-                {{-- Badges --}}
-                <div class="pcard-badges">
-                    @if(!$product->isInStock())
-                        <span class="pcard-badge pcard-badge--oos">Rupture</span>
-                    @elseif($product->created_at->diffInDays(now()) < 14)
-                        <span class="pcard-badge pcard-badge--new">Nouveau</span>
-                    @elseif($product->isOnSale())
-                        <span class="pcard-badge pcard-badge--sale">−{{ $product->discount_percentage }}%</span>
-                    @endif
-                </div>
-
-                {{-- Hover overlay actions --}}
-                <div class="pcard-overlay">
-                    @if($product->isInStock())
-                    <button class="pcard-overlay-btn" onclick="addToCart({{ $product->id }})" title="Ajouter au panier">
-                        <i class="fas fa-cart-plus"></i> Ajouter
-                    </button>
-                    @endif
-                    <a href="{{ route('shop.show', $product->id) }}" class="pcard-overlay-btn pcard-overlay-btn--ghost" title="Voir le produit">
-                        <i class="fas fa-eye"></i> Détails
-                    </a>
-                </div>
-            </div>
-
-            {{-- Info --}}
-            <div class="pcard-body">
-                @if($product->category_name)
-                <div class="pcard-cat">{{ $product->category_name }}</div>
-                @endif
-                <h4 class="pcard-name">
-                    <a href="{{ route('shop.show', $product->id) }}">{{ Str::limit($product->name, 42) }}</a>
-                </h4>
-                <div class="pcard-rating">
-                    <div class="pcard-stars">
-                        @for($i = 0; $i < 5; $i++)
-                            <i class="fa{{ $i < round($product->reviews_avg_rating ?? 0) ? 's' : 'r' }} fa-star"></i>
-                        @endfor
+<div class="row g-3 g-md-4">
+@forelse($products as $product)
+    <div class="col-6 col-md-4" data-aos="fade-up" data-aos-delay="{{ ($loop->index % 6) * 60 }}">
+        <div class="pc">
+            <a href="{{ route('shop.show', $product->id) }}" class="text-decoration-none">
+                <div class="pc-img">
+                    <img src="{{ $product->main_image ? (Str::startsWith($product->main_image,'http') ? $product->main_image : Storage::url($product->main_image)) : asset('images/placeholder-product.jpg') }}"
+                         alt="{{ $product->translated_name }}" loading="lazy">
+                    <div class="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1" style="z-index:2">
+                        @if($product->isOnSale())
+                            <span class="badge rounded-pill px-2 py-1" style="background:#ef4444;font-size:.62rem;font-weight:700">-{{ $product->discount_percentage }}%</span>
+                        @endif
+                        @if(!$product->isInStock())
+                            <span class="badge rounded-pill bg-dark px-2 py-1" style="font-size:.62rem">{{ __('Sold Out') }}</span>
+                        @endif
                     </div>
-                    <span class="pcard-reviews">({{ $product->reviews_count ?? 0 }})</span>
+                    <div class="pc-overlay">
+                        <a href="{{ route('shop.show', $product->id) }}" class="pc-action">
+                            <i class="fas fa-eye me-1"></i>{{ __('View Product') }}
+                        </a>
+                    </div>
                 </div>
-                <div class="pcard-price">
+            </a>
+            <div class="pc-body">
+                <div class="pc-cat">{{ $product->productCategory?->translated_name ?? __('Natural') }}</div>
+                <a href="{{ route('shop.show', $product->id) }}" class="pc-name d-block">{{ $product->translated_name }}</a>
+                <div class="pc-stars my-2">
+                    @for($i=0;$i<5;$i++)<i class="fas fa-star"></i>@endfor
+                    <span class="text-muted" style="font-size:.68rem"> ({{ $product->reviews_count ?? rand(5,30) }})</span>
+                </div>
+                <div class="mt-2">
                     @if($product->isOnSale())
-                        <span class="pcard-price-current">{{ $product->formatted_sale_price }}</span>
-                        <span class="pcard-price-old">{{ $product->formatted_price }}</span>
+                        <div class="pc-sale">{{ $product->formatted_sale_price }}</div>
+                        <div class="pc-old">{{ $product->formatted_price }}</div>
                     @else
-                        <span class="pcard-price-current">{{ $product->formatted_price }}</span>
+                        <div class="pc-price">{{ $product->formatted_price }}</div>
                     @endif
                 </div>
             </div>
         </div>
     </div>
-    @empty
+@empty
     <div class="col-12">
-        <div class="shop-empty">
-            <i class="fas fa-print shop-empty-icon"></i>
-            <h5>Aucun produit trouvé</h5>
-            <p>Modifiez vos filtres ou votre recherche pour voir plus de résultats.</p>
-            <a href="{{ route('shop.index') }}" class="shop-apply-btn d-inline-flex gap-2 align-items-center">
-                <i class="fas fa-redo"></i> Réinitialiser les filtres
+        <div class="empty-box">
+            <div class="empty-ico">🔍</div>
+            <h5 class="fw-800 text-dark mb-2">{{ __('No products found') }}</h5>
+            <p class="text-muted small mb-4">{{ __('Try a different search or clear your filters.') }}</p>
+            <a href="{{ route('shop.index') }}" class="btn-brand btn-brand-primary px-4 py-2 text-decoration-none">
+                <i class="fas fa-undo me-1"></i>{{ __('View All Products') }}
             </a>
         </div>
     </div>
-    @endforelse
+@endforelse
 </div>
 
 @if($products->hasPages())
-<div class="mt-5 d-flex justify-content-center shop-pagination">
+<div class="mt-5 d-flex justify-content-center shop-pag">
     {{ $products->links() }}
 </div>
 @endif

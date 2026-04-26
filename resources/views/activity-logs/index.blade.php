@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Activity Logs')
+@section('title', __('Activity Logs'))
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/management.css') }}">
@@ -10,15 +10,15 @@
 <div class="page-header">
     <div style="display: flex; justify-content: space-between; align-items: center;">
         <div>
-            <h1 class="page-title"><i class="fas fa-history"></i> Activity Logs</h1>
-            <p class="page-subtitle">Track user actions and system events</p>
+            <h1 class="page-title"><i class="fas fa-history"></i> {{ __('Activity Logs') }}</h1>
+            <p class="page-subtitle">{{ __('Track user actions and system events') }}</p>
         </div>
         <div>
-            <form action="{{ route('activity-logs.clear') }}" method="POST" onsubmit="return confirm('Are you sure you want to delete old logs? This action cannot be undone.');" style="display: inline;">
+            <form action="{{ route('activity-logs.clear') }}" method="POST" onsubmit="return confirm('{{ __('Are you sure you want to delete old logs? This action cannot be undone.') }}');" style="display: inline;">
                 @csrf
                 <input type="hidden" name="older_than_days" value="90">
                 <button type="submit" class="btn btn-sm btn-outline-danger">
-                    <i class="fas fa-trash-alt"></i> Clear Old Logs (>90 days)
+                    <i class="fas fa-trash-alt"></i> {{ __('Clear Old Logs (>90 days)') }}
                 </button>
             </form>
         </div>
@@ -40,7 +40,7 @@
                 <i class="fas fa-list-ul" style="color: white; font-size: 28px;"></i>
             </div>
             <div>
-                <p style="color: #64748b; font-size: 13px; margin: 0 0 4px 0; font-weight: 600;">Total Logs</p>
+                <p style="color: #64748b; font-size: 13px; margin: 0 0 4px 0; font-weight: 600;">{{ __('Total Logs') }}</p>
                 <p style="font-size: 28px; font-weight: 700; color: #1e293b; margin: 0;">{{ number_format($stats['total_activities']) }}</p>
             </div>
         </div>
@@ -53,7 +53,7 @@
                 <i class="fas fa-clock" style="color: white; font-size: 28px;"></i>
             </div>
             <div>
-                <p style="color: #166534; font-size: 13px; margin: 0 0 4px 0; font-weight: 600;">Today's Activity</p>
+                <p style="color: #166534; font-size: 13px; margin: 0 0 4px 0; font-weight: 600;">{{ __("Today's Activity") }}</p>
                 <p style="font-size: 28px; font-weight: 700; color: #15803d; margin: 0;">{{ number_format($stats['today_activities']) }}</p>
             </div>
         </div>
@@ -66,7 +66,7 @@
                 <i class="fas fa-users" style="color: white; font-size: 28px;"></i>
             </div>
             <div>
-                <p style="color: #5b21b6; font-size: 13px; margin: 0 0 4px 0; font-weight: 600;">Unique Users</p>
+                <p style="color: #5b21b6; font-size: 13px; margin: 0 0 4px 0; font-weight: 600;">{{ __('Unique Users') }}</p>
                 <p style="font-size: 28px; font-weight: 700; color: #6d28d9; margin: 0;">{{ number_format($stats['unique_users']) }}</p>
             </div>
         </div>
@@ -76,17 +76,17 @@
 <!-- Filters -->
 <div class="card" style="margin-bottom: 24px;">
     <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-filter"></i> Filter Logs</h3>
+        <h3 class="card-title"><i class="fas fa-filter"></i> {{ __('Filter Logs') }}</h3>
     </div>
     <div class="card-body">
         <form method="GET" action="{{ route('activity-logs.index') }}" style="display: flex; gap: 12px; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 200px;">
-                <input type="text" name="search" class="form-control" placeholder="Search description..." value="{{ request('search') }}">
+                <input type="text" name="search" class="form-control" placeholder="{{ __('Search description...') }}" value="{{ request('search') }}">
             </div>
             
             <div style="width: auto; min-width: 150px;">
                 <select name="user_id" class="form-control">
-                    <option value="">All Users</option>
+                    <option value="">{{ __('All Users') }}</option>
                     @foreach($users as $user)
                         <option value="{{ $user->id }}" {{ request('user_id') == $user->id ? 'selected' : '' }}>
                             {{ $user->name }}
@@ -96,15 +96,15 @@
             </div>
 
             <div style="width: auto; min-width: 150px;">
-                <input type="date" name="start_date" class="form-control" value="{{ request('start_date') }}" placeholder="Start Date">
+                <input type="date" name="start_date" class="form-control" value="{{ request('start_date') }}" placeholder="{{ __('Start Date') }}">
             </div>
 
             <div style="width: auto; min-width: 150px;">
-                <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}" placeholder="End Date">
+                <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}" placeholder="{{ __('End Date') }}">
             </div>
             
-            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Filter</button>
-            <a href="{{ route('activity-logs.index') }}" class="btn btn-secondary"><i class="fas fa-redo"></i> Reset</a>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> {{ __('Filter') }}</button>
+            <a href="{{ route('activity-logs.index') }}" class="btn btn-secondary"><i class="fas fa-redo"></i> {{ __('Reset') }}</a>
         </form>
     </div>
 </div>
@@ -112,18 +112,18 @@
 <!-- Logs Table -->
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-list"></i> Activity History</h3>
+        <h3 class="card-title"><i class="fas fa-list"></i> {{ __('Activity History') }}</h3>
     </div>
     <div class="table-responsive">
         <table class="table">
             <thead>
                 <tr>
-                    <th>User</th>
-                    <th>Action</th>
-                    <th>Subject</th>
-                    <th>Changes</th>
-                    <th>Date & Time</th>
-                    <th>Actions</th>
+                    <th>{{ __('User') }}</th>
+                    <th>{{ __('Action') }}</th>
+                    <th>{{ __('Subject') }}</th>
+                    <th>{{ __('Changes') }}</th>
+                    <th>{{ __('Date & Time') }}</th>
+                    <th>{{ __('Actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -135,7 +135,7 @@
                                 {{ $log->user ? substr($log->user->name, 0, 1) : '?' }}
                             </div>
                             <div>
-                                <span style="font-weight: 600; color: #334155;">{{ $log->user->name ?? 'System' }}</span>
+                                <span style="font-weight: 600; color: #334155;">{{ $log->user->name ?? __('System') }}</span>
                                 <br>
                                 <small class="text-muted">{{ $log->user->email ?? '' }}</small>
                             </div>
@@ -178,7 +178,7 @@
                         </span>
                     </td>
                     <td>
-                       <a href="{{ route('activity-logs.show', $log) }}" class="btn btn-sm btn-icon btn-light" title="View Details">
+                       <a href="{{ route('activity-logs.show', $log) }}" class="btn btn-sm btn-icon btn-light" title="{{ __('View Details') }}">
                            <i class="fas fa-eye"></i>
                        </a>
                     </td>
@@ -187,7 +187,7 @@
                 <tr>
                     <td colspan="6" class="empty-state">
                         <i class="fas fa-history"></i>
-                        <p>No activity logs found</p>
+                        <p>{{ __('No activity logs found') }}</p>
                     </td>
                 </tr>
                 @endforelse

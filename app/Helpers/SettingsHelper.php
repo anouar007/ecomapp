@@ -16,6 +16,32 @@ if (!function_exists('setting')) {
     }
 }
 
+if (!function_exists('setting_trans')) {
+    /**
+     * Get a translated setting value based on current locale
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    function setting_trans(string $key, $default = null)
+    {
+        $locale = app()->getLocale();
+        
+        // Try locale specific key first (except for Arabic which is the primary/base)
+        if ($locale !== 'ar') {
+            $transKey = $key . '_' . $locale;
+            $value = Setting::get($transKey);
+            if ($value && $value !== '') {
+                return $value;
+            }
+        }
+        
+        // Fallback to base key
+        return Setting::get($key, $default);
+    }
+}
+
 if (!function_exists('currency')) {
     /**
      * Format a number as currency based on settings
@@ -26,12 +52,17 @@ if (!function_exists('currency')) {
      */
     function currency($amount, bool $showSymbol = true)
     {
-        $symbol = setting('currency_symbol', '$');
+        $symbol = __(setting('currency_symbol', 'DH'));
         $decimals = setting('currency_decimals', 2);
         $decimalSeparator = setting('decimal_separator', '.');
         $thousandsSeparator = setting('thousands_separator', ',');
-        $position = setting('currency_position', 'before'); // before or after
+        $position = setting('currency_position', 'after'); // default to after for DH
         
+        // Auto-adjust for Arabic
+        if (app()->getLocale() == 'ar') {
+            $position = 'after';
+        }
+
         $formatted = number_format($amount, $decimals, $decimalSeparator, $thousandsSeparator);
         
         if (!$showSymbol) {
@@ -39,7 +70,7 @@ if (!function_exists('currency')) {
         }
         
         return $position === 'before' 
-            ? $symbol . $formatted 
+            ? $symbol . ' ' . $formatted 
             : $formatted . ' ' . $symbol;
     }
 }

@@ -183,7 +183,7 @@
                             <label class="form-label fw-bold small text-uppercase">Select Products</label>
                             <select name="applicable_ids[]" class="form-select" multiple size="5">
                                 @foreach($products as $product)
-                                    <option value="{{ $product->id }}">{{ $product->name }}</option>
+                                    <option value="{{ $product->id }}">{{ $product->translated_name }}</option>
                                 @endforeach
                             </select>
                             <div class="form-text">Hold Ctrl/Cmd to select multiple.</div>
@@ -193,7 +193,7 @@
                             <label class="form-label fw-bold small text-uppercase">Select Categories</label>
                             <select name="applicable_ids[]" class="form-select" multiple size="5">
                                 @foreach($categories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    <option value="{{ $category->id }}">{{ $category->translated_name }}</option>
                                 @endforeach
                             </select>
                             <div class="form-text">Hold Ctrl/Cmd to select multiple.</div>

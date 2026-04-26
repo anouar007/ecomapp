@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Users Management')
+@section('title', __('Users Management'))
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/management.css') }}">
@@ -8,8 +8,8 @@
 
 @section('content')
 <div class="page-header">
-    <h1 class="page-title"><i class="fas fa-users"></i> Users Management</h1>
-    <p class="page-subtitle">Manage user roles and access permissions</p>
+    <h1 class="page-title"><i class="fas fa-users"></i> {{ __('Users Management') }}</h1>
+    <p class="page-subtitle">{{ __('Manage user roles and access permissions') }}</p>
 </div>
 
 @if(session('success'))
@@ -26,16 +26,16 @@
 
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-list"></i> All Users</h3>
+        <h3 class="card-title"><i class="fas fa-list"></i> {{ __('All Users') }}</h3>
     </div>
     <div class="table-responsive">
         <table class="table">
             <thead>
                 <tr>
-                    <th>User</th>
-                    <th>Email</th>
-                    <th>Current Roles</th>
-                    <th>Actions</th>
+                    <th>{{ __('User') }}</th>
+                    <th>{{ __('Email') }}</th>
+                    <th>{{ __('Current Roles') }}</th>
+                    <th>{{ __('Actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -58,14 +58,14 @@
                                 @endforeach
                             </div>
                         @else
-                            <span class="text-muted">No roles assigned</span>
+                            <span class="text-muted">{{ __('No roles assigned') }}</span>
                         @endif
                     </td>
                     <td>
                         <button type="button" 
                                 class="btn-action btn-action-edit" 
                                 onclick="openRoleModal({{ $user->id }}, '{{ $user->name }}', {{ json_encode($user->roles->pluck('id')) }})" 
-                                title="Manage Roles">
+                                title="{{ __('Manage Roles') }}">
                             <i class="fas fa-user-shield"></i>
                         </button>
                     </td>
@@ -74,7 +74,7 @@
                 <tr>
                     <td colspan="4" class="empty-state">
                         <i class="fas fa-users"></i>
-                        <p>No users found in the system.</p>
+                        <p>{{ __('No users found in the system.') }}</p>
                     </td>
                 </tr>
                 @endforelse
@@ -87,14 +87,14 @@
 <div id="roleModal" class="modal" style="display:none;">
     <div class="modal-content">
         <div class="modal-header">
-            <h3 class="modal-title"><i class="fas fa-user-shield"></i> Manage User Roles</h3>
+            <h3 class="modal-title"><i class="fas fa-user-shield"></i> {{ __('Manage User Roles') }}</h3>
             <button type="button" class="modal-close" onclick="closeRoleModal()">&times;</button>
         </div>
         <form id="roleForm" method="POST">
             @csrf
             @method('PUT')
             <div class="modal-body">
-                <p class="modal-subtitle">Select roles for <strong id="userName"></strong></p>
+                <p class="modal-subtitle">{{ __('Select roles for') }} <strong id="userName"></strong></p>
                 <div class="roles-grid">
                     @foreach($roles as $role)
                     <div class="role-checkbox">
@@ -106,10 +106,10 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="closeRoleModal()">
-                    <i class="fas fa-times"></i> Cancel
+                    <i class="fas fa-times"></i> {{ __('Cancel') }}
                 </button>
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Update Roles
+                    <i class="fas fa-save"></i> {{ __('Update Roles') }}
                 </button>
             </div>
         </form>

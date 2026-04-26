@@ -10,7 +10,7 @@
                 <i class="fas fa-edit text-primary"></i>
                 Adjust Stock
             </h1>
-            <p class="page-subtitle">{{ $product->name }}</p>
+            <p class="page-subtitle">{{ $product->translated_name }}</p>
         </div>
         <div class="header-actions">
             <a href="{{ route('inventory.index') }}" class="btn btn-secondary">
@@ -91,13 +91,13 @@
             </div>
             <div class="card-body">
                 @if($product->image)
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="img-fluid rounded mb-3">
+                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->translated_name }}" class="img-fluid rounded mb-3">
                 @endif
                 
                 <table class="table table-sm table-borderless">
                     <tr>
                         <td class="text-muted">Product Name:</td>
-                        <td class="fw-bold">{{ $product->name }}</td>
+                        <td class="fw-bold">{{ $product->translated_name }}</td>
                     </tr>
                     <tr>
                         <td class="text-muted">SKU:</td>

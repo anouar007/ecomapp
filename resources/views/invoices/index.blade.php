@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Invoices Management')
+@section('title', __('Invoices Management'))
 
 @section('content')
     <!-- Page Header -->
@@ -10,12 +10,12 @@
                 <div class="brand-header-icon">
                     <i class="fas fa-file-invoice-dollar"></i>
                 </div>
-                Invoices Management
+                {{ __('Invoices Management') }}
             </h1>
-            <p class="brand-subtitle">Track billings, manage customer payments, and monitor revenue</p>
+            <p class="brand-subtitle">{{ __('Track billings, manage customer payments, and monitor revenue') }}</p>
         </div>
         <a href="{{ route('invoices.create') }}" class="btn-brand-primary">
-            <i class="fas fa-plus me-2"></i> Create Invoice
+            <i class="fas fa-plus me-2"></i> {{ __('Create Invoice') }}
         </a>
     </div>
 
@@ -25,10 +25,10 @@
             <div class="brand-stat-icon primary">
                 <i class="fas fa-file-alt"></i>
             </div>
-            <div class="brand-stat-label">Total Invoices</div>
+            <div class="brand-stat-label">{{ __('Total Invoices') }}</div>
             <div class="brand-stat-value">{{ $stats['total_invoices'] }}</div>
             <div class="brand-stat-desc">
-                <i class="fas fa-history"></i> Lifetime generated
+                <i class="fas fa-history"></i> {{ __('Lifetime generated') }}
             </div>
         </div>
         
@@ -36,10 +36,10 @@
             <div class="brand-stat-icon success">
                 <i class="fas fa-check-circle"></i>
             </div>
-            <div class="brand-stat-label">Paid Amount</div>
+            <div class="brand-stat-label">{{ __('Paid Amount') }}</div>
             <div class="brand-stat-value">{{ currency($stats['paid_amount']) }}</div>
             <div class="brand-stat-desc">
-                <i class="fas fa-arrow-up text-success"></i> Successfully collected
+                <i class="fas fa-arrow-up text-success"></i> {{ __('Successfully collected') }}
             </div>
         </div>
         
@@ -47,10 +47,10 @@
             <div class="brand-stat-icon warning">
                 <i class="fas fa-hourglass-start"></i>
             </div>
-            <div class="brand-stat-label">Unpaid Amount</div>
+            <div class="brand-stat-label">{{ __('Unpaid Amount') }}</div>
             <div class="brand-stat-value">{{ currency($stats['unpaid_amount']) }}</div>
             <div class="brand-stat-desc">
-                <i class="fas fa-exclamation-circle text-warning"></i> Pending collections
+                <i class="fas fa-exclamation-circle text-warning"></i> {{ __('Pending collections') }}
             </div>
         </div>
         
@@ -58,10 +58,10 @@
             <div class="brand-stat-icon info">
                 <i class="fas fa-chart-pie"></i>
             </div>
-            <div class="brand-stat-label">Total Revenue</div>
+            <div class="brand-stat-label">{{ __('Total Revenue') }}</div>
             <div class="brand-stat-value">{{ currency($stats['total_revenue']) }}</div>
             <div class="brand-stat-desc">
-                <i class="fas fa-chart-line"></i> Combined gross value
+                <i class="fas fa-chart-line"></i> {{ __('Combined gross value') }}
             </div>
         </div>
     </div>
@@ -73,33 +73,33 @@
                 <i class="fas fa-search"></i>
                 <input type="text" name="search" class="form-control" 
                        value="{{ request('search') }}" 
-                       placeholder="Invoice #, customer name...">
+                       placeholder="{{ __('Invoice #, customer name...') }}">
             </div>
             
             <div style="min-width: 140px;">
                 <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;">Status</label>
                 <select name="status" class="form-select">
-                    <option value="">All Statuses</option>
-                    <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Paid</option>
-                    <option value="unpaid" {{ request('status') === 'unpaid' ? 'selected' : '' }}>Unpaid</option>
-                    <option value="partial" {{ request('status') === 'partial' ? 'selected' : '' }}>Partial</option>
-                    <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                    <option value="">{{ __('All Statuses') }}</option>
+                    <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>{{ __('Paid') }}</option>
+                    <option value="unpaid" {{ request('status') === 'unpaid' ? 'selected' : '' }}>{{ __('Unpaid') }}</option>
+                    <option value="partial" {{ request('status') === 'partial' ? 'selected' : '' }}>{{ __('Partial') }}</option>
+                    <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>{{ __('Cancelled') }}</option>
                 </select>
             </div>
 
             <div style="min-width: 140px;">
-                <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;">From Date</label>
+                <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;">{{ __('From Date') }}</label>
                 <input type="date" name="start_date" value="{{ request('start_date') }}" class="form-control">
             </div>
 
             <div style="min-width: 140px;">
-                <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;">To Date</label>
+                <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;">{{ __('To Date') }}</label>
                 <input type="date" name="end_date" value="{{ request('end_date') }}" class="form-control">
             </div>
 
             <div class="d-flex gap-2">
                 <button type="submit" class="btn-brand-primary">
-                    <i class="fas fa-filter me-1"></i> Filter
+                    <i class="fas fa-filter me-1"></i> {{ __('Filter') }}
                 </button>
                 <a href="{{ route('invoices.index') }}" class="btn-brand-light" title="Reset">
                     <i class="fas fa-redo"></i>
@@ -114,13 +114,13 @@
             <table class="brand-table">
                 <thead>
                     <tr>
-                        <th style="padding-left: 1.5rem;">Invoice #</th>
-                        <th>Customer</th>
-                        <th>Date</th>
-                        <th class="text-end">Total Amount</th>
-                        <th class="text-center">Status</th>
-                        <th>Method</th>
-                        <th class="text-end" style="padding-right: 1.5rem;">Actions</th>
+                        <th style="padding-left: 1.5rem;">{{ __('Invoice #') }}</th>
+                        <th>{{ __('Customer') }}</th>
+                        <th>{{ __('Date') }}</th>
+                        <th class="text-end">{{ __('Total Amount') }}</th>
+                        <th class="text-center">{{ __('Status') }}</th>
+                        <th>{{ __('Method') }}</th>
+                        <th class="text-end" style="padding-right: 1.5rem;">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -163,13 +163,13 @@
                         </td>
                         <td style="padding-right: 1.5rem;">
                             <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ route('invoices.show', $invoice) }}" class="btn-action-icon" title="View Details">
+                                <a href="{{ route('invoices.show', $invoice) }}" class="btn-action-icon" title="{{ __('View Details') }}">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{{ route('invoices.download', $invoice) }}" class="btn-action-icon" title="Download PDF">
+                                <a href="{{ route('invoices.download', $invoice) }}" class="btn-action-icon" title="{{ __('Download PDF') }}">
                                     <i class="fas fa-file-pdf"></i>
                                 </a>
-                                <a href="{{ route('invoices.print', $invoice) }}" target="_blank" class="btn-action-icon" title="Print Invoice">
+                                <a href="{{ route('invoices.print', $invoice) }}" target="_blank" class="btn-action-icon" title="{{ __('Print Invoice') }}">
                                     <i class="fas fa-print"></i>
                                 </a>
                             </div>
@@ -182,8 +182,8 @@
                                 <div class="brand-avatar mx-auto mb-3" style="width: 64px; height: 64px; font-size: 24px;">
                                     <i class="fas fa-receipt"></i>
                                 </div>
-                                <h5 class="fw-bold text-dark">No invoices found</h5>
-                                <p class="text-muted">You haven't generated any invoices matching your search.</p>
+                                <h5 class="fw-bold text-dark">{{ __('No invoices found') }}</h5>
+                                <p class="text-muted">{{ __("You haven't generated any invoices matching your search.") }}</p>
                             </div>
                         </td>
                     </tr>

@@ -1,15 +1,28 @@
-<div class="border-top p-4 bg-white mt-auto shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
-    <div class="d-flex justify-content-between align-items-end mb-4">
-        <span class="text-muted small text-uppercase fw-bold ls-1">Subtotal</span>
-        <span class="h4 fw-bold text-dark mb-0 ls-tight" id="mini-cart-total">{{ currency($total) }}</span>
-    </div>
-    <div class="d-grid gap-2">
-        <a href="{{ route('checkout.index') }}" class="btn btn-primary py-3 rounded-pill fw-bold shadow-sm d-flex justify-content-between align-items-center px-4">
-            <span>Checkout</span>
-            <i class="fas fa-arrow-right"></i>
+@php
+    $cart = session('cart', []);
+    $total = 0;
+    foreach($cart as $details) {
+        $total += $details['price'] * $details['quantity'];
+    }
+@endphp
+
+@if(count($cart) > 0)
+    <div class="p-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="small fw-bold text-muted text-uppercase">{{ __('Subtotal') }}</span>
+            <span class="h5 fw-bold text-dark mb-0">{{ currency($total) }}</span>
+        </div>
+        
+        <div class="bg-white border rounded-3 p-2 mb-3 text-center">
+            <p class="x-small text-muted mb-0"><i class="fas fa-info-circle text-gold me-1"></i> {{ __('Delivery determined at checkout') }}</p>
+        </div>
+
+        <a href="{{ route('checkout.index') }}" class="btn-brand btn-brand-primary w-100 justify-content-center py-3 rounded-pill shadow-sm mb-2">
+            {{ __('Checkout') }} <i class="fas fa-arrow-right ms-2"></i>
         </a>
-        <a href="{{ route('cart.index') }}" class="btn btn-light py-2 rounded-pill fw-bold text-muted small">
-            View Cart Details
+        
+        <a href="{{ route('cart.index') }}" class="btn btn-link w-100 text-decoration-none text-muted small fw-bold py-2">
+            {{ __('View Shopping Cart') }}
         </a>
     </div>
-</div>
+@endif

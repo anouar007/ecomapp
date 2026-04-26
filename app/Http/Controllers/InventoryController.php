@@ -22,8 +22,8 @@ class InventoryController extends Controller
     {
         $query = Product::query();
 
-        // Eager load category
-        $query->with('productCategory');
+        // Eager load category and variants
+        $query->with(['productCategory', 'variants']);
 
         // Filter by track inventory
         if ($request->filled('track_inventory')) {
@@ -177,7 +177,7 @@ class InventoryController extends Controller
      */
     public function movements(Request $request)
     {
-        $query = InventoryMovement::with(['product', 'creator']);
+        $query = InventoryMovement::with(['product', 'variant', 'creator']);
 
         // Filter by product
         if ($request->filled('product_id')) {
@@ -253,17 +253,28 @@ class InventoryController extends Controller
     public function processAdjustment(Request $request, Product $product)
     {
         $validated = $request->validate([
+            'variant_id' => 'nullable|exists:product_variants,id',
             'adjustment_type' => 'required|in:in,out,adjustment',
-            'quantity' => 'required|integer|min:1',
+            'quantity' => 'required|integer|min:0',
             'reason' => 'required|string',
         ]);
 
-        $success = $product->adjustStock(
-            $validated['quantity'],
-            $validated['adjustment_type'],
-            Auth::id(),
-            ['reason' => $validated['reason']]
-        );
+        if (!empty($validated['variant_id'])) {
+            $variant = \App\Models\ProductVariant::findOrFail($validated['variant_id']);
+            $success = $variant->adjustStock(
+                $validated['quantity'],
+                $validated['adjustment_type'],
+                Auth::id(),
+                ['reason' => $validated['reason']]
+            );
+        } else {
+            $success = $product->adjustStock(
+                $validated['quantity'],
+                $validated['adjustment_type'],
+                Auth::id(),
+                ['reason' => $validated['reason']]
+            );
+        }
 
         if ($success) {
             return redirect()->route('inventory.index')
@@ -271,6 +282,65 @@ class InventoryController extends Controller
         }
 
         return back()->with('error', 'Cannot adjust stock to negative value.');
+    }
+
+    /**
+     * Quick stock update via AJAX.
+     */
+    public function quickUpdate(Request $request)
+    {
+        $validated = $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'variant_id' => 'nullable|exists:product_variants,id',
+            'change' => 'nullable|integer', // e.g. +1 or -1
+            'new_quantity' => 'nullable|integer|min:0', // for absolute updates
+            'reason' => 'nullable|string',
+        ]);
+
+        if (!isset($validated['change']) && !isset($validated['new_quantity'])) {
+            return response()->json(['success' => false, 'message' => __('Missing change or new_quantity.')], 422);
+        }
+
+        $reason = $validated['reason'] ?? __('Quick update from inventory list');
+        
+        if (!empty($validated['variant_id'])) {
+            $model = \App\Models\ProductVariant::findOrFail($validated['variant_id']);
+        } else {
+            $model = \App\Models\Product::findOrFail($validated['product_id']);
+        }
+
+        if (isset($validated['new_quantity'])) {
+            // Absolute adjustment
+            $currentStock = $model->stock ?? 0;
+            $targetQuantity = $validated['new_quantity'];
+            
+            if ($targetQuantity == $currentStock) {
+                return response()->json([
+                    'success' => true,
+                    'new_stock' => $currentStock,
+                    'total_stock' => $validated['variant_id'] ? $model->product->fresh()->total_stock : $currentStock
+                ]);
+            }
+            
+            $type = 'adjustment'; // Use the 'adjustment' type for absolute correction
+            $quantity = $targetQuantity;
+        } else {
+            // Relative change (+1 or -1)
+            $type = $validated['change'] > 0 ? 'in' : 'out';
+            $quantity = abs($validated['change']);
+        }
+
+        $success = $model->adjustStock($quantity, $type, Auth::id(), ['reason' => $reason]);
+
+        if ($success) {
+            return response()->json([
+                'success' => true,
+                'new_stock' => $model->fresh()->stock,
+                'total_stock' => $validated['variant_id'] ? $model->product->fresh()->total_stock : $model->fresh()->stock
+            ]);
+        }
+
+        return response()->json(['success' => false, 'message' => __('Failed to adjust stock.')], 422);
     }
 
     /**

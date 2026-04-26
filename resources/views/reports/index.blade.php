@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Reports & Analytics')
+@section('title', __('Reports & Analytics'))
 
 @section('content')
     <!-- Page Header -->
@@ -10,7 +10,7 @@
                 <div class="brand-header-icon">
                     <i class="fas fa-chart-pie"></i>
                 </div>
-                Reports & Analytics
+                {{ __('Reports & Analytics') }}
             </h1>
             <p class="brand-subtitle">
                 <i class="fas fa-calendar me-1 opacity-50"></i>
@@ -23,7 +23,7 @@
                     <button class="btn btn-sm {{ $period === $key ? 'btn-primary' : 'btn-light border-0' }}" 
                             style="{{ $period === $key ? 'border-radius: 8px;' : 'background: transparent; border-radius: 8px;' }}"
                             onclick="changePeriod('{{ $key }}')">
-                        {{ $label }}
+                        {{ __($label) }}
                     </button>
                 @endforeach
             </div>
@@ -43,14 +43,14 @@
             <div class="brand-stat-icon primary">
                 <i class="fas fa-dollar-sign"></i>
             </div>
-            <div class="brand-stat-label">Total Revenue</div>
+            <div class="brand-stat-label">{{ __('Total Revenue') }}</div>
             <div class="brand-stat-value text-primary">{{ currency($metrics['total_revenue']) }}</div>
             <div class="brand-stat-desc">
                 <span class="{{ $metrics['revenue_change'] >= 0 ? 'text-success' : 'text-danger' }} fw-bold">
                     <i class="fas fa-{{ $metrics['revenue_change'] >= 0 ? 'arrow-up' : 'arrow-down' }} me-1"></i>
                     {{ number_format(abs($metrics['revenue_change']), 1) }}%
                 </span>
-                <span class="ms-1">vs previous period</span>
+                <span class="ms-1">{{ __('vs previous period') }}</span>
             </div>
         </div>
 
@@ -58,10 +58,10 @@
             <div class="brand-stat-icon success">
                 <i class="fas fa-shopping-cart"></i>
             </div>
-            <div class="brand-stat-label">Total Orders</div>
+            <div class="brand-stat-label">{{ __('Total Orders') }}</div>
             <div class="brand-stat-value text-success">{{ number_format($metrics['total_orders']) }}</div>
             <div class="brand-stat-desc">
-                <i class="fas fa-check-circle me-1 opacity-50"></i> Completed transactions
+                <i class="fas fa-check-circle me-1 opacity-50"></i> {{ __('Completed transactions') }}
             </div>
         </div>
 
@@ -69,10 +69,10 @@
             <div class="brand-stat-icon info">
                 <i class="fas fa-box"></i>
             </div>
-            <div class="brand-stat-label">Products Sold</div>
+            <div class="brand-stat-label">{{ __('Products Sold') }}</div>
             <div class="brand-stat-value text-info">{{ number_format($metrics['products_sold']) }}</div>
             <div class="brand-stat-desc">
-                <i class="fas fa-cubes me-1 opacity-50"></i> Total units moved
+                <i class="fas fa-cubes me-1 opacity-50"></i> {{ __('Total units moved') }}
             </div>
         </div>
 
@@ -80,10 +80,10 @@
             <div class="brand-stat-icon warning">
                 <i class="fas fa-hand-holding-usd"></i>
             </div>
-            <div class="brand-stat-label">Avg Order Value</div>
+            <div class="brand-stat-label">{{ __('Avg Order Value') }}</div>
             <div class="brand-stat-value text-warning">{{ currency($metrics['avg_order_value']) }}</div>
             <div class="brand-stat-desc">
-                <i class="fas fa-chart-line me-1 opacity-50"></i> Average per ticket
+                <i class="fas fa-chart-line me-1 opacity-50"></i> {{ __('Average per ticket') }}
             </div>
         </div>
     </div>
@@ -96,7 +96,7 @@
                     <div class="brand-stat-icon primary small me-3" style="width: 32px; height: 32px; font-size: 0.8rem;">
                         <i class="fas fa-chart-line"></i>
                     </div>
-                    <h5 class="fw-bold text-dark m-0">Revenue Trend</h5>
+                    <h5 class="fw-bold text-dark m-0">{{ __('Revenue Trend') }}</h5>
                 </div>
                 <div style="height: 300px;">
                     <canvas id="revenueChart"></canvas>
@@ -110,7 +110,7 @@
                     <div class="brand-stat-icon success small me-3" style="width: 32px; height: 32px; font-size: 0.8rem;">
                         <i class="fas fa-trophy"></i>
                     </div>
-                    <h5 class="fw-bold text-dark m-0">Top Performing Products</h5>
+                    <h5 class="fw-bold text-dark m-0">{{ __('Top Performing Products') }}</h5>
                 </div>
                 <div style="height: 300px;">
                     <canvas id="productsChart"></canvas>
@@ -126,7 +126,7 @@
                     <div class="brand-stat-icon info small me-3" style="width: 32px; height: 32px; font-size: 0.8rem;">
                         <i class="fas fa-sitemap"></i>
                     </div>
-                    <h5 class="fw-bold text-dark m-0">Category Breakdown</h5>
+                    <h5 class="fw-bold text-dark m-0">{{ __('Category Breakdown') }}</h5>
                 </div>
                 <div style="height: 300px;">
                     <canvas id="categoryChart"></canvas>
@@ -140,7 +140,7 @@
                     <div class="brand-stat-icon warning small me-3" style="width: 32px; height: 32px; font-size: 0.8rem;">
                         <i class="fas fa-tasks"></i>
                     </div>
-                    <h5 class="fw-bold text-dark m-0">Order Status Distribution</h5>
+                    <h5 class="fw-bold text-dark m-0">{{ __('Order Status Distribution') }}</h5>
                 </div>
                 <div style="height: 300px;">
                     <canvas id="statusChart"></canvas>
@@ -158,33 +158,33 @@
                 <div class="p-4 border-bottom d-flex align-items-center justify-content-between" style="background: rgba(239, 68, 68, 0.03);">
                     <div class="d-flex align-items-center text-danger">
                         <i class="fas fa-exclamation-triangle me-2"></i>
-                        <h5 class="fw-bold m-0">Critical Inventory Levels ({{ $lowStockProducts->count() }})</h5>
+                        <h5 class="fw-bold m-0">{{ __('Critical Inventory Levels') }} ({{ $lowStockProducts->count() }})</h5>
                     </div>
-                    <a href="{{ route('inventory.index') }}" class="btn-brand-light text-danger">Full Audit</a>
+                    <a href="{{ route('inventory.index') }}" class="btn-brand-light text-danger">{{ __('Full Audit') }}</a>
                 </div>
                 <div class="table-responsive">
                     <table class="brand-table">
                         <thead>
                             <tr>
-                                <th style="padding-left: 1.5rem;">Product</th>
-                                <th>Category</th>
-                                <th class="text-center">Available</th>
-                                <th class="text-center">Minimum</th>
-                                <th class="text-end" style="padding-right: 1.5rem;">Status</th>
+                                <th style="padding-left: 1.5rem;">{{ __('Product') }}</th>
+                                <th>{{ __('Category') }}</th>
+                                <th class="text-center">{{ __('Available') }}</th>
+                                <th class="text-center">{{ __('Minimum') }}</th>
+                                <th class="text-end" style="padding-right: 1.5rem;">{{ __('Status') }}</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($lowStockProducts as $product)
                             <tr>
                                 <td style="padding-left: 1.5rem;">
-                                    <div class="fw-bold text-dark">{{ $product->name }}</div>
+                                    <div class="fw-bold text-dark">{{ $product->translated_name }}</div>
                                     <div class="text-muted small">SKU: {{ $product->sku }}</div>
                                 </td>
                                 <td>{{ $product->category->name ?? 'N/A' }}</td>
                                 <td class="text-center fw-bold text-danger">{{ $product->stock }}</td>
                                 <td class="text-center text-muted">{{ $product->min_stock }}</td>
                                 <td class="text-end" style="padding-right: 1.5rem;">
-                                    <span class="brand-badge danger">REPLENISH</span>
+                                    <span class="brand-badge danger">{{ __('REPLENISH') }}</span>
                                 </td>
                             </tr>
                             @endforeach
@@ -199,19 +199,19 @@
         <div class="col-lg-12">
             <div class="brand-table-card">
                 <div class="p-4 border-bottom d-flex align-items-center justify-content-between">
-                    <h5 class="fw-bold text-dark m-0">Recent Transactions Reference</h5>
-                    <a href="{{ route('orders.index') }}" class="btn-brand-light">History</a>
+                    <h5 class="fw-bold text-dark m-0">{{ __('Recent Transactions Reference') }}</h5>
+                    <a href="{{ route('orders.index') }}" class="btn-brand-light">{{ __('History') }}</a>
                 </div>
                 <div class="table-responsive">
                     <table class="brand-table">
                         <thead>
                             <tr>
-                                <th style="padding-left: 1.5rem;">Order #</th>
-                                <th>Customer</th>
-                                <th>Timestamp</th>
-                                <th class="text-center">Qty</th>
-                                <th class="text-end">Value</th>
-                                <th class="text-center" style="padding-right: 1.5rem;">Status</th>
+                                <th style="padding-left: 1.5rem;">{{ __('Order #') }}</th>
+                                <th>{{ __('Customer') }}</th>
+                                <th>{{ __('Timestamp') }}</th>
+                                <th class="text-center">{{ __('Qty') }}</th>
+                                <th class="text-end">{{ __('Value') }}</th>
+                                <th class="text-center" style="padding-right: 1.5rem;">{{ __('Status') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -226,7 +226,7 @@
                                 <td class="text-end fw-bold text-dark">{{ currency($order->total) }}</td>
                                 <td class="text-center" style="padding-right: 1.5rem;">
                                     <span class="brand-badge {{ $order->status === 'completed' ? 'success' : 'info' }}">
-                                        {{ ucfirst($order->status) }}
+                                        {{ __($order->status == 'completed' ? 'Completed' : ($order->status == 'pending' ? 'Pending' : 'Cancelled')) }}
                                     </span>
                                 </td>
                             </tr>

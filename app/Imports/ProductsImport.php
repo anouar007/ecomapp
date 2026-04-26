@@ -74,6 +74,7 @@ class ProductsImport implements ToModel, WithHeadingRow, WithValidation, SkipsOn
         return new Product([
             'name' => $row['name'],
             'sku' => $sku,
+            'slug' => null, // Let the boot method generate a unique slug
             'description' => $row['description'] ?? null,
             'price' => $row['price'] ?? 0,
             'cost_price' => $row['cost_price'] ?? null,

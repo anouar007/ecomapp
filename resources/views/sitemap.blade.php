@@ -37,6 +37,12 @@
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
     <lastmod>{{ $product->updated_at->toAtomString() }}</lastmod>
+    @if($product->main_image)
+    <image:image>
+      <image:loc>{{ url(Storage::url($product->main_image)) }}</image:loc>
+      <image:title>{{ $product->translated_name }}</image:title>
+    </image:image>
+    @endif
   </url>
   @endforeach
 

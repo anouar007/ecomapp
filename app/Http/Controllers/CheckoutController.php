@@ -6,6 +6,8 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class CheckoutController extends Controller
 {
@@ -25,7 +27,8 @@ class CheckoutController extends Controller
             $total += $details['price'] * $details['quantity'];
         }
 
-        return view('frontend.checkout.index', compact('cart', 'total'));
+        $cities = \App\Models\City::orderBy('arabic_name')->get();
+        return view('frontend.checkout.index', compact('cart', 'total', 'cities'));
     }
 
     /**
@@ -35,7 +38,6 @@ class CheckoutController extends Controller
     {
         $request->validate([
             'customer_name' => 'required|string|max:255',
-            'customer_email' => 'nullable|email|max:255',
             'customer_phone' => 'required|string|max:20',
             'shipping_address' => 'required|string|max:255',
             'shipping_city' => 'required|string|max:255',
@@ -52,20 +54,27 @@ class CheckoutController extends Controller
             $subtotal += $details['price'] * $details['quantity'];
         }
 
+        // Calculate Shipping Cost from Database
+        $cityRow = \App\Models\City::where('arabic_name', $request->shipping_city)
+                                  ->orWhere('name', $request->shipping_city)
+                                  ->first();
+        
+        $shippingCost = $cityRow ? $cityRow->price : 40;
+        $total = $subtotal + $shippingCost;
+
         // Create Order
         $order = Order::create([
             'order_number' => 'ORD-' . strtoupper(Str::random(10)),
-            'user_id' => auth()->id(), // Link to user if logged in
+            'user_id' => Auth::id(), // Link to user if logged in
             'customer_name' => $request->customer_name,
-            'customer_email' => $request->customer_email,
             'customer_phone' => $request->customer_phone,
             'shipping_address' => $request->shipping_address,
             'shipping_city' => $request->shipping_city,
-            'shipping_state' => $request->shipping_state,
             'shipping_zip'   => 'N/A',
             'shipping_country' => 'Morocco',
             'subtotal' => $subtotal,
-            'total' => $subtotal,
+            'shipping_cost' => $shippingCost,
+            'total' => $total,
             'status' => 'pending',
             'payment_status' => 'pending',
             'payment_method' => 'cod',
@@ -73,21 +82,31 @@ class CheckoutController extends Controller
 
         // Create Order Items and Update Stock
         // Create Order Items and Update Stock
-        foreach ($cart as $id => $details) {
-            $product = \App\Models\Product::find($id);
+        // Create Order Items and Update Stock
+        foreach ($cart as $key => $details) {
+            $productId = $details['product_id'] ?? (is_numeric($key) ? $key : explode('_', $key)[0]);
+            $variantId = $details['variant_id'] ?? null;
+            
+            $product = \App\Models\Product::find($productId);
+            $variant = $variantId ? \App\Models\ProductVariant::find($variantId) : null;
 
             OrderItem::create([
                 'order_id' => $order->id,
-                'product_id' => $id,
-                'product_sku' => $product ? $product->sku : 'N/A',
+                'product_id' => $productId,
+                'variant_id' => $variantId,
+                'product_sku' => $variant ? ($variant->sku ?? ($product ? $product->sku : 'N/A')) : ($product ? $product->sku : 'N/A'),
                 'product_name' => $details['name'],
+                'color' => $details['color'] ?? ($variant ? $variant->color : null),
+                'size' => $details['size'] ?? ($variant ? $variant->size : null),
                 'price' => $details['price'],
                 'quantity' => $details['quantity'],
                 'subtotal' => $details['price'] * $details['quantity'],
             ]);
 
             // Decrement Stock
-            if ($product && $product->track_inventory) {
+            if ($variant) {
+                $variant->decrement('stock', $details['quantity']);
+            } elseif ($product && $product->track_inventory) {
                 $product->decrement('stock', $details['quantity']);
             }
         }
@@ -97,7 +116,7 @@ class CheckoutController extends Controller
             \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderConfirmation($order));
             \Illuminate\Support\Facades\Mail::to(setting('contact_email', 'admin@speed.com'))->send(new \App\Mail\NewOrderNotification($order));
         } catch (\Exception $e) {
-            \Log::error('Failed to send checkout emails: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Order creation failed: ' . $e->getMessage());
         }
 
         // Clear Cart
