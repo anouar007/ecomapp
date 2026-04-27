@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>@yield('meta_title', setting('app_name', 'Moubdi3oun'))</title>
     
     <!-- Multi-Platform Tracking -->
@@ -413,7 +416,10 @@
         </div>
     </footer>
 
+
+
     <!-- Back to Top -->
+
     <button class="back-to-top" id="backToTop">
         <svg class="progress-circle" width="100%" height="100%" viewBox="-1 -1 102 102">
             <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" style="transition: stroke-dashoffset 10ms linear 0s; stroke-dasharray: 307.919, 307.919; stroke-dashoffset: 307.919;"></path>
@@ -451,7 +457,28 @@ document.addEventListener('DOMContentLoaded', function() {
             searchOverlay.classList.remove('active');
         }
     });
+
+    // Megamenu Mobile Toggle
+    document.querySelectorAll('.has-megamenu > a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            if (window.innerWidth < 992) {
+                e.preventDefault();
+                const parent = this.parentElement;
+                
+                // Close other megamenus
+                document.querySelectorAll('.has-megamenu').forEach(item => {
+                    if (item !== parent) item.classList.remove('active');
+                });
+                
+                parent.classList.toggle('active');
+            }
+        });
+    });
+
+
 });
+
+
 </script>
 <script>
         function initAOS() {
@@ -769,27 +796,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     </script>
-    <!-- Mobile Navigation Dock -->
-    <div class="mobile-nav-dock d-lg-none">
-        <a href="{{ url('/') }}" class="mobile-nav-item {{ Request::is('/') ? 'active' : '' }}">
-            <i class="fas fa-home"></i>
-        </a>
-        <a href="{{ route('shop.index') }}" class="mobile-nav-item {{ Request::is('shop*') ? 'active' : '' }}">
-            <i class="fas fa-th-large"></i>
-        </a>
-        <a href="#" class="mobile-nav-item search-trigger">
-            <i class="fas fa-search"></i>
-        </a>
-        <a href="#" class="mobile-nav-item position-relative" data-bs-toggle="offcanvas" data-bs-target="#miniCart">
-            <i class="fas fa-shopping-bag"></i>
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.5rem;">
-                {{ count(session('cart', [])) }}
-            </span>
-        </a>
-        <a href="{{ route('customer.dashboard') }}" class="mobile-nav-item {{ Request::is('my-account*') ? 'active' : '' }}">
-            <i class="fas fa-user-circle"></i>
-        </a>
-    </div>
+
 
     <!-- Search Overlay -->
     <div class="search-overlay" id="searchOverlay">

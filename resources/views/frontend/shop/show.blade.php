@@ -100,10 +100,15 @@
                             <span class="pdp-price-actual" id="displayPrice">{{ $product->formatted_price }}</span>
                         @endif
                         
-                        <div id="stockBadge" class="ms-auto badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fw-black text-uppercase ls-1" style="font-size: 0.6rem;">
-                             <i class="fas fa-check-circle me-1"></i> {{ __('In Stock') }}
+                        <div id="stockBadge">
+                             @if(!$product->isInStock())
+                                <span class="badge-oos-premium"><i class="fas fa-times-circle me-1"></i> {{ __('Out of Stock') }}</span>
+                             @else
+                                <span class="badge-stock-premium"><i class="fas fa-check-circle me-1"></i> {{ __('In Stock') }}</span>
+                             @endif
                         </div>
                     </div>
+
 
                     {{-- Description --}}
                     <div class="text-muted mb-5 lh-lg" style="font-size: 0.95rem;" data-aos="fade-up" data-aos-delay="300">
@@ -409,12 +414,11 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.disabled = true;
         btn.classList.add('opacity-50');
         btn.innerHTML = '{{ __("Out of Stock") }}';
-        stockBadge.innerHTML = '<i class="fas fa-times-circle me-1"></i> {{ __("Out of Stock") }}';
-        stockBadge.className = 'ms-auto badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-2 fw-black text-uppercase ls-1';
+        stockBadge.innerHTML = '<span class="badge-oos-premium"><i class="fas fa-times-circle me-1"></i> {{ __("Out of Stock") }}</span>';
     } 
     else {
         // We no longer auto-select first available to let user choose
-        stockBadge.innerHTML = `<i class="fas fa-check-circle me-1"></i> ${totalStock} {{ __("In Stock") }}`;
+        stockBadge.innerHTML = `<span class="badge-stock-premium"><i class="fas fa-check-circle me-1"></i> ${totalStock} {{ __("In Stock") }}</span>`;
     }
 
     const viewerCount = document.getElementById('live-viewers');

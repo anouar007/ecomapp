@@ -274,6 +274,7 @@
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
 }
 
+
 .pbadge-new  { background: #1a1a1a; }
 .pbadge-sale { background: var(--accent); }
 .pbadge-oos  { background: #94a3b8; }
@@ -342,7 +343,8 @@
 
 /* ── List View Style (Modern Catalog) ── */
 .row.list-view .col-12 {
-    margin-bottom: 30px;
+    margin-bottom: 0px;
+    margin-top: 0px;
 }
 
 .row.list-view .pcard-v2 {
@@ -368,11 +370,106 @@
     margin-bottom: 1.5rem;
 }
 
-.row.list-view .pcard-v2:hover {
-    transform: translateX(15px);
+@media (max-width: 767px) {
+    /* Base Mobile Product Card Refinements */
+    .pcard-info {
+        padding: 1rem 0.75rem !important;
+        min-height: 110px !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    .pcard-name-creative {
+        font-size: 0.95rem !important;
+        margin-bottom: 0.5rem !important;
+        height: 2.4em !important;
+        overflow: hidden !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        line-height: 1.2 !important;
+    }
+    .pcard-tag {
+        font-size: 0.5rem !important;
+        margin-bottom: 0.3rem !important;
+        letter-spacing: 1px !important;
+        min-height: 12px !important;
+    }
+    .price-val {
+        font-size: 1.05rem !important;
+    }
+    .pcard-v2 {
+        border-radius: 16px !important;
+    }
+    .pcard-media {
+        border-radius: 16px 16px 0 0 !important;
+    }
+    .pbadge {
+        top: 10px !important;
+        left: 10px !important;
+        padding: 4px 10px !important;
+        font-size: 0.45rem !important;
+        border-radius: 4px !important;
+    }
+
+
+    /* List View Mobile Overrides — Premium Horizontal Catalog Style */
+    .row.list-view .pcard-v2 {
+        flex-direction: row !important;
+        height: 140px !important;
+        border-radius: 16px !important;
+        margin-bottom: 15px !important;
+        border: 1px solid rgba(0,0,0,0.06) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.02) !important;
+    }
+    .row.list-view .pcard-media {
+        width: 110px !important;
+        height: 100% !important;
+        border-radius: 16px 0 0 16px !important;
+        flex-shrink: 0 !important;
+    }
+    .row.list-view .pbadge {
+        top: 10px !important;
+        left: 10px !important;
+        padding: 4px 10px !important;
+        font-size: 0.45rem !important;
+        border-radius: 4px !important;
+    }
+    .row.list-view .pcard-info {
+        padding: 0.75rem 1rem !important;
+        justify-content: center !important;
+        overflow: hidden !important;
+    }
+    .row.list-view .pcard-name-creative {
+        font-size: 0.9rem !important;
+        margin-bottom: 0.25rem !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+        white-space: normal !important;
+        line-height: 1.2 !important;
+    }
+    .row.list-view .pcard-tag {
+        margin-bottom: 0.15rem !important;
+        font-size: 0.5rem !important;
+        letter-spacing: 1px !important;
+    }
+    .row.list-view .price-val {
+        font-size: 0.95rem !important;
+    }
 }
 
+
+.row.list-view .pcard-v2:hover {
+    transform: translateX(10px);
+}
+@media (max-width: 767px) {
+    .row.list-view .pcard-v2:hover { transform: translateX(5px) !important; }
+}
+
+
 /* ── Remaining Foundations ── */
+
 .filter-pill {
     display: inline-flex;
     align-items: center;
@@ -514,12 +611,53 @@
     color: var(--text-dark);
 }
 
+/* ── Premium Stock Badges ── */
+.badge-oos-premium, .badge-stock-premium {
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 0.65rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid transparent;
+}
+
+.badge-oos-premium {
+    background: #fff5f5;
+    color: #e53e3e;
+    border-color: #feb2b2;
+}
+
+.badge-stock-premium {
+    background: #f0fff4;
+    color: #38a169;
+    border-color: #9ae6b4;
+}
+
 .pdp-pricing {
     display: flex;
     align-items: baseline;
     gap: 15px;
+    flex-wrap: wrap;
     margin-bottom: 2.5rem;
 }
+
+.live-viewer-pill {
+    display: inline-flex;
+    align-items: center;
+    background: #fff;
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    border: 1px solid rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+}
+
 
 .pdp-price-actual {
     font-size: 2.4rem;
@@ -601,12 +739,31 @@
     letter-spacing: 3px;
     transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+.pdp-add-btn:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background: rgba(255,255,255,0.1);
+    transform: translate(-50%, -50%) scale(0);
+    border-radius: 50%;
+    transition: transform 0.6s;
+}
+
+.pdp-add-btn:hover:after {
+    transform: translate(-50%, -50%) scale(1);
 }
 
 .pdp-add-btn:hover:not(:disabled) {
     background: #000;
-    transform: translateY(-6px);
-    box-shadow: 0 35px 70px rgba(0,0,0,0.28);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 35px 70px rgba(0,0,0,0.3);
 }
 
 .pdp-add-btn:active:not(:disabled) {
@@ -618,6 +775,7 @@
     cursor: not-allowed;
     box-shadow: none;
 }
+
 
 .pdp-qty-wrap {
     display: flex;
@@ -741,65 +899,186 @@
     margin-bottom: 3rem;
 }
 
-.pdp-add-btn {
-    background: var(--text-dark);
-    color: #fff;
-    border: none;
-    padding: 1.25rem 2rem;
-    border-radius: 50px;
-    font-size: 0.95rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-    position: relative;
-    overflow: hidden;
-}
 
-.pdp-add-btn:after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 300%;
-    height: 300%;
-    background: rgba(255,255,255,0.1);
-    transform: translate(-50%, -50%) scale(0);
-    border-radius: 50%;
-    transition: transform 0.6s;
-}
-
-.pdp-add-btn:hover:after {
-    transform: translate(-50%, -50%) scale(1);
-}
-
-.pdp-add-btn:hover:not(:disabled) {
-    background: #000;
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 35px 70px rgba(0,0,0,0.3);
-}
 
 /* Responsive Overrides */
 @media (max-width: 991px) {
-    .pdp-sticky-info { position: relative; top: 0; padding: 2rem; margin-top: 3rem; backdrop-filter: none; background: #fff; }
+    .pdp-sticky-info { 
+        position: relative; 
+        top: 0; 
+        padding: 1.5rem; 
+        margin-top: 1rem; 
+        backdrop-filter: none; 
+        background: #fff; 
+        border-radius: 30px 30px 0 0;
+        box-shadow: 0 -10px 30px rgba(0,0,0,0.03);
+    }
+    
+    .pdp-title { 
+        font-size: 2rem !important; 
+        margin-bottom: 0.5rem !important;
+    }
+
+    .pdp-pricing {
+        margin-bottom: 1.5rem !important;
+        gap: 12px !important;
+        align-items: center !important;
+    }
+
+    .pdp-price-actual {
+        font-size: 1.8rem !important;
+    }
+
+    .pdp-price-old {
+        font-size: 1.1rem !important;
+    }
+    
+    .pdp-variant-options {
+
+        gap: 8px;
+        margin-bottom: 1.5rem;
+    }
+    
+    .variant-pill {
+        padding: 10px 15px;
+        font-size: 0.8rem;
+        min-width: 80px;
+        text-align: center;
+    }
+    
+    .pdp-cta-group {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin: 2rem 0;
+    }
+    
+    .pdp-qty-wrap {
+        width: 100%;
+        justify-content: space-between;
+        padding: 8px;
+    }
+
+    .pdp-qty-btn {
+        width: 50px;
+        height: 50px;
+    }
+
+    .pdp-qty-input {
+        font-size: 1.2rem;
+    }
+    
+    .view-toggle {
+
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        padding: 5px;
+    }
+    .toggle-btn {
+        flex: 1;
+        padding: 10px;
+        justify-content: center;
+        font-size: 0.65rem;
+    }
+    
+    .pdp-add-btn {
+        width: 100%;
+        padding: 18px;
+        font-size: 0.9rem;
+        border-radius: 50px;
+    }
+
+    .pdp-spec-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .pdp-main-image-wrap {
+        border-radius: 0;
+        margin: 0 -12px; /* Pull to edges on mobile */
+    }
+
+    .shop-body .bg-white.p-4 {
+        padding: 1.5rem !important;
+        border-radius: 20px !important;
+        margin-bottom: 2rem !important;
+    }
+    
+    .shop-body .form-control, .shop-body .form-select {
+        padding: 12px 20px !important;
+        font-size: 0.85rem !important;
+    }
 }
+
+/* ── Premium Pagination ── */
+.shop-pagination .pagination {
+    gap: 8px;
+    border: none;
+    margin: 0;
+}
+
+.shop-pagination .page-item {
+    margin: 0;
+}
+
+.shop-pagination .page-item .page-link {
+    min-width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50% !important;
+    border: 1px solid #e2e8f0;
+    color: var(--text-dark);
+    font-weight: 800;
+    font-size: 0.85rem;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    background: #fff;
+    padding: 0 15px;
+}
+
+.shop-pagination .page-item.active .page-link {
+    background: var(--text-dark);
+    border-color: var(--text-dark);
+    color: #fff;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.shop-pagination .page-item.disabled .page-link {
+    opacity: 0.4;
+    background: transparent;
+}
+
+.shop-pagination .page-link:hover:not(.disabled) {
+    background: #f8fafc;
+    transform: translateY(-3px);
+    border-color: var(--text-dark);
+}
+
 
 /* ── Out of Stock Card State ── */
 .pcard-v2--oos {
-    opacity: 0.7;
+    opacity: 0.85;
 }
 
 .pcard-v2--oos .pcard-media:after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255,255,255,0.2);
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255,255,255,0.4);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     pointer-events: none;
-    z-index: 10;
+    z-index: 5;
+}
+
+.pbadge-oos {
+    background: #1a1a1a !important;
+    color: #fff !important;
+    font-size: 0.6rem !important;
+    z-index: 10 !important;
 }
 
 .pcard-v2--oos:hover {
@@ -807,13 +1086,14 @@
 }
 
 .pcard-v2--oos .pcard-media {
-    filter: grayscale(0.5);
-    transition: filter 0.5s ease;
+    filter: grayscale(1);
+    transition: filter 0.8s ease;
 }
 
 .pcard-v2--oos:hover .pcard-media {
-    filter: grayscale(0);
+    filter: grayscale(0.2);
 }
+
 
 /* ── Magnetic Shake Animation ── */
 @keyframes magneticShake {

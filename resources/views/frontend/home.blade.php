@@ -106,22 +106,23 @@
                 <p class="lead text-muted lh-lg">
                     {{ __('Philosophy Description') }}
                 </p>
-                <div class="mt-5 d-flex justify-content-center gap-5">
-                    <div class="text-center">
-                        <h4 class="fw-black mb-0" style="color: var(--accent);">100%</h4>
-                        <span class="small text-uppercase fw-bold ls-1">{{ __('Custom Made') }}</span>
+                <div class="mt-4 mt-lg-5 d-flex flex-row flex-wrap justify-content-center align-items-center gap-3 gap-md-5">
+                    <div class="text-center px-2">
+                        <h4 class="fw-black mb-0 h5" style="color: var(--accent);">100%</h4>
+                        <span class="x-small text-uppercase fw-bold ls-1" style="font-size: 0.65rem;">{{ __('Custom Made') }}</span>
                     </div>
-                    <div class="text-center text-dark" style="width: 1px; height: 50px; background: #eee;"></div>
-                    <div class="text-center">
-                        <h4 class="fw-black mb-0" style="color: var(--accent);">Premium</h4>
-                        <span class="small text-uppercase fw-bold ls-1">{{ __('Materials') }}</span>
+                    <div class="d-none d-md-block text-dark" style="width: 1px; height: 30px; background: #eee;"></div>
+                    <div class="text-center px-2">
+                        <h4 class="fw-black mb-0 h5" style="color: var(--accent);">Premium</h4>
+                        <span class="x-small text-uppercase fw-bold ls-1" style="font-size: 0.65rem;">{{ __('Materials') }}</span>
                     </div>
-                    <div class="text-center text-dark" style="width: 1px; height: 50px; background: #eee;"></div>
-                    <div class="text-center">
-                        <h4 class="fw-black mb-0" style="color: var(--accent);">SAV</h4>
-                        <span class="small text-uppercase fw-bold ls-1">{{ __('Guaranteed') }}</span>
+                    <div class="d-none d-md-block text-dark" style="width: 1px; height: 30px; background: #eee;"></div>
+                    <div class="text-center px-2">
+                        <h4 class="fw-black mb-0 h5" style="color: var(--accent);">SAV</h4>
+                        <span class="x-small text-uppercase fw-bold ls-1" style="font-size: 0.65rem;">{{ __('Guaranteed') }}</span>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -318,23 +319,23 @@
      ============================================= --}}
 <section id="contact" class="section-py" style="background: var(--accent); color: #fff;">
     <div class="container py-4">
-        <div class="row align-items-center g-5 text-center text-lg-start">
+        <div class="row align-items-center g-5 text-start">
             <div class="col-lg-7" data-aos="fade-right">
-                <h2 class="display-4 fw-black mb-4">{{ __('Projects CTA Sub') }} <br> {{ app()->getLocale() == 'ar' ? '' : 'Your' }} <span class="text-white border-bottom border-3">{{ __('Projects CTA Projects') }}</span></h2>
+                <h2 class="display-4 fw-black mb-4">{{ __('Projects CTA Sub') }} <span class="text-white border-bottom border-3">{{ __('Projects CTA Projects') }}</span></h2>
                 <p class="lead mb-0 opacity-90">{{ __('Projects CTA Description') }}</p>
             </div>
             <div class="col-lg-5" data-aos="fade-left">
-                <div class="d-flex flex-column gap-4 align-items-center align-items-lg-start mt-4 mt-lg-0">
+                <div class="d-flex flex-column gap-4 align-items-start mt-4 mt-lg-0">
                     <a href="tel:{{ setting('company_phone') }}" class="text-white text-decoration-none d-flex align-items-center gap-3 h3 fw-black mb-0">
-                        <i class="fas fa-phone-alt p-3 bg-white text-danger rounded-circle" style="width: 60px; height: 60px; display:flex; align-items:center; justify-content:center; font-size: 1.2rem;"></i>
+                        <i class="fas fa-phone-alt p-3 bg-white text-danger rounded-circle" style="width: 55px; height: 55px; display:flex; align-items:center; justify-content:center; font-size: 1rem;"></i>
                         {{ setting('company_phone', '+212 6XX XX XX XX') }}
                     </a>
                     <a href="mailto:{{ setting('company_email') }}" class="text-white text-decoration-none d-flex align-items-center gap-3 h3 fw-black mb-0">
-                        <i class="fas fa-envelope p-3 bg-white text-danger rounded-circle" style="width: 60px; height: 60px; display:flex; align-items:center; justify-content:center; font-size: 1.2rem;"></i>
+                        <i class="fas fa-envelope p-3 bg-white text-danger rounded-circle" style="width: 55px; height: 55px; display:flex; align-items:center; justify-content:center; font-size: 1rem;"></i>
                         {{ setting('company_email', 'contact@moubdi3oun.com') }}
                     </a>
                     <div class="text-white d-flex align-items-center gap-3 h5 fw-bold mb-0">
-                        <i class="fas fa-map-marker-alt p-3 bg-white text-danger rounded-circle" style="width: 60px; height: 60px; display:flex; align-items:center; justify-content:center; font-size: 1.2rem;"></i>
+                        <i class="fas fa-map-marker-alt p-3 bg-white text-danger rounded-circle" style="width: 55px; height: 55px; display:flex; align-items:center; justify-content:center; font-size: 1rem;"></i>
                         {{ setting('company_address', 'Maroc, Casablanca') }}
                     </div>
                 </div>
@@ -355,7 +356,7 @@
             // Better to use keys. I'll update the JSON first.
             @endphp
             @foreach($brands as $brand)
-            <div class="brand-chip" style="font-weight: 600; font-size: 1.1rem; margin: 0 20px;">
+            <div class="brand-chip">
                 <i class="fas fa-gem me-2" style="color: var(--accent);"></i>{{ $brand }}
             </div>
             @endforeach

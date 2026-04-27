@@ -1,7 +1,7 @@
 {{-- We embed a hidden span to let AJAX know the total count --}}
 <span id="product-count-metadata" data-total-count="{{ $products->total() }}" class="d-none"></span>
 
-<div class="row g-4">
+<div class="row g-4 mt-4">
     @forelse($products as $product)
     <div class="col-6 col-md-4" data-aos="fade-up">
         <div class="pcard-v2 {{ $product->isOutOfStock() ? 'pcard-v2--oos' : '' }}">
