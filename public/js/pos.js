@@ -337,9 +337,9 @@ function updateTotals() {
     // Store discount for checkout
     window.currentDiscount = discount;
 
-    const discountedSubtotal = subtotal - discount;
-    const tax = discountedSubtotal * (window.currencyConfig.tax_rate || 0);
-    const total = discountedSubtotal + tax;
+    const total = subtotal - discount;
+    const taxRate = window.currencyConfig.tax_rate || 0;
+    const tax = total - (total / (1 + taxRate));
 
     document.getElementById('subtotal').textContent = formatCurrency(subtotal);
     document.getElementById('tax').textContent = formatCurrency(tax);

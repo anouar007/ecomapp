@@ -123,8 +123,9 @@ class InvoiceController extends Controller
                 ];
             }
 
-            $taxAmount = $subtotal * ($taxRate / 100);
-            $totalAmount = $subtotal + $taxAmount;
+            $totalAmount = $subtotal;
+            $taxAmount = $totalAmount - ($totalAmount / (1 + ($taxRate / 100)));
+            $subtotalNet = $totalAmount - $taxAmount;
 
             // Create invoice
             $invoice = Invoice::create([
@@ -134,7 +135,7 @@ class InvoiceController extends Controller
                 'customer_email' => $validated['customer_email'] ?? null,
                 'customer_phone' => $validated['customer_phone'] ?? null,
                 'customer_address' => $validated['customer_address'] ?? null,
-                'subtotal' => $subtotal,
+                'subtotal' => $subtotalNet,
                 'tax_amount' => $taxAmount,
                 'tax_rate' => $taxRate,
                 'discount_amount' => 0,
@@ -334,9 +335,9 @@ class InvoiceController extends Controller
             DB::beginTransaction();
 
             $taxRate = floatval(setting('tax_rate', 0));
-            $subtotal = $order->subtotal;
-            $taxAmount = ($subtotal * $taxRate) / 100;
-            $totalAmount = $subtotal + $taxAmount;
+            $totalAmount = $order->total;
+            $taxAmount = $totalAmount - ($totalAmount / (1 + ($taxRate / 100)));
+            $subtotalNet = $totalAmount - $taxAmount;
 
             // Create invoice
             $invoice = Invoice::create([
@@ -348,7 +349,7 @@ class InvoiceController extends Controller
                 'customer_phone' => $order->customer_phone ?? null,
                 'ice' => $order->ice ?? null,
                 'customer_address' => $order->shipping_address ?? null,
-                'subtotal' => $subtotal,
+                'subtotal' => $subtotalNet,
                 'tax_amount' => $taxAmount,
                 'tax_rate' => $taxRate,
                 'discount_amount' => 0,

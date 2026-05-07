@@ -137,10 +137,10 @@ class POSController extends Controller
                 }
             }
             
-            $discountedSubtotal = $subtotal - $discount;
+            $total = $subtotal - $discount;
             $taxRate = setting('tax_rate', 10) / 100;
-            $tax = $discountedSubtotal * $taxRate;
-            $total = $discountedSubtotal + $tax;
+            $tax = $total - ($total / (1 + $taxRate));
+            $subtotalNet = $total - $tax;
 
             // Check if customer exists and has credit limit
             $customer = null;
@@ -184,7 +184,7 @@ class POSController extends Controller
                 'shipping_city' => 'Store',
                 'shipping_zip' => '00000',
                 'shipping_country' => 'US',
-                'subtotal' => $subtotal,
+                'subtotal' => $subtotalNet,
                 'tax' => $tax,
                 'shipping_cost' => 0,
                 'discount' => $discount,
@@ -211,7 +211,7 @@ class POSController extends Controller
                     'customer_name' => $customer->name,
                     'customer_email' => $customer->email,
                     'customer_phone' => $customer->phone,
-                    'subtotal' => $subtotal,
+                    'subtotal' => $subtotalNet,
                     'tax_amount' => $tax,
                     'tax_rate' => floatval(setting('tax_rate', 0)),
                     'ice' => $customer->ice ?? null,

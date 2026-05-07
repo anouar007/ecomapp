@@ -1100,7 +1100,7 @@
         
         // Update Total Button Text
         const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const total = subtotal * (1 + window.currencyConfig.tax_rate);
+        const total = subtotal; // Total is now equal to subtotal as prices are tax-inclusive
         
         if(cart.length > 0) {
             document.getElementById('checkoutBtn').innerHTML = `Charge ${formatCurrency(total)}`;

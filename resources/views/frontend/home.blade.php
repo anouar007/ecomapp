@@ -91,144 +91,175 @@
 @section('content')
 
 {{-- =============================================
-     HERO — Full-Width Cinematic Hero
+     HERO — Creative E-Commerce Slider
      ============================================= --}}
-<section class="print-hero-v2">
-    <div class="print-hero-backdrop"></div>
-    <div class="print-hero-grid-overlay"></div>
-
-    <div class="container position-relative py-0">
-        <div class="row align-items-center min-vh-90">
-            <div class="col-lg-6 pe-lg-5" data-aos="fade-right" data-aos-duration="900">
-
-                <div class="hero-eyebrow">
-                    <span class="hero-eyebrow-dot"></span>
-                    Spécialiste Solutions d'Impression
-                </div>
-
-                <h1 class="display-hero">
-                    Équipez votre<br>
-                    <span class="text-gradient-primary">atelier d'impression</span><br>
-                    pro
-                </h1>
-
-                <p class="hero-lead">
-                    Imprimantes grand format <strong>éco-solvant &amp; UV</strong>, traceurs de découpe,
-                    encres certifiées et consommables — livrés partout au Maroc avec installation et formation.
-                </p>
-
-                <div class="hero-actions">
-                    <a href="{{ route('shop.index') }}" class="btn-hero-primary">
-                        <i class="fas fa-print"></i>
-                        <span>Voir les machines</span>
-                    </a>
-                    <a href="mailto:{{ setting('company_email', 'contact@speedprint.ma') }}" class="btn-hero-ghost">
-                        <i class="fas fa-file-invoice"></i>
-                        <span>Demander un devis</span>
-                    </a>
-                </div>
-
-                {{-- Trust pills --}}
-                <div class="hero-trust-pills">
-                    <div class="trust-pill"><i class="fas fa-shipping-fast"></i> Livraison nationale</div>
-                    <div class="trust-pill"><i class="fas fa-tools"></i> SAV technique</div>
-                    <div class="trust-pill"><i class="fas fa-shield-alt"></i> Pièces d'origine</div>
-                </div>
-            </div>
-
-            <div class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center" data-aos="fade-left" data-aos-duration="900" data-aos-delay="150">
-                <div class="hero-image-stack">
-                    {{-- Main image --}}
-                    <div class="hero-img-main">
-                        @if(isset($heroSlides) && $heroSlides->count() > 0)
-                            <img src="{{ $heroSlides[0]->image_url ?? Storage::url($heroSlides[0]->main_image) }}" alt="Imprimante grand format" class="img-fluid">
-                        @else
-                            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=900" alt="Imprimante grand format éco-solvant" class="img-fluid">
-                        @endif
-                    </div>
-
-                    {{-- Floating cards --}}
-                    <div class="hero-float-card hero-float-top">
-                        <div class="float-icon-wrap"><i class="fas fa-tachometer-alt"></i></div>
-                        <div>
-                            <div class="float-label">Vitesse max</div>
-                            <div class="float-value">42 m²/h</div>
+<section class="hero-slider-section">
+    <div class="swiper hero-swiper">
+        <div class="swiper-wrapper">
+            @if(isset($heroSlides) && $heroSlides->count() > 0)
+                @foreach($heroSlides as $i => $slide)
+                <div class="swiper-slide">
+                    <div class="hero-slide" style="background-image: url('{{ $slide->image_url ?? ($slide->main_image ? Storage::url($slide->main_image) : 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=1920') }}');">
+                        <div class="hero-slide-overlay"></div>
+                        <div class="container position-relative" style="z-index:3;">
+                            <div class="row align-items-center hero-slide-row">
+                                <div class="col-lg-7 col-xl-6">
+                                    <div class="hero-slide-content">
+                                        <span class="hero-badge">
+                                            <i class="fas fa-bolt"></i>
+                                            {{ $slide->subtitle ?? setting('app_name', 'SpeedPub') }}
+                                        </span>
+                                        <h2 class="hero-slide-title">{{ $slide->title ?? $slide->name ?? 'Discover Our Products' }}</h2>
+                                        <p class="hero-slide-desc">{{ $slide->description ?? $slide->short_description ?? 'Explore our catalog of professional-grade products' }}</p>
+                                        <div class="hero-slide-actions">
+                                        </div>
+                                        <div class="hero-trust-row">
+                                            <div class="hero-trust-item"><i class="fas fa-check-circle"></i> {{ __('Free Shipping') }}</div>
+                                            <div class="hero-trust-item"><i class="fas fa-check-circle"></i> {{ __('Warranty Included') }}</div>
+                                            <div class="hero-trust-item"><i class="fas fa-check-circle"></i> {{ __('Expert Support') }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="hero-float-card hero-float-bottom">
-                        <div class="float-icon-wrap float-icon-green"><i class="fas fa-expand-arrows-alt"></i></div>
-                        <div>
-                            <div class="float-label">Largeur max</div>
-                            <div class="float-value">3.2 mètres</div>
+                </div>
+                @endforeach
+            @else
+                {{-- Default slides with stunning images --}}
+                @php
+                $defaultSlides = [
+                    [
+                        'title' => 'Professional Printing Equipment',
+                        'desc' => 'Discover our complete range of large-format printers, cutting plotters, and professional supplies delivered across Morocco.',
+                        'badge' => 'New Collection',
+                        'icon' => 'fa-star',
+                        'img' => 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=1920',
+                    ],
+                    [
+                        'title' => 'Fast Delivery Across Morocco',
+                        'desc' => 'On-site installation, operator training included, and reactive technical support to keep your business running.',
+                        'badge' => 'Free Delivery',
+                        'icon' => 'fa-truck',
+                        'img' => 'https://images.unsplash.com/photo-1565793298595-6a879b1d9492?auto=format&fit=crop&q=80&w=1920',
+                    ],
+                    [
+                        'title' => 'Best Prices Guaranteed',
+                        'desc' => 'Competitive pricing with financing available. Get a personalized quote tailored to your project and budget.',
+                        'badge' => 'Special Offer',
+                        'icon' => 'fa-tags',
+                        'img' => 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1920',
+                    ],
+                ];
+                @endphp
+                @foreach($defaultSlides as $i => $ds)
+                <div class="swiper-slide">
+                    <div class="hero-slide" style="background-image: url('{{ $ds['img'] }}');">
+                        <div class="hero-slide-overlay"></div>
+                        <div class="container position-relative" style="z-index:3;">
+                            <div class="row align-items-center hero-slide-row">
+                                <div class="col-lg-7 col-xl-6">
+                                    <div class="hero-slide-content">
+                                        <span class="hero-badge">
+                                            <i class="fas {{ $ds['icon'] }}"></i>
+                                            {{ $ds['badge'] }}
+                                        </span>
+                                        <h2 class="hero-slide-title">{{ $ds['title'] }}</h2>
+                                        <p class="hero-slide-desc">{{ $ds['desc'] }}</p>
+                                        <div class="hero-slide-actions">
+                                        </div>
+                                        <div class="hero-trust-row">
+                                            <div class="hero-trust-item"><i class="fas fa-check-circle"></i> {{ __('Free Shipping') }}</div>
+                                            <div class="hero-trust-item"><i class="fas fa-check-circle"></i> {{ __('Warranty Included') }}</div>
+                                            <div class="hero-trust-item"><i class="fas fa-check-circle"></i> {{ __('Expert Support') }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="hero-float-badge">
-                        <i class="fas fa-star me-1"></i>Résolution 2400 dpi
-                    </div>
                 </div>
-            </div>
+                @endforeach
+            @endif
         </div>
-    </div>
 
-    {{-- Bottom wave separator --}}
-    <div class="hero-wave">
-        <svg viewBox="0 0 1440 60" preserveAspectRatio="none"><path d="M0,40 C360,80 1080,0 1440,40 L1440,60 L0,60 Z" fill="#ffffff"/></svg>
-    </div>
-</section>
 
-{{-- =============================================
-     KEY METRICS STRIP
-     ============================================= --}}
-<section class="metrics-strip">
-    <div class="container">
-        <div class="row g-0 metrics-row">
-            <div class="col-6 col-md-3">
-                <div class="metric-item">
-                    <div class="metric-icon"><i class="fas fa-users"></i></div>
-                    <div class="metric-number">500<span>+</span></div>
-                    <div class="metric-label">Clients actifs</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="metric-item">
-                    <div class="metric-icon"><i class="fas fa-print"></i></div>
-                    <div class="metric-number">50<span>+</span></div>
-                    <div class="metric-label">Modèles disponibles</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="metric-item">
-                    <div class="metric-icon"><i class="fas fa-history"></i></div>
-                    <div class="metric-number">15<span> ans</span></div>
-                    <div class="metric-label">D'expérience</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="metric-item border-end-0">
-                    <div class="metric-icon"><i class="fas fa-headset"></i></div>
-                    <div class="metric-number">24<span>/7</span></div>
-                    <div class="metric-label">Support technique</div>
-                </div>
+
+        <!-- Custom Pagination -->
+        <div class="hero-pagination-wrap">
+            <div class="container">
+                <div class="swiper-pagination hero-dots"></div>
             </div>
         </div>
     </div>
 </section>
 
+
 {{-- =============================================
-     CATEGORIES — Print Industry
+     TRUST BAR — Standard E-Commerce
      ============================================= --}}
-<section id="categories" class="section-py bg-surface">
+<section class="trust-bar-section">
+    <div class="container my-3">
+        <div class="row g-0 trust-bar-row">
+            <div class="col-6 col-md-3">
+                <div class="trust-bar-item">
+                    <i class="fas fa-shipping-fast"></i>
+                    <div>
+                        <strong>{{ __('Free Shipping') }}</strong>
+                        <span>{{ __('On orders over 500 DH') }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="trust-bar-item">
+                    <i class="fas fa-lock"></i>
+                    <div>
+                        <strong>{{ __('Secure Payment') }}</strong>
+                        <span>{{ __('100% protected') }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="trust-bar-item">
+                    <i class="fas fa-undo-alt"></i>
+                    <div>
+                        <strong>{{ __('Easy Returns') }}</strong>
+                        <span>{{ __('30-day guarantee') }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="trust-bar-item border-end-0">
+                    <i class="fas fa-headset"></i>
+                    <div>
+                        <strong>{{ __('24/7 Support') }}</strong>
+                        <span>{{ __('Expert assistance') }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{-- =============================================
+     SHOP BY CATEGORY
+     ============================================= --}}
+<section id="categories" class="section-py bg-white">
     <div class="container">
-        <div class="section-header" data-aos="fade-up">
-            <span class="section-eyebrow">Notre offre</span>
-            <h2 class="section-title">Tout pour votre production</h2>
-            <p class="section-subtitle">Des équipements professionnels, des consommables d'origine, et un support expert — en un seul endroit</p>
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h2 class="section-title mb-1">{{ __('Shop by Category') }}</h2>
+                <p class="text-muted mb-0">{{ __('Browse our product categories') }}</p>
+            </div>
+            <a href="{{ route('shop.index') }}" class="btn-link-arrow d-none d-md-inline-flex">
+                {{ __('All Categories') }} <i class="fas fa-arrow-right ms-2"></i>
+            </a>
         </div>
 
         @if($allCategories->count() > 0)
-        <div class="row g-4">
-            @foreach($allCategories->take(4) as $index => $category)
-            <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="{{ $index * 80 }}">
+        <div class="row g-3">
+            @foreach($allCategories->take(6) as $index => $category)
+            <div class="col-4 col-lg-2">
                 <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="cat-card-v2">
                     <div class="cat-card-img">
                         @if($category->image)
@@ -238,44 +269,15 @@
                                 <img src="{{ Storage::url($category->image) }}" alt="{{ $category->name }}">
                             @endif
                         @else
-                            @php $catIcons = ['fa-print','fa-cut','fa-fill-drip','fa-scroll']; @endphp
-                            <div class="cat-icon-placeholder cat-icon-{{ $index }}">
-                                <i class="fas {{ $catIcons[$index % 4] }}"></i>
+                            @php $catIcons = ['fa-print','fa-cut','fa-fill-drip','fa-scroll','fa-palette','fa-layer-group']; @endphp
+                            <div class="cat-icon-placeholder cat-icon-{{ $index % 4 }}">
+                                <i class="fas {{ $catIcons[$index % 6] }}"></i>
                             </div>
                         @endif
                     </div>
                     <div class="cat-card-body">
                         <h3 class="cat-card-name">{{ $category->name }}</h3>
-                        <span class="cat-card-count">{{ $category->products_count ?? $category->products()->count() }} produits</span>
-                        <div class="cat-card-arrow"><i class="fas fa-arrow-right"></i></div>
-                    </div>
-                </a>
-            </div>
-            @endforeach
-        </div>
-        @else
-        {{-- Fallback static industry categories --}}
-        @php
-        $staticCats = [
-            ['icon'=>'fa-print',     'color'=>'#e94560', 'bg'=>'rgba(233,69,96,.12)',    'name'=>'Imprimantes Éco-Solvant', 'sub'=>'Grand format · UV · Sublimation'],
-            ['icon'=>'fa-cut',       'color'=>'#0077ff', 'bg'=>'rgba(0,119,255,.12)',    'name'=>'Traceurs de découpe',      'sub'=>'Vinyle · Flex · Autocollant'],
-            ['icon'=>'fa-fill-drip', 'color'=>'#f59e0b', 'bg'=>'rgba(245,158,11,.12)',  'name'=>'Encres & consommables',    'sub'=>'Toutes marques · Origine'],
-            ['icon'=>'fa-scroll',    'color'=>'#10b981', 'bg'=>'rgba(16,185,129,.12)',   'name'=>'Médias & supports',        'sub'=>'Bâche · PVC · Bannière'],
-        ];
-        @endphp
-        <div class="row g-4">
-            @foreach($staticCats as $i => $cat)
-            <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="{{ $i * 80 }}">
-                <a href="{{ route('shop.index') }}" class="cat-card-v2">
-                    <div class="cat-card-img">
-                        <div class="cat-icon-placeholder" style="background: {{ $cat['bg'] }}; color: {{ $cat['color'] }};">
-                            <i class="fas {{ $cat['icon'] }}"></i>
-                        </div>
-                    </div>
-                    <div class="cat-card-body">
-                        <h3 class="cat-card-name">{{ $cat['name'] }}</h3>
-                        <span class="cat-card-count">{{ $cat['sub'] }}</span>
-                        <div class="cat-card-arrow"><i class="fas fa-arrow-right"></i></div>
+                        <span class="cat-card-count">{{ $category->products_count ?? $category->products()->count() }} {{ __('products') }}</span>
                     </div>
                 </a>
             </div>
@@ -285,19 +287,19 @@
     </div>
 </section>
 
+
 {{-- =============================================
-     FEATURED MACHINES — Product Grid
+     FEATURED PRODUCTS
      ============================================= --}}
-<section id="featured" class="section-py bg-white">
+<section id="featured" class="section-py bg-surface">
     <div class="container">
-        <div class="d-flex justify-content-between align-items-end mb-5" data-aos="fade-up">
+        <div class="d-flex justify-content-between align-items-end mb-4">
             <div>
-                <span class="section-eyebrow">Sélection</span>
-                <h2 class="section-title mb-0">Nos machines phares</h2>
-                <p class="section-subtitle mb-0 mt-2">Équipements testés, certifiés et plébiscités par nos ateliers partenaires</p>
+                <h2 class="section-title mb-1">{{ __('Featured Products') }}</h2>
+                <p class="text-muted mb-0">{{ __('Handpicked products just for you') }}</p>
             </div>
             <a href="{{ route('shop.index') }}" class="btn-link-arrow d-none d-md-inline-flex">
-                Voir tout <i class="fas fa-arrow-right ms-2"></i>
+                {{ __('View All') }} <i class="fas fa-arrow-right ms-2"></i>
             </a>
         </div>
 
@@ -364,181 +366,133 @@
             @endforeach
         </div>
 
-        <div class="text-center mt-5">
+        <div class="text-center mt-4">
             <a href="{{ route('shop.index') }}" class="btn-cta-outline">
-                Voir tous nos équipements <i class="fas fa-arrow-right ms-2"></i>
+                {{ __('View All Products') }} <i class="fas fa-arrow-right ms-2"></i>
             </a>
         </div>
     </div>
 </section>
+ 
+ {{-- =============================================
+      CATEGORY PRODUCT ROWS
+      ============================================= --}}
+ @foreach($allCategories as $index => $category)
+     @if($category->products->count() > 0)
+     <section class="section-py category-row-section {{ $index % 2 == 0 ? 'bg-white' : 'bg-surface' }}">
+         <div class="container">
+             <div class="d-flex justify-content-between align-items-end mb-4 category-row-header">
+                 <div>
+                     <h2 class="section-title mb-1">{{ $category->name }}</h2>
+                     <p class="text-muted mb-0">{{ __('Discover our selection of') }} {{ strtolower($category->name) }}</p>
+                 </div>
+                 <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="btn-link-arrow">
+                     {{ __('View Category') }} <i class="fas fa-arrow-right ms-2"></i>
+                 </a>
+             </div>
+ 
+             <div class="row g-4">
+                 @foreach($category->products as $product)
+                 <div class="col-6 col-md-4 col-lg-3">
+                     <div class="product-card-v2">
+                         <div class="product-v2-image">
+                             <img src="{{ $product->thumbnail ?? asset('images/placeholder-product.jpg') }}" alt="{{ $product->name }}">
+                             
+                             <div class="product-v2-badges">
+                                 @if($product->created_at->diffInDays(now()) < 7)
+                                     <span class="badge-v2 badge-new">Nouveau</span>
+                                 @endif
+                             </div>
+ 
+                             <div class="product-v2-overlay">
+                                 <button class="btn-overlay" onclick="addToCart({{ $product->id }})">
+                                     <i class="fas fa-cart-plus"></i> {{ __('Add') }}
+                                 </button>
+                                 <a href="{{ route('shop.show', $product->id) }}" class="btn-overlay-icon">
+                                     <i class="fas fa-eye"></i>
+                                 </a>
+                             </div>
+                         </div>
+ 
+                         <div class="product-v2-body">
+                             <h4 class="product-v2-name">{{ Str::limit($product->name, 40) }}</h4>
+                             <div class="product-v2-rating">
+                                 <div class="stars-row">
+                                     @for($i = 0; $i < 5; $i++)
+                                         <i class="fas fa-star{{ $i < $product->rating ? '' : ' opacity-25' }}"></i>
+                                     @endfor
+                                 </div>
+                             </div>
+                             <div class="product-v2-price">
+                                 <span class="price-sale">{{ $product->formatted_price }}</span>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+                 @endforeach
+             </div>
+         </div>
+     </section>
+     @endif
+ @endforeach
+ 
+
 
 {{-- =============================================
-     APPLICATIONS — What Can You Print?
+     PROMOTIONAL CTA BANNER
      ============================================= --}}
-<section class="section-py bg-dark-gradient">
+<section class="promo-cta-section">
     <div class="container">
-        <div class="section-header section-header-light" data-aos="fade-up">
-            <span class="section-eyebrow eyebrow-light">Applications</span>
-            <h2 class="section-title text-white">Ce que vous pouvez réaliser</h2>
-            <p class="section-subtitle" style="color: rgba(255,255,255,.65);">Des machines polyvalentes pour tous les secteurs de l'impression</p>
-        </div>
-        <div class="row g-3 mt-2">
-            @php
-            $apps = [
-                ['icon'=>'fa-store',         'title'=>'Enseignes & signalétique', 'desc'=>'Bannières, roll-ups, panneaux PVC, signalétique intérieure/extérieure'],
-                ['icon'=>'fa-car',           'title'=>'Covering véhicule',        'desc'=>'Films adhésifs, covering complet, décoration de flotte'],
-                ['icon'=>'fa-tshirt',        'title'=>'Textile & habillement',    'desc'=>'Impression sur tissu, flex thermocollant, sublimation textile'],
-                ['icon'=>'fa-building',      'title'=>'Décoration intérieure',    'desc'=>'Papier peint, toile tendue, stickers déco, vitrophanie'],
-                ['icon'=>'fa-image',         'title'=>'Photo & fine art',         'desc'=>'Tirages haute résolution sur papier, toile, aluminium'],
-                ['icon'=>'fa-box-open',      'title'=>'Packaging & étiquettes',   'desc'=>'Étiquettes autocollantes, emballages personnalisés, codage couleur'],
-            ];
-            @endphp
-            @foreach($apps as $i => $app)
-            <div class="col-6 col-md-4" data-aos="fade-up" data-aos-delay="{{ ($i % 3) * 80 }}">
-                <div class="app-card">
-                    <div class="app-icon"><i class="fas {{ $app['icon'] }}"></i></div>
-                    <h5 class="app-title">{{ $app['title'] }}</h5>
-                    <p class="app-desc">{{ $app['desc'] }}</p>
+        <div class="promo-cta-card">
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <h2 class="promo-cta-title">{{ __("Can't find what you need?") }}</h2>
+                    <p class="promo-cta-desc">{{ __('Contact us for a free personalized quote. We deliver and install everywhere in Morocco.') }}</p>
+                </div>
+                <div class="col-lg-5 text-lg-end mt-3 mt-lg-0">
+                    <a href="tel:{{ setting('company_phone', '+212600000000') }}" class="btn-hero-shop me-2">
+                        <i class="fas fa-phone-alt"></i> {{ __('Call Us') }}
+                    </a>
+                    <a href="mailto:{{ setting('company_email', 'contact@speedprint.ma') }}" class="btn-hero-outline" style="border-color: rgba(255,255,255,.5);">
+                        <i class="fas fa-envelope"></i> {{ __('Email Us') }}
+                    </a>
                 </div>
             </div>
-            @endforeach
         </div>
     </div>
 </section>
 
 {{-- =============================================
-     HOW IT WORKS — 4-Step Process
-     ============================================= --}}
-<section class="section-py bg-surface">
-    <div class="container">
-        <div class="section-header" data-aos="fade-up">
-            <span class="section-eyebrow">Processus</span>
-            <h2 class="section-title">Comment ça marche ?</h2>
-            <p class="section-subtitle">De la commande à la mise en production, nous vous accompagnons à chaque étape</p>
-        </div>
-
-        <div class="process-track" data-aos="fade-up" data-aos-delay="100">
-            <div class="process-line"></div>
-            <div class="row g-4 position-relative">
-                @php
-                $steps = [
-                    ['num'=>'01', 'icon'=>'fa-search', 'title'=>'Choisissez votre machine', 'desc'=>'Consultez notre catalogue, comparez les modèles ou appelez nos experts pour un conseil personnalisé.'],
-                    ['num'=>'02', 'icon'=>'fa-file-invoice',  'title'=>'Recevez votre devis', 'desc'=>'Devis détaillé sous 24h incluant machine, installation, formation et garantie.'],
-                    ['num'=>'03', 'icon'=>'fa-truck-moving',  'title'=>'Livraison & installation', 'desc'=>'Nos techniciens livrent, installent et configurent votre équipement sur site.'],
-                    ['num'=>'04', 'icon'=>'fa-graduation-cap','title'=>'Formation & suivi', 'desc'=>'Formation opérateur incluse. SAV réactif et stock de pièces en permanence.'],
-                ];
-                @endphp
-                @foreach($steps as $i => $step)
-                <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="{{ $i * 100 }}">
-                    <div class="process-step{{ $i == 1 ? ' process-step-accent' : '' }}">
-                        <div class="process-num">{{ $step['num'] }}</div>
-                        <div class="process-icon-wrap">
-                            <i class="fas {{ $step['icon'] }}"></i>
-                        </div>
-                        <h5 class="process-title">{{ $step['title'] }}</h5>
-                        <p class="process-desc">{{ $step['desc'] }}</p>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
-</section>
-
-{{-- =============================================
-     WHY CHOOSE US — Expert USPs
+     OUR SERVICES — Simple Icons
      ============================================= --}}
 <section class="section-py bg-white">
     <div class="container">
-        <div class="row align-items-center g-5">
-            <div class="col-lg-5" data-aos="fade-right">
-                <span class="section-eyebrow">Pourquoi nous</span>
-                <h2 class="section-title">Votre partenaire de confiance depuis 15 ans</h2>
-                <p class="section-subtitle text-start">
-                    Nous ne vendons pas juste des machines — nous construisons des relations à long terme avec nos clients. 
-                    Stock permanent, SAV réactif, et expertise technique inégalée.
-                </p>
-                <a href="{{ route('shop.index') }}" class="btn-cta-primary mt-3">
-                    Découvrir notre catalogue <i class="fas fa-arrow-right ms-2"></i>
-                </a>
-            </div>
-            <div class="col-lg-7" data-aos="fade-left" data-aos-delay="100">
-                <div class="row g-3">
-                    @php
-                    $usps = [
-                        ['icon'=>'fa-user-tie',      'color'=>'#e94560', 'title'=>'Experts certifiés',      'desc'=>'Nos conseillers maîtrisent chaque technologie: éco-solvant, UV, sublimation, découpe.'],
-                        ['icon'=>'fa-warehouse',     'color'=>'#0077ff', 'title'=>'Stock permanent',         'desc'=>'Pièces de rechange, têtes d\'impression, encres et médias disponibles immédiatement.'],
-                        ['icon'=>'fa-tools',         'color'=>'#f59e0b', 'title'=>'SAV en 24h',              'desc'=>'Intervention sur site sous 24h dans les grandes villes, téléassistance immédiate.'],
-                        ['icon'=>'fa-graduation-cap','color'=>'#10b981', 'title'=>'Formation incluse',       'desc'=>'Chaque machine est livrée avec une formation opérateur complète pour votre équipe.'],
-                        ['icon'=>'fa-tags',          'color'=>'#8b5cf6', 'title'=>'Meilleurs prix garantis', 'desc'=>'Tarifs compétitifs, financement disponible, devis personnalisé selon votre volume.'],
-                        ['icon'=>'fa-leaf',          'color'=>'#06b6d4', 'title'=>'Encres certifiées',       'desc'=>'Encres éco-solvant conformes aux normes environnementales, longue durée de vie.'],
-                    ];
-                    @endphp
-                    @foreach($usps as $i => $u)
-                    <div class="col-6" data-aos="zoom-in" data-aos-delay="{{ $i * 60 }}">
-                        <div class="usp-mini-card">
-                            <div class="usp-mini-icon" style="background: {{ $u['color'] }}20; color: {{ $u['color'] }};"><i class="fas {{ $u['icon'] }}"></i></div>
-                            <h6 class="usp-mini-title">{{ $u['title'] }}</h6>
-                            <p class="usp-mini-desc">{{ $u['desc'] }}</p>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-            </div>
+        <div class="text-center mb-5">
+            <h2 class="section-title">{{ __('Why Shop With Us') }}</h2>
+            <p class="text-muted">{{ __('We deliver more than just products') }}</p>
         </div>
-    </div>
-</section>
-
-{{-- =============================================
-     PROMO BANNER — Quote CTA
-     ============================================= --}}
-<section class="quote-banner" data-aos="fade-up">
-    <div class="quote-banner-bg"></div>
-    <div class="container position-relative">
-        <div class="row align-items-center g-4">
-            <div class="col-lg-7">
-                <span class="quote-eyebrow">
-                    <i class="fas fa-file-invoice me-2"></i>Devis gratuit & sans engagement
-                </span>
-                <h2 class="quote-title">Besoin d'un équipement sur mesure ?</h2>
-                <p class="quote-sub">Dites-nous vos besoins (format, vitesse, budget) et nous vous proposons la machine idéale avec installation, formation et garantie.</p>
-            </div>
-            <div class="col-lg-5 text-lg-end">
-                <div class="quote-actions">
-                    <a href="tel:{{ setting('company_phone', '+212600000000') }}" class="btn-quote-phone">
-                        <i class="fas fa-phone-alt"></i>
-                        <div class="btn-quote-text">
-                            <small>Appelez-nous</small>
-                            <strong>{{ setting('company_phone', '+212 6XX XX XX XX') }}</strong>
-                        </div>
-                    </a>
-                    <a href="mailto:{{ setting('company_email', 'contact@speedprint.ma') }}" class="btn-quote-email">
-                        <i class="fas fa-envelope"></i> Envoyer un email
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-{{-- =============================================
-     BRANDS STRIP
-     ============================================= --}}
-<section class="brands-section">
-    <div class="container">
-        <p class="brands-label">Marques et équipements disponibles</p>
-        <div class="brands-ticker">
+        <div class="row g-4">
             @php
-            $brands = ['Epson', 'Roland', 'Mimaki', 'Mutoh', 'Graphtec', 'Summa', 'HP Latex', 'Flora', 'Allwin'];
+            $services = [
+                ['icon' => 'fa-truck-moving', 'title' => __('Fast Delivery'), 'desc' => __('Free shipping on orders over 500 DH. Delivery across Morocco.')],
+                ['icon' => 'fa-shield-alt',   'title' => __('Warranty'), 'desc' => __('All products come with manufacturer warranty and after-sales support.')],
+                ['icon' => 'fa-tools',        'title' => __('Installation'), 'desc' => __('On-site installation and setup by our certified technicians.')],
+                ['icon' => 'fa-graduation-cap', 'title' => __('Training'), 'desc' => __('Free operator training included with every equipment purchase.')],
+            ];
             @endphp
-            @foreach($brands as $brand)
-            <div class="brand-chip">
-                <i class="fas fa-print me-2 opacity-50"></i>{{ $brand }}
+            @foreach($services as $svc)
+            <div class="col-6 col-md-3">
+                <div class="service-card text-center">
+                    <div class="service-icon"><i class="fas {{ $svc['icon'] }}"></i></div>
+                    <h5 class="service-title">{{ $svc['title'] }}</h5>
+                    <p class="service-desc">{{ $svc['desc'] }}</p>
+                </div>
             </div>
             @endforeach
         </div>
     </div>
 </section>
+
 
 {{-- =============================================
      TESTIMONIALS
@@ -546,14 +500,13 @@
 @if($testimonials->count() > 0)
 <section class="section-py bg-surface">
     <div class="container">
-        <div class="section-header" data-aos="fade-up">
-            <span class="section-eyebrow">Avis clients</span>
-            <h2 class="section-title">Ce que disent nos ateliers</h2>
-            <p class="section-subtitle">Des imprimeurs professionnels qui nous font confiance au quotidien</p>
+        <div class="text-center mb-5">
+            <h2 class="section-title">{{ __('Customer Reviews') }}</h2>
+            <p class="text-muted">{{ __('What our customers say about us') }}</p>
         </div>
         <div class="row g-4">
             @foreach($testimonials->take(3) as $i => $t)
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ $i * 100 }}">
+            <div class="col-md-4">
                 <div class="review-card">
                     <div class="review-stars">
                         @for($s = 0; $s < $t->rating; $s++)<i class="fas fa-star"></i>@endfor
@@ -563,7 +516,7 @@
                         <div class="review-avatar">{{ strtoupper(substr($t->name, 0, 1)) }}</div>
                         <div>
                             <div class="review-name">{{ $t->name }}</div>
-                            <div class="review-role">Client vérifié</div>
+                            <div class="review-role">{{ __('Verified Customer') }}</div>
                         </div>
                     </div>
                 </div>
@@ -574,52 +527,6 @@
 </section>
 @endif
 
-{{-- =============================================
-     FAQ SECTION
-     ============================================= --}}
-<section class="section-py bg-white">
-    <div class="container">
-        <div class="row g-5 align-items-start">
-            <div class="col-lg-4" data-aos="fade-right">
-                <span class="section-eyebrow">FAQ</span>
-                <h2 class="section-title">Questions fréquentes</h2>
-                <p class="section-subtitle text-start">Vous avez d'autres questions ? Notre équipe est disponible 6j/7.</p>
-                <a href="tel:{{ setting('company_phone', '+212600000000') }}" class="btn-cta-outline mt-3">
-                    <i class="fas fa-phone-alt me-2"></i>Nous appeler
-                </a>
-            </div>
-            <div class="col-lg-8" data-aos="fade-left" data-aos-delay="100">
-                <div class="faq-list">
-                    @php
-                    $faqs = [
-                        ['q'=>'Quelle est la différence entre échosolvant et UV ?',
-                         'a'=>'L\'éco-solvant utilise des encres à base de solvant doux, idéal pour les supports souples (bâche, vinyle). L\'UV imprime directement sur des supports rigides (bois, verre, métal) et sèche instantanément par lampe ultraviolet.'],
-                        ['q'=>'Livrez-vous dans tout le Maroc ?',
-                         'a'=>'Oui. Nous livrons partout au Maroc avec notre propre réseau logistique. Les grandes villes bénéficient d\'une livraison J+1 et d\'une installation sur site incluse.'],
-                        ['q'=>'La formation est-elle incluse à l\'achat ?',
-                         'a'=>'Oui, chaque machine est accompagnée d\'une formation opérateur gratuite (1 à 2 jours selon la complexité) réalisée sur votre lieu de production par nos techniciens certifiés.'],
-                        ['q'=>'Proposez-vous des facilités de paiement ?',
-                         'a'=>'Oui, nous proposons des solutions de financement personnalisées (paiement en plusieurs fois, leasing) selon votre situation. Contactez-nous pour un devis adapté à votre budget.'],
-                        ['q'=>'Quels types d\'encres compatibles sont disponibles ?',
-                         'a'=>'Nous stockons les encres d\'origine pour toutes les marques (Roland, Epson, Mimaki...) ainsi que des encres compatibles certifiées offrant un excellent rapport qualité/prix sans altérer la tête d\'impression.'],
-                    ];
-                    @endphp
-                    @foreach($faqs as $fi => $faq)
-                    <div class="faq-item{{ $fi === 0 ? ' faq-open' : '' }}">
-                        <button class="faq-question" onclick="toggleFaq(this)">
-                            <span>{{ $faq['q'] }}</span>
-                            <i class="fas fa-chevron-down faq-chevron"></i>
-                        </button>
-                        <div class="faq-answer" style="{{ $fi === 0 ? '' : 'display:none;' }}">
-                            <p>{{ $faq['a'] }}</p>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
 {{-- =============================================
      WHATSAPP FLOATING BUTTON
@@ -647,6 +554,27 @@
 
 @push('scripts')
 <script>
+// Hero Slider
+const heroSwiper = new Swiper('.hero-swiper', {
+    loop: true,
+    autoplay: {
+        delay: 6000,
+        disableOnInteraction: false,
+    },
+    effect: 'fade',
+    fadeEffect: {
+        crossFade: true
+    },
+    speed: 1000,
+    pagination: {
+        el: '.hero-dots',
+        clickable: true,
+        renderBullet: function (index, className) {
+            return '<span class="' + className + '"><i></i></span>';
+        },
+    }
+});
+
 function addToCart(productId) {
     fetch(`{{ url('/cart/add') }}/${productId}`, {
         method: 'POST',

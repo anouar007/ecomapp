@@ -41,6 +41,40 @@ class InvoiceItem extends Model
     }
 
     /**
+     * Get unit price HT (Hors Taxe).
+     */
+    public function getUnitPriceHtAttribute(): float
+    {
+        $taxRate = $this->invoice->tax_rate / 100;
+        return floatval($this->unit_price) / (1 + $taxRate);
+    }
+
+    /**
+     * Get total price HT (Hors Taxe).
+     */
+    public function getTotalPriceHtAttribute(): float
+    {
+        $taxRate = $this->invoice->tax_rate / 100;
+        return floatval($this->total_price) / (1 + $taxRate);
+    }
+
+    /**
+     * Get formatted unit price HT.
+     */
+    public function getFormattedUnitPriceHtAttribute(): string
+    {
+        return currency($this->unit_price_ht);
+    }
+
+    /**
+     * Get formatted total price HT.
+     */
+    public function getFormattedTotalPriceHtAttribute(): string
+    {
+        return currency($this->total_price_ht);
+    }
+
+    /**
      * Get formatted unit price.
      */
     public function getFormattedUnitPriceAttribute(): string

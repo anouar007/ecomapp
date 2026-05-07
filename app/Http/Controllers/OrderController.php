@@ -104,8 +104,10 @@ class OrderController extends Controller
                 ];
             }
 
-            $tax = $subtotal * 0.1; // 10% tax
-            $total = $subtotal + $tax + ($validated['shipping_cost'] ?? 0) - ($validated['discount'] ?? 0);
+            $taxRate = floatval(setting('tax_rate', 0)) / 100;
+            $total = $subtotal + ($validated['shipping_cost'] ?? 0) - ($validated['discount'] ?? 0);
+            $tax = $total - ($total / (1 + $taxRate));
+            $subtotalNet = $total - $tax;
 
             // Create order
             $order = Order::create([
@@ -118,7 +120,7 @@ class OrderController extends Controller
                 'shipping_state' => $validated['shipping_state'] ?? null,
                 'shipping_zip' => $validated['shipping_zip'],
                 'shipping_country' => $validated['shipping_country'],
-                'subtotal' => $subtotal,
+                'subtotal' => $subtotalNet,
                 'tax' => $tax,
                 'shipping_cost' => $validated['shipping_cost'] ?? 0,
                 'discount' => $validated['discount'] ?? 0,

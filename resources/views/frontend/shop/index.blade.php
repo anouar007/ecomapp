@@ -75,32 +75,32 @@
 <section class="shop-hero">
     <div class="shop-hero-backdrop"></div>
     <div class="container position-relative">
-        <div class="shop-hero-content">
-            <div class="hero-eyebrow">
+        <div class="shop-hero-content" data-aos="fade-up">
+            <div class="hero-eyebrow mb-3">
                 <span class="hero-eyebrow-dot"></span>
-                {{ request('q') ? 'Résultats de recherche' : (request('category') ? 'Catégorie' : 'Catalogue complet') }}
+                {{ request('q') ? 'Résultats de recherche' : (request('category') ? 'Catalogue Spécialisé' : 'Solutions d\'Impression') }}
             </div>
             <h1 class="shop-hero-title">
                 @if(request('q'))
-                    Résultats pour <span class="text-gradient-primary">« {{ request('q') }} »</span>
+                    Résultats pour <span class="text-white">« {{ request('q') }} »</span>
                 @elseif(request('category'))
-                    <span class="text-gradient-primary">{{ $categories->where('slug', request('category'))->first()->name ?? 'Produits' }}</span>
+                    <span class="text-white">{{ $categories->where('slug', request('category'))->first()->name ?? 'Produits' }}</span>
                 @else
-                    Nos <span class="text-gradient-primary">équipements</span> & consommables
+                    Équipements <span class="text-primary-light">Premium</span> & Consommables
                 @endif
             </h1>
             <p class="shop-hero-sub">
-                Machines éco-solvant, traceurs de découpe, encres certifiées et accessoires — tout pour votre production.
+                Explorez notre sélection de machines éco-solvant, traceurs de découpe et encres certifiées pour une production d'excellence.
             </p>
 
             {{-- Breadcrumb --}}
-            <nav class="shop-breadcrumb" aria-label="breadcrumb">
-                <a href="{{ url('/') }}"><i class="fas fa-home"></i> Accueil</a>
-                <span class="shop-bc-sep">/</span>
-                <a href="{{ route('shop.index') }}">Catalogue</a>
+            <nav class="shop-breadcrumb mt-4" aria-label="breadcrumb">
+                <a href="{{ url('/') }}"><i class="fas fa-home me-1"></i> Accueil</a>
+                <span class="shop-bc-sep mx-2 opacity-50">/</span>
+                <a href="{{ route('shop.index') }}">Boutique</a>
                 @if(request('category'))
-                    <span class="shop-bc-sep">/</span>
-                    <span>{{ $categories->where('slug', request('category'))->first()->name ?? 'Catégorie' }}</span>
+                    <span class="shop-bc-sep mx-2 opacity-50">/</span>
+                    <span class="text-white fw-bold">{{ $categories->where('slug', request('category'))->first()->name ?? 'Catégorie' }}</span>
                 @endif
             </nav>
         </div>
@@ -114,86 +114,67 @@
     <div class="container">
         <div class="row g-5">
 
-            {{-- ── SIDEBAR ── --}}
-            <div class="col-lg-3">
-                <div class="shop-sidebar sticky-top" style="top: 90px;">
+            {{-- ── MOBILE CATEGORY SCROLLER ── --}}
+            <div class="shop-mobile-categories d-lg-none py-3 mb-2 overflow-auto" style="white-space: nowrap; -webkit-overflow-scrolling: touch;">
+                <div class="container-fluid px-3 d-flex gap-2">
+                    <a href="#" class="btn btn-sm rounded-pill px-4 py-2 fw-bold border category-filter {{ !request('category') ? 'btn-primary text-white border-primary' : 'btn-white text-muted' }}" data-slug="">
+                        Tous
+                    </a>
+                    @foreach($categories as $cat)
+                        <a href="#" class="btn btn-sm rounded-pill px-4 py-2 fw-bold border category-filter {{ request('category') == $cat->slug ? 'btn-primary text-white border-primary' : 'btn-white text-muted' }}" data-slug="{{ $cat->slug }}">
+                            {{ $cat->name }}
+                        </a>
+                    @endforeach
+                </div>
+            </div>
 
-                    {{-- Search --}}
-                    <div class="shop-filter-card mb-4">
-                        <h6 class="shop-filter-title"><i class="fas fa-search me-2"></i>Recherche</h6>
-                        <form id="searchForm">
-                            <div class="shop-search-wrap">
-                                <input type="text" name="q" class="shop-search-input"
-                                       placeholder="Nom du produit…" value="{{ request('q') }}">
-                                <button type="submit" class="shop-search-btn">
-                                    <i class="fas fa-arrow-right"></i>
-                                </button>
-                            </div>
-                        </form>
+            {{-- ── MOBILE FLOATING FILTER BUTTON (FAB) ── --}}
+            <button class="btn btn-primary btn-fab d-lg-none shadow-lg d-flex align-items-center justify-content-center" 
+                    type="button" data-bs-toggle="offcanvas" data-bs-target="#shopFiltersBottom">
+                <i class="fas fa-sliders-h fs-4"></i>
+            </button>
+
+            {{-- Advanced Filters Bottom Sheet --}}
+            <div class="offcanvas offcanvas-bottom border-0 shadow-lg d-lg-none" tabindex="-1" id="shopFiltersBottom" style="height: 70vh; border-radius: 28px 28px 0 0;">
+                <div class="offcanvas-header bg-white border-bottom py-3 px-4">
+                    <h5 class="offcanvas-title fw-bold">Options de filtrage</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body p-4 bg-light">
+                    @include('frontend.shop.partials.sidebar-content')
+                    <div class="mt-4 pb-5">
+                        <button class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-lg" data-bs-dismiss="offcanvas">
+                            Voir les {{ $products->total() }} produits
+                        </button>
                     </div>
+                </div>
+            </div>
 
-                    {{-- Categories --}}
-                    <div class="shop-filter-card mb-4">
-                        <h6 class="shop-filter-title"><i class="fas fa-th-large me-2"></i>Catégories</h6>
-                        <ul class="shop-cat-list">
-                            <li>
-                                <a href="#" class="shop-cat-link category-filter {{ !request('category') ? 'active' : '' }}" data-slug="">
-                                    <span>Tous les produits</span>
-                                    <span class="shop-cat-count">{{ \App\Models\Product::where('status','active')->count() }}</span>
-                                </a>
-                            </li>
-                            @foreach($categories as $cat)
-                            <li>
-                                <a href="#" class="shop-cat-link category-filter {{ request('category') == $cat->slug ? 'active' : '' }}" data-slug="{{ $cat->slug }}">
-                                    <span>{{ $cat->name }}</span>
-                                    <span class="shop-cat-count">{{ $cat->products_count }}</span>
-                                </a>
-                            </li>
-                            @endforeach
-                        </ul>
-                    </div>
+            {{-- ── SIDEBAR (Desktop) / OFFCANVAS (Mobile) ── --}}
+            <div class="col-lg-3 d-none d-lg-block">
+                <div class="shop-sidebar sticky-top" style="top: 100px;">
+                    @include('frontend.shop.partials.sidebar-content')
+                </div>
+            </div>
 
-                    {{-- Price Range --}}
-                    <div class="shop-filter-card mb-4">
-                        <h6 class="shop-filter-title"><i class="fas fa-tag me-2"></i>Fourchette de prix</h6>
-                        <form id="priceFilterForm">
-                            <div class="shop-price-inputs">
-                                <input type="number" name="min_price" class="shop-price-input"
-                                       placeholder="Min" value="{{ request('min_price') }}" min="0">
-                                <span class="shop-price-sep">—</span>
-                                <input type="number" name="max_price" class="shop-price-input"
-                                       placeholder="Max" value="{{ request('max_price') }}" min="0">
-                            </div>
-                            <button type="submit" class="shop-apply-btn w-100 mt-3">
-                                <i class="fas fa-filter me-2"></i>Appliquer
-                            </button>
-                        </form>
-                    </div>
-
-                    {{-- Quick Links --}}
-                    <div class="shop-filter-card">
-                        <h6 class="shop-filter-title"><i class="fas fa-bolt me-2"></i>Raccourcis</h6>
-                        <div class="d-flex flex-column gap-2">
-                            <a href="{{ route('shop.index') }}?sort=newest" class="shop-quick-link">
-                                <i class="fas fa-star me-2 text-accent"></i>Nouveautés
-                            </a>
-                            <a href="{{ route('shop.index') }}?sort=price_asc" class="shop-quick-link">
-                                <i class="fas fa-sort-amount-up me-2 text-accent"></i>Prix croissant
-                            </a>
-                            <a href="{{ route('shop.index') }}?sort=price_desc" class="shop-quick-link">
-                                <i class="fas fa-sort-amount-down me-2 text-accent"></i>Prix décroissant
-                            </a>
-                        </div>
-                    </div>
-
+            {{-- Mobile Offcanvas --}}
+            <div class="offcanvas offcanvas-start border-0 shadow-lg d-lg-none" tabindex="-1" id="shopSidebarOffcanvas" style="width: 320px;">
+                <div class="offcanvas-header bg-white border-bottom py-3">
+                    <h5 class="offcanvas-title fw-bold" id="shopSidebarOffcanvasLabel">
+                        <i class="fas fa-filter me-2 text-primary"></i>Filtres
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body p-4 bg-light">
+                    @include('frontend.shop.partials.sidebar-content')
                 </div>
             </div>
 
             {{-- ── PRODUCT GRID ── --}}
             <div class="col-lg-9">
 
-                {{-- Toolbar --}}
-                <div class="shop-toolbar mb-4">
+                {{-- Toolbar (Desktop only) --}}
+                <div class="shop-toolbar mb-4 d-none d-lg-flex">
                     <div class="shop-toolbar-left">
                         <span class="shop-toolbar-title" id="categoryTitle">
                             @if(request('category'))
@@ -253,6 +234,12 @@
 @push('scripts')
 <script>
 let currentCategory = "{{ request('category') }}";
+
+function updateSort(val) {
+    const select = document.getElementById('sortSelect');
+    if (select) select.value = val;
+    fetchProducts();
+}
 
 function getParams() {
     const p = new URLSearchParams();

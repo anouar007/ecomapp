@@ -42,11 +42,11 @@ class InvoiceService
 
             // Calculate tax and total
             $taxRate = $data['tax_rate'] ?? 20;
-            $taxAmount = $subtotal * ($taxRate / 100);
             $discountAmount = $data['discount_amount'] ?? 0;
-            $totalAmount = $subtotal + $taxAmount - $discountAmount;
+            $totalAmount = $subtotal - $discountAmount;
+            $taxAmount = $totalAmount - ($totalAmount / (1 + ($taxRate / 100)));
+            $subtotalNet = $totalAmount - $taxAmount;
 
-            // Create invoice
             $invoice = Invoice::create([
                 'invoice_number' => Invoice::generateInvoiceNumber(),
                 'order_id' => $data['order_id'] ?? null,
@@ -54,7 +54,7 @@ class InvoiceService
                 'customer_email' => $data['customer_email'] ?? null,
                 'customer_phone' => $data['customer_phone'] ?? null,
                 'customer_address' => $data['customer_address'] ?? null,
-                'subtotal' => $subtotal,
+                'subtotal' => $subtotalNet,
                 'tax_amount' => $taxAmount,
                 'tax_rate' => $taxRate,
                 'discount_amount' => $discountAmount,
@@ -92,8 +92,9 @@ class InvoiceService
 
             $subtotal = $order->items->sum(fn($item) => $item->unit_price * $item->quantity);
             $taxRate = 20;
-            $taxAmount = $subtotal * ($taxRate / 100);
-            $totalAmount = $subtotal + $taxAmount;
+            $totalAmount = $subtotal;
+            $taxAmount = $totalAmount - ($totalAmount / (1 + ($taxRate / 100)));
+            $subtotalNet = $totalAmount - $taxAmount;
 
             $invoice = Invoice::create([
                 'invoice_number' => Invoice::generateInvoiceNumber(),
@@ -102,7 +103,7 @@ class InvoiceService
                 'customer_email' => $order->customer_email,
                 'customer_phone' => $order->customer_phone ?? null,
                 'customer_address' => $order->shipping_address ?? null,
-                'subtotal' => $subtotal,
+                'subtotal' => $subtotalNet,
                 'tax_amount' => $taxAmount,
                 'tax_rate' => $taxRate,
                 'discount_amount' => 0,

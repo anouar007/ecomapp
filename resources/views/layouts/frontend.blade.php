@@ -8,7 +8,7 @@
     <meta name="keywords" content="@yield('meta_keywords', setting('app_name', 'boutique') . ', e-commerce, Maroc, acheter en ligne, livraison Maroc')">
     <meta name="robots" content="@yield('meta_robots', 'index, follow')">
     <meta name="author" content="{{ setting('app_name', 'Speed Platform') }}">
-    <meta name="theme-color" content="#e94560">
+    <meta name="theme-color" content="#1964D6">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Canonical URL -->
@@ -89,7 +89,7 @@
     @endforeach
 
     <!-- Main Header -->
-    <div class="header-main sticky-top shadow-sm w-100 z-50">
+    <div class="header-main shadow-sm w-100" style="z-index: 1040;">
         <div class="container">
             <nav class="navbar navbar-expand-lg navbar-light py-2">
                 <div class="container-fluid px-0">

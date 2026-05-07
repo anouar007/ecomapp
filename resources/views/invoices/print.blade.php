@@ -211,76 +211,87 @@
         <div class="invoice-accent-bar"></div>
         <div class="invoice-content">
             <!-- Header Section -->
-            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 20px;">
                 <!-- Company Info -->
                 <div style="flex: 1;">
-                    <h1 class="company-name" style="font-size: 32px;">{{ setting('company_name', setting('app_name')) }}</h1>
-                    <div style="color: #64748b; line-height: 1.4; font-size: 14px;">
-                        {{ setting('company_address') }}<br>
-                        <div style="margin-top: 8px; display: flex; gap: 15px;">
-                            @if(setting('company_phone')) <span style="display: flex; align-items: center; gap: 6px;"><i class="fas fa-phone" style="font-size: 11px; color: #6366f1;"></i> {{ setting('company_phone') }}</span> @endif
-                            @if(setting('company_email')) <span style="display: flex; align-items: center; gap: 6px;"><i class="fas fa-envelope" style="font-size: 11px; color: #6366f1;"></i> {{ setting('company_email') }}</span> @endif
+                    <h1 class="company-name" style="font-size: 32px; margin-bottom: 8px;">{{ setting('company_name', setting('app_name')) }}</h1>
+                    <div style="color: #64748b; line-height: 1.4; font-size: 13px;">
+                        {{ setting('company_address') }}
+                        <div style="margin-top: 4px; display: flex; gap: 15px;">
+                            @if(setting('company_phone')) <span style="display: flex; align-items: center; gap: 6px;"><i class="fas fa-phone" style="font-size: 10px; color: #6366f1;"></i> {{ setting('company_phone') }}</span> @endif
+                            @if(setting('company_email')) <span style="display: flex; align-items: center; gap: 6px;"><i class="fas fa-envelope" style="font-size: 10px; color: #6366f1;"></i> {{ setting('company_email') }}</span> @endif
                         </div>
-                        <div class="fiscal-ids" style="margin-top: 15px;">
-                            @if(setting('company_tax_id')) <span class="fiscal-tag">{{ __('ICE') }}: {{ setting('company_tax_id') }}</span> @endif
-                            @if(setting('company_registry_id')) <span class="fiscal-tag">{{ __('RC') }}: {{ setting('company_registry_id') }}</span> @endif
-                            @if(setting('company_patente')) <span class="fiscal-tag">{{ __('Patente') }}: {{ setting('company_patente') }}</span> @endif
-                            @if(setting('company_fiscal_id')) <span class="fiscal-tag">{{ __('IF') }}: {{ setting('company_fiscal_id') }}</span> @endif
+                        <div class="fiscal-ids" style="margin-top: 10px; gap: 8px;">
+                            @if(setting('company_tax_id')) <span class="fiscal-tag" style="padding: 2px 8px;">{{ __('ICE') }}: {{ setting('company_tax_id') }}</span> @endif
+                            @if(setting('company_registry_id')) <span class="fiscal-tag" style="padding: 2px 8px;">{{ __('RC') }}: {{ setting('company_registry_id') }}</span> @endif
+                            @if(setting('company_patente')) <span class="fiscal-tag" style="padding: 2px 8px;">{{ __('Patente') }}: {{ setting('company_patente') }}</span> @endif
+                            @if(setting('company_fiscal_id')) <span class="fiscal-tag" style="padding: 2px 8px;">{{ __('IF') }}: {{ setting('company_fiscal_id') }}</span> @endif
                         </div>
                     </div>
                 </div>
 
-                <!-- Logo & Details -->
-                <div class="invoice-details" style="gap: 20px;">
-                    @if(setting('app_logo'))
-                        <div style="background: white; padding: 8px; border-radius: 12px; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
-                            <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="Logo" style="max-width: 140px; height: auto;">
-                        </div>
+                <!-- Logo -->
+                @if(setting('app_logo'))
+                    <div style="background: white; padding: 6px; border-radius: 12px; border: 1px solid #f1f5f9; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                        <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="Logo" style="max-width: 120px; height: auto;">
+                    </div>
+                @endif
+            </div>
+
+            <!-- Client & Invoice Info Row -->
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 25px;">
+                <!-- Client Info -->
+                <div style="flex: 1;">
+                    <p class="section-title" style="margin-bottom: 8px;">{{ $invoice->getBillToLabel() }}</p>
+                    <h3 style="font-size: 20px; font-weight: 800; color: #1e293b; margin: 0 0 4px 0;">{{ $invoice->customer_name }}</h3>
+                    @if($invoice->ice)
+                    <div style="margin-bottom: 6px;">
+                        <span style="background: #f1f5f9; color: #475569; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">{{ __('ICE') }}: {{ $invoice->ice }}</span>
+                    </div>
                     @endif
-                    <div class="details-grid" style="gap: 8px 24px;">
-                        <span class="label-sm">{{ $invoice->getNumberLabel() }}</span>
-                        <span class="value-md" style="font-size: 16px;">#{{ $invoice->invoice_number }}</span>
-                        <span class="label-sm">{{ __('Issue Date') }}</span>
-                        <span class="value-sm" style="font-size: 14px;">{{ $invoice->issued_at->translatedFormat('d M, Y') }}</span>
-                        @if($invoice->due_date)
-                        <span class="label-sm">{{ __('Due Date') }}</span>
-                        <span class="value-sm" style="font-size: 14px; color: #ef4444;">{{ $invoice->due_date->translatedFormat('d M, Y') }}</span>
+                    <div style="color: #475569; font-size: 13px; line-height: 1.4;">
+                        @php
+                            $address = $invoice->customer_address ?: ($invoice->order->shipping_address ?? null);
+                        @endphp
+                        @if($address) 
+                        <div style="display: flex; align-items: start; gap: 8px; margin-bottom: 2px;">
+                            <i class="fas fa-map-marker-alt" style="margin-top: 3px; color: #94a3b8; font-size: 11px;"></i>
+                            <span>{{ $address }}</span>
+                        </div> 
+                        @endif
+                        @if($invoice->customer_phone || $invoice->customer_email)
+                        <div style="display: flex; gap: 15px;">
+                            @if($invoice->customer_phone) 
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-phone-alt" style="color: #94a3b8; font-size: 11px;"></i>
+                                <span>{{ $invoice->customer_phone }}</span>
+                            </div> 
+                            @endif
+                            @if($invoice->customer_email) 
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-envelope" style="color: #94a3b8; font-size: 11px;"></i>
+                                <span>{{ $invoice->customer_email }}</span>
+                            </div> 
+                            @endif
+                        </div>
                         @endif
                     </div>
                 </div>
-            </div>
 
-            <!-- Client Info -->
-            <div style="margin-bottom: 40px;">
-                <p class="section-title">{{ $invoice->getBillToLabel() }}</p>
-                <h3 style="font-size: 22px; font-weight: 800; color: #1e293b; margin: 0 0 5px 0;">{{ $invoice->customer_name }}</h3>
-                @if($invoice->ice)
-                <div style="margin-bottom: 8px;">
-                    <span style="background: #f1f5f9; color: #475569; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">{{ __('ICE') }}: {{ $invoice->ice }}</span>
-                </div>
-                @endif
-                <div style="color: #475569; font-size: 14px; line-height: 1.5;">
-                    @php
-                        $address = $invoice->customer_address ?: ($invoice->order->shipping_address ?? null);
-                    @endphp
-                    @if($address) 
-                    <div style="display: flex; align-items: start; gap: 10px; margin-bottom: 4px;">
-                        <i class="fas fa-map-marker-alt" style="margin-top: 3px; color: #94a3b8; font-size: 12px;"></i>
-                        <span>{{ $address }}</span>
-                    </div> 
-                    @endif
-                    @if($invoice->customer_phone) 
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
-                        <i class="fas fa-phone-alt" style="color: #94a3b8; font-size: 12px;"></i>
-                        <span>{{ $invoice->customer_phone }}</span>
-                    </div> 
-                    @endif
-                    @if($invoice->customer_email) 
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <i class="fas fa-envelope" style="color: #94a3b8; font-size: 12px;"></i>
-                        <span>{{ $invoice->customer_email }}</span>
-                    </div> 
-                    @endif
+                <!-- Invoice Details -->
+                <div class="invoice-details" style="gap: 10px; text-align: right;">
+                    <div class="details-grid" style="gap: 4px 20px; display: grid; grid-template-columns: auto auto;">
+                        <span class="label-sm">{{ $invoice->getNumberLabel() }}</span>
+                        <span class="value-md" style="font-size: 15px;">#{{ $invoice->invoice_number }}</span>
+                        <span class="label-sm">{{ __('Issue Date') }}</span>
+                        <span class="value-sm" style="font-size: 13px;">{{ $invoice->issued_at->translatedFormat('d M, Y') }}</span>
+                        @if($invoice->due_date)
+                        <span class="label-sm">{{ __('Due Date') }}</span>
+                        <span class="value-sm" style="font-size: 13px; color: #ef4444;">{{ $invoice->due_date->translatedFormat('d M, Y') }}</span>
+                        @endif
+                        <span class="label-sm">{{ __('Status') }}</span>
+                        <span class="value-sm" style="font-size: 13px; text-transform: capitalize;">{{ $invoice->payment_status }}</span>
+                    </div>
                 </div>
             </div>
 
@@ -304,8 +315,8 @@
                             @endif
                         </td>
                         <td style="text-align: center; font-weight: 500;">{{ $item->quantity }}</td>
-                        <td style="text-align: {{ app()->getLocale() === 'ar' ? 'left' : 'right' }}; font-weight: 500;">{{ $item->formatted_unit_price }}</td>
-                        <td style="text-align: {{ app()->getLocale() === 'ar' ? 'left' : 'right' }}; font-weight: 800; color: #1e293b;">{{ $item->formatted_total_price }}</td>
+                        <td style="text-align: {{ app()->getLocale() === 'ar' ? 'left' : 'right' }}; font-weight: 500;">{{ $item->formatted_unit_price_ht }}</td>
+                        <td style="text-align: {{ app()->getLocale() === 'ar' ? 'left' : 'right' }}; font-weight: 800; color: #1e293b;">{{ $item->formatted_total_price_ht }}</td>
                     </tr>
                     @endforeach
                 </tbody>

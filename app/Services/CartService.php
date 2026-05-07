@@ -104,11 +104,12 @@ class CartService
         }
 
         $taxRate = 0.20; // 20% tax
-        $tax = $subtotal * $taxRate;
-        $total = $subtotal + $tax;
+        $total = $subtotal;
+        $tax = $total - ($total / (1 + $taxRate));
+        $subtotalNet = $total - $tax;
 
         return [
-            'subtotal' => $subtotal,
+            'subtotal' => $subtotalNet,
             'tax' => $tax,
             'total' => $total,
             'item_count' => $itemCount,

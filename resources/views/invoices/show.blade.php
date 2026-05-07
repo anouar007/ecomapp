@@ -85,114 +85,114 @@
     <!-- Invoice Content Card -->
     <div class="invoice-card">
         <div class="invoice-accent-bar"></div>
-        <div style="padding: 60px;">
+        <div style="padding: 40px;">
             <!-- Header Section -->
-            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 60px;">
-                <!-- Company Info (Left) -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 20px;">
+                <!-- Company Info -->
                 <div style="flex: 1;">
-                    <h2 style="font-size: 42px; font-weight: 800; color: #1e293b; margin: 0 0 16px 0; letter-spacing: -2px; line-height: 1;">{{ setting('company_name', setting('app_name')) }}</h2>
-                    
-                    <div style="color: #64748b; line-height: 1.6; font-size: 15px; font-weight: 400;">
-                        {{ setting('company_address') }}<br>
-                        <div style="margin-top: 10px; display: flex; gap: 20px;">
-                            @if(setting('company_phone')) <span style="display: inline-flex; align-items: center; gap: 8px;"><i class="fas fa-phone" style="font-size: 12px; color: #6366f1;"></i> {{ setting('company_phone') }}</span> @endif
-                            @if(setting('company_email')) <span style="display: inline-flex; align-items: center; gap: 8px;"><i class="fas fa-envelope" style="font-size: 12px; color: #6366f1;"></i> {{ setting('company_email') }}</span> @endif
+                    <h2 style="font-size: 32px; font-weight: 800; color: #1e293b; margin: 0 0 8px 0; letter-spacing: -1.5px; line-height: 1;">{{ setting('company_name', setting('app_name')) }}</h2>
+                    <div style="color: #64748b; line-height: 1.4; font-size: 13px;">
+                        <p style="margin: 0 0 4px 0;">{{ setting('company_address') }}</p>
+                        <div style="display: flex; gap: 15px; margin-bottom: 8px;">
+                            @if(setting('company_phone')) <span style="display: inline-flex; align-items: center; gap: 6px;"><i class="fas fa-phone" style="font-size: 10px; color: #6366f1;"></i> {{ setting('company_phone') }}</span> @endif
+                            @if(setting('company_email')) <span style="display: inline-flex; align-items: center; gap: 6px;"><i class="fas fa-envelope" style="font-size: 10px; color: #6366f1;"></i> {{ setting('company_email') }}</span> @endif
                         </div>
-                        
-                        <div style="margin-top: 24px; display: flex; flex-wrap: wrap; gap: 12px; font-size: 11px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
-                            @if(setting('company_tax_id')) <span style="background: #f8fafc; padding: 4px 10px; border-radius: 6px; border: 1px solid #f1f5f9;">{{ __('ICE') }}: {{ setting('company_tax_id') }}</span> @endif
-                            @if(setting('company_registry_id')) <span style="background: #f8fafc; padding: 4px 10px; border-radius: 6px; border: 1px solid #f1f5f9;">{{ __('RC') }}: {{ setting('company_registry_id') }}</span> @endif
-                            @if(setting('company_patente')) <span style="background: #f8fafc; padding: 4px 10px; border-radius: 6px; border: 1px solid #f1f5f9;">{{ __('Patente') }}: {{ setting('company_patente') }}</span> @endif
-                            @if(setting('company_fiscal_id')) <span style="background: #f8fafc; padding: 4px 10px; border-radius: 6px; border: 1px solid #f1f5f9;">{{ __('IF') }}: {{ setting('company_fiscal_id') }}</span> @endif
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            @if(setting('company_tax_id')) <span style="background: #f8fafc; padding: 2px 8px; border-radius: 4px; border: 1px solid #f1f5f9; font-size: 9px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">{{ __('ICE') }}: {{ setting('company_tax_id') }}</span> @endif
+                            @if(setting('company_registry_id')) <span style="background: #f8fafc; padding: 2px 8px; border-radius: 4px; border: 1px solid #f1f5f9; font-size: 9px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">{{ __('RC') }}: {{ setting('company_registry_id') }}</span> @endif
+                            @if(setting('company_patente')) <span style="background: #f8fafc; padding: 2px 8px; border-radius: 4px; border: 1px solid #f1f5f9; font-size: 9px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">{{ __('Patente') }}: {{ setting('company_patente') }}</span> @endif
+                            @if(setting('company_fiscal_id')) <span style="background: #f8fafc; padding: 2px 8px; border-radius: 4px; border: 1px solid #f1f5f9; font-size: 9px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">{{ __('IF') }}: {{ setting('company_fiscal_id') }}</span> @endif
                         </div>
                     </div>
                 </div>
 
-                <!-- Logo & Invoice Details (Right) -->
-                <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 32px;">
-                    @if(setting('app_logo'))
-                        <div style="background: white; padding: 10px; border-radius: 16px; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
-                            <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="Company Logo" style="max-width: 180px; height: auto; object-fit: contain;">
-                        </div>
-                    @endif
-
-                    <div style="display: grid; grid-template-columns: auto auto; gap: 12px 32px; text-align: {{ app()->getLocale() === 'ar' ? 'left' : 'right' }};">
-                        @if($invoice->isQuote())
-                        <div style="grid-column: span 2; margin-bottom: 8px;">
-                            <span style="background: #fef3c7; color: #d97706; padding: 6px 16px; border-radius: 99px; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">{{ __('Quote') }}</span>
-                        </div>
-                        @endif
-                        <span style="color: #94a3b8; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px;">{{ $invoice->getNumberLabel() }}</span>
-                        <span style="color: #1e293b; font-weight: 800; font-size: 18px;">#{{ $invoice->invoice_number }}</span>
-                        
-                        <span style="color: #94a3b8; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px;">{{ __('Issue Date') }}</span>
-                        <span style="color: #1e293b; font-weight: 600; font-size: 15px;">{{ $invoice->issued_at->translatedFormat('d M, Y') }}</span>
-                        
-                        @if($invoice->due_date)
-                        <span style="color: #94a3b8; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px;">{{ __('Due Date') }}</span>
-                        <span style="color: #ef4444; font-weight: 700; font-size: 15px;">{{ $invoice->due_date->translatedFormat('d M, Y') }}</span>
-                        @endif
+                <!-- Logo -->
+                @if(setting('app_logo'))
+                <div style="width: 150px; text-align: right;">
+                    <div style="background: white; padding: 6px; border-radius: 12px; border: 1px solid #f1f5f9; display: inline-block;">
+                        <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="Logo" style="max-width: 120px; height: auto;">
                     </div>
-                </div>
-            </div>
-
-            <!-- Client Info Section -->
-            <div style="margin-bottom: 60px;">
-                <p style="color: #6366f1; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px;">{{ $invoice->getBillToLabel() }}</p>
-                <h3 style="font-size: 26px; font-weight: 800; color: #1e293b; margin: 0 0 5px 0; line-height: 1.2;">{{ $invoice->customer_name }}</h3>
-                @if($invoice->ice)
-                <div style="margin-bottom: 10px;">
-                    <span style="background: #f1f5f9; color: #475569; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">{{ __('ICE') }}: {{ $invoice->ice }}</span>
                 </div>
                 @endif
-                <div style="color: #475569; font-size: 15px; line-height: 1.6;">
-                    @php
-                        $address = $invoice->customer_address ?: ($invoice->order->shipping_address ?? null);
-                    @endphp
-                    @if($address) 
-                    <div style="margin-bottom: 8px; display: flex; align-items: start; gap: 10px;">
-                        <i class="fas fa-map-marker-alt" style="margin-top: 4px; color: #94a3b8; font-size: 14px;"></i>
-                        <span style="max-width: 350px;">{{ $address }}</span>
-                    </div> 
+            </div>
+
+            <!-- Client & Invoice Info Row -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px;">
+                <!-- Client Info -->
+                <div style="flex: 1.2;">
+                    <p style="color: #6366f1; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;">{{ $invoice->getBillToLabel() }}</p>
+                    <h3 style="font-size: 20px; font-weight: 800; color: #1e293b; margin: 0 0 4px 0;">{{ $invoice->customer_name }}</h3>
+                    
+                    @if($invoice->ice)
+                    <div style="margin-bottom: 6px;">
+                        <span style="background: #f1f5f9; color: #475569; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">{{ __('ICE') }}: {{ $invoice->ice }}</span>
+                    </div>
                     @endif
-                    @if($invoice->customer_phone) 
-                    <div style="margin-bottom: 4px; display: flex; align-items: center; gap: 10px;">
-                        <i class="fas fa-phone-alt" style="color: #94a3b8; font-size: 14px;"></i>
-                        <span>{{ $invoice->customer_phone }}</span>
-                    </div> 
-                    @endif
-                    @if($invoice->customer_email) 
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <i class="far fa-envelope" style="color: #94a3b8; font-size: 14px;"></i>
-                        <span>{{ $invoice->customer_email }}</span>
-                    </div> 
-                    @endif
+
+                    <div style="color: #475569; font-size: 13px; line-height: 1.4;">
+                        @php $address = $invoice->customer_address ?: ($invoice->order->shipping_address ?? null); @endphp
+                        @if($address) 
+                        <div style="display: flex; align-items: start; gap: 8px; margin-bottom: 2px;">
+                            <i class="fas fa-map-marker-alt" style="margin-top: 3px; color: #cbd5e1; font-size: 11px;"></i>
+                            <span>{{ $address }}</span>
+                        </div> 
+                        @endif
+                        <div style="display: flex; gap: 15px;">
+                            @if($invoice->customer_phone) 
+                            <span style="display: inline-flex; align-items: center; gap: 8px;"><i class="fas fa-phone" style="color: #cbd5e1; font-size: 11px;"></i> {{ $invoice->customer_phone }}</span>
+                            @endif
+                            @if($invoice->customer_email) 
+                            <span style="display: inline-flex; align-items: center; gap: 8px;"><i class="fas fa-envelope" style="color: #cbd5e1; font-size: 11px;"></i> {{ $invoice->customer_email }}</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Invoice Details -->
+                <div style="flex: 0.8; text-align: right;">
+                    <div style="display: inline-grid; grid-template-columns: auto auto; gap: 4px 20px; text-align: right;">
+                        <span style="color: #94a3b8; font-weight: 700; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px;">{{ $invoice->getNumberLabel() }}</span>
+                        <span style="color: #1e293b; font-weight: 800; font-size: 15px;">#{{ $invoice->invoice_number }}</span>
+                        
+                        <span style="color: #94a3b8; font-weight: 700; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px;">{{ __('Issue Date') }}</span>
+                        <span style="color: #1e293b; font-weight: 600; font-size: 13px;">{{ $invoice->issued_at->translatedFormat('d M, Y') }}</span>
+                        
+                        @if($invoice->due_date)
+                        <span style="color: #94a3b8; font-weight: 700; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px;">{{ __('Due Date') }}</span>
+                        <span style="color: #ef4444; font-weight: 700; font-size: 13px;">{{ $invoice->due_date->translatedFormat('d M, Y') }}</span>
+                        @endif
+
+                        <span style="color: #94a3b8; font-weight: 700; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px;">{{ __('Status') }}</span>
+                        <span style="background: {{ $invoice->status_color }}20; color: {{ $invoice->status_color }}; padding: 2px 8px; border-radius: 100px; font-weight: 700; font-size: 10px; text-transform: uppercase;">
+                            {{ $invoice->status_label }}
+                        </span>
+                    </div>
                 </div>
             </div>
 
             <!-- Items Table -->
-            <div style="margin-bottom: 60px; border: 1px solid #f1f5f9; border-radius: 16px; overflow: hidden;">
+            <div style="margin-bottom: 30px; border: 1px solid #f1f5f9; border-radius: 12px; overflow: hidden;">
                 <table class="items-table" style="width: 100%; border-collapse: collapse;">
                     <thead>
                         <tr>
-                            <th style="padding: 20px 24px; text-align: {{ app()->getLocale() === 'ar' ? 'right' : 'left' }}; color: #475569; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">{{ __('Description') }}</th>
-                            <th style="padding: 20px 24px; text-align: center; color: #475569; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; width: 100px;">{{ __('Qty') }}</th>
-                            <th style="padding: 20px 24px; text-align: {{ app()->getLocale() === 'ar' ? 'left' : 'right' }}; color: #475569; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; width: 160px;">{{ __('Unit Price') }}</th>
-                            <th style="padding: 20px 24px; text-align: {{ app()->getLocale() === 'ar' ? 'left' : 'right' }}; color: #475569; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; width: 160px;">{{ __('Total') }}</th>
+                            <th style="padding: 12px 15px; text-align: left; background: #f8fafc; color: #475569; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">{{ __('Description') }}</th>
+                            <th style="padding: 12px 15px; text-align: center; background: #f8fafc; color: #475569; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">{{ __('Qty') }}</th>
+                            <th style="padding: 12px 15px; text-align: right; background: #f8fafc; color: #475569; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">{{ __('Unit Price') }}</th>
+                            <th style="padding: 12px 15px; text-align: right; background: #f8fafc; color: #475569; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">{{ __('Total') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($invoice->items as $item)
                         <tr>
-                            <td style="padding: 24px; vertical-align: top;">
-                                <div style="font-weight: 700; color: #1e293b; font-size: 16px; margin-bottom: 4px;">{{ $item->product_name }}</div>
+                            <td style="padding: 15px; border-bottom: 1px solid #f1f5f9;">
+                                <div style="font-weight: 700; color: #1e293b; font-size: 14px; margin-bottom: 2px;">{{ $item->product_name }}</div>
                                 @if($item->product_sku)
-                                <div style="font-size: 12px; color: #94a3b8; font-weight: 500;">{{ __('SKU') }}: {{ $item->product_sku }}</div>
+                                <div style="font-size: 11px; color: #94a3b8; font-weight: 500;">{{ __('SKU') }}: {{ $item->product_sku }}</div>
                                 @endif
                             </td>
-                            <td style="padding: 24px; text-align: center; color: #475569; font-size: 16px; font-weight: 500;">{{ $item->quantity }}</td>
-                            <td style="padding: 24px; text-align: {{ app()->getLocale() === 'ar' ? 'left' : 'right' }}; color: #475569; font-size: 16px; font-weight: 500;">{{ $item->formatted_unit_price }}</td>
-                            <td style="padding: 24px; text-align: {{ app()->getLocale() === 'ar' ? 'left' : 'right' }}; color: #1e293b; font-weight: 800; font-size: 16px;">{{ $item->formatted_total_price }}</td>
+                            <td style="padding: 15px; border-bottom: 1px solid #f1f5f9; text-align: center; color: #475569; font-size: 14px; font-weight: 500;">{{ $item->quantity }}</td>
+                            <td style="padding: 15px; border-bottom: 1px solid #f1f5f9; text-align: right; color: #475569; font-size: 14px; font-weight: 500;">{{ $item->formatted_unit_price_ht }}</td>
+                            <td style="padding: 15px; border-bottom: 1px solid #f1f5f9; text-align: right; color: #1e293b; font-weight: 800; font-size: 14px;">{{ $item->formatted_total_price_ht }}</td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -200,45 +200,45 @@
             </div>
 
             <!-- Totals & Notes -->
-            <div style="display: flex; gap: 60px;">
-                <div style="flex: 1;">
+            <div style="display: flex; gap: 40px; align-items: flex-start;">
+                <div style="flex: 1.2;">
                     <!-- Amounts in Words -->
-                    <div style="margin-bottom: 32px; background: #f8fafc; padding: 24px; border-radius: 16px; border: 1px solid #f1f5f9;">
-                        <p style="color: #6366f1; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">{{ __('Total in Words') }}</p>
-                        <p style="color: #475569; font-style: italic; font-size: 15px; margin: 0; line-height: 1.5;">
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #f1f5f9; margin-bottom: 20px;">
+                        <p style="color: #6366f1; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">{{ __('Total in Words') }}</p>
+                        <p style="color: #475569; font-style: italic; font-size: 13px; margin: 0; line-height: 1.4;">
                             {{ __('Stopped this invoice at the sum of') }}: <strong style="color: #1e293b;">{{ $invoice->total_in_words }} {{ setting('currency_code', 'USD') }}</strong>
                         </p>
                     </div>
 
                     @if($invoice->notes)
-                    <div style="padding: 0 24px;">
-                        <p style="color: #94a3b8; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">{{ __('Notes') }}</p>
-                        <p style="color: #475569; font-size: 14px; line-height: 1.6; margin: 0;">{{ $invoice->notes }}</p>
+                    <div style="padding: 0 10px;">
+                        <p style="color: #94a3b8; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">{{ __('Notes') }}</p>
+                        <p style="color: #475569; font-size: 12px; line-height: 1.5; margin: 0;">{{ $invoice->notes }}</p>
                     </div>
                     @endif
                 </div>
 
-                <div style="width: 380px;">
-                    <div style="background: #f8fafc; padding: 32px; border-radius: 24px; border: 1px solid #f1f5f9;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
-                            <span style="color: #64748b; font-weight: 500; font-size: 15px;">{{ __('Subtotal') }} (HT)</span>
-                            <span style="font-weight: 700; color: #1e293b; font-size: 15px;">{{ $invoice->formatted_subtotal }}</span>
+                <div style="flex: 0.8;">
+                    <div style="background: #f8fafc; padding: 24px; border-radius: 16px; border: 1px solid #f1f5f9;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                            <span style="color: #64748b; font-weight: 500; font-size: 14px;">{{ __('Subtotal') }} (HT)</span>
+                            <span style="font-weight: 700; color: #1e293b; font-size: 14px;">{{ $invoice->formatted_subtotal }}</span>
                         </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
-                            <span style="color: #64748b; font-weight: 500; font-size: 15px;">{{ __('Tax') }} ({{ $invoice->tax_rate }}%)</span>
-                            <span style="font-weight: 700; color: #1e293b; font-size: 15px;">{{ $invoice->formatted_tax_amount }}</span>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                            <span style="color: #64748b; font-weight: 500; font-size: 14px;">{{ __('Tax') }} ({{ $invoice->tax_rate }}%)</span>
+                            <span style="font-weight: 700; color: #1e293b; font-size: 14px;">{{ $invoice->formatted_tax_amount }}</span>
                         </div>
                         @if($invoice->discount_amount > 0)
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
-                            <span style="color: #10b981; font-weight: 500; font-size: 15px;">{{ __('Discount') }}</span>
-                            <span style="font-weight: 700; color: #10b981; font-size: 15px;">-{{ $invoice->formatted_discount_amount }}</span>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                            <span style="color: #10b981; font-weight: 500; font-size: 14px;">{{ __('Discount') }}</span>
+                            <span style="font-weight: 700; color: #10b981; font-size: 14px;">-{{ $invoice->formatted_discount_amount }}</span>
                         </div>
                         @endif
                         
-                        <div style="border-top: 2px dashed #e2e8f0; margin-top: 24px; padding-top: 24px; display: flex; justify-content: space-between; align-items: flex-end;">
-                            <div>
-                                <span style="font-size: 13px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 4px;">{{ __('Total') }} (TTC)</span>
-                                <span style="font-size: 38px; font-weight: 900; color: #6366f1; letter-spacing: -1.5px; line-height: 1;">{{ $invoice->formatted_total_amount }}</span>
+                        <div style="border-top: 2px dashed #e2e8f0; margin-top: 20px; padding-top: 20px;">
+                            <span style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 4px;">{{ __('Total') }} (TTC)</span>
+                            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                                <span style="font-size: 32px; font-weight: 900; color: #6366f1; letter-spacing: -1.5px; line-height: 1;">{{ $invoice->formatted_total_amount }}</span>
                             </div>
                         </div>
                     </div>

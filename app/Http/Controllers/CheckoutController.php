@@ -52,9 +52,10 @@ class CheckoutController extends Controller
             $subtotal += $details['price'] * $details['quantity'];
         }
 
-        $taxRateSetting = floatval(setting('tax_rate', 0));
-        $tax = ($subtotal * $taxRateSetting) / 100;
-        $total = $subtotal + $tax;
+        $taxRateSetting = floatval(setting('tax_rate', 0)) / 100;
+        $total = $subtotal; // Subtotal is already tax-inclusive (TTC)
+        $tax = $total - ($total / (1 + $taxRateSetting));
+        $subtotalNet = $total - $tax;
 
         // Create Order
         $order = Order::create([
@@ -69,7 +70,7 @@ class CheckoutController extends Controller
             'shipping_state' => $request->shipping_state,
             'shipping_zip'   => 'N/A',
             'shipping_country' => 'Morocco',
-            'subtotal' => $subtotal,
+            'subtotal' => $subtotalNet,
             'tax' => $tax,
             'total' => $total,
             'status' => 'pending',

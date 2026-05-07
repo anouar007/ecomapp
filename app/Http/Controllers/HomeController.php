@@ -36,16 +36,22 @@ class HomeController extends Controller
                 ->get();
         }
 
-        // 2. All Categories List
+        // 2. All Categories List with products (eager load images)
         $allCategories = Category::where('status', 'active')
+            ->with(['products' => function($query) {
+                $query->where('status', 'active')
+                    ->with(['primaryImage', 'images']) // Eager load for image attribute
+                    ->latest()
+                    ->take(4);
+            }])
             ->orderBy('sort_order', 'asc')
-            ->get(); // Fetching all for the list section
+            ->get();
 
-        // 3. Featured Products
+        // 3. Featured Products - Show only one row (4 items)
         $featuredProducts = Product::where('status', 'active')
             ->with(['productCategory', 'primaryImage', 'images'])
-            ->latest() // Use latest for now as "featured"
-            ->take(8)
+            ->latest() 
+            ->take(4) // One row
             ->get()
             ->map(function($product) {
                 // Compatibility for new view
@@ -57,6 +63,15 @@ class HomeController extends Controller
                 $product->in_wishlist = false; // Requires auth check ideally
                 return $product;
             });
+
+        // Ensure category products also have these properties for the view
+        foreach($allCategories as $category) {
+            $category->products->each(function($product) {
+                $product->thumbnail = $product->main_image ? Storage::url($product->main_image) : null;
+                $product->rating = rand(3, 5);
+                $product->review_count = rand(10, 500);
+            });
+        }
 
         // 4. Testimonials
         $testimonials = \App\Models\Testimonial::where('is_active', true)
