@@ -134,21 +134,7 @@
                 <i class="fas fa-sliders-h fs-4"></i>
             </button>
 
-            {{-- Advanced Filters Bottom Sheet --}}
-            <div class="offcanvas offcanvas-bottom border-0 shadow-lg d-lg-none" tabindex="-1" id="shopFiltersBottom" style="height: 70vh; border-radius: 28px 28px 0 0;">
-                <div class="offcanvas-header bg-white border-bottom py-3 px-4">
-                    <h5 class="offcanvas-title fw-bold">Options de filtrage</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                </div>
-                <div class="offcanvas-body p-4 bg-light">
-                    @include('frontend.shop.partials.sidebar-content')
-                    <div class="mt-4 pb-5">
-                        <button class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-lg" data-bs-dismiss="offcanvas">
-                            Voir les {{ $products->total() }} produits
-                        </button>
-                    </div>
-                </div>
-            </div>
+
 
             {{-- ── SIDEBAR (Desktop) / OFFCANVAS (Mobile) ── --}}
             <div class="col-lg-3 d-none d-lg-block">
@@ -157,18 +143,7 @@
                 </div>
             </div>
 
-            {{-- Mobile Offcanvas --}}
-            <div class="offcanvas offcanvas-start border-0 shadow-lg d-lg-none" tabindex="-1" id="shopSidebarOffcanvas" style="width: 320px;">
-                <div class="offcanvas-header bg-white border-bottom py-3">
-                    <h5 class="offcanvas-title fw-bold" id="shopSidebarOffcanvasLabel">
-                        <i class="fas fa-filter me-2 text-primary"></i>Filtres
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                </div>
-                <div class="offcanvas-body p-4 bg-light">
-                    @include('frontend.shop.partials.sidebar-content')
-                </div>
-            </div>
+
 
             {{-- ── PRODUCT GRID ── --}}
             <div class="col-lg-9">
@@ -228,6 +203,34 @@
         </div>
     </div>
 </section>
+
+{{-- ── OFFCANVAS COMPONENTS (Moved outside main containers) ── --}}
+<div class="offcanvas offcanvas-bottom border-0 shadow-lg d-lg-none" tabindex="-1" id="shopFiltersBottom" style="height: 70vh; border-radius: 28px 28px 0 0;">
+    <div class="offcanvas-header bg-white border-bottom py-3 px-4">
+        <h5 class="offcanvas-title fw-bold">Options de filtrage</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-4 bg-light">
+        @include('frontend.shop.partials.sidebar-content')
+        <div class="mt-4 pb-5">
+            <button class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-lg" data-bs-dismiss="offcanvas">
+                Voir les {{ $products->total() }} produits
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-start border-0 shadow-lg d-lg-none" tabindex="-1" id="shopSidebarOffcanvas" style="width: 320px;">
+    <div class="offcanvas-header bg-white border-bottom py-3">
+        <h5 class="offcanvas-title fw-bold" id="shopSidebarOffcanvasLabel">
+            <i class="fas fa-filter me-2 text-primary"></i>Filtres
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-4 bg-light">
+        @include('frontend.shop.partials.sidebar-content')
+    </div>
+</div>
 
 @endsection
 
