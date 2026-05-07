@@ -1,162 +1,336 @@
 /* 
-   Coop Ait Oumdis — Premium Bio & Natural Design System
-   Modern, Clean, and Vibrant Green
+   Maison Argan Katy — "Dangila" Design System
+   Natural Luxury, Organic, Editorial
 */
 
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
 :root {
-    /* Brand Colors (Pure Green & White) */
-    --brand-primary: #3BB878;
-    --brand-primary-dark: #2f9461;
-    --brand-primary-light: #e8f7ef;
-    --brand-secondary: #2D3436;
-    --brand-accent: #3BB878;
-    --brand-cream: #FFFFFF;
-    --brand-beige: #F9FAFB;
-    --brand-white: #FFFFFF;
+    /* Dangila Palette */
+    --color-primary: #A36E4D; /* Muted Terracotta */
+    --color-primary-hover: #8B5A3E;
+    --color-bg: #FDF8F4; /* Warm Light Beige */
+    --color-surface: #FFFFFF;
+    --color-text-main: #000000;
+    --color-text-secondary: #3D2110; /* Dark Espresso */
+    --color-text-dim: #8E837D;
     
-    /* Text Colors */
-    --text-dark: #1F2937;
-    --text-medium: #4B5563;
-    --text-light: #9CA3AF;
+    /* Typography */
+    --font-main: 'Plus Jakarta Sans', sans-serif;
     
-    /* Layout */
-    --font-main: 'Tajawal', sans-serif;
-    --radius-sm: 10px;
-    --radius-md: 16px;
-    --radius-lg: 24px;
-    --radius-full: 50%;
-    
-    /* Shadows */
-    --shadow-sm: 0 2px 10px rgba(59, 184, 120, 0.05);
-    --shadow-md: 0 4px 20px rgba(59, 184, 120, 0.08);
-    --shadow-lg: 0 10px 40px rgba(59, 184, 120, 0.12);
+    /* Transitions */
+    --transition-smooth: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
 }
+
+.opacity-05 { opacity: 0.05 !important; }
+.shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15); }
+.hover-scale-105:hover { transform: scale(1.05); }
 
 /* ── Global Styles ── */
 body {
+    background-color: var(--color-bg);
+    color: var(--color-text-secondary);
     font-family: var(--font-main);
-    background-color: var(--brand-white);
-    color: var(--text-dark);
     line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
 }
-
-/* ── Modern Animations ── */
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes scaleIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
-}
-
-.anim-fade-up { animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-.anim-scale-in { animation: scaleIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 
 /* ── Typography ── */
-.text-green { color: var(--brand-primary) !important; }
+h1, h2, h3, h4, .dangila-heading {
+    font-weight: 700;
+    color: var(--color-text-main);
+    letter-spacing: -0.01em;
+}
 
-/* ── Premium Buttons ── */
-.btn-brand {
+.text-primary { color: var(--color-primary) !important; }
+.text-espresso { color: var(--color-text-secondary); }
+
+/* ── Buttons (Pill-shaped) ── */
+.btn-dangila {
     display: inline-flex;
     align-items: center;
-    gap: 12px;
-    padding: 14px 32px;
-    border-radius: 100px; /* Modern Pill shape */
+    justify-content: center;
+    padding: 16px 36px;
+    background: var(--color-primary);
+    color: var(--color-surface);
+    border-radius: 980px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--transition-smooth);
+    border: 2px solid var(--color-primary);
+}
+
+.btn-dangila:hover {
+    background: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+    transform: translateY(-2px);
+    color: var(--color-surface);
+}
+
+.btn-dangila-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 36px;
+    background: transparent;
+    color: var(--color-text-main);
+    border-radius: 980px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--transition-smooth);
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+.btn-dangila-outline:hover {
+    border-color: var(--color-text-main);
+    transform: translateY(-2px);
+}
+
+/* ── Navigation ── */
+.nav-dangila {
+    background: rgba(253, 248, 244, 0.8);
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(163, 110, 77, 0.05);
+    transition: var(--transition-smooth);
+}
+
+.nav-link-dangila {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-text-main);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: var(--transition-smooth);
+}
+
+.nav-link-dangila:hover, .nav-link-dangila.active {
+    opacity: 1;
+    color: var(--color-primary);
+}
+
+/* ── Layout Patterns ── */
+.section-padding { padding: 120px 0; }
+@media (max-width: 768px) { .section-padding { padding: 80px 0; } }
+
+.container-dangila { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+
+/* ── Product Cards ── */
+.card-dangila {
+    background: var(--color-surface);
+    border-radius: 32px;
+    padding: 12px;
+    border: 1px solid transparent;
+    transition: var(--transition-smooth);
+}
+
+.card-dangila:hover {
+    transform: translateY(-8px);
+    border-color: rgba(163, 110, 77, 0.1);
+    box-shadow: 0 30px 60px rgba(163, 110, 77, 0.08);
+}
+
+/* ── Badges ── */
+.badge-dangila {
+    background: var(--color-primary);
+    color: var(--color-surface);
+    padding: 6px 16px;
+    border-radius: 980px;
+    font-size: 0.75rem;
     font-weight: 700;
-    letter-spacing: 0.5px;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* ── Hero Specifics ── */
+.hero-dangila {
+    min-vh-100;
+    position: relative;
+    background-color: var(--color-bg);
+    display: flex;
+    align-items: center;
+    padding-top: 100px;
+}
+
+.vertical-title-bg {
+    position: absolute;
+    right: -10%;
+    top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    font-size: 20rem;
+    font-weight: 900;
+    color: var(--color-text-main);
+    opacity: 0.03;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.btn-split-dangila {
+    display: inline-flex;
+    align-items: center;
+    background: var(--color-primary);
+    color: white;
+    border-radius: 980px;
+    overflow: hidden;
+    text-decoration: none;
+    transition: var(--transition-smooth);
+}
+
+.btn-split-dangila .btn-main {
+    padding: 16px 32px;
+    font-weight: 700;
+}
+
+.btn-split-dangila .btn-price {
+    padding: 16px 24px;
+    background: rgba(0,0,0,0.1);
+    border-left: 1px solid rgba(255,255,255,0.2);
+    font-weight: 400;
+}
+
+.btn-split-dangila:hover {
+    background: var(--color-primary-hover);
+    color: white;
+    transform: scale(1.05);
+}
+
+.stat-item .stat-number {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--color-text-main);
+    line-height: 1;
+}
+
+.stat-item .stat-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--color-text-dim);
+    margin-top: 10px;
+}
+
+.benefit-card {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.benefit-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 50%;
+    color: var(--color-primary);
+    box-shadow: 0 10px 30px rgba(163, 110, 77, 0.08);
+}
+
+/* ── Custom Scrollbar ── */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: #E5D5C8; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-primary); }
+
+.dots-pattern {
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 100px;
+    height: 100px;
+    background-image: radial-gradient(var(--color-primary) 1px, transparent 1px);
+    background-size: 15px 15px;
+    opacity: 0.1;
+    z-index: 1;
+}
+
+.btn-dangila-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 36px;
+    background: #E5D5C8;
+    color: var(--color-text-secondary);
+    border-radius: 980px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--transition-smooth);
     border: none;
 }
 
-.btn-brand-primary {
-    background: var(--brand-primary);
-    color: var(--brand-white) !important;
-    box-shadow: 0 10px 20px rgba(59, 184, 120, 0.2);
+.btn-dangila-secondary:hover {
+    background: #D4C3B5;
+    transform: translateY(-2px);
 }
 
-.btn-brand-primary:hover {
-    background: var(--brand-primary-dark);
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 15px 30px rgba(59, 184, 120, 0.3);
+.category-circle-item {
+    text-align: center;
+    transition: var(--transition-smooth);
+    text-decoration: none;
+    display: block;
 }
 
-.btn-brand-outline {
-    background: transparent;
-    border: 2px solid var(--brand-primary);
-    color: var(--brand-primary) !important;
+.category-circle-item:hover {
+    transform: translateY(-5px);
 }
 
-.btn-brand-outline:hover {
-    background: var(--brand-primary);
-    color: var(--brand-white) !important;
-    transform: translateY(-4px);
-}
-
-/* ── Product Cards ── */
-.product-card {
-    background: var(--brand-white);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    border: 1px solid #f1f5f9;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.product-card:hover {
-    transform: translateY(-12px);
-    box-shadow: var(--shadow-lg);
-    border-color: var(--brand-primary-light);
-}
-
-.product-image-wrapper {
-    position: relative;
-    padding-top: 125%; /* 4:5 aspect ratio */
+.category-circle {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 20px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 40px rgba(163, 110, 77, 0.05);
+    border: 1px solid rgba(163, 110, 77, 0.05);
     overflow: hidden;
 }
 
-.product-image-wrapper img {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+.category-circle img {
+    width: 60%;
+    height: 60%;
+    object-fit: contain;
+    opacity: 0.8;
+}
+
+.category-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text-dim);
+}
+
+.testimonial-card {
+    text-align: center;
+    padding: 20px;
+}
+
+.testimonial-portrait {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 30px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 15px 45px rgba(0,0,0,0.1);
+}
+
+.testimonial-portrait img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.product-card:hover .product-image-wrapper img {
-    transform: scale(1.1);
+.testimonial-quote {
+    font-size: 1.1rem;
+    font-style: italic;
+    color: var(--color-text-secondary);
+    margin-bottom: 20px;
+    opacity: 0.7;
 }
 
-/* ── Hero Section ── */
-.hero-section {
-    position: relative;
-    padding: 120px 0;
-    background: var(--brand-white);
-    overflow: hidden;
-}
-
-.hero-gradient {
-    position: absolute;
-    top: -20%; right: -10%;
-    width: 60%; height: 60%;
-    background: radial-gradient(circle, rgba(59, 184, 120, 0.08) 0%, rgba(255,255,255,0) 70%);
-    z-index: 0;
-}
-
-/* ── Header ── */
-.main-header {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(0,0,0,0.03);
-}
-
-/* ── Category Story Pills ── */
-.category-story-pill .category-img-container {
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.category-story-pill:hover .category-img-container {
-    transform: scale(1.1);
-    border-color: var(--brand-primary) !important;
+.testimonial-author {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.8rem;
+    color: var(--color-primary);
 }
