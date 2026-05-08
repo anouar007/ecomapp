@@ -8,6 +8,8 @@
     <meta name="keywords" content="@yield('meta_keywords', setting('app_name', 'boutique') . ', e-commerce, Maroc, acheter en ligne, livraison Maroc')">
     <meta name="robots" content="@yield('meta_robots', 'index, follow')">
     <meta name="author" content="{{ setting('app_name', 'Speed Platform') }}">
+    <meta name="developer" content="Elegant Boost (https://elegantboost.com/)">
+    <meta name="designer" content="Elegant Boost">
     <meta name="theme-color" content="#1964D6">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -326,7 +328,7 @@
             
             <div class="row align-items-center">
                 <div class="col-md-12 text-center text-md-start mb-3 mb-md-0">
-                    <p class="small text-center mb-0">&copy; {{ date('Y') }} {{ setting('app_name', 'Speed Print') }}. Tous droits réservés.</p>
+                    <p class="small text-center mb-0">&copy; {{ date('Y') }} {{ setting('app_name', 'Speed Print') }}. Tous droits réservés. Développé par <a href="https://elegantboost.com/" target="_blank" class="text-white text-decoration-none fw-bold hover-primary transition-all">Elegant Boost</a>.</p>
                 </div>
             </div>
         </div>

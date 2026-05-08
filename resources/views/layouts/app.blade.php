@@ -293,6 +293,15 @@
                 </a>
             </li>
             @endcan
+            
+            <!-- Developer Credit -->
+            <li class="sidebar-menu-item mt-auto pt-4 pb-2 px-4 text-center">
+                <hr class="opacity-25 mb-3">
+                <div class="small text-muted" style="font-size: 0.75rem;">
+                    Developed by<br>
+                    <a href="https://elegantboost.com/" target="_blank" class="text-primary text-decoration-none fw-bold">Elegant Boost</a>
+                </div>
+            </li>
         </ul>
     </aside>
 

@@ -1,3 +1,4 @@
+# Developed by Elegant Boost (https://elegantboost.com/)
 User-agent: *
 Allow: /
 Disallow: /dashboard

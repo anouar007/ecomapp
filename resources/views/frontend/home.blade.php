@@ -83,6 +83,18 @@
         }
       }
     ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "{{ setting('app_name', 'Speed Platform') }}",
+    "operatingSystem": "Web",
+    "applicationCategory": "BusinessApplication, eCommerce",
+    "author": {
+      "@type": "Organization",
+      "name": "Elegant Boost",
+      "url": "https://elegantboost.com/"
+    }
   }
 ]
 </script>
