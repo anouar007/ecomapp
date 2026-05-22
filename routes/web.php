@@ -209,3 +209,11 @@ Route::middleware('auth')->group(function () {
 
 // Public routes - Reviews (accessible by guests)
 Route::post('/reviews', [\App\Http\Controllers\ProductReviewController::class, 'store'])->name('reviews.store');
+
+// Language Switcher
+Route::get('lang/{locale}', function ($locale) {
+    if (in_array($locale, ['en', 'fr', 'ar'])) {
+        session()->put('locale', $locale);
+    }
+    return redirect()->back();
+})->name('lang.switch');

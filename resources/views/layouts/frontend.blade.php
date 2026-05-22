@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ setting('language', 'fr') }}" dir="{{ setting('text_direction', 'ltr') }}">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}" style="scroll-behavior: smooth;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -53,14 +53,37 @@
     <!-- JSON-LD Structured Data Schema -->
     @yield('json_ld')
     
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;500;600;700;800&family=Noto+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    @if(app()->getLocale() == 'ar')
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    @else
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    @endif
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
     <link rel="stylesheet" href="{{ asset('css/frontend.css') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- Dynamic Theme Overrides -->
+    <style>
+        :root {
+            --primary: {{ setting('primary_color', '#475927') }};
+            --primary-mid: {{ setting('primary_color', '#475927') }}cc;
+            --secondary: #b93126;
+            --gold: #d4af37;
+            --bg-warm: #fcfaf8;
+            --text-dark: #000000;
+            --accent: {{ setting('primary_color', '#475927') }};
+            --accent-hover: {{ setting('primary_color', '#475927') }}b3;
+            --font-heading: {{ setting('font_family', "'Noto Kufi Arabic', 'Noto Sans', system-ui, sans-serif") }};
+            --font-body: {{ setting('font_family', "'Noto Kufi Arabic', 'Noto Sans', system-ui, sans-serif") }};
+        }
+        body, h1, h2, h3, h4, h5, h6, .navbar-brand, .nav-link-custom {
+            font-family: var(--font-body) !important;
+        }
+    </style>
     <!-- Custom Head Codes -->
     @php
         $headCodes = \App\Models\CustomCode::where('is_active', true)
@@ -79,6 +102,18 @@
     @endforeach
 </head>
 <body>
+    <!-- Preloader -->
+    <div id="preloader" class="preloader-wrapper">
+        <div class="preloader-content">
+            <div class="spinner-grow text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="spinner-grow text-danger" style="width: 3rem; height: 3rem;" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <h4 class="mt-3" style="font-family: var(--font-heading); color: var(--primary);">ديوان الفن</h4>
+        </div>
+    </div>
     <!-- Custom Body Start Codes -->
     @php
         $bodyStartCodes = \App\Models\CustomCode::where('is_active', true)
@@ -90,81 +125,66 @@
         {!! $code->content !!}
     @endforeach
 
+    <!-- Gold accent line -->
+    <div style="height:3px; background: linear-gradient(90deg, #d4a843 0%, #c8922a 100%); width:100%;"></div>
+
     <!-- Main Header -->
-    <div class="header-main shadow-sm w-100" style="z-index: 1040;">
+    <div class="header-main w-100 position-sticky top-0 transition-all duration-300" id="mainHeader" style="background-color: rgba(252, 250, 248, 0.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 1040; border-bottom: 1px solid rgba(0,0,0,0.06); box-shadow: 0 4px 30px rgba(0,0,0,0.03);">
         <div class="container">
-            <nav class="navbar navbar-expand-lg navbar-light py-2">
+            <nav class="navbar navbar-expand-lg navbar-light py-3">
                 <div class="container-fluid px-0">
-                    <!-- Logo -->
-                    <a class="navbar-brand me-3 me-lg-5" href="{{ url('/') }}">
-                        @if(setting('app_logo'))
-                            <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="{{ setting('app_name', 'Logo') }}" class="navbar-logo-img">
-                        @else
-                            <h3 class="m-0 fw-bold text-uppercase fst-italic position-relative" style="font-family: 'Rajdhani'; letter-spacing: 1px;">
-                                Speed<span class="text-primary">Store</span>
-                                <i class="fas fa-bolt text-warning position-absolute top-0 start-100 translate-middle ms-2" style="font-size: 0.8em; transform: rotate(15deg);"></i>
-                            </h3>
-                        @endif
+                    
+                    <!-- Language Switcher (Left Side in mockup) -->
+                    <div class="d-none d-lg-flex align-items-center me-auto order-lg-1">
+                        <div class="dropdown">
+                            <button class="btn btn-link text-dark text-decoration-none fw-bold px-0 dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="font-family: var(--font-heading); font-size: 0.9rem; letter-spacing: 1px;">
+                                EN / FR
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-start shadow-sm border-0" aria-labelledby="languageDropdown">
+                                <li><a class="dropdown-item fw-bold text-end" href="{{ route('lang.switch', 'ar') }}" style="font-family: 'Cairo', sans-serif;">العربية (AR)</a></li>
+                                <li><a class="dropdown-item fw-bold" href="{{ route('lang.switch', 'fr') }}">Français (FR)</a></li>
+                                <li><a class="dropdown-item fw-bold" href="{{ route('lang.switch', 'en') }}">English (EN)</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Navigation links (Middle) -->
+                    <div class="collapse navbar-collapse order-lg-2" id="navbarMain">
+                        @php
+                            $headerMenu = \App\Models\Menu::where('location', 'header')->first();
+                        @endphp
+                        <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-3 gap-lg-4">
+                            @if($headerMenu && $headerMenu->items->count() > 0)
+                                @foreach($headerMenu->items->sortBy('order') as $item)
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark fw-bold {{ request()->is(ltrim($item->link, '/')) || (request()->routeIs('home') && $item->link === '/') ? 'active text-primary' : '' }}" href="{{ url($item->link) }}" style="font-size: 0.95rem; transition: color 0.3s ease;">
+                                            {{ $item->label }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            @else
+                                <li class="nav-item"><a class="nav-link text-dark fw-bold {{ request()->routeIs('home') ? 'active text-primary' : '' }}" href="{{ url('/') }}">{{ __('الرئيسية') }}</a></li>
+                                <li class="nav-item"><a class="nav-link text-dark fw-bold" href="{{ url('/about') }}">{{ __('عن الديوان') }}</a></li>
+                                <li class="nav-item"><a class="nav-link text-dark fw-bold" href="{{ url('/workshops') }}">{{ __('الورش') }}</a></li>
+                                <li class="nav-item"><a class="nav-link text-dark fw-bold" href="{{ url('/news') }}">{{ __('الأخبار والجديد') }}</a></li>
+                                <li class="nav-item"><a class="nav-link text-dark fw-bold" href="{{ url('/events') }}">{{ __('الفعاليات') }}</a></li>
+                                <li class="nav-item"><a class="nav-link text-dark fw-bold" href="{{ url('/research') }}">{{ __('البحوث والأساتذة') }}</a></li>
+                                <li class="nav-item"><a class="nav-link text-dark fw-bold" href="{{ url('/shop') }}">{{ __('المتجر الفني') }}</a></li>
+                                <li class="nav-item"><a class="nav-link text-dark fw-bold" href="{{ url('/gallery') }}">{{ __('المعرض') }}</a></li>
+                                <li class="nav-item"><a class="nav-link text-dark fw-bold" href="{{ url('/contact') }}">{{ __('تواصل معنا') }}</a></li>
+                            @endif
+                        </ul>
+                    </div>
+
+                    <!-- Logo (Right Side in mockup) -->
+                    <a class="navbar-brand ms-auto ms-lg-0 order-lg-3" href="{{ url('/') }}">
+                        <img src="{{ asset('images/logo.png') }}" alt="{{ setting('app_name', 'Diwane') }}" class="navbar-logo-img" style="max-height: 45px;">
                     </a>
 
-                    <!-- Mobile: always-visible actions (cart + user) + toggler -->
-                    <div class="d-flex align-items-center gap-2 ms-auto d-lg-none">
-                        @auth
-                            <a href="{{ route('dashboard') }}" class="action-btn-circle text-decoration-none" title="Mon compte">
-                                <i class="far fa-user"></i>
-                            </a>
-                        @endauth
-                        <div class="position-relative">
-                            <button class="action-btn-circle bg-transparent" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart">
-                                <i class="fas fa-shopping-bag"></i>
-                            </button>
-                            <span id="header-cart-count-mobile" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style="font-size: 0.6rem;">
-                                {{ count(session('cart', [])) }}
-                            </span>
-                        </div>
-                        <button class="navbar-toggler border-0 p-1" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-expanded="false" aria-label="Menu">
-                            <span class="navbar-toggler-icon"></span>
-                        </button>
-                    </div>
-
-                    <!-- Collapsible section -->
-                    <div class="collapse navbar-collapse" id="navbarMain">
-                        <!-- Navigation links -->
-                        <ul class="navbar-nav me-auto mb-0 gap-1 mb-3 mb-lg-0">
-                            <li class="nav-item">
-                                <a class="nav-link-custom {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Accueil</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link-custom {{ request()->routeIs('shop.index') ? 'active' : '' }}" href="{{ route('shop.index') }}">Boutique</a>
-                            </li>
-                        </ul>
-
-                        <!-- Search -->
-                        <form action="{{ route('shop.index') }}" method="GET" class="d-flex mx-lg-4 flex-grow-1 flex-lg-grow-0 mb-3 mb-lg-0" style="max-width: 380px;">
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0 text-muted ps-3"><i class="fas fa-search"></i></span>
-                                <input class="form-control bg-light border-start-0 ps-0 text-muted" type="search" name="q" placeholder="Rechercher des produits..." aria-label="Rechercher" value="{{ request('q') }}">
-                            </div>
-                        </form>
-
-                        <!-- Desktop-only actions -->
-                        <div class="d-none d-lg-flex align-items-center gap-3 ms-3">
-                            @auth
-                                <a href="{{ route('dashboard') }}" class="action-btn-circle text-decoration-none" title="Mon compte">
-                                    <i class="far fa-user"></i>
-                                </a>
-                            @endauth
-
-                            <div class="position-relative">
-                                <button class="action-btn-circle bg-transparent" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart">
-                                    <i class="fas fa-shopping-bag"></i>
-                                </button>
-                                <span id="header-cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style="font-size: 0.6rem;">
-                                    {{ count(session('cart', [])) }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Mobile Toggler -->
+                    <button class="navbar-toggler border-0 p-1 ms-2 order-4" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-expanded="false" aria-label="Menu">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
                 </div>
             </nav>
         </div>
@@ -178,8 +198,8 @@
     <!-- Offcanvas Mini Cart -->
     <div class="offcanvas offcanvas-end border-0 shadow-lg" tabindex="-1" id="miniCart" aria-labelledby="miniCartLabel" style="width: 450px; background: #f8fafc;">
         <div class="offcanvas-header bg-white border-bottom py-3">
-            <h5 class="offcanvas-title fw-bold font-heading" id="miniCartLabel">
-                <i class="fas fa-shopping-bag me-2 text-primary"></i>Mon Panier
+            <h5 class="offcanvas-title fw-bold font-heading" id="miniCartLabel" style="font-family: 'Cairo', sans-serif; color: var(--primary);">
+                <i class="fas fa-shopping-bag me-2" style="color: var(--primary);"></i>سلة المشتريات
             </h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
@@ -249,13 +269,13 @@
         </div>
     </div>
 
-    <footer class="footer-modern">
+    <footer class="footer-modern pt-5 pb-4" style="background-color: #1c2410; color: rgba(255,255,255,0.85); border-top: none;">
         <div class="container">
             <div class="row g-5">
-                <div class="col-lg-6">
-                    <h5 class="fw-bold text-white mb-4 text-uppercase ls-1">{{ setting('app_name', 'Speed Print') }}</h5>
-                    <p class="small lh-lg mb-4">
-                        Votre partenaire de confiance en solutions d'impression grand format. Machines éco-solvant, traceurs de découpe, encres et consommables — tout pour votre production.
+                <div class="col-lg-5">
+                    <img src="{{ asset('images/logo.png') }}" alt="{{ setting('app_name', 'Diwane') }} | ديوان الفن" class="mb-4" style="max-height: 60px;">
+                    <p class="small lh-lg mb-4" style="color: rgba(255,255,255,0.65);">
+                        {{ setting('app_description', 'أكاديمية ديوان الفن: فضاء فني وثقافي لتعليم الخط العربي والبحوث الأكاديمية الأصيلة وصيانة التراث الجمالي الإسلامي بالمملكة المغربية.') }}
                     </p>
                     @php
                         $sfb  = setting('social_facebook',  '');
@@ -266,7 +286,7 @@
                         // Only treat as valid if it's a real URL (not empty or bare '#')
                         $validUrl = fn($v) => $v && $v !== '#' && $v !== '/#';
                     @endphp
-                    <div class="d-flex gap-3 flex-wrap">
+                    <div class="d-flex gap-3 flex-wrap mb-4">
                         @if($validUrl($sfb))
                         <a href="{{ $sfb }}" target="_blank" rel="noopener" class="footer-social-btn" title="Facebook">
                             <i class="fab fa-facebook-f"></i>
@@ -295,40 +315,41 @@
                             <i class="fab fa-whatsapp"></i>
                         </a>
                         @endif
-                        {{-- If none configured, show placeholder text --}}
-                        @if(!$validUrl($sfb) && !$validUrl($stw) && !$validUrl($sig) && !$validUrl($sli) && !$validUrl($swa))
-                        <span class="text-muted small fst-italic">Réseaux sociaux bientôt disponibles</span>
-                        @endif
                     </div>
                 </div>
                 
                 <div class="col-lg-3 col-6">
-                    <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">Boutique</h6>
+                    <h6 class="fw-bold mb-4" style="font-family: 'Cairo', sans-serif; color: #d4a843;">{{ __('روابط سريعة') }}</h6>
                     <ul class="list-unstyled">
-                        <li><a href="{{ route('shop.index') }}" class="footer-link small">Tous les produits</a></li>
-                        <li><a href="#" class="footer-link small">Nouveautés</a></li>
-                        <li><a href="#" class="footer-link small">Coup de cœur</a></li>
-                        <li><a href="#" class="footer-link small">Promotions</a></li>
+                        <li><a href="{{ url('/') }}" class="footer-link small d-block mb-2 text-decoration-none" style="color: rgba(255,255,255,0.6);">الرئيسية</a></li>
+                        <li><a href="{{ url('/about') }}" class="footer-link small d-block mb-2 text-decoration-none" style="color: rgba(255,255,255,0.6);">عن الديوان</a></li>
+                        <li><a href="{{ url('/workshops') }}" class="footer-link small d-block mb-2 text-decoration-none" style="color: rgba(255,255,255,0.6);">الورش الفنية</a></li>
+                        <li><a href="{{ url('/news') }}" class="footer-link small d-block mb-2 text-decoration-none" style="color: rgba(255,255,255,0.6);">الأخبار والجديد</a></li>
+                        <li><a href="{{ url('/events') }}" class="footer-link small d-block mb-2 text-decoration-none" style="color: rgba(255,255,255,0.6);">الفعاليات والمعارض</a></li>
+                        <li><a href="{{ url('/research') }}" class="footer-link small d-block mb-2 text-decoration-none" style="color: rgba(255,255,255,0.6);">البحوث والأساتذة</a></li>
                     </ul>
                 </div>
 
-                <div class="col-lg-3 col-6">
-                    <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">Assistance</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="footer-link small">Centre d'aide</a></li>
-                        <li><a href="#" class="footer-link small">Suivre ma commande</a></li>
-                        <li><a href="#" class="footer-link small">Retours</a></li>
-                        <li><a href="#" class="footer-link small">Garantie</a></li>
-                    </ul>
+                <div class="col-lg-4 col-12">
+                    <h6 class="fw-bold mb-4" style="font-family: 'Cairo', sans-serif; color: #d4a843;">{{ __('النشرة البريدية') }}</h6>
+                    <p class="small mb-3" style="color: rgba(255,255,255,0.6);">اشترك معنا ليصلك أحدث مستجدات المعارض والدورات التخصصية بالديوان.</p>
+                    <form action="{{ route('newsletter.subscribe') }}" method="POST" class="d-flex gap-2">
+                        @csrf
+                        <input type="email" name="email" class="form-control form-control-sm border py-2" placeholder="البريد الإلكتروني..." required>
+                        <button type="submit" class="btn btn-primary btn-sm px-3" style="background-color: var(--primary); border: none;">اشترك</button>
+                    </form>
                 </div>
 
             </div>
             
-            <hr class="border-secondary opacity-25 my-5">
+            <hr class="border-secondary opacity-25 my-4">
             
             <div class="row align-items-center">
-                <div class="col-md-12 text-center text-md-start mb-3 mb-md-0">
-                    <p class="small text-center mb-0">&copy; {{ date('Y') }} {{ setting('app_name', 'Speed Print') }}. Tous droits réservés. Développé par <a href="https://elegantboost.com/" target="_blank" class="text-white text-decoration-none fw-bold hover-primary transition-all">Elegant Boost</a>.</p>
+                <div class="col-md-12 text-center">
+                    <p class="small mb-0" style="color: rgba(255,255,255,0.5);">
+                        &copy; {{ date('Y') }} {{ setting('app_name', 'Diwane') }}. جميع الحقوق محفوظة. 
+                        صنع بكل شغف وفخر في المغرب <i class="fas fa-heart text-danger mx-1"></i> Made with passion in Morocco.
+                    </p>
                 </div>
             </div>
         </div>
@@ -339,13 +360,44 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        @if(setting('frontend_enable_animations'))
+        @if(setting('frontend_enable_animations', true))
         AOS.init({
-            duration: 800,
+            duration: 1000,
+            easing: 'ease-out-cubic',
             once: true,
-            offset: 100
+            offset: 50,
+            delay: 50
         });
         @endif
+
+        // Preloader Logic
+        const hidePreloader = function() {
+            const preloader = document.getElementById('preloader');
+            if (preloader && preloader.style.display !== 'none') {
+                preloader.style.opacity = '0';
+                setTimeout(() => {
+                    preloader.style.display = 'none';
+                }, 500);
+            }
+        };
+        
+        window.addEventListener('load', hidePreloader);
+        // Fallback: hide preloader after 2 seconds max even if images are still loading
+        setTimeout(hidePreloader, 2000);
+
+        // Sticky Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('mainHeader');
+            if (window.scrollY > 50) {
+                header.style.backgroundColor = 'rgba(252, 250, 248, 0.95)';
+                header.style.boxShadow = '0 10px 40px rgba(0,0,0,0.08)';
+                header.style.borderBottom = '1px solid rgba(212, 168, 67, 0.2)';
+            } else {
+                header.style.backgroundColor = 'rgba(252, 250, 248, 0.9)';
+                header.style.boxShadow = '0 4px 30px rgba(0,0,0,0.03)';
+                header.style.borderBottom = '1px solid rgba(0,0,0,0.06)';
+            }
+        });
 
         // Mini Cart Functions
         function updateQty(id, qty) {

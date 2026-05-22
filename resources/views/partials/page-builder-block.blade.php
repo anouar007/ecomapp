@@ -99,7 +99,7 @@
         @case('cta')
             <div class="py-5 w-100">
                  <div class="container text-center">
-                    <div class="p-5 rounded-5 shadow-lg bg-primary text-white" style="@if(!empty($block['bg_image'])) background-image: url('{{ $block['bg_image'] }}'); background-size: cover; @endif; background: var(--gradient-primary, #0d6efd);">
+                    <div class="p-5 rounded-5 shadow-lg bg-primary text-white" style="@if(!empty($block['bg_image'])) background-image: url('{{ $block['bg_image'] }}'); background-size: cover; @endif; background: var(--gradient-primary, #475927);">
                         <h2 class="display-5 fw-bold mb-4">{{ $block['body'] ?? 'Ready to Grow?' }}</h2>
                         @if(!empty($block['cta_text']))
                             <a href="{{ $block['cta_link'] ?? '#' }}" class="btn btn-light btn-lg px-5 py-3 rounded-pill fw-bold shadow">{{ $block['cta_text'] }}</a>

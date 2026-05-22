@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <!-- SweetAlert2 CSS -->
@@ -24,7 +24,7 @@
             --success-color: {{ setting('success_color', '#10b981') }};
             --warning-color: {{ setting('warning_color', '#f59e0b') }};
             --danger-color: {{ setting('danger_color', '#ef4444') }};
-            --font-family: {{ setting('font_family', 'Inter, system-ui, sans-serif') }};
+            --font-family: {{ setting('font_family', "Cairo, Inter, system-ui, sans-serif") }};
             --font-size-base: {{ setting('font_size_base', '14') }}px;
             --border-radius: {{ setting('border_radius', '12') }}px;
         }
@@ -98,7 +98,7 @@
             </li>
             @can('manage_orders')
             <li class="sidebar-menu-item">
-                <a href="{{ route('pos.index') }}" class="sidebar-menu-link" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
+                <a href="{{ route('pos.index') }}" class="sidebar-menu-link pos-link">
                     <i class="fas fa-cash-register"></i>
                     <span>POS Terminal</span>
                 </a>
@@ -295,11 +295,10 @@
             @endcan
             
             <!-- Developer Credit -->
-            <li class="sidebar-menu-item mt-auto pt-4 pb-2 px-4 text-center">
-                <hr class="opacity-25 mb-3">
-                <div class="small text-muted" style="font-size: 0.75rem;">
+            <li class="sidebar-menu-item sidebar-credit mt-auto">
+                <div class="small">
                     Developed by<br>
-                    <a href="https://elegantboost.com/" target="_blank" class="text-primary text-decoration-none fw-bold">Elegant Boost</a>
+                    <a href="https://elegantboost.com/" target="_blank">Elegant Boost</a>
                 </div>
             </li>
         </ul>
