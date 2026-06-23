@@ -7,7 +7,7 @@
 @else
     <div class="row g-3 g-lg-4" id="products-grid">
         @foreach($products as $product)
-            <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up">
+            <div class="col-6 col-md-6 col-lg-4" data-aos="fade-up">
                 @include('frontend.partials.product_card_v2', ['product' => $product])
             </div>
         @endforeach

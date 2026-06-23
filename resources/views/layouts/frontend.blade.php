@@ -76,7 +76,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
     
     <!-- CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    @if(app()->getLocale() == 'ar')
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
+    @else
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    @endif
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -89,11 +93,15 @@
 
     <style>
         :root {
-            --green: #3BB878;
-            --green-dark: #2f9461;
-            --green-light: #e8f7ef;
-            --primary: #3BB878;
-            --accent: #3BB878;
+            --green: #0e3820;
+            --green-dark: #0a2d19;
+            --green-light: #f0faf5;
+            --primary: #0e3820;
+            --accent: #bf8b43;
+            --gold: #bf8b43;
+            --gold-light: #fcf8f2;
+            --brand-primary: #0e3820;
+            --brand-primary-dark: #0a2d19;
         }
         
         /* ── Global Resets ── */
@@ -101,26 +109,117 @@
         html, body { overflow-x: hidden; width: 100%; position: relative; scroll-behavior: smooth; }
         body { font-family: 'Tajawal', sans-serif; background: #fff; color: #1F2937; -webkit-font-smoothing: antialiased; }
         
-        .text-green { color: #3BB878 !important; }
-        .text-gold  { color: #3BB878 !important; }
-        .bg-green   { background-color: #3BB878 !important; }
-        .bg-green-light { background-color: #e8f7ef !important; }
-        .bg-brand-primary { background-color: #3BB878 !important; }
-        .border-green { border-color: #3BB878 !important; }
+        .text-green { color: #0e3820 !important; }
+        .text-gold  { color: #bf8b43 !important; }
+        .bg-green   { background-color: #0e3820 !important; }
+        .bg-green-light { background-color: #f0faf5 !important; }
+        .bg-brand-primary { background-color: #0e3820 !important; }
+        .border-green { border-color: #0e3820 !important; }
         .x-small { font-size: 0.75rem; }
+
+        .nav-link-custom {
+            color: rgba(255, 255, 255, 0.85) !important;
+            font-weight: 700 !important;
+            font-size: 0.88rem !important;
+            padding: 8px 4px !important;
+            position: relative;
+            transition: color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .nav-link-custom:hover, .nav-link-custom.active {
+            color: #bf8b43 !important;
+        }
+        .nav-link-custom::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background-color: #bf8b43;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateX(-50%);
+        }
+        .nav-link-custom.active::after, .nav-link-custom:hover::after {
+            width: 80%;
+        }
 
         /* ── Header ── */
         .main-header {
             position: sticky;
             top: 0;
             z-index: 1000;
-            background: rgba(255,255,255,0.92);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            transition: box-shadow 0.3s;
+            background: #0e3820 !important;
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .main-header.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .main-header.scrolled { 
+            box-shadow: 0 10px 30px rgba(14, 56, 32, 0.15); 
+            background: rgba(14, 56, 32, 0.95) !important;
+            border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        /* ── Modern Premium Search Container ── */
+        .header-search-container {
+            width: 170px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 100px;
+            padding: 5px 14px;
+            display: flex;
+            align-items: center;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .header-search-container:focus-within {
+            width: 230px;
+            background: rgba(255, 255, 255, 0.12);
+            border-color: #bf8b43 !important;
+            box-shadow: 0 0 14px rgba(191, 139, 67, 0.3);
+        }
+        .header-search-input {
+            outline: none;
+            background: transparent;
+            border: 0;
+            color: #fff;
+            font-size: 0.8rem;
+            width: 100%;
+        }
+        .header-search-input::placeholder {
+            color: rgba(255, 255, 255, 0.55);
+        }
+
+        /* ── Dropdown Upgrades ── */
+        .dropdown-menu {
+            border-radius: 14px !important;
+            padding: 8px !important;
+            box-shadow: 0 15px 40px rgba(14, 56, 32, 0.1) !important;
+            border: 1px solid rgba(14, 56, 32, 0.05) !important;
+            background: #fff;
+            transform: translateY(10px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .dropdown-item {
+            border-radius: 8px !important;
+            padding: 8px 16px !important;
+            font-weight: 700;
+            color: #4B5563;
+            transition: all 0.2s ease;
+        }
+        .dropdown-item:hover {
+            background-color: #f0faf5 !important;
+            color: #0e3820 !important;
+        }
+
+        /* ── Cart Badge Animation ── */
+        @keyframes cartPulse {
+            0% { transform: translate(-60%, 20%) scale(1); }
+            50% { transform: translate(-60%, 20%) scale(1.4); box-shadow: 0 0 15px #bf8b43; }
+            100% { transform: translate(-60%, 20%) scale(1); }
+        }
+        .cart-badge-pulse {
+            animation: cartPulse 0.45s ease-out;
+        }
 
         /* ── Buttons ── */
         .btn-brand {
@@ -223,34 +322,34 @@
 
         /* ── Footer ── */
         .footer-main { background: #0F1F16; color: rgba(255,255,255,0.75); }
-        .footer-link { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
-        .footer-link:hover { color: #3BB878; }
-        .footer-social { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: all 0.3s; }
-        .footer-social:hover { background: #3BB878; color: #fff; transform: translateY(-3px); }
+        .footer-link { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.9rem; transition: color 0.25s ease; }
+        .footer-link:hover { color: #bf8b43; }
+        .footer-social { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+        .footer-social:hover { background: #bf8b43; color: #fff; transform: translateY(-4px) scale(1.05); }
 
         /* ── Scroll to Top ── */
         #scrollTopBtn {
             position: fixed; bottom: 30px; right: 30px; z-index: 1100;
             width: 54px; height: 54px; border-radius: 16px;
-            background: #3BB878; color: #fff; border: none;
+            background: linear-gradient(135deg, #0e3820, #bf8b43); color: #fff; border: 2px solid rgba(255,255,255,0.1);
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 10px 30px rgba(59,184,120,0.4);
+            box-shadow: 0 10px 30px rgba(14, 56, 32, 0.3);
             opacity: 0; transform: translateY(30px) scale(0.8);
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer;
             visibility: hidden;
         }
         #scrollTopBtn.visible { opacity: 1; transform: translateY(0) scale(1); visibility: visible; }
         #scrollTopBtn:hover { 
-            background: #2f9461; transform: translateY(-8px) scale(1.05); 
-            box-shadow: 0 15px 40px rgba(59,184,120,0.5); 
+            transform: translateY(-8px) scale(1.06); 
+            box-shadow: 0 15px 40px rgba(191, 139, 67, 0.45); 
         }
         #scrollTopBtn i { font-size: 1.2rem; transition: transform 0.3s; }
-        #scrollTopBtn:hover i { transform: translateY(-3px); }
+        #scrollTopBtn:hover i { transform: translateY(-4px); }
 
         @keyframes btnPulse {
-            0% { box-shadow: 0 0 0 0 rgba(59,184,120, 0.4); }
-            70% { box-shadow: 0 0 0 15px rgba(59,184,120, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(59,184,120, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(191, 139, 67, 0.45); }
+            70% { box-shadow: 0 0 0 15px rgba(191, 139, 67, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(191, 139, 67, 0); }
         }
         #scrollTopBtn.visible { animation: btnPulse 2s infinite; }
 
@@ -386,27 +485,42 @@
                 <a href="{{ url('/') }}" class="text-decoration-none logo-link">
                     <div class="d-flex align-items-center gap-2">
                         @if(setting('app_logo'))
-                            <img src="{{ Storage::url(setting('app_logo')) }}" alt="{{ __('Logo') }}" style="height: 55px; width: auto; flex-shrink: 0;">
+                            <img src="{{ Storage::url(setting('app_logo')) }}" alt="{{ __('Logo') }}" style="height: 50px; width: auto; flex-shrink: 0; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.15));">
                         @else
-                            <div style="width: 50px; height: 50px; background: #3BB878; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                <i class="fas fa-leaf text-white fs-4"></i>
+                            <div style="width: 44px; height: 44px; background: #bf8b43; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="fas fa-leaf text-white fs-5"></i>
                             </div>
                         @endif
-                        <span class="fs-3 fw-bold text-dark logo-text">{{ __('Ait') }} <span class="text-green">{{ __('Oumdis') }}</span></span>
+                        <div class="d-flex flex-column text-start align-items-start {{ app()->getLocale() == 'ar' ? 'text-end align-items-end' : '' }}">
+                            <span class="fs-5 fw-bold text-white lh-1 logo-text" style="font-family: 'Tajawal', sans-serif;">{{ app()->getLocale() == 'ar' ? 'تعاونية آيت أومديس' : 'Coop Ait Oumdis' }}</span>
+                            <span class="x-small text-white opacity-50 fw-500 mt-1" style="font-size: 0.62rem; font-family: 'Tajawal', sans-serif;">{{ app()->getLocale() == 'ar' ? 'منتجات طبيعية من قلب الأطلس' : 'Produits Naturels du cœur de l\'Atlas' }}</span>
+                        </div>
                     </div>
                 </a>
 
                 <!-- Desktop Nav -->
                 <nav class="d-none d-lg-flex align-items-center gap-4">
-                    <a href="{{ url('/') }}" class="text-decoration-none text-muted fw-500 small hover-green transition-all">{{ __('Home') }}</a>
-                    <a href="{{ route('shop.index') }}" class="text-decoration-none text-muted fw-500 small hover-green transition-all">{{ __('Shop') }}</a>
+                    <a href="{{ url('/') }}" class="text-decoration-none nav-link-custom {{ Request::is('/') ? 'active' : '' }}">{{ app()->getLocale() == 'ar' ? 'الرئيسية' : (app()->getLocale() == 'fr' ? 'Accueil' : 'Home') }}</a>
+                    <a href="{{ route('shop.index', ['category' => 'honey']) }}" class="text-decoration-none nav-link-custom {{ request('category') == 'honey' ? 'active' : '' }}">{{ app()->getLocale() == 'ar' ? 'العسل' : (app()->getLocale() == 'fr' ? 'Miel' : 'Honey') }}</a>
+                    <a href="{{ route('shop.index', ['category' => 'amlou']) }}" class="text-decoration-none nav-link-custom {{ request('category') == 'amlou' ? 'active' : '' }}">{{ app()->getLocale() == 'ar' ? 'أملو' : (app()->getLocale() == 'fr' ? 'Amlou' : 'Amlou') }}</a>
+                    <a href="{{ route('shop.index') }}" class="text-decoration-none nav-link-custom {{ Request::routeIs('shop.index') && !request('category') ? 'active' : '' }}">{{ app()->getLocale() == 'ar' ? 'المنتجات الطبيعية' : (app()->getLocale() == 'fr' ? 'Produits Naturels' : 'Natural Products') }}</a>
+                    <a href="#about" class="text-decoration-none nav-link-custom">{{ app()->getLocale() == 'ar' ? 'من نحن' : (app()->getLocale() == 'fr' ? 'Qui sommes-nous' : 'About Us') }}</a>
+                    <a href="https://wa.me/{{ str_replace(['+',' '],'',(setting('app_phone','212600000000'))) }}" target="_blank" class="text-decoration-none nav-link-custom">{{ app()->getLocale() == 'ar' ? 'اتصل بنا' : (app()->getLocale() == 'fr' ? 'Contact' : 'Contact Us') }}</a>
                 </nav>
 
                 <!-- Actions -->
                 <div class="d-flex align-items-center gap-2 gap-lg-3">
+                    <!-- Search Input (as in design image) -->
+                    <div class="d-none d-lg-flex align-items-center header-search-container me-2">
+                        <i class="fas fa-search text-white opacity-50 me-2 small"></i>
+                        <form action="{{ route('shop.index') }}" method="GET" class="m-0 p-0 w-100">
+                            <input type="text" name="search" placeholder="{{ app()->getLocale() == 'ar' ? 'بحث عن منتج...' : (app()->getLocale() == 'fr' ? 'Rechercher...' : 'Search...') }}" class="header-search-input opacity-75 small" value="{{ request('search') }}">
+                        </form>
+                    </div>
+
                     <!-- Language -->
                     <div class="dropdown">
-                        <button class="btn btn-link text-muted text-decoration-none p-2 dropdown-toggle small fw-bold" type="button" data-bs-toggle="dropdown">
+                        <button class="btn btn-link text-white opacity-75 hover-opacity-100 text-decoration-none p-2 dropdown-toggle small fw-bold" type="button" data-bs-toggle="dropdown">
                             <i class="fas fa-globe me-1"></i> {{ strtoupper(app()->getLocale()) }}
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-3">
@@ -417,21 +531,25 @@
                     </div>
 
                     @auth
-                    <a href="{{ route('dashboard') }}" class="btn btn-link text-muted text-decoration-none p-2 d-none d-lg-block">
-                        <i class="fas fa-user-circle fs-5"></i>
+                    <a href="{{ route('dashboard') }}" class="btn btn-link text-white opacity-75 hover-opacity-100 text-decoration-none p-2 d-none d-lg-block" title="{{ __('Dashboard') }}">
+                        <i class="fa-regular fa-user fs-5"></i>
+                    </a>
+                    @else
+                    <a href="{{ route('login') }}" class="btn btn-link text-white opacity-75 hover-opacity-100 text-decoration-none p-2 d-none d-lg-block" title="{{ __('Login') }}">
+                        <i class="fa-regular fa-user fs-5"></i>
                     </a>
                     @endauth
 
                     <!-- Cart Toggle -->
-                    <button class="position-relative p-2 border-0 bg-green rounded-3 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart" style="width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;">
+                    <button class="position-relative p-2 border-0 rounded-3 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart" style="width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background-color: rgba(255,255,255,0.1) !important; border: 1px solid rgba(255,255,255,0.15) !important;">
                         <i class="fa-solid fa-bag-shopping fs-6"></i>
-                        <span id="header-cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark border border-white" style="font-size: 0.55rem; transform: translate(-60%, 20%);">
+                        <span id="header-cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark border border-white" style="font-size: 0.55rem; transform: translate(-60%, 20%); background-color: #bf8b43 !important;">
                             {{ count(session('cart', [])) }}
                         </span>
                     </button>
 
                     <!-- Mobile Toggle -->
-                    <button class="d-lg-none p-2 border-0 bg-light rounded-3 text-dark" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu" style="width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;">
+                    <button class="d-lg-none p-2 border-0 rounded-3 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu" style="width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background-color: rgba(255,255,255,0.1) !important; border: 1px solid rgba(255,255,255,0.15) !important;">
                         <i class="fa-solid fa-bars-staggered fs-5"></i>
                     </button>
                 </div>
@@ -676,13 +794,94 @@
                 if(btn) { btn.disabled = false; btn.innerHTML = orig; }
                 if(data.success) {
                     Swal.fire({ icon: 'success', title: '{{ __('Added to cart!') }}', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
-                    document.getElementById('header-cart-count').innerText = data.cartCount;
+                    const badge = document.getElementById('header-cart-count');
+                    if (badge) {
+                        badge.innerText = data.cartCount;
+                        badge.classList.remove('cart-badge-pulse');
+                        void badge.offsetWidth; // trigger reflow
+                        badge.classList.add('cart-badge-pulse');
+                    }
                     refreshMiniCart();
                     new bootstrap.Offcanvas(document.getElementById('miniCart')).show();
                 } else {
                     Swal.fire({ icon: 'error', title: '{{ __('Error') }}', text: data.message });
                 }
             }).catch(() => { if(btn) { btn.disabled = false; btn.innerHTML = orig; }});
+        }
+
+        function selectProductSize(productId, variantId, formattedPrice, formattedOriginalPrice, isInStock) {
+            const sizeList = document.querySelector(`.size-list-${productId}`);
+            if (sizeList) {
+                sizeList.querySelectorAll('.size-pill-btn').forEach(btn => {
+                    btn.classList.remove('border-green', 'bg-green-light', 'text-green', 'fw-700');
+                    btn.classList.add('border-light', 'bg-light', 'text-muted');
+                });
+            }
+            const clickedBtn = document.getElementById(`size-pill-${productId}-${variantId}`);
+            if (clickedBtn) {
+                clickedBtn.classList.remove('border-light', 'bg-light', 'text-muted');
+                clickedBtn.classList.add('border-green', 'bg-green-light', 'text-green', 'fw-700');
+            }
+
+            const priceContainer = document.querySelector(`.price-container-${productId}`);
+            if (priceContainer) {
+                const mainPrice = priceContainer.querySelector('.main-price');
+                const origPrice = priceContainer.querySelector('.original-price');
+                if (mainPrice) mainPrice.innerText = formattedPrice;
+                if (origPrice) {
+                    if (formattedOriginalPrice) {
+                        origPrice.innerText = formattedOriginalPrice;
+                        origPrice.classList.remove('d-none');
+                    } else {
+                        origPrice.classList.add('d-none');
+                    }
+                }
+            }
+
+            const addBtn = document.getElementById(`add-cart-btn-${productId}`);
+            if (addBtn) {
+                if (isInStock) {
+                    addBtn.removeAttribute('disabled');
+                    addBtn.style.opacity = '1';
+                    addBtn.onclick = function(e) {
+                        addToCart(productId, variantId);
+                    };
+                } else {
+                    addBtn.setAttribute('disabled', 'disabled');
+                    addBtn.style.opacity = '0.5';
+                    addBtn.onclick = null;
+                }
+            }
+        }
+
+        function toggleWishlist(productId) {
+            const heart = document.getElementById(`heart-icon-${productId}`);
+            if (heart) {
+                const isHearted = heart.classList.contains('fa-solid');
+                if (isHearted) {
+                    heart.classList.remove('fa-solid', 'text-danger');
+                    heart.classList.add('fa-regular', 'text-muted');
+                    Swal.fire({
+                        icon: 'success',
+                        title: '{{ __("Removed from wishlist") }}',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                } else {
+                    heart.classList.remove('fa-regular', 'text-muted');
+                    heart.classList.add('fa-solid', 'text-danger');
+                    Swal.fire({
+                        icon: 'success',
+                        title: '{{ __("Added to wishlist!") }}',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                }
+            }
         }
     </script>
     @stack('scripts')

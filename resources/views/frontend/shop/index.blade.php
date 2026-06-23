@@ -86,7 +86,7 @@
 {{-- SHOP BODY --}}
 <div style="background:#f9fafb;min-height:80vh">
     <div class="container py-5">
-        <div class="row g-4 align-items-start {{ app()->getLocale() == 'ar' ? 'flex-row-reverse' : '' }}">
+        <div class="row g-4 align-items-start">
 
             {{-- SIDEBAR (desktop) --}}
             <aside class="col-lg-3 d-none d-lg-block">

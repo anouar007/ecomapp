@@ -7,7 +7,7 @@
 <?php else: ?>
     <div class="row g-3 g-lg-4" id="products-grid">
         <?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up">
+            <div class="col-6 col-md-6 col-lg-4" data-aos="fade-up">
                 <?php echo $__env->make('frontend.partials.product_card_v2', ['product' => $product], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
             </div>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
