@@ -29,10 +29,10 @@
     </div>
 
     {{-- Image --}}
-    <div class="product-image-wrapper position-relative text-center bg-white" style="padding-top: 20px; padding-bottom: 15px;">
-        <a href="{{ route('shop.show', $product->id) }}" class="d-inline-block">
+    <div class="product-image-wrapper position-relative text-center bg-white">
+        <a href="{{ route('shop.show', $product->id) }}" class="d-block w-100 h-100">
             <img src="{{ $product->main_image ? (Str::startsWith($product->main_image,'http') ? $product->main_image : Storage::url($product->main_image)) : asset('images/placeholder-product.jpg') }}"
-                 alt="{{ $product->translated_name }}" loading="lazy" class="object-fit-contain" style="width: 180px; height: 180px;">
+                 alt="{{ $product->translated_name }}" loading="lazy" class="w-100 h-100 object-fit-cover">
         </a>
     </div>
 

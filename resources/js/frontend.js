@@ -4,12 +4,13 @@
  */
 
 // ── Third-party imports ──────────────────────────────────────
-import 'bootstrap';
+import * as bootstrap from 'bootstrap';
 import AOS from 'aos';
 import Swiper from 'swiper/bundle';
 import Swal from 'sweetalert2';
 
 // ── Make globals available for inline Blade script blocks ────
+window.bootstrap = bootstrap;
 window.AOS   = AOS;
 window.Swiper = Swiper;
 window.Swal  = Swal;
