@@ -129,14 +129,7 @@
                 <nav class="d-none d-lg-flex align-items-center gap-4">
                     <a href="{{ url('/') }}"                                       class="text-decoration-none nav-link-custom {{ Request::is('/') ? 'active' : '' }}">{{ app()->getLocale() == 'ar' ? 'الرئيسية' : (app()->getLocale() == 'fr' ? 'Accueil' : 'Home') }}</a>
                     
-                    @php
-                        $navCategories = \App\Models\Category::where('status', 'active')->whereNull('parent_id')->orderBy('sort_order')->get();
-                    @endphp
-                    @foreach($navCategories as $cat)
-                        <a href="{{ route('shop.index', ['category' => $cat->slug]) }}" class="text-decoration-none nav-link-custom {{ request('category') == $cat->slug ? 'active' : '' }}">{{ $cat->translated_name }}</a>
-                    @endforeach
-                    
-                    <a href="{{ route('shop.index') }}"                            class="text-decoration-none nav-link-custom {{ Request::routeIs('shop.index') && !request('category') ? 'active' : '' }}">{{ app()->getLocale() == 'ar' ? 'كل المنتجات' : (app()->getLocale() == 'fr' ? 'Tous les produits' : 'All Products') }}</a>
+                    <a href="{{ route('shop.index') }}"                            class="text-decoration-none nav-link-custom {{ Request::routeIs('shop.index') ? 'active' : '' }}">{{ app()->getLocale() == 'ar' ? 'المتجر' : (app()->getLocale() == 'fr' ? 'Boutique' : 'Shop') }}</a>
                     <a href="https://wa.me/{{ str_replace(['+',' '],'',(setting('app_phone','212600000000'))) }}" target="_blank" class="text-decoration-none nav-link-custom">{{ app()->getLocale() == 'ar' ? 'اتصل بنا' : (app()->getLocale() == 'fr' ? 'Contact' : 'Contact Us') }}</a>
                 </nav>
 
@@ -343,20 +336,10 @@
                     <i class="fas fa-home {{ Request::is('/') ? 'text-green-mid' : 'text-muted' }}"></i>
                     <span>{{ app()->getLocale() == 'ar' ? 'الرئيسية' : (app()->getLocale() == 'fr' ? 'Accueil' : 'Home') }}</span>
                 </a>
-                <a href="{{ route('shop.index') }}"                            class="list-group-item list-group-item-action py-3 px-4 border-0 d-flex align-items-center gap-3 font-tajawal {{ Request::routeIs('shop.*') && !request('category') ? 'text-green fw-bold' : '' }}">
-                    <i class="fas fa-store {{ Request::routeIs('shop.*') && !request('category') ? 'text-green-mid' : 'text-muted' }}"></i>
-                    <span>{{ app()->getLocale() == 'ar' ? 'كل المنتجات' : (app()->getLocale() == 'fr' ? 'Tous les produits' : 'All Products') }}</span>
+                <a href="{{ route('shop.index') }}"                            class="list-group-item list-group-item-action py-3 px-4 border-0 d-flex align-items-center gap-3 font-tajawal {{ Request::routeIs('shop.*') ? 'text-green fw-bold' : '' }}">
+                    <i class="fas fa-shopping-bag {{ Request::routeIs('shop.*') ? 'text-green-mid' : 'text-muted' }}"></i>
+                    <span>{{ app()->getLocale() == 'ar' ? 'المتجر' : (app()->getLocale() == 'fr' ? 'Boutique' : 'Shop') }}</span>
                 </a>
-                
-                @php
-                    $mobileNavCategories = \App\Models\Category::where('status', 'active')->whereNull('parent_id')->orderBy('sort_order')->get();
-                @endphp
-                @foreach($mobileNavCategories as $cat)
-                    <a href="{{ route('shop.index', ['category' => $cat->slug]) }}" class="list-group-item list-group-item-action py-3 px-4 border-0 d-flex align-items-center gap-3 font-tajawal {{ request('category') == $cat->slug ? 'text-green fw-bold' : '' }}">
-                        <i class="fas fa-angle-left {{ request('category') == $cat->slug ? 'text-green-mid' : 'text-muted' }}"></i>
-                        <span>{{ $cat->translated_name }}</span>
-                    </a>
-                @endforeach
                 @auth
                 <a href="{{ route('dashboard') }}" class="list-group-item list-group-item-action py-3 px-4 border-0 d-flex align-items-center gap-3 font-tajawal">
                     <i class="fa-regular fa-user text-muted"></i>
