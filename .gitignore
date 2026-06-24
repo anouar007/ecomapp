@@ -26,3 +26,4 @@ yarn-error.log
 debug_*.php
 *.swp
 *~
+/storage/debug.txt
