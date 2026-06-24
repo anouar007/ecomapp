@@ -2,7 +2,7 @@
 
 @section('meta_title', $product->translated_name . ' — ' . setting('app_name', 'Hijab Princesses'))
 @section('meta_description', Str::limit(strip_tags($product->translated_description), 155))
-@section('meta_image', $product->main_image ? url(Storage::url($product->main_image)) : null)
+@section('meta_image', $product->main_image ? url(getImageUrl($product->main_image)) : null)
 
 @section('json_ld')
 <script type="application/ld+json">
@@ -38,7 +38,7 @@
       "@type": "Product",
       "name": "{{ $product->translated_name }}",
       "image": [
-        "{{ $product->main_image ? url(Storage::url($product->main_image)) : '' }}"
+        "{{ $product->main_image ? url(getImageUrl($product->main_image)) : '' }}"
       ],
       "description": "{{ Str::limit(strip_tags($product->translated_description), 160) }}",
       "sku": "{{ $product->sku }}",
@@ -96,7 +96,7 @@
             <div class="col-lg-6 mt-0">
                 <div class="pdp-main-image-wrap rounded-4 overflow-hidden shadow-sm bg-white mb-3" id="zoomWrap" onmousemove="pdpZoom(event)" style="aspect-ratio: 4/5; position: relative; cursor: crosshair;">
                     @if($product->main_image)
-                        <img id="mainImage" src="{{ Storage::url($product->main_image) }}"
+                        <img id="mainImage" src="{{ getImageUrl($product->main_image) }}"
                              alt="{{ $product->translated_name }}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
                     @else
                         <div class="d-flex align-items-center justify-content-center h-100 bg-light text-muted">
@@ -126,8 +126,8 @@
                 @if($uniqueImages->count() >= 1)
                 <div class="d-flex gap-2 overflow-auto pdp-thumbs pb-1">
                     @foreach($uniqueImages as $imagePath)
-                    <div class="thumb-item {{ $loop->first ? 'active' : '' }} border rounded overflow-hidden" onclick="pdpChangeImage('{{ Storage::url($imagePath) }}', this)" style="width: 80px; height: 100px; flex-shrink: 0; cursor: pointer; transition: 0.3s;">
-                        <img src="{{ Storage::url($imagePath) }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    <div class="thumb-item {{ $loop->first ? 'active' : '' }} border rounded overflow-hidden" onclick="pdpChangeImage('{{ getImageUrl($imagePath) }}', this)" style="width: 80px; height: 100px; flex-shrink: 0; cursor: pointer; transition: 0.3s;">
+                        <img src="{{ getImageUrl($imagePath) }}" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                     @endforeach
                 </div>
@@ -177,11 +177,11 @@
                                         @foreach($styles as $style)
                                             <div class="variant-option border rounded p-1" 
                                                  data-style-id="{{ $style->style_id }}"
-                                                 data-image="{{ $style->color_image && strval($style->color_image) !== '0' ? \Illuminate\Support\Facades\Storage::url($style->color_image) : '' }}" 
+                                                 data-image="{{ getImageUrl($style->color_image) }}" 
                                                  style="cursor: pointer; transition: 0.3s;"
                                                  onclick="selectStyle(this)"
                                                  title="Style">
-                                                @php $imgUrl = $style->color_image && strval($style->color_image) !== '0' ? \Illuminate\Support\Facades\Storage::url($style->color_image) : asset('images/placeholder-product.jpg'); @endphp
+                                                @php $imgUrl = getImageUrl($style->color_image) ?: asset('images/placeholder-product.jpg'); @endphp
                                                 <div class="rounded bg-light" style="width: 60px; height: 70px; overflow: hidden; border: 1px solid rgba(0,0,0,0.1);">
                                                     <img src="{{ $imgUrl }}" alt="Style" style="width: 100%; height: 100%; object-fit: cover;">
                                                 </div>
@@ -316,7 +316,7 @@ let selectedSize = null;
 const baseIsOnSale = {{ $product->isOnSale() ? 'true' : 'false' }};
 const basePrice = "{{ $product->formatted_price }}";
 const baseSalePrice = "{{ $product->isOnSale() ? $product->formatted_sale_price : '' }}";
-const mainImageSrc = "{{ $product->main_image ? Storage::url($product->main_image) : '' }}";
+const mainImageSrc = "{{ getImageUrl($product->main_image) }}";
 
 function selectStyle(el) {
     if (el.classList.contains('disabled')) return;

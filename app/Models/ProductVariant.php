@@ -35,10 +35,7 @@ class ProductVariant extends Model
 
     public function getColorImageUrlAttribute()
     {
-        if (!$this->color_image || $this->color_image === '0' || $this->color_image === '') {
-            return null;
-        }
-        return Storage::url($this->color_image);
+        return getImageUrl($this->color_image);
     }
 
 

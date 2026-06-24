@@ -1,6 +1,6 @@
 <?php $__env->startSection('meta_title', $product->translated_name . ' — ' . setting('app_name', 'Hijab Princesses')); ?>
 <?php $__env->startSection('meta_description', Str::limit(strip_tags($product->translated_description), 155)); ?>
-<?php $__env->startSection('meta_image', $product->main_image ? url(Storage::url($product->main_image)) : null); ?>
+<?php $__env->startSection('meta_image', $product->main_image ? url(getImageUrl($product->main_image)) : null); ?>
 
 <?php $__env->startSection('json_ld'); ?>
 <script type="application/ld+json">
@@ -36,7 +36,7 @@
       "@type": "Product",
       "name": "<?php echo e($product->translated_name); ?>",
       "image": [
-        "<?php echo e($product->main_image ? url(Storage::url($product->main_image)) : ''); ?>"
+        "<?php echo e($product->main_image ? url(getImageUrl($product->main_image)) : ''); ?>"
       ],
       "description": "<?php echo e(Str::limit(strip_tags($product->translated_description), 160)); ?>",
       "sku": "<?php echo e($product->sku); ?>",
@@ -90,7 +90,7 @@
             <div class="col-lg-6 mt-0">
                 <div class="pdp-main-image-wrap rounded-4 overflow-hidden shadow-sm bg-white mb-3" id="zoomWrap" onmousemove="pdpZoom(event)" style="aspect-ratio: 4/5; position: relative; cursor: crosshair;">
                     <?php if($product->main_image): ?>
-                        <img id="mainImage" src="<?php echo e(Storage::url($product->main_image)); ?>"
+                        <img id="mainImage" src="<?php echo e(getImageUrl($product->main_image)); ?>"
                              alt="<?php echo e($product->translated_name); ?>" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
                     <?php else: ?>
                         <div class="d-flex align-items-center justify-content-center h-100 bg-light text-muted">
@@ -120,8 +120,8 @@
                 <?php if($uniqueImages->count() >= 1): ?>
                 <div class="d-flex gap-2 overflow-auto pdp-thumbs pb-1">
                     <?php $__currentLoopData = $uniqueImages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $imagePath): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <div class="thumb-item <?php echo e($loop->first ? 'active' : ''); ?> border rounded overflow-hidden" onclick="pdpChangeImage('<?php echo e(Storage::url($imagePath)); ?>', this)" style="width: 80px; height: 100px; flex-shrink: 0; cursor: pointer; transition: 0.3s;">
-                        <img src="<?php echo e(Storage::url($imagePath)); ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                    <div class="thumb-item <?php echo e($loop->first ? 'active' : ''); ?> border rounded overflow-hidden" onclick="pdpChangeImage('<?php echo e(getImageUrl($imagePath)); ?>', this)" style="width: 80px; height: 100px; flex-shrink: 0; cursor: pointer; transition: 0.3s;">
+                        <img src="<?php echo e(getImageUrl($imagePath)); ?>" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
@@ -171,11 +171,11 @@
                                         <?php $__currentLoopData = $styles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $style): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div class="variant-option border rounded p-1" 
                                                  data-style-id="<?php echo e($style->style_id); ?>"
-                                                 data-image="<?php echo e($style->color_image && strval($style->color_image) !== '0' ? \Illuminate\Support\Facades\Storage::url($style->color_image) : ''); ?>" 
+                                                 data-image="<?php echo e(getImageUrl($style->color_image)); ?>" 
                                                  style="cursor: pointer; transition: 0.3s;"
                                                  onclick="selectStyle(this)"
                                                  title="Style">
-                                                <?php $imgUrl = $style->color_image && strval($style->color_image) !== '0' ? \Illuminate\Support\Facades\Storage::url($style->color_image) : asset('images/placeholder-product.jpg'); ?>
+                                                <?php $imgUrl = getImageUrl($style->color_image) ?: asset('images/placeholder-product.jpg'); ?>
                                                 <div class="rounded bg-light" style="width: 60px; height: 70px; overflow: hidden; border: 1px solid rgba(0,0,0,0.1);">
                                                     <img src="<?php echo e($imgUrl); ?>" alt="Style" style="width: 100%; height: 100%; object-fit: cover;">
                                                 </div>
@@ -312,7 +312,7 @@ let selectedSize = null;
 const baseIsOnSale = <?php echo e($product->isOnSale() ? 'true' : 'false'); ?>;
 const basePrice = "<?php echo e($product->formatted_price); ?>";
 const baseSalePrice = "<?php echo e($product->isOnSale() ? $product->formatted_sale_price : ''); ?>";
-const mainImageSrc = "<?php echo e($product->main_image ? Storage::url($product->main_image) : ''); ?>";
+const mainImageSrc = "<?php echo e(getImageUrl($product->main_image)); ?>";
 
 function selectStyle(el) {
     if (el.classList.contains('disabled')) return;

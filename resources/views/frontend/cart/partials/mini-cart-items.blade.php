@@ -1,12 +1,12 @@
 @forelse(session('cart', []) as $key => $details)
     <div class="mc-item" id="cart-item-{{ $key }}">
-        <img src="{{ !empty($details['image']) && strval($details['image']) !== '0' ? Storage::url($details['image']) : asset('images/placeholder-product.jpg') }}"
+        <img src="{{ !empty($details['image']) && strval($details['image']) !== '0' ? getImageUrl($details['image']) : asset('images/placeholder-product.jpg') }}"
              alt="{{ $details['name'] }}" class="mc-item-img">
         <div class="mc-item-info">
             <div class="mc-item-name">{{ $details['name'] }}</div>
             <div class="mc-tags d-flex align-items-center gap-2">
                 @if(!empty($details['image']))
-                    <img src="{{ Storage::url($details['image']) }}" alt="Style" 
+                    <img src="{{ getImageUrl($details['image']) }}" alt="Style" 
                          style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1.5px solid #c5a059;">
                 @endif
                 @if(!empty($details['size']))

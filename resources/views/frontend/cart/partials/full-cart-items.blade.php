@@ -5,7 +5,7 @@
         <div class="row align-items-center g-3 g-md-4">
             {{-- Image --}}
             <div class="col-4 col-md-2">
-                @php $pImg = !empty($details['image']) && strval($details['image']) !== '0' ? Storage::url($details['image']) : asset('images/placeholder-product.jpg'); @endphp
+                @php $pImg = !empty($details['image']) && strval($details['image']) !== '0' ? getImageUrl($details['image']) : asset('images/placeholder-product.jpg'); @endphp
                 <img src="{{ $pImg }}" alt="{{ $details['name'] }}" class="img-fluid rounded shadow-sm object-fit-cover w-100" style="aspect-ratio: 3/4;">
             </div>
 
@@ -18,7 +18,7 @@
                 <div class="d-flex align-items-center flex-wrap gap-2 mt-2">
                     @if(!empty($details['image']))
                         <div class="rounded-circle border border-gold-light overflow-hidden shadow-sm d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-                            <img src="{{ Storage::url($details['image']) }}" alt="Style" class="w-100 h-100 object-fit-cover">
+                            <img src="{{ getImageUrl($details['image']) }}" alt="Style" class="w-100 h-100 object-fit-cover">
                         </div>
                     @endif
                     @if(!empty($details['size']))

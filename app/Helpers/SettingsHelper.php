@@ -80,3 +80,24 @@ if (!function_exists('formatDateTime')) {
         return $datetime->format($dateFormat . ' ' . $timeFormat);
     }
 }
+
+if (!function_exists('getImageUrl')) {
+    /**
+     * Get properly formatted image URL, handling absolute paths and storage paths
+     *
+     * @param string|null $path
+     * @return string|null
+     */
+    function getImageUrl($path)
+    {
+        if (empty($path) || $path === '0') {
+            return null;
+        }
+        
+        if (\Illuminate\Support\Str::startsWith($path, ['http://', 'https://'])) {
+            return $path;
+        }
+        
+        return \Illuminate\Support\Facades\Storage::url($path);
+    }
+}

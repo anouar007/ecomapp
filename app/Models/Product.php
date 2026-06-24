@@ -489,7 +489,7 @@ class Product extends Model
                 'sale_price' => $isOnSale ? $currentPrice : null,
                 'is_on_sale' => $isOnSale,
                 'stock' => $v->stock,
-                'image' => $v->color_image && strval($v->color_image) !== "0" ? \Illuminate\Support\Facades\Storage::url($v->color_image) : null,
+                'image' => getImageUrl($v->color_image),
                 'formatted_price' => currency($currentPrice),
                 'formatted_original_price' => currency($originalPrice),
             ];

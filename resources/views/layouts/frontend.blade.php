@@ -554,6 +554,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
+        window.cardVariants = window.cardVariants || {};
+        window.selectedCardOptions = window.selectedCardOptions || {};
         @if(setting('frontend_enable_animations'))
         AOS.init({
             duration: 800,
