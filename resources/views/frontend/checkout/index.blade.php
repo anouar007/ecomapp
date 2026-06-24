@@ -14,7 +14,7 @@
 .co-step-num {
     width:32px; height:32px; border-radius:50%; display:flex; align-items:center;
     justify-content:center; font-size:.75rem; font-weight:800;
-    background:#3BB878; color:#fff; flex-shrink:0;
+    background:#2E993B; color:#fff; flex-shrink:0;
 }
 .co-step-label { font-size:.8rem; font-weight:700; color:#374151; }
 .co-step-line { width:48px; height:2px; background:#d1fae5; margin:0 8px; }
@@ -27,7 +27,7 @@
 }
 .co-card-title {
     font-size:.78rem; font-weight:800; text-transform:uppercase;
-    letter-spacing:1.5px; color:#3BB878; margin-bottom:20px;
+    letter-spacing:1.5px; color:#2E993B; margin-bottom:20px;
     display:flex; align-items:center; gap:8px;
 }
 .co-card-title i { font-size:.85rem; }
@@ -43,7 +43,7 @@
     background:#fff; outline:none; transition:border-color .2s, box-shadow .2s;
     font-family:inherit;
 }
-.co-input:focus { border-color:#3BB878; box-shadow:0 0 0 4px rgba(59,184,120,.1); }
+.co-input:focus { border-color:#2E993B; box-shadow:0 0 0 4px rgba(59,184,120,.1); }
 .co-input::placeholder { color:#9CA3AF; font-weight:400; }
 textarea.co-input { resize:none; }
 
@@ -54,10 +54,10 @@ textarea.co-input { resize:none; }
     box-shadow:none !important; min-height:50px !important;
     font-size:.93rem !important; font-weight:500 !important;
 }
-.ts-control.focus { border-color:#3BB878 !important; box-shadow:0 0 0 4px rgba(59,184,120,.1) !important; }
+.ts-control.focus { border-color:#2E993B !important; box-shadow:0 0 0 4px rgba(59,184,120,.1) !important; }
 .ts-dropdown { border-radius:14px !important; border:none !important; box-shadow:0 12px 40px rgba(0,0,0,.12) !important; margin-top:6px !important; }
 .ts-dropdown .option { padding:11px 16px !important; font-size:.9rem !important; }
-.ts-dropdown .active { background:#3BB878 !important; color:#fff !important; }
+.ts-dropdown .active { background:#2E993B !important; color:#fff !important; }
 
 /* Payment badge */
 .co-payment {
@@ -66,14 +66,14 @@ textarea.co-input { resize:none; }
     padding:20px 24px; display:flex; align-items:center; gap:16px;
 }
 .co-pay-icon {
-    width:48px; height:48px; border-radius:14px; background:#3BB878;
+    width:48px; height:48px; border-radius:14px; background:#2E993B;
     display:flex; align-items:center; justify-content:center;
     color:#fff; font-size:1.1rem; flex-shrink:0;
 }
 
 /* Submit button */
 .btn-co-submit {
-    width:100%; background:#3BB878; color:#fff; border:none;
+    width:100%; background:#2E993B; color:#fff; border:none;
     border-radius:14px; font-weight:800; font-size:1rem;
     padding:16px 24px; cursor:pointer; display:flex;
     align-items:center; justify-content:center; gap:10px;
@@ -81,7 +81,7 @@ textarea.co-input { resize:none; }
     box-shadow:0 8px 28px rgba(59,184,120,.35);
     letter-spacing:.3px;
 }
-.btn-co-submit:hover { background:#2f9461; transform:translateY(-2px); box-shadow:0 14px 36px rgba(59,184,120,.4); }
+.btn-co-submit:hover { background:#233F2E; transform:translateY(-2px); box-shadow:0 14px 36px rgba(59,184,120,.4); }
 .btn-co-submit:active { transform:translateY(0); }
 
 /* Order summary card */
@@ -92,8 +92,8 @@ textarea.co-input { resize:none; }
 .co-item-img img { width:100%; height:100%; object-fit:cover; }
 .co-item-name { font-size:.88rem; font-weight:700; color:#111827; line-height:1.3; margin-bottom:6px; }
 .co-item-size { display:inline-block; background:#f3f4f6; border-radius:100px; padding:2px 10px; font-size:.72rem; font-weight:700; color:#6B7280; }
-.co-item-qty { display:inline-block; background:#e8f7ef; color:#3BB878; border-radius:100px; padding:2px 10px; font-size:.72rem; font-weight:700; }
-.co-item-price { font-size:.93rem; font-weight:800; color:#3BB878; margin-top:4px; }
+.co-item-qty { display:inline-block; background:#e8f7ef; color:#2E993B; border-radius:100px; padding:2px 10px; font-size:.72rem; font-weight:700; }
+.co-item-price { font-size:.93rem; font-weight:800; color:#2E993B; margin-top:4px; }
 
 /* Totals */
 .co-totals { background:#f9fafb; border-radius:14px; padding:18px; margin-top:16px; }
@@ -102,14 +102,14 @@ textarea.co-input { resize:none; }
 .co-total-label { font-size:.83rem; color:#6B7280; font-weight:600; }
 .co-total-value { font-size:.88rem; font-weight:700; color:#374151; }
 .co-grand-label { font-size:.95rem; font-weight:800; color:#111827; }
-.co-grand-value { font-size:1.4rem; font-weight:900; color:#3BB878; }
+.co-grand-value { font-size:1.4rem; font-weight:900; color:#2E993B; }
 
 /* Security badge */
 .co-secure { display:flex; align-items:center; gap:8px; justify-content:center; margin-top:16px; }
 .co-secure span { font-size:.75rem; color:#9CA3AF; font-weight:600; }
 
 /* Breadcrumb */
-.co-hero { background:linear-gradient(135deg,#0d1f14,#1a5c38 60%,#3BB878); padding:40px 0; position:relative; overflow:hidden; }
+.co-hero { background:linear-gradient(135deg,#0d1f14,#1a5c38 60%,#2E993B); padding:40px 0; position:relative; overflow:hidden; }
 .co-hero::before { content:''; position:absolute; inset:0; background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.06) 1px,transparent 0); background-size:28px 28px; }
 
 @media(max-width:991px){
@@ -187,7 +187,7 @@ textarea.co-input { resize:none; }
                             <div>
                                 <label class="co-label">{{ __('Phone Number') }}</label>
                                 <div class="position-relative">
-                                    <span class="position-absolute" style="left:14px;top:50%;transform:translateY(-50%);color:#3BB878;font-size:.85rem">
+                                    <span class="position-absolute" style="left:14px;top:50%;transform:translateY(-50%);color:#2E993B;font-size:.85rem">
                                         <i class="fas fa-phone"></i>
                                     </span>
                                     <input type="tel" name="customer_phone" class="co-input ps-5"

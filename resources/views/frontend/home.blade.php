@@ -27,7 +27,7 @@
 
                 {{-- Call-to-Action Buttons --}}
                 <div class="d-flex flex-wrap gap-3 mb-4 justify-content-start">
-                    <a href="#catalog" class="hero-cta-btn text-decoration-none d-inline-flex align-items-center gap-2">
+                    <a href="{{ route('shop.index') }}" class="hero-cta-btn text-decoration-none d-inline-flex align-items-center gap-2">
                         {{ __('Acheter maintenant') }} <i class="fas {{ app()->getLocale() == 'ar' ? 'fa-chevron-left' : 'fa-chevron-right' }} small"></i>
                     </a>
                 </div>

@@ -26,16 +26,16 @@
     transition:border-color .2s, box-shadow .2s;
     box-shadow: 0 2px 8px rgba(0,0,0,.08);
 }
-.thumb-item.border-green { border-color: #3BB878; box-shadow: 0 4px 16px rgba(59,184,120,.25); }
+.thumb-item.border-green { border-color: #2E993B; box-shadow: 0 4px 16px rgba(59,184,120,.25); }
 .thumb-item img { width:100%; height:100%; object-fit:cover; }
 
 /* Info panel */
 .pdp-info { background:#fff; border-radius:24px; padding:36px; box-shadow:0 8px 40px rgba(0,0,0,.06); height:fit-content; }
-.pdp-cat { font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; color:#3BB878; margin-bottom:8px; }
+.pdp-cat { font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; color:#2E993B; margin-bottom:8px; }
 .pdp-title { font-size:clamp(1.5rem,3vw,2rem); font-weight:900; color:#111827; line-height:1.2; margin-bottom:16px; }
 .pdp-rating { display:flex; align-items:center; gap:8px; margin-bottom:20px; }
 .pdp-stars { font-size:.65rem; color:#f59e0b; }
-.pdp-price { font-size:1.9rem; font-weight:900; color:#3BB878; }
+.pdp-price { font-size:1.9rem; font-weight:900; color:#2E993B; }
 .pdp-price-old { font-size:1rem; color:#9CA3AF; text-decoration:line-through; font-weight:600; }
 .pdp-divider { height:1px; background:#f1f5f9; margin:24px 0; }
 .pdp-desc { font-size:.93rem; color:#6B7280; line-height:1.75; margin-bottom:24px; }
@@ -47,8 +47,8 @@
     cursor:pointer; border:2px solid #e5e7eb; color:#374151;
     transition:all .2s; white-space:nowrap;
 }
-.size-pill:hover { border-color:#3BB878; color:#3BB878; }
-.size-pill.bg-green { background:#3BB878 !important; color:#fff !important; border-color:#3BB878; }
+.size-pill:hover { border-color:#2E993B; color:#2E993B; }
+.size-pill.bg-green { background:#2E993B !important; color:#fff !important; border-color:#2E993B; }
 
 /* Qty + CTA */
 .qty-wrap {
@@ -60,13 +60,13 @@
     font-size:.9rem; color:#374151; cursor:pointer; display:flex;
     align-items:center; justify-content:center; transition:background .2s;
 }
-.qty-btn:hover { background:#e8f7ef; color:#3BB878; }
+.qty-btn:hover { background:#e8f7ef; color:#2E993B; }
 .qty-input {
     width:48px; border:none; background:transparent; text-align:center;
     font-weight:800; font-size:1rem; color:#111827; outline:none;
 }
 .btn-atc {
-    flex:1; background:#3BB878; color:#fff; border:none;
+    flex:1; background:#2E993B; color:#fff; border:none;
     border-radius:100px; font-weight:800; font-size:.95rem;
     padding:14px 24px; cursor:pointer; display:flex;
     align-items:center; justify-content:center; gap:8px;
@@ -74,7 +74,7 @@
     box-shadow:0 6px 24px rgba(59,184,120,.3);
     white-space:nowrap;
 }
-.btn-atc:hover { background:#2f9461; transform:translateY(-2px); box-shadow:0 10px 32px rgba(59,184,120,.4); }
+.btn-atc:hover { background:#233F2E; transform:translateY(-2px); box-shadow:0 10px 32px rgba(59,184,120,.4); }
 .btn-atc:active { transform:translateY(0); }
 
 /* Trust badges */
@@ -99,7 +99,7 @@
 
 /* Breadcrumb */
     .hover-green { transition: all 0.3s; }
-    .hover-green:hover { color: #3BB878 !important; }
+    .hover-green:hover { color: #2E993B !important; }
 
     /* Shake animation */
     @keyframes shake {
@@ -434,7 +434,7 @@
                 icon: 'warning', 
                 title: '{{ __('Please select a size') }}', 
                 text: '{{ __('Please choose a size before adding to cart.') }}',
-                confirmButtonColor: '#3BB878'
+                confirmButtonColor: '#2E993B'
             });
             return;
         }
@@ -444,7 +444,7 @@
                 icon: 'error', 
                 title: '{{ __('Stock Limit') }}', 
                 text: '{{ __('Sorry, we only have {stock} items left in stock.') }}'.replace('{stock}', currentStockLimit),
-                confirmButtonColor: '#3BB878'
+                confirmButtonColor: '#2E993B'
             });
             return;
         }
@@ -456,7 +456,7 @@
         }).then(r => r.json()).then(data => {
             if(data.success) {
                 Swal.fire({ icon: 'success', title: '{{ __('Added to cart!') }}', toast: true, position: 'top-end', showConfirmButton: false, timer: 2500 });
-                document.getElementById('header-cart-count').innerText = data.cartCount;
+                document.querySelectorAll('[data-cart-count]').forEach(el => el.textContent = data.cartCount);
                 refreshMiniCart();
                 const miniCartElement = document.getElementById('miniCart');
                 if (miniCartElement) {

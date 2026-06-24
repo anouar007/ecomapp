@@ -16,19 +16,19 @@
                     </div>
                     <div class="list-group list-group-flush font-body">
                         <a href="{{ route('customer.dashboard') }}" class="list-group-item list-group-item-action p-3 border-0 d-flex align-items-center gap-3 {{ request()->routeIs('customer.dashboard') ? 'bg-gold-light text-gold fw-bold border-start-gold' : 'text-muted' }}">
-                            <i class="fas fa-columns opacity-50"></i> لوحة التحكم
+                            <i class="fas fa-columns opacity-50"></i> {{ __('Dashboard') }}
                         </a>
                         <a href="{{ route('customer.orders') }}" class="list-group-item list-group-item-action p-3 border-0 d-flex align-items-center gap-3 {{ request()->routeIs('customer.orders*') ? 'bg-gold-light text-gold fw-bold border-start-gold' : 'text-muted' }}">
-                            <i class="fas fa-shopping-bag opacity-50"></i> طلباتي
+                            <i class="fas fa-shopping-bag opacity-50"></i> {{ __('My Orders') }}
                         </a>
                         <a href="{{ route('customer.profile') }}" class="list-group-item list-group-item-action p-3 border-0 d-flex align-items-center gap-3 {{ request()->routeIs('customer.profile') ? 'bg-gold-light text-gold fw-bold border-start-gold' : 'text-muted' }}">
-                            <i class="fas fa-user-crown opacity-50"></i> إعدادات الحساب
+                            <i class="fas fa-user-crown opacity-50"></i> {{ __('Account Settings') }}
                         </a>
                         <div class="bg-light mx-3" style="height: 1px;"></div>
                         <form action="{{ route('logout') }}" method="POST" class="m-0">
                             @csrf
                             <button type="submit" class="list-group-item list-group-item-action p-3 border-0 text-danger d-flex align-items-center gap-3 bg-transparent">
-                                <i class="fas fa-sign-out-alt opacity-50"></i> تسجيل الخروج
+                                <i class="fas fa-sign-out-alt opacity-50"></i> {{ __('Logout') }}
                             </button>
                         </form>
                     </div>

@@ -65,8 +65,8 @@
       window.OneSignal = window.OneSignal || [];
       OneSignal.push(function() {
         OneSignal.init({
-          appId: "{{ env('ONESIGNAL_APP_ID') }}",
-          safari_web_id: "web.onesignal.auto.10427e02-4660-449e-b5c6-724f113e6396",
+          appId: "{{ config('services.onesignal.app_id') }}",
+          safari_web_id: "{{ config('services.onesignal.safari_web_id') }}",
           notifyButton: {
             enable: true,
           },
@@ -335,10 +335,19 @@
             }
         }
 
-        // Start checking (every 60 seconds)
+        // Start checking (every 120 seconds, paused when tab is hidden)
         if (window.location.pathname.includes('/dashboard') || window.location.pathname.includes('/orders')) {
             checkNewOrders(); // Initial check
-            setInterval(checkNewOrders, 60000);
+            let orderPollInterval = setInterval(() => {
+                // Skip poll if tab is hidden — saves server resources
+                if (document.visibilityState === 'hidden') return;
+                checkNewOrders();
+            }, 120000);
+
+            // Also fire once when tab becomes visible again after being hidden
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') checkNewOrders();
+            });
         }
     </script>
     @stack('scripts')

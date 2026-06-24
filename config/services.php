@@ -54,4 +54,10 @@ return [
         'chat_id'   => env('TELEGRAM_CHAT_ID'),
     ],
 
+    'onesignal' => [
+        'app_id'       => env('ONESIGNAL_APP_ID'),
+        'rest_api_key' => env('ONESIGNAL_REST_API_KEY'),
+        'safari_web_id'=> env('ONESIGNAL_SAFARI_WEB_ID', 'web.onesignal.auto.10427e02-4660-449e-b5c6-724f113e6396'),
+    ],
+
 ];

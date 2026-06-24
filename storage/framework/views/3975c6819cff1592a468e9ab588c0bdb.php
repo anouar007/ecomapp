@@ -1,7 +1,6 @@
-@extends('layouts.frontend')
-@section('meta_title', __('Shop') . ' — Ait Oumdis')
+<?php $__env->startSection('meta_title', __('Shop') . ' — Ait Oumdis'); ?>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
 .shop-hero{background:linear-gradient(135deg,#0d1f14,#1a5c38 55%,#2E993B);padding:64px 0 80px;position:relative;overflow:hidden}
 .shop-hero::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.06) 1px,transparent 0);background-size:32px 32px}
@@ -48,31 +47,32 @@
 .empty-box{background:#fff;border-radius:20px;padding:60px 20px;text-align:center}
 .empty-ico{width:80px;height:80px;background:#e8f7ef;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:2rem}
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
-{{-- HERO --}}
+
 <div class="shop-hero">
     <div class="container position-relative" style="z-index:1">
         <div class="row align-items-center gy-4">
             <div class="col-lg-7" data-aos="fade-right">
                 <nav aria-label="breadcrumb" class="mb-3">
                     <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item"><a href="{{ url('/') }}" class="text-white opacity-60 text-decoration-none small">{{ __('Home') }}</a></li>
-                        <li class="breadcrumb-item active text-white small">{{ __('Shop') }}</li>
+                        <li class="breadcrumb-item"><a href="<?php echo e(url('/')); ?>" class="text-white opacity-60 text-decoration-none small"><?php echo e(__('Home')); ?></a></li>
+                        <li class="breadcrumb-item active text-white small"><?php echo e(__('Shop')); ?></li>
                     </ol>
                 </nav>
                 <h1 class="text-white fw-900 lh-1 mb-3" style="font-size:clamp(2rem,4vw,3rem)">
-                    {{ __('Our Natural Products') }}<br>
-                    <span style="color:#a7f3c8">{{ __('from the Atlas Mountains') }}</span>
+                    <?php echo e(__('Our Natural Products')); ?><br>
+                    <span style="color:#a7f3c8"><?php echo e(__('from the Atlas Mountains')); ?></span>
                 </h1>
                 <p class="text-white lh-lg mb-0" style="opacity:.72;max-width:480px;font-size:.95rem">
-                    {{ __('Pure honey, argan oil, saffron & organic cosmetics — harvested with care and tradition.') }}
+                    <?php echo e(__('Pure honey, argan oil, saffron & organic cosmetics — harvested with care and tradition.')); ?>
+
                 </p>
             </div>
             <div class="col-lg-5 d-none d-lg-flex justify-content-end" data-aos="fade-left">
-                {{-- Category icons removed --}}
+                
             </div>
         </div>
     </div>
@@ -83,21 +83,21 @@
     </div>
 </div>
 
-{{-- SHOP BODY --}}
+
 <div style="background:#f9fafb;min-height:80vh">
     <div class="container py-5">
         <div class="row g-4 align-items-start">
 
-            {{-- SIDEBAR (desktop) --}}
+            
             <aside class="col-lg-3 d-none d-lg-block">
                 <div class="sticky-top" style="top:95px">
 
-                    {{-- Search --}}
+                    
                     <div class="sidebar-card">
-                        <div class="sidebar-label">{{ __('Search') }}</div>
+                        <div class="sidebar-label"><?php echo e(__('Search')); ?></div>
                         <div class="position-relative">
-                            <input type="text" id="shopSearch" value="{{ request('q') }}"
-                                   placeholder="{{ __('Search products...') }}"
+                            <input type="text" id="shopSearch" value="<?php echo e(request('q')); ?>"
+                                   placeholder="<?php echo e(__('Search products...')); ?>"
                                    class="form-control border-0 bg-light rounded-3 pe-5" style="height:44px"
                                    autocomplete="off">
                             <button type="button" id="searchBtn"
@@ -108,94 +108,98 @@
                         </div>
                     </div>
 
-                    {{-- Categories --}}
+                    
                     <div class="sidebar-card">
-                        <div class="sidebar-label">{{ __('Categories') }}</div>
-                        <a href="#" class="cpill {{ !request('category') ? 'on' : '' }}"
+                        <div class="sidebar-label"><?php echo e(__('Categories')); ?></div>
+                        <a href="#" class="cpill <?php echo e(!request('category') ? 'on' : ''); ?>"
                            data-filter="category" data-value="">
-                            <span><i class="fas fa-th-large me-2 opacity-60" style="font-size:.75rem"></i>{{ __('All Products') }}</span>
-                            <span class="badge">{{ $products->total() }}</span>
+                            <span><i class="fas fa-th-large me-2 opacity-60" style="font-size:.75rem"></i><?php echo e(__('All Products')); ?></span>
+                            <span class="badge"><?php echo e($products->total()); ?></span>
                         </a>
-                        @foreach($allCategories as $cat)
-                        <a href="#" class="cpill {{ request('category') == $cat->slug ? 'on' : '' }}"
-                           data-filter="category" data-value="{{ $cat->slug }}" data-label="{{ $cat->translated_name }}">
-                            <span class="text-truncate">{{ $cat->translated_name }}</span>
-                            <span class="badge">{{ $cat->products->count() }}</span>
+                        <?php $__currentLoopData = $allCategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <a href="#" class="cpill <?php echo e(request('category') == $cat->slug ? 'on' : ''); ?>"
+                           data-filter="category" data-value="<?php echo e($cat->slug); ?>" data-label="<?php echo e($cat->translated_name); ?>">
+                            <span class="text-truncate"><?php echo e($cat->translated_name); ?></span>
+                            <span class="badge"><?php echo e($cat->products->count()); ?></span>
                         </a>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
 
-                    {{-- Price --}}
+                    
                     <div class="sidebar-card">
-                        <div class="sidebar-label">{{ __('Price Range') }} ({{ __('DH') }})</div>
+                        <div class="sidebar-label"><?php echo e(__('Price Range')); ?> (<?php echo e(__('DH')); ?>)</div>
                         <div class="d-flex gap-2 align-items-center mb-3">
-                            <input type="number" id="minPrice" value="{{ request('min_price') }}"
+                            <input type="number" id="minPrice" value="<?php echo e(request('min_price')); ?>"
                                    placeholder="0" class="p-input" min="0">
                             <span class="text-muted fw-700 small">–</span>
-                            <input type="number" id="maxPrice" value="{{ request('max_price') }}"
-                                   placeholder="{{ __('max') }}" class="p-input" min="0">
+                            <input type="number" id="maxPrice" value="<?php echo e(request('max_price')); ?>"
+                                   placeholder="<?php echo e(__('max')); ?>" class="p-input" min="0">
                         </div>
                         <button type="button" id="applyPrice"
                                 class="btn w-100 rounded-3 fw-700 py-2"
                                 style="background:#2E993B;color:#fff;font-size:.84rem">
-                            <i class="fas fa-check me-1"></i>{{ __('Apply Filter') }}
+                            <i class="fas fa-check me-1"></i><?php echo e(__('Apply Filter')); ?>
+
                         </button>
                     </div>
 
-                    {{-- Clear --}}
+                    
                     <button type="button" id="clearFilters"
                             class="btn btn-outline-danger w-100 rounded-3 fw-700 small py-2"
-                            style="display:{{ request()->hasAny(['category','q','sort','min_price','max_price']) ? 'block' : 'none' }}">
-                        <i class="fas fa-times me-1"></i>{{ __('Clear All Filters') }}
+                            style="display:<?php echo e(request()->hasAny(['category','q','sort','min_price','max_price']) ? 'block' : 'none'); ?>">
+                        <i class="fas fa-times me-1"></i><?php echo e(__('Clear All Filters')); ?>
+
                     </button>
                 </div>
             </aside>
 
-            {{-- MAIN AREA --}}
+            
             <div class="col-lg-9">
 
-                {{-- Toolbar --}}
+                
                 <div class="toolbar d-flex flex-wrap align-items-center justify-content-between gap-3">
                     <div class="d-flex align-items-center gap-2">
                         <button class="btn border fw-700 rounded-3 py-2 px-3 d-lg-none"
                                 style="font-size:.82rem" type="button"
                                 data-bs-toggle="offcanvas" data-bs-target="#mobileFilters">
-                            <i class="fas fa-sliders-h me-1 text-green"></i>{{ __('Filters') }}
+                            <i class="fas fa-sliders-h me-1 text-green"></i><?php echo e(__('Filters')); ?>
+
                         </button>
                         <p id="toolbar-info" class="mb-0 small text-muted">
-                            @if(request('category'))
-                                @php $activeCat = $allCategories->firstWhere('slug', request('category')); @endphp
-                                <strong class="text-dark">{{ $activeCat?->translated_name }}</strong> &mdash;
-                            @elseif(request('q'))
-                                {{ __('Results for') }}: <strong class="text-dark">"{{ request('q') }}"</strong> &mdash;
-                            @endif
-                            <strong class="text-green">{{ $products->total() }}</strong> {{ __('products') }}
+                            <?php if(request('category')): ?>
+                                <?php $activeCat = $allCategories->firstWhere('slug', request('category')); ?>
+                                <strong class="text-dark"><?php echo e($activeCat?->translated_name); ?></strong> &mdash;
+                            <?php elseif(request('q')): ?>
+                                <?php echo e(__('Results for')); ?>: <strong class="text-dark">"<?php echo e(request('q')); ?>"</strong> &mdash;
+                            <?php endif; ?>
+                            <strong class="text-green"><?php echo e($products->total()); ?></strong> <?php echo e(__('products')); ?>
+
                         </p>
                     </div>
                     <div class="d-flex align-items-center gap-2">
-                        <span class="x-small text-muted fw-600 d-none d-sm-inline">{{ __('Sort:') }}</span>
+                        <span class="x-small text-muted fw-600 d-none d-sm-inline"><?php echo e(__('Sort:')); ?></span>
                         <select id="sortSel" class="sort-sel">
-                            <option value="newest"     {{ request('sort','newest')==='newest'    ? 'selected' : '' }}>{{ __('Newest') }}</option>
-                            <option value="price_asc"  {{ request('sort')==='price_asc'          ? 'selected' : '' }}>{{ __('Price ↑') }}</option>
-                            <option value="price_desc" {{ request('sort')==='price_desc'         ? 'selected' : '' }}>{{ __('Price ↓') }}</option>
+                            <option value="newest"     <?php echo e(request('sort','newest')==='newest'    ? 'selected' : ''); ?>><?php echo e(__('Newest')); ?></option>
+                            <option value="price_asc"  <?php echo e(request('sort')==='price_asc'          ? 'selected' : ''); ?>><?php echo e(__('Price ↑')); ?></option>
+                            <option value="price_desc" <?php echo e(request('sort')==='price_desc'         ? 'selected' : ''); ?>><?php echo e(__('Price ↓')); ?></option>
                         </select>
                     </div>
                 </div>
 
-                {{-- Active filter chips (JS-managed) --}}
+                
                 <div id="filter-chips" class="flex-wrap gap-2 mb-4"
-                     style="display:{{ request()->hasAny(['category','q','min_price','max_price']) ? 'flex' : 'none' }}">
+                     style="display:<?php echo e(request()->hasAny(['category','q','min_price','max_price']) ? 'flex' : 'none'); ?>">
                 </div>
 
-                {{-- Products Grid --}}
+                
                 <div id="pgrid">
-                    @include('frontend.shop.partials.product-grid')
+                    <?php echo $__env->make('frontend.shop.partials.product-grid', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
                 </div>
 
-                {{-- Skeleton Loader (hidden by default, shown during AJAX) --}}
+                
                 <div id="pgrid-skeleton" class="d-none">
                     <div class="row g-3 g-md-4">
-                        @for($s=0; $s<6; $s++)
+                        <?php for($s=0; $s<6; $s++): ?>
                         <div class="col-6 col-md-4">
                             <div class="skeleton-card">
                                 <div class="skeleton skeleton-img"></div>
@@ -207,7 +211,7 @@
                                 </div>
                             </div>
                         </div>
-                        @endfor
+                        <?php endfor; ?>
                     </div>
                 </div>
             </div>
@@ -215,66 +219,69 @@
     </div>
 </div>
 
-{{-- MOBILE FILTERS OFFCANVAS --}}
+
 <div class="offcanvas offcanvas-start border-0 shadow-lg" id="mobileFilters" style="max-width:300px">
     <div class="offcanvas-header" style="background:#f9fafb;border-bottom:1px solid #f1f5f9">
-        <h5 class="fw-800 mb-0"><i class="fas fa-sliders-h text-green me-2"></i>{{ __('Filters') }}</h5>
+        <h5 class="fw-800 mb-0"><i class="fas fa-sliders-h text-green me-2"></i><?php echo e(__('Filters')); ?></h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
     </div>
     <div class="offcanvas-body d-flex flex-column gap-4">
         <div>
-            <div class="sidebar-label">{{ __('Search') }}</div>
-            <input type="text" id="mobSearch" placeholder="{{ __('Search...') }}"
-                   value="{{ request('q') }}"
+            <div class="sidebar-label"><?php echo e(__('Search')); ?></div>
+            <input type="text" id="mobSearch" placeholder="<?php echo e(__('Search...')); ?>"
+                   value="<?php echo e(request('q')); ?>"
                    class="form-control rounded-3 border-light" autocomplete="off">
         </div>
         <div>
-            <div class="sidebar-label">{{ __('Categories') }}</div>
+            <div class="sidebar-label"><?php echo e(__('Categories')); ?></div>
             <div class="d-flex flex-column gap-1">
-                <a href="#" class="cpill {{ !request('category') ? 'on' : '' }}"
-                   data-filter="category" data-value="">{{ __('All Products') }}</a>
-                @foreach($allCategories as $cat)
-                <a href="#" class="cpill {{ request('category') == $cat->slug ? 'on' : '' }}"
-                   data-filter="category" data-value="{{ $cat->slug }}" data-label="{{ $cat->translated_name }}">
-                    {{ $cat->translated_name }}
+                <a href="#" class="cpill <?php echo e(!request('category') ? 'on' : ''); ?>"
+                   data-filter="category" data-value=""><?php echo e(__('All Products')); ?></a>
+                <?php $__currentLoopData = $allCategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <a href="#" class="cpill <?php echo e(request('category') == $cat->slug ? 'on' : ''); ?>"
+                   data-filter="category" data-value="<?php echo e($cat->slug); ?>" data-label="<?php echo e($cat->translated_name); ?>">
+                    <?php echo e($cat->translated_name); ?>
+
                 </a>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
         </div>
         <div>
-            <div class="sidebar-label">{{ __('Price') }} ({{ __('DH') }})</div>
+            <div class="sidebar-label"><?php echo e(__('Price')); ?> (<?php echo e(__('DH')); ?>)</div>
             <div class="d-flex gap-2">
-                <input type="number" id="mobMinPrice" value="{{ request('min_price') }}" placeholder="0"   class="p-input">
-                <input type="number" id="mobMaxPrice" value="{{ request('max_price') }}" placeholder="{{ __('max') }}" class="p-input">
+                <input type="number" id="mobMinPrice" value="<?php echo e(request('min_price')); ?>" placeholder="0"   class="p-input">
+                <input type="number" id="mobMaxPrice" value="<?php echo e(request('max_price')); ?>" placeholder="<?php echo e(__('max')); ?>" class="p-input">
             </div>
         </div>
         <button type="button" id="mobApply" class="btn fw-700 rounded-3 py-2 w-100" style="background:#2E993B;color:#fff">
-            {{ __('Apply Filters') }}
+            <?php echo e(__('Apply Filters')); ?>
+
         </button>
         <button type="button" id="mobClear" class="btn btn-outline-secondary rounded-3 small fw-700 w-100">
-            {{ __('Clear All') }}
+            <?php echo e(__('Clear All')); ?>
+
         </button>
     </div>
 </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 (function() {
     'use strict';
 
     /* ─── State ─── */
     const state = {
-        q:         '{{ request('q') }}',
-        category:  '{{ request('category') }}',
-        sort:      '{{ request('sort', 'newest') }}',
-        min_price: '{{ request('min_price') }}',
-        max_price: '{{ request('max_price') }}',
+        q:         '<?php echo e(request('q')); ?>',
+        category:  '<?php echo e(request('category')); ?>',
+        sort:      '<?php echo e(request('sort', 'newest')); ?>',
+        min_price: '<?php echo e(request('min_price')); ?>',
+        max_price: '<?php echo e(request('max_price')); ?>',
         page:      '1',
     };
 
-    const ENDPOINT = '{{ route('shop.index') }}';
+    const ENDPOINT = '<?php echo e(route('shop.index')); ?>';
 
     /* ─── Elements ─── */
     const pgrid       = document.getElementById('pgrid');
@@ -351,9 +358,9 @@
             const label = pill ? (pill.dataset.label || pill.textContent.trim()) : state.category;
             html += `<strong class="text-dark">${label}</strong> &mdash; `;
         } else if (state.q) {
-            html += `{{ __('Results for') }}: <strong class="text-dark">"${state.q}"</strong> &mdash; `;
+            html += `<?php echo e(__('Results for')); ?>: <strong class="text-dark">"${state.q}"</strong> &mdash; `;
         }
-        html += `<strong class="text-green">${count}</strong> {{ __('products') }}`;
+        html += `<strong class="text-green">${count}</strong> <?php echo e(__('products')); ?>`;
         toolbarInfo.innerHTML = html;
     }
 
@@ -371,7 +378,7 @@
             html += `<span class="fchip"><i class="fas fa-search text-green" style="font-size:.62rem"></i>"${state.q}"<button class="chip-x" data-clear="q">×</button></span>`;
         }
         if (state.min_price || state.max_price) {
-            html += `<span class="fchip"><i class="fas fa-tag text-green" style="font-size:.62rem"></i>${state.min_price||0}–${state.max_price||'∞'} {{ __('DH') }}<button class="chip-x" data-clear="price">×</button></span>`;
+            html += `<span class="fchip"><i class="fas fa-tag text-green" style="font-size:.62rem"></i>${state.min_price||0}–${state.max_price||'∞'} <?php echo e(__('DH')); ?><button class="chip-x" data-clear="price">×</button></span>`;
         }
 
         chipsEl.innerHTML = html;
@@ -519,5 +526,7 @@
 
 })();
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
 
+
+<?php echo $__env->make('layouts.frontend', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Applications/XAMPP/xamppfiles/htdocs/speed/resources/views/frontend/shop/index.blade.php ENDPATH**/ ?>
