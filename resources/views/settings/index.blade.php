@@ -384,7 +384,7 @@ ashed #cbd5e1;
                             <div class="logo-upload-area" onclick="document.getElementById('logo-input').click()">
                                 <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #3b82f6; margin-bottom: 16px;"></i>
                                 <p style="margin: 0; color: #64748b;">{{ __('Click to upload logo') }}</p>
-                                <p style="margin: 4px 0 0 0; font-size: 12px; color: #94a3b8;">{{ __('PNG, JPG, SVG up to 2MB') }}</p>
+                                <p style="margin: 4px 0 0 0; font-size: 12px; color: #94a3b8;">{{ __('PNG, JPG, SVG up to 10MB') }}</p>
                                 <input type="file" id="logo-input" form="logo-upload-form" name="logo" accept="image/*" style="display: none;" onchange="document.getElementById('logo-upload-form').submit()">
                             </div>
                     </div>

@@ -79,7 +79,7 @@
                            class="form-control" 
                            accept="image/*"
                            onchange="previewAvatar(event)">
-                    <small class="text-muted">{{ __('Max size: 2MB. Accepted: JPG, PNG, GIF') }}</small>
+                    <small class="text-muted">{{ __('Max size: 10MB. Accepted: JPG, PNG, GIF') }}</small>
                 </div>
             </div>
             

@@ -92,6 +92,28 @@ class DashboardController extends Controller
             'cancelled' => \App\Models\Order::where('status', 'cancelled')->count(),
         ];
 
+        $todayStr = now()->toDateString();
+        $yesterdayStr = now()->subDay()->toDateString();
+
+        $productViews = \App\Models\Product::with(['images', 'dailyViews' => function ($query) use ($todayStr, $yesterdayStr) {
+                $query->whereIn('view_date', [$todayStr, $yesterdayStr]);
+            }])
+            ->get()
+            ->map(function ($product) use ($todayStr, $yesterdayStr) {
+                $todayViews = $product->dailyViews->where('view_date', $todayStr)->first();
+                $yesterdayViews = $product->dailyViews->where('view_date', $yesterdayStr)->first();
+                return [
+                    'product' => $product,
+                    'today_views' => $todayViews ? $todayViews->view_count : 0,
+                    'yesterday_views' => $yesterdayViews ? $yesterdayViews->view_count : 0,
+                ];
+            })
+            ->filter(function ($item) {
+                return $item['today_views'] > 0 || $item['yesterday_views'] > 0;
+            })
+            ->sortByDesc('today_views')
+            ->take(10);
+
         return view('dashboard', compact(
             'stats', 
             'user', 
@@ -100,7 +122,68 @@ class DashboardController extends Controller
             'topSellingProducts', 
             'revenueData', 
             'revenueLabels', 
-            'orderStatusCounts'
+            'orderStatusCounts',
+            'productViews'
         ));
+    }
+
+    /**
+     * Show full product views interface.
+     */
+    public function productViews(Request $request)
+    {
+        $todayStr = now()->toDateString();
+        $yesterdayStr = now()->subDay()->toDateString();
+
+        $query = \App\Models\Product::with(['images', 'category', 'dailyViews' => function ($query) use ($todayStr, $yesterdayStr) {
+                $query->whereIn('view_date', [$todayStr, $yesterdayStr]);
+            }]);
+
+        if ($request->has('search') && $request->search != '') {
+            $query->where(function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('name_ar', 'like', '%' . $request->search . '%')
+                  ->orWhere('name_fr', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->has('category') && $request->category != '') {
+            $query->where('category_id', $request->category);
+        }
+
+        $productViews = $query->get()
+            ->map(function ($product) use ($todayStr, $yesterdayStr) {
+                $todayViews = $product->dailyViews->where('view_date', $todayStr)->first();
+                $yesterdayViews = $product->dailyViews->where('view_date', $yesterdayStr)->first();
+                return [
+                    'product' => $product,
+                    'today_views' => $todayViews ? $todayViews->view_count : 0,
+                    'yesterday_views' => $yesterdayViews ? $yesterdayViews->view_count : 0,
+                ];
+            })
+            ->filter(function ($item) {
+                return $item['today_views'] > 0 || $item['yesterday_views'] > 0;
+            })
+            ->sortByDesc('today_views')
+            // Using pagination manually using a simple array slice or using a paginator on collection
+            ->values();
+
+        // Paginate the collection manually
+        $page = request()->get('page', 1);
+        $perPage = 15;
+        $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
+            $productViews->forPage($page, $perPage),
+            $productViews->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        $categories = \App\Models\Category::where('status', 'active')->get();
+
+        return view('dashboard.product-views', [
+            'productViews' => $paginated,
+            'categories' => $categories
+        ]);
     }
 }

@@ -283,6 +283,59 @@
         </div>
     </div>
 
+    <!-- Row 4: Product Views -->
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-lg-6">
+            <div class="brand-table-card h-100 p-0 overflow-hidden">
+                <div class="p-4 border-bottom bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="dashboard-card-title m-0">{{ __('Product Views') }} ({{ __('Today') }} vs {{ __('Yesterday') }})</h5>
+                    <i class="fas fa-eye text-primary"></i>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light text-muted small text-uppercase">
+                            <tr>
+                                <th class="ps-4">{{ __('Product') }}</th>
+                                <th class="text-center">{{ __('Today') }}</th>
+                                <th class="text-center pe-4">{{ __('Yesterday') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($productViews as $item)
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="brand-avatar" style="width: 40px; height: 40px; border-radius: 8px;">
+                                            @if($item['product'] && $item['product']->main_image)
+                                                <img src="{{ asset('storage/' . $item['product']->main_image) }}" alt="" style="width:100%; height:100%; object-fit:cover; border-radius: 8px;">
+                                            @else
+                                                <div style="width:100%; height:100%; background:#f3f4f6; border-radius:8px; display:flex; align-items:center; justify-content:center;">
+                                                    <i class="fas fa-box text-muted"></i>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="fw-bold text-dark small">{{ $item['product'] ? $item['product']->translated_name : __('Unknown') }}</div>
+                                    </div>
+                                </td>
+                                <td class="text-center font-inter">
+                                    <span class="badge bg-primary text-white">{{ $item['today_views'] }}</span>
+                                </td>
+                                <td class="text-center pe-4 font-inter">
+                                    <span class="badge bg-secondary text-white">{{ $item['yesterday_views'] }}</span>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="3" class="text-center p-4 text-muted small">{{ __('No views data available yet') }}</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Chart.js Integration -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>

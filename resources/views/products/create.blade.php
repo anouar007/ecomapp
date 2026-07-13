@@ -140,7 +140,7 @@
                        multiple
                        style="display: none;" 
                        onchange="handleMultipleImages(event)">
-                <small class="form-help">{{ __('You can upload multiple images. First image will be the primary image. Max 2MB each.') }}</small>
+                <small class="form-help">{{ __('You can upload multiple images. First image will be the primary image. Max 10MB each.') }}</small>
             </div>
 
             <div class="form-row d-none">
@@ -351,14 +351,14 @@ let selectedFiles = [];
 
 function handleMultipleImages(event) {
     const files = Array.from(event.target.files);
-    const maxSize = 4 * 1024 * 1024; // 4MB
+    const maxSize = 10 * 1024 * 1024; // 10MB
     
     let validFiles = [];
     let errorMessages = [];
 
     files.forEach(file => {
         if (file.size > maxSize) {
-            errorMessages.push(`- ${file.name}: {{ __('The image is too large. Max size is 4MB.') }}`);
+            errorMessages.push(`- ${file.name}: {{ __('The image is too large. Max size is 10MB.') }}`);
         } else if (!file.type.match('image.*')) {
             errorMessages.push(`- ${file.name}: {{ __('Please select a valid image file.') }}`);
         } else {
@@ -553,6 +553,10 @@ function addVariationRow() {
                 <input type="color" name="variants[${vIndex}][color_code]" class="form-control form-control-color" value="#000000">
             </div>
             <div class="variant-input-group">
+                <label>{{ __('اسم اللون') }}</label>
+                <input type="text" name="variants[${vIndex}][color]" class="form-control" placeholder="{{ __('مثال: أحمر') }}">
+            </div>
+            <div class="variant-input-group">
                 <label>{{ __('Size') }}</label>
                 <input type="text" name="variants[${vIndex}][size]" class="form-control" placeholder="{{ __('e.g. XL') }}">
             </div>
@@ -622,10 +626,10 @@ function removeVariationRow(btn) {
 function previewVariantImage(input, index) {
     if (input.files && input.files[0]) {
         const file = input.files[0];
-        const maxSize = 4 * 1024 * 1024; // 4MB
+        const maxSize = 10 * 1024 * 1024; // 10MB
         
         if (file.size > maxSize) {
-            showError("{{ __('Error') }}", "{{ __('The image is too large. Max size is 4MB.') }}");
+            showError("{{ __('Error') }}", "{{ __('The image is too large. Max size is 10MB.') }}");
             input.value = '';
             return;
         }
@@ -676,18 +680,18 @@ document.getElementById('productForm')?.addEventListener('submit', function(e) {
             hasError = true;
             errorMessage += `\n- ${'{{ __("Variant") }}'} ${i+1}: ${'{{ __("Stock cannot be negative") }}'}`;
         }
-        if (fileInput && fileInput.files[0] && fileInput.files[0].size > 4 * 1024 * 1024) {
+        if (fileInput && fileInput.files[0] && fileInput.files[0].size > 10 * 1024 * 1024) {
             hasError = true;
-            errorMessage += `\n- ${'{{ __("Variant") }}'} ${i+1}: ${'{{ __("Image exceeds 4MB limit") }}'}`;
+            errorMessage += `\n- ${'{{ __("Variant") }}'} ${i+1}: ${'{{ __("Image exceeds 10MB limit") }}'}`;
         }
     });
 
     // Check main product images (they are stored in the selectedFiles array)
     if (typeof selectedFiles !== 'undefined' && selectedFiles.length > 0) {
         selectedFiles.forEach((file) => {
-            if (file.size > 4 * 1024 * 1024) {
+            if (file.size > 10 * 1024 * 1024) {
                 hasError = true;
-                errorMessage += `\n- {{ __('Main Product Image') }} ${file.name}: {{ __('Image exceeds 4MB limit') }}`;
+                errorMessage += `\n- {{ __('Main Product Image') }} ${file.name}: {{ __('Image exceeds 10MB limit') }}`;
             }
         });
     }

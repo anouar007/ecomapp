@@ -152,6 +152,11 @@ class Product extends Model
         return $this->belongsTo(Category::class, 'category_id');
     }
 
+    public function dailyViews()
+    {
+        return $this->hasMany(ProductDailyView::class);
+    }
+
     /**
      * Alias for productCategory for compatibility.
      */

@@ -363,11 +363,22 @@
                                        value="{{ old('customer_name') }}">
                             </div>
 
-                            <div class="field-group">
-                                <label class="field-label" for="customer_phone">رقم الهاتف</label>
-                                <input type="tel" id="customer_phone" name="customer_phone"
-                                       class="field-input" placeholder="06 XX XX XX XX" required
-                                       value="{{ old('customer_phone') }}">
+                            <div class="row g-3 field-group mb-3">
+                                <div class="col-12 col-md-6">
+                                    <label class="field-label" for="customer_phone">رقم الهاتف</label>
+                                    <input type="tel" id="customer_phone" name="customer_phone"
+                                           class="field-input" placeholder="06 XX XX XX XX" required
+                                           value="{{ old('customer_phone') }}">
+                                    @error('customer_phone')
+                                        <div class="text-danger small mt-1 fw-bold">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label class="field-label" for="customer_phone_confirmation">تأكيد رقم الهاتف</label>
+                                    <input type="tel" id="customer_phone_confirmation" name="customer_phone_confirmation"
+                                           class="field-input" placeholder="06 XX XX XX XX" required
+                                           value="{{ old('customer_phone_confirmation') }}">
+                                </div>
                             </div>
 
                             <div class="field-group">
@@ -393,6 +404,13 @@
                             <i class="fas fa-arrow-right me-1"></i> العودة للسلة
                         </a>
                     </div>
+                </div>
+
+                {{-- Payment Method (Mobile Only) --}}
+                <div class="payment-card d-lg-none mt-3">
+                    <div class="payment-icon"><i class="fas fa-money-bill-wave"></i></div>
+                    <div class="payment-label">الدفع عند الاستلام</div>
+                    <div class="payment-note">سيتواصل معك فريقنا لتأكيد الطلب قبل الإرسال</div>
                 </div>
             </div>
 
@@ -452,8 +470,8 @@
                     </div>
                 </div>
 
-                {{-- Payment Method --}}
-                <div class="payment-card">
+                {{-- Payment Method (Desktop Only) --}}
+                <div class="payment-card d-none d-lg-block">
                     <div class="payment-icon"><i class="fas fa-money-bill-wave"></i></div>
                     <div class="payment-label">الدفع عند الاستلام</div>
                     <div class="payment-note">سيتواصل معك فريقنا لتأكيد الطلب قبل الإرسال</div>
@@ -505,10 +523,20 @@ document.addEventListener('DOMContentLoaded', function () {
             },
         },
         placeholder: 'ابحثي عن مدينتك... / Chercher...',
-        create: false, // Don't allow custom cities to ensure we have a price
+        create: function(input) {
+            return {
+                value: input,
+                label: input,
+                fr: 'إدخال يدوي',
+                text: input,
+                price: 40
+            };
+        },
+        createOnBlur: true,
         maxOptions: 500,
         onChange: function(value) {
-            const city = options.find(o => o.value === value);
+            // Find in original options, or fallback to the custom created object from TomSelect
+            const city = options.find(o => o.value === value) || this.options[value];
             updateShipping(city);
         }
     });
@@ -530,6 +558,48 @@ document.addEventListener('DOMContentLoaded', function () {
         
         shippingDisplay.classList.add('text-primary');
         setTimeout(() => shippingDisplay.classList.remove('text-primary'), 500);
+    }
+
+    const form = document.getElementById('checkout-form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const phone1 = document.getElementById('customer_phone').value;
+            const phone2 = document.getElementById('customer_phone_confirmation').value;
+            
+            // Clean phone (keep only digits)
+            const cleanPhone = phone1.replace(/\D/g, '');
+            let isPhoneValid = false;
+            
+            if (cleanPhone.length === 10 && (cleanPhone.startsWith('05') || cleanPhone.startsWith('06') || cleanPhone.startsWith('07'))) {
+                isPhoneValid = true;
+            } else if (cleanPhone.length === 12 && cleanPhone.startsWith('212') && ['5', '6', '7'].includes(cleanPhone.substring(3, 4))) {
+                isPhoneValid = true;
+            }
+
+            if (!isPhoneValid) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'تنبيه',
+                    text: 'يرجى إدخال رقم هاتف مغربي صحيح (مثال: 0612345678)',
+                    confirmButtonColor: '#c5a059',
+                    confirmButtonText: 'حسناً'
+                });
+                return;
+            }
+
+            if (phone1 !== phone2) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'تنبيه',
+                    text: 'أرقام الهاتف غير متطابقة، يرجى التأكد.',
+                    confirmButtonColor: '#c5a059',
+                    confirmButtonText: 'حسناً'
+                });
+                return;
+            }
+        });
     }
 });
 </script>

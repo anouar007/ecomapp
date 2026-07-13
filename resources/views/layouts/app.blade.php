@@ -109,6 +109,13 @@
                 </a>
             </li>
 
+            <li class="sidebar-menu-item">
+                <a href="{{ route('dashboard.product-views') }}" class="sidebar-menu-link {{ request()->routeIs('dashboard.product-views') ? 'active' : '' }}">
+                    <i class="fas fa-eye"></i>
+                    <span>مشاهدات المنتجات</span>
+                </a>
+            </li>
+
             @can('manage_products')
             <li class="sidebar-menu-item">
                 <a href="{{ route('products.index') }}" class="sidebar-menu-link {{ request()->routeIs('products.*') ? 'active' : '' }}">

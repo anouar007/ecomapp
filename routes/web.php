@@ -45,6 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/chatbot/ask', [\App\Http\Controllers\ChatbotController::class, 'ask'])->name('chatbot.ask');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/product-views', [DashboardController::class, 'productViews'])->name('dashboard.product-views');
     
     // Profile Management
     Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');

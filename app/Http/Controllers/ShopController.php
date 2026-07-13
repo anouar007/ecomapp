@@ -87,6 +87,38 @@ class ShopController extends Controller
         // For now using ID, later can switch to slug if added
         $product = Product::with(['images', 'productCategory', 'inventoryMovements'])->findOrFail($id);
         
+        // Track unique daily view
+        $today = date('Y-m-d');
+        $sessionKey = 'viewed_product_' . $product->id . '_' . $today;
+        
+        $productView = \App\Models\ProductDailyView::firstOrCreate(
+            ['product_id' => $product->id, 'view_date' => $today],
+            ['view_count' => 0]
+        );
+
+        if (!session()->has($sessionKey)) {
+            $productView->increment('view_count');
+            session()->put($sessionKey, true);
+        }
+
+        // Calculate display views
+        $todayViewsCount = $productView->fresh()->view_count;
+        $displayViews = $todayViewsCount;
+
+        if ($todayViewsCount < 15) {
+            // Use local Moroccan time to get the correct hour
+            $currentHour = now()->timezone('Africa/Casablanca')->hour;
+            $seed = crc32($product->id . $today);
+            srand($seed);
+
+            if ($currentHour >= 10 && $currentHour <= 23) {
+                $displayViews = rand(15, 40);
+            } else {
+                $displayViews = rand(9, 12);
+            }
+            srand(); // Reset
+        }
+        
         // Paginate approved reviews separately - 5 per page
         $reviews = ProductReview::where('product_id', $product->id)
             ->where('status', 'approved')
@@ -103,7 +135,7 @@ class ShopController extends Controller
 
         $allCategories = Category::where('status', 'active')->orderBy('sort_order', 'asc')->get();
 
-        return view('frontend.shop.show', compact('product', 'relatedProducts', 'reviews', 'allCategories'));
+        return view('frontend.shop.show', compact('product', 'relatedProducts', 'reviews', 'allCategories', 'displayViews'));
     }
 
     /**

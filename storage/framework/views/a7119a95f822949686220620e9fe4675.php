@@ -224,8 +224,8 @@
     </div>
 
     <!-- Inventory Table (Desktop Only) -->
-    <div class="brand-table-card d-none d-lg-block mt-4 overflow-hidden">
-        <div class="table-responsive" style="max-height: 70vh;">
+    <div class="brand-table-card mt-4 overflow-hidden">
+        <div class="table-responsive d-none d-lg-block" style="max-height: 70vh;">
             <table class="brand-table mb-0">
                 <thead style="position: sticky; top: 0; z-index: 10;">
                     <tr>

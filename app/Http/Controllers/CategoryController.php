@@ -62,7 +62,7 @@ class CategoryController extends Controller
             'description_ar' => ['nullable', 'string'],
             'parent_id' => ['nullable', 'exists:categories,id'],
             'icon' => ['nullable', 'string', 'max:50'],
-            'image' => ['nullable', 'image', 'max:2048'],
+            'image' => ['nullable', 'image', 'max:10240'],
             'status' => ['required', 'in:active,inactive'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
         ]);
@@ -114,7 +114,7 @@ class CategoryController extends Controller
             'description_ar' => ['nullable', 'string'],
             'parent_id' => ['nullable', 'exists:categories,id'],
             'icon' => ['nullable', 'string', 'max:50'],
-            'image' => ['nullable', 'image', 'max:2048'],
+            'image' => ['nullable', 'image', 'max:10240'],
             'status' => ['required', 'in:active,inactive'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
         ]);

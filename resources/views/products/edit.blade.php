@@ -370,7 +370,10 @@
                                 <div class="variant-input-group d-none">
                                     <label>{{ __('Color') }}</label>
                                     <input type="color" name="variants[{{ $index }}][color_code]" class="form-control form-control-color" value="{{ $variant->color_code ?: '#000000' }}">
-                                    <input type="hidden" name="variants[{{ $index }}][color]" value="{{ $variant->color }}">
+                                </div>
+                                <div class="variant-input-group">
+                                    <label>{{ __('اسم اللون') }}</label>
+                                    <input type="text" name="variants[{{ $index }}][color]" class="form-control" value="{{ $variant->color }}" placeholder="{{ __('مثال: أحمر') }}">
                                 </div>
                                 <div class="variant-input-group">
                                     <label>{{ __('Size') }}</label>
@@ -516,16 +519,16 @@ function markImageForRemoval(imageId, button) {
 function handleNewImages(event) {
     const container = document.getElementById('imagePreviewContainer');
     const files = Array.from(event.target.files);
-    const maxSize = 4 * 1024 * 1024; // 4MB
+    const maxSize = 10 * 1024 * 1024; // 10MB
     
     let validFiles = [];
     let errorMessages = [];
 
     files.forEach(file => {
-        if (file.size > maxSize) {
-            errorMessages.push(`- ${file.name}: {{ __('The image is too large. Max size is 4MB.') }}`);
-        } else if (!file.type.match('image.*')) {
-            errorMessages.push(`- ${file.name}: {{ __('Please select a valid image file.') }}`);
+        if (!file.type.match('image.*')) {
+            errorMessages.push(`- ${file.name}: {{ __('Not a valid image file.') }}`);
+        } else if (file.size > maxSize) {
+            errorMessages.push(`- ${file.name}: {{ __('The image is too large. Max size is 10MB.') }}`);
         } else {
             validFiles.push(file);
         }
@@ -585,6 +588,10 @@ function addVariationRow() {
             <div class="variant-input-group d-none">
                 <label>{{ __('Color') }}</label>
                 <input type="color" name="variants[${vIndex}][color_code]" class="form-control form-control-color" value="#000000">
+            </div>
+            <div class="variant-input-group">
+                <label>{{ __('اسم اللون') }}</label>
+                <input type="text" name="variants[${vIndex}][color]" class="form-control" placeholder="{{ __('مثال: أحمر') }}">
             </div>
             <div class="variant-input-group">
                 <label>{{ __('Size') }}</label>
@@ -654,19 +661,16 @@ function removeVariationRow(btn) {
 }
 
 function previewVariantImage(input, index) {
+    const maxSize = 10 * 1024 * 1024; // 10MB
     if (input.files && input.files[0]) {
-        const file = input.files[0];
-        const maxSize = 4 * 1024 * 1024; // 4MB
-        
-        // Size Check
-        if (file.size > maxSize) {
-            showError("{{ __('Error') }}", "{{ __('The image is too large. Max size is 4MB.') }}");
+        if (input.files[0].size > maxSize) {
+            showError("{{ __('Error') }}", "{{ __('The image is too large. Max size is 10MB.') }}");
             input.value = ''; // Reset input
             return;
         }
 
         // Type Check
-        if (!file.type.match('image.*')) {
+        if (!input.files[0].type.match('image.*')) {
             showError("{{ __('Error') }}", "{{ __('Please select a valid image file.') }}");
             input.value = '';
             return;
@@ -689,7 +693,7 @@ function previewVariantImage(input, index) {
             }
             img.src = e.target.result;
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(input.files[0]);
     }
 }
 
@@ -716,9 +720,9 @@ document.getElementById('productForm')?.addEventListener('submit', function(e) {
         }
 
         // Final File Size Check (double-check before submit)
-        if (fileInput && fileInput.files[0] && fileInput.files[0].size > 4 * 1024 * 1024) {
+        if (fileInput && fileInput.files[0] && fileInput.files[0].size > 10 * 1024 * 1024) {
             hasError = true;
-            errorMessage += `\n- ${'{{ __("Variant") }}'} ${i+1}: ${'{{ __("Image exceeds 4MB limit") }}'}`;
+            errorMessage += `\n- ${'{{ __("Variant") }}'} ${i+1}: ${'{{ __("Image exceeds 10MB limit") }}'}`;
         }
     });
 
@@ -726,9 +730,9 @@ document.getElementById('productForm')?.addEventListener('submit', function(e) {
     const mainImagesInput = document.getElementById('images');
     if (mainImagesInput && mainImagesInput.files.length > 0) {
         Array.from(mainImagesInput.files).forEach((file, idx) => {
-            if (file.size > 4 * 1024 * 1024) {
+            if (file.size > 10 * 1024 * 1024) {
                 hasError = true;
-                errorMessage += `\n- {{ __('Main Product Image') }} ${file.name}: {{ __('Image exceeds 4MB limit') }}`;
+                errorMessage += `\n- {{ __('Main Product Image') }} ${file.name}: {{ __('Image exceeds 10MB limit') }}`;
             }
         });
     }

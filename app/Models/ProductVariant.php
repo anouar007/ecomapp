@@ -112,6 +112,10 @@ class ProductVariant extends Model
      */
     public function getColorNameAttribute()
     {
+        if (empty($this->color)) {
+            return '';
+        }
+
         $color = strtolower($this->color);
         $map = [
             '#000000' => 'أسود',

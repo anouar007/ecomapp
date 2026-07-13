@@ -227,7 +227,7 @@
                     <div id="uploadPlaceholder" class="text-center py-4">
                         <i class="fas fa-cloud-upload-alt" style="font-size: 2.5rem; color: #667eea; opacity: 0.6;"></i>
                         <p class="mb-0 mt-2 text-muted">{{ $category->image ? __('Upload a new image to replace') : __('Click to upload or drag and drop') }}</p>
-                        <small class="text-muted">{{ __('PNG, JPG up to 2MB') }}</small>
+                        <small class="text-muted">{{ __('PNG, JPG up to 10MB') }}</small>
                     </div>
                 </div>
                 <small class="form-help">{{ $category->image ? __('Upload a new image to replace the current one, or check the box above to remove it') : __('Optional image to represent this category') }}</small>

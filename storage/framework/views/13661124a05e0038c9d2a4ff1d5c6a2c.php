@@ -286,6 +286,59 @@
         </div>
     </div>
 
+    <!-- Row 4: Product Views -->
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-lg-6">
+            <div class="brand-table-card h-100 p-0 overflow-hidden">
+                <div class="p-4 border-bottom bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="dashboard-card-title m-0"><?php echo e(__('Product Views')); ?> (<?php echo e(__('Today')); ?> vs <?php echo e(__('Yesterday')); ?>)</h5>
+                    <i class="fas fa-eye text-primary"></i>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light text-muted small text-uppercase">
+                            <tr>
+                                <th class="ps-4"><?php echo e(__('Product')); ?></th>
+                                <th class="text-center"><?php echo e(__('Today')); ?></th>
+                                <th class="text-center pe-4"><?php echo e(__('Yesterday')); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php $__empty_1 = true; $__currentLoopData = $productViews; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="brand-avatar" style="width: 40px; height: 40px; border-radius: 8px;">
+                                            <?php if($item['product'] && $item['product']->main_image): ?>
+                                                <img src="<?php echo e(asset('storage/' . $item['product']->main_image)); ?>" alt="" style="width:100%; height:100%; object-fit:cover; border-radius: 8px;">
+                                            <?php else: ?>
+                                                <div style="width:100%; height:100%; background:#f3f4f6; border-radius:8px; display:flex; align-items:center; justify-content:center;">
+                                                    <i class="fas fa-box text-muted"></i>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="fw-bold text-dark small"><?php echo e($item['product'] ? $item['product']->translated_name : __('Unknown')); ?></div>
+                                    </div>
+                                </td>
+                                <td class="text-center font-inter">
+                                    <span class="badge bg-primary text-white"><?php echo e($item['today_views']); ?></span>
+                                </td>
+                                <td class="text-center pe-4 font-inter">
+                                    <span class="badge bg-secondary text-white"><?php echo e($item['yesterday_views']); ?></span>
+                                </td>
+                            </tr>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <tr>
+                                <td colspan="3" class="text-center p-4 text-muted small"><?php echo e(__('No views data available yet')); ?></td>
+                            </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Chart.js Integration -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>

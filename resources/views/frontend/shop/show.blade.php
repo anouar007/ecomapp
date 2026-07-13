@@ -137,9 +137,7 @@
             {{-- ── INFO PANEL ── --}}
             <div class="col-lg-6">
                 <div class="ps-lg-5">
-                    @if($product->productCategory)
-                    <div class="text-gold small fw-bold mb-2 text-uppercase ls-2 font-body" style="letter-spacing: 2px;">{{ $product->productCategory->translated_name }}</div>
-                    @endif
+
                     
                     <h1 class="brand-heading h1 mb-3 text-dark">{{ $product->translated_name }}</h1>
 
@@ -162,6 +160,14 @@
                         </span>
                     </div>
 
+                    {{-- Visiteurs Counter --}}
+                    @if(isset($displayViews) && $displayViews > 0)
+                    <div class="d-inline-flex align-items-center gap-2 mb-3 px-3 py-2 rounded-3 bg-light border border-light shadow-sm" style="font-size: 14px;">
+                        <i class="fas fa-eye text-primary"></i>
+                        <span><span class="fw-bold text-dark">{{ $displayViews }}</span> شخص يشاهد هذا المنتج اليوم</span>
+                    </div>
+                    @endif
+
 
                     <div class="bg-gold-light opacity-50 my-2" style=""></div>
 
@@ -172,15 +178,16 @@
                             @php $styles = $product->getAvailableStylesAttribute(); @endphp
                             @if($styles->count() > 0)
                                 <div class="">
-                                    <label class="fw-bold mb-2 d-block small text-muted text-uppercase">اختر اللون:</label>
+                                    <label class="fw-bold mb-2 d-block small text-muted text-uppercase">اختر اللون: <span id="selectedColorName" class="text-dark fw-bold ms-1"></span></label>
                                     <div class="d-flex flex-wrap gap-3" id="styleOptions">
                                         @foreach($styles as $style)
                                             <div class="variant-option border rounded p-1" 
                                                  data-style-id="{{ $style->style_id }}"
+                                                 data-color-name="{{ $style->color_name }}"
                                                  data-image="{{ getImageUrl($style->color_image) }}" 
                                                  style="cursor: pointer; transition: 0.3s;"
                                                  onclick="selectStyle(this)"
-                                                 title="Style">
+                                                 title="{{ $style->color_name ?? 'Style' }}">
                                                 @php $imgUrl = getImageUrl($style->color_image) ?: asset('images/placeholder-product.jpg'); @endphp
                                                 <div class="rounded bg-light" style="width: 60px; height: 70px; overflow: hidden; border: 1px solid rgba(0,0,0,0.1);">
                                                     <img src="{{ $imgUrl }}" alt="Style" style="width: 100%; height: 100%; object-fit: cover;">
@@ -218,18 +225,43 @@
                         <input type="hidden" name="variant_id" id="selectedVariantId" value="">
                         
                         <div class="row g-2 align-items-stretch mb-5">
-                            <div class="col-4 col-md-3">
-                                <div class="d-flex align-items-center border rounded h-100 bg-white">
-                                    <button type="button" class="btn btn-link text-muted p-3 px-2 text-decoration-none" onclick="pdpChangeQty(1)" title="زيادة">
-                                        <i class="fas fa-plus fs-5"></i>
+                            <div class="col-5 col-md-4 col-lg-3">
+                                <style>
+                                    .qty-input::-webkit-outer-spin-button,
+                                    .qty-input::-webkit-inner-spin-button {
+                                        -webkit-appearance: none;
+                                        margin: 0;
+                                    }
+                                    .qty-input {
+                                        -moz-appearance: textfield;
+                                        box-shadow: none !important;
+                                        outline: none !important;
+                                    }
+                                    .qty-btn {
+                                        width: 45px;
+                                        border: none;
+                                        background: transparent;
+                                        color: #333;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        transition: background 0.2s;
+                                    }
+                                    .qty-btn:hover {
+                                        background: rgba(0,0,0,0.05);
+                                    }
+                                </style>
+                                <div class="d-flex align-items-stretch border rounded h-100 bg-white overflow-hidden" style="border-color: #ddd !important;">
+                                    <button type="button" class="qty-btn" onclick="pdpChangeQty(1)" title="زيادة">
+                                        <i class="fas fa-plus"></i>
                                     </button>
                                     <input type="number" name="quantity" id="pdpQty" value="1"
                                            min="1" max="{{ $product->getTotalStockAttribute() }}" 
-                                           class="form-control border-0 text-center fw-bold px-1 font-body fs-5 flex-grow-1" 
-                                           style="background: transparent; min-width: 40px;"
+                                           class="form-control border-0 text-center fw-bold px-0 font-body fs-5 flex-grow-1 qty-input" 
+                                           style="background: transparent; min-width: 50px;"
                                            oninput="if(Number(this.value) > Number(this.max)) this.value = this.max; if(Number(this.value) < 1 && this.value !== '') this.value = 1;">
-                                    <button type="button" class="btn btn-link text-muted p-3 px-2 text-decoration-none" onclick="pdpChangeQty(-1)" title="نقص">
-                                        <i class="fas fa-minus fs-5"></i>
+                                    <button type="button" class="qty-btn" onclick="pdpChangeQty(-1)" title="نقص">
+                                        <i class="fas fa-minus"></i>
                                     </button>
                                 </div>
                             </div>
@@ -288,11 +320,10 @@
 @push('scripts')
 <style>
     .variant-option.disabled {
-        opacity: 0.35;
+        opacity: 0.8;
         cursor: not-allowed;
         pointer-events: none;
         position: relative;
-        filter: grayscale(0.6);
         border-color: #dc3545 !important;
         background-color: rgba(220, 53, 69, 0.05);
     }
@@ -332,6 +363,11 @@ function selectStyle(el) {
         selectedStyleId = el.dataset.styleId;
         const styleImg = el.dataset.image;
         if (styleImg) pdpChangeImage(styleImg, null);
+        
+        const colorNameSpan = document.getElementById('selectedColorName');
+        if (colorNameSpan) {
+            colorNameSpan.textContent = el.dataset.colorName || '';
+        }
     }
     updateVariantSelection(true); 
 }
@@ -569,6 +605,7 @@ function pdpAddToCart(event) {
             const badge = document.getElementById('header-cart-count');
             if (badge && data.cartCount !== undefined) badge.textContent = data.cartCount;
             if (typeof refreshMiniCart === 'function') refreshMiniCart();
+            if (typeof updateFAB === 'function') updateFAB(data.cartCount, true);
             Swal.fire({ 
                 toast:true, position:'top-start', icon:'success',
                 title:'تمت الإضافة للسلة!',

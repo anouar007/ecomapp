@@ -115,6 +115,13 @@
                 </a>
             </li>
 
+            <li class="sidebar-menu-item">
+                <a href="<?php echo e(route('dashboard.product-views')); ?>" class="sidebar-menu-link <?php echo e(request()->routeIs('dashboard.product-views') ? 'active' : ''); ?>">
+                    <i class="fas fa-eye"></i>
+                    <span>مشاهدات المنتجات</span>
+                </a>
+            </li>
+
             <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage_products')): ?>
             <li class="sidebar-menu-item">
                 <a href="<?php echo e(route('products.index')); ?>" class="sidebar-menu-link <?php echo e(request()->routeIs('products.*') ? 'active' : ''); ?>">

@@ -72,7 +72,7 @@ class ProductController extends Controller
             'stock' => ['required', 'integer', 'min:0'],
             'min_stock' => ['required', 'integer', 'min:0'],
             'category_id' => ['nullable', 'exists:categories,id'],
-            'images.*' => ['nullable', 'image', 'max:4096'],
+            'images.*' => ['nullable', 'image', 'max:10240'],
             'status' => ['required', 'in:active,inactive'],
             'variants' => ['nullable', 'array'],
             'variants.*.size' => ['nullable', 'string', 'max:255'],
@@ -82,7 +82,7 @@ class ProductController extends Controller
             'variants.*.price' => ['nullable', 'numeric', 'min:0'],
             'variants.*.sale_price' => ['nullable', 'numeric', 'min:0'],
             'variants.*.stock' => ['required_with:variants', 'integer', 'min:0'],
-            'variants.*.color_image' => ['nullable', 'image', 'max:4096'],
+            'variants.*.color_image' => ['nullable', 'image', 'max:10240'],
             'variants.*.style_key' => ['nullable', 'string', 'max:255'],
         ]);
 
@@ -120,9 +120,9 @@ class ProductController extends Controller
             // Handle Variations
             if ($request->has('variants')) {
                 foreach ($request->variants as $index => $variantData) {
-                    // Fallback to HEX code if color name is not provided
-                    if (empty($variantData['color']) && !empty($variantData['color_code'])) {
-                        $variantData['color'] = $variantData['color_code'];
+                    // Color name can be empty
+                    if (array_key_exists('color', $variantData) && $variantData['color'] === null) {
+                        $variantData['color'] = '';
                     }
 
                     // Handle color image upload
@@ -202,7 +202,7 @@ class ProductController extends Controller
             'stock' => ['required', 'integer', 'min:0'],
             'min_stock' => ['required', 'integer', 'min:0'],
             'category_id' => ['nullable', 'exists:categories,id'],
-            'images.*' => ['nullable', 'image', 'max:4096'],
+            'images.*' => ['nullable', 'image', 'max:10240'],
             'status' => ['required', 'in:active,inactive'],
             'remove_images' => ['nullable', 'array'],
             'remove_images.*' => ['exists:product_images,id'],
@@ -215,7 +215,7 @@ class ProductController extends Controller
             'variants.*.price' => ['nullable', 'numeric', 'min:0'],
             'variants.*.sale_price' => ['nullable', 'numeric', 'min:0'],
             'variants.*.stock' => ['required_with:variants', 'integer', 'min:0'],
-            'variants.*.color_image' => ['nullable', 'image', 'max:4096'],
+            'variants.*.color_image' => ['nullable', 'image', 'max:10240'],
             'variants.*.style_key' => ['nullable', 'string', 'max:255'],
             'variants.*.remove_image' => ['nullable', 'boolean'],
         ]);
@@ -271,9 +271,9 @@ class ProductController extends Controller
                 foreach ($request->variants as $index => $variantData) {
                     $variantId = $variantData['id'] ?? null;
                     
-                    // Fallback to HEX code if color name is not provided
-                    if (empty($variantData['color']) && !empty($variantData['color_code'])) {
-                        $variantData['color'] = $variantData['color_code'];
+                    // Color name can be empty
+                    if (array_key_exists('color', $variantData) && $variantData['color'] === null) {
+                        $variantData['color'] = '';
                     }
                     
                     // Handle color image upload
