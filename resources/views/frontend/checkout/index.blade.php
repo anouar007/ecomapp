@@ -7,53 +7,55 @@
 <style>
 /* ── Checkout Mobile-First Layout ────────────────── */
 .checkout-page {
-    background: linear-gradient(135deg, #f8f9fc 0%, #eef2ff 100%);
+    background: #f8f9fa;
     min-height: 100vh;
-    padding: 1.5rem 0 3rem;
+    padding: 1rem 0 3rem;
 }
 
 .checkout-wrapper {
     max-width: 540px;
     margin: 0 auto;
-    padding: 0 1rem;
+    padding: 0 0.75rem;
 }
 
 /* ── Page Header ─────────────────────────────────── */
 .checkout-header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
+    padding: 0 1rem;
 }
 .checkout-header h1 {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     font-weight: 900;
     color: #1e293b;
     margin-bottom: 0.25rem;
 }
 .checkout-header p {
-    font-size: 0.875rem;
-    color: #94a3b8;
+    font-size: 0.85rem;
+    color: #64748b;
 }
 
 /* ── Order Summary Card ───────────────────────────── */
 .summary-card {
     background: #fff;
-    border-radius: 1.25rem;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    border-radius: 1rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
     overflow: hidden;
     margin-bottom: 1.25rem;
+    border: 1px solid #f1f5f9;
 }
 .summary-header {
-    background: linear-gradient(135deg, #c5a059, #a07840);
+    background: #1e293b;
     color: #fff;
-    padding: 1rem 1.25rem;
+    padding: 0.875rem 1.25rem;
     font-weight: 800;
-    font-size: 0.95rem;
+    font-size: 1rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 .summary-body {
-    padding: 1.25rem;
+    padding: 1rem;
 }
 .cart-row {
     display: flex;
@@ -68,17 +70,17 @@
     flex-shrink: 0;
 }
 .cart-img {
-    width: 80px;
-    height: 120px;
+    width: 60px;
+    height: 85px;
     object-fit: cover;
-    border-radius: 0.75rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 .cart-img-placeholder {
     width: 60px;
-    height: 75px;
+    height: 85px;
     background: #f1f5f9;
-    border-radius: 0.75rem;
+    border-radius: 0.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -87,48 +89,48 @@
 }
 .cart-qty-badge {
     position: absolute;
-    top: -6px;
-    right: -6px;
-    width: 20px;
-    height: 20px;
-    background: #c5a059;
+    top: -8px;
+    right: -8px;
+    width: 22px;
+    height: 22px;
+    background: #ef4444;
     color: #fff;
     border-radius: 50%;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: center;
     border: 2px solid #fff;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
 }
 .cart-info { flex: 1; min-width: 0; }
 .cart-name {
-    font-weight: 700;
-    font-size: 0.9rem;
+    font-weight: 800;
+    font-size: 0.95rem;
     color: #1e293b;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    line-height: 1.3;
+    margin-bottom: 0.25rem;
 }
 .cart-variants {
     display: flex;
     gap: 0.375rem;
     flex-wrap: wrap;
-    margin-top: 0.375rem;
+    align-items: center;
 }
 .variant-tag {
     background: #f8fafc;
     border: 1px solid #e2e8f0;
     color: #64748b;
-    font-size: 0.7rem;
-    font-weight: 600;
+    font-size: 0.75rem;
+    font-weight: 700;
     padding: 2px 8px;
     border-radius: 100px;
 }
 .cart-price {
-    font-weight: 800;
-    color: #c5a059;
-    font-size: 0.95rem;
+    font-weight: 900;
+    color: var(--accent);
+    font-size: 1rem;
     flex-shrink: 0;
 }
 
@@ -142,140 +144,138 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 0.5rem;
-    font-size: 0.875rem;
+    font-size: 0.9rem;
     color: #64748b;
+    font-weight: 600;
 }
 .totals-row.grand {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 900;
     color: #1e293b;
     border-top: 1px solid #e2e8f0;
     padding-top: 0.75rem;
     margin-top: 0.5rem;
 }
-.totals-row.grand .val { color: #c5a059; }
+.totals-row.grand .val { color: var(--accent); }
 
 /* ── Form Card ───────────────────────────────────── */
 .form-card {
     background: #fff;
-    border-radius: 1.25rem;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    border-radius: 1rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
     overflow: hidden;
     margin-bottom: 1.25rem;
+    border: 1px solid #f1f5f9;
 }
 .form-header {
     background: #f8fafc;
     padding: 1rem 1.25rem;
-    font-weight: 800;
-    font-size: 0.95rem;
+    font-weight: 900;
+    font-size: 1.05rem;
     color: #1e293b;
     display: flex;
     align-items: center;
     gap: 0.5rem;
     border-bottom: 1px solid #f1f5f9;
 }
-.form-body { padding: 1.25rem; }
+.form-header i { color: var(--accent); }
+.form-body { padding: 1.25rem 1rem; }
 
-.field-group { margin-bottom: 1.25rem; }
+.field-group { margin-bottom: 1rem; }
 .field-label {
     display: block;
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #334155;
+    margin-bottom: 0.4rem;
 }
 .field-input {
     width: 100%;
-    background: #f8fafc;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 0.875rem;
-    padding: 0.875rem 1rem;
+    background: #fff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
     font-size: 1rem;
+    font-weight: 600;
     color: #1e293b;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: all 0.2s;
     outline: none;
     font-family: inherit;
 }
 .field-input:focus {
-    border-color: #c5a059;
-    box-shadow: 0 0 0 3px rgba(197,160,89,0.15);
-    background: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-light);
 }
-.field-input::placeholder { color: #cbd5e1; }
+.field-input::placeholder { color: #94a3b8; font-weight: 500; }
 
 /* TomSelect overrides */
 .ts-wrapper { width: 100%; }
 .ts-control {
-    background: #f8fafc !important;
-    border: 1.5px solid #e2e8f0 !important;
-    border-radius: 0.875rem !important;
-    padding: 0.875rem 1rem !important;
+    background: #fff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 0.75rem !important;
+    padding: 0.75rem 1rem !important;
     font-size: 1rem !important;
+    font-weight: 600 !important;
     min-height: unset !important;
     box-shadow: none !important;
     cursor: pointer;
 }
 .ts-control:focus-within,
 .ts-wrapper.focus .ts-control {
-    border-color: #c5a059 !important;
-    box-shadow: 0 0 0 3px rgba(197,160,89,0.15) !important;
-    background: #fff !important;
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 3px var(--accent-light) !important;
 }
-.ts-control input { font-size: 1rem !important; }
+.ts-control input { font-size: 1rem !important; font-weight: 600 !important; }
 .ts-dropdown {
-    border-radius: 0.875rem !important;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.12) !important;
+    border-radius: 0.75rem !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
     border: 1px solid #e2e8f0 !important;
     overflow: hidden;
 }
-.ts-dropdown .option { padding: 0.75rem 1rem; font-size: 0.9rem; }
-.ts-dropdown .option.active { background: rgba(197,160,89,0.12) !important; color: #a07840 !important; }
-.ts-dropdown .option:hover { background: #fdf8f0 !important; }
+.ts-dropdown .option { padding: 0.75rem 1rem; font-size: 0.95rem; font-weight: 600; }
+.ts-dropdown .option.active { background: var(--accent-light) !important; color: var(--accent) !important; }
+.ts-dropdown .option:hover { background: #f8fafc !important; }
 
 /* ── Payment Method ──────────────────────────────── */
 .payment-card {
-    background: linear-gradient(135deg, #fff9f0, #fff);
-    border: 1.5px solid #f0e0c0;
-    border-radius: 1.25rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
     padding: 1.25rem;
     text-align: center;
     margin-bottom: 1.25rem;
 }
 .payment-icon {
-    width: 56px; height: 56px;
-    background: linear-gradient(135deg, #c5a059, #a07840);
+    width: 50px; height: 50px;
+    background: var(--accent-light);
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    color: #fff; font-size: 1.25rem;
+    color: var(--accent); font-size: 1.25rem;
     margin: 0 auto 0.75rem;
 }
 .payment-label {
-    font-weight: 800; font-size: 1rem; color: #1e293b;
+    font-weight: 900;
+    font-size: 1.1rem;
+    color: #1e293b;
     margin-bottom: 0.25rem;
 }
-.payment-note { font-size: 0.8rem; color: #94a3b8; }
+.payment-note {
+    font-size: 0.85rem;
+    color: #64748b;
+    font-weight: 600;
+}
 
-/* ── Submit Button ───────────────────────────────── */
+/* ── Checkout Button ─────────────────────────────── */
 .btn-checkout {
-    width: 100%;
-    background: linear-gradient(135deg, #c5a059, #a07840);
-    color: #fff;
-    border: none;
-    border-radius: 1rem;
-    padding: 1.25rem;
-    font-size: 1.1rem;
-    font-weight: 800;
-    letter-spacing: 0.02em;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
-    box-shadow: 0 4px 20px rgba(197,160,89,0.4);
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    margin-bottom: 1rem;
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
 }
 .btn-checkout:hover {
     transform: translateY(-2px);

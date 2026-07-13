@@ -163,8 +163,8 @@
                     {{-- Visiteurs Counter --}}
                     @if(isset($displayViews) && $displayViews > 0)
                     <div class="d-inline-flex align-items-center gap-2 mb-3 px-3 py-2 rounded-3 bg-light border border-light shadow-sm" style="font-size: 14px;">
-                        <i class="fas fa-eye text-primary"></i>
-                        <span><span class="fw-bold text-dark">{{ $displayViews }}</span> شخص يشاهد هذا المنتج اليوم</span>
+                        <i class="fas fa-eye text-success"></i>
+                        <span><span class="fw-bold text-dark">{{ $displayViews }}</span> الاشخاص الذين يشاهدونه الآن</span>
                     </div>
                     @endif
 
