@@ -352,8 +352,8 @@
 
                     </button>
                 </div>
-                <div class="card-body p-3">
-                    <div id="variantsContainer" class="variants-container p-3">
+                <div class="card-body py-3 px-0">
+                    <div id="variantsContainer" class="variants-container py-3">
                         <?php $__currentLoopData = $product->variants; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $variant): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div class="variant-card" data-index="<?php echo e($index); ?>">
                             <div class="variant-actions">

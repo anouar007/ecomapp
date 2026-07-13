@@ -347,8 +347,8 @@
                         <i class="fas fa-plus me-1"></i> {{ __('Add Variation') }}
                     </button>
                 </div>
-                <div class="card-body p-3">
-                    <div id="variantsContainer" class="variants-container p-3">
+                <div class="card-body py-3 px-0">
+                    <div id="variantsContainer" class="variants-container py-3">
                         @foreach($product->variants as $index => $variant)
                         <div class="variant-card" data-index="{{ $index }}">
                             <div class="variant-actions">
