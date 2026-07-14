@@ -1,10 +1,8 @@
-@extends('layouts.frontend')
+<?php $__env->startSection('meta_title', $product->translated_name . ' — ' . setting('app_name', 'Hijab Princesses')); ?>
+<?php $__env->startSection('meta_description', Str::limit(strip_tags($product->translated_description), 155)); ?>
+<?php $__env->startSection('meta_image', $product->main_image ? url(getImageUrl($product->main_image)) : null); ?>
 
-@section('meta_title', $product->translated_name . ' — ' . setting('app_name', 'Hijab Princesses'))
-@section('meta_description', Str::limit(strip_tags($product->translated_description), 155))
-@section('meta_image', $product->main_image ? url(getImageUrl($product->main_image)) : null)
-
-@section('json_ld')
+<?php $__env->startSection('json_ld'); ?>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org/",
@@ -15,44 +13,44 @@
         {
           "@type": "ListItem",
           "position": 1,
-          "name": "{{ __('Home') }}",
-          "item": "{{ url('/') }}"
+          "name": "<?php echo e(__('Home')); ?>",
+          "item": "<?php echo e(url('/')); ?>"
         },
         {
           "@type": "ListItem",
           "position": 2,
-          "name": "{{ __('Shop') }}",
-          "item": "{{ route('shop.index') }}"
+          "name": "<?php echo e(__('Shop')); ?>",
+          "item": "<?php echo e(route('shop.index')); ?>"
         }
-        @if($product->productCategory),
+        <?php if($product->productCategory): ?>,
         {
           "@type": "ListItem",
           "position": 3,
-          "name": "{{ $product->productCategory->translated_name }}",
-          "item": "{{ route('shop.index', ['category' => $product->productCategory->slug]) }}"
+          "name": "<?php echo e($product->productCategory->translated_name); ?>",
+          "item": "<?php echo e(route('shop.index', ['category' => $product->productCategory->slug])); ?>"
         }
-        @endif
+        <?php endif; ?>
       ]
     },
     {
       "@type": "Product",
-      "name": "{{ $product->translated_name }}",
+      "name": "<?php echo e($product->translated_name); ?>",
       "image": [
-        "{{ $product->main_image ? url(getImageUrl($product->main_image)) : '' }}"
+        "<?php echo e($product->main_image ? url(getImageUrl($product->main_image)) : ''); ?>"
       ],
-      "description": "{{ Str::limit(strip_tags($product->translated_description), 160) }}",
-      "sku": "{{ $product->sku }}",
+      "description": "<?php echo e(Str::limit(strip_tags($product->translated_description), 160)); ?>",
+      "sku": "<?php echo e($product->sku); ?>",
       "brand": {
         "@type": "Brand",
-        "name": "{{ setting('app_name', 'Hijab Princesses') }}"
+        "name": "<?php echo e(setting('app_name', 'Hijab Princesses')); ?>"
       },
       "offers": {
         "@type": "Offer",
-        "url": "{{ url()->current() }}",
+        "url": "<?php echo e(url()->current()); ?>",
         "priceCurrency": "MAD",
-        "price": "{{ $product->sale_price ?? $product->price }}",
+        "price": "<?php echo e($product->sale_price ?? $product->price); ?>",
         "itemCondition": "https://schema.org/NewCondition",
-        "availability": "https://schema.org/{{ $product->getTotalStockAttribute() > 0 ? 'InStock' : 'OutOfStock' }}",
+        "availability": "https://schema.org/<?php echo e($product->getTotalStockAttribute() > 0 ? 'InStock' : 'OutOfStock'); ?>",
         "seller": {
             "@type": "Organization",
             "name": "Hijab Princesses"
@@ -62,153 +60,150 @@
   ]
 }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
-{{-- =============================================
-     BREADCRUMB
-     ============================================= --}}
+
 <section class="pdp-breadcrumb-bar py-3 bg-white border-bottom">
     <div class="container px-xl-5 small font-body">
         <nav class="pdp-breadcrumb" aria-label="breadcrumb">
-            <a href="{{ url('/') }}" class="text-muted text-decoration-none fw-bold" style="letter-spacing: 0.5px;">HIJAB <span class="text-gold">PRINCESSES</span></a>
+            <a href="<?php echo e(url('/')); ?>" class="text-muted text-decoration-none fw-bold" style="letter-spacing: 0.5px;">HIJAB <span class="text-gold">PRINCESSES</span></a>
             <span class="mx-2 text-muted opacity-50">/</span>
-            <a href="{{ route('shop.index') }}" class="text-muted text-decoration-none">المتجر</a>
-            @if($product->productCategory)
+            <a href="<?php echo e(route('shop.index')); ?>" class="text-muted text-decoration-none">المتجر</a>
+            <?php if($product->productCategory): ?>
                 <span class="mx-2 text-muted opacity-50">/</span>
-                <a href="{{ route('shop.index', ['category' => $product->productCategory->slug]) }}" class="text-muted text-decoration-none">{{ $product->productCategory->translated_name }}</a>
-            @endif
+                <a href="<?php echo e(route('shop.index', ['category' => $product->productCategory->slug])); ?>" class="text-muted text-decoration-none"><?php echo e($product->productCategory->translated_name); ?></a>
+            <?php endif; ?>
             <span class="mx-2 text-muted opacity-50">/</span>
-            <span class="text-gold fw-bold">{{ Str::limit($product->translated_name, 40) }}</span>
+            <span class="text-gold fw-bold"><?php echo e(Str::limit($product->translated_name, 40)); ?></span>
         </nav>
     </div>
 </section>
 
-{{-- =============================================
-     MAIN PRODUCT LAYOUT
-     ============================================= --}}
+
 <section class="pdp-body section-py pt-5">
     <div class="container px-xl-5">
         <div class="row g-4 g-lg-5">
 
-            {{-- ── IMAGE PANEL ── --}}
+            
             <div class="col-lg-6 mt-0">
                 <div class="pdp-main-image-wrap rounded-4 overflow-hidden shadow-sm bg-white mb-3" id="zoomWrap" onmousemove="pdpZoom(event)" style="aspect-ratio: 4/5; position: relative; cursor: crosshair;">
-                    @if($product->main_image)
-                        <img id="mainImage" src="{{ getImageUrl($product->main_image) }}"
-                             alt="{{ $product->translated_name }}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
-                    @else
+                    <?php if($product->main_image): ?>
+                        <img id="mainImage" src="<?php echo e(getImageUrl($product->main_image)); ?>"
+                             alt="<?php echo e($product->translated_name); ?>" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+                    <?php else: ?>
                         <div class="d-flex align-items-center justify-content-center h-100 bg-light text-muted">
                             <i class="fas fa-image fa-4x"></i>
                         </div>
-                    @endif
+                    <?php endif; ?>
 
-                    {{-- Badges --}}
+                    
                     <div class="pdp-badges position-absolute top-0 start-0 p-3">
-                        @if($product->getTotalStockAttribute() <= 0)
+                        <?php if($product->getTotalStockAttribute() <= 0): ?>
                             <span class="badge bg-danger rounded-pill px-3 py-2">نفذ من المخزن</span>
-                        @elseif($product->isOnSale())
-                            <span class="badge bg-danger rounded-pill px-3 py-2">تخفيض {{ $product->discount_percentage }}%</span>
-                        @endif
+                        <?php elseif($product->isOnSale()): ?>
+                            <span class="badge bg-danger rounded-pill px-3 py-2">تخفيض <?php echo e($product->discount_percentage); ?>%</span>
+                        <?php endif; ?>
                     </div>
                 </div>
 
-                {{-- Thumbnail Strip --}}
-                @php
+                
+                <?php
                     $uniqueImages = collect([$product->main_image])
                         ->merge($product->images->pluck('image_path'))
                         ->filter()
                         ->unique()
                         ->values();
-                @endphp
+                ?>
 
-                @if($uniqueImages->count() >= 1)
+                <?php if($uniqueImages->count() >= 1): ?>
                 <div class="d-flex gap-2 overflow-auto pdp-thumbs pb-1">
-                    @foreach($uniqueImages as $imagePath)
-                    <div class="thumb-item {{ $loop->first ? 'active' : '' }} border rounded overflow-hidden" onclick="pdpChangeImage('{{ getImageUrl($imagePath) }}', this)" style="width: 80px; height: 100px; flex-shrink: 0; cursor: pointer; transition: 0.3s;">
-                        <img src="{{ getImageUrl($imagePath) }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    <?php $__currentLoopData = $uniqueImages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $imagePath): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <div class="thumb-item <?php echo e($loop->first ? 'active' : ''); ?> border rounded overflow-hidden" onclick="pdpChangeImage('<?php echo e(getImageUrl($imagePath)); ?>', this)" style="width: 80px; height: 100px; flex-shrink: 0; cursor: pointer; transition: 0.3s;">
+                        <img src="<?php echo e(getImageUrl($imagePath)); ?>" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
-                @endif
+                <?php endif; ?>
             </div>
 
-            {{-- ── INFO PANEL ── --}}
+            
             <div class="col-lg-6 mt-0">
                 <div class="ps-lg-5">
 
                     <div class="bg-gold-light opacity-50 my-2" style=""></div>
 
-                    {{-- VARIANT SELECTION --}}
-                    @if($product->variants->count() > 0)
+                    
+                    <?php if($product->variants->count() > 0): ?>
                         <div class="pdp-variants mb-3 font-body">
-                            {{-- Style Images (Replaces Colors) --}}
-                            @php $styles = $product->getAvailableStylesAttribute(); @endphp
-                            @if($styles->count() > 0)
+                            
+                            <?php $styles = $product->getAvailableStylesAttribute(); ?>
+                            <?php if($styles->count() > 0): ?>
                                 <div class="">
                                     <label class="fw-bold mb-2 d-block small text-muted text-uppercase">اختر اللون: <span id="selectedColorName" class="text-dark fw-bold ms-1"></span></label>
                                     <div class="d-flex flex-wrap gap-3" id="styleOptions">
-                                        @foreach($styles as $style)
+                                        <?php $__currentLoopData = $styles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $style): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div class="variant-option border rounded p-1" 
-                                                 data-style-id="{{ $style->style_id }}"
-                                                 data-color-name="{{ $style->color_name }}"
-                                                 data-image="{{ getImageUrl($style->color_image) }}" 
+                                                 data-style-id="<?php echo e($style->style_id); ?>"
+                                                 data-color-name="<?php echo e($style->color_name); ?>"
+                                                 data-image="<?php echo e(getImageUrl($style->color_image)); ?>" 
                                                  style="cursor: pointer; transition: 0.3s;"
                                                  onclick="selectStyle(this)"
-                                                 title="{{ $style->color_name ?? 'Style' }}">
-                                                @php $imgUrl = getImageUrl($style->color_image) ?: asset('images/placeholder-product.jpg'); @endphp
+                                                 title="<?php echo e($style->color_name ?? 'Style'); ?>">
+                                                <?php $imgUrl = getImageUrl($style->color_image) ?: asset('images/placeholder-product.jpg'); ?>
                                                 <div class="rounded bg-light" style="width: 60px; height: 70px; overflow: hidden; border: 1px solid rgba(0,0,0,0.1);">
-                                                    <img src="{{ $imgUrl }}" alt="Style" style="width: 100%; height: 100%; object-fit: cover;">
+                                                    <img src="<?php echo e($imgUrl); ?>" alt="Style" style="width: 100%; height: 100%; object-fit: cover;">
                                                 </div>
                                             </div>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </div>
                                 </div>
-                            @endif
+                            <?php endif; ?>
 
-                            {{-- Sizes --}}
-                            @php $sizes = $product->getAvailableSizesAttribute(); @endphp
-                            @if($sizes->count() > 0)
+                            
+                            <?php $sizes = $product->getAvailableSizesAttribute(); ?>
+                            <?php if($sizes->count() > 0): ?>
                                 <div class="mb-4">
                                     <label class="fw-bold mb-2 d-block small text-muted text-uppercase">المقاس:</label>
                                     <div class="d-flex flex-wrap gap-2" id="sizeOptions">
-                                        @foreach($sizes as $size)
+                                        <?php $__currentLoopData = $sizes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $size): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div class="variant-option border rounded px-3 py-2 small fw-bold" 
                                                  style="cursor: pointer; transition: 0.3s;"
-                                                 data-size="{{ $size }}"
+                                                 data-size="<?php echo e($size); ?>"
                                                  onclick="selectSize(this)">
-                                                {{ $size }}
+                                                <?php echo e($size); ?>
+
                                             </div>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </div>
                                 </div>
-                            @endif
+                            <?php endif; ?>
                         </div>
-                    @endif
-                    {{-- Price & Stock --}}
+                    <?php endif; ?>
+                    
                     <div class="d-flex align-items-center gap-3 mb-2">
                         <div class="pdp-price" id="priceContainer">
-                            @if($product->isOnSale())
-                                <span class="h2 fw-bold text-gold m-0" id="displayPrice">{{ $product->formatted_sale_price }}</span>
-                                <span class="text-danger text-decoration-line-through ms-2 h4 font-body" id="originalPrice">{{ $product->formatted_price }}</span>
-                            @else
-                                <span class="h2 fw-bold text-gold m-0" id="displayPrice">{{ $product->formatted_price }}</span>
+                            <?php if($product->isOnSale()): ?>
+                                <span class="h2 fw-bold text-gold m-0" id="displayPrice"><?php echo e($product->formatted_sale_price); ?></span>
+                                <span class="text-danger text-decoration-line-through ms-2 h4 font-body" id="originalPrice"><?php echo e($product->formatted_price); ?></span>
+                            <?php else: ?>
+                                <span class="h2 fw-bold text-gold m-0" id="displayPrice"><?php echo e($product->formatted_price); ?></span>
                                 <span class="text-danger text-decoration-line-through ms-2 h4 font-body d-none" id="originalPrice"></span>
-                            @endif
+                            <?php endif; ?>
                         </div>
                         
-                        <span id="stockBadge" class="d-none small px-3 py-1 rounded-pill fw-bold font-body {{ $product->getTotalStockAttribute() > 0 ? 'bg-gold-light text-dark' : 'bg-light text-muted' }}">
-                            @if($product->getTotalStockAttribute() > 0)
-                            @else
-                            @endif
+                        <span id="stockBadge" class="d-none small px-3 py-1 rounded-pill fw-bold font-body <?php echo e($product->getTotalStockAttribute() > 0 ? 'bg-gold-light text-dark' : 'bg-light text-muted'); ?>">
+                            <?php if($product->getTotalStockAttribute() > 0): ?>
+                            <?php else: ?>
+                            <?php endif; ?>
                         </span>
                     </div>
 
-                    {{-- Add to Cart Form --}}
+                    
                     <form id="addToCartForm" onsubmit="pdpAddToCart(event)">
-                        @csrf
-                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        <?php echo csrf_field(); ?>
+                        <input type="hidden" name="product_id" value="<?php echo e($product->id); ?>">
                         <input type="hidden" name="variant_id" id="selectedVariantId" value="">
                         
                         <div class="row g-2 align-items-stretch mb-3">
@@ -243,7 +238,7 @@
                                         <i class="fas fa-plus"></i>
                                     </button>
                                     <input type="number" name="quantity" id="pdpQty" value="1"
-                                           min="1" max="{{ $product->getTotalStockAttribute() }}" 
+                                           min="1" max="<?php echo e($product->getTotalStockAttribute()); ?>" 
                                            class="form-control border-0 text-center fw-bold px-0 font-body fs-5 flex-grow-1 qty-input" 
                                            style="background: transparent; min-width: 50px;"
                                            oninput="if(Number(this.value) > Number(this.max)) this.value = this.max; if(Number(this.value) < 1 && this.value !== '') this.value = 1;">
@@ -260,15 +255,15 @@
                         </div>
                     </form>
 
-                    {{-- Visiteurs Counter --}}
-                    @if(isset($displayViews) && $displayViews > 0)
+                    
+                    <?php if(isset($displayViews) && $displayViews > 0): ?>
                     <div class="d-inline-flex align-items-center gap-2 mb-3 px-3 py-2 rounded-3 bg-light border border-light shadow-sm" style="font-size: 14px;">
                         <i class="fas fa-eye text-success"></i>
-                        <span><span class="fw-bold text-dark">{{ $displayViews }}</span> الاشخاص الذين يشاهدونه الآن</span>
+                        <span><span class="fw-bold text-dark"><?php echo e($displayViews); ?></span> الاشخاص الذين يشاهدونه الآن</span>
                     </div>
-                    @endif
+                    <?php endif; ?>
 
-                    {{-- Trust Pills --}}
+                    
                     <div class="row g-3 d-none">
                         <div class="col-5">
                             <div class="brand-card p-3 border-0 bg-gold-light text-center h-100">
@@ -288,7 +283,7 @@
 
         </div>
 
-        {{-- PRODUCT DESCRIPTION SECTION --}}
+        
         <div class="pt-3 border-top">
             <div class="d-flex justify-content-between align-items-end mb-4">
                 <div>
@@ -296,24 +291,25 @@
                     <div class="bg-gold mt-2 rounded" style="width: 40px; height: 3px;"></div>
                 </div>
             </div>
-            <h1 class="brand-heading h1 mb-3 text-dark">{{ $product->translated_name }}</h1>
+            <h1 class="brand-heading h1 mb-3 text-dark"><?php echo e($product->translated_name); ?></h1>
             <div class="row">
                 <div class="col-lg-12">
                     <div class="text-muted font-body lh-lg" style="font-size: 1.05rem;">
-                        {!! nl2br(e($product->translated_description)) !!}
+                        <?php echo nl2br(e($product->translated_description)); ?>
+
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- RELATED PRODUCTS --}}
+        
         
 
     </div>
 </section>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <style>
     .variant-option.disabled {
         opacity: 0.8;
@@ -337,13 +333,13 @@
 </style>
 <script>
 // ── Variants Logic ───────────────────────────────
-const variants = @json(json_decode($product->variants_json));
+const variants = <?php echo json_encode(json_decode($product->variants_json), 15, 512) ?>;
 let selectedStyleId = null;
 let selectedSize = null;
-const baseIsOnSale = {{ $product->isOnSale() ? 'true' : 'false' }};
-const basePrice = "{{ $product->formatted_price }}";
-const baseSalePrice = "{{ $product->isOnSale() ? $product->formatted_sale_price : '' }}";
-const mainImageSrc = "{{ getImageUrl($product->main_image) }}";
+const baseIsOnSale = <?php echo e($product->isOnSale() ? 'true' : 'false'); ?>;
+const basePrice = "<?php echo e($product->formatted_price); ?>";
+const baseSalePrice = "<?php echo e($product->isOnSale() ? $product->formatted_sale_price : ''); ?>";
+const mainImageSrc = "<?php echo e(getImageUrl($product->main_image)); ?>";
 
 function selectStyle(el) {
     if (el.classList.contains('disabled')) return;
@@ -428,7 +424,7 @@ function updateVariantSelection(updateColors = true) {
             }
         } else {
             btn.disabled = false;
-            const totalStock = {{ $product->getTotalStockAttribute() }};
+            const totalStock = <?php echo e($product->getTotalStockAttribute()); ?>;
             if (stockBadge) {
                 stockBadge.className = totalStock > 0 ? 'small px-3 py-1 rounded-pill fw-bold font-body bg-gold-light text-dark' : 'small px-3 py-1 rounded-pill fw-bold font-body bg-light text-muted';
             }
@@ -556,7 +552,7 @@ function pdpAddToCart(event) {
     event.preventDefault();
     const btn      = document.getElementById('addToCartBtn');
     const quantity = document.getElementById('pdpQty').value;
-    const productId = {{ $product->id }};
+    const productId = <?php echo e($product->id); ?>;
     const variantId = document.getElementById('selectedVariantId').value;
 
     if (variants.length > 0 && !variantId) {
@@ -584,7 +580,7 @@ function pdpAddToCart(event) {
     const orig = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإضافة…';
 
-    fetch(`{{ url('/cart/add') }}/${productId}`, {
+    fetch(`<?php echo e(url('/cart/add')); ?>/${productId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -619,4 +615,6 @@ function pdpAddToCart(event) {
     });
 }
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.frontend', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Applications/XAMPP/xamppfiles/htdocs/speed/resources/views/frontend/shop/show.blade.php ENDPATH**/ ?>

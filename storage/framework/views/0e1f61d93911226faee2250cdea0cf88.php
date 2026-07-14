@@ -1,8 +1,6 @@
-@extends('layouts.frontend')
+<?php $__env->startSection('meta_title', 'تم تأكيد طلبكِ بنجاح — ' . setting('app_name', 'Hijab Princesses')); ?>
 
-@section('meta_title', 'تم تأكيد طلبكِ بنجاح — ' . setting('app_name', 'Hijab Princesses'))
-
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
 .success-page {
     background-color: #ffffff;
@@ -309,9 +307,9 @@
     }
 }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="success-page">
     <div class="container px-xl-5">
         <div class="success-card">
@@ -341,7 +339,7 @@
                     </div>
                     <div>
                         <div class="summary-label">المبلغ عند الاستلام</div>
-                        <div class="summary-value price" dir="ltr">{{ $order->formatted_total }}</div>
+                        <div class="summary-value price" dir="ltr"><?php echo e($order->formatted_total); ?></div>
                     </div>
                 </div>
                 
@@ -354,7 +352,7 @@
                     </div>
                     <div>
                         <div class="summary-label">رقم الطلب</div>
-                        <div class="summary-value" style="font-size: 0.95rem;" dir="ltr">{{ $order->order_number }}#</div>
+                        <div class="summary-value" style="font-size: 0.95rem;" dir="ltr"><?php echo e($order->order_number); ?>#</div>
                     </div>
                 </div>
             </div>
@@ -389,11 +387,13 @@
                 </div>
             </div>
 
-            <a href="{{ route('shop.index') }}" class="btn-store text-decoration-none">
+            <a href="<?php echo e(route('shop.index')); ?>" class="btn-store text-decoration-none">
                 العودة للمتجر <i class="fas fa-shopping-bag mx-1"></i> 
             </a>
 
         </div>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.frontend', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Applications/XAMPP/xamppfiles/htdocs/speed/resources/views/frontend/checkout/success.blade.php ENDPATH**/ ?>
