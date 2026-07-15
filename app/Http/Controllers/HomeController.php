@@ -41,7 +41,9 @@ class HomeController extends Controller
         });
 
         // 2. Product Catalog Query
-        $query = Product::where('status', 'active');
+        $query = Product::select('products.*')
+            ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
+            ->where('products.status', 'active');
 
         // Filter by category
         if ($request->filled('category')) {
@@ -54,34 +56,31 @@ class HomeController extends Controller
         if ($request->filled('search')) {
             $searchTerm = $request->search;
             $query->where(function($q) use ($searchTerm) {
-                $q->where('name', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('description', 'like', '%' . $searchTerm . '%');
+                $q->where('products.name', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('products.description', 'like', '%' . $searchTerm . '%');
             });
         }
 
-        // Sort - Default to Newest
+        // Sort - Default to Category Priority then selected sort
+        $query->orderByRaw('COALESCE(categories.sort_order, 9999) asc');
+        
         $sort = $request->get('sort', 'newest');
         switch ($sort) {
-            case 'price_asc': $query->orderBy('price', 'asc'); break;
-            case 'price_desc': $query->orderBy('price', 'desc'); break;
-            default: $query->orderBy('created_at', 'desc'); break;
+            case 'price_asc': $query->orderBy('products.price', 'asc'); break;
+            case 'price_desc': $query->orderBy('products.price', 'desc'); break;
+            default: $query->orderBy('products.created_at', 'desc'); break;
         }
 
-        // 3. Custom Pagination: 30 then 10
+        // 3. Pagination
         $page = (int)$request->get('page', 1);
-        $perPage = ($page === 1) ? 30 : 10;
-        $offset = ($page === 1) ? 0 : 30 + (($page - 2) * 10);
+        $perPage = 24; // 24 products per page (divisible by 2, 3, 4)
         
         $products = $query->with(['images', 'productCategory', 'variants'])
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')
-            ->skip($offset)
-            ->take($perPage)
-            ->get();
+            ->paginate($perPage);
 
-        // Check for more products
-        $totalInQuery = (clone $query)->count();
-        $hasMore = ($offset + $perPage) < $totalInQuery;
+        $hasMore = $products->hasMorePages();
 
         $allCategories = Category::where('status', 'active')->orderBy('sort_order', 'asc')->get();
 
