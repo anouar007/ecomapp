@@ -94,7 +94,7 @@
 
             {{-- ── IMAGE PANEL ── --}}
             <div class="col-lg-6 mt-0">
-                <div class="pdp-main-image-wrap rounded-4 overflow-hidden shadow-sm bg-white mb-3" id="zoomWrap" onmousemove="pdpZoom(event)" style="aspect-ratio: 4/5; position: relative; cursor: crosshair;">
+                <div class="pdp-main-image-wrap rounded-4 overflow-hidden shadow-sm bg-white mb-3 mx-auto" id="zoomWrap" onmousemove="pdpZoom(event)" style="aspect-ratio: 9/16; width: 25%; position: relative; cursor: crosshair;">
                     @if($product->main_image)
                         <img id="mainImage" src="{{ getImageUrl($product->main_image) }}"
                              alt="{{ $product->translated_name }}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
@@ -124,7 +124,7 @@
                 @endphp
 
                 @if($uniqueImages->count() >= 1)
-                <div class="d-flex gap-2 overflow-auto pdp-thumbs pb-1">
+                <div class="d-none gap-2 overflow-auto pdp-thumbs pb-1 mx-auto" style="width: 60%;">
                     @foreach($uniqueImages as $imagePath)
                     <div class="thumb-item {{ $loop->first ? 'active' : '' }} border rounded overflow-hidden" onclick="pdpChangeImage('{{ getImageUrl($imagePath) }}', this)" style="width: 80px; height: 100px; flex-shrink: 0; cursor: pointer; transition: 0.3s;">
                         <img src="{{ getImageUrl($imagePath) }}" style="width: 100%; height: 100%; object-fit: cover;">
@@ -142,7 +142,7 @@
 
                     {{-- VARIANT SELECTION --}}
                     @if($product->variants->count() > 0)
-                        <div class="pdp-variants mb-3 font-body">
+                        <div class="pdp-variants font-body">
                             {{-- Style Images (Replaces Colors) --}}
                             @php $styles = $product->getAvailableStylesAttribute(); @endphp
                             @if($styles->count() > 0)
@@ -170,8 +170,8 @@
                             {{-- Sizes --}}
                             @php $sizes = $product->getAvailableSizesAttribute(); @endphp
                             @if($sizes->count() > 0)
-                                <div class="mb-4">
-                                    <label class="fw-bold mb-2 d-block small text-muted text-uppercase">المقاس:</label>
+                                <div class="my-2 d-flex align-items-center justify-content-between">
+                                    <label class="fw-bold mb-0 small text-muted text-uppercase">المقاس:</label>
                                     <div class="d-flex flex-wrap gap-2" id="sizeOptions">
                                         @foreach($sizes as $size)
                                             <div class="variant-option border rounded px-3 py-2 small fw-bold" 
@@ -186,18 +186,8 @@
                             @endif
                         </div>
                     @endif
-                    {{-- Price & Stock --}}
-                    <div class="d-flex align-items-center gap-3 mb-2">
-                        <div class="pdp-price" id="priceContainer">
-                            @if($product->isOnSale())
-                                <span class="h2 fw-bold text-gold m-0" id="displayPrice">{{ $product->formatted_sale_price }}</span>
-                                <span class="text-danger text-decoration-line-through ms-2 h4 font-body" id="originalPrice">{{ $product->formatted_price }}</span>
-                            @else
-                                <span class="h2 fw-bold text-gold m-0" id="displayPrice">{{ $product->formatted_price }}</span>
-                                <span class="text-danger text-decoration-line-through ms-2 h4 font-body d-none" id="originalPrice"></span>
-                            @endif
-                        </div>
-                        
+                    {{-- Stock --}}
+                    <div class="d-flex align-items-center mb-2">
                         <span id="stockBadge" class="d-none small px-3 py-1 rounded-pill fw-bold font-body {{ $product->getTotalStockAttribute() > 0 ? 'bg-gold-light text-dark' : 'bg-light text-muted' }}">
                             @if($product->getTotalStockAttribute() > 0)
                             @else
@@ -212,7 +202,7 @@
                         <input type="hidden" name="variant_id" id="selectedVariantId" value="">
                         
                         <div class="row g-2 align-items-stretch mb-3">
-                            <div class="col-5 col-md-4 col-lg-3">
+                            <div class="d-none">
                                 <style>
                                     .qty-input::-webkit-outer-spin-button,
                                     .qty-input::-webkit-inner-spin-button {
@@ -252,10 +242,21 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="col-8 col-md-9">
-                                <button type="submit" id="addToCartBtn" class="btn-brand-primary w-100 h-100 py-3 font-body">
+                            <div class="col-7 col-md-8">
+                                <button type="submit" id="addToCartBtn" class="btn-brand-primary w-100 h-100 py-3 font-body" style="border-radius: 8px;">
                                     أضيفي للسلة <i class="fas fa-cart-plus ms-2"></i>
                                 </button>
+                            </div>
+                            <div class="col-5 col-md-4 d-flex align-items-center justify-content-center bg-light">
+                                <div class="pdp-price text-center" id="priceContainer">
+                                    @if($product->isOnSale())
+                                        <div class="h5 fw-bold text-gold m-0" id="displayPrice">{{ $product->formatted_sale_price }}</div>
+                                        <div class="text-danger text-decoration-line-through small font-body mt-1" id="originalPrice" style="font-size: 0.85rem;">{{ $product->formatted_price }}</div>
+                                    @else
+                                        <div class="h5 fw-bold text-gold m-0" id="displayPrice">{{ $product->formatted_price }}</div>
+                                        <div class="text-danger text-decoration-line-through small font-body mt-1 d-none" id="originalPrice" style="font-size: 0.85rem;"></div>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </form>
