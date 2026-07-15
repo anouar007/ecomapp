@@ -42,14 +42,14 @@
                         <i class="fas fa-images"></i> Voir nos réalisations
                     </a>
                     <a href="#contact" onclick="smoothTo('contact'); return false;" class="btn-ghost">
-                        <i class="fas fa-phone-alt"></i> Devis gratuit
+                        <i class="fas fa-phone-alt"></i> Contactez-Nous
                     </a>
                 </div>
 
                 <div class="hero-trust" data-aos="fade-up" data-aos-delay="320">
-                    <div class="trust-item"><i class="fas fa-medal"></i><span>+10 ans d'expertise</span></div>
-                    <div class="trust-item"><i class="fas fa-print"></i><span>Impression HD</span></div>
-                    <div class="trust-item"><i class="fas fa-shipping-fast"></i><span>Livraison rapide</span></div>
+                    <div class="trust-item"><i class="fas fa-medal"></i><span>+8 ans d'expertise</span></div>
+                    <div class="trust-item"><i class="fas fa-print"></i><span>Impression de Haute Qualité</span></div>
+                    <div class="trust-item"><i class="fas fa-shipping-fast"></i><span>Livraison Rapide</span></div>
                 </div>
             </div>
 
@@ -91,56 +91,6 @@
 </section>
 
 {{-- ══════════════════════════════════════════════
-         STATS BAND
-══════════════════════════════════════════════ --}}
-<div class="stats-band">
-    <div class="container-fluid px-0">
-        <div class="row g-0">
-
-            <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="50">
-                <div class="stat-cell">
-                    <div style="display:flex;align-items:baseline;justify-content:center;gap:2px;">
-                        <span class="stat-val js-count" data-target="500">0</span>
-                        <span class="stat-val" style="font-size:2rem;padding-bottom:2px;">+</span>
-                    </div>
-                    <div class="stat-lbl">Projets livrés</div>
-                </div>
-            </div>
-
-            <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="130">
-                <div class="stat-cell">
-                    <div style="display:flex;align-items:baseline;justify-content:center;gap:2px;">
-                        <span class="stat-val js-count" data-target="200">0</span>
-                        <span class="stat-val" style="font-size:2rem;padding-bottom:2px;">+</span>
-                    </div>
-                    <div class="stat-lbl">Clients satisfaits</div>
-                </div>
-            </div>
-
-            <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="210">
-                <div class="stat-cell">
-                    <div style="display:flex;align-items:baseline;justify-content:center;gap:2px;">
-                        <span class="stat-val js-count" data-target="4">0</span>
-                    </div>
-                    <div class="stat-lbl">Techniques d'impression</div>
-                </div>
-            </div>
-
-            <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="290">
-                <div class="stat-cell">
-                    <div style="display:flex;align-items:baseline;justify-content:center;gap:2px;">
-                        <span class="stat-val js-count" data-target="10">0</span>
-                        <span class="stat-val" style="font-size:2rem;padding-bottom:2px;">+</span>
-                    </div>
-                    <div class="stat-lbl">Années d'expérience</div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-{{-- ══════════════════════════════════════════════
          ABOUT
 ══════════════════════════════════════════════ --}}
 <section id="about" class="about-section section-py">
@@ -150,7 +100,7 @@
             {{-- Images --}}
             <div class="col-lg-5" data-aos="fade-right" data-aos-duration="900">
                 <div class="img-stack">
-                    <div class="years-badge"><span class="y-n">10</span><span class="y-l">Années</span></div>
+                    <div class="years-badge"><span class="y-n">8</span><span class="y-l">Années</span></div>
                     <img class="img-main"
                          src="https://images.unsplash.com/photo-1543269664-7eef42226a21?auto=format&fit=crop&q=80&w=800"
                          alt="Notre savoir-faire">
@@ -172,7 +122,7 @@
                 <span class="rule"></span>
 
                 <p class="body-text mb-4">
-                    Depuis plus de 10 ans, Jawhara Pro Print accompagne les entreprises et particuliers casablancais dans leurs projets de communication visuelle. Notre expertise couvre l'ensemble du spectre de l'impression — du grand format impactant aux supports premium raffinés.
+                    Depuis plus de 8 ans, Jawhara Pro Print accompagne les entreprises et particuliers casablancais dans leurs projets de communication visuelle. Notre expertise couvre l'ensemble du spectre de l'impression — du grand format impactant aux supports premium raffinés.
                 </p>
                 <p class="body-text mb-5">
                     Notre engagement : comprendre votre vision, proposer la solution technique optimale et livrer un résultat irréprochable — dans les délais, à chaque fois, sans exception.
@@ -203,7 +153,7 @@
                 </ul>
 
                 <a href="#contact" onclick="smoothTo('contact'); return false;" class="btn-dark">
-                    <i class="fas fa-arrow-right"></i> Demander un devis
+                    <i class="fas fa-arrow-right"></i> Contactez-Nous
                 </a>
             </div>
 
@@ -230,50 +180,71 @@
 
         <div class="row g-4" data-stagger>
 
-            <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="60">
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="60">
                 <div class="svc-card">
                     <span class="svc-num">01</span>
                     <div class="svc-icon" style="background:rgba(233,164,37,.08);">
-                        <i class="fas fa-ruler-combined" style="color:var(--gold);"></i>
+                        <i class="fas fa-ruler-combined" style="color:var(--gold, #E9A425);"></i>
                     </div>
                     <h4>Grand Format</h4>
                     <p>Bâches PVC, vinyles, affiches XL, kakémonos et habillage complet de véhicules ou vitrines en haute résolution durable.</p>
                 </div>
             </div>
 
-            <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="140">
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="140">
                 <div class="svc-card">
                     <span class="svc-num">02</span>
                     <div class="svc-icon" style="background:rgba(13,185,215,.08);">
-                        <i class="fas fa-layer-group" style="color:var(--cyan);"></i>
+                        <i class="fas fa-layer-group" style="color:var(--cyan, #0db9d7);"></i>
                     </div>
                     <h4>Petit Format</h4>
-                    <p>Cartes de visite premium, flyers, brochures, dépliants et catalogues avec des finitions mat, brillant ou soft-touch.</p>
+                    <p>Cartes de visite premium, flyers, brochures, dépliants et catalogues.</p>
                 </div>
             </div>
 
-            <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="220">
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="220">
                 <div class="svc-card">
                     <span class="svc-num">03</span>
                     <div class="svc-icon" style="background:rgba(196,26,179,.08);">
-                        <i class="fas fa-industry" style="color:var(--magenta);"></i>
+                        <i class="fas fa-industry" style="color:var(--magenta, #c41ab3);"></i>
                     </div>
                     <h4>Offset</h4>
                     <p>Impression offset pour les grandes séries : magazines, catalogues institutionnels, têtes de lettre, enveloppes et journaux.</p>
                 </div>
             </div>
 
-            <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="300">
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="60">
                 <div class="svc-card">
                     <span class="svc-num">04</span>
-                    <div class="svc-icon" style="background:rgba(233,164,37,.08);">
-                        <i class="fas fa-mitten" style="color:var(--gold);"></i>
+                    <div class="svc-icon" style="background:rgba(74,144,226,.08);">
+                        <i class="fas fa-tshirt" style="color:#4A90E2;"></i>
                     </div>
                     <h4>DTF Textile</h4>
                     <p>Direct to Film pour personnaliser t-shirts, polos, blouses et vêtements de travail avec un rendu couleurs exceptionnel.</p>
                 </div>
             </div>
 
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="140">
+                <div class="svc-card">
+                    <span class="svc-num">05</span>
+                    <div class="svc-icon" style="background:rgba(46,204,113,.08);">
+                        <i class="fas fa-magic" style="color:#2ecc71;"></i>
+                    </div>
+                    <h4>UV DTF</h4>
+                    <p>Impression UV sur adhésif et laminage pour surfaces planes : packaging, boîtes cadeaux, bouteilles, etc.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="220">
+                <div class="svc-card">
+                    <span class="svc-num">06</span>
+                    <div class="svc-icon" style="background:rgba(231,76,60,.08);">
+                        <i class="fas fa-cut" style="color:#e74c3c;"></i>
+                    </div>
+                    <h4>Laser CO2</h4>
+                    <p>Gravure et découpe laser sur bois, plexiglas, cuir, papier et autres matériaux non métalliques.</p>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -300,6 +271,8 @@
             <button class="ftab" data-filter="petit-format">Petit Format</button>
             <button class="ftab" data-filter="offset">Offset</button>
             <button class="ftab" data-filter="dtf">DTF Textile</button>
+            <button class="ftab" data-filter="uv-dtf">UV DTF</button>
+            <button class="ftab" data-filter="laser">Laser CO2</button>
         </div>
 
         {{-- Grid --}}
@@ -376,6 +349,29 @@
                     </div>
                 </a>
             </div>
+            <div class="col-sm-6 col-lg-4 g-item" data-cat="uv-dtf" data-aos="fade-up" data-aos-delay="50">
+                <a class="project-card" href="#">
+                    <span class="project-marker">UV DTF</span>
+                    <img src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&q=80&w=800" alt="Packaging">
+                    <div class="project-overlay">
+                        <span class="project-cat">UV DTF</span>
+                        <h5>Packaging Cadeaux</h5>
+                        <p>Marquage UV sur bois · 100 unités</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-sm-6 col-lg-4 g-item" data-cat="laser" data-aos="fade-up" data-aos-delay="110">
+                <a class="project-card" href="#">
+                    <span class="project-marker">Laser CO2</span>
+                    <img src="https://images.unsplash.com/photo-1512401666870-128a3f80cda1?auto=format&fit=crop&q=80&w=800" alt="Laser">
+                    <div class="project-overlay">
+                        <span class="project-cat">Laser CO2</span>
+                        <h5>Trophées Plexiglas</h5>
+                        <p>Découpe laser · Gravure HD</p>
+                    </div>
+                </a>
+            </div>
 
         </div>
     </div>
@@ -395,21 +391,105 @@
             <span class="rule center"></span>
         </div>
 
-        <div class="row g-3 justify-content-center">
-            @foreach([
-                ['icon'=>'fab fa-apple',     'delay'=>60],
-                ['icon'=>'fab fa-google',    'delay'=>100],
-                ['icon'=>'fab fa-microsoft', 'delay'=>140],
-                ['icon'=>'fab fa-amazon',    'delay'=>60],
-                ['icon'=>'fab fa-shopify',   'delay'=>100],
-                ['icon'=>'fab fa-airbnb',    'delay'=>140],
-                ['icon'=>'fab fa-spotify',   'delay'=>60],
-                ['icon'=>'fab fa-slack',     'delay'=>100],
-            ] as $cl)
-            <div class="col-6 col-md-3 col-lg-3" data-aos="zoom-in" data-aos-delay="{{ $cl['delay'] }}">
-                <div class="clt-box"><i class="{{ $cl['icon'] }}"></i></div>
+        <style>
+            .clt-img {
+                max-height: 45px;
+                max-width: 80%;
+                filter: brightness(0) invert(1) opacity(0.25);
+                transition: all 0.35s ease;
+            }
+            .clt-box-marquee:hover .clt-img {
+                filter: brightness(1) invert(0) opacity(1);
+            }
+            .clt-text {
+                font-size: 1.1rem;
+                font-weight: 800;
+                text-transform: uppercase;
+                text-align: center;
+                line-height: 1.2;
+                color: rgba(255,255,255,0.15);
+                transition: all 0.35s ease;
+            }
+            .clt-box-marquee:hover .clt-text {
+                color: var(--gold, #E9A425);
+            }
+
+            /* Marquee Animations */
+            .marquee-container {
+                width: 100%;
+                overflow: hidden;
+                position: relative;
+                padding: 20px 0;
+                /* Fade edges for a premium look */
+                -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+                mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+            }
+            .marquee-track {
+                display: flex;
+                gap: 24px;
+                width: max-content;
+                animation: scroll-marquee 40s linear infinite;
+            }
+            .marquee-container:hover .marquee-track {
+                animation-play-state: paused;
+            }
+            @keyframes scroll-marquee {
+                0% { transform: translateX(0); }
+                100% { transform: translateX(calc(-50% - 12px)); } /* 12px is half the 24px gap */
+            }
+            .clt-box-marquee {
+                width: 220px;
+                height: 110px;
+                background: rgba(255,255,255,.03);
+                border: 1px solid rgba(255,255,255,.05);
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.35s ease;
+                flex-shrink: 0;
+                cursor: default;
+            }
+            .clt-box-marquee:hover {
+                background: rgba(233,164,37,.06);
+                border-color: rgba(233,164,37,.22);
+                transform: translateY(-5px) scale(1.04);
+                box-shadow: 0 12px 36px rgba(233,164,37,.12);
+            }
+        </style>
+        
+        <div class="marquee-container" data-aos="fade-up" data-aos-delay="100">
+            @php
+                $clients = [
+                    ['name' => '2M', 'logo' => 'https://upload.wikimedia.org/wikipedia/commons/4/41/2M_Maroc_logo.svg'],
+                    ['name' => 'JIBAL', 'logo' => 'https://jibal.ma/wp-content/uploads/2021/05/logo.png'],
+                    ['name' => 'ORANGE', 'logo' => 'https://upload.wikimedia.org/wikipedia/commons/c/c8/Orange_logo.svg'],
+                    ['name' => 'Sigma Technologies', 'logo' => 'https://logo.clearbit.com/sigma-technologies.ma'],
+                    ['name' => 'Image Factory', 'logo' => 'https://imagefactory-maroc.com/wp-content/uploads/2018/10/logo.png'],
+                    ['name' => 'Talis', 'logo' => 'https://ui-avatars.com/api/?name=Talis&background=0d1117&color=E9A425&bold=true&font-size=0.33'],
+                    ['name' => 'SmallX', 'logo' => 'https://i.scdn.co/image/ab6761610000e5eba4f8372671b585bf2ecdf4bc'],
+                    ['name' => 'Dragonov', 'logo' => 'https://i.scdn.co/image/ab6761610000e5ebf88e1bb45dd7f44d82f71694'],
+                    ['name' => 'Xiaomi', 'logo' => 'https://upload.wikimedia.org/wikipedia/commons/2/29/Xiaomi_logo.svg'],
+                    ['name' => 'Skoda', 'logo' => 'https://upload.wikimedia.org/wikipedia/commons/a/a4/Skoda_Auto_logo_%282023%29.svg'],
+                    ['name' => 'Coca-Cola', 'logo' => 'https://upload.wikimedia.org/wikipedia/commons/c/ce/Coca-Cola_logo.svg'],
+                    ['name' => 'Ait Oumdis', 'logo' => 'https://ui-avatars.com/api/?name=Ait+Oumdis&background=0d1117&color=E9A425&bold=true&font-size=0.33'],
+                    ['name' => 'Marjane', 'logo' => 'https://upload.wikimedia.org/wikipedia/commons/4/4b/Marjane_logo.svg'],
+                ];
+            @endphp
+            <div class="marquee-track">
+                {{-- Loop twice to create a seamless infinite scroll --}}
+                @for($i = 0; $i < 2; $i++)
+                    @foreach($clients as $cl)
+                    <div class="clt-box-marquee">
+                        @if($cl['logo'])
+                            <img src="{{ $cl['logo'] }}" alt="{{ $cl['name'] }}" class="clt-img" onerror="this.outerHTML='<span class=\'clt-text\'>{{ $cl['name'] }}</span>'">
+                        @else
+                            <span class="clt-text">{{ $cl['name'] }}</span>
+                        @endif
+                    </div>
+                    @endforeach
+                @endfor
             </div>
-            @endforeach
         </div>
 
     </div>
