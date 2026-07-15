@@ -88,7 +88,17 @@
 
             
             <div class="col-lg-6 mt-0">
-                <div class="pdp-main-image-wrap rounded-4 overflow-hidden shadow-sm bg-white mb-3 mx-auto" id="zoomWrap" onmousemove="pdpZoom(event)" style="aspect-ratio: 9/16; width: 25%; position: relative; cursor: crosshair;">
+                <style>
+                    .responsive-pdp-image {
+                        width: 75%;
+                    }
+                    @media (max-width: 991.98px) {
+                        .responsive-pdp-image {
+                            width: 35%;
+                        }
+                    }
+                </style>
+                <div class="pdp-main-image-wrap rounded-4 overflow-hidden shadow-sm bg-white mb-3 mx-auto responsive-pdp-image" id="zoomWrap" onmousemove="pdpZoom(event)" style="aspect-ratio: 9/16; position: relative; cursor: crosshair;">
                     <?php if($product->main_image): ?>
                         <img id="mainImage" src="<?php echo e(getImageUrl($product->main_image)); ?>"
                              alt="<?php echo e($product->translated_name); ?>" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
@@ -164,9 +174,9 @@
                             
                             <?php $sizes = $product->getAvailableSizesAttribute(); ?>
                             <?php if($sizes->count() > 0): ?>
-                                <div class="my-2 d-flex align-items-center justify-content-between">
+                                <div class="my-2 d-flex align-items-center">
                                     <label class="fw-bold mb-0 small text-muted text-uppercase">المقاس:</label>
-                                    <div class="d-flex flex-wrap gap-2" id="sizeOptions">
+                                    <div class="d-flex flex-wrap gap-2 mr-2" id="sizeOptions">
                                         <?php $__currentLoopData = $sizes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $size): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div class="variant-option border rounded px-3 py-2 small fw-bold" 
                                                  style="cursor: pointer; transition: 0.3s;"
