@@ -34,7 +34,7 @@
                 </h1>
 
                 <p class="hero-sub" data-aos="fade-up" data-aos-delay="160">
-                    Jawhara Pro Print est votre partenaire stratégique en communication visuelle. Grand format, petit format, offset ou DTF — nous créons des impressions qui marquent durablement.
+                    Jawhara Pro Print est votre partenaire stratégique en communication visuelle. Grand format, petit format, offset, DTF, UV DTF ou Laser CO2 — nous créons des impressions qui marquent durablement.
                 </p>
 
                 <div class="hero-cta" data-aos="fade-up" data-aos-delay="240">

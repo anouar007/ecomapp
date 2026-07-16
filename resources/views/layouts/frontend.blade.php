@@ -87,7 +87,7 @@
                         <div class="footer-brand">{{ setting('app_name', 'Jawhara') }}</div>
                     @endif
                     <p class="footer-bio">
-                        Votre partenaire en communication visuelle à Casablanca. Impression grand format, petit format, offset et DTF avec un savoir-faire de plus de 10 ans.
+                        Jawhara Pro Print est votre partenaire stratégique en communication visuelle. Grand format, petit format, offset, DTF, UV DTF ou Laser CO2 — nous créons des impressions qui marquent durablement.
                     </p>
                     <div class="f-social">
                         @if(setting('social_facebook'))
