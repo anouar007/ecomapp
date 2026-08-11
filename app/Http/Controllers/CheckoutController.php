@@ -56,12 +56,10 @@ class CheckoutController extends Controller
             $subtotal += $details['price'] * $details['quantity'];
         }
 
-        // Calculate Shipping Cost from Database
-        $cityRow = \App\Models\City::where('arabic_name', $request->shipping_city)
-                                  ->orWhere('name', $request->shipping_city)
-                                  ->first();
-        
-        $shippingCost = $cityRow ? $cityRow->price : 40;
+        // Calculate Shipping Cost from Database with fuzzy resolution
+        $cityRow = $this->resolveCity($request->shipping_city);
+        $shippingCost = $cityRow ? (float) $cityRow->price : 40;
+        $shippingCity = $cityRow ? $cityRow->arabic_name : $request->shipping_city;
         $total = $subtotal + $shippingCost;
 
         // Create Order
@@ -71,7 +69,7 @@ class CheckoutController extends Controller
             'customer_name' => $request->customer_name,
             'customer_phone' => $request->customer_phone,
             'shipping_address' => $request->shipping_address,
-            'shipping_city' => $request->shipping_city,
+            'shipping_city' => $shippingCity,
             'shipping_zip'   => 'N/A',
             'shipping_country' => 'Morocco',
             'subtotal' => $subtotal,
@@ -134,5 +132,68 @@ class CheckoutController extends Controller
     {
         $order = Order::findOrFail($id);
         return view('frontend.checkout.success', compact('order'));
+    }
+
+    /**
+     * Resolve typed city string to canonical database City model.
+     */
+    private function resolveCity($inputCity)
+    {
+        if (empty($inputCity)) {
+            return null;
+        }
+
+        $inputClean = trim($inputCity);
+
+        // 1. Direct exact match
+        $city = \App\Models\City::where('arabic_name', $inputClean)
+            ->orWhere('name', $inputClean)
+            ->first();
+
+        if ($city) {
+            return $city;
+        }
+
+        // 2. Space/punctuation-insensitive match (e.g. الدارالبيضاء vs الدار البيضاء)
+        $compactInput = str_replace([' ', '-', '_', '\''], '', mb_strtolower($inputClean));
+        $cities = \App\Models\City::all();
+
+        foreach ($cities as $c) {
+            $compactAr = str_replace([' ', '-', '_', '\''], '', mb_strtolower($c->arabic_name));
+            $compactFr = str_replace([' ', '-', '_', '\''], '', mb_strtolower($c->name));
+
+            if ($compactInput === $compactAr || $compactInput === $compactFr) {
+                return $c;
+            }
+        }
+
+        // 3. Arabic letter normalization match (أ/إ/آ -> ا, ة -> ه, ى -> ي)
+        $normInput = preg_replace('/[أإآ]/u', 'ا', $compactInput);
+        $normInput = preg_replace('/ة/u', 'ه', $normInput);
+        $normInput = preg_replace('/ى/u', 'ي', $normInput);
+
+        foreach ($cities as $c) {
+            $normAr = preg_replace('/[أإآ]/u', 'ا', str_replace([' ', '-', '_', '\''], '', mb_strtolower($c->arabic_name)));
+            $normAr = preg_replace('/ة/u', 'ه', $normAr);
+            $normAr = preg_replace('/ى/u', 'ي', $normAr);
+
+            $normFr = str_replace([' ', '-', '_', '\''], '', mb_strtolower($c->name));
+
+            if ($normInput === $normAr || $normInput === $normFr) {
+                return $c;
+            }
+        }
+
+        // 4. Substring containment match
+        foreach ($cities as $c) {
+            $normAr = preg_replace('/[أإآ]/u', 'ا', str_replace([' ', '-', '_', '\''], '', mb_strtolower($c->arabic_name)));
+            $normFr = str_replace([' ', '-', '_', '\''], '', mb_strtolower($c->name));
+
+            if (mb_strlen($normInput) >= 3 && (str_contains($normAr, $normInput) || str_contains($normFr, $normInput))) {
+                return $c;
+            }
+        }
+
+        return null;
     }
 }

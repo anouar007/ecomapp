@@ -1,8 +1,6 @@
-@extends('layouts.frontend')
+<?php $__env->startSection('meta_title', 'تأكيد الطلب — ' . setting('app_name', 'Hijab Princesses')); ?>
 
-@section('meta_title', 'تأكيد الطلب — ' . setting('app_name', 'Hijab Princesses'))
-
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
 <style>
 /* ── Checkout Mobile-First Layout ────────────────── */
@@ -364,13 +362,13 @@
     }
 }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="checkout-page">
     <div class="checkout-wrapper">
 
-        {{-- Header --}}
+        
         <div class="checkout-header">
             <h1>تأكيد الطلب</h1>
             <p class="mb-2">شحن سريع لجميع مدن المغرب 🇲🇦</p>
@@ -379,20 +377,20 @@
 
         <div class="checkout-grid">
             <div class="checkout-main">
-                {{-- Delivery Info Form --}}
+                
                 <div class="form-card">
                     <div class="form-header">
                         <i class="fas fa-map-marker-alt text-primary"></i> معلومات التوصيل
                     </div>
                     <div class="form-body">
-                        <form action="{{ route('checkout.store') }}" method="POST" id="checkout-form">
-                            @csrf
+                        <form action="<?php echo e(route('checkout.store')); ?>" method="POST" id="checkout-form">
+                            <?php echo csrf_field(); ?>
 
                             <div class="field-group">
                                 <label class="field-label" for="customer_name">الاسم الكامل</label>
                                 <input type="text" id="customer_name" name="customer_name"
                                        class="field-input" placeholder="مثال: فاطمة الزهراء" required
-                                       value="{{ old('customer_name') }}">
+                                       value="<?php echo e(old('customer_name')); ?>">
                             </div>
 
                             <div class="row g-3 field-group mb-3">
@@ -400,16 +398,23 @@
                                     <label class="field-label" for="customer_phone">رقم الهاتف</label>
                                     <input type="tel" id="customer_phone" name="customer_phone"
                                            class="field-input" placeholder="06 XX XX XX XX" required
-                                           value="{{ old('customer_phone') }}">
-                                    @error('customer_phone')
-                                        <div class="text-danger small mt-1 fw-bold">{{ $message }}</div>
-                                    @enderror
+                                           value="<?php echo e(old('customer_phone')); ?>">
+                                    <?php $__errorArgs = ['customer_phone'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <div class="text-danger small mt-1 fw-bold"><?php echo e($message); ?></div>
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <label class="field-label" for="customer_phone_confirmation">تأكيد رقم الهاتف</label>
                                     <input type="tel" id="customer_phone_confirmation" name="customer_phone_confirmation"
                                            class="field-input" placeholder="06 XX XX XX XX" required
-                                           value="{{ old('customer_phone_confirmation') }}">
+                                           value="<?php echo e(old('customer_phone_confirmation')); ?>">
                                 </div>
                             </div>
 
@@ -417,7 +422,7 @@
                                 <label class="field-label" for="shipping_address">العنوان</label>
                                 <input type="text" id="shipping_address" name="shipping_address"
                                        class="field-input" placeholder="الحي، الشارع، رقم المنزل..." required
-                                       value="{{ old('shipping_address') }}">
+                                       value="<?php echo e(old('shipping_address')); ?>">
                             </div>
 
                             <div class="field-group">
@@ -432,13 +437,13 @@
                             <i class="fas fa-check-circle"></i> تأكيد الطلب الآن
                         </button>
 
-                        <a href="{{ route('cart.index') }}" class="back-link">
+                        <a href="<?php echo e(route('cart.index')); ?>" class="back-link">
                             <i class="fas fa-arrow-right me-1"></i> العودة للسلة
                         </a>
                     </div>
                 </div>
 
-                {{-- Payment Method (Mobile Only) --}}
+                
                 <div class="payment-card d-lg-none mt-3">
                     <div class="payment-icon"><i class="fas fa-money-bill-wave"></i></div>
                     <div class="payment-label">الدفع عند الاستلام</div>
@@ -447,58 +452,58 @@
             </div>
 
             <div class="checkout-side">
-                {{-- Order Summary --}}
+                
                 <div class="summary-card">
                     <div class="summary-header">
                         <i class="fas fa-shopping-bag"></i> ملخص الطلب
                     </div>
                     <div class="summary-body">
-                        @foreach($cart as $key => $details)
+                        <?php $__currentLoopData = $cart; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $details): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div class="cart-row">
                             <div class="cart-img-wrap">
-                                @if($details['image'])
-                                    <img src="{{ Storage::url($details['image']) }}" alt="{{ $details['name'] }}" class="cart-img">
-                                @else
+                                <?php if($details['image']): ?>
+                                    <img src="<?php echo e(Storage::url($details['image'])); ?>" alt="<?php echo e($details['name']); ?>" class="cart-img">
+                                <?php else: ?>
                                     <div class="cart-img-placeholder"><i class="fas fa-image"></i></div>
-                                @endif
-                                <div class="cart-qty-badge">{{ $details['quantity'] }}</div>
+                                <?php endif; ?>
+                                <div class="cart-qty-badge"><?php echo e($details['quantity']); ?></div>
                             </div>
                             <div class="cart-info">
-                                <div class="cart-name">{{ $details['name'] }}</div>
+                                <div class="cart-name"><?php echo e($details['name']); ?></div>
                                 <div class="cart-variants d-flex align-items-center gap-2 mt-1">
-                                    @if($details['image'])
+                                    <?php if($details['image']): ?>
                                         <div class="rounded-circle border border-gold-light overflow-hidden shadow-sm" style="width: 35px; height: 35px;">
-                                            <img src="{{ Storage::url($details['image']) }}" alt="Style" class="w-100 h-100 object-fit-cover">
+                                            <img src="<?php echo e(Storage::url($details['image'])); ?>" alt="Style" class="w-100 h-100 object-fit-cover">
                                         </div>
-                                    @endif
-                                    @if($details['size'] ?? null)
-                                        <span class="variant-tag">{{ $details['size'] }}</span>
-                                    @endif
+                                    <?php endif; ?>
+                                    <?php if($details['size'] ?? null): ?>
+                                        <span class="variant-tag"><?php echo e($details['size']); ?></span>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="d-flex align-items-center gap-3 mt-2">
                                     <div class="mc-qty" style="border-radius: 6px; border: 1px solid #e2e8f0; display: inline-flex;">
-                                        <button type="button" class="mc-qty-btn" onclick="updateCheckoutQty('{{ $key }}', {{ $details['quantity'] - 1 }})"><i class="fas fa-minus"></i></button>
-                                        <input type="text" class="mc-qty-val" value="{{ $details['quantity'] }}" readonly style="width: 30px; text-align: center; border: none; background: transparent; font-weight: bold; color: #1e293b;">
-                                        <button type="button" class="mc-qty-btn" onclick="updateCheckoutQty('{{ $key }}', {{ $details['quantity'] + 1 }})"><i class="fas fa-plus"></i></button>
+                                        <button type="button" class="mc-qty-btn" onclick="updateCheckoutQty('<?php echo e($key); ?>', <?php echo e($details['quantity'] - 1); ?>)"><i class="fas fa-minus"></i></button>
+                                        <input type="text" class="mc-qty-val" value="<?php echo e($details['quantity']); ?>" readonly style="width: 30px; text-align: center; border: none; background: transparent; font-weight: bold; color: #1e293b;">
+                                        <button type="button" class="mc-qty-btn" onclick="updateCheckoutQty('<?php echo e($key); ?>', <?php echo e($details['quantity'] + 1); ?>)"><i class="fas fa-plus"></i></button>
                                     </div>
-                                    <button type="button" class="btn btn-sm text-danger p-0" onclick="removeCheckoutItem('{{ $key }}')" title="حذف">
+                                    <button type="button" class="btn btn-sm text-danger p-0" onclick="removeCheckoutItem('<?php echo e($key); ?>')" title="حذف">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </div>
                             </div>
                             <div class="cart-price d-flex flex-column align-items-end">
-                                <span class="fw-bold text-gold">{{ currency($details['price'] * $details['quantity']) }}</span>
-                                @if(isset($details['original_price']) && $details['original_price'] > $details['price'])
-                                    <span class="text-danger small text-decoration-line-through" style="font-size: 0.75rem;">{{ currency($details['original_price'] * $details['quantity']) }}</span>
-                                @endif
+                                <span class="fw-bold text-gold"><?php echo e(currency($details['price'] * $details['quantity'])); ?></span>
+                                <?php if(isset($details['original_price']) && $details['original_price'] > $details['price']): ?>
+                                    <span class="text-danger small text-decoration-line-through" style="font-size: 0.75rem;"><?php echo e(currency($details['original_price'] * $details['quantity'])); ?></span>
+                                <?php endif; ?>
                             </div>
                         </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
                         <div class="totals-section">
                             <div class="totals-row">
                                 <span>المجموع الفرعي</span>
-                                <span class="fw-bold">{{ currency($total) }}</span>
+                                <span class="fw-bold"><?php echo e(currency($total)); ?></span>
                             </div>
                              <div class="totals-row">
                                 <span>التوصيل</span>
@@ -512,7 +517,7 @@
                     </div>
                 </div>
 
-                {{-- Payment Method (Desktop Only) --}}
+                
                 <div class="payment-card d-none d-lg-block">
                     <div class="payment-icon"><i class="fas fa-money-bill-wave"></i></div>
                     <div class="payment-label">الدفع عند الاستلام</div>
@@ -523,9 +528,9 @@
 
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -645,7 +650,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Inject cities from PHP
-    const moroccanCities = @json($cities);
+    const moroccanCities = <?php echo json_encode($cities, 15, 512) ?>;
 
     const options = moroccanCities.map(c => {
         const ar = c.arabic_name || '';
@@ -747,7 +752,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return Math.round(baseScore * conciseness + (maxWordSim * 100));
     }
 
-    const subtotal = {{ $total }};
+    const subtotal = <?php echo e($total); ?>;
     const shippingDisplay = document.getElementById('shipping-cost-display');
     const totalDisplay = document.getElementById('grand-total-display');
 
@@ -937,11 +942,11 @@ window.updateCheckoutQty = function(id, qty) {
     
     saveCheckoutForm();
     
-    fetch('{{ route('cart.update') }}', {
+    fetch('<?php echo e(route('cart.update')); ?>', {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
             'Accept': 'application/json'
         },
         body: JSON.stringify({ id, quantity: qty })
@@ -967,11 +972,11 @@ window.removeCheckoutItem = function(id) {
     }).then((result) => {
         if (result.isConfirmed) {
             saveCheckoutForm();
-            fetch('{{ route('cart.remove') }}', {
+            fetch('<?php echo e(route('cart.remove')); ?>', {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({ id })
@@ -979,7 +984,7 @@ window.removeCheckoutItem = function(id) {
             .then(res => res.json())
             .then(data => {
                 if(data.cartCount === 0) {
-                    window.location.href = '{{ route('cart.index') }}';
+                    window.location.href = '<?php echo e(route('cart.index')); ?>';
                 } else {
                     window.location.reload();
                 }
@@ -988,4 +993,6 @@ window.removeCheckoutItem = function(id) {
     });
 };
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.frontend', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Applications/XAMPP/xamppfiles/htdocs/speed/resources/views/frontend/checkout/index.blade.php ENDPATH**/ ?>
