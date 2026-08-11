@@ -163,7 +163,7 @@
     background: #fff;
     border-radius: 1rem;
     box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-    overflow: hidden;
+    overflow: visible;
     margin-bottom: 1.25rem;
     border: 1px solid #f1f5f9;
 }
@@ -177,6 +177,8 @@
     align-items: center;
     gap: 0.5rem;
     border-bottom: 1px solid #f1f5f9;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
 }
 .form-header i { color: var(--accent); }
 .form-body { padding: 1.25rem 1rem; }
@@ -209,7 +211,7 @@
 .field-input::placeholder { color: #94a3b8; font-weight: 500; }
 
 /* TomSelect overrides */
-.ts-wrapper { width: 100%; }
+.ts-wrapper { width: 100%; position: relative; z-index: 1050; }
 .ts-control {
     background: #fff !important;
     border: 1.5px solid #cbd5e1 !important;
@@ -229,11 +231,32 @@
 .ts-control input { font-size: 1rem !important; font-weight: 600 !important; }
 .ts-dropdown {
     border-radius: 0.75rem !important;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
     border: 1px solid #e2e8f0 !important;
     overflow: hidden;
+    z-index: 1060 !important;
 }
-.ts-dropdown .option { padding: 0.75rem 1rem; font-size: 0.95rem; font-weight: 600; }
+.ts-dropdown .ts-dropdown-content {
+    display: flex !important;
+    flex-direction: column !important;
+    max-height: 250px !important;
+    overflow-y: auto !important;
+}
+.ts-dropdown .option {
+    order: 1 !important;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+.ts-dropdown .create {
+    order: 9999 !important;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-top: 1px dashed #e2e8f0;
+}
+.ts-dropdown .create.active { background: var(--accent-light) !important; color: var(--accent) !important; }
+.ts-dropdown .create:hover { background: #f8fafc !important; }
 .ts-dropdown .option.active { background: var(--accent-light) !important; color: var(--accent) !important; }
 .ts-dropdown .option:hover { background: #f8fafc !important; }
 
@@ -506,16 +529,223 @@
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    function levenshtein(a, b) {
+        if (a === b) return 0;
+        if (a.length === 0) return b.length;
+        if (b.length === 0) return a.length;
+
+        var matrix = [];
+        for (var i = 0; i <= b.length; i++) {
+            matrix[i] = [i];
+        }
+        for (var j = 0; j <= a.length; j++) {
+            matrix[0][j] = j;
+        }
+
+        for (var i = 1; i <= b.length; i++) {
+            for (var j = 1; j <= a.length; j++) {
+                if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                    matrix[i][j] = matrix[i - 1][j - 1];
+                } else {
+                    matrix[i][j] = Math.min(
+                        matrix[i - 1][j - 1] + 1,
+                        matrix[i][j - 1] + 1,
+                        matrix[i - 1][j] + 1
+                    );
+                }
+            }
+        }
+        return matrix[b.length][a.length];
+    }
+
+    function wordSimilarity(qw, cw) {
+        if (!qw || !cw) return 0;
+        qw = qw.toLowerCase();
+        cw = cw.toLowerCase();
+        
+        if (qw === cw) return 1.0;
+        
+        // Only trigger substring bonus for words >= 3 chars to avoid single-letter false matches
+        if (cw.length >= 3 && qw.includes(cw)) return 0.95;
+        if (qw.length >= 3 && cw.includes(qw)) return 0.95;
+        
+        var maxLen = Math.max(qw.length, cw.length);
+        if (maxLen === 0) return 1.0;
+        
+        var dist = levenshtein(qw, cw);
+        return 1 - (dist / maxLen);
+    }
+
+    function normalizeArabic(str) {
+        if (!str) return '';
+        return str
+            .toLowerCase()
+            .replace(/[\u064B-\u0652]/g, '')
+            .replace(/[أإآ]/g, 'ا')
+            .replace(/ة/g, 'ه')
+            .replace(/ى/g, 'ي')
+            .replace(/ـ/g, '')
+            .trim();
+    }
+
+    function cleanCompact(str) {
+        return normalizeArabic(str).replace(/[\s\-_'/]/g, '');
+    }
+
+    function normalizePhonetic(str) {
+        if (!str) return '';
+        return cleanCompact(str)
+            .replace(/[aeiouy]/g, 'e')
+            .replace(/bb/g, 'b')
+            .replace(/dd/g, 'd')
+            .replace(/ff/g, 'f')
+            .replace(/gg/g, 'g')
+            .replace(/ll/g, 'l')
+            .replace(/mm/g, 'm')
+            .replace(/pp/g, 'p')
+            .replace(/rr/g, 'r')
+            .replace(/ss/g, 's')
+            .replace(/tt/g, 't')
+            .replace(/zz/g, 's')
+            .replace(/z/g, 's')
+            .replace(/ch/g, 'k')
+            .replace(/kh/g, 'k')
+            .replace(/sh/g, 's')
+            .replace(/ck/g, 'k')
+            .replace(/c/g, 'k')
+            .replace(/q/g, 'k');
+    }
+
+    function wordSimilarity(qw, cw) {
+        if (!qw || !cw) return 0;
+        qw = qw.toLowerCase();
+        cw = cw.toLowerCase();
+        
+        if (qw === cw) return 1.0;
+        
+        const qwP = normalizePhonetic(qw);
+        const cwP = normalizePhonetic(cw);
+        if (qwP === cwP) return 0.98;
+        if (cwP.length >= 3 && qwP.includes(cwP)) return 0.92;
+        if (qwP.length >= 3 && cwP.includes(qwP)) return 0.92;
+
+        if (cw.length >= 3 && qw.includes(cw)) return 0.95;
+        if (qw.length >= 3 && cw.includes(qw)) return 0.95;
+        
+        var maxLen = Math.max(qw.length, cw.length);
+        if (maxLen === 0) return 1.0;
+        
+        var dist = levenshtein(qw, cw);
+        var distP = levenshtein(qwP, cwP);
+        
+        var simStandard = 1 - (dist / maxLen);
+        var simPhonetic = 1 - (distP / Math.max(qwP.length, cwP.length, 1));
+        
+        return Math.max(simStandard, simPhonetic * 0.95);
+    }
+
     // Inject cities from PHP
     const moroccanCities = @json($cities);
 
-    const options = moroccanCities.map(c => ({
-        value: c.arabic_name,
-        label: c.arabic_name,
-        fr: c.name,
-        price: parseFloat(c.price),
-        text: c.arabic_name + ' ' + c.name,
-    }));
+    const options = moroccanCities.map(c => {
+        const ar = c.arabic_name || '';
+        const fr = c.name || '';
+        const normAr = normalizeArabic(ar);
+        const compAr = cleanCompact(ar);
+        const compFr = cleanCompact(fr);
+        const compFull = compAr + compFr;
+        const phonAr = normalizePhonetic(ar);
+        const phonFr = normalizePhonetic(fr);
+        const phonFull = phonAr + phonFr;
+        
+        const words = [
+            ...ar.split(/\s+/),
+            ...fr.split(/\s+/),
+            normAr,
+            compAr,
+            compFr
+        ].map(w => cleanCompact(w)).filter(w => w.length >= 2);
+
+        return {
+            value: ar,
+            label: ar,
+            fr: fr,
+            price: parseFloat(c.price),
+            text: ar + ' ' + fr,
+            _normAr: normAr,
+            _compAr: compAr,
+            _compFr: compFr,
+            _compFull: compFull,
+            _phonAr: phonAr,
+            _phonFr: phonFr,
+            _phonFull: phonFull,
+            _words: [...new Set(words)]
+        };
+    });
+
+    function getBestMatchScore(query, item) {
+        if (!query) return 1;
+        
+        const qNorm = normalizeArabic(query);
+        const qComp = cleanCompact(query);
+        const qPhon = normalizePhonetic(query);
+        if (!qComp || !qPhon) return 1;
+
+        // 1. Exact or Phonetic Match on Primary City Name
+        const isArExact = item._compAr === qComp || item._phonAr === qPhon;
+        const isFrExact = item._compFr === qComp || item._phonFr === qPhon;
+        
+        if (isArExact || isFrExact) {
+            return 3000;
+        }
+
+        // 2. Prefix Match on Primary City Name (e.g. marake -> marrakech, mekn -> meknes, casa -> casablanca)
+        const isArPrefix = (item._compAr.length >= qComp.length && item._compAr.startsWith(qComp)) ||
+                           (item._phonAr.length >= qPhon.length && item._phonAr.startsWith(qPhon));
+        const isFrPrefix = (item._compFr.length >= qComp.length && item._compFr.startsWith(qComp)) ||
+                           (item._phonFr.length >= qPhon.length && item._phonFr.startsWith(qPhon));
+
+        if (isArPrefix || isFrPrefix) {
+            const lenDiff = Math.abs(item._phonFr.length - qPhon.length);
+            const conciseness = Math.max(0.5, 1.0 - (lenDiff * 0.03));
+            return Math.round(2200 * conciseness);
+        }
+
+        // 3. Substring match inside compact full name
+        let baseScore = 0;
+        if (item._compFull.includes(qComp) || item._phonFull.includes(qPhon)) {
+            baseScore = 1000;
+        }
+
+        // 4. Fuzzy Levenshtein Distance Match
+        let maxWordSim = 0;
+        for (let i = 0; i < item._words.length; i++) {
+            const w = item._words[i];
+            if (!w || w.length < 2) continue;
+            
+            const sim = wordSimilarity(qComp, w);
+            if (sim > maxWordSim) maxWordSim = sim;
+        }
+
+        const simAr = wordSimilarity(qComp, item._compAr);
+        if (simAr > maxWordSim) maxWordSim = simAr;
+
+        const simFr = wordSimilarity(qComp, item._compFr);
+        if (simFr > maxWordSim) maxWordSim = simFr;
+
+        if (baseScore === 0 && maxWordSim >= 0.55) {
+            baseScore = Math.round(maxWordSim * 800);
+        }
+
+        if (baseScore === 0) return 0;
+
+        // 5. Conciseness Weighting
+        const nameLen = Math.min(item._compAr.length, item._compFr.length);
+        const lenDiff = Math.abs(nameLen - qComp.length);
+        const conciseness = Math.max(0.3, 1.0 - (lenDiff * 0.05));
+
+        return Math.round(baseScore * conciseness + (maxWordSim * 100));
+    }
 
     const subtotal = {{ $total }};
     const shippingDisplay = document.getElementById('shipping-cost-display');
@@ -527,6 +757,15 @@ document.addEventListener('DOMContentLoaded', function () {
         valueField: 'value',
         labelField: 'label',
         searchField: ['text'],
+        sortField: [{ field: '$score', direction: 'desc' }],
+        score: function(search) {
+            const rawQuery = search ? search.trim() : '';
+            if (!rawQuery) return function() { return 1; };
+            
+            return function(item) {
+                return getBestMatchScore(rawQuery, item);
+            };
+        },
         render: {
             option: function (data, escape) {
                 return '<div class="d-flex align-items-center justify-content-between gap-2">' +
@@ -540,6 +779,9 @@ document.addEventListener('DOMContentLoaded', function () {
             item: function (data, escape) {
                 return '<div>' + escape(data.label) + '</div>';
             },
+            option_create: function (data, escape) {
+                return '<div class="create">إضافة <strong>' + escape(data.input) + '</strong> (إدخال يدوي)...</div>';
+            }
         },
         placeholder: 'ابحثي عن مدينتك... / Chercher...',
         create: function(input) {
