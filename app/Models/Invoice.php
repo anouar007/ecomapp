@@ -25,6 +25,7 @@ class Invoice extends Model
         'total_amount',
         'payment_method',
         'payment_status',
+        'with_stamp',
         'notes',
         'issued_at',
         'due_date',
@@ -37,6 +38,7 @@ class Invoice extends Model
         'tax_rate' => 'decimal:2',
         'discount_amount' => 'decimal:2',
         'total_amount' => 'decimal:2',
+        'with_stamp' => 'boolean',
         'issued_at' => 'datetime',
         'due_date' => 'date',
     ];

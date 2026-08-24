@@ -54,6 +54,15 @@ class InvoiceController extends Controller
             $query->byDateRange($request->start_date, $request->end_date);
         }
 
+        // Filter by stamp
+        if ($request->filled('with_stamp')) {
+            if ($request->with_stamp === '1' || $request->with_stamp === 'yes' || $request->with_stamp === 'true') {
+                $query->where('with_stamp', true);
+            } elseif ($request->with_stamp === '0' || $request->with_stamp === 'no' || $request->with_stamp === 'false') {
+                $query->where('with_stamp', false);
+            }
+        }
+
         $invoices = $query->orderBy('created_at', 'desc')->paginate(15);
 
         // Calculate summary statistics
@@ -91,6 +100,7 @@ class InvoiceController extends Controller
             'type' => 'required|in:invoice,quote',
             'payment_method' => 'required|in:cash,card,bank_transfer,cod,other',
             'payment_status' => 'required|in:paid,unpaid,partial,cancelled',
+            'with_stamp' => 'nullable',
             'notes' => 'nullable|string',
             'due_date' => 'nullable|date',
             'items' => 'required|array|min:1',
@@ -142,6 +152,7 @@ class InvoiceController extends Controller
                 'total_amount' => $totalAmount,
                 'payment_method' => $validated['payment_method'],
                 'payment_status' => $validated['payment_status'],
+                'with_stamp' => $request->has('with_stamp') ? $request->boolean('with_stamp') : true,
                 'notes' => $validated['notes'] ?? null,
                 'issued_at' => now(),
                 'due_date' => $validated['due_date'] ?? null,
@@ -179,10 +190,11 @@ class InvoiceController extends Controller
     /**
      * Display the specified invoice.
      */
-    public function show(Invoice $invoice)
+    public function show(Request $request, Invoice $invoice)
     {
         $invoice->load(['items.product', 'creator', 'order', 'payments']);
-        return view('invoices.show', compact('invoice'));
+        $withStamp = $request->has('with_stamp') ? $request->boolean('with_stamp') : ($invoice->with_stamp ?? true);
+        return view('invoices.show', compact('invoice', 'withStamp'));
     }
 
     /**
@@ -216,10 +228,12 @@ class InvoiceController extends Controller
             'type' => 'required|in:invoice,quote',
             'payment_method' => 'required|in:cash,card,bank_transfer,cod,other',
             'payment_status' => 'required|in:paid,unpaid,partial,cancelled',
+            'with_stamp' => 'nullable',
             'notes' => 'nullable|string',
             'due_date' => 'nullable|date',
         ]);
 
+        $validated['with_stamp'] = $request->has('with_stamp') ? $request->boolean('with_stamp') : false;
         $invoice->update($validated);
 
         // Update customer balance
@@ -261,9 +275,10 @@ class InvoiceController extends Controller
     /**
      * Download invoice as PDF.
      */
-    public function download(Invoice $invoice)
+    public function download(Request $request, Invoice $invoice)
     {
         $invoice->load(['items.product', 'creator', 'order']);
+        $withStamp = $request->has('with_stamp') ? $request->boolean('with_stamp') : ($invoice->with_stamp ?? true);
 
         try {
             // Clean any existing output buffers to prevent PDF corruption
@@ -271,10 +286,10 @@ class InvoiceController extends Controller
                 ob_end_clean();
             }
 
-            $pdf = Pdf::loadView('invoices.pdf', compact('invoice'))
+            $pdf = Pdf::loadView('invoices.pdf', compact('invoice', 'withStamp'))
                 ->setPaper('a4', 'portrait');
 
-            $filename = ($invoice->isQuote() ? 'Quote-' : 'Invoice-') . str_replace(['#', '/', '\\', ' '], '-', $invoice->invoice_number) . '.pdf';
+            $filename = ($invoice->isQuote() ? 'Quote-' : 'Invoice-') . str_replace(['#', '/', '\\', ' '], '-', $invoice->invoice_number) . ($withStamp ? '-Stamped' : '') . '.pdf';
 
             return $pdf->download($filename);
         } catch (\Exception $e) {
@@ -286,10 +301,11 @@ class InvoiceController extends Controller
     /**
      * Display printable invoice.
      */
-    public function print(Invoice $invoice)
+    public function print(Request $request, Invoice $invoice)
     {
         $invoice->load(['items.product', 'creator', 'order']);
-        return view('invoices.print', compact('invoice'));
+        $withStamp = $request->has('with_stamp') ? $request->boolean('with_stamp') : ($invoice->with_stamp ?? true);
+        return view('invoices.print', compact('invoice', 'withStamp'));
     }
 
     /**
@@ -356,6 +372,7 @@ class InvoiceController extends Controller
                 'total_amount' => $totalAmount,
                 'payment_method' => $order->payment_method ?? 'cash',
                 'payment_status' => $order->payment_status === 'paid' ? 'paid' : 'unpaid',
+                'with_stamp' => true,
                 'notes' => null,
                 'issued_at' => now(),
                 'due_date' => null,

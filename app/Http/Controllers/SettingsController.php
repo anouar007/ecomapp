@@ -283,6 +283,55 @@ class SettingsController extends Controller
     }
 
     /**
+     * Upload company stamp
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function uploadStamp(Request $request)
+    {
+        $request->validate([
+            'stamp' => 'required|image|mimes:jpeg,png,jpg,svg,webp|max:2048'
+        ]);
+
+        // Delete old stamp if exists
+        $oldStamp = setting('company_stamp');
+        if ($oldStamp && Storage::disk('public')->exists($oldStamp)) {
+            Storage::disk('public')->delete($oldStamp);
+        }
+
+        // Store new stamp
+        $path = $request->file('stamp')->store('stamps', 'public');
+        Setting::set('company_stamp', $path, 'file', 'company');
+
+        // Clear cache
+        Cache::forget('setting_company_stamp');
+        Setting::clearCache();
+
+        return back()->with('success', 'Company stamp uploaded successfully!');
+    }
+
+    /**
+     * Remove company stamp
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function removeStamp()
+    {
+        $stamp = setting('company_stamp');
+        
+        if ($stamp && Storage::disk('public')->exists($stamp)) {
+            Storage::disk('public')->delete($stamp);
+        }
+
+        Setting::where('key', 'company_stamp')->delete();
+        Cache::forget('setting_company_stamp');
+        Setting::clearCache();
+
+        return back()->with('success', 'Company stamp removed successfully!');
+    }
+
+    /**
      * Reset settings to default
      *
      * @return \Illuminate\Http\RedirectResponse

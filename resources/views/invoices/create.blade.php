@@ -163,6 +163,13 @@
                     </div>
                 </div>
 
+                <div style="margin-bottom: 20px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; font-weight: 600; color: #1e293b;">
+                        <input type="checkbox" name="with_stamp" value="1" {{ old('with_stamp', 1) ? 'checked' : '' }} style="width: 18px; height: 18px; accent-color: #6366f1;">
+                        <span><i class="fas fa-stamp text-indigo" style="color: #6366f1;"></i> {{ __('Include Company Stamp & Signature on Document') }}</span>
+                    </label>
+                </div>
+
                 <div>
                     <label style="display: block; font-size: 14px; font-weight: 600; color: #64748b; margin-bottom: 8px;">Notes</label>
                     <textarea name="notes" rows="4"

@@ -170,6 +170,8 @@ Route::middleware('auth')->group(function () {
         Route::put('/settings', [\App\Http\Controllers\SettingsController::class, 'update'])->name('settings.update');
         Route::post('/settings/logo', [\App\Http\Controllers\SettingsController::class, 'uploadLogo'])->name('settings.logo');
         Route::delete('/settings/logo', [\App\Http\Controllers\SettingsController::class, 'removeLogo'])->name('settings.logo.remove');
+        Route::post('/settings/stamp', [\App\Http\Controllers\SettingsController::class, 'uploadStamp'])->name('settings.stamp');
+        Route::delete('/settings/stamp', [\App\Http\Controllers\SettingsController::class, 'removeStamp'])->name('settings.stamp.remove');
         Route::post('/settings/reset', [\App\Http\Controllers\SettingsController::class, 'reset'])->name('settings.reset');
         
         // Custom Code Manager

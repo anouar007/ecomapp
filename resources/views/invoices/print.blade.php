@@ -332,9 +332,15 @@
                         </p>
                     </div>
                     @if($invoice->notes)
-                    <div style="padding: 0 24px;">
+                    <div style="padding: 0 24px; margin-bottom: 20px;">
                         <p class="label-sm" style="margin-bottom: 8px;">{{ __('Notes') }}</p>
                         <p style="color: #475569; font-size: 14px; line-height: 1.6; margin: 0;">{{ $invoice->notes }}</p>
+                    </div>
+                    @endif
+
+                    @if(($withStamp ?? $invoice->with_stamp ?? true) && setting('company_stamp'))
+                    <div style="padding: 0 24px; margin-top: 15px;">
+                        <img src="{{ asset('storage/' . setting('company_stamp')) }}" alt="Company Stamp" style="max-height: 95px; max-width: 180px; object-fit: contain; display: inline-block;">
                     </div>
                     @endif
                 </div>

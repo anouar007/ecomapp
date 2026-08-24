@@ -53,6 +53,23 @@ class SettingsVerificationTest extends TestCase
             'logo' => $file
         ]);
         $response->assertRedirect();
+        $this->assertNotNull(Setting::get('app_logo'));
+
+        // 4b. Test Stamp Upload & Remove
+        $stampFile = UploadedFile::fake()->image('stamp.png');
+        $response = $this->actingAs($admin)->post(route('settings.stamp'), [
+            'stamp' => $stampFile
+        ]);
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+        $this->assertNotNull(Setting::get('company_stamp'));
+        Storage::disk('public')->assertExists(Setting::get('company_stamp'));
+
+        // Test Stamp Remove
+        $response = $this->actingAs($admin)->delete(route('settings.stamp.remove'));
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+        $this->assertNull(Setting::get('company_stamp'));
         
         // 5. Custom Code CRUD
         // Create

@@ -503,6 +503,29 @@ ashed #cbd5e1;
                                    value="{{ $companySettings->where('key', 'company_website')->first()->value ?? '' }}">
                         </div>
                     </div>
+
+                    <div class="settings-section">
+                        <h3 class="section-title">Company Stamp & Signature (Cachet)</h3>
+                        <p style="color: #64748b; font-size: 13px; margin-bottom: 16px;">This official stamp and signature will appear on printed and PDF invoices, quotes, and receipts.</p>
+                        
+                        @if(setting('company_stamp'))
+                            <div style="text-align: center; margin-bottom: 20px; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px dashed #cbd5e1;">
+                                <img src="{{ asset('storage/' . setting('company_stamp')) }}" alt="Company Stamp" style="max-width: 220px; max-height: 120px; margin: 0 auto 12px auto; display: block; object-fit: contain;">
+                                <div>
+                                    <button type="submit" form="remove-stamp-form" class="btn-danger" onclick="return confirm('Remove company stamp?')">
+                                        <i class="fas fa-trash"></i> Remove Stamp
+                                    </button>
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="logo-upload-area" onclick="document.getElementById('stamp-input').click()">
+                            <i class="fas fa-stamp" style="font-size: 48px; color: #3b82f6; margin-bottom: 16px;"></i>
+                            <p style="margin: 0; color: #64748b; font-weight: 500;">Click to upload Company Stamp / Cachet</p>
+                            <p style="margin: 4px 0 0 0; font-size: 12px; color: #94a3b8;">PNG (transparent recommended), JPG, SVG, WebP up to 2MB</p>
+                            <input type="file" id="stamp-input" form="stamp-upload-form" name="stamp" accept="image/*" style="display: none;" onchange="document.getElementById('stamp-upload-form').submit()">
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Theme Tab -->
@@ -845,6 +868,15 @@ ashed #cbd5e1;
 </form>
 
 <form id="logo-upload-form" action="{{ route('settings.logo') }}" method="POST" enctype="multipart/form-data" style="display: none;">
+    @csrf
+</form>
+
+<form id="remove-stamp-form" action="{{ route('settings.stamp.remove') }}" method="POST" style="display: none;">
+    @csrf
+    @method('DELETE')
+</form>
+
+<form id="stamp-upload-form" action="{{ route('settings.stamp') }}" method="POST" enctype="multipart/form-data" style="display: none;">
     @csrf
 </form>
 

@@ -61,13 +61,45 @@
                 </a>
                 <h1 style="font-size: 28px; font-weight: 800; color: #1e293b; margin: 0; letter-spacing: -0.5px;">{{ $invoice->getTypeLabel() }} <span style="color: #64748b; font-weight: 400;">#{{ $invoice->invoice_number }}</span></h1>
             </div>
-            <div style="display: flex; gap: 12px;">
-                <a href="{{ route('invoices.download', $invoice) }}" download="Invoice-{{ str_replace(['#', '/', '\\', ' '], '-', $invoice->invoice_number) }}.pdf" class="btn btn-action btn-primary" style="background: #6366f1; border-color: #6366f1; display: inline-flex; align-items: center; gap: 8px;">
-                    <i class="fas fa-download"></i> {{ __('Download PDF') }}
-                </a>
-                <a href="{{ route('invoices.print', $invoice) }}" target="_blank" class="btn btn-action btn-outline-secondary" style="background: white; color: #475569; border-color: #e2e8f0; display: inline-flex; align-items: center; gap: 8px;">
-                    <i class="fas fa-print"></i> {{ __('Print') }}
-                </a>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <!-- Download PDF Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-action btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="background: #6366f1; border-color: #6366f1; display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-download"></i> {{ __('Download PDF') }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 13px; border-radius: 10px;">
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('invoices.download', [$invoice, 'with_stamp' => 1]) }}">
+                                <i class="fas fa-stamp" style="color: #6366f1; width: 16px;"></i> {{ __('Download With Stamp') }}
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('invoices.download', [$invoice, 'with_stamp' => 0]) }}">
+                                <i class="far fa-file-pdf text-muted" style="width: 16px;"></i> {{ __('Download Without Stamp') }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Print Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-action btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="background: white; color: #475569; border-color: #e2e8f0; display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-print"></i> {{ __('Print') }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 13px; border-radius: 10px;">
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" target="_blank" href="{{ route('invoices.print', [$invoice, 'with_stamp' => 1]) }}">
+                                <i class="fas fa-stamp" style="color: #6366f1; width: 16px;"></i> {{ __('Print With Stamp') }}
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" target="_blank" href="{{ route('invoices.print', [$invoice, 'with_stamp' => 0]) }}">
+                                <i class="fas fa-print text-muted" style="width: 16px;"></i> {{ __('Print Without Stamp') }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
                 @if($invoice->canEdit())
                 <a href="{{ route('invoices.edit', $invoice) }}" class="btn btn-action btn-outline-secondary" style="background: white; color: #475569; border-color: #e2e8f0; display: inline-flex; align-items: center; gap: 8px;">
                     <i class="fas fa-edit"></i> {{ __('Edit') }}
@@ -214,6 +246,12 @@
                     <div style="padding: 0 10px;">
                         <p style="color: #94a3b8; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">{{ __('Notes') }}</p>
                         <p style="color: #475569; font-size: 12px; line-height: 1.5; margin: 0;">{{ $invoice->notes }}</p>
+                    </div>
+                    @endif
+
+                    @if(($withStamp ?? $invoice->with_stamp ?? true) && setting('company_stamp'))
+                    <div style="padding: 0 10px; margin-top: 15px;">
+                        <img src="{{ asset('storage/' . setting('company_stamp')) }}" alt="Company Stamp" style="max-height: 90px; max-width: 170px; object-fit: contain; display: inline-block;">
                     </div>
                     @endif
                 </div>

@@ -287,6 +287,17 @@
                         <div style="font-size: 10px; color: #64748b; line-height: 1.4;">{{ $invoice->notes }}</div>
                     </div>
                     @endif
+
+                    @if(($withStamp ?? $invoice->with_stamp ?? true) && setting('company_stamp'))
+                        @php
+                            $stampPath = public_path('storage/' . setting('company_stamp'));
+                        @endphp
+                        @if(file_exists($stampPath))
+                        <div style="margin-top: 15px; padding: 0 10px;">
+                            <img src="data:image/{{ pathinfo($stampPath, PATHINFO_EXTENSION) }};base64,{{ base64_encode(file_get_contents($stampPath)) }}" style="max-height: 80px; max-width: 160px; object-fit: contain;">
+                        </div>
+                        @endif
+                    @endif
                 </td>
                 <td style="width: 45%; vertical-align: top;">
                     <div class="totals-card" style="margin-{{ app()->getLocale() === 'ar' ? 'right' : 'left' }}: auto;">

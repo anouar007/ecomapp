@@ -97,6 +97,15 @@
             </div>
 
             <div style="min-width: 140px;">
+                <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;">Stamp</label>
+                <select name="with_stamp" class="form-select">
+                    <option value="">All Stamps</option>
+                    <option value="1" {{ request('with_stamp') === '1' ? 'selected' : '' }}>With Stamp</option>
+                    <option value="0" {{ request('with_stamp') === '0' ? 'selected' : '' }}>Without Stamp</option>
+                </select>
+            </div>
+
+            <div style="min-width: 140px;">
                 <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;">From Date</label>
                 <input type="date" name="start_date" value="{{ request('start_date') }}" class="form-control">
             </div>
@@ -128,6 +137,7 @@
                         <th>Date</th>
                         <th class="text-end">Total Amount</th>
                         <th class="text-center">Status</th>
+                        <th class="text-center">Stamp</th>
                         <th>Method</th>
                         <th class="text-end" style="padding-right: 1.5rem;">Actions</th>
                     </tr>
@@ -170,26 +180,69 @@
                                 {{ $invoice->status_label }}
                             </span>
                         </td>
+                        <td class="text-center">
+                            @if($invoice->with_stamp)
+                                <span style="background: #e0e7ff; color: #4338ca; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                                    <i class="fas fa-stamp" style="font-size: 9px;"></i> Yes
+                                </span>
+                            @else
+                                <span style="background: #f1f5f9; color: #64748b; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600;">
+                                    No
+                                </span>
+                            @endif
+                        </td>
                         <td class="text-muted small">
                             <span class="text-uppercase" style="letter-spacing: 0.02em;">{{ str_replace('_', ' ', $invoice->payment_method) }}</span>
                         </td>
                         <td style="padding-right: 1.5rem;">
-                            <div class="d-flex justify-content-end gap-2">
+                            <div class="d-flex justify-content-end gap-1">
                                 <a href="{{ route('invoices.show', $invoice) }}" class="btn-action-icon" title="View Details">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{{ route('invoices.download', $invoice) }}" class="btn-action-icon" title="Download PDF">
-                                    <i class="fas fa-file-pdf"></i>
-                                </a>
-                                <a href="{{ route('invoices.print', $invoice) }}" target="_blank" class="btn-action-icon" title="Print Invoice">
-                                    <i class="fas fa-print"></i>
-                                </a>
+
+                                <!-- PDF Dropdown -->
+                                <div class="dropdown d-inline-block">
+                                    <button class="btn-action-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Download PDF Options">
+                                        <i class="fas fa-file-pdf"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 13px; border-radius: 10px;">
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('invoices.download', [$invoice, 'with_stamp' => 1]) }}">
+                                                <i class="fas fa-stamp" style="color: #6366f1; width: 14px;"></i> {{ __('Download With Stamp') }}
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('invoices.download', [$invoice, 'with_stamp' => 0]) }}">
+                                                <i class="far fa-file-pdf text-muted" style="width: 14px;"></i> {{ __('Download Without Stamp') }}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <!-- Print Dropdown -->
+                                <div class="dropdown d-inline-block">
+                                    <button class="btn-action-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Print Options">
+                                        <i class="fas fa-print"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 13px; border-radius: 10px;">
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" target="_blank" href="{{ route('invoices.print', [$invoice, 'with_stamp' => 1]) }}">
+                                                <i class="fas fa-stamp" style="color: #6366f1; width: 14px;"></i> {{ __('Print With Stamp') }}
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" target="_blank" href="{{ route('invoices.print', [$invoice, 'with_stamp' => 0]) }}">
+                                                <i class="fas fa-print text-muted" style="width: 14px;"></i> {{ __('Print Without Stamp') }}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7">
+                        <td colspan="8">
                             <div class="text-center py-5">
                                 <div class="brand-avatar mx-auto mb-3" style="width: 64px; height: 64px; font-size: 24px;">
                                     <i class="fas fa-receipt"></i>
