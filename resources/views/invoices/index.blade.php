@@ -237,6 +237,42 @@
                                         </li>
                                     </ul>
                                 </div>
+
+                                <!-- Guarantee Dropdown -->
+                                <div class="dropdown d-inline-block">
+                                    <button class="btn-action-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="{{ __('Guarantee Options') }}" style="color: #059669;">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 13px; border-radius: 10px;">
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('invoices.guarantee', $invoice) }}">
+                                                <i class="fas fa-eye" style="color: #10b981; width: 14px;"></i> {{ __('View Guarantee') }}
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider my-1"></li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('invoices.guarantee.download', [$invoice, 'with_stamp' => 1]) }}">
+                                                <i class="fas fa-stamp" style="color: #10b981; width: 14px;"></i> {{ __('PDF With Stamp') }}
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('invoices.guarantee.download', [$invoice, 'with_stamp' => 0]) }}">
+                                                <i class="far fa-file-pdf text-muted" style="width: 14px;"></i> {{ __('PDF No Stamp') }}
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider my-1"></li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" target="_blank" href="{{ route('invoices.guarantee.print', [$invoice, 'with_stamp' => 1]) }}">
+                                                <i class="fas fa-print" style="color: #10b981; width: 14px;"></i> {{ __('Print With Stamp') }}
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" target="_blank" href="{{ route('invoices.guarantee.print', [$invoice, 'with_stamp' => 0]) }}">
+                                                <i class="fas fa-print text-muted" style="width: 14px;"></i> {{ __('Print No Stamp') }}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </td>
                     </tr>

@@ -176,6 +176,7 @@ class SettingsController extends Controller
     {
         $prefixGroups = [
             'company_' => 'company',
+            'guarantee_' => 'guarantee',
             'social_' => 'social',
             'frontend_' => 'frontend',
             'currency_' => 'localization',
@@ -219,6 +220,9 @@ class SettingsController extends Controller
     private function inferSettingType(string $key, $value): string
     {
         // Check for specific patterns
+        if (str_contains($key, 'terms') || str_contains($key, 'description') || str_contains($key, 'notes')) {
+            return 'text';
+        }
         if (str_contains($key, 'color')) {
             return 'string';
         }

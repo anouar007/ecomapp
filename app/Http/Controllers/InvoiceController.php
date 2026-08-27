@@ -309,6 +309,52 @@ class InvoiceController extends Controller
     }
 
     /**
+     * Display warranty / guarantee certificate for invoice.
+     */
+    public function guarantee(Request $request, Invoice $invoice)
+    {
+        $invoice->load(['items.product', 'creator', 'order']);
+        $withStamp = $request->has('with_stamp') ? $request->boolean('with_stamp') : ($invoice->with_stamp ?? true);
+        return view('invoices.guarantee', compact('invoice', 'withStamp'));
+    }
+
+    /**
+     * Download guarantee certificate as PDF.
+     */
+    public function downloadGuarantee(Request $request, Invoice $invoice)
+    {
+        $invoice->load(['items.product', 'creator', 'order']);
+        $withStamp = $request->has('with_stamp') ? $request->boolean('with_stamp') : ($invoice->with_stamp ?? true);
+
+        try {
+            // Clean any existing output buffers to prevent PDF corruption
+            if (ob_get_length()) {
+                ob_end_clean();
+            }
+
+            $pdf = Pdf::loadView('invoices.guarantee_pdf', compact('invoice', 'withStamp'))
+                ->setPaper('a4', 'portrait');
+
+            $filename = 'Guarantee-' . str_replace(['#', '/', '\\', ' '], '-', $invoice->invoice_number) . ($withStamp ? '-Stamped' : '') . '.pdf';
+
+            return $pdf->download($filename);
+        } catch (\Exception $e) {
+            \Log::error('Guarantee PDF generation failed: ' . $e->getMessage());
+            return back()->with('error', 'Unable to generate Guarantee PDF: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Display printable guarantee certificate.
+     */
+    public function printGuarantee(Request $request, Invoice $invoice)
+    {
+        $invoice->load(['items.product', 'creator', 'order']);
+        $withStamp = $request->has('with_stamp') ? $request->boolean('with_stamp') : ($invoice->with_stamp ?? true);
+        return view('invoices.guarantee_print', compact('invoice', 'withStamp'));
+    }
+
+    /**
      * Send invoice via email.
      */
     public function email(Invoice $invoice)

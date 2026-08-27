@@ -319,6 +319,10 @@ ashed #cbd5e1;
                 <i class="fas fa-building"></i>
                 <span>Company Info</span>
             </button>
+            <button class="settings-tab" onclick="switchTab('guarantee')">
+                <i class="fas fa-shield-alt"></i>
+                <span>Guarantee & Warranty</span>
+            </button>
             <button class="settings-tab" onclick="switchTab('theme')">
                 <i class="fas fa-palette"></i>
                 <span>Theme</span>
@@ -524,6 +528,48 @@ ashed #cbd5e1;
                             <p style="margin: 0; color: #64748b; font-weight: 500;">Click to upload Company Stamp / Cachet</p>
                             <p style="margin: 4px 0 0 0; font-size: 12px; color: #94a3b8;">PNG (transparent recommended), JPG, SVG, WebP up to 2MB</p>
                             <input type="file" id="stamp-input" form="stamp-upload-form" name="stamp" accept="image/*" style="display: none;" onchange="document.getElementById('stamp-upload-form').submit()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Guarantee & Warranty Tab -->
+                <div class="tab-pane" id="guarantee-tab">
+                    <div class="settings-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-shield-alt text-primary me-2"></i> {{ __('Guarantee & Warranty Settings') }}
+                        </h3>
+                        <p style="color: #64748b; font-size: 13px; margin-bottom: 24px;">
+                            {{ __('Customize the document title, default duration, and description terms that will appear on warranty & guarantee certificates generated for your invoices.') }}
+                        </p>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label">{{ __('Certificate Document Title') }}</label>
+                                <input type="text" name="settings[guarantee_title]" class="form-input" 
+                                       value="{{ setting('guarantee_title', 'CERTIFICAT DE GARANTIE') }}" 
+                                       placeholder="e.g. CERTIFICAT DE GARANTIE / WARRANTY CERTIFICATE">
+                                <small style="color: #94a3b8; font-size: 12px; display: block; margin-top: 4px;">{{ __('Main document title printed on the guarantee certificate.') }}</small>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label">{{ __('Default Guarantee Duration') }}</label>
+                                <input type="text" name="settings[guarantee_period_default]" class="form-input" 
+                                       value="{{ setting('guarantee_period_default', '12 Mois') }}" 
+                                       placeholder="e.g. 12 Mois, 24 Mois, 1 An, 2 Years">
+                                <small style="color: #94a3b8; font-size: 12px; display: block; margin-top: 4px;">{{ __('Default warranty period applied to covered invoice items.') }}</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 24px;">
+                            <label class="form-label">{{ __('Guarantee Description & Terms of Coverage') }}</label>
+                            <textarea name="settings[guarantee_terms]" class="form-input" rows="8" style="font-family: inherit; line-height: 1.6; font-size: 13px;" placeholder="{{ __('Enter warranty terms, conditions, and coverage details...') }}">{{ setting('guarantee_terms', "1. La présente garantie couvre tous les défauts de fabrication et de fonctionnement du matériel pour la durée spécifiée à compter de la date d'émission de la facture.\n2. La garantie s'applique uniquement sur présentation du présent bon de garantie accompagné de la facture d'achat originale.\n3. Sont exclus de la garantie : les dommages dus à une mauvaise utilisation, à une négligence, aux surtensions électriques, aux dégâts des eaux, ou à toute intervention technique non autorisée.\n4. En cas de panne couverte par la garantie, notre service après-vente procédera gratuitement à la réparation ou au remplacement du composant défectueux dans les meilleurs délais.\n5. Les consommables, accessoires d'usure et pièces externes ne sont pas couverts par la garantie.") }}</textarea>
+                            <small style="color: #94a3b8; font-size: 12px; display: block; margin-top: 4px;">{{ __('These terms and conditions will be printed directly in the warranty terms section of the certificate.') }}</small>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">{{ __('Additional Guarantee Notes & Disclaimer (Optional)') }}</label>
+                            <textarea name="settings[guarantee_notes]" class="form-input" rows="3" style="font-size: 13px;" placeholder="e.g. Pour toute assistance technique, contactez notre service SAV...">{{ setting('guarantee_notes', 'Pour toute assistance technique ou réclamation sous garantie, veuillez vous munir de votre numéro de facture et contacter notre service après-vente.') }}</textarea>
+                            <small style="color: #94a3b8; font-size: 12px; display: block; margin-top: 4px;">{{ __('Printed at the bottom of the certificate before signatures.') }}</small>
                         </div>
                     </div>
                 </div>

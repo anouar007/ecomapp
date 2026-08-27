@@ -52,5 +52,10 @@ class CustomCodeInjectionVerificationTest extends TestCase
         
         // Body End Check
         $response->assertSee("console.log('Footer Injected');", false);
+
+        // Cleanup
+        $headCode->delete();
+        $bodyStartCode->delete();
+        $bodyEndCode->delete();
     }
 }

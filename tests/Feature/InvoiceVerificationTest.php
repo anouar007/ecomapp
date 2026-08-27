@@ -133,7 +133,24 @@ class InvoiceVerificationTest extends TestCase
         $response = $this->actingAs($admin)->get(route('invoices.print', [$invoice->id, 'with_stamp' => 0]));
         $response->assertStatus(200);
 
-        // 7. Email Verification
+        // 7. Guarantee Certificate Verification
+        $response = $this->actingAs($admin)->get(route('invoices.guarantee', $invoice->id));
+        $response->assertStatus(200);
+        $response->assertSee('GAR-' . $invoice->invoice_number);
+
+        $response = $this->actingAs($admin)->get(route('invoices.guarantee.download', [$invoice->id, 'with_stamp' => 1]));
+        $response->assertStatus(200);
+
+        $response = $this->actingAs($admin)->get(route('invoices.guarantee.download', [$invoice->id, 'with_stamp' => 0]));
+        $response->assertStatus(200);
+
+        $response = $this->actingAs($admin)->get(route('invoices.guarantee.print', [$invoice->id, 'with_stamp' => 1]));
+        $response->assertStatus(200);
+
+        $response = $this->actingAs($admin)->get(route('invoices.guarantee.print', [$invoice->id, 'with_stamp' => 0]));
+        $response->assertStatus(200);
+
+        // 8. Email Verification
         $response = $this->actingAs($admin)->post(route('invoices.email', $invoice->id));
         $response->assertSessionHas('success');
         Mail::assertSent(InvoiceEmail::class, function ($mail) use ($invoice) {
@@ -141,7 +158,7 @@ class InvoiceVerificationTest extends TestCase
                    $mail->hasTo($invoice->customer_email);
         });
 
-        // 8. Delete (Paid check)
+        // 9. Delete (Paid check)
         $response = $this->actingAs($admin)->delete(route('invoices.destroy', $genInvoice->id));
         $response->assertSessionHas('error'); // Cannot delete paid
         

@@ -79,6 +79,9 @@ Route::middleware('auth')->group(function () {
         Route::resource('invoices', \App\Http\Controllers\InvoiceController::class);
         Route::get('invoices/{invoice}/download', [\App\Http\Controllers\InvoiceController::class, 'download'])->name('invoices.download');
         Route::get('invoices/{invoice}/print', [\App\Http\Controllers\InvoiceController::class, 'print'])->name('invoices.print');
+        Route::get('invoices/{invoice}/guarantee', [\App\Http\Controllers\InvoiceController::class, 'guarantee'])->name('invoices.guarantee');
+        Route::get('invoices/{invoice}/guarantee/download', [\App\Http\Controllers\InvoiceController::class, 'downloadGuarantee'])->name('invoices.guarantee.download');
+        Route::get('invoices/{invoice}/guarantee/print', [\App\Http\Controllers\InvoiceController::class, 'printGuarantee'])->name('invoices.guarantee.print');
         Route::post('invoices/{invoice}/email', [\App\Http\Controllers\InvoiceController::class, 'email'])->name('invoices.email');
         Route::post('orders/{order}/generate-invoice', [\App\Http\Controllers\InvoiceController::class, 'generateFromOrder'])->name('orders.generate-invoice');
         Route::post('orders/{order}/generate-quote', [\App\Http\Controllers\InvoiceController::class, 'generateFromOrder'])->name('orders.generate-quote');
