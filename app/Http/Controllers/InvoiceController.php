@@ -167,6 +167,16 @@ class InvoiceController extends Controller
             // Create Accounting Entry
             $this->createAccountingEntry($invoice);
 
+            // Deduct stock if paid
+            if ($invoice->type === 'invoice' && $invoice->payment_status === 'paid' && !$invoice->stock_deducted) {
+                foreach ($invoice->items as $item) {
+                    if ($item->product) {
+                        $item->product->decrement('stock', $item->quantity);
+                    }
+                }
+                $invoice->update(['stock_deducted' => true]);
+            }
+
             DB::commit();
 
             // Update customer balance
@@ -234,7 +244,42 @@ class InvoiceController extends Controller
         ]);
 
         $validated['with_stamp'] = $request->has('with_stamp') ? $request->boolean('with_stamp') : false;
+        
+        $originalStatus = $invoice->payment_status;
         $invoice->update($validated);
+
+        if ($invoice->type === 'invoice') {
+            // Determine if the stock was already deducted by a linked order
+            $orderStockDeducted = $invoice->order_id && $invoice->order && $invoice->order->stock_deducted;
+
+            // Handle stock deduction on payment
+            if ($validated['payment_status'] === 'paid' && !$invoice->stock_deducted && !$orderStockDeducted) {
+                foreach ($invoice->items as $item) {
+                    if ($item->product) {
+                        $item->product->decrement('stock', $item->quantity);
+                    }
+                }
+                $invoice->update(['stock_deducted' => true]);
+                // If it belongs to an order, mark the order as deducted to prevent double-deduction later
+                if ($invoice->order_id && $invoice->order) {
+                    $invoice->order->update(['stock_deducted' => true]);
+                }
+            }
+            
+            // Handle stock restoration if reverted from paid
+            if ($originalStatus === 'paid' && $validated['payment_status'] !== 'paid' && $invoice->stock_deducted) {
+                foreach ($invoice->items as $item) {
+                    if ($item->product) {
+                        $item->product->increment('stock', $item->quantity);
+                    }
+                }
+                $invoice->update(['stock_deducted' => false]);
+                // Also unmark the order if we were the ones tracking it
+                if ($invoice->order_id && $invoice->order) {
+                    $invoice->order->update(['stock_deducted' => false]);
+                }
+            }
+        }
 
         // Update customer balance
         if ($invoice->customer_email) {
@@ -258,6 +303,19 @@ class InvoiceController extends Controller
         }
 
         $customerEmail = $invoice->customer_email;
+        
+        // Restore stock if it was deducted by this invoice
+        if ($invoice->stock_deducted) {
+            foreach ($invoice->items as $item) {
+                if ($item->product) {
+                    $item->product->increment('stock', $item->quantity);
+                }
+            }
+            if ($invoice->order_id && $invoice->order) {
+                $invoice->order->update(['stock_deducted' => false]);
+            }
+        }
+
         $invoice->delete();
 
         // Update customer balance
@@ -438,6 +496,20 @@ class InvoiceController extends Controller
             }
 
             DB::commit();
+
+            // Deduct stock if paid (and if order hasn't already done it)
+            if ($invoice->type === 'invoice' && $invoice->payment_status === 'paid' && !$invoice->stock_deducted) {
+                $orderStockDeducted = $order->stock_deducted;
+                if (!$orderStockDeducted) {
+                    foreach ($invoice->items as $item) {
+                        if ($item->product) {
+                            $item->product->decrement('stock', $item->quantity);
+                        }
+                    }
+                    $invoice->update(['stock_deducted' => true]);
+                    $order->update(['stock_deducted' => true]);
+                }
+            }
 
             // Update customer balance
             if ($invoice->customer_email) {

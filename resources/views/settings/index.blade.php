@@ -529,6 +529,52 @@ ashed #cbd5e1;
                             <p style="margin: 4px 0 0 0; font-size: 12px; color: #94a3b8;">PNG (transparent recommended), JPG, SVG, WebP up to 2MB</p>
                             <input type="file" id="stamp-input" form="stamp-upload-form" name="stamp" accept="image/*" style="display: none;" onchange="document.getElementById('stamp-upload-form').submit()">
                         </div>
+
+                        {{-- Stamp Scale Control --}}
+                        <div style="margin-top: 24px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
+                            <h4 style="font-size: 14px; font-weight: 700; color: #1e293b; margin: 0 0 4px 0;">
+                                <i class="fas fa-search-plus" style="color: #3b82f6; margin-right: 6px;"></i>
+                                Stamp Scale on Documents
+                            </h4>
+                            <p style="font-size: 12px; color: #64748b; margin: 0 0 20px 0;">Uniformly scales the stamp image on invoices, quotes, and guarantee certificates while keeping its original proportions.</p>
+
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label" for="stamp-scale-range" style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span>Scale</span>
+                                    <span style="display: flex; align-items: center; gap: 6px;">
+                                        <span id="stamp-scale-value" style="font-size: 22px; font-weight: 800; color: #3b82f6; line-height: 1;">{{ setting('company_stamp_scale', 100) }}</span>
+                                        <span style="font-size: 13px; color: #64748b;">%</span>
+                                    </span>
+                                </label>
+
+                                <input type="range" id="stamp-scale-range"
+                                       name="settings[company_stamp_scale]"
+                                       min="25" max="200" step="5"
+                                       value="{{ setting('company_stamp_scale', 100) }}"
+                                       style="width: 100%; accent-color: #3b82f6; cursor: pointer; height: 6px;"
+                                       oninput="updateStampSize()">
+
+                                <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-top: 6px;">
+                                    <span>25% (tiny)</span>
+                                    <span>100% (default)</span>
+                                    <span>200% (large)</span>
+                                </div>
+                            </div>
+
+                            {{-- Live preview --}}
+                            @if(setting('company_stamp'))
+                            @php $initScale = intval(setting('company_stamp_scale', 100)) / 100; @endphp
+                            <div style="margin-top: 20px; text-align: center; background: white; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 24px; overflow: hidden;">
+                                <p style="font-size: 11px; color: #94a3b8; margin: 0 0 14px 0; text-transform: uppercase; letter-spacing: 0.5px;">Live Preview</p>
+                                <div style="display: inline-block; transform-origin: center top;" id="stamp-preview-wrap">
+                                    <img id="stamp-preview-img"
+                                         src="{{ asset('storage/' . setting('company_stamp')) }}"
+                                         alt="Stamp Preview"
+                                         style="width: {{ round(160 * $initScale) }}px; height: auto; display: block; transition: width 0.15s;">
+                                </div>
+                            </div>
+                            @endif
+                        </div>
                     </div>
                 </div>
 
@@ -984,6 +1030,26 @@ ashed #cbd5e1;
                 currencySymbolInput.value = symbol;
             }
         });
+    }
+
+    // Stamp scale slider
+    function updateStampSize() {
+        const scaleRange = document.getElementById('stamp-scale-range');
+        const scaleVal   = document.getElementById('stamp-scale-value');
+        const preview    = document.getElementById('stamp-preview-img');
+
+        if (!scaleRange) return;
+
+        const pct = parseInt(scaleRange.value, 10);
+
+        if (scaleVal) {
+            scaleVal.textContent = pct;
+        }
+
+        // Base reference width at 100% = 160px
+        if (preview) {
+            preview.style.width = Math.round(160 * pct / 100) + 'px';
+        }
     }
 </script>
 @endpush

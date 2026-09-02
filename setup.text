@@ -15,4 +15,4 @@ php artisan cache:clear
 php artisan route:clear
 php artisan view:clear
 ln -s ../storage/app/public public/storage
-php artisan make:admin your-email@domain.com YourPassword123 --name="Admin"
+php artisan make:admin lik@domain.com YourPassword123 --name="Admin"

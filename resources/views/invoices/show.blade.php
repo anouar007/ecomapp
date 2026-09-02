@@ -287,7 +287,7 @@
 
                     @if(($withStamp ?? $invoice->with_stamp ?? true) && setting('company_stamp'))
                     <div style="padding: 0 10px; margin-top: 15px;">
-                        <img src="{{ asset('storage/' . setting('company_stamp')) }}" alt="Company Stamp" style="max-height: 90px; max-width: 170px; object-fit: contain; display: inline-block;">
+                        <img src="{{ asset('storage/' . setting('company_stamp')) }}" alt="Company Stamp" style="width: {{ round(160 * intval(setting('company_stamp_scale', 100)) / 100) }}px; height: auto; object-fit: contain; display: inline-block;">
                     </div>
                     @endif
                 </div>

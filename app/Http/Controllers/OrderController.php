@@ -129,12 +129,9 @@ class OrderController extends Controller
                 'notes' => $validated['notes'] ?? null,
             ]);
 
-            // Create order items and update stock
+            // Create order items
             foreach ($items as $itemData) {
                 OrderItem::create(array_merge($itemData, ['order_id' => $order->id]));
-                
-                $product = Product::find($itemData['product_id']);
-                $product->decrement('stock', $itemData['quantity']);
             }
 
             DB::commit();
@@ -177,7 +174,28 @@ class OrderController extends Controller
             'notes' => ['nullable', 'string'],
         ]);
 
+        $originalStatus = $order->status;
         $order->update($validated);
+        
+        // Handle stock deduction on delivery
+        if ($validated['status'] === 'delivered' && !$order->stock_deducted) {
+            foreach ($order->items as $item) {
+                if ($item->product) {
+                    $item->product->decrement('stock', $item->quantity);
+                }
+            }
+            $order->update(['stock_deducted' => true]);
+        }
+        
+        // Handle stock restoration if reverted from delivered
+        if ($originalStatus === 'delivered' && $validated['status'] !== 'delivered' && $order->stock_deducted) {
+            foreach ($order->items as $item) {
+                if ($item->product) {
+                    $item->product->increment('stock', $item->quantity);
+                }
+            }
+            $order->update(['stock_deducted' => false]);
+        }
 
         return redirect()->route('orders.show', $order)->with('success', 'Order updated successfully.');
     }
@@ -194,10 +212,12 @@ class OrderController extends Controller
 
         DB::beginTransaction();
         try {
-            // Restore stock for cancelled/pending orders
-            foreach ($order->items as $item) {
-                if ($item->product) {
-                    $item->product->increment('stock', $item->quantity);
+            // Restore stock if it was previously deducted
+            if ($order->stock_deducted) {
+                foreach ($order->items as $item) {
+                    if ($item->product) {
+                        $item->product->increment('stock', $item->quantity);
+                    }
                 }
             }
 

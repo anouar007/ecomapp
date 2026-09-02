@@ -311,10 +311,11 @@
                         @if(($withStamp ?? $invoice->with_stamp ?? true) && setting('company_stamp'))
                             @php
                                 $stampPath = public_path('storage/' . setting('company_stamp'));
+                                $stampW = round(160 * intval(setting('company_stamp_scale', 100)) / 100);
                             @endphp
                             @if(file_exists($stampPath))
                             <div style="margin-top: 6px;">
-                                <img src="data:image/{{ pathinfo($stampPath, PATHINFO_EXTENSION) }};base64,{{ base64_encode(file_get_contents($stampPath)) }}" style="max-height: 65px; max-width: 140px; object-fit: contain;">
+                                <img src="data:image/{{ pathinfo($stampPath, PATHINFO_EXTENSION) }};base64,{{ base64_encode(file_get_contents($stampPath)) }}" style="width: {{ $stampW }}px; height: auto; object-fit: contain;">
                             </div>
                             @endif
                         @else
