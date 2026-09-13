@@ -270,9 +270,6 @@ body.checkout-page-body { width: auto; margin: 0; padding: 0; background: #fdfbf
     min-height: 122px;
     overflow: hidden;
     border-bottom: 1px solid #e9dfd3;
-    background:
-        linear-gradient(90deg, #faf6edee 0 35%, #faf6edbb 49%, #073c2d44 72%, #073c2daa),
-        url('../design/assets/hero.png') center 47% / cover no-repeat;
 }
 .checkout-hero-copy { padding: 25px 24px 20px; text-align: center; }
 .checkout-hero-copy h1 { margin: 0 0 4px; font-size: clamp(32px, 3vw, 45px); line-height: 1.2; }
@@ -381,11 +378,6 @@ body.checkout-success-page { width: auto; margin: 0; padding: 0; background: #fd
     min-height: 138px;
     overflow: hidden;
     border-bottom: 1px solid #e9dfd3;
-    background:
-        linear-gradient(90deg, #faf6edb5 0 19%, transparent 43% 78%, #073c2d38),
-        url('../design/assets/hero-trees.png') right center / 62% 100% no-repeat,
-        url('../design/assets/hero.png') left 48% / auto 100% no-repeat,
-        #f4eee4;
 }
 .success-hero-note { position: absolute; top: 31px; left: 12%; color: var(--green); font-size: 22px; font-weight: 700; line-height: 1.45; text-align: center; }
 .success-hero-note span { display: block; width: 48px; height: 3px; margin: 7px auto 0; border-radius: 10px; background: var(--gold); transform: rotate(-5deg); }
@@ -407,7 +399,7 @@ body.checkout-success-page { width: auto; margin: 0; padding: 0; background: #fd
 .success-shop-link { min-width: 285px; min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 14px; padding: 10px 28px; border: 1px solid #dfc7a8; border-radius: 6px; color: #a9640d; font-size: 15px; }
 .success-shop-link svg { width: 20px; height: 20px; }
 @media (max-width: 700px) {
-    .success-hero { min-height: 116px; background-size: 100% 100%, 90% 100%, auto 100%; }
+    .success-hero { min-height: 116px; }
     .success-hero-note { display: none; }
     .success-page { min-height: 0; padding: 0 14px 35px; }
     .success-check { width: 74px; height: 74px; margin-top: -37px; border-width: 8px; }
@@ -418,3 +410,21 @@ body.checkout-success-page { width: auto; margin: 0; padding: 0; background: #fd
     .success-order-detail + .success-order-detail::after { top: 0; right: 12%; width: 76%; height: 1px; }
     .success-shop-link { width: 100%; min-width: 0; }
 }
+
+/* Shared image and treatment for storefront page banners. */
+.shop-banner,
+.contact .contact-hero,
+.checkout-hero,
+.success-hero {
+    background: linear-gradient(#082d2266, #082d2266),
+        url('../design/assets/1ac8d05e-3e9f-4f11-8670-309219cd3555.png') center / cover no-repeat;
+    color: #fff;
+}
+.shop-banner::before { content: none; }
+.shop-banner a,
+.checkout-hero-copy h1,
+.checkout-hero-copy p,
+.checkout-hero-note,
+.success-hero-note { color: #fff; }
+.checkout-hero-note span,
+.success-hero-note span { background: #fff; }

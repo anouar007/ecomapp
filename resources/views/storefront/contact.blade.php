@@ -61,17 +61,5 @@
 </div>
 </aside>
 </main>
-<section class="contact-links">
-<div>
-<i data-lucide="message-circle" aria-hidden="true"></i><span><b>دعم واتساب</b><small>تواصل معنا مباشرة عبر واتساب</small><a href="https://wa.me/212612345678">بدء المحادثة　←</a></span>
-</div>
-<div>
-<i data-lucide="package-search" aria-hidden="true"></i><span><b>تتبع طلبك</b><small>تابع حالة طلبك بسهولة</small><a href="{{ route('customer.orders') }}">تتبع الطلب　←</a></span>
-</div>
-<div>
-<i data-lucide="headset" aria-hidden="true"></i><span><b>الأسئلة الشائعة</b><small>تجدون إجابات على أكثر الأسئلة شيوعاً</small><button type="button" class="text-link" onclick="showModal('faq')">عرض الأسئلة الشائعة　←</button></span>
-</div>
-</section>
 
 @endsection
-
