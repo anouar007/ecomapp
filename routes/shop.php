@@ -26,6 +26,7 @@ Route::get('/products/{id}/json', [\App\Http\Controllers\ShopController::class, 
 
 // Cart
 Route::get('/cart', [\App\Http\Controllers\CartController::class, 'index'])->name('cart.index');
+Route::delete('/cart', [\App\Http\Controllers\CartController::class, 'clear'])->name('cart.clear');
 Route::post('/cart/add/{id}', [\App\Http\Controllers\CartController::class, 'addToCart'])->name('cart.add');
 Route::patch('/cart/update', [\App\Http\Controllers\CartController::class, 'update'])->name('cart.update');
 Route::delete('/cart/remove', [\App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
@@ -38,6 +39,8 @@ Route::post('/checkout', [\App\Http\Controllers\CheckoutController::class, 'stor
 Route::get('/checkout/success/{order}', [\App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
 
 // Dynamic Frontend Pages (Catch-all)
+Route::view('/contact', 'storefront.contact')->name('contact');
+
 Route::get('/{slug?}', [\App\Http\Controllers\FrontendController::class, 'show'])
     ->where('slug', '^(?!api|dashboard|pos|products|categories|orders|invoices|customers|inventory|coupons|roles|permissions|users|activity-logs|settings|my-account|login|register|logout).*')
     ->name('frontend.page');

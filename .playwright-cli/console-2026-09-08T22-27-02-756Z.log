@@ -1,0 +1,28 @@
+[   54606ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8017/shop/1:0
+[   55735ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8017/design/4af8c39e-999b-4fdb-8488-18557bf2f267.png:0
+[   55907ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8017/design/07a0cc55-8427-4b47-ad63-81e1e20f9432.png:0
+[   57749ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8017/shop/1:0
+[   58730ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8017/design/07a0cc55-8427-4b47-ad63-81e1e20f9432.png:0
+[   59093ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8017/design/4af8c39e-999b-4fdb-8488-18557bf2f267.png:0
+[   60626ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8017/shop/1:0
+[   61474ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8017/design/4af8c39e-999b-4fdb-8488-18557bf2f267.png:0
+[   61925ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8017/design/07a0cc55-8427-4b47-ad63-81e1e20f9432.png:0
+[   62094ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://127.0.0.1:8017/design/index.html:0
+[   63164ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://127.0.0.1:8017/design/products.html:0
+[   63972ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://127.0.0.1:8017/design/product.html:0
+[   64692ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://127.0.0.1:8017/design/cart.html:0
+[   65038ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://127.0.0.1:8017/design/contact.html:0
+[   65191ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8017/design/4af8c39e-999b-4fdb-8488-18557bf2f267.png:0
+[   65345ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8017/design/07a0cc55-8427-4b47-ad63-81e1e20f9432.png:0
+[  297763ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8018/design/07a0cc55-8427-4b47-ad63-81e1e20f9432.png:0
+[  297776ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8018/design/4af8c39e-999b-4fdb-8488-18557bf2f267.png:0
+[  301973ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8018/design/4af8c39e-999b-4fdb-8488-18557bf2f267.png:0
+[  302016ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8018/design/07a0cc55-8427-4b47-ad63-81e1e20f9432.png:0
+[  305613ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8018/design/4af8c39e-999b-4fdb-8488-18557bf2f267.png:0
+[  306089ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://127.0.0.1:8018/design/index.html:0
+[  307391ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://127.0.0.1:8018/design/products.html:0
+[  308370ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://127.0.0.1:8018/design/product.html:0
+[  309032ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://127.0.0.1:8018/design/cart.html:0
+[  309491ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://127.0.0.1:8018/design/contact.html:0
+[  309808ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8018/design/4af8c39e-999b-4fdb-8488-18557bf2f267.png:0
+[  309880ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8018/design/07a0cc55-8427-4b47-ad63-81e1e20f9432.png:0

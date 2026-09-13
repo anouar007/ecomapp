@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="assets/logo.png">
+<title>
+تواصل معنا | تعاونية آيت أومديس
+</title>
+<link rel="stylesheet" href="style.css">
+<script src="assets/lucide.js" defer></script>
+<script src="app.js" defer>
+</script>
+</head>
+<body class="contact">
+<div id="app">
+<header>
+<a class="brand" href="index.html"><img src="assets/logo.png" alt="شعار التعاونية"><span><b>تعاونية آيت أومديس</b><small>منتجات طبيعية من قلب الأطلس</small></span></a>
+<nav>
+<a href="index.html">الرئيسية</a><a href="products.html">المتجر</a><button onclick="storyMore()">من نحن</button><a class="active" aria-current="page" href="contact.html">اتصل بنا</a>
+</nav>
+<div class="tools">
+<form action="products.html">
+<input name="q" placeholder="بحث عن منتج..." aria-label="بحث عن منتج"><button aria-label="بحث"><i data-lucide="search" aria-hidden="true"></i></button>
+</form>
+<button aria-label="حسابي" onclick="account()"><i data-lucide="user-round" aria-hidden="true"></i></button><a class="cart-link" href="cart.html" aria-label="سلة التسوق"><i data-lucide="shopping-cart" aria-hidden="true"></i><span class="cart-count">4</span></a>
+</div>
+</header>
+<section class="contact-hero">
+<div class="contact-hero-title">
+<h1>
+تواصل معنا
+</h1>
+<p>
+نحن هنا للإجابة على جميع استفساراتكم<br>معاً نحو نمط حياة أكثر طبيعية وصحة
+</p>
+</div>
+<div class="contact-hero-note">
+من قلب الأطلس<br>إلى كل بيت في العالم<span></span>
+</div>
+</section>
+<main class="contact-main">
+<section class="contact-visuals">
+<div class="contact-photo" role="img" aria-label="متجر تعاونية آيت أومديس">
+</div>
+<div class="contact-map" role="img" aria-label="موقع التعاونية على الخريطة">
+<div class="map-controls">
+<button aria-label="تكبير"><i data-lucide="plus" aria-hidden="true"></i></button><button aria-label="تصغير"><i data-lucide="minus" aria-hidden="true"></i></button>
+</div>
+<span class="map-label">تعاونية آيت أومديس</span><span class="map-pin"><i data-lucide="map-pin" aria-hidden="true"></i></span><b class="map-imlil">إمليل<br>Imlil</b><b class="map-asni">أسني<br>Asni</b>
+</div>
+</section>
+<section class="contact-form-panel panel">
+<h2>
+أرسل لنا رسالة
+</h2>
+<p>
+املأ النموذج التالي وسنعاود الاتصال بكم في أقرب وقت ممكن
+</p>
+<form onsubmit="sendContact(event)">
+<div class="contact-form-grid">
+<label>الاسم الكامل <em>*</em><span><input name="name" required placeholder="أدخل اسمك الكامل"><i data-lucide="user-round" aria-hidden="true"></i></span></label><label>البريد الإلكتروني <em>*</em><span><input name="email" type="email" required placeholder="example@domain.com"><i data-lucide="mail" aria-hidden="true"></i></span></label><label>رقم الهاتف<span><input name="phone" dir="ltr" placeholder="+212 ..."><i data-lucide="phone" aria-hidden="true"></i></span></label><label>موضوع الرسالة <em>*</em><select name="subject" required><option value="">اختر الموضوع</option><option>استفسار عن منتج</option><option>تتبع طلب</option><option>التعاون والشراكات</option></select></label><label class="message-label">رسالتك <em>*</em><textarea name="message" required maxlength="500" placeholder="اكتب رسالتك هنا ..." oninput="this.nextElementSibling.textContent=this.value.length+'/500'"></textarea><small>0/500</small></label>
+</div>
+<button class="primary contact-submit" type="submit"><i data-lucide="send" aria-hidden="true"></i> إرسال الرسالة</button>
+</form>
+</section>
+<aside class="contact-info panel">
+<h2>
+معلومات التواصل
+</h2>
+<p>
+يسعدنا الاستماع إليكم، يمكنكم التواصل معنا عبر<br>الطرق التالية:
+</p>
+<div class="contact-detail">
+<i><i data-lucide="phone" aria-hidden="true"></i></i><span><b>الهاتف</b><a href="tel:+212612345678">+212 6 12 34 56 78</a><small>من الاثنين إلى الجمعة، 9:00 - 18:00</small></span>
+</div>
+<div class="contact-detail">
+<i><i data-lucide="phone" aria-hidden="true"></i></i><span><b>واتساب</b><a href="https://wa.me/212612345678">+212 6 12 34 56 78</a><small>للاستشارات السريعة</small></span>
+</div>
+<div class="contact-detail">
+<i><i data-lucide="mail" aria-hidden="true"></i></i><span><b>البريد الإلكتروني</b><a href="mailto:contact@aitoumdis.ma">contact@aitoumdis.ma</a><small>نرد خلال 24 ساعة</small></span>
+</div>
+<div class="contact-detail">
+<i><i data-lucide="map-pin" aria-hidden="true"></i></i><span><b>العنوان</b><a href="https://maps.google.com/?q=Imlil+Morocco">دوار آيت أومديس، جماعة أسني</a><small>إقليم الحوز، المغرب</small><u>عرض على خرائط جوجل ↗</u></span>
+</div>
+</aside>
+</main>
+<section class="contact-links">
+<div>
+<i data-lucide="message-circle" aria-hidden="true"></i><span><b>دعم واتساب</b><small>تواصل معنا مباشرة عبر واتساب</small><a href="#">بدء المحادثة　←</a></span>
+</div>
+<div>
+<i data-lucide="package-search" aria-hidden="true"></i><span><b>تتبع طلبك</b><small>تابع حالة طلبك بسهولة</small><a href="#">تتبع الطلب　←</a></span>
+</div>
+<div>
+<i data-lucide="headset" aria-hidden="true"></i><span><b>الأسئلة الشائعة</b><small>تجدون إجابات على أكثر الأسئلة شيوعاً</small><a href="#">عرض الأسئلة الشائعة　←</a></span>
+</div>
+</section>
+<footer class="site-footer">
+<div class="footer-inner">
+<a class="footer-brand" href="index.html"><img src="assets/logo.png" alt="شعار تعاونية آيت أومديس"><span><b>تعاونية آيت أومديس</b><small>منتجات طبيعية من قلب الأطلس</small></span></a>
+<nav aria-label="روابط التذييل">
+<a href="index.html">الرئيسية</a><a href="products.html">منتجاتنا</a><a href="contact.html">اتصل بنا</a>
+</nav>
+<span class="footer-copy">© 2026 تعاونية آيت أومديس. جميع الحقوق محفوظة.</span>
+</div>
+</footer>
+</div>
+<noscript>
+<p class="no-js-notice">
+يمكنك تصفح جميع المنتجات والصفحات. فعّل JavaScript لاستخدام السلة والفلاتر والنماذج.
+</p>
+</noscript>
+<div id="toast" role="status" aria-live="polite">
+</div>
+<dialog id="modal" aria-label="معلومات التعاونية">
+<button class="close" aria-label="إغلاق" onclick="this.closest('dialog').close()"><i data-lucide="x" aria-hidden="true"></i></button>
+<div id="modal-content">
+<section data-dialog="account" hidden>
+<h2>
+تسجيل الدخول
+</h2>
+<form onsubmit="event.preventDefault();toast('خدمة الحسابات غير متاحة حالياً')">
+<label>البريد الإلكتروني<input type="email" required></label><label>كلمة المرور<input type="password" required></label><button class="primary">تسجيل الدخول</button>
+</form>
+</section>
+<section data-dialog="story" hidden>
+<h2>
+قصتنا من قلب الأطلس
+</h2>
+<img class="story-modal" src="assets/story.png" alt="تعاونية آيت أومديس">
+<p>
+تأسست تعاونية آيت أومديس في قلب الأطلس المغربي. نعمل مع نساء المنطقة لجمع أفضل ما تقدمه الطبيعة، ونحافظ على الموروث الطبيعي والحرف التقليدية عبر منتجات أصيلة مصنوعة بعناية.
+</p>
+</section>
+<section data-dialog="checkout" hidden>
+<h2>
+إتمام الطلب
+</h2>
+<p>
+هذه واجهة تجريبية. الدفع وإرسال الطلبات غير متاحين حالياً.
+</p>
+<a class="primary" href="products.html">متابعة التسوق</a>
+</section>
+<section data-dialog="zoom" hidden>
+<img class="zoomed" alt="صورة المنتج مكبرة">
+</section>
+</div>
+</dialog>
+</body>
+</html>

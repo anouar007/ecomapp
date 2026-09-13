@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="assets/logo.png">
+<title>
+عسل الزهر الطبيعي | تعاونية آيت أومديس
+</title>
+<link rel="stylesheet" href="style.css">
+<script src="assets/lucide.js" defer></script>
+<script src="app.js" defer>
+</script>
+</head>
+<body class="product">
+<div id="app">
+<header>
+<a class="brand" href="index.html"><img src="assets/logo.png" alt="شعار التعاونية"><span><b>تعاونية آيت أومديس</b><small>منتجات طبيعية من قلب الأطلس</small></span></a>
+<nav>
+<a href="index.html">الرئيسية</a><a class="active" aria-current="page" href="products.html">المتجر</a><button onclick="storyMore()">من نحن</button><a href="contact.html">اتصل بنا</a>
+</nav>
+<div class="tools">
+<form action="products.html">
+<input name="q" placeholder="بحث عن منتج..." aria-label="بحث عن منتج"><button aria-label="بحث"><i data-lucide="search" aria-hidden="true"></i></button>
+</form>
+<button aria-label="حسابي" onclick="account()"><i data-lucide="user-round" aria-hidden="true"></i></button><a class="cart-link" href="cart.html" aria-label="سلة التسوق"><i data-lucide="shopping-cart" aria-hidden="true"></i><span class="cart-count">4</span></a>
+</div>
+</header>
+<main class="product-page">
+<div class="breadcrumb">
+<a href="index.html">الرئيسية</a>　‹　<a href="products.html">العسل</a>　‹　 عسل الزهر الطبيعي
+</div>
+<div class="product-top">
+<section class="details panel">
+<h1>
+عسل الزهر الطبيعي
+</h1>
+<div class="reviews">
+(128)　4.9　 <span class="stars">★ ★ ★ ★ ★</span>
+</div>
+<p class="origin">
+طبيعي 100% • من قلب الأطلس
+</p>
+<p>
+عسل نقي مستخرج من زهور برية متنوعة تنمو في جبال الأطلس، يتميز<br> بنكهته الفريدة وفوائده الصحية العديدة.
+</p>
+<div class="qualities">
+<span><i data-lucide="users-round" aria-hidden="true"></i>منتج تعاوني</span><span><i data-lucide="flask-conical" aria-hidden="true"></i>بدون إضافات</span><span><i data-lucide="droplets" aria-hidden="true"></i>غير مبستر</span><span><i data-lucide="leaf" aria-hidden="true"></i>طبيعي 100%</span>
+</div>
+<div class="purchase">
+<div>
+الحجم
+<div class="sizes">
+<button>50 مل</button><button class="selected">100 مل</button><button>200 مل</button>
+</div>
+</div>
+<div>
+<strong>120 درهم</strong><small>شامل الضريبة</small>
+</div>
+</div>
+<b>الكمية</b>
+<div class="buy-row">
+<div class="quantity">
+<button onclick="qty++;$('#qty').textContent=qty" aria-label="زيادة الكمية"><i data-lucide="plus" aria-hidden="true"></i></button><span id="qty">1</span><button onclick="qty=Math.max(1,qty-1);$('#qty').textContent=qty" aria-label="تقليل الكمية"><i data-lucide="minus" aria-hidden="true"></i></button>
+</div>
+<button class="primary" onclick="add(0,qty)"><i data-lucide="shopping-cart" aria-hidden="true"></i> أضف إلى السلة</button><button class="square" onclick="shareProduct()" aria-label="مشاركة"><i data-lucide="share-2" aria-hidden="true"></i></button><button class="square" data-favorite="0" aria-pressed="false" onclick="toggleFavorite(0)" aria-label="المفضلة"><i data-lucide="heart" aria-hidden="true"></i></button>
+</div>
+</section>
+<section class="gallery">
+<div class="main-photo">
+<img id="main-photo" src="assets/honey-detail.png" alt="عسل الزهر الطبيعي"><span class="badge">الأكثر مبيعاً</span><button class="zoom" onclick="zoomPhoto()" aria-label="تكبير الصورة"><i data-lucide="expand" aria-hidden="true"></i></button>
+</div>
+<div class="thumbnails">
+<button class="selected" onclick="$('#main-photo').src='assets/honey-detail.png';document.querySelectorAll('.thumbnails button').forEach(b=>b.classList.remove('selected'));this.classList.add('selected')"><img src="assets/honey-thumb.png" alt="صورة المنتج 1"></button><button class="" onclick="$('#main-photo').src='assets/honeycomb.png';document.querySelectorAll('.thumbnails button').forEach(b=>b.classList.remove('selected'));this.classList.add('selected')"><img src="assets/honeycomb.png" alt="صورة المنتج 2"></button><button class="" onclick="$('#main-photo').src='assets/village.png';document.querySelectorAll('.thumbnails button').forEach(b=>b.classList.remove('selected'));this.classList.add('selected')"><img src="assets/village.png" alt="صورة المنتج 3"></button><button class="" onclick="$('#main-photo').src='assets/beekeeper.png';document.querySelectorAll('.thumbnails button').forEach(b=>b.classList.remove('selected'));this.classList.add('selected')"><img src="assets/beekeeper.png" alt="صورة المنتج 4"></button>
+</div>
+</section>
+</div>
+<div class="product-bottom">
+<aside class="atlas panel">
+<h2>
+من قلب الأطلس
+</h2>
+<p>
+ندعم النحالين المحليين ونحافظ<br>على التقاليد الطبيعية للأجيال القادمة.
+</p>
+<img src="assets/atlas.png" alt="جبال الأطلس">
+</aside>
+<section class="description">
+<div class="benefits product">
+<div>
+<i data-lucide="truck" aria-hidden="true"></i><span><b>توصيل سريع</b><small>إلى جميع أنحاء المغرب</small></span>
+</div>
+<div>
+<i data-lucide="lock-keyhole" aria-hidden="true"></i><span><b>دفع آمن</b><small>100% آمن وموثوق</small></span>
+</div>
+<div>
+<i data-lucide="badge-check" aria-hidden="true"></i><span><b>منتج مضمون</b><small>جودة مضمونة 100%</small></span>
+</div>
+</div>
+<div class="panel tabs-panel">
+<div class="tabs">
+<button class="active" onclick="tab(0,this)">الوصف</button><button class="" onclick="tab(1,this)">الفوائد</button><button class="" onclick="tab(2,this)">طريقة الاستخدام</button><button class="" onclick="tab(3,this)">التقييمات (128)</button>
+</div>
+<div id="tab-content" data-tab-panel="0">
+<h3>
+وصف المنتج
+</h3>
+<p>
+عسل الزهر الطبيعي هو مزيج فريد من رحيق الأزهار البرية التي تنمو في مرتفعات الأطلس.<br> يتميز بلونه الذهبي الفاتح، رائحته الزكية، وقوامه السلس.<br> يتم جمعه بعناية من قبل النحالين المحليين وحفظه بدون أي معالجة حرارية للحفاظ على<br> جميع خصائصه الطبيعية.
+</p>
+</div>
+<div data-tab-panel="1" hidden>
+<h3>
+الفوائد
+</h3>
+<p>
+منتج طبيعي غني بالنكهة، يضيف حلاوة مميزة إلى أطباقك ومشروباتك اليومية.
+</p>
+</div>
+<div data-tab-panel="2" hidden>
+<h3>
+طريقة الاستخدام
+</h3>
+<p>
+يضاف حسب الرغبة إلى المشروبات والأطعمة. يحفظ في مكان بارد وجاف.
+</p>
+</div>
+<div data-tab-panel="3" hidden>
+<h3>
+التقييمات (128)
+</h3>
+<p class="stars">
+★★★★★　4.9 / 5
+</p>
+<p>
+تقييمات العملاء للمنتج.
+</p>
+</div>
+</div>
+</section>
+<aside class="specs panel">
+<h3>
+معلومات إضافية
+</h3>
+<div>
+<b>النوع</b><span>عسل زهر طبيعي</span>
+</div>
+<div>
+<b>المصدر</b><span>جبال الأطلس – المغرب</span>
+</div>
+<div>
+<b>طريقة الاستخراج</b><span>عصر على البارد</span>
+</div>
+<div>
+<b>اللون</b><span>ذهبي</span>
+</div>
+<div>
+<b>النكهة</b><span>زهري حلو طبيعي</span>
+</div>
+<div>
+<b>الحفظ</b><span>يحفظ في مكان بارد وجاف</span>
+</div>
+</aside>
+</div>
+</main>
+<footer class="site-footer">
+<div class="footer-inner">
+<a class="footer-brand" href="index.html"><img src="assets/logo.png" alt="شعار تعاونية آيت أومديس"><span><b>تعاونية آيت أومديس</b><small>منتجات طبيعية من قلب الأطلس</small></span></a>
+<nav aria-label="روابط التذييل">
+<a href="index.html">الرئيسية</a><a href="products.html">منتجاتنا</a><a href="contact.html">اتصل بنا</a>
+</nav>
+<span class="footer-copy">© 2026 تعاونية آيت أومديس. جميع الحقوق محفوظة.</span>
+</div>
+</footer>
+</div>
+<noscript>
+<p class="no-js-notice">
+يمكنك تصفح جميع المنتجات والصفحات. فعّل JavaScript لاستخدام السلة والفلاتر والنماذج.
+</p>
+</noscript>
+<div id="toast" role="status" aria-live="polite">
+</div>
+<dialog id="modal" aria-label="معلومات التعاونية">
+<button class="close" aria-label="إغلاق" onclick="this.closest('dialog').close()"><i data-lucide="x" aria-hidden="true"></i></button>
+<div id="modal-content">
+<section data-dialog="account" hidden>
+<h2>
+تسجيل الدخول
+</h2>
+<form onsubmit="event.preventDefault();toast('خدمة الحسابات غير متاحة حالياً')">
+<label>البريد الإلكتروني<input type="email" required></label><label>كلمة المرور<input type="password" required></label><button class="primary">تسجيل الدخول</button>
+</form>
+</section>
+<section data-dialog="story" hidden>
+<h2>
+قصتنا من قلب الأطلس
+</h2>
+<img class="story-modal" src="assets/story.png" alt="تعاونية آيت أومديس">
+<p>
+تأسست تعاونية آيت أومديس في قلب الأطلس المغربي. نعمل مع نساء المنطقة لجمع أفضل ما تقدمه الطبيعة، ونحافظ على الموروث الطبيعي والحرف التقليدية عبر منتجات أصيلة مصنوعة بعناية.
+</p>
+</section>
+<section data-dialog="checkout" hidden>
+<h2>
+إتمام الطلب
+</h2>
+<p>
+هذه واجهة تجريبية. الدفع وإرسال الطلبات غير متاحين حالياً.
+</p>
+<a class="primary" href="products.html">متابعة التسوق</a>
+</section>
+<section data-dialog="zoom" hidden>
+<img class="zoomed" alt="صورة المنتج مكبرة">
+</section>
+</div>
+</dialog>
+</body>
+</html>

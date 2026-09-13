@@ -19,7 +19,7 @@ class CartController extends Controller
             $total += $details['price'] * $details['quantity'];
         }
 
-        return view('frontend.cart.index', compact('cart', 'total'));
+        return view('storefront.cart', compact('cart', 'total'));
     }
 
     /**
@@ -27,13 +27,14 @@ class CartController extends Controller
      */
     public function addToCart(Request $request, $id)
     {
+        $request->validate(['quantity' => 'sometimes|integer|min:1', 'variant_id' => 'nullable|integer']);
         try {
-            $product = Product::with(['variants'])->findOrFail($id);
+            $product = Product::where('status', 'active')->with(['variants'])->findOrFail($id);
             $variantId = $request->get('variant_id');
             $variant = null;
 
             if ($variantId) {
-                $variant = \App\Models\ProductVariant::where('product_id', $id)->find($variantId);
+                $variant = \App\Models\ProductVariant::where('product_id', $id)->where('status', 'active')->find($variantId);
                 if (!$variant) {
                     throw new \Exception('Variant not found.');
                 }
@@ -109,6 +110,17 @@ class CartController extends Controller
      */
     public function update(Request $request)
     {
+        $request->validate(['id' => 'required|string', 'quantity' => 'required|integer|min:1']);
+        $item = session('cart', [])[$request->id] ?? null;
+        if (!$item) {
+            return response()->json(['success' => false, 'message' => 'المنتج غير موجود في السلة'], 404);
+        }
+        $product = Product::where('status', 'active')->find($item['product_id'] ?? explode('_', $request->id)[0]);
+        $variant = !empty($item['variant_id']) ? $product?->variants()->where('status', 'active')->find($item['variant_id']) : null;
+        $stock = !empty($item['variant_id']) ? ($variant?->stock ?? 0) : ($product?->stock ?? 0);
+        if ($request->integer('quantity') > $stock) {
+            return response()->json(['success' => false, 'message' => "المتوفر في المخزن هو {$stock} فقط"], 422);
+        }
         if ($request->id && $request->quantity) {
             $cart = session()->get('cart', []);
             if (isset($cart[$request->id])) {
@@ -119,6 +131,12 @@ class CartController extends Controller
             return response()->json(['success' => true, 'cartCount' => $cartCount]);
         }
         return response()->json(['success' => false], 400);
+    }
+
+    public function clear()
+    {
+        session()->forget('cart');
+        return response()->json(['success' => true, 'cartCount' => 0]);
     }
 
     /**

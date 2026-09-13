@@ -17,15 +17,27 @@ class ShopController extends Controller
         $query = Product::where('status', 'active');
 
         // Filter by category
-        if ($request->has('category')) {
+        if ($request->filled('category')) {
             $query->whereHas('productCategory', function ($q) use ($request) {
-                $q->where('slug', $request->category);
+                $q->whereIn('slug', (array) $request->input('category'));
             });
+        }
+
+        if ($request->filled('size')) {
+            $query->whereHas('variants', fn ($q) => $q
+                ->where('status', 'active')->whereIn('size', (array) $request->input('size')));
+        }
+
+        if ($request->filled('rating') && is_numeric($request->input('rating'))) {
+            $query->whereHas('reviews', fn ($q) => $q->where('status', 'approved')
+                ->selectRaw('product_id')->groupBy('product_id')
+                ->havingRaw('AVG(rating) >= CAST(? AS DECIMAL(3,2))', [(float) $request->input('rating')]));
         }
 
         // Search
         if ($request->has('q')) {
-            $query->where('name', 'like', '%' . $request->q . '%');
+            $query->where(fn ($q) => $q->where('name', 'like', '%' . $request->q . '%')
+                ->orWhere('name_ar', 'like', '%' . $request->q . '%'));
         }
 
         // Price Filter
@@ -38,6 +50,10 @@ class ShopController extends Controller
 
         // Sort
         switch ($request->get('sort')) {
+            case 'popular':
+            case null:
+                $query->withSum('orderItems', 'quantity')->orderByDesc('order_items_sum_quantity');
+                break;
             case 'price_asc':
                 $query->orderBy('price', 'asc');
                 break;
@@ -52,18 +68,23 @@ class ShopController extends Controller
                 break;
         }
 
-        $products = $query->with(['images', 'productCategory'])
-            ->withCount('reviews')
-            ->withAvg('reviews', 'rating')
+        $products = $query->with(['images', 'productCategory', 'variants'])
+            ->withCount(['reviews' => fn ($q) => $q->where('status', 'approved')])
+            ->withAvg(['reviews' => fn ($q) => $q->where('status', 'approved')], 'rating')
             ->paginate(12)->withQueryString();
 
         if ($request->ajax()) {
-            return view('frontend.shop.partials.product-grid', compact('products'))->render();
+            return view('storefront.partials.product-grid', compact('products'))->render();
         }
 
-        $categories = Category::withCount('products')->get();
+        $categories = Category::where('status', 'active')
+            ->withCount(['products' => fn ($q) => $q->where('status', 'active')])->get();
+        $sizes = \App\Models\ProductVariant::where('status', 'active')
+            ->whereHas('product', fn ($q) => $q->where('status', 'active'))
+            ->whereNotNull('size')->distinct()->orderBy('size')->pluck('size');
+        $priceCeiling = max(500, (int) ceil(Product::where('status', 'active')->max('price') ?? 0));
 
-        return view('frontend.shop.index', compact('products', 'categories'));
+        return view('storefront.shop', compact('products', 'categories', 'sizes', 'priceCeiling'));
     }
 
     /**
@@ -72,7 +93,10 @@ class ShopController extends Controller
     public function show($id)
     {
         // For now using ID, later can switch to slug if added
-        $product = Product::with(['images', 'productCategory', 'inventoryMovements'])->findOrFail($id);
+        $product = Product::where('status', 'active')->with(['images', 'productCategory', 'variants'])
+            ->withCount(['reviews' => fn ($q) => $q->where('status', 'approved')])
+            ->withAvg(['reviews' => fn ($q) => $q->where('status', 'approved')], 'rating')
+            ->findOrFail($id);
         
         // Paginate approved reviews separately - 5 per page
         $reviews = ProductReview::where('product_id', $product->id)
@@ -88,7 +112,7 @@ class ShopController extends Controller
             ->take(4)
             ->get();
 
-        return view('frontend.shop.show', compact('product', 'relatedProducts', 'reviews'));
+        return view('storefront.product', compact('product', 'relatedProducts', 'reviews'));
     }
 
     /**

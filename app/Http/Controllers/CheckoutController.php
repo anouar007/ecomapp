@@ -27,7 +27,7 @@ class CheckoutController extends Controller
             $total += $details['price'] * $details['quantity'];
         }
 
-        return view('frontend.checkout.index', compact('cart', 'total'));
+        return view('storefront.checkout', compact('cart', 'total'));
     }
 
     /**
@@ -41,6 +41,10 @@ class CheckoutController extends Controller
             'customer_phone' => 'required|string|max:20',
             'shipping_address' => 'required|string|max:255',
             'shipping_city' => 'required|string|max:255',
+            'shipping_state' => 'nullable|string|max:255',
+            'shipping_zip' => 'nullable|string|max:20',
+            'notes' => 'nullable|string|max:1000',
+            'payment_method' => 'sometimes|in:cod',
         ]);
 
         $cart = session()->get('cart', []);
@@ -64,13 +68,15 @@ class CheckoutController extends Controller
             'shipping_address' => $request->shipping_address,
             'shipping_city' => $request->shipping_city,
             'shipping_state' => $request->shipping_state,
-            'shipping_zip'   => 'N/A',
+            'shipping_zip'   => $request->shipping_zip ?: 'N/A',
             'shipping_country' => 'Morocco',
             'subtotal' => $subtotal,
+            'shipping_cost' => 0,
             'total' => $subtotal,
             'status' => 'pending',
             'payment_status' => 'pending',
             'payment_method' => 'cod',
+            'notes' => $request->notes,
         ]);
 
         // Create Order Items and Update Stock
@@ -124,6 +130,6 @@ class CheckoutController extends Controller
     public function success($id)
     {
         $order = Order::findOrFail($id);
-        return view('frontend.checkout.success', compact('order'));
+        return view('storefront.checkout-success', compact('order'));
     }
 }

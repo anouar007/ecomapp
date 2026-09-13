@@ -1,0 +1,109 @@
+- generic [active] [ref=e1]:
+  - link "انتقل إلى المحتوى" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - link "شعار التعاونية تعاونية آيت أومديس منتجات طبيعية من قلب الأطلس" [ref=e5] [cursor=pointer]:
+        - /url: http://127.0.0.1:8017
+        - img "شعار التعاونية" [ref=e6]
+        - generic [ref=e7]:
+          - text: تعاونية آيت أومديس
+          - generic [ref=e8]: منتجات طبيعية من قلب الأطلس
+      - navigation [ref=e9]:
+        - link "الرئيسية" [ref=e10] [cursor=pointer]:
+          - /url: http://127.0.0.1:8017
+        - link "المتجر" [ref=e11] [cursor=pointer]:
+          - /url: http://127.0.0.1:8017/shop
+        - button "من نحن" [ref=e12] [cursor=pointer]
+        - link "اتصل بنا" [ref=e13] [cursor=pointer]:
+          - /url: http://127.0.0.1:8017/contact
+      - generic [ref=e14]:
+        - generic [ref=e15]:
+          - textbox "بحث عن منتج" [ref=e16]:
+            - /placeholder: بحث عن منتج...
+          - button "بحث" [ref=e17] [cursor=pointer]:
+            - img [ref=e18]
+        - link "حسابي" [ref=e21] [cursor=pointer]:
+          - /url: http://127.0.0.1:8017/login
+          - img [ref=e22]
+        - link "سلة التسوق" [ref=e25] [cursor=pointer]:
+          - /url: http://127.0.0.1:8017/cart
+          - img [ref=e26]
+          - generic [ref=e30]: "0"
+    - generic [ref=e31]:
+      - generic [ref=e33]:
+        - heading "من جبال الأطلس... إلى كل بيت بالعالم" [level=1] [ref=e34]:
+          - text: من جبال الأطلس...
+          - text: إلى كل بيت بالعالم
+        - paragraph [ref=e35]:
+          - text: منتجات طبيعية، نقية وأصيلة، من صنع أيادٍ نسائية
+          - text: تعاونية، تحافظ على إرث الأجداد بجودة عالية.
+        - link "تسوق الآن" [ref=e36] [cursor=pointer]:
+          - /url: http://127.0.0.1:8017/shop
+        - generic [ref=e37]:
+          - generic [ref=e38]:
+            - img [ref=e39]
+            - text: دعم تعاونيات نسائية
+          - generic [ref=e43]:
+            - img [ref=e44]
+            - text: من قلب الأطلس
+          - generic [ref=e46]:
+            - img [ref=e47]
+            - text: طبيعي 100%
+      - generic [ref=e50]:
+        - generic [ref=e51]:
+          - img [ref=e52]
+          - generic [ref=e55]:
+            - text: عضو معتمد
+            - generic [ref=e56]: منتجاتنا معتمدة وذات جودة عالية
+        - generic [ref=e57]:
+          - img [ref=e58]
+          - generic [ref=e63]:
+            - text: توصيل سريع
+            - generic [ref=e64]: توصيل إلى جميع أنحاء العالم
+        - generic [ref=e65]:
+          - img [ref=e66]
+          - generic [ref=e70]:
+            - text: دفع آمن
+            - generic [ref=e71]: معاملات آمنة ومشفرة 100%
+      - generic [ref=e72]:
+        - generic [ref=e73]:
+          - generic [ref=e74]:
+            - generic [ref=e75]: تسوّق حسب الفئة
+            - heading "اكتشف منتجاتنا الطبيعية" [level=2] [ref=e76]
+          - link "عرض جميع الفئات ‹" [ref=e77] [cursor=pointer]:
+            - /url: http://127.0.0.1:8017/shop
+        - paragraph [ref=e79]: ستتوفر فئات منتجاتنا قريباً.
+      - generic [ref=e80]:
+        - generic [ref=e81]:
+          - generic [ref=e82]:
+            - generic [ref=e83]: مختاراتنا لك
+            - heading "منتجات مميزة" [level=2] [ref=e84]
+          - link "عرض جميع المنتجات ‹" [ref=e85] [cursor=pointer]:
+            - /url: http://127.0.0.1:8017/shop
+        - generic [ref=e86]:
+          - tablist "تصفية المنتجات" [ref=e87]:
+            - tab "الكل" [selected] [ref=e88] [cursor=pointer]
+            - tab "الأحدث" [ref=e89] [cursor=pointer]
+            - tab "الأكثر مبيعاً" [ref=e90] [cursor=pointer]
+          - generic [ref=e91]:
+            - button "المنتجات السابقة" [ref=e92] [cursor=pointer]: ‹
+            - button "المنتجات التالية" [ref=e93] [cursor=pointer]: ›
+        - paragraph [ref=e96]: ستتوفر منتجاتنا قريباً.
+    - contentinfo [ref=e97]:
+      - generic [ref=e98]:
+        - link "شعار تعاونية آيت أومديس تعاونية آيت أومديس منتجات طبيعية من قلب الأطلس" [ref=e99] [cursor=pointer]:
+          - /url: http://127.0.0.1:8017
+          - img "شعار تعاونية آيت أومديس" [ref=e100]
+          - generic [ref=e101]:
+            - generic [ref=e102]: تعاونية آيت أومديس
+            - generic [ref=e103]: منتجات طبيعية من قلب الأطلس
+        - navigation "روابط التذييل" [ref=e104]:
+          - link "الرئيسية" [ref=e105] [cursor=pointer]:
+            - /url: http://127.0.0.1:8017
+          - link "منتجاتنا" [ref=e106] [cursor=pointer]:
+            - /url: http://127.0.0.1:8017/shop
+          - link "اتصل بنا" [ref=e107] [cursor=pointer]:
+            - /url: http://127.0.0.1:8017/contact
+        - generic [ref=e108]: © 2026 تعاونية آيت أومديس. جميع الحقوق محفوظة.
+  - status

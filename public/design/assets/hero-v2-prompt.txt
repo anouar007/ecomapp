@@ -1,0 +1,11 @@
+Generated with the built-in image_gen tool.
+
+Use case: product-mockup
+Asset type: panoramic ecommerce homepage hero background, wide 3:1 landscape composition.
+Primary request: Create a new photorealistic background for a Moroccan natural products cooperative storefront.
+Scene/backdrop: Moroccan Atlas Mountains with a distant earthen village, softly hazy mountain ridges and olive-green vegetation at golden hour.
+Subject: on the left third, a tasteful still life of a clear bottle of golden argan oil, a glass jar of amber honey and a small ceramic bowl of amlou with a few almonds, on textured natural stone. Containers unbranded without labels.
+Composition/framing: panoramic wide shot; products grouped entirely within left 40%, fully visible with breathing room. Landscape fades naturally into deeply shaded forest-green foliage across the right 50%, smooth subdued low-detail negative space suitable for white Arabic heading and buttons. Keep the right half dark throughout its height. Natural cohesive scene, no hard split or collage. Compose for a shallow full-width website banner.
+Lighting/mood: warm sunlight from upper left, amber glass highlights, calm premium artisanal editorial photography, real stone and glass textures.
+Color palette: honey gold, earthy beige, deep forest green matching #062c23.
+Constraints: background artwork only, no text, no lettering, no logos, no watermarks, no UI, no people.

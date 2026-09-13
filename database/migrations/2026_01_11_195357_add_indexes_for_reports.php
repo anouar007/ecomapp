@@ -94,7 +94,23 @@ return new class extends Migration
      */
     private function getIndexes(string $table): array
     {
-        $indexes = DB::select("SHOW INDEX FROM {$table}");
-        return collect($indexes)->pluck('Key_name')->unique()->toArray();
+        // `SHOW INDEX` is MySQL-specific. The test environment uses SQLite,
+        // whose equivalent is the PRAGMA below.
+        return match (DB::connection()->getDriverName()) {
+            'sqlite' => collect(DB::select("PRAGMA index_list('{$table}')"))
+                ->pluck('name')
+                ->unique()
+                ->values()
+                ->all(),
+            'pgsql' => collect(DB::select(
+                'select indexname from pg_indexes where schemaname = current_schema() and tablename = ?',
+                [$table],
+            ))->pluck('indexname')->unique()->values()->all(),
+            default => collect(DB::select("SHOW INDEX FROM `{$table}`"))
+                ->pluck('Key_name')
+                ->unique()
+                ->values()
+                ->all(),
+        };
     }
 };
