@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Services\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
@@ -14,9 +15,9 @@ class CheckoutController extends Controller
     /**
      * Show the checkout form.
      */
-    public function index()
+    public function index(CartService $cartService)
     {
-        $cart = session()->get('cart', []);
+        $cart = $cartService->getCart();
         
         if (empty($cart)) {
             return redirect()->route('shop.index')->with('error', 'Your cart is empty.');

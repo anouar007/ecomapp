@@ -205,7 +205,9 @@ button:disabled, [aria-disabled="true"], .unavailable { opacity: .5; cursor: not
 }
 .catalog-bar .view + .view { margin-left: 4px; }
 .catalog-bar .view svg { display: block; width: 20px; height: 20px; }
-.catalog-bar select {
+.catalog-bar select,
+.contact-form-grid select,
+.checkout-form-grid select {
     -webkit-appearance: none;
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23262626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
@@ -312,9 +314,10 @@ body.checkout-page-body { width: auto; margin: 0; padding: 0; background: #fdfbf
 .checkout-form-grid em { color: #b5241b; font-style: normal; }
 .checkout-form-grid input,
 .checkout-form-grid select,
-.checkout-form-grid textarea { width: 100%; border: 1px solid #ddd7d0; border-radius: 6px; background: #fff; color: #26322e; outline: none; font: inherit; }
+.checkout-form-grid textarea { width: 100%; border: 1px solid #ddd7d0; border-radius: 6px; background-color: #fff; color: #26322e; outline: none; font: inherit; }
 .checkout-form-grid input,
 .checkout-form-grid select { height: 44px; padding: 0 13px; }
+.checkout-form-grid select { padding-inline: 17px 36px; }
 .checkout-form-grid textarea { min-height: 60px; padding: 12px 13px; resize: vertical; }
 .checkout-form-grid input:focus,
 .checkout-form-grid select:focus,

@@ -30,7 +30,7 @@
 <div><span>مصاريف التوصيل</span><b class="checkout-free">مجاني</b></div>
 <div class="checkout-total"><strong>المجموع الكلي</strong><b>{{ \App\Support\Storefront::money($total) }}</b></div>
 </div>
-<button type="submit" class="checkout-submit"><i data-lucide="lock-keyhole" aria-hidden="true"></i> تأكيد الطلب بقيمة {{ \App\Support\Storefront::money($total) }}</button>
+<button type="submit" class="checkout-submit"><i data-lucide="lock-keyhole" aria-hidden="true"></i>تأكيد الطلب</button>
 <p class="checkout-secure"><i data-lucide="shield-check" aria-hidden="true"></i> عملية طلب آمنة ومشفرة</p>
 </aside>
 

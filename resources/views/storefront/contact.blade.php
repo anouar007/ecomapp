@@ -48,10 +48,10 @@
 يسعدنا الاستماع إليكم، يمكنكم التواصل معنا عبر<br>الطرق التالية:
 </p>
 <div class="contact-detail">
-<i><i data-lucide="phone" aria-hidden="true"></i></i><span><b>الهاتف</b><a href="tel:+212612345678">+212 6 12 34 56 78</a><small>من الاثنين إلى الجمعة، 9:00 - 18:00</small></span>
+<i><i data-lucide="phone" aria-hidden="true"></i></i><span><b>الهاتف</b><a href="tel:+212612345678"><bdi dir="ltr">+212 6 12 34 56 78</bdi></a><small>من الاثنين إلى الجمعة، 9:00 - 18:00</small></span>
 </div>
 <div class="contact-detail">
-<i><i data-lucide="phone" aria-hidden="true"></i></i><span><b>واتساب</b><a href="https://wa.me/212612345678">+212 6 12 34 56 78</a><small>للاستشارات السريعة</small></span>
+<i><i data-lucide="phone" aria-hidden="true"></i></i><span><b>واتساب</b><a href="https://wa.me/212612345678"><bdi dir="ltr">+212 6 12 34 56 78</bdi></a><small>للاستشارات السريعة</small></span>
 </div>
 <div class="contact-detail">
 <i><i data-lucide="mail" aria-hidden="true"></i></i><span><b>البريد الإلكتروني</b><a href="mailto:contact@aitoumdis.ma">contact@aitoumdis.ma</a><small>نرد خلال 24 ساعة</small></span>

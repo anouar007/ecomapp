@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Services\CartService;
+use App\Support\Storefront;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
@@ -10,9 +12,9 @@ class CartController extends Controller
     /**
      * Display the cart.
      */
-    public function index()
+    public function index(CartService $cartService)
     {
-        $cart = session()->get('cart', []);
+        $cart = $cartService->getCart();
         $total = 0;
         
         foreach ($cart as $id => $details) {
@@ -29,7 +31,7 @@ class CartController extends Controller
     {
         $request->validate(['quantity' => 'sometimes|integer|min:1', 'variant_id' => 'nullable|integer']);
         try {
-            $product = Product::where('status', 'active')->with(['variants'])->findOrFail($id);
+            $product = Product::where('status', 'active')->with(['variants', 'primaryImage', 'images'])->findOrFail($id);
             $variantId = $request->get('variant_id');
             $variant = null;
 
@@ -76,7 +78,7 @@ class CartController extends Controller
                 $cart[$cartKey] = [
                     'product_id' => $id,
                     'variant_id' => $variantId,
-                    'name' => $product->translated_name,
+                    'name' => Storefront::name($product),
                     'quantity' => $quantity,
                     'price' => $variant ? ($variant->price ?? $product->price) : $product->price,
                     'image' => $variant && $variant->color_image ? $variant->color_image : $product->main_image,

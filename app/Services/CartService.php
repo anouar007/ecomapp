@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Product;
+use App\Support\Storefront;
 use Illuminate\Support\Facades\Session;
 
 class CartService
@@ -12,7 +13,33 @@ class CartService
      */
     public function getCart(): array
     {
-        return Session::get('cart', []);
+        $cart = Session::get('cart', []);
+        if (empty($cart)) {
+            return $cart;
+        }
+
+        $productIds = [];
+        foreach ($cart as $key => $item) {
+            $productIds[] = $item['product_id'] ?? explode('_', (string) $key)[0];
+        }
+        $products = Product::with(['primaryImage', 'images', 'variants'])
+            ->whereIn('id', $productIds)->get()->keyBy('id');
+
+        foreach ($cart as $key => &$item) {
+            $product = $products->get($item['product_id'] ?? explode('_', (string) $key)[0]);
+            if (!$product) {
+                continue;
+            }
+
+            $variant = $product->variants->firstWhere('id', $item['variant_id'] ?? null);
+            $item['name'] = Storefront::name($product);
+            $item['image'] = $variant?->color_image ?: $product->main_image;
+        }
+        unset($item);
+
+        Session::put('cart', $cart);
+
+        return $cart;
     }
 
     /**
@@ -20,7 +47,7 @@ class CartService
      */
     public function addToCart(int $productId, int $quantity = 1): bool
     {
-        $product = Product::find($productId);
+        $product = Product::with(['primaryImage', 'images'])->find($productId);
         
         if (!$product || !$product->isInStock()) {
             return false;
@@ -33,7 +60,7 @@ class CartService
         } else {
             $cart[$productId] = [
                 'id' => $product->id,
-                'name' => $product->name,
+                'name' => Storefront::name($product),
                 'price' => $product->isOnSale() ? $product->sale_price : $product->price,
                 'image' => $product->main_image,
                 'quantity' => $quantity,

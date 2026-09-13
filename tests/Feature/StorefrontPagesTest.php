@@ -77,6 +77,40 @@ class StorefrontPagesTest extends TestCase
         $this->assertEmpty(session('cart'));
     }
 
+    public function test_cart_add_uses_arabic_name_and_product_gallery_image(): void
+    {
+        app()->setLocale('fr');
+        $product = $this->product(['name' => 'Miel', 'name_fr' => 'Miel']);
+        $product->images()->create(['image_path' => 'products/honey.jpg', 'is_primary' => true]);
+
+        $this->postJson(route('cart.add', $product), ['quantity' => 1])->assertOk()
+            ->assertSessionHas('cart.' . $product->id . '_0.name', $product->name_ar)
+            ->assertSessionHas('cart.' . $product->id . '_0.image', 'products/honey.jpg');
+    }
+
+    public function test_cart_and_checkout_refresh_saved_product_details(): void
+    {
+        $product = $this->product(['name' => 'Miel', 'name_fr' => 'Miel']);
+        $product->images()->create(['image_path' => 'products/honey.jpg', 'sort_order' => 0]);
+        $variant = $product->variants()->create([
+            'size' => '200 غ', 'sku' => 'HONEY-IMAGE', 'stock' => 4,
+            'status' => 'active', 'color_image' => 'products/honey-variant.jpg',
+        ]);
+
+        foreach (['/cart', '/checkout'] as $url) {
+            foreach ([null, $variant] as $selectedVariant) {
+                $key = $product->id . '_' . ($selectedVariant?->id ?? 0);
+                $this->withSession(['cart' => [$key => [
+                    'product_id' => $product->id, 'variant_id' => $selectedVariant?->id,
+                    'name' => 'Miel', 'image' => null, 'price' => 120, 'quantity' => 2,
+                ]]])->get($url)->assertOk()
+                    ->assertSee($product->name_ar)->assertDontSee('Miel')
+                    ->assertSee($selectedVariant ? 'products/honey-variant.jpg' : 'products/honey.jpg')
+                    ->assertSee('240 درهم');
+            }
+        }
+    }
+
     public function test_favorites_survive_a_page_reload(): void
     {
         $product = $this->product();
