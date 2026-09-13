@@ -41,7 +41,7 @@
 </section>
 </div>
 <div class="product-bottom">
-<aside class="atlas panel"><h2>من قلب الأطلس</h2><p>ندعم المنتجين المحليين ونحافظ<br>على التقاليد الطبيعية للأجيال القادمة.</p><img src="/design/assets/atlas.png" alt="جبال الأطلس"></aside>
+<aside class="atlas panel"><h2>من قلب الأطلس</h2><p>ندعم المنتجين المحليين ونحافظ<br>على التقاليد الطبيعية للأجيال القادمة.</p><img src="{{ asset('images/storefront/atlas.png') }}" alt="جبال الأطلس"></aside>
 <section class="description">
 <div class="benefits product"><div><i data-lucide="truck" aria-hidden="true"></i><span><b>توصيل سريع</b><small>إلى جميع أنحاء المغرب</small></span></div><div><i data-lucide="lock-keyhole" aria-hidden="true"></i><span><b>دفع آمن</b><small>100% آمن وموثوق</small></span></div><div><i data-lucide="badge-check" aria-hidden="true"></i><span><b>منتج مضمون</b><small>جودة مضمونة 100%</small></span></div></div>
 <div class="panel tabs-panel">

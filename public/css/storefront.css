@@ -1,5 +1,4 @@
-/* The reference CSS is loaded first, unchanged. These rules adapt native controls
-   and dynamic content without introducing another CSS framework or reset. */
+/* Storefront controls and dynamic content. */
 .skip-link { position: fixed; top: -100px; right: 16px; z-index: 100; padding: 12px 20px; background: #fff; color: var(--green); }
 .skip-link:focus { top: 12px; }
 #main-content:focus { outline: none; }
@@ -21,7 +20,7 @@
     width: 10%;
     background-image:
         linear-gradient(var(--pattern-fade-direction), #f9f1e900 20%, #f9f1e9 100%),
-        url('../design/assets/2d2e1afa-04b8-49f0-ba02-65deb6d8faef.png');
+        url('../images/storefront/benefits-pattern.png');
     background-position: center;
     background-size: 100% 100%, 200%;
     background-repeat: no-repeat;
@@ -420,7 +419,7 @@ body.checkout-success-page { width: auto; margin: 0; padding: 0; background: #fd
 .checkout-hero,
 .success-hero {
     background: linear-gradient(#082d2266, #082d2266),
-        url('../design/assets/1ac8d05e-3e9f-4f11-8670-309219cd3555.png') center / cover no-repeat;
+        url('../images/storefront/page-banner.png') center / cover no-repeat;
     color: #fff;
 }
 .shop-banner::before { content: none; }

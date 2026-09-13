@@ -30,8 +30,9 @@ class StorefrontPagesTest extends TestCase
         $product = $this->product();
         foreach (['/', '/shop', '/shop/' . $product->id, '/cart', '/contact'] as $url) {
             $this->get($url)->assertOk()->assertSee('dir="rtl"', false)
-                ->assertSee('/design/style.css', false)->assertSee('/design/assets/lucide.js', false)
-                ->assertSee('تعاونية آيت أومديس')->assertDontSee('product.html');
+                ->assertSee('/css/storefront-base.css', false)->assertSee('/css/storefront.css', false)->assertSee('/vendor/lucide/lucide.js', false)
+                ->assertSee('تعاونية آيت أومديس')->assertDontSee('product.html')
+                ->assertDontSee('/design/', false);
         }
         $this->get('/shop')->assertSee($product->name);
         $this->get('/cart')->assertSee('سلة التسوق فارغة')->assertDontSee('610 درهم');

@@ -7,15 +7,15 @@
 <meta name="description" content="@yield('description', 'منتجات طبيعية، نقية وأصيلة من قلب الأطلس المغربي.')">
 <meta name="theme-color" content="#073c2d">
 <link rel="canonical" href="{{ url()->current() }}">
-<link rel="icon" href="/design/assets/logo.png">
+<link rel="icon" href="{{ asset('images/storefront/logo.png') }}">
 <title>@yield('title', 'تعاونية آيت أومديس')</title>
-<link rel="stylesheet" href="{{ asset('design/style.css') }}">
+<link rel="stylesheet" href="{{ asset('css/storefront-base.css') }}">
 @if(request()->routeIs('home'))
 <link rel="stylesheet" href="{{ asset('vendor/swiper/swiper-bundle.min.css') }}">
 <script src="{{ asset('vendor/swiper/swiper-bundle.min.js') }}" defer></script>
 @endif
 <link rel="stylesheet" href="{{ asset('css/storefront.css') }}">
-<script src="{{ asset('design/assets/lucide.js') }}" defer></script>
+<script src="{{ asset('vendor/lucide/lucide.js') }}" defer></script>
 <script src="{{ asset('js/storefront.js') }}" defer></script>
 @include('storefront.partials.custom-code', ['position' => 'head'])
 </head>
@@ -25,7 +25,7 @@
 <a class="skip-link" href="#main-content">انتقل إلى المحتوى</a>
 <div id="app">
 <header>
-<a class="brand" href="{{ route('home') }}"><img src="/design/assets/logo.png" alt="شعار التعاونية"><span><b>تعاونية آيت أومديس</b><small>منتجات طبيعية من قلب الأطلس</small></span></a>
+<a class="brand" href="{{ route('home') }}"><img src="{{ asset('images/storefront/logo.png') }}" alt="شعار التعاونية"><span><b>تعاونية آيت أومديس</b><small>منتجات طبيعية من قلب الأطلس</small></span></a>
 <nav>
 <a class="{{ request()->routeIs('home') ? 'active' : '' }}" @if(request()->routeIs('home')) aria-current="page" @endif href="{{ route('home') }}">الرئيسية</a><a class="{{ request()->routeIs('shop.*') ? 'active' : '' }}" @if(request()->routeIs('shop.*')) aria-current="page" @endif href="{{ route('shop.index') }}">المتجر</a><a class="{{ request()->routeIs('contact') ? 'active' : '' }}" @if(request()->routeIs('contact')) aria-current="page" @endif href="{{ route('contact') }}">اتصل بنا</a>
 </nav>
@@ -41,7 +41,7 @@
 </div>
 <footer class="site-footer">
 <div class="footer-inner">
-<a class="footer-brand" href="{{ route('home') }}"><img src="/design/assets/logo.png" alt="شعار تعاونية آيت أومديس"><span><b>تعاونية آيت أومديس</b><small>منتجات طبيعية من قلب الأطلس</small></span></a>
+<a class="footer-brand" href="{{ route('home') }}"><img src="{{ asset('images/storefront/logo.png') }}" alt="شعار تعاونية آيت أومديس"><span><b>تعاونية آيت أومديس</b><small>منتجات طبيعية من قلب الأطلس</small></span></a>
 <nav aria-label="روابط التذييل">
 <a href="{{ route('home') }}">الرئيسية</a><a href="{{ route('shop.index') }}">منتجاتنا</a><a href="{{ route('contact') }}">اتصل بنا</a>
 </nav>
