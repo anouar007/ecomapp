@@ -9,6 +9,22 @@
 <link rel="canonical" href="{{ url()->current() }}">
 <link rel="icon" href="{{ asset('images/storefront/logo.png') }}">
 <title>@yield('title', 'تعاونية آيت أومديس')</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="تعاونية آيت أومديس">
+<meta property="og:locale" content="ar_MA">
+<meta property="og:url" content="{{ url()->current() }}">
+<meta property="og:title" content="@yield('title', 'تعاونية آيت أومديس')">
+<meta property="og:description" content="@yield('description', 'منتجات طبيعية، نقية وأصيلة من قلب الأطلس المغربي.')">
+<meta property="og:image" content="{{ asset('images/storefront/open-graph.png') }}">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1731">
+<meta property="og:image:height" content="909">
+<meta property="og:image:alt" content="تعاونية آيت أومديس — منتجات طبيعية من قلب الأطلس">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="@yield('title', 'تعاونية آيت أومديس')">
+<meta name="twitter:description" content="@yield('description', 'منتجات طبيعية، نقية وأصيلة من قلب الأطلس المغربي.')">
+<meta name="twitter:image" content="{{ asset('images/storefront/open-graph.png') }}">
+<meta name="twitter:image:alt" content="تعاونية آيت أومديس — منتجات طبيعية من قلب الأطلس">
 <link rel="stylesheet" href="{{ asset('css/storefront-base.css') }}">
 @if(request()->routeIs('home'))
 <link rel="stylesheet" href="{{ asset('vendor/swiper/swiper-bundle.min.css') }}">

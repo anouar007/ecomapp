@@ -1,0 +1,15 @@
+Generated with the built-in image_gen tool.
+Reference images: home-hero.png and logo.png in this directory.
+Actual output: 1731 x 909 PNG.
+
+Use case: ads-marketing
+Asset type: Open Graph social sharing image for Ait Oumdis cooperative storefront, landscape 1200 by 630 pixels (1.905:1).
+Primary request: Create a polished Arabic brand card matching the supplied storefront hero and logo.
+Input images: Image 1 is a reference for products, Atlas mountain landscape and warm photography; Image 2 is the existing brand logo to preserve faithfully.
+Scene/backdrop: Moroccan Atlas mountains at golden hour, subtle olive branches, honey and amlou jars on a natural stone surface as in the hero reference.
+Composition/framing: Products and mountain photography on the left half, blending softly into a warm ivory background on the right half for readable right-to-left Arabic text. Small faithful existing green logo above text. Generous outer safe margins, strong readability at thumbnail size.
+Style/medium: premium natural product photography with restrained editorial typography.
+Color palette: forest green #073c2d, warm ivory, honey gold.
+Text (verbatim): "تعاونية آيت أومديس"
+Secondary text (verbatim): "منتجات طبيعية من قلب الأطلس"
+Constraints: Correct connected Arabic lettering, brand name large and bold, secondary text smaller. Preserve logo identity. No extra slogans, URL, badges, buttons, watermark or invented certification. Finished edge-to-edge share card.
