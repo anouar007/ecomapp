@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\ProductVariant;
+use App\Support\Storefront;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -38,15 +41,20 @@ class POSController extends Controller
         $categoryId = $request->get('category_id');
 
         $products = Product::where('status', 'active')
-            ->where('stock', '>', 0)
+            ->where(function ($q) {
+                $q->whereHas('variants', fn ($variants) => $variants->where('status', 'active')->where('stock', '>', 0))
+                    ->orWhere(fn ($simple) => $simple->doesntHave('variants')->where('stock', '>', 0));
+            })
             ->where(function($q) use ($query) {
                 $q->where('name', 'like', "%{$query}%")
-                  ->orWhere('sku', 'like', "%{$query}%");
+                  ->orWhere('sku', 'like', "%{$query}%")
+                  ->orWhereHas('variants', fn ($variants) => $variants->where('status', 'active')
+                      ->where('sku', 'like', "%{$query}%"));
             })
             ->when($categoryId, function($q) use ($categoryId) {
                 $q->where('category_id', $categoryId);
             })
-            ->with(['images', 'productCategory'])
+            ->with(['images', 'productCategory', 'variants'])
             ->limit(20)
             ->get()
             ->map(function($product) {
@@ -65,7 +73,16 @@ class POSController extends Controller
                     'name' => $product->name,
                     'sku' => $product->sku,
                     'price' => $product->price,
-                    'stock' => $product->stock,
+                    'stock' => $product->variants->isNotEmpty()
+                        ? $product->variants->where('status', 'active')->sum('stock') : $product->stock,
+                    'variants' => $product->variants->where('status', 'active')->values()->map(fn ($variant) => [
+                        'id' => $variant->id,
+                        'label' => implode(' · ', array_filter([$variant->size, $variant->color])) ?: ($variant->sku ?: 'Standard'),
+                        'sku' => $variant->sku,
+                        'price' => $variant->price ?? $product->price,
+                        'stock' => $variant->stock,
+                        'image' => Storefront::image($variant->color_image ?: $product->main_image),
+                    ]),
                     'category' => $categoryName,
                     'image' => $product->images->first() 
                         ? asset('storage/' . $product->images->first()->image_path)
@@ -91,6 +108,7 @@ class POSController extends Controller
             'discount_type' => ['nullable', 'string', 'in:percent,fixed'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'exists:products,id'],
+            'items.*.variant_id' => ['nullable', 'integer', 'exists:product_variants,id'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.price' => ['required', 'numeric', 'min:0'],
         ]);
@@ -100,25 +118,42 @@ class POSController extends Controller
             $subtotal = 0;
             $orderItems = [];
 
-            // Validate stock and calculate totals
-            foreach ($validated['items'] as $item) {
+            // Lock stock rows and account for repeated lines in the same request.
+            $reserved = [];
+            foreach ($validated['items'] as $index => $item) {
                 $product = Product::lockForUpdate()->findOrFail($item['product_id']);
-                
-                if ($product->stock < $item['quantity']) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => "Insufficient stock for {$product->name}. Available: {$product->stock}"
-                    ], 400);
+                $variant = null;
+                if ($product->status !== 'active') {
+                    throw ValidationException::withMessages(["items.$index.product_id" => 'This product is unavailable.']);
+                }
+                if (!empty($item['variant_id'])) {
+                    $variant = $product->variants()->whereKey($item['variant_id'])->lockForUpdate()->first();
+                    if (!$variant || $variant->status !== 'active') {
+                        throw ValidationException::withMessages(["items.$index.variant_id" => 'Select an active variation belonging to this product.']);
+                    }
+                } elseif ($product->variants()->exists()) {
+                    throw ValidationException::withMessages(["items.$index.variant_id" => 'Select a product variation.']);
                 }
 
-                $itemSubtotal = $item['price'] * $item['quantity'];
-                $subtotal += $itemSubtotal;
+                $stock = $variant?->stock ?? $product->stock;
+                $key = $product->id . ':' . ($variant?->id ?? 'simple');
+                $reserved[$key] = ($reserved[$key] ?? 0) + $item['quantity'];
+                if ($stock < $reserved[$key]) {
+                    throw ValidationException::withMessages(["items.$index.quantity" => "Insufficient stock for {$product->name}. Available: {$stock}"]);
+                }
 
+                $price = $variant?->price ?? $product->price;
+                $label = $variant ? implode(' · ', array_filter([$variant->size, $variant->color])) : '';
+                $itemSubtotal = $price * $item['quantity'];
+                $subtotal += $itemSubtotal;
                 $orderItems[] = [
                     'product_id' => $product->id,
-                    'product_name' => $product->name,
-                    'product_sku' => $product->sku ?? 'N/A',
-                    'price' => $item['price'],
+                    'variant_id' => $variant?->id,
+                    'color' => $variant?->color,
+                    'size' => $variant?->size,
+                    'product_name' => $product->name . ($label ? " ($label)" : ''),
+                    'product_sku' => $variant?->sku ?: ($product->sku ?? 'N/A'),
+                    'price' => $price,
                     'quantity' => $item['quantity'],
                     'subtotal' => $itemSubtotal,
                 ];
@@ -199,8 +234,14 @@ class POSController extends Controller
             foreach ($orderItems as $itemData) {
                 OrderItem::create(array_merge($itemData, ['order_id' => $order->id]));
                 
-                Product::where('id', $itemData['product_id'])
-                    ->decrement('stock', $itemData['quantity']);
+                if ($itemData['variant_id']) {
+                    ProductVariant::whereKey($itemData['variant_id'])->decrement('stock', $itemData['quantity']);
+                    Product::whereKey($itemData['product_id'])->update([
+                        'stock' => ProductVariant::where('product_id', $itemData['product_id'])->sum('stock'),
+                    ]);
+                } else {
+                    Product::whereKey($itemData['product_id'])->decrement('stock', $itemData['quantity']);
+                }
             }
 
             // Create invoice if credit purchase
@@ -241,6 +282,9 @@ class POSController extends Controller
                 ]
             ]);
 
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            throw $e;
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([

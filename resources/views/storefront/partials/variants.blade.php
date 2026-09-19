@@ -5,7 +5,7 @@
 <div class="sizes" role="group" aria-label="الحجم">
 @forelse($variants as $variant)
     <label class="size-option {{ $variant->id === $selectedVariant?->id ? 'selected' : '' }} {{ $variant->stock < 1 ? 'unavailable' : '' }}">
-        <input type="radio" name="variant_id" value="{{ $variant->id }}" data-price="{{ $variant->price ?? $product->price }}" data-stock="{{ $variant->stock }}" @checked($variant->id === $selectedVariant?->id) @disabled($variant->stock < 1)>
+        <input type="radio" name="variant_id" value="{{ $variant->id }}" data-image="{{ \App\Support\Storefront::image($variant->color_image ?: $product->main_image) }}" data-price="{{ $variant->price ?? $product->price }}" data-stock="{{ $variant->stock }}" @checked($variant->id === $selectedVariant?->id) @disabled($variant->stock < 1)>
         <span>{{ implode(' · ', array_filter([$variant->size, $variant->color])) ?: 'الحجم القياسي' }}</span>
     </label>
 @empty

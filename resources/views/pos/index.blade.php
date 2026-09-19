@@ -982,17 +982,17 @@
         }
 
         grid.innerHTML = products.map(product => {
-            const cartItem = cart.find(item => item.product_id === product.id);
-            const quantityBadge = cartItem ? `<div class="qty-badge">${cartItem.quantity}</div>` : '';
+            const cartQuantity = cart.filter(item => item.product_id === product.id).reduce((sum, item) => sum + item.quantity, 0);
+            const quantityBadge = cartQuantity ? `<div class="qty-badge">${cartQuantity}</div>` : '';
             
             // Build image path correctly
             let imageSrc = '';
             if (product.image) {
-                imageSrc = product.image.startsWith('http') ? product.image : `/storage/${product.image}`;
+                imageSrc = product.image.startsWith('http') || product.image.startsWith('/') ? product.image : `/storage/${product.image}`;
             }
             
             const imageHtml = imageSrc 
-                ? `<img src="${imageSrc}" class="card-img" alt="${product.name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'no-image-placeholder\\'><i class=\\'fas fa-box\\'></i></div>'">`
+                ? `<img src="${imageSrc}" class="card-img" alt="${escapePosHtml(product.name)}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'no-image-placeholder\\'><i class=\\'fas fa-box\\'></i></div>'">`
                 : `<div class="no-image-placeholder"><i class="fas fa-box"></i></div>`;
 
             // Stock status with colors
@@ -1012,6 +1012,7 @@
                 : '';
             
             // Price display
+            const availableVariants = (product.variants || []).filter(v => v.stock > 0);
             let priceHtml = '';
             if (product.sale_price && parseFloat(product.sale_price) < parseFloat(product.price)) {
                 priceHtml = `
@@ -1024,13 +1025,18 @@
                 priceHtml = `<div class="card-price">${formatCurrency(parseFloat(product.price))}</div>`;
             }
             
+            if (availableVariants.length) {
+                const minimum = Math.min(...availableVariants.map(v => Number(v.price)));
+                priceHtml = `<div class="card-price">From ${formatCurrency(minimum)}</div>`;
+            }
+
             // SKU display
-            const skuHtml = product.sku ? `<div class="card-sku">${product.sku}</div>` : '';
+            const skuHtml = product.sku ? `<div class="card-sku">${escapePosHtml(product.sku)}</div>` : '';
 
             return `
                 <div class="pos-product-card ${isOutOfStock ? 'out-of-stock-card' : ''}" 
                      onclick="${isOutOfStock ? '' : `addToCartWithFeedback(${product.id})`}" 
-                     title="${product.name}">
+                     title="${escapePosHtml(product.name)}">
                     ${quantityBadge}
                     ${saleBadge}
                     <div class="card-img-wrapper">
@@ -1039,8 +1045,9 @@
                     </div>
                     ${stockBadgeHtml}
                     <div class="card-content">
-                        <div class="card-title">${product.name}</div>
+                        <div class="card-title">${escapePosHtml(product.name)}</div>
                         ${skuHtml}
+                        ${product.variants?.length ? `<div class="card-sku">${product.variants.length} variations · Choose options</div>` : ''}
                         <div class="card-footer">
                             ${priceHtml}
                         </div>
@@ -1078,15 +1085,15 @@
             container.innerHTML = cart.map(item => `
                 <div class="cart-item">
                     <div class="item-details">
-                        <h4>${item.name}</h4>
+                        <h4>${escapePosHtml(item.name)}</h4>
                         <div class="item-price">${formatCurrency(item.price)}</div>
                     </div>
                     <div class="item-controls">
-                        <div class="control-btn" onclick="updateQuantity(${item.product_id}, -1)">
+                        <div class="control-btn" onclick="updateQuantity('${item.key}', -1)">
                             <i class="fas fa-minus" style="font-size: 10px;"></i>
                         </div>
                         <div class="qty-text">${item.quantity}</div>
-                        <div class="control-btn" onclick="updateQuantity(${item.product_id}, 1)">
+                        <div class="control-btn" onclick="updateQuantity('${item.key}', 1)">
                             <i class="fas fa-plus" style="font-size: 10px;"></i>
                         </div>
                     </div>
@@ -1108,10 +1115,10 @@
     };
 
     // Add wrapper for feedback
-    window.addToCartWithFeedback = function(id) {
+    window.addToCartWithFeedback = async function(id) {
         const product = products.find(p => p.id === id);
         if (product && product.stock > 0) {
-            addToCart(id);
+            if (!await addToCart(id)) return;
             
             // Simple visual feedback if Toast isn't available
             if(typeof Toast !== 'undefined') {

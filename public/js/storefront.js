@@ -43,6 +43,16 @@ document.addEventListener('change', event => {
     const form = event.target.closest('form');
     form.querySelectorAll('.size-option').forEach(option => option.classList.toggle('selected', !!option.querySelector(':checked')));
     form.querySelector('[data-product-price]').textContent = money(event.target.dataset.price);
+    const imageScope = form.closest('[data-product-images]') || form;
+    const productImage = imageScope.querySelector('[data-product-image]');
+    if (productImage && event.target.dataset.image) {
+        productImage.src = event.target.dataset.image;
+        imageScope.querySelectorAll('.thumbnails button').forEach(button => {
+            const selected = button.querySelector('img').src === productImage.src;
+            button.classList.toggle('selected', selected);
+            button.setAttribute('aria-pressed', String(selected));
+        });
+    }
     const quantity = form.querySelector('[name="quantity"]');
     if (quantity) {
         quantity.max = event.target.dataset.stock;

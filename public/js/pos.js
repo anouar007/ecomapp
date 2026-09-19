@@ -194,59 +194,88 @@ function displayProducts(products) {
     }).join('');
 }
 
-// Add to cart
-window.addToCart = function (productId) {
+// Escape catalog text before placing it in HTML.
+function escapePosHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[char]);
+}
+
+// Each variation has its own cart line and stock limit.
+window.addToCart = async function (productId, variantId = null) {
     const product = products.find(p => p.id === productId);
-    if (!product) return;
-
-    const existingItem = cart.find(item => item.product_id === productId);
-
-    if (existingItem) {
-        if (existingItem.quantity < product.stock) {
-            existingItem.quantity++;
+    if (!product) return false;
+    const variants = product.variants || [];
+    if (variants.length && variantId === null) {
+        const query = document.getElementById('searchInput').value.trim();
+        const scanned = variants.find(v => v.sku && v.sku === query && v.stock > 0);
+        if (scanned) {
+            variantId = scanned.id;
         } else {
-            showStockLimit(product.name, product.stock);
-            return;
+            const options = Object.fromEntries(variants.filter(v => v.stock > 0).map(v => [v.id,
+                `${v.label} — ${formatCurrency(Number(v.price))} — Stock: ${v.stock}`]));
+            if (!Object.keys(options).length) return false;
+            const result = await Swal.fire({
+                titleText: product.name,
+                input: 'select', inputOptions: options, inputPlaceholder: 'Choose a variation',
+                showCancelButton: true, confirmButtonText: 'Add to cart',
+                inputValidator: value => !value ? 'Choose a variation' : undefined,
+                didOpen: () => {
+                    const select = Swal.getInput();
+                    const preview = document.createElement('img');
+                    preview.alt = product.name;
+                    preview.style.cssText = 'display:none;max-width:160px;max-height:160px;margin:12px auto;object-fit:contain';
+                    select.insertAdjacentElement('afterend', preview);
+                    select.addEventListener('change', () => {
+                        const selected = variants.find(v => v.id === Number(select.value));
+                        preview.style.display = selected ? 'block' : 'none';
+                        if (selected) preview.src = selected.image;
+                    });
+                }
+            });
+            if (!result.isConfirmed) return false;
+            variantId = Number(result.value);
         }
-    } else {
-        cart.push({
-            product_id: productId,
-            name: product.name,
-            price: product.price,
-            quantity: 1,
-            stock: product.stock
-        });
     }
-
+    const variant = variants.find(v => v.id === variantId);
+    if (variants.length && !variant) return false;
+    const stock = variant ? variant.stock : product.stock;
+    const name = variant ? `${product.name} (${variant.label})` : product.name;
+    const key = `${productId}:${variantId ?? 'simple'}`;
+    const existingItem = cart.find(item => item.key === key);
+    if ((existingItem?.quantity || 0) >= stock) {
+        showStockLimit(name, stock);
+        return false;
+    }
+    if (existingItem) {
+        existingItem.quantity++;
+        existingItem.stock = stock;
+    } else {
+        cart.push({key, product_id: productId, variant_id: variantId,
+            name, price: variant ? variant.price : product.price, quantity: 1, stock});
+    }
     updateCart();
-}
+    return true;
+};
 
-// Remove from cart
-window.removeFromCart = function (productId) {
-    cart = cart.filter(item => item.product_id !== productId);
+window.removeFromCart = function (key) {
+    cart = cart.filter(item => item.key !== key);
     updateCart();
-}
+};
 
-// Update quantity
-window.updateQuantity = function (productId, delta) {
-    const item = cart.find(item => item.product_id === productId);
+window.updateQuantity = function (key, delta) {
+    const item = cart.find(item => item.key === key);
     if (!item) return;
-
     const newQuantity = item.quantity + delta;
-
     if (newQuantity <= 0) {
-        removeFromCart(productId);
+        removeFromCart(key);
     } else if (newQuantity <= item.stock) {
-        if (delta > 0 && item.quantity >= item.stock) { // Check for stock limit when increasing
-            showStockLimit(item.name, item.stock);
-            return;
-        }
         item.quantity = newQuantity;
         updateCart();
     } else {
         showStockLimit(item.name, item.stock);
     }
-}
+};
 
 // Update cart display
 function updateCart() {
@@ -272,18 +301,18 @@ function updateCart() {
         cartItemsContainer.innerHTML = cart.map(item => `
             <div class="cart-item">
                 <div class="cart-item-info">
-                    <div class="cart-item-name">${item.name}</div>
+                    <div class="cart-item-name">${escapePosHtml(item.name)}</div>
                     <div class="cart-item-price">${formatCurrency(parseFloat(item.price))} × ${item.quantity} = ${formatCurrency(item.price * item.quantity)}</div>
                 </div>
                 <div class="cart-item-controls">
-                    <button class="qty-btn" onclick="updateQuantity(${item.product_id}, -1)" title="Decrease">
+                    <button class="qty-btn" onclick="updateQuantity('${item.key}', -1)" title="Decrease">
                         <i class="fas fa-minus"></i>
                     </button>
                     <div class="qty-display">${item.quantity}</div>
-                    <button class="qty-btn" onclick="updateQuantity(${item.product_id}, 1)" title="Increase">
+                    <button class="qty-btn" onclick="updateQuantity('${item.key}', 1)" title="Increase">
                         <i class="fas fa-plus"></i>
                     </button>
-                    <button class="remove-btn" onclick="removeFromCart(${item.product_id})" title="Remove">
+                    <button class="remove-btn" onclick="removeFromCart('${item.key}')" title="Remove">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
@@ -427,6 +456,7 @@ window.checkout = function () {
         payment_method: paymentMethod,
         items: cart.map(item => ({
             product_id: item.product_id,
+            variant_id: item.variant_id,
             quantity: item.quantity,
             price: item.price
         }))

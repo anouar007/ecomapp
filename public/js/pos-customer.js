@@ -210,6 +210,7 @@ function processOrderAPI(customerId, customerName, customerEmail, customerPhone,
         discount_type: discountType,
         items: cart.map(item => ({
             product_id: item.product_id,
+            variant_id: item.variant_id,
             quantity: item.quantity,
             price: item.price
         }))
@@ -224,6 +225,7 @@ function processOrderAPI(customerId, customerName, customerEmail, customerPhone,
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
         },
         body: JSON.stringify(orderData)

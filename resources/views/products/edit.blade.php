@@ -518,11 +518,12 @@ function previewVariantImage(input, index) {
             const parent = input.parentElement;
             
             if (!img) {
-                parent.innerHTML = `<img src="${e.target.result}" id="variant_img_preview_${index}">
-                                    <input type="file" name="variants[${index}][color_image]" class="d-none" accept="image/*" onchange="previewVariantImage(this, ${index})">`;
-            } else {
-                img.src = e.target.result;
+                img = document.createElement('img');
+                img.id = `variant_img_preview_${index}`;
+                parent.querySelector('.no-img-placeholder')?.remove();
+                parent.insertBefore(img, input);
             }
+            img.src = e.target.result;
         };
         reader.readAsDataURL(input.files[0]);
     }

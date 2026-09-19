@@ -2,13 +2,14 @@
     $name = \App\Support\Storefront::name($product);
     $variant = $product->variants->where('status', 'active')->firstWhere('stock', '>', 0);
     $available = $product->variants->isNotEmpty() ? (bool) $variant : $product->stock > 0;
+    $displayVariant = $variant ?? $product->variants->firstWhere('status', 'active');
     $isNew = $product->created_at && $product->created_at->greaterThan(now()->subDays(30));
 @endphp
 <article class="card{{ !empty($carouselSlide) ? ' swiper-slide' : '' }}" data-product-id="{{ $product->id }}" data-label="{{ $isNew ? 'new' : '' }}" data-sales="{{ $product->order_items_sum_quantity ?? 0 }}">
 <form action="{{ route('cart.add', $product->id) }}" method="post" data-add-to-cart>
 @csrf
 <div class="card-photo">
-    <a href="{{ route('shop.show', $product->id) }}"><img src="{{ \App\Support\Storefront::image($product->main_image) }}" alt="{{ $name }}" loading="lazy"></a>
+    <a href="{{ route('shop.show', $product->id) }}"><img data-product-image src="{{ \App\Support\Storefront::image($displayVariant?->color_image ?: $product->main_image) }}" alt="{{ $name }}" loading="lazy"></a>
     @if($isNew)<span class="product-badge new">جديد</span>@endif
     <button type="button" class="favorite" data-favorite="{{ $product->id }}" aria-pressed="false" aria-label="إضافة للمفضلة: {{ $name }}" onclick="toggleFavorite({{ $product->id }},this)"><i data-lucide="heart" aria-hidden="true"></i></button>
 </div>

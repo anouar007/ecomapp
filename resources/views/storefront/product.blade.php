@@ -7,11 +7,16 @@
     $description = $product->description_ar ?: $product->description;
     $variant = $product->variants->where('status', 'active')->firstWhere('stock', '>', 0);
     $available = $product->variants->isNotEmpty() ? (bool) $variant : $product->stock > 0;
-    $gallery = collect([$product->main_image])->merge($product->images->pluck('image_path'))->filter()->unique()->values();
+    $displayVariant = $variant ?? $product->variants->firstWhere('status', 'active');
+    $displayImage = $displayVariant?->color_image ?: $product->main_image;
+    $gallery = collect([$displayImage, $product->main_image])
+        ->merge($product->images->pluck('image_path'))
+        ->merge($product->variants->where('status', 'active')->pluck('color_image'))
+        ->filter()->unique()->values();
 @endphp
 <main class="product-page">
 <div class="breadcrumb"><a href="{{ route('home') }}">الرئيسية</a>　‹　<a href="{{ route('shop.index', ['category' => $product->productCategory?->slug]) }}">{{ $product->productCategory ? \App\Support\Storefront::name($product->productCategory) : 'المتجر' }}</a>　‹　 {{ $name }}</div>
-<div class="product-top">
+<div class="product-top" data-product-images>
 <section class="details panel">
 <h1>{{ $name }}</h1>
 <div class="reviews">({{ $product->reviews_count }})　{{ $product->reviews_count ? number_format($product->reviews_avg_rating, 1) : '—' }}　 <span class="stars" aria-label="تقييم المنتج">★ ★ ★ ★ ★</span></div>
@@ -30,10 +35,10 @@
 </form>
 </section>
 <section class="gallery" aria-label="صور المنتج">
-<div class="main-photo"><img id="main-photo" src="{{ \App\Support\Storefront::image($gallery->first()) }}" alt="{{ $name }}"><button class="zoom" onclick="zoomPhoto()" aria-label="تكبير الصورة"><i data-lucide="expand" aria-hidden="true"></i></button></div>
+<div class="main-photo"><img id="main-photo" data-product-image src="{{ \App\Support\Storefront::image($displayImage) }}" alt="{{ $name }}"><button class="zoom" onclick="zoomPhoto()" aria-label="تكبير الصورة"><i data-lucide="expand" aria-hidden="true"></i></button></div>
 <div class="thumbnails">
 @forelse($gallery as $photo)
-<button class="{{ $loop->first ? 'selected' : '' }}" aria-pressed="{{ $loop->first ? 'true' : 'false' }}" onclick="selectPhoto(this)"><img src="{{ \App\Support\Storefront::image($photo) }}" alt="{{ $name }} — صورة {{ $loop->iteration }}"></button>
+<button class="{{ $photo === $displayImage ? 'selected' : '' }}" aria-pressed="{{ $photo === $displayImage ? 'true' : 'false' }}" onclick="selectPhoto(this)"><img src="{{ \App\Support\Storefront::image($photo) }}" alt="{{ $name }} — صورة {{ $loop->iteration }}"></button>
 @empty
 <button class="selected" aria-pressed="true" onclick="selectPhoto(this)"><img src="{{ \App\Support\Storefront::image(null) }}" alt="{{ $name }}"></button>
 @endforelse
