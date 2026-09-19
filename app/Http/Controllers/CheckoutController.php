@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Services\CartService;
+use App\Services\ShippingService;
+use App\Support\Storefront;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
@@ -15,7 +17,7 @@ class CheckoutController extends Controller
     /**
      * Show the checkout form.
      */
-    public function index(CartService $cartService)
+    public function index(CartService $cartService, ShippingService $shipping)
     {
         $cart = $cartService->getCart();
         
@@ -28,13 +30,24 @@ class CheckoutController extends Controller
             $total += $details['price'] * $details['quantity'];
         }
 
-        return view('storefront.checkout', compact('cart', 'total'));
+        $shippingCost = $shipping->cost($total, old('shipping_city'));
+        $shippingQuotes = [];
+        foreach (array_merge([''], ShippingService::CITIES) as $city) {
+            $cost = $shipping->cost($total, $city);
+            $shippingQuotes[$city] = [
+                'shipping' => $cost == 0 ? 'مجاني' : Storefront::money($cost),
+                'free' => $cost == 0,
+                'total' => Storefront::money($total + $cost),
+            ];
+        }
+
+        return view('storefront.checkout', compact('cart', 'total', 'shippingCost', 'shippingQuotes'));
     }
 
     /**
      * Process the checkout.
      */
-    public function store(Request $request)
+    public function store(Request $request, ShippingService $shipping)
     {
         $request->validate([
             'customer_name' => 'required|string|max:255',
@@ -59,6 +72,8 @@ class CheckoutController extends Controller
             $subtotal += $details['price'] * $details['quantity'];
         }
 
+        $shippingCost = $shipping->cost($subtotal, $request->shipping_city);
+
         // Create Order
         $order = Order::create([
             'order_number' => 'ORD-' . strtoupper(Str::random(10)),
@@ -72,8 +87,8 @@ class CheckoutController extends Controller
             'shipping_zip'   => $request->shipping_zip ?: 'N/A',
             'shipping_country' => 'Morocco',
             'subtotal' => $subtotal,
-            'shipping_cost' => 0,
-            'total' => $subtotal,
+            'shipping_cost' => $shippingCost,
+            'total' => round($subtotal + $shippingCost, 2),
             'status' => 'pending',
             'payment_status' => 'pending',
             'payment_method' => 'cod',

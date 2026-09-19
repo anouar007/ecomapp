@@ -52,6 +52,13 @@
 <a class="account-link" style="display: none;" aria-label="حسابي" href="{{ auth()->check() ? route('customer.dashboard') : route('login') }}"><i data-lucide="user-round" aria-hidden="true"></i></a><a class="cart-link" href="{{ route('cart.index') }}" aria-label="سلة التسوق"><i data-lucide="shopping-cart" aria-hidden="true"></i><span class="cart-count">{{ array_sum(array_column(session('cart', []), 'quantity')) }}</span></a>
 </div>
 </header>
+@php($freeShippingThreshold = setting('shipping_free_threshold'))
+@if($freeShippingThreshold !== null && $freeShippingThreshold !== '')
+<div class="free-shipping-notice">
+<i data-lucide="truck" aria-hidden="true"></i>
+<span>@if((float) $freeShippingThreshold > 0)توصيل مجاني لجميع أنحاء المغرب للطلبات بقيمة {{ \App\Support\Storefront::money($freeShippingThreshold) }} أو أكثر@elseتوصيل مجاني لجميع الطلبات إلى جميع أنحاء المغرب@endif</span>
+</div>
+@endif
 <div id="main-content" tabindex="-1">
 @yield('content')
 </div>

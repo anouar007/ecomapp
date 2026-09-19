@@ -56,6 +56,11 @@ class SettingsSeeder extends Seeder
             ['key' => 'enable_cache', 'value' => '1', 'type' => 'boolean', 'group' => 'advanced'],
             ['key' => 'cache_duration', 'value' => '3600', 'type' => 'integer', 'group' => 'advanced'],
 
+            // Shipping (blank threshold disables free-shipping minimum)
+            ['key' => 'shipping_outside_casablanca_rate', 'value' => '0', 'type' => 'string', 'group' => 'shipping'],
+            ['key' => 'shipping_free_threshold', 'value' => '', 'type' => 'string', 'group' => 'shipping'],
+            ['key' => 'shipping_casablanca_rate', 'value' => '0', 'type' => 'string', 'group' => 'shipping'],
+
             // Company Information
             ['key' => 'company_name', 'value' => 'My Company Name', 'type' => 'string', 'group' => 'company'],
             ['key' => 'company_address', 'value' => '123 Business Street, City, Country', 'type' => 'string', 'group' => 'company'],

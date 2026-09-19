@@ -137,12 +137,22 @@ class SettingsController extends Controller
     {
         $request->validate([
             'settings' => 'required|array',
+            'settings.shipping_outside_casablanca_rate' => 'sometimes|required|numeric|min:0|max:999999.99|decimal:0,2',
+            'settings.shipping_free_threshold' => 'nullable|numeric|min:0|max:999999.99|decimal:0,2',
+            'settings.shipping_casablanca_rate' => 'sometimes|required|numeric|min:0|max:999999.99|decimal:0,2',
         ]);
 
         \Log::info('Settings update attempt', ['user_id' => auth()->id(), 'data' => $request->settings]);
 
         $updatedCount = 0;
         foreach ($request->settings as $key => $value) {
+            if (in_array($key, ['shipping_outside_casablanca_rate', 'shipping_free_threshold', 'shipping_casablanca_rate'], true)) {
+                // Keep a blank threshold distinct from zero (free on every order).
+                Setting::set($key, $value, 'string', 'shipping');
+                $updatedCount++;
+                continue;
+            }
+
             // Find the setting to get its type
             $setting = Setting::where('key', $key)->first();
             

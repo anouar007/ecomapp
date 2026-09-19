@@ -1,4 +1,6 @@
 /* Storefront controls and dynamic content. */
+.free-shipping-notice { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 20px; background: #073c2d; color: #fff; text-align: center; font-size: 14px; line-height: 1.6; }
+.free-shipping-notice svg { width: 20px; height: 20px; flex-shrink: 0; }
 .skip-link { position: fixed; top: -100px; right: 16px; z-index: 100; padding: 12px 20px; background: #fff; color: var(--green); }
 .skip-link:focus { top: 12px; }
 #main-content:focus { outline: none; }

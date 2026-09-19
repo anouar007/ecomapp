@@ -335,6 +335,9 @@ ashed #cbd5e1;
                 <i class="fas fa-globe"></i>
                 <span>Localization</span>
             </button>
+            <button class="settings-tab" onclick="switchTab('shipping')">
+                <i class="fas fa-truck"></i> Shipping
+            </button>
             <button class="settings-tab" onclick="switchTab('advanced')">
                 <i class="fas fa-cogs"></i>
                 <span>Advanced</span>
@@ -700,6 +703,27 @@ ashed #cbd5e1;
                 </div>
 
                 <!-- Advanced Tab -->
+                <div class="tab-pane" id="shipping-tab">
+                    <div class="settings-section">
+                        <h3 class="section-title">Shipping Rates</h3>
+                        <p>Rates are in MAD (Moroccan dirhams) and apply to storefront orders.</p>
+                        @foreach(['shipping_casablanca_rate' => 'Inside Casablanca', 'shipping_outside_casablanca_rate' => 'Outside Casablanca'] as $key => $label)
+                        <div class="form-group">
+                            <label class="form-label" for="{{ $key }}">{{ $label }}</label>
+                            <input id="{{ $key }}" type="number" name="settings[{{ $key }}]" class="form-input" min="0" max="999999.99" step="0.01"
+                                value="{{ old('settings.' . $key, setting($key, 0)) }}">
+                            <small>Set to 0 for free shipping.</small>
+                        </div>
+                        @endforeach
+                        <div class="form-group">
+                            <label class="form-label" for="shipping-free-threshold">Free shipping from subtotal</label>
+                            <input id="shipping-free-threshold" type="number" name="settings[shipping_free_threshold]" class="form-input" min="0" max="999999.99" step="0.01"
+                                value="{{ old('settings.shipping_free_threshold', setting('shipping_free_threshold')) }}">
+                            <small>Leave blank to disable. Orders at or above this subtotal ship free, both inside and outside Casablanca.</small>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="tab-pane" id="advanced-tab">
                     <div class="settings-section">
                         <h3 class="section-title">Pagination</h3>

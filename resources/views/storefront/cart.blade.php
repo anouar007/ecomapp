@@ -10,10 +10,10 @@
 <aside class="summary panel">
 <h2>ملخص الطلب <i data-lucide="lock-keyhole" aria-hidden="true"></i></h2>
 <div class="summary-line"><span>المجموع الفرعي</span><b data-subtotal>{{ \App\Support\Storefront::money($total) }}</b></div>
-<div class="summary-line"><span>التوصيل</span><b>مجاني</b></div>
+<div class="summary-line"><span>التوصيل</span><b>يُحسب عند إتمام الطلب</b></div>
 <p class="muted">التوصيل إلى جميع أنحاء المغرب</p>
 <div class="summary-line"><span>خصم</span><span class="discount">0 درهم</span></div>
-<div class="summary-line total"><b>المجموع الكلي</b><strong data-total>{{ \App\Support\Storefront::money($total) }}</strong></div>
+<div class="summary-line total"><b>المجموع قبل التوصيل</b><strong data-total>{{ \App\Support\Storefront::money($total) }}</strong></div>
 <p class="muted">تشمل جميع الضرائب</p>
 <div class="coupon"><label for="coupon">كود الخصم</label><div><input id="coupon" placeholder="أدخل كود الخصم"><button type="button" onclick="checkCoupon()">تطبيق ♧</button></div></div>
 <a class="primary checkout" href="{{ route('checkout.index') }}" @if(empty($cart)) aria-disabled="true" tabindex="-1" @endif><i data-lucide="lock-keyhole" aria-hidden="true"></i> إتمام الطلب</a>
