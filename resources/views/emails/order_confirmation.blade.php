@@ -18,7 +18,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <a href="{{ url('/') }}" class="logo">{{ setting('app_name', 'Speed Store') }}</a>
+            <a href="{{ url('/') }}" class="logo">{{ setting('app_name', 'Coopérative Aït Oumdis') }}</a>
         </div>
 
         <h2>Thank you for your order! 🎉</h2>

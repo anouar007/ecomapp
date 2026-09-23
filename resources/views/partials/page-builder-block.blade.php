@@ -144,7 +144,7 @@
                 <div class="container">
                     <h2 class="text-center fw-bold mb-5">What Our Clients Say</h2>
                     <div class="row g-4">
-                        @php $testimonials = explode("\n", $block['body'] ?? "John Doe: Speed is amazing!\nJane Smith: Handled all our orders perfectly."); @endphp
+                        @php $testimonials = explode("\n", $block['body'] ?? "John Doe: Aït Oumdis est remarquable!\nJane Smith: Handled all our orders perfectly."); @endphp
                         @foreach($testimonials as $testi)
                             @if(str_contains($testi, ':'))
                                 @php [$name, $text] = explode(':', $testi, 2); @endphp

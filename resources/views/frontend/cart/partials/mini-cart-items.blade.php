@@ -1,42 +1,51 @@
-@php $total = 0; @endphp
 @forelse(session('cart', []) as $id => $details)
-    @php $total += $details['price'] * $details['quantity']; @endphp
-    <div class="cart-item bg-white p-3 rounded-4 shadow-sm mb-3 position-relative border border-light" id="cart-item-{{ $id }}">
-        <div class="d-flex align-items-center">
-            <div class="flex-shrink-0 me-3 position-relative">
-                <img src="{{ Storage::url($details['image']) }}" alt="{{ $details['name'] }}" class="rounded-3 object-fit-cover" style="width: 80px; height: 80px;">
-                <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-light text-dark border shadow-sm" style="font-size: 0.7rem;">x{{ $details['quantity'] }}</span>
-            </div>
-            <div class="flex-grow-1 min-w-0">
-                <h6 class="fw-bold mb-1 text-truncate pe-4" title="{{ $details['name'] }}">{{ $details['name'] }}</h6>
-                <p class="mb-2 text-muted small">{{ $details['category_name'] ?? 'Produit' }}</p>
-                
-                <div class="d-flex align-items-center justify-content-between mt-2">
-                    <span class="text-primary fw-bold" style="font-size: 1.1rem;">{{ currency($details['price']) }}</span>
-                    
-                    <div class="quantity-control bg-light rounded-pill d-flex align-items-center px-1 border">
-                        <button class="btn btn-sm btn-link text-dark text-decoration-none p-1 border-0" onclick="updateQty({{ $id }}, {{ $details['quantity'] - 1 }})">
-                            <i class="fas fa-minus" style="font-size: 0.7rem;"></i>
-                        </button>
-                        <input type="text" class="form-control form-control-sm border-0 bg-transparent text-center fw-bold p-0" value="{{ $details['quantity'] }}" readonly style="width: 30px;">
-                        <button class="btn btn-sm btn-link text-dark text-decoration-none p-1 border-0" onclick="updateQty({{ $id }}, {{ $details['quantity'] + 1 }})">
-                            <i class="fas fa-plus" style="font-size: 0.7rem;"></i>
-                        </button>
-                    </div>
+    <div class="mc-item" id="cart-item-{{ $id }}">
+        <div class="mc-item-img-wrap">
+            @if(!empty($details['image']))
+                <img src="{{ Storage::url($details['image']) }}"
+                     alt="{{ $details['name'] }}"
+                     class="mc-item-img"
+                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                <div class="mc-item-img-placeholder" style="display:none;">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                </div>
+            @else
+                <div class="mc-item-img-placeholder">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                </div>
+            @endif
+            <span class="mc-qty-badge">x{{ $details['quantity'] }}</span>
+        </div>
+        <div class="mc-item-body">
+            <div class="mc-item-name" title="{{ $details['name'] }}">{{ $details['name'] }}</div>
+            <div class="mc-item-cat">{{ $details['category_name'] ?? 'Soin naturel' }}</div>
+            <div class="mc-item-footer">
+                <span class="mc-item-price">{{ currency($details['price']) }}</span>
+                <div class="mc-qty-ctrl">
+                    <button class="mc-qty-btn" onclick="updateQty({{ $id }}, {{ $details['quantity'] - 1 }})">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <input class="mc-qty-val" value="{{ $details['quantity'] }}" readonly>
+                    <button class="mc-qty-btn" onclick="updateQty({{ $id }}, {{ $details['quantity'] + 1 }})">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
                 </div>
             </div>
         </div>
-        <button class="btn btn-sm text-danger position-absolute top-0 end-0 mt-2 me-2 opacity-50 hover-opacity-100 transition-all" onclick="removeItem({{ $id }})" title="Supprimer">
-            <i class="fas fa-times"></i>
+        <button class="mc-remove-btn" onclick="removeItem({{ $id }})" title="Retirer">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
     </div>
 @empty
-    <div class="text-center py-5 mt-5">
-        <div class="mb-4 bg-white rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 100px; height: 100px;">
-            <i class="fas fa-shopping-basket fa-3x text-muted opacity-25"></i>
+    <div class="mc-empty">
+        <div class="mc-empty-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
         </div>
-        <h5 class="fw-bold text-dark">Votre panier est vide</h5>
-        <p class="text-muted small mb-4">Vous n'avez encore rien ajouté à votre panier.</p>
-        <a href="{{ route('shop.index') }}" class="btn btn-primary rounded-pill px-5 shadow-sm">Commencer les achats</a>
+        <div class="mc-empty-title">Votre panier est vide</div>
+        <div class="mc-empty-sub">Découvrez nos soins 100% naturels<br>du Haut Atlas marocain.</div>
+        <a href="{{ route('shop.index') }}" class="mc-btn-checkout" style="margin-top:12px;width:auto;padding:12px 28px;display:inline-flex;">
+            <span>Voir la boutique</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
     </div>
 @endforelse

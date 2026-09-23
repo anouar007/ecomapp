@@ -12,13 +12,24 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['"Plus Jakarta Sans"', 'Inter', ...defaultTheme.fontFamily.sans],
+                serif: ['"Playfair Display"', 'Cinzel', 'Georgia', ...defaultTheme.fontFamily.serif],
             },
             colors: {
-                danger: '#e60000',
-                warning: '#ffc107',
-                dark: '#0f172a', // Slate 900 or similar dark
-                primary: '#e60000',
+                danger: '#dc2626',
+                warning: '#d97706',
+                dark: '#071914',
+                primary: {
+                    DEFAULT: '#0c261e',
+                    light: '#163d2e',
+                    dark: '#071914',
+                },
+                accent: {
+                    DEFAULT: '#c28d32',
+                    light: '#e2ad50',
+                    dark: '#8c6014',
+                },
+                cream: '#faf8f3',
             },
         },
     },

@@ -1,6 +1,6 @@
 @extends('layouts.frontend')
 
-@section('meta_title', $product->name . ' — ' . setting('app_name', 'Speed Platform'))
+@section('meta_title', $product->name . ' — ' . setting('app_name', 'Coopérative Aït Oumdis'))
 @section('meta_description', Str::limit(strip_tags($product->description), 155))
 @section('meta_keywords', $product->name . ', ' . ($product->category_name ?? '') . ', acheter ' . $product->name . ', ' . setting('app_name', 'boutique') . ', Maroc')
 @section('meta_type', 'product')
@@ -38,7 +38,7 @@
       "availability": "{{ $product->isInStock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
       "seller": {
         "@type": "Organization",
-        "name": "{{ addslashes(setting('app_name', 'Speed Platform')) }}"
+        "name": "{{ addslashes(setting('app_name', 'Coopérative Aït Oumdis')) }}"
       }
     }
     @if($reviewCount > 0)
@@ -485,9 +485,10 @@ function pdpAddToCart(event) {
         btn.disabled = false;
         btnText.innerHTML = orig;
         if (data.success) {
-            const badge = document.getElementById('header-cart-count');
-            if (badge && data.cartCount !== undefined) badge.textContent = data.cartCount;
-            if (typeof refreshMiniCart === 'function') refreshMiniCart();
+            document.querySelectorAll('#header-cart-count, #header-cart-count-mobile, .sp-cart-count').forEach(el => {
+                if (data.cartCount !== undefined) el.textContent = data.cartCount;
+            });
+            if (typeof refreshMiniCart === 'function') refreshMiniCart(true);
             Swal.fire({ toast:true, position:'top-end', icon:'success',
                 title:'Ajouté au panier !',
                 text:'{{ addslashes($product->name) }}',

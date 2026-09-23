@@ -1,74 +1,105 @@
 @extends('layouts.frontend')
 
-@section('meta_title', 'Mon Panier - Speed Platform')
+@section('meta_title', 'Mon Panier — Coopérative Aït Oumdis')
 
 @section('content')
-<div class="bg-light py-5">
+<div class="container mt-5 mb-4">
+    <h1 style="font-family: 'Playfair Display', Georgia, serif; font-size: clamp(1.8rem, 3vw, 2.4rem); font-weight: 700; color: #0c261e; margin: 0;">Mon Panier</h1>
+</div>
+<div class="py-5" style="background-color: #faf7f2; background-image: url('{{ asset('assets/images/botanical_pattern_bg.jpg') }}'); background-size: 850px auto; background-repeat: repeat; min-height: 70vh;">
     <div class="container">
-        <h1 class="fw-bold mb-4 font-heading">Mon Panier</h1>
 
         @if(session('cart') && count(session('cart')) > 0)
+
+        @php
+            $subtotal = collect(session('cart', []))->sum(function($item) {
+                return $item['price'] * $item['quantity'];
+            });
+            $freeThreshold = 500;
+            $remainingForFree = max(0, $freeThreshold - $subtotal);
+            $progressPercent = min(100, round(($subtotal / $freeThreshold) * 100));
+        @endphp
+
+        <!-- Free shipping meter -->
+        <div class="card border-0 shadow-sm rounded-4 mb-4 p-4" style="background: #ffffff; border: 1px solid rgba(226, 173, 80, 0.25) !important;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas fa-truck-fast" style="color: #c28d32; font-size: 1.1rem;"></i>
+                    @if($subtotal >= $freeThreshold)
+                        <span class="fw-bold" style="color: #0c261e;">Félicitations ! Vous bénéficiez de la <strong>livraison gratuite</strong> partout au Maroc !</span>
+                    @else
+                        <span style="color: #0c261e;">Plus que <strong style="color: #c28d32;">{{ currency($remainingForFree) }}</strong> d'achat pour la <strong>livraison gratuite</strong> !</span>
+                    @endif
+                </div>
+                <span class="badge rounded-pill" style="background: rgba(226,173,80,0.15); color: #c28d32; font-weight: 700;">{{ $progressPercent }}%</span>
+            </div>
+            <div class="progress rounded-pill" style="height: 8px; background: #e2e8f0;">
+                <div class="progress-bar" role="progressbar" style="width: {{ $progressPercent }}%; background: linear-gradient(90deg, #c28d32, #e2ad50);"></div>
+            </div>
+        </div>
+
+        
+        
+
         <div class="row g-4">
             <div class="col-lg-8">
-                <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-borderless align-middle mb-0">
-                                <thead class="bg-light border-bottom">
-                                    <tr>
-                                        <th scope="col" class="py-3 px-4 text-muted small text-uppercase fw-bold ls-1">Produit</th>
-                                        <th scope="col" class="py-3 px-4 text-muted small text-uppercase text-center fw-bold ls-1">Prix</th>
-                                        <th scope="col" class="py-3 px-4 text-muted small text-uppercase text-center fw-bold ls-1" style="width: 150px;">Quantité</th>
-                                        <th scope="col" class="py-3 px-4 text-muted small text-uppercase text-end fw-bold ls-1">Total</th>
-                                        <th scope="col" class="py-3 px-4"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php $total = 0; @endphp
-                                    @foreach(session('cart') as $id => $details)
-                                    @php $total += $details['price'] * $details['quantity']; @endphp
-                                    <tr class="border-bottom transition-all hover-bg-light" id="cart-row-{{ $id }}">
-                                        <td class="py-4 px-4">
-                                            <div class="d-flex align-items-center">
-                                                <div class="flex-shrink-0 me-3">
-                                                    @if($details['image'])
-                                                    <img src="{{ Storage::url($details['image']) }}" alt="{{ $details['name'] }}" class="rounded-3 shadow-sm object-fit-cover" style="width: 70px; height: 70px;">
-                                                    @else
-                                                    <div class="bg-light rounded-3 d-flex align-items-center justify-content-center text-muted" style="width: 70px; height: 70px;">
-                                                        <i class="fas fa-image"></i>
-                                                    </div>
-                                                    @endif
-                                                </div>
-                                                <div>
-                                                    <h6 class="fw-bold mb-1 ml-3"><a href="{{ route('shop.show', $id) }}" class="text-decoration-none text-dark">{{ $details['name'] }}</a></h6>
-                                                    <p class="text-muted small mb-0 ml-3">{{ $details['category_name'] ?? 'Produit' }}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="text-center py-4 px-4 fw-bold">{{ currency($details['price']) }}</td>
-                                        <td class="text-center py-4 px-4">
-                                            <div class="quantity-control bg-light rounded-pill d-flex align-items-center px-2 py-1 border mx-auto" style="width: 100px;">
-                                                <button class="btn btn-sm btn-link text-dark text-decoration-none p-0 w-100" onclick="updateQty({{ $id }}, {{ $details['quantity'] - 1 }})">
-                                                    <i class="fas fa-minus small"></i>
-                                                </button>
-                                                <input type="text" class="form-control form-control-sm border-0 bg-transparent text-center fw-bold p-0" value="{{ $details['quantity'] }}" readonly>
-                                                <button class="btn btn-sm btn-link text-dark text-decoration-none p-0 w-100" onclick="updateQty({{ $id }}, {{ $details['quantity'] + 1 }})">
-                                                    <i class="fas fa-plus small"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                        <td class="text-end py-4 px-4 fw-bold text-primary h5 mb-0">{{ currency($details['price'] * $details['quantity']) }}</td>
-                                        <td class="text-end py-4 px-4">
-                                            <button class="btn btn-link text-danger p-2 opacity-50 hover-opacity-100 rounded-circle hover-bg-danger-light transition-all" onclick="removeItem({{ $id }})" title="Remove item">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                <div class="cart-items-wrapper d-flex flex-column gap-3">
+                    @php $total = 0; @endphp
+                    @foreach(session('cart') as $id => $details)
+                    @php $total += $details['price'] * $details['quantity']; @endphp
+                    <div class="card border-0 rounded-4 shadow-sm" style="background: #ffffff; padding: 20px;" id="cart-row-{{ $id }}">
+                        <div class="row align-items-center g-3">
+                            <!-- Image & Name -->
+                            <div class="col-12 col-md-6 d-flex align-items-center">
+                                <div class="flex-shrink-0 me-3 position-relative">
+                                    @if($details['image'])
+                                    <img src="{{ Storage::url($details['image']) }}" alt="{{ $details['name'] }}" class="rounded-3 shadow-sm object-fit-cover" style="width: 85px; height: 85px;">
+                                    @else
+                                    <div class="rounded-3 d-flex align-items-center justify-content-center text-muted" style="width: 85px; height: 85px; background: #fbf9f4;">
+                                        <i class="fas fa-image fa-2x opacity-50"></i>
+                                    </div>
+                                    @endif
+                                </div>
+                                <div class="min-w-0 flex-grow-1">
+                                    <h6 class="fw-bold mb-1 text-truncate" style="font-family: 'Playfair Display', Georgia, serif; font-size: 1.1rem; line-height: 1.3;">
+                                        <a href="{{ route('shop.show', $id) }}" class="text-decoration-none" style="color: #0c261e;">{{ $details['name'] }}</a>
+                                    </h6>
+                                    <p class="text-muted small mb-0 text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">{{ $details['category_name'] ?? 'Soin Naturel' }}</p>
+                                    
+                                    <!-- Price (Mobile only) -->
+                                    <div class="d-md-none mt-2">
+                                        <span class="fw-bold" style="color: #c28d32; font-size: 1.1rem;">{{ currency($details['price']) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Price (Desktop only) -->
+                            <div class="col-md-2 d-none d-md-block text-center">
+                                <span class="fw-bold" style="color: #c28d32; font-size: 1.1rem;">{{ currency($details['price']) }}</span>
+                            </div>
+                            
+                            <!-- Quantity -->
+                            <div class="col-6 col-md-3 d-flex justify-content-start justify-content-md-center align-items-center">
+                                <div class="quantity-control rounded-pill d-flex align-items-center px-1 py-1" style="background: #fbf9f4; border: 1.5px solid rgba(12,38,30,0.08); width: 110px;">
+                                    <button class="btn btn-sm btn-link text-decoration-none p-0 w-100 h-100 d-flex align-items-center justify-content-center" onclick="updateQty({{ $id }}, {{ $details['quantity'] - 1 }})" style="color: #0c261e !important;">
+                                        <i class="fas fa-minus" style="font-size: 0.7rem;"></i>
+                                    </button>
+                                    <input type="text" class="form-control form-control-sm border-0 bg-transparent text-center fw-bold p-0" value="{{ $details['quantity'] }}" readonly style="color: #0c261e; font-size: 0.95rem;">
+                                    <button class="btn btn-sm btn-link text-decoration-none p-0 w-100 h-100 d-flex align-items-center justify-content-center" onclick="updateQty({{ $id }}, {{ $details['quantity'] + 1 }})" style="color: #0c261e !important;">
+                                        <i class="fas fa-plus" style="font-size: 0.7rem;"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Remove -->
+                            <div class="col-6 col-md-1 d-flex justify-content-end align-items-center">
+                                <button class="btn btn-sm p-2 rounded-circle transition-all" onclick="removeItem({{ $id }})" title="Supprimer" style="background: rgba(220,38,38,0.08); color: #dc2626; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
+                    @endforeach
                 </div>
             </div>
 
@@ -89,7 +120,7 @@
                             <span class="h5 fw-bold mb-0">Total</span>
                             <span class="h4 fw-bold text-primary mb-0">{{ currency($total) }}</span>
                         </div>
-                        <button class="btn btn-dark w-100 py-3 rounded-pill fw-bold mb-3 shadow-lg hover-scale-sm transition-transform" onclick="location.href='{{ route('checkout.index') }}'">
+                        <button class="btn btn-primary w-100 py-3 rounded-pill fw-bold mb-3 shadow-lg hover-scale-sm transition-transform" onclick="location.href='{{ route('checkout.index') }}'">
                             Passer la commande <i class="fas fa-arrow-right ms-2"></i>
                         </button>
                         <a href="{{ route('shop.index') }}" class="btn btn-link text-muted w-100 text-decoration-none small">

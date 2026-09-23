@@ -77,7 +77,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>{{ config('app.name', 'Speed') }}</h1>
+        <h1>{{ config('app.name', 'Coopérative Aït Oumdis') }}</h1>
         <p>@yield('subtitle')</p>
     </div>
 

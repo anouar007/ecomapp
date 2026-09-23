@@ -1,31 +1,74 @@
 @extends('layouts.frontend')
 
-@section('meta_title', 'Checkout - Speed Platform')
+@section('meta_title', 'Finaliser ma commande — Coopérative Aït Oumdis')
+
 
 @section('content')
-<div class="bg-light py-5">
+<style>
+    /* Premium Form Styling */
+    .premium-input:focus {
+        background-color: #ffffff !important;
+        border-color: #e2ad50 !important;
+        box-shadow: 0 0 0 4px rgba(226, 173, 80, 0.15) !important;
+        outline: none;
+    }
+    .premium-form-card {
+        background: #ffffff;
+        border: 1px solid rgba(12, 38, 30, 0.08);
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(12, 38, 30, 0.03);
+    }
+    
+    /* Premium Product Cards for Checkout */
+    .checkout-product-card {
+        background: #ffffff;
+        border: 1px solid rgba(12, 38, 30, 0.06);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .checkout-product-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+    }
+</style>
+
+<div class="container mt-5 mb-4">
+    <nav class="sp-breadcrumb mb-3" aria-label="Fil d'Ariane" style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem;">
+      <a href="{{ route('home') }}" style="color: #6b7a72; text-decoration: none;">Accueil</a>
+      <span class="sep" style="color: #c28d32;">/</span>
+      <a href="{{ route('cart.index') }}" style="color: #6b7a72; text-decoration: none;">Panier</a>
+      <span class="sep" style="color: #c28d32;">/</span>
+      <span class="current" style="color: #0c261e; font-weight: 600;">Commande</span>
+    </nav>
+    <h1 style="font-family: 'Playfair Display', Georgia, serif; font-size: clamp(1.8rem, 3vw, 2.4rem); font-weight: 700; color: #0c261e; margin: 0;">Finaliser ma Commande</h1>
+</div>
+
+<div class="py-5" style="background-color: #faf7f2; background-image: url('{{ asset('assets/images/botanical_pattern_bg.jpg') }}'); background-size: 850px auto; background-repeat: repeat; min-height: 70vh;">
     <div class="container">
         <div class="row">
             <div class="col-lg-7">
-                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="premium-form-card mb-4">
                     <div class="card-body p-4">
                         <h4 class="fw-bold mb-4">Informations de livraison</h4>
                         <form action="{{ route('checkout.store') }}" method="POST" id="checkout-form">
                             @csrf
                             <div class="row g-3">
                                 <div class="col-12">
-                                    <label class="form-label small fw-bold text-muted">NOM COMPLET</label>
-                                    <input type="text" name="customer_name" class="form-control bg-light border-0 py-2" required>
+                                    <label class="form-label fw-bold" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7a72;">NOM COMPLET</label>
+                                    <input type="text" name="customer_name" class="form-control py-3 premium-input" style="background-color: #fbf9f4; border: 1px solid rgba(12,38,30,0.1); border-radius: 8px; color: #0c261e; font-weight: 500;" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">ADRESSE E-MAIL <span class="text-muted fw-normal">(optionnel)</span></label>
-                                    <input type="email" name="customer_email" class="form-control bg-light border-0 py-2" placeholder="Pour la confirmation de commande">
+                                    <label class="form-label fw-bold" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7a72;">ADRESSE E-MAIL <span class="text-muted fw-normal">(optionnel)</span></label>
+                                    <input type="email" name="customer_email" class="form-control py-3 premium-input" style="background-color: #fbf9f4; border: 1px solid rgba(12,38,30,0.1); border-radius: 8px; color: #0c261e; font-weight: 500;" placeholder="Pour la confirmation de commande">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">NUMÉRO DE TÉLÉPHONE</label>
+                                    <label class="form-label fw-bold" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7a72;">NUMÉRO DE TÉLÉPHONE</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light border-0">+212</span>
-                                        <input type="tel" name="customer_phone" class="form-control bg-light border-0 py-2" 
+                                        <input type="tel" name="customer_phone" class="form-control py-3 premium-input" style="background-color: #fbf9f4; border: 1px solid rgba(12,38,30,0.1); border-radius: 8px; color: #0c261e; font-weight: 500;" 
                                                placeholder="6 XX XX XX XX" 
                                                pattern="[0-9]{9}" 
                                                title="Enter 9 digits (e.g. 612345678)"
@@ -33,16 +76,16 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">ICE <span class="text-muted fw-normal">(optionnel)</span></label>
-                                    <input type="text" name="ice" class="form-control bg-light border-0 py-2" placeholder="Identifiant Commun de l'Entreprise">
+                                    <label class="form-label fw-bold" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7a72;">ICE <span class="text-muted fw-normal">(optionnel)</span></label>
+                                    <input type="text" name="ice" class="form-control py-3 premium-input" style="background-color: #fbf9f4; border: 1px solid rgba(12,38,30,0.1); border-radius: 8px; color: #0c261e; font-weight: 500;" placeholder="Identifiant Commun de l'Entreprise">
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label small fw-bold text-muted">ADRESSE</label>
-                                    <input type="text" name="shipping_address" class="form-control bg-light border-0 py-2" required>
+                                    <label class="form-label fw-bold" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7a72;">ADRESSE</label>
+                                    <input type="text" name="shipping_address" class="form-control py-3 premium-input" style="background-color: #fbf9f4; border: 1px solid rgba(12,38,30,0.1); border-radius: 8px; color: #0c261e; font-weight: 500;" required>
                                 </div>
                                 <div class="col-md-5">
-                                    <label class="form-label small fw-bold text-muted">VILLE</label>
-                                    <select name="shipping_city" class="form-select bg-light border-0 py-2" required>
+                                    <label class="form-label fw-bold" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7a72;">VILLE</label>
+                                    <select name="shipping_city" class="form-select py-3 premium-input" style="background-color: #fbf9f4; border: 1px solid rgba(12,38,30,0.1); border-radius: 8px; color: #0c261e; font-weight: 500;" required>
                                         <option value="">Choisir la ville</option>
                                         <option value="Casablanca">Casablanca</option>
                                         <option value="Rabat">Rabat</option>
@@ -96,52 +139,36 @@
                                     </select>
                                 </div>
                                 <div class="col-md-5">
-                                    <label class="form-label small fw-bold text-muted">RÉGION</label>
-                                    <input type="text" name="shipping_state" class="form-control bg-light border-0 py-2" placeholder="ex. Casablanca-Settat">
+                                    <label class="form-label fw-bold" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7a72;">RÉGION</label>
+                                    <input type="text" name="shipping_state" class="form-control py-3 premium-input" style="background-color: #fbf9f4; border: 1px solid rgba(12,38,30,0.1); border-radius: 8px; color: #0c261e; font-weight: 500;" placeholder="ex. Casablanca-Settat">
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
 
-                <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-body p-4">
-                        <h4 class="fw-bold mb-4">Paiement</h4>
-                        <div class="alert alert-info border-0 rounded-3">
-                            <i class="fas fa-info-circle me-2"></i> Pour la démo, cette boutique utilise le <strong>paiement à la livraison</strong> (COD) ou par chèque.
-                        </div>
-                        <div class="form-check p-3 border rounded-3 bg-white mb-2">
-                            <input class="form-check-input ms-0 me-3" type="radio" name="payment_method" id="cod" checked>
-                            <label class="form-check-label fw-bold" for="cod">
-                                Paiement à la livraison
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-5">
-                <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-header bg-white p-4 border-bottom-0">
-                        <h5 class="fw-bold m-0">Récapitulatif de la commande</h5>
+                <div class="premium-form-card" style="background: #ffffff; border: 1px solid rgba(12,38,30,0.05) !important;">
+                    <div class="card-header bg-white p-4 border-bottom-0 rounded-top-4">
+                        <h5 class="fw-bold m-0" style="font-family: 'Playfair Display', serif; color: #0c261e; font-size: 1.3rem;">Récapitulatif</h5>
                     </div>
                     <div class="card-body p-4 pt-0">
                         @foreach($cart as $id => $details)
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="me-3 position-relative">
+                        <div class="checkout-product-card d-flex align-items-center">
+                            <div class="me-3 position-relative flex-shrink-0">
                                 @if($details['image'])
-                                <img src="{{ Storage::url($details['image']) }}" alt="{{ $details['name'] }}" class="rounded-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                <img src="{{ Storage::url($details['image']) }}" alt="{{ $details['name'] }}" class="rounded-3 object-fit-cover" style="width: 70px; height: 70px;">
                                 @else
-                                <div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; background: #fbf9f4;">
                                     <i class="fas fa-image text-muted opacity-25"></i>
                                 </div>
                                 @endif
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary tiny-badge">{{ $details['quantity'] }}</span>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="background: #e2ad50; color: #fff; width: 22px; height: 22px; font-size: 0.75rem; border: 2px solid #fff; font-weight: 700;">{{ $details['quantity'] }}</span>
                             </div>
-                            <div class="flex-grow-1">
-                                <h6 class="fw-bold mb-0 text-truncate" style="max-width: 150px;">{{ $details['name'] }}</h6>
+                            <div class="flex-grow-1 min-w-0 pr-2">
+                                <h6 class="fw-bold mb-1 text-truncate" style="color: #0c261e; font-size: 0.95rem; font-family: 'Playfair Display', serif;">{{ $details['name'] }}</h6>
+                                <p class="text-muted small mb-0 text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;">{{ $details['category_name'] ?? 'Soin Naturel' }}</p>
                             </div>
-                            <div class="fw-bold">{{ currency($details['price'] * $details['quantity']) }}</div>
+                            <div class="fw-bold flex-shrink-0" style="color: #0c261e; font-size: 1.05rem;">{{ currency($details['price'] * $details['quantity']) }}</div>
                         </div>
                         @endforeach
                         
@@ -160,9 +187,9 @@
                             <span class="h4 fw-bold text-primary mb-0">{{ currency($total) }}</span>
                         </div>
 
-                        <button type="submit" form="checkout-form" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow">
+                        <div class="mobile-sticky-checkout"><button type="submit" form="checkout-form" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow">
                             Commander ({{ currency($total) }})
-                        </button>
+                        </button></div>
                     </div>
                 </div>
                 
@@ -175,4 +202,11 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    document.body.classList.add('checkout-page');
+</script>
+@endpush
 @endsection
+

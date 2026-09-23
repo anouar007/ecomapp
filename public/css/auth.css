@@ -1,7 +1,7 @@
 :root {
-    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --primary-gradient: linear-gradient(135deg, #0c261e 0%, #163d2e 100%);
+    --secondary-gradient: linear-gradient(135deg, #c28d32 0%, #e2ad50 100%);
+    --success-gradient: linear-gradient(135deg, #15803d 0%, #22c55e 100%);
     --glass-bg: rgba(255, 255, 255, 0.95);
     --glass-border: rgba(255, 255, 255, 0.3);
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -27,7 +27,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    background: radial-gradient(circle at 20% 20%, #163d2e 0%, #0c261e 60%, #071914 100%);
     background-size: 200% 200%;
     animation: gradientShift 15s ease infinite;
     padding: 20px;
@@ -160,7 +160,7 @@ body {
 
 .form-control:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #c28d32;
     box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
     transform: translateY(-1px);
 }
@@ -181,7 +181,7 @@ body {
     height: 18px;
     margin-right: 8px;
     cursor: pointer;
-    accent-color: #667eea;
+    accent-color: #c28d32;
 }
 
 .form-check-label {
@@ -253,4 +253,30 @@ body {
     .auth-title {
         font-size: 28px;
     }
+}
+
+.auth-card {
+    border: 1px solid rgba(226, 173, 80, 0.35) !important;
+    box-shadow: 0 12px 40px rgba(7, 25, 20, 0.35) !important;
+}
+.auth-title {
+    font-family: 'Playfair Display', Georgia, serif !important;
+    background: linear-gradient(135deg, #0c261e 0%, #c28d32 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+}
+.btn-primary {
+    background: linear-gradient(135deg, #0c261e 0%, #163d2e 100%) !important;
+    border-radius: 9999px !important;
+    font-weight: 700 !important;
+    transition: all 0.25s ease !important;
+}
+.btn-primary:hover {
+    background: linear-gradient(135deg, #c28d32 0%, #e2ad50 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(194, 141, 50, 0.35) !important;
+}
+.auth-logo {
+    background: linear-gradient(135deg, #c28d32 0%, #e2ad50 100%) !important;
+    border-radius: 50% !important;
 }

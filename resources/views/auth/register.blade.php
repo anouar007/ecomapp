@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Create Account - Speed Store</title>
+    <title>Créer un compte — Coopérative Aït Oumdis</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
     <style>
         .auth-footer {
@@ -22,13 +22,13 @@
             font-size: 14px;
         }
         .auth-footer a {
-            color: #667eea;
+            color: #c28d32;
             text-decoration: none;
             font-weight: 600;
             transition: color 0.2s;
         }
         .auth-footer a:hover {
-            color: #764ba2;
+            color: #0c261e;
             text-decoration: underline;
         }
         .password-requirements {
@@ -43,10 +43,10 @@
         <div class="auth-card">
             <div class="auth-header">
                 <div class="auth-logo">
-                    <i class="fas fa-user-plus"></i>
+                    <img src="{{ asset('images/emblem-gold.png') }}" alt="Aït Oumdis" style="width: 48px; height: 48px; object-fit: contain;">
                 </div>
-                <h1 class="auth-title">Create Account</h1>
-                <p class="auth-subtitle">Join Speed Store and start shopping</p>
+                <h1 class="auth-title" style="font-family: 'Playfair Display', Georgia, serif;">Créer votre compte</h1>
+                <p class="auth-subtitle" style="font-family: 'Plus Jakarta Sans', sans-serif;">Coopérative Aït Oumdis — Terroir du Haut Atlas</p>
             </div>
 
             @if ($errors->any())
@@ -59,14 +59,14 @@
                 @csrf
 
                 <div class="form-group">
-                    <label for="name" class="form-label">Full Name</label>
+                    <label for="name" class="form-label">Nom complet</label>
                     <input 
                         type="text" 
                         id="name" 
                         name="name" 
                         class="form-control @error('name') is-invalid @enderror" 
                         value="{{ old('name') }}" 
-                        placeholder="Enter your full name"
+                        placeholder="Votre nom complet"
                         required 
                         autofocus
                         autocomplete="name"
@@ -77,14 +77,14 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="email" class="form-label">Email Address</label>
+                    <label for="email" class="form-label">Adresse e-mail</label>
                     <input 
                         type="email" 
                         id="email" 
                         name="email" 
                         class="form-control @error('email') is-invalid @enderror" 
                         value="{{ old('email') }}" 
-                        placeholder="Enter your email"
+                        placeholder="exemple@domaine.com"
                         required
                         autocomplete="email"
                     >
@@ -94,42 +94,42 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="password" class="form-label">Password</label>
+                    <label for="password" class="form-label">Mot de passe</label>
                     <input 
                         type="password" 
                         id="password" 
                         name="password" 
                         class="form-control @error('password') is-invalid @enderror" 
-                        placeholder="Create a password"
+                        placeholder="Au moins 8 caractères"
                         required
                         autocomplete="new-password"
                     >
-                    <p class="password-requirements">Password must be at least 8 characters</p>
+                    <p class="password-requirements">Le mot de passe doit contenir au moins 8 caractères</p>
                     @error('password')
                         <span class="invalid-feedback">{{ $message }}</span>
                     @enderror
                 </div>
 
                 <div class="form-group">
-                    <label for="password_confirmation" class="form-label">Confirm Password</label>
+                    <label for="password_confirmation" class="form-label">Confirmer le mot de passe</label>
                     <input 
                         type="password" 
                         id="password_confirmation" 
                         name="password_confirmation" 
                         class="form-control" 
-                        placeholder="Confirm your password"
+                        placeholder="Répétez votre mot de passe"
                         required
                         autocomplete="new-password"
                     >
                 </div>
 
                 <button type="submit" class="btn-primary">
-                    Create Account
+                    Créer mon compte
                 </button>
             </form>
 
             <div class="auth-footer">
-                <p>Already have an account? <a href="{{ route('login') }}">Sign in</a></p>
+                <p>Vous avez déjà un compte ? <a href="{{ route('login') }}">Se connecter</a></p>
             </div>
         </div>
     </div>

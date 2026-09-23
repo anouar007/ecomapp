@@ -1,6 +1,6 @@
 @extends('layouts.frontend')
 
-@section('meta_title', 'Commande confirmée - Speed Platform')
+@section('meta_title', 'Commande confirmée — Coopérative Aït Oumdis')
 
 @section('content')
 <div class="bg-light py-5 min-vh-100 d-flex align-items-center">
@@ -32,7 +32,7 @@
                         </div>
                     </div>
 
-                    <a href="{{ route('shop.index') }}" class="btn btn-dark rounded-pill px-5 py-3 fw-bold w-100">
+                    <a href="{{ route('shop.index') }}" class="btn btn-primary rounded-pill px-5 py-3 fw-bold w-100">
                         Continuer les achats
                     </a>
                 </div>
