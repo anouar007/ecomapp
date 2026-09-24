@@ -80,7 +80,7 @@
         @endif
     @endforeach
 </head>
-<body>
+<body class="{{ request()->routeIs('checkout.*') ? 'checkout-page' : '' }}">
     <!-- Custom Body Start Codes -->
     @php
         $bodyStartCodes = \App\Models\CustomCode::where('is_active', true)

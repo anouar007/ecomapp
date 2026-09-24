@@ -11458,8 +11458,11 @@ body {
     padding-bottom: 90px;
   }
   
-  /* Hide whatsapp widget on checkout to avoid overlapping the button */
+  /* Hide whatsapp widget and footer on checkout to avoid overlapping the button */
   body.checkout-page .sp-wa-widget {
+    display: none !important;
+  }
+  body.checkout-page .sp-footer {
     display: none !important;
   }
 }
