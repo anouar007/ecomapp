@@ -4,10 +4,11 @@
         // Resolve product card image: always use the uploaded image from product page
         $imgUrl = $product->image_url;
 
+        $lowerName = strtolower($product->name ?? '');
+
         // Use custom product size from dashboard, fallback to name-based detection if empty
         $volume = $product->size ?: $product->volume;
         if (!$volume) {
-            $lowerName = strtolower($product->name);
             if (str_contains($lowerName, 'shampooing')) $volume = '200ml';
             elseif (str_contains($lowerName, 'huile')) $volume = '50ml';
             elseif (str_contains($lowerName, 'spray')) $volume = '125ml';
@@ -62,7 +63,7 @@
                 </div>
 
                 <p class="sp-card-excerpt">
-                    {{ Str::limit(strip_tags($product->description), 85) }}
+                    {{ Str::limit(strip_tags((string)($product->description ?? '')), 85) }}
                 </p>
 
                 <div class="sp-stock-tag">
