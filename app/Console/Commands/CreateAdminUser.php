@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class CreateAdminUser extends Command
 {
@@ -14,7 +15,7 @@ class CreateAdminUser extends Command
                             {password : The admin password}
                             {--name=Admin : The admin name}';
 
-    protected $description = 'Create a new admin user with all permissions';
+    protected $description = 'Create or update an admin user with full access (all permissions)';
 
     public function handle()
     {
@@ -22,27 +23,42 @@ class CreateAdminUser extends Command
         $password = $this->argument('password');
         $name = $this->option('name');
 
-        // Check if user already exists
-        if (User::where('email', $email)->exists()) {
-            $this->error("User with email {$email} already exists!");
-            return 1;
+        // Ensure roles and permissions exist
+        if (Permission::count() === 0) {
+            $this->info('Seeding roles and permissions...');
+            $this->call('db:seed', ['--class' => 'Database\Seeders\RolePermissionSeeder', '--force' => true]);
         }
 
-        // Create admin user
-        $admin = User::create([
-            'name' => $name,
-            'email' => $email,
-            'password' => Hash::make($password),
-            'email_verified_at' => now(),
-        ]);
+        // Find existing user or create a new one
+        $admin = User::firstOrNew(['email' => $email]);
+        $isNew = !$admin->exists;
 
-        // Assign Admin role (make sure roles are seeded first)
+        $admin->name = $name ?: ($admin->name ?? 'Admin');
+        $admin->password = Hash::make($password);
+        $admin->email_verified_at = now();
+        $admin->save();
+
+        // Ensure Admin role has all permissions
         $adminRole = Role::firstOrCreate(['name' => 'Admin']);
-        $admin->assignRole($adminRole);
+        $adminRole->syncPermissions(Permission::all());
 
-        $this->info("✓ Admin user created successfully!");
+        // Assign Admin role to user
+        if (!$admin->hasRole('Admin')) {
+            $admin->assignRole($adminRole);
+        }
+
+        // Clear permission cache
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
+        if ($isNew) {
+            $this->info("✓ Admin user created successfully with FULL ACCESS!");
+        } else {
+            $this->info("✓ Existing user updated to Admin with FULL ACCESS!");
+        }
+
         $this->info("Email: {$email}");
-        $this->info("You can now login with this account.");
+        $this->info("Role: Admin (" . $adminRole->permissions()->count() . " permissions granted)");
+        $this->info("Login URL: " . url('/login'));
 
         return 0;
     }
