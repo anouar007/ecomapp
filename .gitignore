@@ -25,3 +25,6 @@ yarn-error.log
 debug_*.php
 *.swp
 *~
+
+deploy.zip
+*.zip
