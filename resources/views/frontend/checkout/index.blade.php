@@ -138,6 +138,24 @@
 .sp-fg {
     margin-bottom: 18px;
 }
+.sp-city-switch-btn {
+    background: transparent;
+    border: none;
+    color: #c28d32;
+    font-size: 0.74rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.2s ease;
+}
+.sp-city-switch-btn:hover {
+    color: #0c261e;
+}
 .sp-label {
     display: flex;
     align-items: center;
@@ -692,33 +710,58 @@
                             </div>
 
                             <!-- City -->
+                            @php
+                                $popularCities = [
+                                    'Casablanca', 'Rabat', 'Marrakech', 'Fès', 'Tanger', 'Agadir', 
+                                    'Meknès', 'Oujda', 'Kenitra', 'Tétouan', 'Salé', 'Temara', 
+                                    'Safi', 'Mohammedia', 'Khouribga', 'El Jadida', 'Béni Mellal', 
+                                    'Aït Melloul', 'Nador', 'Laâyoune', 'Dakhla', 'Al Hoceïma', 
+                                    'Settat', 'Berrechid', 'Khemisset', 'Guelmim', 'Berkane', 
+                                    'Taourirt', 'Taroudant', 'Ouarzazate', 'Taza', 'Essaouira', 
+                                    'Larache', 'Ksar El Kebir', 'Tiznit', 'Azilal', 'Aït Oumdis'
+                                ];
+                                $oldCity = old('shipping_city');
+                                $isCustomCity = $oldCity && !in_array($oldCity, $popularCities);
+                            @endphp
                             <div class="col-md-6 sp-fg">
-                                <label class="sp-label" for="shipping_city">
-                                    <i class="fas fa-city" style="color: #c28d32;"></i>
-                                    <span>Ville <span class="text-danger">*</span></span>
-                                </label>
-                                <select id="shipping_city" 
-                                        name="shipping_city" 
-                                        class="sp-select @error('shipping_city') is-invalid @enderror" 
-                                        required 
-                                        autocomplete="address-level2">
-                                    <option value="" disabled {{ old('shipping_city') ? '' : 'selected' }}>Sélectionnez votre ville</option>
-                                    @php
-                                        $cities = [
-                                            'Casablanca', 'Rabat', 'Marrakech', 'Fès', 'Tanger', 'Agadir', 
-                                            'Meknès', 'Oujda', 'Kenitra', 'Tétouan', 'Salé', 'Temara', 
-                                            'Safi', 'Mohammedia', 'Khouribga', 'El Jadida', 'Béni Mellal', 
-                                            'Aït Melloul', 'Nador', 'Laâyoune', 'Dakhla', 'Al Hoceïma', 
-                                            'Settat', 'Berrechid', 'Khemisset', 'Guelmim', 'Berkane', 
-                                            'Taourirt', 'Taroudant', 'Ouarzazate', 'Taza', 'Essaouira', 
-                                            'Larache', 'Ksar El Kebir', 'Tiznit', 'Azilal', 'Aït Oumdis'
-                                        ];
-                                    @endphp
-                                    @foreach($cities as $city)
-                                        <option value="{{ $city }}" {{ old('shipping_city') == $city ? 'selected' : '' }}>{{ $city }}</option>
-                                    @endforeach
-                                    <option value="Autre ville" {{ old('shipping_city') == 'Autre ville' ? 'selected' : '' }}>Autre ville au Maroc</option>
-                                </select>
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label class="sp-label mb-0" for="shipping_city_select">
+                                        <i class="fas fa-city" style="color: #c28d32;"></i>
+                                        <span>Ville <span class="text-danger">*</span></span>
+                                    </label>
+                                    <button type="button" class="sp-city-switch-btn" id="cityModeBtn" onclick="toggleCityMode()">
+                                        <i class="fas fa-pen me-1" id="cityModeBtnIcon"></i><span id="cityModeBtnText">{{ $isCustomCity ? 'Choisir dans la liste' : 'Saisir manuellement' }}</span>
+                                    </button>
+                                </div>
+
+                                <!-- Mode 1: Dropdown Select -->
+                                <div id="citySelectContainer" style="display: {{ $isCustomCity ? 'none' : 'block' }};">
+                                    <select id="shipping_city_select" 
+                                            {{ $isCustomCity ? '' : 'name="shipping_city" required' }} 
+                                            class="sp-select @error('shipping_city') is-invalid @enderror" 
+                                            onchange="handleCitySelectChange(this)"
+                                            autocomplete="address-level2">
+                                        <option value="" disabled {{ $oldCity ? '' : 'selected' }}>Sélectionnez votre ville</option>
+                                        @foreach($popularCities as $city)
+                                            <option value="{{ $city }}" {{ $oldCity == $city ? 'selected' : '' }}>{{ $city }}</option>
+                                        @endforeach
+                                        <option value="Autre ville" {{ ($oldCity == 'Autre ville' || $isCustomCity) ? 'selected' : '' }}>✏️ Autre ville (saisir manuellement)...</option>
+                                    </select>
+                                </div>
+
+                                <!-- Mode 2: Manual Text Input -->
+                                <div id="cityManualContainer" style="display: {{ $isCustomCity ? 'block' : 'none' }};">
+                                    <input type="text" 
+                                           id="shipping_city_manual" 
+                                           {{ $isCustomCity ? 'name="shipping_city" required' : '' }}
+                                           class="sp-input @error('shipping_city') is-invalid @enderror" 
+                                           placeholder="Ex: Demnate, Oukaïmeden, Azilal, Tinghir..." 
+                                           value="{{ $isCustomCity ? $oldCity : '' }}" 
+                                           autocomplete="address-level2">
+                                    <div class="form-text" style="font-size: 0.72rem; color: #6b7a72; margin-top: 5px;">
+                                        <i class="fas fa-info-circle me-1" style="color: #c28d32;"></i>Livraison disponible partout au Maroc (villes, centres et communes).
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- State / Region -->
@@ -904,6 +947,59 @@
 
 @push('scripts')
 <script>
+        // City mode toggle: dropdown vs manual input
+    var isCityManualMode = false;
+
+    function toggleCityMode() {
+        isCityManualMode = !isCityManualMode;
+        applyCityMode();
+    }
+
+    function handleCitySelectChange(select) {
+        if (select.value === 'Autre ville') {
+            isCityManualMode = true;
+            applyCityMode();
+            var manualInput = document.getElementById('shipping_city_manual');
+            if (manualInput) {
+                manualInput.value = '';
+                manualInput.focus();
+            }
+        }
+    }
+
+    function applyCityMode() {
+        var selectContainer = document.getElementById('citySelectContainer');
+        var manualContainer = document.getElementById('cityManualContainer');
+        var selectEl = document.getElementById('shipping_city_select');
+        var manualEl = document.getElementById('shipping_city_manual');
+        var btnText = document.getElementById('cityModeBtnText');
+        var btnIcon = document.getElementById('cityModeBtnIcon');
+
+        if (isCityManualMode) {
+            selectContainer.style.display = 'none';
+            manualContainer.style.display = 'block';
+            selectEl.removeAttribute('name');
+            selectEl.removeAttribute('required');
+            manualEl.setAttribute('name', 'shipping_city');
+            manualEl.setAttribute('required', 'required');
+            manualEl.focus();
+            if (btnText) btnText.textContent = 'Choisir dans la liste';
+            if (btnIcon) btnIcon.className = 'fas fa-list me-1';
+        } else {
+            selectContainer.style.display = 'block';
+            manualContainer.style.display = 'none';
+            manualEl.removeAttribute('name');
+            manualEl.removeAttribute('required');
+            selectEl.setAttribute('name', 'shipping_city');
+            selectEl.setAttribute('required', 'required');
+            if (selectEl.value === 'Autre ville') {
+                selectEl.value = '';
+            }
+            if (btnText) btnText.textContent = 'Saisir manuellement';
+            if (btnIcon) btnIcon.className = 'fas fa-pen me-1';
+        }
+    }
+
     // Ensure checkout body class is active
     document.body.classList.add('checkout-page');
 
@@ -913,13 +1009,15 @@
         checkoutForm.addEventListener('submit', function (e) {
             var nameField = document.getElementById('customer_name');
             var phoneField = document.getElementById('customer_phone');
-            var cityField = document.getElementById('shipping_city');
+            var cityField = isCityManualMode 
+                ? document.getElementById('shipping_city_manual') 
+                : document.getElementById('shipping_city_select');
             var addressField = document.getElementById('shipping_address');
 
             var invalid = null;
             if (!nameField.value.trim()) invalid = nameField;
             else if (!phoneField.value.trim()) invalid = phoneField;
-            else if (!cityField.value) invalid = cityField;
+            else if (!cityField.value.trim()) invalid = cityField;
             else if (!addressField.value.trim()) invalid = addressField;
 
             if (invalid) {
