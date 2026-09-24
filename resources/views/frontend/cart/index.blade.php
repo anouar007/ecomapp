@@ -11,37 +11,7 @@
 
         @if(session('cart') && count(session('cart')) > 0)
 
-        @php
-            $subtotal = collect(session('cart', []))->sum(function($item) {
-                return $item['price'] * $item['quantity'];
-            });
-            $freeThreshold = 500;
-            $remainingForFree = max(0, $freeThreshold - $subtotal);
-            $progressPercent = min(100, round(($subtotal / $freeThreshold) * 100));
-        @endphp
-
-        <!-- Free shipping meter -->
-        <div class="card border-0 shadow-sm rounded-4 mb-4 p-4" style="background: #ffffff; border: 1px solid rgba(226, 173, 80, 0.25) !important;">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <div class="d-flex align-items-center gap-2">
-                    <i class="fas fa-truck-fast" style="color: #c28d32; font-size: 1.1rem;"></i>
-                    @if($subtotal >= $freeThreshold)
-                        <span class="fw-bold" style="color: #0c261e;">Félicitations ! Vous bénéficiez de la <strong>livraison gratuite</strong> partout au Maroc !</span>
-                    @else
-                        <span style="color: #0c261e;">Plus que <strong style="color: #c28d32;">{{ currency($remainingForFree) }}</strong> d'achat pour la <strong>livraison gratuite</strong> !</span>
-                    @endif
-                </div>
-                <span class="badge rounded-pill" style="background: rgba(226,173,80,0.15); color: #c28d32; font-weight: 700;">{{ $progressPercent }}%</span>
-            </div>
-            <div class="progress rounded-pill" style="height: 8px; background: #e2e8f0;">
-                <div class="progress-bar" role="progressbar" style="width: {{ $progressPercent }}%; background: linear-gradient(90deg, #c28d32, #e2ad50);"></div>
-            </div>
-        </div>
-
-        
-        
-
-        <div class="row g-4">
+                <div class="row g-4">
             <div class="col-lg-8">
                 <div class="cart-items-wrapper d-flex flex-column gap-3">
                     @php $total = 0; @endphp
@@ -113,7 +83,7 @@
                         </div>
                         <div class="d-flex justify-content-between mb-3 text-muted">
                             <span>Livraison</span>
-                            <span class="text-success fw-bold">Gratuit</span>
+                            <span class="fw-semibold text-dark">Calculée selon la ville</span>
                         </div>
                         <hr class="my-4 opacity-10">
                         <div class="d-flex justify-content-between mb-4 align-items-center">

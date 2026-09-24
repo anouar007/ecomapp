@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Services\ShippingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -20,12 +21,18 @@ class CheckoutController extends Controller
             return redirect()->route('shop.index')->with('error', 'Your cart is empty.');
         }
 
-        $total = 0;
+        $subtotal = 0;
         foreach ($cart as $id => $details) {
-            $total += $details['price'] * $details['quantity'];
+            $subtotal += $details['price'] * $details['quantity'];
         }
 
-        return view('frontend.checkout.index', compact('cart', 'total'));
+        $oldCity = old('shipping_city', auth()->user()->city ?? '');
+        $shippingFee = ShippingService::getDeliveryFee($oldCity);
+        $total = $subtotal + $shippingFee;
+
+        $shippingCities = ShippingService::getCities();
+
+        return view('frontend.checkout.index', compact('cart', 'subtotal', 'shippingFee', 'total', 'shippingCities'));
     }
 
     /**
@@ -52,10 +59,12 @@ class CheckoutController extends Controller
             $subtotal += $details['price'] * $details['quantity'];
         }
 
+        $shippingCost = ShippingService::getDeliveryFee($request->shipping_city);
+        $total = $subtotal + $shippingCost;
+
         $taxRateSetting = floatval(setting('tax_rate', 0)) / 100;
-        $total = $subtotal; // Subtotal is already tax-inclusive (TTC)
-        $tax = $total - ($total / (1 + $taxRateSetting));
-        $subtotalNet = $total - $tax;
+        $tax = $subtotal - ($subtotal / (1 + $taxRateSetting));
+        $subtotalNet = $subtotal - $tax;
 
         // Create Order
         $order = Order::create([
@@ -72,13 +81,13 @@ class CheckoutController extends Controller
             'shipping_country' => 'Morocco',
             'subtotal' => $subtotalNet,
             'tax' => $tax,
+            'shipping_cost' => $shippingCost,
             'total' => $total,
             'status' => 'pending',
             'payment_status' => 'pending',
             'payment_method' => 'cod',
         ]);
 
-        // Create Order Items and Update Stock
         // Create Order Items and Update Stock
         foreach ($cart as $id => $details) {
             $product = \App\Models\Product::find($id);

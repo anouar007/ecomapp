@@ -214,7 +214,7 @@
               <span style="background: #e2ad50; color: #0c261e; font-size: 0.78rem; font-weight: 800; padding: 3px 12px; border-radius: 9999px;">
                 Économisez 80 DH
               </span>
-              <span style="color: rgba(255,255,255,0.75); font-size: 0.84rem;">• Livraison Gratuite au Maroc</span>
+              <span style="color: rgba(255,255,255,0.75); font-size: 0.84rem;">• Livraison Partout au Maroc</span>
             </div>
             <div style="display: flex; gap: 14px; flex-wrap: wrap;">
               <button onclick="addToCart({{ $bundlePack->id }}, 1, this)" class="sp-btn-gold" style="padding: 12px 28px; font-size: 0.92rem; border: none; cursor: pointer; border-radius: 9999px; display: inline-flex; align-items: center; gap: 8px;">

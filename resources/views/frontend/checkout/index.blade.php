@@ -138,6 +138,16 @@
 .sp-fg {
     margin-bottom: 18px;
 }
+.sp-city-badge {
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #0c261e;
+    background: #fbf8f2;
+    border: 1px solid rgba(194, 141, 50, 0.35);
+    padding: 2px 9px;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+}
 .sp-city-dropdown {
     position: absolute;
     top: calc(100% + 4px);
@@ -148,20 +158,21 @@
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(12, 38, 30, 0.16);
     z-index: 1050;
-    max-height: 230px;
+    max-height: 250px;
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
 }
 .sp-city-item {
-    padding: 11px 14px;
-    font-size: 0.90rem;
+    padding: 10px 14px;
+    font-size: 0.88rem;
     font-weight: 600;
     color: #0c261e;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 9px;
+    justify-content: space-between;
+    gap: 10px;
     transition: background 0.15s ease, color 0.15s ease;
     border-bottom: 1px solid rgba(12, 38, 30, 0.04);
 }
@@ -170,19 +181,63 @@
 }
 .sp-city-item:hover, .sp-city-item.active {
     background: #fbf8f2;
-    color: #c28d32;
 }
-.sp-city-item .city-pin {
-    color: #c28d32;
-    font-size: 0.80rem;
-    opacity: 0.85;
+.sp-city-name-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 1;
+}
+.sp-city-name-en {
+    font-weight: 700;
+    color: #0c261e;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.sp-city-name-ar {
+    font-size: 0.78rem;
+    color: #7a8b82;
+    direction: rtl;
+    white-space: nowrap;
+}
+.sp-city-price-tag {
+    font-size: 0.74rem;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.sp-city-price-tag.rate-20 {
+    background: #eaf6ec;
+    color: #1e7e34;
+    border: 1px solid rgba(40, 167, 69, 0.25);
+}
+.sp-city-price-tag.rate-30 {
+    background: #eef5fc;
+    color: #1976d2;
+    border: 1px solid rgba(25, 118, 210, 0.25);
+}
+.sp-city-price-tag.rate-40 {
+    background: #fdf6ec;
+    color: #b26a00;
+    border: 1px solid rgba(226, 173, 80, 0.35);
+}
+.sp-city-price-tag.rate-35 {
+    background: #faf4e8;
+    color: #8c5b08;
+    border: 1px solid rgba(226, 173, 80, 0.4);
 }
 .sp-city-match {
     color: #c28d32;
     font-weight: 800;
+    text-decoration: underline;
+    text-underline-offset: 2px;
 }
 .sp-city-custom-opt {
-    padding: 11px 14px;
+    padding: 10px 14px;
     font-size: 0.84rem;
     font-weight: 700;
     color: #0c261e;
@@ -191,10 +246,11 @@
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: space-between;
+    gap: 10px;
     transition: background 0.15s ease;
 }
-.sp-city-custom-opt:hover {
+.sp-city-custom-opt:hover, .sp-city-custom-opt.active {
     background: #f4efe4;
     color: #c28d32;
 }
@@ -753,16 +809,19 @@
 
                             <!-- City (Text input with live proposed options + manual typing) -->
                             <div class="col-md-6 sp-fg">
-                                <label class="sp-label" for="shipping_city">
-                                    <i class="fas fa-city" style="color: #c28d32;"></i>
-                                    <span>Ville <span class="text-danger">*</span></span>
-                                </label>
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label class="sp-label mb-0" for="shipping_city">
+                                        <i class="fas fa-city" style="color: #c28d32;"></i>
+                                        <span>Ville <span class="text-danger">*</span></span>
+                                    </label>
+                                    <span id="spCityRateBadge" class="sp-city-badge">Livraison : {{ ($shippingFee ?? 35) }} DH</span>
+                                </div>
                                 <div class="position-relative" id="cityInputWrapper">
                                     <input type="text" 
                                            id="shipping_city" 
                                            name="shipping_city" 
                                            class="sp-input @error('shipping_city') is-invalid @enderror" 
-                                           placeholder="Ex: Casablanca, Rabat, Marrakech, Azilal..." 
+                                           placeholder="Ex: Casablanca, Rabat, Marrakech, Azilal, فاس..." 
                                            value="{{ old('shipping_city', auth()->user()->city ?? '') }}" 
                                            required 
                                            autocomplete="off">
@@ -777,7 +836,7 @@
                                 </div>
 
                                 <div class="form-text" style="font-size: 0.72rem; color: #6b7a72; margin-top: 5px;">
-                                    <i class="fas fa-info-circle me-1" style="color: #c28d32;"></i>Tapez votre ville pour voir les suggestions ou saisissez directement le nom de votre commune/village.
+                                    <i class="fas fa-info-circle me-1" style="color: #c28d32;"></i>Tapez votre ville pour voir le tarif de livraison ou saisissez librement (tarif standard : 35 DH).
                                 </div>
                             </div>
 
@@ -888,11 +947,11 @@
                     <div class="sp-pricing-box">
                         <div class="sp-price-row">
                             <span>Sous-total</span>
-                            <span class="sp-price-val">{{ currency($total) }}</span>
+                            <span class="sp-price-val" id="spSubtotalVal">{{ currency($subtotal ?? $total) }}</span>
                         </div>
                         <div class="sp-price-row">
                             <span>Frais de livraison</span>
-                            <span class="sp-free-tag">GRATUITE</span>
+                            <span class="sp-price-val fw-bold" style="color: #0c261e;" id="spShippingFeeVal">{{ currency($shippingFee ?? 35) }}</span>
                         </div>
                     </div>
 
@@ -902,7 +961,7 @@
                             <span class="sp-total-main-label">Total à payer</span>
                             <span class="sp-total-sub-label">TVA comprise • Paiement à la réception</span>
                         </div>
-                        <div class="sp-total-main-val">
+                        <div class="sp-total-main-val" id="spTotalVal">
                             {{ currency($total) }}
                         </div>
                     </div>
@@ -911,7 +970,7 @@
                     <div class="sp-desktop-submit-wrap">
                         <button type="submit" form="checkout-form" class="sp-desktop-submit-btn" id="desktopSubmitBtn">
                             <i class="fas fa-lock"></i>
-                            <span>Confirmer la commande ({{ currency($total) }})</span>
+                            <span>Confirmer la commande (<span id="spDesktopTotalVal">{{ currency($total) }}</span>)</span>
                             <i class="fas fa-arrow-right ms-auto"></i>
                         </button>
                     </div>
@@ -953,7 +1012,7 @@
 <div class="sp-mobile-sticky-bar">
     <div class="sp-sticky-total-block">
         <span class="sp-sticky-total-label">Total net</span>
-        <span class="sp-sticky-total-val">{{ currency($total) }}</span>
+        <span class="sp-sticky-total-val" id="spMobileTotalVal">{{ currency($total) }}</span>
     </div>
     <button type="submit" form="checkout-form" class="sp-sticky-submit-btn" id="mobileSubmitBtn">
         <i class="fas fa-lock"></i>
@@ -964,31 +1023,55 @@
 
 @push('scripts')
 <script>
-    // Comprehensive Moroccan Cities for Real-Time Autocomplete
-    var moroccanCities = [
-        "Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir", "Meknès", "Oujda", 
-        "Kenitra", "Tétouan", "Salé", "Temara", "Safi", "Mohammedia", "Khouribga", "El Jadida", 
-        "Béni Mellal", "Nador", "Laâyoune", "Dakhla", "Al Hoceïma", "Settat", "Berrechid", 
-        "Khemisset", "Guelmim", "Berkane", "Taourirt", "Taroudant", "Ouarzazate", "Taza", 
-        "Essaouira", "Larache", "Ksar El Kebir", "Tiznit", "Azilal", "Aït Oumdis", "Demnate", 
-        "Tinghir", "Midelt", "Errachidia", "Tan-Tan", "Sidi Kacem", "Sidi Slimane", "Youssoufia", 
-        "Oued Zem", "Skhirat", "Fnideq", "M'diq", "Martil", "Chefchaouen", "Ouezzane", "Bouznika", 
-        "Guercif", "Jerada", "Figuig", "Zagora", "Tarfaya", "Smara", "Assa", "Tata", "Sidi Ifni", 
-        "Imzouren", "Beni Bouayach", "Souk El Arbaa", "Asilah", "Ben Guerir", "Kelaat M'Gouna", 
-        "El Kelaa des Sraghna", "Kasba Tadla", "Zaio", "Driouch", "Selouane", "Bouarfa", "Missour", 
-        "Outat El Haj", "Ain Harrouda", "Bouskoura", "Tit Mellil", "Deroua", "Mediouna", "Nouaceur", 
-        "Had Soualem", "Bir Jdid", "Oulmes", "Rich", "Erfoud", "Rissani", "Boudnib", "Goulmima", 
-        "Boulmane Dades", "Agdz", "Mhamid El Ghizlane", "Oukaïmeden", "Asni", "Tahannaout", 
-        "Amizmiz", "Ourika", "Imilchil", "Aït Bouguemez", "Bin El Ouidane", "Ouaouizeght", "Afourar",
-        "Ifrane", "Azrou", "Sefrou", "Moulay Yacoub", "Sidi Bennour", "Chichaoua", "Tafraout", "Taliouine", "Taghazout"
-    ];
+    // Comprehensive Moroccan Cities with Rates
+    var moroccanCities = @json($shippingCities ?? config('shipping_cities.cities', []));
+    var baseSubtotal = {{ (float) ($subtotal ?? $total) }};
+    var currentShippingFee = {{ (float) ($shippingFee ?? 35) }};
+    var defaultShippingFee = 35;
+    var currencySymbol = @json(setting('currency_symbol', '$'));
+    var currencyPosition = @json(setting('currency_position', 'before'));
+    var currencyDecimals = @json(setting('currency_decimals', 2));
 
-    function normalizeCity(str) {
-        return (str || '')
-            .toLowerCase()
-            .normalize("NFD")
-            .replace(/[̀-ͯ]/g, "")
-            .trim();
+    function formatMoney(amount) {
+        var val = Number(amount).toFixed(currencyDecimals);
+        return currencyPosition === 'before' ? currencySymbol + val : val + ' ' + currencySymbol;
+    }
+
+    function updatePriceDisplay(fee) {
+        currentShippingFee = Number(fee);
+        var total = baseSubtotal + currentShippingFee;
+
+        var feeEl = document.getElementById('spShippingFeeVal');
+        if (feeEl) feeEl.textContent = formatMoney(currentShippingFee);
+
+        var totalEl = document.getElementById('spTotalVal');
+        if (totalEl) totalEl.textContent = formatMoney(total);
+
+        var desktopTotalEl = document.getElementById('spDesktopTotalVal');
+        if (desktopTotalEl) desktopTotalEl.textContent = formatMoney(total);
+
+        var mobileTotalEl = document.getElementById('spMobileTotalVal');
+        if (mobileTotalEl) mobileTotalEl.textContent = formatMoney(total);
+
+        var badgeEl = document.getElementById('spCityRateBadge');
+        if (badgeEl) {
+            badgeEl.textContent = 'Livraison : ' + Math.round(currentShippingFee) + ' DH';
+        }
+    }
+
+    function normalizeText(str) {
+        if (!str) return '';
+        var s = str.toLowerCase().trim();
+        // Remove tashkeel
+        s = s.replace(/[\u064B-\u065F\u0670]/g, '');
+        // Normalize Arabic letters
+        s = s.replace(/[أإآٱ]/g, 'ا');
+        s = s.replace(/ة/g, 'ه');
+        s = s.replace(/ى/g, 'ي');
+        // Normalize Latin accents
+        s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        // Remove spaces, punctuation, dashes
+        return s.replace(/[^\p{L}\p{N}]/gu, '');
     }
 
     function escapeHtml(text) {
@@ -997,61 +1080,124 @@
         return div.innerHTML;
     }
 
+    function findMatchingCity(cityName) {
+        if (!cityName) return null;
+        var clean = normalizeText(cityName);
+        if (!clean) return null;
+
+        // Exact match on English or Arabic name
+        for (var i = 0; i < moroccanCities.length; i++) {
+            var c = moroccanCities[i];
+            if (normalizeText(c.name_en) === clean || normalizeText(c.name_ar) === clean) {
+                return c;
+            }
+        }
+
+        // Starts-with match
+        for (var j = 0; j < moroccanCities.length; j++) {
+            var c2 = moroccanCities[j];
+            var enNorm = normalizeText(c2.name_en);
+            var arNorm = normalizeText(c2.name_ar);
+            if (clean.indexOf(enNorm) === 0 || enNorm.indexOf(clean) === 0 ||
+                clean.indexOf(arNorm) === 0 || arNorm.indexOf(clean) === 0) {
+                return c2;
+            }
+        }
+
+        return null;
+    }
+
+    function evaluateShippingFee(cityName) {
+        if (!cityName || !cityName.trim()) {
+            return defaultShippingFee;
+        }
+        var found = findMatchingCity(cityName);
+        return found ? found.price : defaultShippingFee; // 35 DH fallback for new/custom cities
+    }
+
     var cityInput = document.getElementById('shipping_city');
     var cityDropdown = document.getElementById('spCityDropdown');
     var cityList = document.getElementById('spCityList');
     var currentHighlightIndex = -1;
 
-    function selectCity(val) {
+    function selectCity(name, price) {
         if (!cityInput) return;
-        cityInput.value = val;
+        cityInput.value = name;
         cityInput.classList.remove('is-invalid');
         if (cityDropdown) cityDropdown.style.display = 'none';
         currentHighlightIndex = -1;
+        updatePriceDisplay(price);
     }
 
     function renderCitySuggestions(query) {
         if (!cityList || !cityDropdown) return;
-        var cleanQ = normalizeCity(query);
+        var cleanQ = normalizeText(query);
         var matches = [];
         currentHighlightIndex = -1;
 
         if (!cleanQ) {
-            // Show top popular destinations when input is empty
-            matches = moroccanCities.slice(0, 8);
+            // Top major cities when empty
+            matches = moroccanCities.slice(0, 10);
         } else {
-            // Filter cities that contain or start with the query
             matches = moroccanCities.filter(function(c) {
-                return normalizeCity(c).indexOf(cleanQ) !== -1;
+                return normalizeText(c.name_en).indexOf(cleanQ) !== -1 || 
+                       normalizeText(c.name_ar).indexOf(cleanQ) !== -1;
             });
         }
 
         var html = '';
         if (matches.length > 0) {
-            matches.forEach(function(city) {
-                var safeCity = escapeHtml(city);
-                var displayHtml = safeCity;
+            matches.slice(0, 30).forEach(function(city) {
+                var safeEn = escapeHtml(city.name_en);
+                var safeAr = escapeHtml(city.name_ar);
+                var displayEn = safeEn;
+                var displayAr = safeAr;
+
                 if (cleanQ) {
-                    var idx = normalizeCity(city).indexOf(cleanQ);
-                    if (idx !== -1) {
-                        displayHtml = escapeHtml(city.substring(0, idx)) + 
-                                      '<span class="sp-city-match">' + escapeHtml(city.substring(idx, idx + cleanQ.length)) + '</span>' + 
-                                      escapeHtml(city.substring(idx + cleanQ.length));
+                    var idxEn = normalizeText(city.name_en).indexOf(cleanQ);
+                    if (idxEn !== -1) {
+                        displayEn = safeEn.substring(0, idxEn) + 
+                                    '<span class="sp-city-match">' + safeEn.substring(idxEn, idxEn + cleanQ.length) + '</span>' + 
+                                    safeEn.substring(idxEn + cleanQ.length);
+                    }
+                    var idxAr = normalizeText(city.name_ar).indexOf(cleanQ);
+                    if (idxAr !== -1) {
+                        displayAr = safeAr.substring(0, idxAr) + 
+                                    '<span class="sp-city-match">' + safeAr.substring(idxAr, idxAr + cleanQ.length) + '</span>' + 
+                                    safeAr.substring(idxAr + cleanQ.length);
                     }
                 }
-                html += '<div class="sp-city-item" data-value="' + safeCity + '">' +
-                        '<i class="fas fa-map-marker-alt city-pin"></i>' +
-                        '<span>' + displayHtml + '</span>' +
+
+                var rateClass = 'rate-' + city.price;
+
+                html += '<div class="sp-city-item" data-name="' + safeEn + '" data-price="' + city.price + '">' +
+                        '  <div class="sp-city-name-wrap">' +
+                        '    <i class="fas fa-map-marker-alt text-muted" style="font-size: 0.75rem; color: #c28d32 !important;"></i>' +
+                        '    <span class="sp-city-name-en">' + displayEn + '</span>' +
+                        '    <span class="sp-city-name-ar">(' + displayAr + ')</span>' +
+                        '  </div>' +
+                        '  <span class="sp-city-price-tag ' + rateClass + '">' + city.price + ' DH</span>' +
                         '</div>';
             });
         }
 
-        // If user typed something not strictly matching, offer manual option
-        if (cleanQ && !moroccanCities.some(function(c) { return normalizeCity(c) === cleanQ; })) {
-            var rawVal = escapeHtml(query.trim());
-            html += '<div class="sp-city-custom-opt" data-value="' + rawVal + '">' +
-                    '<i class="fas fa-pen" style="color: #c28d32; font-size: 0.8rem;"></i>' +
-                    '<span>Utiliser "<strong>' + rawVal + '</strong>" (Saisie manuelle)</span>' +
+        // If user typed something not strictly matching, offer manual option with 35 DH
+        var rawVal = query ? query.trim() : '';
+        var hasExactMatch = moroccanCities.some(function(c) {
+            return normalizeText(c.name_en) === cleanQ || normalizeText(c.name_ar) === cleanQ;
+        });
+
+        if (cleanQ && !hasExactMatch) {
+            var safeRaw = escapeHtml(rawVal);
+            html += '<div class="sp-city-custom-opt" data-name="' + safeRaw + '" data-price="35">' +
+                    '  <div class="sp-city-name-wrap">' +
+                    '    <i class="fas fa-pen text-warning" style="font-size: 0.75rem;"></i>' +
+                    '    <div>' +
+                    '      <div style="font-weight: 700;">Utiliser "' + safeRaw + '"</div>' +
+                    '      <div style="font-size: 0.72rem; color: #7a8b82;">Autre ville / commune (Saisie libre)</div>' +
+                    '    </div>' +
+                    '  </div>' +
+                    '  <span class="sp-city-price-tag rate-35">35 DH</span>' +
                     '</div>';
         }
 
@@ -1063,11 +1209,15 @@
             cityDropdown.querySelectorAll('.sp-city-item, .sp-city-custom-opt').forEach(function(item) {
                 item.addEventListener('pointerdown', function(e) {
                     e.preventDefault();
-                    selectCity(this.getAttribute('data-value'));
+                    var name = this.getAttribute('data-name');
+                    var price = Number(this.getAttribute('data-price'));
+                    selectCity(name, price);
                 });
                 item.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    selectCity(this.getAttribute('data-value'));
+                    var name = this.getAttribute('data-name');
+                    var price = Number(this.getAttribute('data-price'));
+                    selectCity(name, price);
                 });
             });
         } else {
@@ -1076,7 +1226,15 @@
     }
 
     if (cityInput) {
+        // Initial price calculation based on pre-filled value
+        if (cityInput.value.trim()) {
+            var initFee = evaluateShippingFee(cityInput.value);
+            updatePriceDisplay(initFee);
+        }
+
         cityInput.addEventListener('input', function() {
+            var fee = evaluateShippingFee(this.value);
+            updatePriceDisplay(fee);
             renderCitySuggestions(this.value);
         });
 
@@ -1124,7 +1282,9 @@
                     e.preventDefault();
                     var chosen = currentHighlightIndex >= 0 ? items[currentHighlightIndex] : items[0];
                     if (chosen) {
-                        selectCity(chosen.getAttribute('data-value'));
+                        var name = chosen.getAttribute('data-name');
+                        var price = Number(chosen.getAttribute('data-price'));
+                        selectCity(name, price);
                     }
                 }
             }
