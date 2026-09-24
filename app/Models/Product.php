@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
@@ -22,6 +23,7 @@ class Product extends Model
         'min_stock',
         'category_id',
         'status',
+        'size',
         'image',
     ];
 
@@ -297,14 +299,22 @@ class Product extends Model
      */
     public function getMainImageAttribute()
     {
-        // 1. Check for primary image in dedicated table
-        if ($this->relationLoaded('primaryImage') && $this->primaryImage) {
-            return $this->primaryImage->image_path;
+        // 1. Primary image in product_images relationship
+        $primary = $this->relationLoaded('primaryImage') 
+            ? $this->primaryImage 
+            : $this->primaryImage()->first();
+
+        if ($primary && $primary->image_path) {
+            return $primary->image_path;
         }
 
-        // 2. Check for any image in dedicated table
-        if ($this->relationLoaded('images') && $this->images->count() > 0) {
-            return $this->images->first()->image_path;
+        // 2. First image in images relationship
+        $firstImage = $this->relationLoaded('images') 
+            ? $this->images->first() 
+            : $this->images()->orderBy('sort_order')->first();
+
+        if ($firstImage && $firstImage->image_path) {
+            return $firstImage->image_path;
         }
 
         // 3. Fallback to the legacy/simple image column
@@ -313,6 +323,35 @@ class Product extends Model
         }
 
         return null;
+    }
+
+    /**
+     * Get the full URL for the product's main image.
+     */
+    public function getImageUrlAttribute(): string
+    {
+        $main = $this->main_image;
+        if (!$main) {
+            return asset('assets/images/pack-rituel.jpg');
+        }
+
+        if (str_starts_with($main, 'http://') || str_starts_with($main, 'https://')) {
+            return $main;
+        }
+
+        if (file_exists(public_path($main))) {
+            return asset($main);
+        }
+
+        return Storage::url($main);
+    }
+
+    /**
+     * Compatibility accessor for size / volume
+     */
+    public function getVolumeAttribute()
+    {
+        return $this->size ?? ($this->attributes['volume'] ?? null);
     }
 }
 

@@ -180,16 +180,19 @@
                         <td>
                             <div class="d-flex align-items-center gap-3">
                                 <div class="brand-avatar">
-                                    @if($product->image)
-                                        <img src="{{ asset('storage/' . $product->image) }}" alt="">
-                                    @elseif($product->images->count() > 0)
-                                        <img src="{{ asset('storage/' . $product->images->first()->image_path) }}" alt="">
+                                    @if($product->main_image)
+                                        <img src="{{ $product->image_url }}" alt="">
                                     @else
                                         <i class="fas fa-image"></i>
                                     @endif
                                 </div>
                                 <div>
-                                    <div class="fw-bold text-dark">{{ $product->name }}</div>
+                                    <div class="fw-bold text-dark d-flex align-items-center gap-2">
+                                        <span>{{ $product->name }}</span>
+                                        @if($product->size || $product->volume)
+                                            <span class="badge bg-amber-50 text-amber-700" style="background: rgba(226,173,80,0.15); color: #c28d32; font-size: 0.72rem; padding: 2px 7px; border-radius: 9999px;">{{ $product->size ?: $product->volume }}</span>
+                                        @endif
+                                    </div>
                                     @if($product->description)
                                         <div class="text-muted small" style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                             {{ $product->description }}

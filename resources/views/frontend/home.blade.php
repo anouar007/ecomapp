@@ -157,7 +157,7 @@
 
               <div class="sp-card-media" style="cursor: pointer;" title="Voir le détail de {{ $p->name }}">
                 <a href="{{ route('shop.show', $p->id) }}" style="display: block; width: 100%; height: 100%;" aria-label="Découvrir {{ $p->name }}">
-                  <img src="{{ $p->main_image ? Storage::url($p->main_image) : asset('assets/images/pack-rituel.jpg') }}" alt="{{ $p->name }}" class="sp-card-img" loading="lazy">
+                  <img src="{{ $p->image_url }}" alt="{{ $p->name }}" class="sp-card-img" loading="lazy">
                 </a>
               </div>
 
@@ -166,8 +166,8 @@
                   <h3 class="sp-card-title" style="margin: 0;">
                     <a href="{{ route('shop.show', $p->id) }}">{{ $p->name }}</a>
                   </h3>
-                  @if($p->volume)
-                    <span style="font-size: 0.74rem; font-weight: 700; color: #c28d32; background: rgba(226,173,80,0.12); padding: 2px 7px; border-radius: 9999px; white-space: nowrap; flex-shrink: 0;">{{ $p->volume }}</span>
+                  @if($p->size || $p->volume)
+                    <span style="font-size: 0.74rem; font-weight: 700; color: #c28d32; background: rgba(226,173,80,0.12); padding: 2px 7px; border-radius: 9999px; white-space: nowrap; flex-shrink: 0;">{{ $p->size ?: $p->volume }}</span>
                   @endif
                 </div>
                 <p class="sp-card-subtitle">

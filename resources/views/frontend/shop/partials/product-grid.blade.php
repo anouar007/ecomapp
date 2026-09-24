@@ -1,24 +1,20 @@
 <div class="row g-4">
     @forelse($products as $product)
     @php
-        $imgUrl = asset('assets/images/pack-rituel.jpg');
-        if ($product->image) {
-            if (file_exists(public_path($product->image))) {
-                $imgUrl = asset($product->image);
-            } elseif (file_exists(public_path('assets/images/' . basename($product->image)))) {
-                $imgUrl = asset('assets/images/' . basename($product->image));
-            } else {
-                $imgUrl = Storage::url($product->image);
-            }
-        }
+        // Resolve product card image: always use the uploaded image from product page
+        $imgUrl = $product->image_url;
 
-        $volume = 'Soin Bio';
-        $lowerName = strtolower($product->name);
-        if (str_contains($lowerName, 'shampooing')) $volume = '200ml';
-        elseif (str_contains($lowerName, 'huile')) $volume = '50ml';
-        elseif (str_contains($lowerName, 'spray')) $volume = '125ml';
-        elseif (str_contains($lowerName, 'solaire') || str_contains($lowerName, 'crème')) $volume = '50ml';
-        elseif (str_contains($lowerName, 'coffret') || str_contains($lowerName, 'pack')) $volume = 'Coffret 4 Soins';
+        // Use custom product size from dashboard, fallback to name-based detection if empty
+        $volume = $product->size ?: $product->volume;
+        if (!$volume) {
+            $lowerName = strtolower($product->name);
+            if (str_contains($lowerName, 'shampooing')) $volume = '200ml';
+            elseif (str_contains($lowerName, 'huile')) $volume = '50ml';
+            elseif (str_contains($lowerName, 'spray')) $volume = '125ml';
+            elseif (str_contains($lowerName, 'solaire') || str_contains($lowerName, 'crème')) $volume = '50ml';
+            elseif (str_contains($lowerName, 'coffret') || str_contains($lowerName, 'pack')) $volume = 'Coffret 4 Soins';
+            else $volume = 'Soin Bio';
+        }
 
         $activeTag = '100% Bio du Haut Atlas';
         if (str_contains($lowerName, 'shampooing')) $activeTag = 'Romarin sauvage & Argan';

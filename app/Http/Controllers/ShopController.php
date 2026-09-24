@@ -108,7 +108,8 @@ class ShopController extends Controller
             'is_on_sale' => $product->isOnSale(),
             'discount_percentage' => $product->discount_percentage,
             'category_name' => $product->category_name,
-            'main_image_url' => $product->main_image ? \Storage::url($product->main_image) : null,
+            'size' => $product->size ?: $product->volume,
+            'main_image_url' => $product->image_url,
             'url' => route('shop.show', $product->id)
         ]);
     }

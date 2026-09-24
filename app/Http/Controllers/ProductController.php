@@ -59,6 +59,7 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'sku' => ['required', 'string', 'max:255', 'unique:products,sku'],
+            'size' => ['nullable', 'string', 'max:50'],
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
             'cost_price' => ['nullable', 'numeric', 'min:0'],
@@ -117,6 +118,7 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'sku' => ['required', 'string', 'max:255', 'unique:products,sku,' . $product->id],
+            'size' => ['nullable', 'string', 'max:50'],
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
             'cost_price' => ['nullable', 'numeric', 'min:0'],

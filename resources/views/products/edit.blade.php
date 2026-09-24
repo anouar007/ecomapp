@@ -149,6 +149,21 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="size" class="form-label">
+                        <i class="fas fa-wine-bottle text-muted"></i> Product Size / Contenance
+                    </label>
+                    <input type="text" 
+                           id="size" 
+                           name="size" 
+                           class="form-control" 
+                           value="{{ old('size', $product->size ?? $product->volume) }}" 
+                           placeholder="e.g. 50ml, 125ml, 200g, Pack 4 Soins">
+                    <small class="form-help">
+                        Badge shown on top-right of product card
+                    </small>
+                </div>
+
+                <div class="form-group">
                     <label for="sku" class="form-label">
                         SKU <span class="required">*</span>
                     </label>
