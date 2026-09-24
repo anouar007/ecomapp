@@ -138,23 +138,65 @@
 .sp-fg {
     margin-bottom: 18px;
 }
-.sp-city-switch-btn {
-    background: transparent;
-    border: none;
-    color: #c28d32;
-    font-size: 0.74rem;
-    font-weight: 700;
-    cursor: pointer;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    padding: 0;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    transition: color 0.2s ease;
+.sp-city-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border: 1.5px solid rgba(12, 38, 30, 0.14);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(12, 38, 30, 0.16);
+    z-index: 1050;
+    max-height: 230px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
 }
-.sp-city-switch-btn:hover {
+.sp-city-item {
+    padding: 11px 14px;
+    font-size: 0.90rem;
+    font-weight: 600;
     color: #0c261e;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    transition: background 0.15s ease, color 0.15s ease;
+    border-bottom: 1px solid rgba(12, 38, 30, 0.04);
+}
+.sp-city-item:last-child {
+    border-bottom: none;
+}
+.sp-city-item:hover, .sp-city-item.active {
+    background: #fbf8f2;
+    color: #c28d32;
+}
+.sp-city-item .city-pin {
+    color: #c28d32;
+    font-size: 0.80rem;
+    opacity: 0.85;
+}
+.sp-city-match {
+    color: #c28d32;
+    font-weight: 800;
+}
+.sp-city-custom-opt {
+    padding: 11px 14px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #0c261e;
+    background: #faf8f3;
+    border-top: 1px dashed rgba(226, 173, 80, 0.45);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.15s ease;
+}
+.sp-city-custom-opt:hover {
+    background: #f4efe4;
+    color: #c28d32;
 }
 .sp-label {
     display: flex;
@@ -709,58 +751,33 @@
                                        autocomplete="email">
                             </div>
 
-                            <!-- City -->
-                            @php
-                                $popularCities = [
-                                    'Casablanca', 'Rabat', 'Marrakech', 'Fès', 'Tanger', 'Agadir', 
-                                    'Meknès', 'Oujda', 'Kenitra', 'Tétouan', 'Salé', 'Temara', 
-                                    'Safi', 'Mohammedia', 'Khouribga', 'El Jadida', 'Béni Mellal', 
-                                    'Aït Melloul', 'Nador', 'Laâyoune', 'Dakhla', 'Al Hoceïma', 
-                                    'Settat', 'Berrechid', 'Khemisset', 'Guelmim', 'Berkane', 
-                                    'Taourirt', 'Taroudant', 'Ouarzazate', 'Taza', 'Essaouira', 
-                                    'Larache', 'Ksar El Kebir', 'Tiznit', 'Azilal', 'Aït Oumdis'
-                                ];
-                                $oldCity = old('shipping_city');
-                                $isCustomCity = $oldCity && !in_array($oldCity, $popularCities);
-                            @endphp
+                            <!-- City (Text input with live proposed options + manual typing) -->
                             <div class="col-md-6 sp-fg">
-                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <label class="sp-label mb-0" for="shipping_city_select">
-                                        <i class="fas fa-city" style="color: #c28d32;"></i>
-                                        <span>Ville <span class="text-danger">*</span></span>
-                                    </label>
-                                    <button type="button" class="sp-city-switch-btn" id="cityModeBtn" onclick="toggleCityMode()">
-                                        <i class="fas fa-pen me-1" id="cityModeBtnIcon"></i><span id="cityModeBtnText">{{ $isCustomCity ? 'Choisir dans la liste' : 'Saisir manuellement' }}</span>
-                                    </button>
-                                </div>
-
-                                <!-- Mode 1: Dropdown Select -->
-                                <div id="citySelectContainer" style="display: {{ $isCustomCity ? 'none' : 'block' }};">
-                                    <select id="shipping_city_select" 
-                                            {{ $isCustomCity ? '' : 'name="shipping_city" required' }} 
-                                            class="sp-select @error('shipping_city') is-invalid @enderror" 
-                                            onchange="handleCitySelectChange(this)"
-                                            autocomplete="address-level2">
-                                        <option value="" disabled {{ $oldCity ? '' : 'selected' }}>Sélectionnez votre ville</option>
-                                        @foreach($popularCities as $city)
-                                            <option value="{{ $city }}" {{ $oldCity == $city ? 'selected' : '' }}>{{ $city }}</option>
-                                        @endforeach
-                                        <option value="Autre ville" {{ ($oldCity == 'Autre ville' || $isCustomCity) ? 'selected' : '' }}>✏️ Autre ville (saisir manuellement)...</option>
-                                    </select>
-                                </div>
-
-                                <!-- Mode 2: Manual Text Input -->
-                                <div id="cityManualContainer" style="display: {{ $isCustomCity ? 'block' : 'none' }};">
+                                <label class="sp-label" for="shipping_city">
+                                    <i class="fas fa-city" style="color: #c28d32;"></i>
+                                    <span>Ville <span class="text-danger">*</span></span>
+                                </label>
+                                <div class="position-relative" id="cityInputWrapper">
                                     <input type="text" 
-                                           id="shipping_city_manual" 
-                                           {{ $isCustomCity ? 'name="shipping_city" required' : '' }}
+                                           id="shipping_city" 
+                                           name="shipping_city" 
                                            class="sp-input @error('shipping_city') is-invalid @enderror" 
-                                           placeholder="Ex: Demnate, Oukaïmeden, Azilal, Tinghir..." 
-                                           value="{{ $isCustomCity ? $oldCity : '' }}" 
-                                           autocomplete="address-level2">
-                                    <div class="form-text" style="font-size: 0.72rem; color: #6b7a72; margin-top: 5px;">
-                                        <i class="fas fa-info-circle me-1" style="color: #c28d32;"></i>Livraison disponible partout au Maroc (villes, centres et communes).
+                                           placeholder="Ex: Casablanca, Rabat, Marrakech, Azilal..." 
+                                           value="{{ old('shipping_city', auth()->user()->city ?? '') }}" 
+                                           required 
+                                           autocomplete="off">
+                                    <span class="position-absolute end-0 top-50 translate-middle-y me-3 text-muted" style="pointer-events: none; opacity: 0.6;">
+                                        <i class="fas fa-map-marker-alt" style="color: #c28d32;"></i>
+                                    </span>
+
+                                    <!-- Dropdown of Proposed Options -->
+                                    <div id="spCityDropdown" class="sp-city-dropdown" style="display: none;">
+                                        <div id="spCityList"></div>
                                     </div>
+                                </div>
+
+                                <div class="form-text" style="font-size: 0.72rem; color: #6b7a72; margin-top: 5px;">
+                                    <i class="fas fa-info-circle me-1" style="color: #c28d32;"></i>Tapez votre ville pour voir les suggestions ou saisissez directement le nom de votre commune/village.
                                 </div>
                             </div>
 
@@ -947,57 +964,171 @@
 
 @push('scripts')
 <script>
-        // City mode toggle: dropdown vs manual input
-    var isCityManualMode = false;
+    // Comprehensive Moroccan Cities for Real-Time Autocomplete
+    var moroccanCities = [
+        "Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir", "Meknès", "Oujda", 
+        "Kenitra", "Tétouan", "Salé", "Temara", "Safi", "Mohammedia", "Khouribga", "El Jadida", 
+        "Béni Mellal", "Nador", "Laâyoune", "Dakhla", "Al Hoceïma", "Settat", "Berrechid", 
+        "Khemisset", "Guelmim", "Berkane", "Taourirt", "Taroudant", "Ouarzazate", "Taza", 
+        "Essaouira", "Larache", "Ksar El Kebir", "Tiznit", "Azilal", "Aït Oumdis", "Demnate", 
+        "Tinghir", "Midelt", "Errachidia", "Tan-Tan", "Sidi Kacem", "Sidi Slimane", "Youssoufia", 
+        "Oued Zem", "Skhirat", "Fnideq", "M'diq", "Martil", "Chefchaouen", "Ouezzane", "Bouznika", 
+        "Guercif", "Jerada", "Figuig", "Zagora", "Tarfaya", "Smara", "Assa", "Tata", "Sidi Ifni", 
+        "Imzouren", "Beni Bouayach", "Souk El Arbaa", "Asilah", "Ben Guerir", "Kelaat M'Gouna", 
+        "El Kelaa des Sraghna", "Kasba Tadla", "Zaio", "Driouch", "Selouane", "Bouarfa", "Missour", 
+        "Outat El Haj", "Ain Harrouda", "Bouskoura", "Tit Mellil", "Deroua", "Mediouna", "Nouaceur", 
+        "Had Soualem", "Bir Jdid", "Oulmes", "Rich", "Erfoud", "Rissani", "Boudnib", "Goulmima", 
+        "Boulmane Dades", "Agdz", "Mhamid El Ghizlane", "Oukaïmeden", "Asni", "Tahannaout", 
+        "Amizmiz", "Ourika", "Imilchil", "Aït Bouguemez", "Bin El Ouidane", "Ouaouizeght", "Afourar",
+        "Ifrane", "Azrou", "Sefrou", "Moulay Yacoub", "Sidi Bennour", "Chichaoua", "Tafraout", "Taliouine", "Taghazout"
+    ];
 
-    function toggleCityMode() {
-        isCityManualMode = !isCityManualMode;
-        applyCityMode();
+    function normalizeCity(str) {
+        return (str || '')
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[̀-ͯ]/g, "")
+            .trim();
     }
 
-    function handleCitySelectChange(select) {
-        if (select.value === 'Autre ville') {
-            isCityManualMode = true;
-            applyCityMode();
-            var manualInput = document.getElementById('shipping_city_manual');
-            if (manualInput) {
-                manualInput.value = '';
-                manualInput.focus();
-            }
-        }
+    function escapeHtml(text) {
+        var div = document.createElement('div');
+        div.textContent = text || '';
+        return div.innerHTML;
     }
 
-    function applyCityMode() {
-        var selectContainer = document.getElementById('citySelectContainer');
-        var manualContainer = document.getElementById('cityManualContainer');
-        var selectEl = document.getElementById('shipping_city_select');
-        var manualEl = document.getElementById('shipping_city_manual');
-        var btnText = document.getElementById('cityModeBtnText');
-        var btnIcon = document.getElementById('cityModeBtnIcon');
+    var cityInput = document.getElementById('shipping_city');
+    var cityDropdown = document.getElementById('spCityDropdown');
+    var cityList = document.getElementById('spCityList');
+    var currentHighlightIndex = -1;
 
-        if (isCityManualMode) {
-            selectContainer.style.display = 'none';
-            manualContainer.style.display = 'block';
-            selectEl.removeAttribute('name');
-            selectEl.removeAttribute('required');
-            manualEl.setAttribute('name', 'shipping_city');
-            manualEl.setAttribute('required', 'required');
-            manualEl.focus();
-            if (btnText) btnText.textContent = 'Choisir dans la liste';
-            if (btnIcon) btnIcon.className = 'fas fa-list me-1';
+    function selectCity(val) {
+        if (!cityInput) return;
+        cityInput.value = val;
+        cityInput.classList.remove('is-invalid');
+        if (cityDropdown) cityDropdown.style.display = 'none';
+        currentHighlightIndex = -1;
+    }
+
+    function renderCitySuggestions(query) {
+        if (!cityList || !cityDropdown) return;
+        var cleanQ = normalizeCity(query);
+        var matches = [];
+        currentHighlightIndex = -1;
+
+        if (!cleanQ) {
+            // Show top popular destinations when input is empty
+            matches = moroccanCities.slice(0, 8);
         } else {
-            selectContainer.style.display = 'block';
-            manualContainer.style.display = 'none';
-            manualEl.removeAttribute('name');
-            manualEl.removeAttribute('required');
-            selectEl.setAttribute('name', 'shipping_city');
-            selectEl.setAttribute('required', 'required');
-            if (selectEl.value === 'Autre ville') {
-                selectEl.value = '';
-            }
-            if (btnText) btnText.textContent = 'Saisir manuellement';
-            if (btnIcon) btnIcon.className = 'fas fa-pen me-1';
+            // Filter cities that contain or start with the query
+            matches = moroccanCities.filter(function(c) {
+                return normalizeCity(c).indexOf(cleanQ) !== -1;
+            });
         }
+
+        var html = '';
+        if (matches.length > 0) {
+            matches.forEach(function(city) {
+                var safeCity = escapeHtml(city);
+                var displayHtml = safeCity;
+                if (cleanQ) {
+                    var idx = normalizeCity(city).indexOf(cleanQ);
+                    if (idx !== -1) {
+                        displayHtml = escapeHtml(city.substring(0, idx)) + 
+                                      '<span class="sp-city-match">' + escapeHtml(city.substring(idx, idx + cleanQ.length)) + '</span>' + 
+                                      escapeHtml(city.substring(idx + cleanQ.length));
+                    }
+                }
+                html += '<div class="sp-city-item" data-value="' + safeCity + '">' +
+                        '<i class="fas fa-map-marker-alt city-pin"></i>' +
+                        '<span>' + displayHtml + '</span>' +
+                        '</div>';
+            });
+        }
+
+        // If user typed something not strictly matching, offer manual option
+        if (cleanQ && !moroccanCities.some(function(c) { return normalizeCity(c) === cleanQ; })) {
+            var rawVal = escapeHtml(query.trim());
+            html += '<div class="sp-city-custom-opt" data-value="' + rawVal + '">' +
+                    '<i class="fas fa-pen" style="color: #c28d32; font-size: 0.8rem;"></i>' +
+                    '<span>Utiliser "<strong>' + rawVal + '</strong>" (Saisie manuelle)</span>' +
+                    '</div>';
+        }
+
+        if (html) {
+            cityList.innerHTML = html;
+            cityDropdown.style.display = 'block';
+
+            // Add pointer/click listeners to items
+            cityDropdown.querySelectorAll('.sp-city-item, .sp-city-custom-opt').forEach(function(item) {
+                item.addEventListener('pointerdown', function(e) {
+                    e.preventDefault();
+                    selectCity(this.getAttribute('data-value'));
+                });
+                item.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    selectCity(this.getAttribute('data-value'));
+                });
+            });
+        } else {
+            cityDropdown.style.display = 'none';
+        }
+    }
+
+    if (cityInput) {
+        cityInput.addEventListener('input', function() {
+            renderCitySuggestions(this.value);
+        });
+
+        cityInput.addEventListener('focus', function() {
+            renderCitySuggestions(this.value);
+        });
+
+        // Close dropdown when tapping/clicking outside
+        document.addEventListener('pointerdown', function(e) {
+            if (!cityInput.contains(e.target) && !cityDropdown.contains(e.target)) {
+                cityDropdown.style.display = 'none';
+            }
+        });
+
+        cityInput.addEventListener('keydown', function(e) {
+            var items = cityDropdown.querySelectorAll('.sp-city-item, .sp-city-custom-opt');
+            if (e.key === 'Escape') {
+                cityDropdown.style.display = 'none';
+            } else if (e.key === 'ArrowDown') {
+                if (cityDropdown.style.display === 'none') {
+                    renderCitySuggestions(cityInput.value);
+                } else if (items.length > 0) {
+                    e.preventDefault();
+                    currentHighlightIndex = (currentHighlightIndex + 1) % items.length;
+                    items.forEach(function(el, idx) {
+                        el.classList.toggle('active', idx === currentHighlightIndex);
+                    });
+                    if (items[currentHighlightIndex]) {
+                        items[currentHighlightIndex].scrollIntoView({ block: 'nearest' });
+                    }
+                }
+            } else if (e.key === 'ArrowUp') {
+                if (items.length > 0 && cityDropdown.style.display !== 'none') {
+                    e.preventDefault();
+                    currentHighlightIndex = (currentHighlightIndex - 1 + items.length) % items.length;
+                    items.forEach(function(el, idx) {
+                        el.classList.toggle('active', idx === currentHighlightIndex);
+                    });
+                    if (items[currentHighlightIndex]) {
+                        items[currentHighlightIndex].scrollIntoView({ block: 'nearest' });
+                    }
+                }
+            } else if (e.key === 'Enter') {
+                if (cityDropdown.style.display !== 'none' && items.length > 0) {
+                    e.preventDefault();
+                    var chosen = currentHighlightIndex >= 0 ? items[currentHighlightIndex] : items[0];
+                    if (chosen) {
+                        selectCity(chosen.getAttribute('data-value'));
+                    }
+                }
+            }
+        });
     }
 
     // Ensure checkout body class is active
@@ -1009,9 +1140,7 @@
         checkoutForm.addEventListener('submit', function (e) {
             var nameField = document.getElementById('customer_name');
             var phoneField = document.getElementById('customer_phone');
-            var cityField = isCityManualMode 
-                ? document.getElementById('shipping_city_manual') 
-                : document.getElementById('shipping_city_select');
+            var cityField = document.getElementById('shipping_city');
             var addressField = document.getElementById('shipping_address');
 
             var invalid = null;
