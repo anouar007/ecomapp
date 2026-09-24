@@ -624,13 +624,45 @@
                 el.textContent = num;
             });
 
-            const floatingBtn = document.getElementById('spFloatingCheckout');
-            const badge = document.getElementById('spFloatingCartBadge');
+            let floatingBtn = document.getElementById('spFloatingCheckout');
+            if (!floatingBtn && num > 0 && !window.location.pathname.includes('/checkout')) {
+                floatingBtn = document.createElement('a');
+                floatingBtn.href = '{{ route('checkout.index') }}';
+                floatingBtn.id = 'spFloatingCheckout';
+                floatingBtn.className = 'sp-floating-checkout is-visible';
+                floatingBtn.setAttribute('title', 'Confirmer la commande');
+                floatingBtn.setAttribute('aria-label', 'Confirmer la commande');
+                floatingBtn.innerHTML = `
+                    <span class="sp-fc-icon-box">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                        <span class="sp-fc-badge" id="spFloatingCartBadge">${num}</span>
+                    </span>
+                    <span class="sp-fc-text">Confirmer la commande</span>
+                    <span class="sp-fc-arrow">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </span>
+                `;
+                document.body.appendChild(floatingBtn);
+            }
+
             if (floatingBtn) {
+                const badge = document.getElementById('spFloatingCartBadge');
                 if (badge) badge.textContent = num;
-                if (num > 0) {
+
+                if (num > 0 && !window.location.pathname.includes('/checkout')) {
                     floatingBtn.classList.remove('is-hidden');
                     floatingBtn.classList.add('is-visible');
+                    floatingBtn.style.setProperty('display', 'inline-flex', 'important');
+                    floatingBtn.style.setProperty('opacity', '1', 'important');
+                    floatingBtn.style.setProperty('pointer-events', 'auto', 'important');
+                    floatingBtn.style.setProperty('visibility', 'visible', 'important');
+
                     floatingBtn.classList.remove('sp-pulse');
                     void floatingBtn.offsetWidth;
                     floatingBtn.classList.add('sp-pulse');
@@ -638,9 +670,13 @@
                 } else {
                     floatingBtn.classList.remove('is-visible');
                     floatingBtn.classList.add('is-hidden');
+                    floatingBtn.style.setProperty('display', 'none', 'important');
+                    floatingBtn.style.setProperty('opacity', '0', 'important');
+                    floatingBtn.style.setProperty('pointer-events', 'none', 'important');
                 }
             }
         }
+        window.updateGlobalCartCount = updateGlobalCartCount;
 
         // Mini Cart Functions
         function updateQty(id, qty) {
@@ -886,9 +922,7 @@
             }
             var fc = document.getElementById('spFloatingCheckout');
             if (fc) {
-                fc.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
-                fc.style.opacity = '0';
-                fc.style.pointerEvents = 'none';
+                fc.style.setProperty('display', 'none', 'important');
             }
         });
 
@@ -901,8 +935,9 @@
             }
             var fc = document.getElementById('spFloatingCheckout');
             if (fc && fc.classList.contains('is-visible')) {
-                fc.style.opacity = '1';
-                fc.style.pointerEvents = '';
+                fc.style.setProperty('display', 'inline-flex', 'important');
+                fc.style.setProperty('opacity', '1', 'important');
+                fc.style.setProperty('pointer-events', 'auto', 'important');
             }
         });
     })();

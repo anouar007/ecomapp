@@ -7,54 +7,54 @@
 <!-- Floating Button to Confirm Order -->
 <style>
 .sp-floating-checkout {
-    position: fixed;
+    position: fixed !important;
     bottom: 24px;
     left: 50%;
-    transform: translateX(-50%) translateY(30px) scale(0.92);
-    z-index: 9980;
-    display: inline-flex;
+    transform: translateX(-50%);
+    z-index: 9980 !important;
+    display: none;
     align-items: center;
     gap: 12px;
-    background: linear-gradient(135deg, #0c261e 0%, #174236 100%);
+    background: linear-gradient(135deg, #0c261e 0%, #174236 100%) !important;
     color: #ffffff !important;
     text-decoration: none !important;
     padding: 10px 22px 10px 14px;
     border-radius: 9999px;
-    border: 1.5px solid rgba(226, 173, 80, 0.45);
-    box-shadow: 0 10px 28px rgba(12, 38, 30, 0.42), 0 2px 8px rgba(0, 0, 0, 0.18);
+    border: 1.5px solid rgba(226, 173, 80, 0.5) !important;
+    box-shadow: 0 10px 28px rgba(12, 38, 30, 0.42), 0 2px 8px rgba(0, 0, 0, 0.18) !important;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-                box-shadow 0.25s ease,
-                border-color 0.25s ease;
+    transition: opacity 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
     cursor: pointer;
     user-select: none;
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .sp-floating-checkout.is-visible {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateX(-50%) translateY(0) scale(1);
+    display: inline-flex !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    visibility: visible !important;
+    transform: translateX(-50%) translateY(0) scale(1) !important;
 }
 
 .sp-floating-checkout.is-hidden {
+    display: none !important;
     opacity: 0 !important;
     pointer-events: none !important;
-    transform: translateX(-50%) translateY(30px) scale(0.92) !important;
+    visibility: hidden !important;
 }
 
 .sp-floating-checkout:hover {
-    background: linear-gradient(135deg, #0e2e25 0%, #1c5243 100%);
-    border-color: #e2ad50;
-    transform: translateX(-50%) translateY(-3px) scale(1.03);
-    box-shadow: 0 14px 34px rgba(12, 38, 30, 0.5), 0 0 18px rgba(226, 173, 80, 0.28);
+    background: linear-gradient(135deg, #0e2e25 0%, #1c5243 100%) !important;
+    border-color: #e2ad50 !important;
+    transform: translateX(-50%) translateY(-3px) scale(1.03) !important;
+    box-shadow: 0 14px 34px rgba(12, 38, 30, 0.5), 0 0 18px rgba(226, 173, 80, 0.3) !important;
     color: #ffffff !important;
 }
 
 .sp-floating-checkout:active {
-    transform: translateX(-50%) translateY(0) scale(0.98);
+    transform: translateX(-50%) translateY(0) scale(0.98) !important;
 }
 
 .sp-fc-icon-box {
@@ -62,8 +62,8 @@
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: rgba(226, 173, 80, 0.16);
-    border: 1px solid rgba(226, 173, 80, 0.38);
+    background: rgba(226, 173, 80, 0.18);
+    border: 1px solid rgba(226, 173, 80, 0.4);
     color: #e2ad50;
     display: flex;
     align-items: center;
@@ -73,8 +73,8 @@
 }
 
 .sp-floating-checkout:hover .sp-fc-icon-box {
-    transform: scale(1.06);
-    background: rgba(226, 173, 80, 0.26);
+    transform: scale(1.08);
+    background: rgba(226, 173, 80, 0.28);
 }
 
 .sp-fc-badge {
@@ -117,50 +117,55 @@
     transform: translateX(4px);
 }
 
-@keyframes spFloatingPulse {
+@keyframes spPulseDesktop {
     0% { transform: translateX(-50%) scale(1); }
-    30% { transform: translateX(-50%) scale(1.08); box-shadow: 0 0 25px rgba(226, 173, 80, 0.6); }
-    60% { transform: translateX(-50%) scale(0.98); }
+    40% { transform: translateX(-50%) scale(1.08); box-shadow: 0 0 24px rgba(226, 173, 80, 0.6) !important; }
     100% { transform: translateX(-50%) scale(1); }
 }
 
 .sp-floating-checkout.sp-pulse {
-    animation: spFloatingPulse 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: spPulseDesktop 0.55s ease-out;
 }
 
-/* Mobile: position on bottom-left, opposite of WhatsApp on bottom-right */
-@media (max-width: 767px) {
+/* Mobile responsive */
+@media (max-width: 768px) {
     .sp-floating-checkout {
-        bottom: 18px;
-        left: 14px;
-        transform: translateY(30px) scale(0.92);
-        padding: 9px 16px 9px 11px;
-        gap: 9px;
-        max-width: calc(100vw - 86px);
+        bottom: 18px !important;
+        left: 14px !important;
+        transform: none !important;
+        padding: 9px 16px 9px 11px !important;
+        gap: 9px !important;
+        max-width: calc(100vw - 86px) !important;
     }
     .sp-floating-checkout.is-visible {
-        transform: translateY(0) scale(1);
+        display: inline-flex !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        visibility: visible !important;
+        transform: none !important;
     }
     .sp-floating-checkout.is-hidden {
-        transform: translateY(30px) scale(0.92) !important;
+        display: none !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        visibility: hidden !important;
     }
     .sp-floating-checkout:hover {
-        transform: translateY(-2px) scale(1.02);
+        transform: translateY(-2px) scale(1.02) !important;
     }
     .sp-floating-checkout:active {
-        transform: translateY(0) scale(0.98);
+        transform: translateY(0) scale(0.98) !important;
     }
     .sp-fc-text {
         font-size: 0.82rem;
     }
-    @keyframes spFloatingPulseMobile {
+    @keyframes spPulseMobile {
         0% { transform: scale(1); }
-        30% { transform: scale(1.08); box-shadow: 0 0 25px rgba(226, 173, 80, 0.6); }
-        60% { transform: scale(0.98); }
+        40% { transform: scale(1.08); box-shadow: 0 0 24px rgba(226, 173, 80, 0.6) !important; }
         100% { transform: scale(1); }
     }
     .sp-floating-checkout.sp-pulse {
-        animation: spFloatingPulseMobile 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        animation: spPulseMobile 0.55s ease-out;
     }
 }
 </style>
@@ -168,6 +173,7 @@
 <a href="{{ route('checkout.index') }}" 
    id="spFloatingCheckout" 
    class="sp-floating-checkout {{ $cartCount > 0 ? 'is-visible' : '' }}" 
+   style="{{ $cartCount > 0 ? 'display: inline-flex; opacity: 1; pointer-events: auto;' : 'display: none; opacity: 0; pointer-events: none;' }}"
    title="Confirmer la commande"
    aria-label="Confirmer la commande">
     <span class="sp-fc-icon-box">

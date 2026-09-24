@@ -485,7 +485,9 @@ function pdpAddToCart(event) {
         btn.disabled = false;
         btnText.innerHTML = orig;
         if (data.success) {
-            if (typeof updateGlobalCartCount === 'function') {
+            if (typeof window.updateGlobalCartCount === 'function') {
+                window.updateGlobalCartCount(data.cartCount);
+            } else if (typeof updateGlobalCartCount === 'function') {
                 updateGlobalCartCount(data.cartCount);
             } else {
                 document.querySelectorAll('#header-cart-count, #header-cart-count-mobile, .sp-cart-count').forEach(el => {
