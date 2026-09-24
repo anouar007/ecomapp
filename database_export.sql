@@ -136,7 +136,7 @@ CREATE TABLE `cache` (
 
 LOCK TABLES `cache` WRITE;
 /*!40000 ALTER TABLE `cache` DISABLE KEYS */;
-INSERT INTO `cache` VALUES ('setting_app_name','s:16:\"Updated App Name\";',1790284240),('setting_language','N;',1790284245),('setting_timezone','N;',1790284245);
+INSERT INTO `cache` VALUES ('setting_app_name','s:16:\"Updated App Name\";',1790285007),('setting_language','N;',1790285112),('setting_timezone','N;',1790285112);
 /*!40000 ALTER TABLE `cache` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -825,7 +825,7 @@ CREATE TABLE `model_has_roles` (
 
 LOCK TABLES `model_has_roles` WRITE;
 /*!40000 ALTER TABLE `model_has_roles` DISABLE KEYS */;
-INSERT INTO `model_has_roles` VALUES (1,'App\\Models\\User',14),(1,'App\\Models\\User',37),(1,'App\\Models\\User',38),(1,'App\\Models\\User',39),(1,'App\\Models\\User',41),(1,'App\\Models\\User',43),(1,'App\\Models\\User',44),(1,'App\\Models\\User',45);
+INSERT INTO `model_has_roles` VALUES (1,'App\\Models\\User',14),(1,'App\\Models\\User',37),(1,'App\\Models\\User',38),(1,'App\\Models\\User',39),(1,'App\\Models\\User',41),(1,'App\\Models\\User',43),(1,'App\\Models\\User',44),(1,'App\\Models\\User',45),(1,'App\\Models\\User',47);
 /*!40000 ALTER TABLE `model_has_roles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1096,7 +1096,7 @@ CREATE TABLE `permissions` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `permissions_name_guard_name_unique` (`name`,`guard_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1105,7 +1105,7 @@ CREATE TABLE `permissions` (
 
 LOCK TABLES `permissions` WRITE;
 /*!40000 ALTER TABLE `permissions` DISABLE KEYS */;
-INSERT INTO `permissions` VALUES (1,'manage_settings','web','2026-09-24 20:10:34','2026-09-24 20:10:34'),(16,'manage_invoices','web','2026-09-24 20:10:35','2026-09-24 20:10:35'),(18,'view_reports','web','2026-09-24 20:10:35','2026-09-24 20:10:35'),(19,'manage_products','web','2026-09-24 20:10:35','2026-09-24 20:10:35');
+INSERT INTO `permissions` VALUES (1,'manage_settings','web','2026-09-24 20:10:34','2026-09-24 20:10:34'),(16,'manage_invoices','web','2026-09-24 20:10:35','2026-09-24 20:10:35'),(18,'view_reports','web','2026-09-24 20:10:35','2026-09-24 20:10:35'),(19,'manage_products','web','2026-09-24 20:10:35','2026-09-24 20:10:35'),(20,'view_dashboard','web','2026-09-24 20:24:04','2026-09-24 20:24:04'),(21,'manage_users','web','2026-09-24 20:24:04','2026-09-24 20:24:04'),(22,'manage_roles','web','2026-09-24 20:24:04','2026-09-24 20:24:04'),(23,'manage_categories','web','2026-09-24 20:24:04','2026-09-24 20:24:04'),(24,'manage_inventory','web','2026-09-24 20:24:04','2026-09-24 20:24:04'),(25,'manage_coupons','web','2026-09-24 20:24:04','2026-09-24 20:24:04'),(26,'manage_reviews','web','2026-09-24 20:24:04','2026-09-24 20:24:04'),(27,'manage_returns','web','2026-09-24 20:24:04','2026-09-24 20:24:04'),(28,'manage_orders','web','2026-09-24 20:24:04','2026-09-24 20:24:04'),(29,'manage_customers','web','2026-09-24 20:24:04','2026-09-24 20:24:04'),(30,'manage_accounting','web','2026-09-24 20:24:04','2026-09-24 20:24:04'),(31,'view_analytics','web','2026-09-24 20:24:04','2026-09-24 20:24:04'),(32,'manage_content','web','2026-09-24 20:24:04','2026-09-24 20:24:04'),(33,'view_activity_logs','web','2026-09-24 20:24:04','2026-09-24 20:24:04'),(34,'export_data','web','2026-09-24 20:24:04','2026-09-24 20:24:04');
 /*!40000 ALTER TABLE `permissions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1306,7 +1306,7 @@ CREATE TABLE `role_has_permissions` (
 
 LOCK TABLES `role_has_permissions` WRITE;
 /*!40000 ALTER TABLE `role_has_permissions` DISABLE KEYS */;
-INSERT INTO `role_has_permissions` VALUES (1,1),(16,1),(18,1),(19,1);
+INSERT INTO `role_has_permissions` VALUES (1,1),(16,1),(16,4),(18,1),(18,4),(19,1),(19,4),(19,5),(20,1),(20,4),(20,5),(21,1),(22,1),(23,1),(23,4),(24,1),(24,4),(25,1),(25,4),(26,1),(26,4),(27,1),(27,4),(28,1),(28,4),(28,5),(29,1),(29,4),(30,1),(31,1),(32,1),(33,1),(34,1);
 /*!40000 ALTER TABLE `role_has_permissions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1325,7 +1325,7 @@ CREATE TABLE `roles` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `roles_name_guard_name_unique` (`name`,`guard_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1334,7 +1334,7 @@ CREATE TABLE `roles` (
 
 LOCK TABLES `roles` WRITE;
 /*!40000 ALTER TABLE `roles` DISABLE KEYS */;
-INSERT INTO `roles` VALUES (1,'Admin','web','2026-09-24 20:10:34','2026-09-24 20:10:34');
+INSERT INTO `roles` VALUES (1,'Admin','web','2026-09-24 20:10:34','2026-09-24 20:10:34'),(4,'Manager','web','2026-09-24 20:24:04','2026-09-24 20:24:04'),(5,'Staff','web','2026-09-24 20:24:04','2026-09-24 20:24:04');
 /*!40000 ALTER TABLE `roles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1486,7 +1486,7 @@ CREATE TABLE `users` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `users_email_unique` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1495,7 +1495,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (14,'Logs Admin','logs_verifier_admin@example.com',NULL,NULL,'$2y$04$2gNLSzLz5LeJJgwdyAStlesVCtx0tiJFXNEXDVII/3Lt5xzGcH4F.',NULL,'2026-09-24 20:10:34','2026-09-24 20:10:34'),(36,'Jane Runte','mikayla.keebler@example.net',NULL,'2026-09-24 20:10:35','$2y$04$cZBlYZ6sqEsSeWNQZaeTdOYD1DvUs1.glydiU.dbTVi6YKXEEQhim','BNnhdLqj7H','2026-09-24 20:10:35','2026-09-24 20:10:35'),(37,'Invoice Admin','invoice_admin@example.com',NULL,NULL,'$2y$04$cLYhSDhjNyAqAsA9hVr9nOLF9vr297Y5EaEcOF3pxK9bh4FuNnmGi',NULL,'2026-09-24 20:10:35','2026-09-24 20:10:35'),(38,'Perms Admin','perms_verifier_admin@example.com',NULL,NULL,'$2y$04$WBWjBE4HqcWwodbdwPjQpu.OichJs29XvDRT0JJtuo.hn1eyc282a',NULL,'2026-09-24 20:10:35','2026-09-24 20:10:35'),(39,'Reports Admin','reports_verifier_admin@example.com',NULL,NULL,'$2y$04$.OJ/dQ.1pkyHfKCeYmojCunf.UpllA1eru9VTnkPJwUvq7IQJzUU6',NULL,'2026-09-24 20:10:35','2026-09-24 20:10:35'),(40,'Dr. Arno Powlowski','breitenberg.lawrence@example.com',NULL,'2026-09-24 20:10:35','$2y$04$cZBlYZ6sqEsSeWNQZaeTdOYD1DvUs1.glydiU.dbTVi6YKXEEQhim','xZS6qGEROK','2026-09-24 20:10:35','2026-09-24 20:10:35'),(41,'Reviews Admin','reviews_admin@example.com',NULL,NULL,'$2y$04$n7nzPnF4rgPffroT5fRV/eKQDqR6cFdoUtRLkdj6lCOYNnuUl6mwW',NULL,'2026-09-24 20:10:35','2026-09-24 20:10:35'),(42,'Dr. Monserrat Predovic','tdaniel@example.net',NULL,'2026-09-24 20:10:35','$2y$04$cZBlYZ6sqEsSeWNQZaeTdOYD1DvUs1.glydiU.dbTVi6YKXEEQhim','3Cl99LSQdG','2026-09-24 20:10:35','2026-09-24 20:10:35'),(43,'Roles Admin','roles_verifier_admin@example.com',NULL,NULL,'$2y$04$Xur.RVOXkCFfJ4rLPtkbo.h7wHRGq6INXC6Fd0bbjsXRz1MVUE0He',NULL,'2026-09-24 20:10:35','2026-09-24 20:10:35'),(44,'Settings Admin','settings_verifier_admin@example.com',NULL,NULL,'$2y$04$eS4L110Vq3thOaxoJXvuieHQnj30zUeylhh8bCPuc.l/siUsn/wVC',NULL,'2026-09-24 20:10:35','2026-09-24 20:10:35'),(45,'Test Admin Link','test_admin_verifier@example.com',NULL,NULL,'$2y$04$3kSWpmveGkjDx92iJzKkNOSQ3pk.afBz4PM.WjPxAhqUsOkZULR8m',NULL,'2026-09-24 20:10:35','2026-09-24 20:10:35');
+INSERT INTO `users` VALUES (14,'Logs Admin','logs_verifier_admin@example.com',NULL,NULL,'$2y$04$2gNLSzLz5LeJJgwdyAStlesVCtx0tiJFXNEXDVII/3Lt5xzGcH4F.',NULL,'2026-09-24 20:10:34','2026-09-24 20:10:34'),(36,'Jane Runte','mikayla.keebler@example.net',NULL,'2026-09-24 20:10:35','$2y$04$cZBlYZ6sqEsSeWNQZaeTdOYD1DvUs1.glydiU.dbTVi6YKXEEQhim','BNnhdLqj7H','2026-09-24 20:10:35','2026-09-24 20:10:35'),(37,'Invoice Admin','invoice_admin@example.com',NULL,NULL,'$2y$04$cLYhSDhjNyAqAsA9hVr9nOLF9vr297Y5EaEcOF3pxK9bh4FuNnmGi',NULL,'2026-09-24 20:10:35','2026-09-24 20:10:35'),(38,'Perms Admin','perms_verifier_admin@example.com',NULL,NULL,'$2y$04$WBWjBE4HqcWwodbdwPjQpu.OichJs29XvDRT0JJtuo.hn1eyc282a',NULL,'2026-09-24 20:10:35','2026-09-24 20:10:35'),(39,'Reports Admin','reports_verifier_admin@example.com',NULL,NULL,'$2y$04$.OJ/dQ.1pkyHfKCeYmojCunf.UpllA1eru9VTnkPJwUvq7IQJzUU6',NULL,'2026-09-24 20:10:35','2026-09-24 20:10:35'),(40,'Dr. Arno Powlowski','breitenberg.lawrence@example.com',NULL,'2026-09-24 20:10:35','$2y$04$cZBlYZ6sqEsSeWNQZaeTdOYD1DvUs1.glydiU.dbTVi6YKXEEQhim','xZS6qGEROK','2026-09-24 20:10:35','2026-09-24 20:10:35'),(41,'Reviews Admin','reviews_admin@example.com',NULL,NULL,'$2y$04$n7nzPnF4rgPffroT5fRV/eKQDqR6cFdoUtRLkdj6lCOYNnuUl6mwW',NULL,'2026-09-24 20:10:35','2026-09-24 20:10:35'),(42,'Dr. Monserrat Predovic','tdaniel@example.net',NULL,'2026-09-24 20:10:35','$2y$04$cZBlYZ6sqEsSeWNQZaeTdOYD1DvUs1.glydiU.dbTVi6YKXEEQhim','3Cl99LSQdG','2026-09-24 20:10:35','2026-09-24 20:10:35'),(43,'Roles Admin','roles_verifier_admin@example.com',NULL,NULL,'$2y$04$Xur.RVOXkCFfJ4rLPtkbo.h7wHRGq6INXC6Fd0bbjsXRz1MVUE0He',NULL,'2026-09-24 20:10:35','2026-09-24 20:10:35'),(44,'Settings Admin','settings_verifier_admin@example.com',NULL,NULL,'$2y$04$eS4L110Vq3thOaxoJXvuieHQnj30zUeylhh8bCPuc.l/siUsn/wVC',NULL,'2026-09-24 20:10:35','2026-09-24 20:10:35'),(45,'Test Admin Link','test_admin_verifier@example.com',NULL,NULL,'$2y$04$3kSWpmveGkjDx92iJzKkNOSQ3pk.afBz4PM.WjPxAhqUsOkZULR8m',NULL,'2026-09-24 20:10:35','2026-09-24 20:10:35'),(47,'Directeur Général','admin@aitcos.com',NULL,'2026-09-24 20:25:12','$2y$12$.BBkU15/x9M2y5Ox1o3R1OlnQT2PbCh91eO0sLABz2Gz94AS9be5G',NULL,'2026-09-24 20:24:55','2026-09-24 20:25:12');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1538,4 +1538,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-09-24 20:11:20
+-- Dump completed on 2026-09-24 20:25:16
