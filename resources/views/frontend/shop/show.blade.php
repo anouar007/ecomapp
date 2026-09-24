@@ -485,15 +485,19 @@ function pdpAddToCart(event) {
         btn.disabled = false;
         btnText.innerHTML = orig;
         if (data.success) {
-            document.querySelectorAll('#header-cart-count, #header-cart-count-mobile, .sp-cart-count').forEach(el => {
-                if (data.cartCount !== undefined) el.textContent = data.cartCount;
-            });
-            if (typeof refreshMiniCart === 'function') refreshMiniCart(true);
+            if (typeof updateGlobalCartCount === 'function') {
+                updateGlobalCartCount(data.cartCount);
+            } else {
+                document.querySelectorAll('#header-cart-count, #header-cart-count-mobile, .sp-cart-count').forEach(el => {
+                    if (data.cartCount !== undefined) el.textContent = data.cartCount;
+                });
+            }
+            if (typeof refreshMiniCart === 'function') refreshMiniCart(false);
             Swal.fire({ toast:true, position:'top-end', icon:'success',
-                title:'Ajouté au panier !',
+                title:'Soin ajouté au panier !',
                 text:'{{ addslashes($product->name) }}',
                 showConfirmButton:false, timer:2500,
-                background:'#1a1a2e', color:'#fff' });
+                background:'#0c261e', color:'#fff' });
         } else {
             throw new Error(data.message || 'Erreur');
         }

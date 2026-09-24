@@ -617,6 +617,31 @@
         });
         @endif
 
+        // Update all cart counters and the floating checkout button
+        function updateGlobalCartCount(count) {
+            const num = parseInt(count) || 0;
+            document.querySelectorAll('#header-cart-count, #header-cart-count-mobile, .sp-cart-count').forEach(el => {
+                el.textContent = num;
+            });
+
+            const floatingBtn = document.getElementById('spFloatingCheckout');
+            const badge = document.getElementById('spFloatingCartBadge');
+            if (floatingBtn) {
+                if (badge) badge.textContent = num;
+                if (num > 0) {
+                    floatingBtn.classList.remove('is-hidden');
+                    floatingBtn.classList.add('is-visible');
+                    floatingBtn.classList.remove('sp-pulse');
+                    void floatingBtn.offsetWidth;
+                    floatingBtn.classList.add('sp-pulse');
+                    setTimeout(() => floatingBtn.classList.remove('sp-pulse'), 700);
+                } else {
+                    floatingBtn.classList.remove('is-visible');
+                    floatingBtn.classList.add('is-hidden');
+                }
+            }
+        }
+
         // Mini Cart Functions
         function updateQty(id, qty) {
             if(qty < 1) {
@@ -635,10 +660,8 @@
             })
             .then(response => response.json())
             .then(data => {
-                document.querySelectorAll('#header-cart-count, #header-cart-count-mobile, .sp-cart-count').forEach(el => {
-                    if (data.cartCount !== undefined) el.textContent = data.cartCount;
-                });
-                refreshMiniCart();
+                if (data.cartCount !== undefined) updateGlobalCartCount(data.cartCount);
+                refreshMiniCart(false);
                 if (window.location.pathname.endsWith('/cart') || window.location.pathname === '/cart') {
                     window.location.reload();
                 }
@@ -671,10 +694,8 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    document.querySelectorAll('#header-cart-count, #header-cart-count-mobile, .sp-cart-count').forEach(el => {
-                        if (data.cartCount !== undefined) el.textContent = data.cartCount;
-                    });
-                    refreshMiniCart();
+                    if (data.cartCount !== undefined) updateGlobalCartCount(data.cartCount);
+                    refreshMiniCart(false);
                     if (window.location.pathname.endsWith('/cart') || window.location.pathname === '/cart') {
                         window.location.reload();
                     } else if (typeof Swal !== 'undefined') {
@@ -751,9 +772,7 @@
                     btn.innerHTML = originalHtml;
                 }
                 if (data.success) {
-                    document.querySelectorAll('#header-cart-count, #header-cart-count-mobile, .sp-cart-count').forEach(el => {
-                        if (data.cartCount !== undefined) el.textContent = data.cartCount;
-                    });
+                    if (data.cartCount !== undefined) updateGlobalCartCount(data.cartCount);
 
                     if (typeof Swal !== 'undefined') {
                         Swal.fire({
@@ -768,7 +787,7 @@
                         });
                     }
 
-                    refreshMiniCart(true);
+                    refreshMiniCart(false);
 
                     if (window.location.pathname.endsWith('/cart') || window.location.pathname === '/cart') {
                         window.location.reload();
@@ -865,6 +884,12 @@
                 wa.style.transform = 'scale(0.85)';
                 wa.style.pointerEvents = 'none';
             }
+            var fc = document.getElementById('spFloatingCheckout');
+            if (fc) {
+                fc.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+                fc.style.opacity = '0';
+                fc.style.pointerEvents = 'none';
+            }
         });
 
         document.addEventListener('hidden.bs.offcanvas', function () {
@@ -873,6 +898,11 @@
                 wa.style.opacity   = '1';
                 wa.style.transform = 'scale(1)';
                 wa.style.pointerEvents = '';
+            }
+            var fc = document.getElementById('spFloatingCheckout');
+            if (fc && fc.classList.contains('is-visible')) {
+                fc.style.opacity = '1';
+                fc.style.pointerEvents = '';
             }
         });
     })();
@@ -921,6 +951,7 @@
             {!! $code->content !!}
         @endif
     @endforeach
+    @include('partials.floating-checkout')
     @include('partials.whatsapp-popup')
 </body>
 </html>
