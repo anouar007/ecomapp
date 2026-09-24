@@ -24,7 +24,7 @@
           <p class="sp-hero-desc">
             La puissance de la nature pour une protection minérale optimale.<br class="sp-desktop-br">Disponible à l'unité ou dans notre rituel complet.
           </p>
-          <a href="#produits" class="sp-btn-gold" id="heroCtaBtn">
+          <a href="{{ route('shop.index') }}" class="sp-btn-gold" id="heroCtaBtn">
             <span>Découvrir le produit</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>

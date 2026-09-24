@@ -70,6 +70,139 @@
 @section('content')
 
 {{-- =============================================
+     MAIN SHOP LAYOUT
+     ============================================= --}}
+<section class="shop-body" style="background-color: #faf7f2; background-image: url('{{ asset('assets/images/botanical_pattern_bg.jpg') }}'); background-size: 850px auto; background-repeat: repeat; background-position: center top; padding: 50px 0 100px;">
+    <div class="container">
+        <div class="row g-5">
+
+            
+
+            {{-- ── MOBILE FLOATING FILTER BUTTON (FAB) ── --}}
+            <button class="btn btn-primary btn-fab d-lg-none shadow-lg d-flex align-items-center justify-content-center" 
+                    type="button" data-bs-toggle="offcanvas" data-bs-target="#shopFiltersBottom">
+                <i class="fas fa-sliders-h fs-4"></i>
+            </button>
+
+
+
+            {{-- ── SIDEBAR (Desktop) / OFFCANVAS (Mobile) ── --}}
+            <div class="col-lg-3 d-none d-lg-block">
+                <div class="shop-sidebar sticky-top" style="top: 100px;">
+                    @include('frontend.shop.partials.sidebar-content')
+                </div>
+            </div>
+
+
+
+            {{-- ── PRODUCT GRID ── --}}
+            <div class="col-lg-9">
+
+                {{-- Toolbar (Desktop only) --}}
+                <style>
+.sp-cat-pills-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+}
+.sp-cat-pill-btn {
+    background: #ffffff;
+    border: 1.5px solid rgba(12, 38, 30, 0.1);
+    color: #0c261e;
+    padding: 8px 18px;
+    border-radius: 9999px;
+    font-size: 0.86rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+}
+.sp-cat-pill-btn:hover {
+    border-color: #c28d32;
+    color: #c28d32;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(194, 141, 50, 0.15);
+}
+.sp-cat-pill-btn.active {
+    background: #0c261e;
+    color: #ffffff;
+    border-color: #0c261e;
+    box-shadow: 0 4px 14px rgba(12, 38, 30, 0.25);
+}
+.sp-cat-pill-btn .pill-badge {
+    font-size: 0.74rem;
+    opacity: 0.7;
+}
+.sp-cat-pill-btn.active .pill-badge {
+    color: #e2ad50;
+    opacity: 1;
+}
+</style>
+
+                
+
+                <div class="shop-toolbar mb-4 d-none d-lg-flex">
+                    <div class="shop-toolbar-left">
+                        <span class="shop-toolbar-title" id="categoryTitle">
+                            @if(request('category'))
+                                {{ $categories->where('slug', request('category'))->first()->name ?? 'Produits' }}
+                            @else
+                                Tous nos soins botaniques
+                            @endif
+                        </span>
+                        <span class="shop-toolbar-count">{{ $products->total() }} produit{{ $products->total() != 1 ? 's' : '' }}</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <label class="shop-sort-label">Trier :</label>
+                        <select class="shop-sort-select" id="sortSelect">
+                            <option value="newest"  {{ request('sort') == 'newest'     ? 'selected' : '' }}>Plus récents</option>
+                            <option value="price_asc"  {{ request('sort') == 'price_asc'  ? 'selected' : '' }}>Prix croissant</option>
+                            <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Prix décroissant</option>
+                        </select>
+                    </div>
+                </div>
+
+                {{-- Active Filters --}}
+                @if(request('q') || request('category') || request('min_price') || request('max_price'))
+                <div class="shop-active-filters mb-4">
+                    <span class="shop-active-label">Filtres actifs :</span>
+                    @if(request('q'))
+                        <span class="shop-filter-tag">Recherche : {{ request('q') }}</span>
+                    @endif
+                    @if(request('category'))
+                        <span class="shop-filter-tag">Catégorie : {{ $categories->where('slug', request('category'))->first()->name ?? request('category') }}</span>
+                    @endif
+                    @if(request('min_price') || request('max_price'))
+                        <span class="shop-filter-tag">Prix : {{ request('min_price', '0') }} — {{ request('max_price', '∞') }} DH</span>
+                    @endif
+                    <a href="{{ route('shop.index') }}" class="shop-clear-link">
+                        <i class="fas fa-times me-1"></i>Effacer tout
+                    </a>
+                </div>
+                @endif
+
+                {{-- Product Grid (AJAX-swapped partial) --}}
+                <div id="productGridContainer">
+                    @include('frontend.shop.partials.product-grid')
+                </div>
+
+                {{-- Loader --}}
+                <div id="loader" class="d-none text-center py-5">
+                    <div class="shop-loader-spinner"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{{-- =============================================
      SHOP HERO STRIP (dark, matching home page)
      ============================================= --}}
   <header class="sp-boutique-hero" style="background-image: linear-gradient(90deg, rgba(8, 26, 19, 0.94) 0%, rgba(8, 26, 19, 0.80) 45%, rgba(8, 26, 19, 0.35) 82%, rgba(8, 26, 19, 0.65) 100%), url('{{ asset('assets/images/shop-hero.jpg') }}'); background-size: cover; background-position: center right; background-repeat: no-repeat; padding: 130px 0 35px 0; color: #ffffff; position: relative;">
@@ -150,162 +283,7 @@
     </div>
   </header>
 
-{{-- =============================================
-     MAIN SHOP LAYOUT
-     ============================================= --}}
-<section class="shop-body" style="background-color: #faf7f2; background-image: url('{{ asset('assets/images/botanical_pattern_bg.jpg') }}'); background-size: 850px auto; background-repeat: repeat; background-position: center top; padding: 50px 0 100px;">
-    <div class="container">
-        <div class="row g-5">
 
-            {{-- ── MOBILE CATEGORY SCROLLER ── --}}
-            <div class="shop-mobile-categories d-lg-none py-3 mb-2 overflow-auto" style="white-space: nowrap; -webkit-overflow-scrolling: touch;">
-                <div class="container-fluid px-3 d-flex gap-2">
-                    <a href="#" class="btn btn-sm rounded-pill px-4 py-2 fw-bold border category-filter {{ !request('category') ? 'btn-primary text-white border-primary' : 'btn-white text-muted' }}" data-slug="">
-                        Tous
-                    </a>
-                    @foreach($categories as $cat)
-                        <a href="#" class="btn btn-sm rounded-pill px-4 py-2 fw-bold border category-filter {{ request('category') == $cat->slug ? 'btn-primary text-white border-primary' : 'btn-white text-muted' }}" data-slug="{{ $cat->slug }}">
-                            {{ $cat->name }}
-                        </a>
-                    @endforeach
-                </div>
-            </div>
-
-            {{-- ── MOBILE FLOATING FILTER BUTTON (FAB) ── --}}
-            <button class="btn btn-primary btn-fab d-lg-none shadow-lg d-flex align-items-center justify-content-center" 
-                    type="button" data-bs-toggle="offcanvas" data-bs-target="#shopFiltersBottom">
-                <i class="fas fa-sliders-h fs-4"></i>
-            </button>
-
-
-
-            {{-- ── SIDEBAR (Desktop) / OFFCANVAS (Mobile) ── --}}
-            <div class="col-lg-3 d-none d-lg-block">
-                <div class="shop-sidebar sticky-top" style="top: 100px;">
-                    @include('frontend.shop.partials.sidebar-content')
-                </div>
-            </div>
-
-
-
-            {{-- ── PRODUCT GRID ── --}}
-            <div class="col-lg-9">
-
-                {{-- Toolbar (Desktop only) --}}
-                <style>
-.sp-cat-pills-bar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 22px;
-    flex-wrap: wrap;
-}
-.sp-cat-pill-btn {
-    background: #ffffff;
-    border: 1.5px solid rgba(12, 38, 30, 0.1);
-    color: #0c261e;
-    padding: 8px 18px;
-    border-radius: 9999px;
-    font-size: 0.86rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.22s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    text-decoration: none;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-}
-.sp-cat-pill-btn:hover {
-    border-color: #c28d32;
-    color: #c28d32;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(194, 141, 50, 0.15);
-}
-.sp-cat-pill-btn.active {
-    background: #0c261e;
-    color: #ffffff;
-    border-color: #0c261e;
-    box-shadow: 0 4px 14px rgba(12, 38, 30, 0.25);
-}
-.sp-cat-pill-btn .pill-badge {
-    font-size: 0.74rem;
-    opacity: 0.7;
-}
-.sp-cat-pill-btn.active .pill-badge {
-    color: #e2ad50;
-    opacity: 1;
-}
-</style>
-
-                {{-- Horizontal Category Pills --}}
-                <div class="sp-cat-pills-bar">
-                    <button type="button" class="sp-cat-pill-btn category-filter {{ !request('category') ? 'active' : '' }}" data-slug="">
-                        <span>Tous les Soins</span>
-                        <span class="pill-badge">({{ \App\Models\Product::where('status', 'active')->count() }})</span>
-                    </button>
-                    @foreach($categories as $cat)
-                    <button type="button" class="sp-cat-pill-btn category-filter {{ request('category') == $cat->slug ? 'active' : '' }}" data-slug="{{ $cat->slug }}">
-                        <span>{{ $cat->name }}</span>
-                        <span class="pill-badge">({{ $cat->products()->where('status', 'active')->count() }})</span>
-                    </button>
-                    @endforeach
-                </div>
-
-                <div class="shop-toolbar mb-4 d-none d-lg-flex">
-                    <div class="shop-toolbar-left">
-                        <span class="shop-toolbar-title" id="categoryTitle">
-                            @if(request('category'))
-                                {{ $categories->where('slug', request('category'))->first()->name ?? 'Produits' }}
-                            @else
-                                Tous nos soins botaniques
-                            @endif
-                        </span>
-                        <span class="shop-toolbar-count">{{ $products->total() }} produit{{ $products->total() != 1 ? 's' : '' }}</span>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <label class="shop-sort-label">Trier :</label>
-                        <select class="shop-sort-select" id="sortSelect">
-                            <option value="newest"  {{ request('sort') == 'newest'     ? 'selected' : '' }}>Plus récents</option>
-                            <option value="price_asc"  {{ request('sort') == 'price_asc'  ? 'selected' : '' }}>Prix croissant</option>
-                            <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Prix décroissant</option>
-                        </select>
-                    </div>
-                </div>
-
-                {{-- Active Filters --}}
-                @if(request('q') || request('category') || request('min_price') || request('max_price'))
-                <div class="shop-active-filters mb-4">
-                    <span class="shop-active-label">Filtres actifs :</span>
-                    @if(request('q'))
-                        <span class="shop-filter-tag">Recherche : {{ request('q') }}</span>
-                    @endif
-                    @if(request('category'))
-                        <span class="shop-filter-tag">Catégorie : {{ $categories->where('slug', request('category'))->first()->name ?? request('category') }}</span>
-                    @endif
-                    @if(request('min_price') || request('max_price'))
-                        <span class="shop-filter-tag">Prix : {{ request('min_price', '0') }} — {{ request('max_price', '∞') }} DH</span>
-                    @endif
-                    <a href="{{ route('shop.index') }}" class="shop-clear-link">
-                        <i class="fas fa-times me-1"></i>Effacer tout
-                    </a>
-                </div>
-                @endif
-
-                {{-- Product Grid (AJAX-swapped partial) --}}
-                <div id="productGridContainer">
-                    @include('frontend.shop.partials.product-grid')
-                </div>
-
-                {{-- Loader --}}
-                <div id="loader" class="d-none text-center py-5">
-                    <div class="shop-loader-spinner"></div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
 
 {{-- ── OFFCANVAS COMPONENTS (Moved outside main containers) ── --}}
 <div class="offcanvas offcanvas-bottom border-0 shadow-lg d-lg-none" tabindex="-1" id="shopFiltersBottom" style="height: 85vh; border-radius: 24px 24px 0 0; background: #faf9f5;">
