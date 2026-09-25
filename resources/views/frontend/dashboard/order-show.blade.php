@@ -21,9 +21,13 @@
                         <tr>
                             <td class="ps-4 py-3">
                                 <div class="d-flex align-items-center">
-                                    <div class="bg-light rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
-                                        <i class="fas fa-cube text-muted opacity-50"></i>
-                                    </div>
+                                    @php
+                                        $prodImg = $item->product ? $item->product->image_url : null;
+                                        if (!$prodImg) {
+                                            $prodImg = function_exists('app_logo_url') ? app_logo_url() : asset('assets/images/logo.png');
+                                        }
+                                    @endphp
+                                    <img src="{{ $prodImg }}" alt="{{ $item->product_name }}" class="rounded-3 me-3" style="width: 50px; height: 50px; object-fit: cover; border: 1px solid rgba(0,0,0,0.08); flex-shrink: 0;" onerror="this.onerror=null;this.src='{{ function_exists('app_logo_url') ? app_logo_url() : asset('assets/images/logo.png') }}';">
                                     <div>
                                         <h6 class="fw-bold mb-0">{{ $item->product_name }}</h6>
                                         <small class="text-muted">Qté : {{ $item->quantity }}</small>

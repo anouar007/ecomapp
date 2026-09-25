@@ -232,9 +232,16 @@
                             <tr>
                                 <td style="padding-left: 24px;">
                                     <div style="display: flex; align-items: center; gap: 16px;">
-                                        <div style="width: 48px; height: 48px; background: #f1f5f9; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #cbd5e1;">
-                                            <i class="fas fa-image fa-lg"></i>
-                                        </div>
+                                        @php
+                                            $prodImg = null;
+                                            if ($item->product) {
+                                                $prodImg = $item->product->image_url;
+                                            }
+                                            if (!$prodImg) {
+                                                $prodImg = function_exists('app_logo_url') ? app_logo_url() : asset('assets/images/logo.png');
+                                            }
+                                        @endphp
+                                        <img src="{{ $prodImg }}" alt="{{ $item->product_name }}" style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover; border: 1px solid #e2e8f0; flex-shrink: 0;" onerror="this.onerror=null;this.src='{{ function_exists('app_logo_url') ? app_logo_url() : asset('assets/images/logo.png') }}';">
                                         <div>
                                             <div style="font-weight: 600; color: #1e293b; font-size: 15px;">{{ $item->product_name }}</div>
                                             <div style="font-size: 12px; color: #64748b; margin-top: 2px;">SKU: {{ $item->product->sku ?? 'N/A' }}</div>
