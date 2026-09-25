@@ -11,6 +11,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Multi-language Switcher
+Route::get('/lang/{locale}', function ($locale) {
+    if (in_array($locale, ['fr', 'ar', 'en'])) {
+        session(['locale' => $locale]);
+        cookie()->queue(cookie('locale', $locale, 60 * 24 * 365));
+    }
+    return redirect()->back();
+})->name('lang.switch');
+
 // SEO: Sitemap & Robots
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
 Route::get('/robots.txt', [\App\Http\Controllers\SitemapController::class, 'robots'])->name('robots');
