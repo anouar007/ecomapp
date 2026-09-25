@@ -531,6 +531,15 @@
             <div class="sp-footer-signature">Naturellement proche de vous</div>
             <span class="sp-sig-underline"></span>
           </div>
+          <p class="sp-footer-desc">
+            @if(($currentLocale ?? app()->getLocale() ?? 'fr') === 'ar')
+              تعاونية فلاحية وحرفية أصيلة في قلب الأطلس الكبير على ارتفاع 1800 متر. نصنع مستحضرات تجميل طبيعية وعضوية 100% بيو: زيوت نباتية نفيسة، عناية طبيعية بالشعر وواقي الشمس SunPure من كنوز الطبيعة المغربية المستدامة.
+            @elseif(($currentLocale ?? app()->getLocale() ?? 'fr') === 'en')
+              Authentic artisanal cooperative nestled at 1,800m in Morocco's High Atlas. We craft 100% organic and natural botanical skincare, pure oils, and SunPure suncare born from ancestral Moroccan heritage.
+            @else
+              Coopérative artisanale nichée à 1 800 m d'altitude dans le Haut Atlas marocain. Nous formulons des soins cosmétiques 100% biologiques et naturels : huiles végétales pures, rituels capillaires et protecteurs solaires SunPure, issus d'un savoir-faire ancestral respectueux de la terre.
+            @endif
+          </p>
         </div>
 
         <!-- Col 2 : Liens utiles (Titre Doré) -->
