@@ -23,12 +23,8 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
     <!-- Favicon -->
-    @if(setting('app_logo'))
-        <link rel="icon" href="{{ asset('storage/' . setting('app_logo')) }}" type="image/x-icon">
-        <link rel="apple-touch-icon" href="{{ asset('storage/' . setting('app_logo')) }}">
-    @else
-        <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
-    @endif
+    <link rel="icon" href="{{ app_favicon_url() }}">
+    <link rel="apple-touch-icon" href="{{ app_favicon_url() }}">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="@yield('meta_type', 'website')">
@@ -36,7 +32,7 @@
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="@yield('meta_title', setting('app_name', 'Coopérative Aït Oumdis'))">
     <meta property="og:description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
-    <meta property="og:image" content="@yield('meta_image', setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/og-default.jpg'))">
+    <meta property="og:image" content="@yield('meta_image', app_logo_url('images/og-default.jpg'))">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:locale" content="{{ setting('language', 'fr') === 'ar' ? 'ar_MA' : 'fr_MA' }}">
@@ -47,7 +43,7 @@
     <meta name="twitter:url" content="{{ url()->current() }}">
     <meta name="twitter:title" content="@yield('meta_title', setting('app_name', 'Coopérative Aït Oumdis'))">
     <meta name="twitter:description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
-    <meta name="twitter:image" content="@yield('meta_image', setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/og-default.jpg'))">    
+    <meta name="twitter:image" content="@yield('meta_image', app_logo_url('images/og-default.jpg'))">    
     <meta name="twitter:site" content="@yield('twitter_site', '@' . str_replace(' ', '', setting('app_name', 'Coopérative Aït Oumdis')))">
     
     <!-- JSON-LD Structured Data Schema -->
@@ -98,7 +94,7 @@
   <header class="sp-header {{ !request()->routeIs('home') ? 'sp-header-solid' : '' }}" id="spHeader">
     <div class="sp-nav-container">
       <a href="{{ route('home') }}" class="sp-logo-link" aria-label="Accueil Coopérative Aït Oumdis">
-        <img src="{{ asset('assets/images/emblem-gold.png') }}" alt="Logo Aït Oumdis" class="sp-logo-symbol">
+        <img src="{{ app_logo_url() }}" alt="Logo {{ setting('app_name', 'Aït Oumdis') }}" class="sp-logo-symbol">
         <div class="sp-logo-text-wrap">
           <span class="sp-logo-main">AIT OUMDIS</span>
           <span class="sp-logo-sub">COOPERATIVE</span>
@@ -525,7 +521,7 @@
         <!-- Col 1 : Logo & Signature Cursive -->
         <div class="sp-footer-brand-col">
           <a href="{{ route('home') }}" class="sp-logo-link" style="gap: 12px; text-decoration: none;">
-            <img src="{{ asset('assets/images/emblem-gold.png') }}" alt="Logo Aït Oumdis" class="sp-logo-symbol">
+            <img src="{{ app_logo_url() }}" alt="Logo {{ setting('app_name', 'Aït Oumdis') }}" class="sp-logo-symbol">
             <div class="sp-logo-text-wrap">
               <span class="sp-logo-main">AIT OUMDIS</span>
               <span class="sp-logo-sub">COOPERATIVE</span>

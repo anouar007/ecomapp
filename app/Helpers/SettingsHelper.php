@@ -16,6 +16,42 @@ if (!function_exists('setting')) {
     }
 }
 
+if (!function_exists('app_logo_url')) {
+    /**
+     * Get application logo URL from dashboard settings with fallback.
+     *
+     * @param string|null $fallback
+     * @return string
+     */
+    function app_logo_url(?string $fallback = null): string
+    {
+        $logo = setting('app_logo');
+        if (!empty($logo)) {
+            if (str_starts_with($logo, 'http://') || str_starts_with($logo, 'https://')) {
+                return $logo;
+            }
+            return asset('storage/' . ltrim($logo, '/'));
+        }
+        return $fallback ? asset($fallback) : asset('assets/images/emblem-gold.png');
+    }
+}
+
+if (!function_exists('app_favicon_url')) {
+    /**
+     * Get application favicon URL.
+     *
+     * @return string
+     */
+    function app_favicon_url(): string
+    {
+        $logo = setting('app_logo');
+        if (!empty($logo)) {
+            return app_logo_url();
+        }
+        return asset('assets/images/logo.png');
+    }
+}
+
 if (!function_exists('currency')) {
     /**
      * Format a number as currency based on settings

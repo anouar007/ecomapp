@@ -16,7 +16,7 @@
         <div class="auth-card">
             <div class="auth-header">
                 <div class="auth-logo">
-                    <img src="{{ asset('images/emblem-gold.png') }}" alt="Aït Oumdis" style="width: 48px; height: 48px; object-fit: contain;">
+                    <img src="{{ app_logo_url() }}" alt="Aït Oumdis" style="width: 48px; height: 48px; object-fit: contain;">
                 </div>
                 <h1 class="auth-title" style="font-family: 'Playfair Display', Georgia, serif;">Espace Client</h1>
                 <p class="auth-subtitle" style="font-family: 'Plus Jakarta Sans', sans-serif;">Coopérative Aït Oumdis — Terroir du Haut Atlas</p>

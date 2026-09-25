@@ -315,7 +315,7 @@
         <!-- Header -->
         <div class="sp-wa-header">
             <div class="sp-wa-avatar-box">
-                <img src="{{ asset('assets/images/emblem-gold.png') }}" alt="Aït Oumdis" class="sp-wa-avatar">
+                <img src="{{ app_logo_url() }}" alt="Aït Oumdis" class="sp-wa-avatar">
                 <span class="sp-wa-status-dot"></span>
             </div>
             <div class="sp-wa-header-info">
