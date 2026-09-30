@@ -152,35 +152,7 @@
                 </a>
             </li>
             @endcan
-            @can('manage_content')
-            <li class="sidebar-menu-item sidebar-submenu {{ request()->routeIs('pages.*') || request()->routeIs('menus.*') || request()->routeIs('custom-codes.*') ? 'active' : '' }}">
-                <a href="#" class="sidebar-menu-link" onclick="toggleSubmenu(event)">
-                    <i class="fas fa-desktop"></i>
-                    <span>Interfaces & Contenu</span>
-                    <i class="fas fa-chevron-down submenu-arrow"></i>
-                </a>
-                <ul class="submenu-items">
-                    <li class="submenu-item">
-                        <a href="{{ route('pages.index') }}" class="submenu-link {{ request()->routeIs('pages.*') ? 'active' : '' }}">
-                            <i class="fas fa-file-code"></i>
-                            <span>Pages</span>
-                        </a>
-                    </li>
-                    <li class="submenu-item">
-                        <a href="{{ route('menus.index') }}" class="submenu-link {{ request()->routeIs('menus.*') ? 'active' : '' }}">
-                            <i class="fas fa-compass"></i>
-                            <span>Menus de navigation</span>
-                        </a>
-                    </li>
-                    <li class="submenu-item">
-                        <a href="{{ route('custom-codes.index') }}" class="submenu-link {{ request()->routeIs('custom-codes.*') ? 'active' : '' }}">
-                            <i class="fas fa-code"></i>
-                            <span>Codes personnalisés</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            @endcan
+
             @can('manage_settings')
             <li class="sidebar-menu-item">
                 <a href="{{ route('settings.index') }}" class="sidebar-menu-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
