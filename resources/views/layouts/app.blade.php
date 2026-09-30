@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Dashboard') - {{ setting('app_name', 'E-commerce') }}</title>
+    <title>@yield('title', 'Tableau de bord') - {{ setting('app_name', 'E-commerce') }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -57,7 +57,7 @@
             <!-- Help/Tour Button -->
             <button onclick="startTour()" class="btn btn-sm btn-outline-primary" style="margin-right: 12px; border-radius: 20px; display: flex; align-items: center; gap: 6px;">
                 <i class="fas fa-question-circle"></i>
-                <span class="d-none d-md-inline">Help & Guide</span>
+                <span class="d-none d-md-inline">Aide & Guide</span>
             </button>
 
             <div class="user-avatar" id="user-menu-trigger">
@@ -70,17 +70,17 @@
                 </div>
                 <a href="{{ route('profile.show') }}" class="user-dropdown-item">
                     <i class="fas fa-user"></i>
-                    My Profile
+                    Mon Profil
                 </a>
                 <a href="{{ route('profile.edit') }}" class="user-dropdown-item">
                     <i class="fas fa-edit"></i>
-                    Edit Profile
+                    Modifier le profil
                 </a>
                 <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
                     @csrf
                     <button type="submit" class="user-dropdown-item" style="width: 100%;">
                         <i class="fas fa-sign-out-alt"></i>
-                        Logout
+                        Déconnexion
                     </button>
                 </form>
             </div>
@@ -91,205 +91,101 @@
     <aside class="sidebar">
         <ul class="sidebar-menu">
             <li class="sidebar-menu-item">
-                <a href="{{ route('dashboard') }}" class="sidebar-menu-link active">
+                <a href="{{ route('dashboard') }}" class="sidebar-menu-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <i class="fas fa-home"></i>
-                    <span>Dashboard</span>
+                    <span>Tableau de bord</span>
                 </a>
             </li>
-            @can('manage_orders')
+            @can('manage_categories')
             <li class="sidebar-menu-item">
-                <a href="{{ route('pos.index') }}" class="sidebar-menu-link" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
-                    <i class="fas fa-cash-register"></i>
-                    <span>POS Terminal</span>
+                <a href="{{ route('categories.index') }}" class="sidebar-menu-link {{ request()->routeIs('categories.*') ? 'active' : '' }}">
+                    <i class="fas fa-folder-tree"></i>
+                    <span>Catégories</span>
                 </a>
             </li>
             @endcan
             @can('manage_products')
             <li class="sidebar-menu-item">
-                <a href="{{ route('products.index') }}" class="sidebar-menu-link">
+                <a href="{{ route('products.index') }}" class="sidebar-menu-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
                     <i class="fas fa-box"></i>
-                    <span>Products</span>
-                </a>
-            </li>
-            @endcan
-            @can('manage_categories')
-            <li class="sidebar-menu-item">
-                <a href="{{ route('categories.index') }}" class="sidebar-menu-link">
-                    <i class="fas fa-folder-tree"></i>
-                    <span>Categories</span>
+                    <span>Produits</span>
                 </a>
             </li>
             @endcan
             @can('manage_orders')
             <li class="sidebar-menu-item">
-                <a href="{{ route('orders.index') }}" class="sidebar-menu-link">
+                <a href="{{ route('orders.index') }}" class="sidebar-menu-link {{ request()->routeIs('orders.*') ? 'active' : '' }}">
                     <i class="fas fa-shopping-cart"></i>
-                    <span>Orders</span>
+                    <span>Commandes</span>
                 </a>
             </li>
             @endcan
             @can('manage_invoices')
             <li class="sidebar-menu-item">
-                <a href="{{ route('invoices.index') }}" class="sidebar-menu-link">
+                <a href="{{ route('invoices.index') }}" class="sidebar-menu-link {{ request()->routeIs('invoices.*') ? 'active' : '' }}">
                     <i class="fas fa-file-invoice"></i>
-                    <span>Invoices</span>
-                </a>
-            </li>
-            @endcan
-            @can('manage_customers')
-            <li class="sidebar-menu-item">
-                <a href="{{ route('customers.index') }}" class="sidebar-menu-link">
-                    <i class="fas fa-users"></i>
-                    <span>Customers</span>
-                </a>
-            </li>
-            <li class="sidebar-menu-item">
-                <a href="{{ route('debtors.index') }}" class="sidebar-menu-link">
-                    <i class="fas fa-hand-holding-usd"></i>
-                    <span>Debtors</span>
+                    <span>Factures & Devis</span>
                 </a>
             </li>
             @endcan
             @can('manage_inventory')
             <li class="sidebar-menu-item">
-                <a href="{{ route('inventory.index') }}" class="sidebar-menu-link">
+                <a href="{{ route('inventory.index') }}" class="sidebar-menu-link {{ request()->routeIs('inventory.*') ? 'active' : '' }}">
                     <i class="fas fa-boxes"></i>
-                    <span>Inventory</span>
+                    <span>Inventaire & Stock</span>
                 </a>
             </li>
             @endcan
-            @can('manage_coupons')
+            @can('manage_customers')
             <li class="sidebar-menu-item">
-                <a href="{{ route('coupons.index') }}" class="sidebar-menu-link">
-                    <i class="fas fa-tags"></i>
-                    <span>Coupons</span>
+                <a href="{{ route('customers.index') }}" class="sidebar-menu-link {{ request()->routeIs('customers.*') ? 'active' : '' }}">
+                    <i class="fas fa-users"></i>
+                    <span>Clients</span>
                 </a>
             </li>
             @endcan
-            
             @can('manage_reviews')
             <li class="sidebar-menu-item">
-                <a href="{{ route('reviews.index') }}" class="sidebar-menu-link">
+                <a href="{{ route('reviews.index') }}" class="sidebar-menu-link {{ request()->routeIs('reviews.*') ? 'active' : '' }}">
                     <i class="fas fa-star"></i>
-                    <span>Reviews</span>
+                    <span>Avis clients</span>
                 </a>
             </li>
             @endcan
-            
-            <!-- Access Control Section (Grouped) -->
-            @if(auth()->user()->hasRole('Admin') || auth()->user()->can('manage_users') || auth()->user()->can('manage_roles'))
-            <li class="sidebar-menu-item sidebar-submenu {{ request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('permissions.*') || request()->routeIs('activity-logs.*') ? 'active' : '' }}">
-                <a href="#" class="sidebar-menu-link" onclick="toggleSubmenu(event)">
-                    <i class="fas fa-user-shield"></i>
-                    <span>Access Control</span>
-                    <i class="fas fa-chevron-down submenu-arrow"></i>
-                </a>
-                <ul class="submenu-items">
-                    @can('manage_users')
-                    <li class="submenu-item">
-                        <a href="{{ route('users.index') }}" class="submenu-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                            <i class="fas fa-users"></i>
-                            <span>Users</span>
-                        </a>
-                    </li>
-                    @endcan
-                    @can('manage_roles')
-                    <li class="submenu-item">
-                        <a href="{{ route('roles.index') }}" class="submenu-link {{ request()->routeIs('roles.*') ? 'active' : '' }}">
-                            <i class="fas fa-user-tag"></i>
-                            <span>Roles</span>
-                        </a>
-                    </li>
-                    <li class="submenu-item">
-                        <a href="{{ route('permissions.index') }}" class="submenu-link {{ request()->routeIs('permissions.*') ? 'active' : '' }}">
-                            <i class="fas fa-key"></i>
-                            <span>Permissions</span>
-                        </a>
-                    </li>
-                    @endcan
-                    @can('view_activity_logs')
-                    <li class="submenu-item">
-                        <a href="{{ route('activity-logs.index') }}" class="submenu-link {{ request()->routeIs('activity-logs.*') ? 'active' : '' }}">
-                            <i class="fas fa-history"></i>
-                            <span>Activity Logs</span>
-                        </a>
-                    </li>
-                    @endcan
-                </ul>
-            </li>
-            @endif
-            
-            @can('view_reports')
-            <li class="sidebar-menu-item">
-                <a href="{{ route('reports.index') }}" class="sidebar-menu-link">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Reports</span>
-                </a>
-            </li>
-            @endcan
-
-            @can('manage_accounting')
-            <li class="sidebar-menu-item sidebar-submenu {{ request()->is('accounting*') ? 'active' : '' }}">
-                <a href="#" class="sidebar-menu-link" onclick="toggleSubmenu(event)">
-                    <i class="fas fa-calculator"></i>
-                    <span>Accounting</span>
-                    <i class="fas fa-chevron-down submenu-arrow"></i>
-                </a>
-                <ul class="submenu-items">
-                    <li class="submenu-item">
-                        <a href="{{ route('accounting.index') }}" class="submenu-link {{ request()->routeIs('accounting.index') ? 'active' : '' }}">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
-                    <li class="submenu-item">
-                        <a href="{{ route('accounting.accounts') }}" class="submenu-link {{ request()->routeIs('accounting.accounts') ? 'active' : '' }}">
-                            <i class="fas fa-list-ol"></i>
-                            <span>Chart of Accounts</span>
-                        </a>
-                    </li>
-                    <li class="submenu-item">
-                        <a href="{{ route('accounting.entries') }}" class="submenu-link {{ request()->routeIs('accounting.entries*', 'accounting.entries') ? 'active' : '' }}">
-                            <i class="fas fa-book"></i>
-                            <span>Journal Entries</span>
-                        </a>
-                    </li>
-                    <li class="submenu-item">
-                        <a href="{{ route('accounting.reports') }}" class="submenu-link {{ request()->routeIs('accounting.reports*') ? 'active' : '' }}">
-                            <i class="fas fa-file-invoice-dollar"></i>
-                            <span>Reports</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            @endcan
-
             @can('manage_content')
-            <li class="sidebar-menu-item">
-                <a href="{{ route('pages.index') }}" class="sidebar-menu-link">
-                    <i class="fas fa-file-code"></i>
-                    <span>Page Manager</span>
+            <li class="sidebar-menu-item sidebar-submenu {{ request()->routeIs('pages.*') || request()->routeIs('menus.*') || request()->routeIs('custom-codes.*') ? 'active' : '' }}">
+                <a href="#" class="sidebar-menu-link" onclick="toggleSubmenu(event)">
+                    <i class="fas fa-desktop"></i>
+                    <span>Interfaces & Contenu</span>
+                    <i class="fas fa-chevron-down submenu-arrow"></i>
                 </a>
-            </li>
-            <li class="sidebar-menu-item">
-                <a href="{{ route('menus.index') }}" class="sidebar-menu-link">
-                    <i class="fas fa-compass"></i>
-                    <span>Navigation Menus</span>
-                </a>
-            </li>
-            <li class="sidebar-menu-item">
-                <a href="{{ route('custom-codes.index') }}" class="sidebar-menu-link">
-                    <i class="fas fa-code"></i>
-                    <span>Custom Codes</span>
-                </a>
+                <ul class="submenu-items">
+                    <li class="submenu-item">
+                        <a href="{{ route('pages.index') }}" class="submenu-link {{ request()->routeIs('pages.*') ? 'active' : '' }}">
+                            <i class="fas fa-file-code"></i>
+                            <span>Pages</span>
+                        </a>
+                    </li>
+                    <li class="submenu-item">
+                        <a href="{{ route('menus.index') }}" class="submenu-link {{ request()->routeIs('menus.*') ? 'active' : '' }}">
+                            <i class="fas fa-compass"></i>
+                            <span>Menus de navigation</span>
+                        </a>
+                    </li>
+                    <li class="submenu-item">
+                        <a href="{{ route('custom-codes.index') }}" class="submenu-link {{ request()->routeIs('custom-codes.*') ? 'active' : '' }}">
+                            <i class="fas fa-code"></i>
+                            <span>Codes personnalisés</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
             @endcan
-
             @can('manage_settings')
             <li class="sidebar-menu-item">
-                <a href="{{ route('settings.index') }}" class="sidebar-menu-link">
+                <a href="{{ route('settings.index') }}" class="sidebar-menu-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
                     <i class="fas fa-cog"></i>
-                    <span>Settings</span>
+                    <span>Paramètres</span>
                 </a>
             </li>
             @endcan
@@ -298,7 +194,7 @@
             <li class="sidebar-menu-item mt-auto pt-4 pb-2 px-4 text-center">
                 <hr class="opacity-25 mb-3">
                 <div class="small text-muted" style="font-size: 0.75rem;">
-                    Developed by<br>
+                    Développé par<br>
                     <a href="https://elegantboost.com/" target="_blank" class="text-primary text-decoration-none fw-bold">Elegant Boost</a>
                 </div>
             </li>

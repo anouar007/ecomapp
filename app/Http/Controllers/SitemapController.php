@@ -14,7 +14,7 @@ class SitemapController extends Controller
     public function index(): Response
     {
         $products = Product::where('status', 'active')
-            ->select(['id', 'name', 'updated_at'])
+            ->with(['primaryImage', 'images'])
             ->latest('updated_at')
             ->get();
 
@@ -22,7 +22,11 @@ class SitemapController extends Controller
             ->select(['id', 'slug', 'updated_at'])
             ->get();
 
-        $content = view('sitemap', compact('products', 'categories'))->render();
+        $pages = class_exists(\App\Models\Page::class) 
+            ? \App\Models\Page::where('is_published', true)->select(['id', 'slug', 'updated_at'])->get()
+            : collect();
+
+        $content = view('sitemap', compact('products', 'categories', 'pages'))->render();
 
         return response($content, 200)
             ->header('Content-Type', 'application/xml');
@@ -33,7 +37,7 @@ class SitemapController extends Controller
      */
     public function robots(): Response
     {
-        $sitemapUrl = config('app.url') . '/sitemap.xml';
+        $sitemapUrl = url('/sitemap.xml');
 
         $content = view('robots', compact('sitemapUrl'))->render();
 

@@ -1,13 +1,7 @@
 <div class="card h-100 border border-light shadow-hover rounded-0 product-card overflow-hidden">
     <div class="position-relative overflow-hidden group">
         <a href="{{ route('shop.show', $product->id) }}">
-            @if($product->main_image)
-            <img src="{{ Storage::url($product->main_image) }}" class="card-img-top p-3 transition-transform duration-500 group-hover:scale-110" alt="{{ $product->name }}" style="height: 220px; object-fit: contain;">
-            @else
-            <div class="bg-light d-flex align-items-center justify-content-center text-muted col-12" style="height: 220px;">
-                <i class="fas fa-image fa-3x opacity-25"></i>
-            </div>
-            @endif
+            <img src="{{ $product->thumbnail }}" class="card-img-top p-3 transition-transform duration-500 group-hover:scale-110" alt="{{ $product->name }}" style="height: 220px; object-fit: contain;" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
         </a>
 
         <!-- Badges -->

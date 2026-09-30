@@ -19,8 +19,15 @@ Route::get('/robots.txt', [\App\Http\Controllers\SitemapController::class, 'robo
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::post('/newsletter', [\App\Http\Controllers\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 
+// About & Contact
+Route::get('/about', [\App\Http\Controllers\HomeController::class, 'about'])->name('about');
+Route::get('/a-propos', function() { return redirect()->route('about'); });
+Route::get('/contact', [\App\Http\Controllers\HomeController::class, 'contact'])->name('contact');
+Route::post('/contact', [\App\Http\Controllers\HomeController::class, 'sendContact'])->name('contact.send');
+
 // Shop & Products
 Route::get('/shop', [\App\Http\Controllers\ShopController::class, 'index'])->name('shop.index');
+Route::get('/shop/search/live', [\App\Http\Controllers\ShopController::class, 'liveSearch'])->name('shop.search.live');
 Route::get('/shop/{id}', [\App\Http\Controllers\ShopController::class, 'show'])->name('shop.show');
 Route::get('/products/{id}/json', [\App\Http\Controllers\ShopController::class, 'json'])->name('product.json');
 

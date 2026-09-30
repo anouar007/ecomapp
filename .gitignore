@@ -25,3 +25,7 @@ yarn-error.log
 debug_*.php
 *.swp
 *~
+*.sql
+*.tar.gz
+database_backup.sql
+storage_uploads.tar.gz

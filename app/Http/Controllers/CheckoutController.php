@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Services\DeliveryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -25,7 +26,9 @@ class CheckoutController extends Controller
             $total += $details['price'] * $details['quantity'];
         }
 
-        return view('frontend.checkout.index', compact('cart', 'total'));
+        $cities = DeliveryService::getCities();
+
+        return view('frontend.checkout.index', compact('cart', 'total', 'cities'));
     }
 
     /**
@@ -39,7 +42,17 @@ class CheckoutController extends Controller
             'customer_phone' => 'required|string|max:20',
             'shipping_address' => 'required|string|max:255',
             'shipping_city' => 'required|string|max:255',
+            'shipping_city_custom' => 'nullable|string|max:255',
         ]);
+
+        // Determine actual city name (support manual entry if city is not in the list)
+        $cityName = trim($request->shipping_city);
+        if ($cityName === '__other__' || empty($cityName)) {
+            $cityName = trim($request->shipping_city_custom ?? '');
+            if (empty($cityName)) {
+                return back()->withInput()->withErrors(['shipping_city_custom' => 'Veuillez saisir le nom de votre ville.']);
+            }
+        }
 
         $cart = session()->get('cart', []);
         
@@ -52,10 +65,13 @@ class CheckoutController extends Controller
             $subtotal += $details['price'] * $details['quantity'];
         }
 
-        $taxRateSetting = floatval(setting('tax_rate', 0)) / 100;
-        $total = $subtotal; // Subtotal is already tax-inclusive (TTC)
-        $tax = $total - ($total / (1 + $taxRateSetting));
-        $subtotalNet = $total - $tax;
+        // Calculate dynamic delivery fee from resolved city (defaulting to standard 40 DH if unlisted)
+        $shippingCost = DeliveryService::getDeliveryCost($cityName, 40.0);
+
+        $taxRateSetting = floatval(setting('tax_rate', 20)) / 100;
+        $tax = $taxRateSetting > 0 ? ($subtotal - ($subtotal / (1 + $taxRateSetting))) : 0;
+        $subtotalNet = $subtotal - $tax;
+        $total = $subtotal + $shippingCost; // Total TTC including shipping
 
         // Create Order
         $order = Order::create([
@@ -66,12 +82,13 @@ class CheckoutController extends Controller
             'customer_phone' => $request->customer_phone,
             'ice' => $request->ice,
             'shipping_address' => $request->shipping_address,
-            'shipping_city' => $request->shipping_city,
+            'shipping_city' => $cityName,
             'shipping_state' => $request->shipping_state,
             'shipping_zip'   => 'N/A',
             'shipping_country' => 'Morocco',
             'subtotal' => $subtotalNet,
             'tax' => $tax,
+            'shipping_cost' => $shippingCost,
             'total' => $total,
             'status' => 'pending',
             'payment_status' => 'pending',

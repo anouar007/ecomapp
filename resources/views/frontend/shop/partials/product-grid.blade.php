@@ -1,15 +1,11 @@
-<div class="row g-4">
+<div class="row g-2 g-sm-3 g-md-4" id="shopProductRow">
     @forelse($products as $product)
-    <div class="col-6 col-md-4">
-        <div class="pcard">
+    <div class="col-6 col-md-4 product-col">
+        <div class="pcard h-100 d-flex flex-column">
             {{-- Image --}}
             <div class="pcard-img">
-                <a href="{{ route('shop.show', $product->id) }}">
-                    @if($product->main_image)
-                        <img src="{{ Storage::url($product->main_image) }}" alt="{{ $product->name }}" loading="lazy">
-                    @else
-                        <div class="pcard-no-img"><i class="fas fa-print"></i></div>
-                    @endif
+                <a href="{{ route('shop.show', $product->id) }}" class="pcard-img-link">
+                    <img src="{{ $product->thumbnail }}" alt="{{ $product->name }}" loading="lazy">
                 </a>
 
                 {{-- Badges --}}
@@ -23,8 +19,8 @@
                     @endif
                 </div>
 
-                {{-- Hover overlay actions --}}
-                <div class="pcard-overlay">
+                {{-- Desktop Hover overlay actions --}}
+                <div class="pcard-overlay d-none d-md-flex">
                     @if($product->isInStock())
                     <button class="pcard-overlay-btn" onclick="addToCart({{ $product->id }})" title="Ajouter au panier">
                         <i class="fas fa-cart-plus"></i> Ajouter
@@ -37,12 +33,12 @@
             </div>
 
             {{-- Info --}}
-            <div class="pcard-body">
+            <div class="pcard-body d-flex flex-column flex-grow-1">
                 @if($product->category_name)
-                <div class="pcard-cat">{{ $product->category_name }}</div>
+                <div class="pcard-cat text-truncate">{{ $product->category_name }}</div>
                 @endif
                 <h4 class="pcard-name">
-                    <a href="{{ route('shop.show', $product->id) }}">{{ Str::limit($product->name, 42) }}</a>
+                    <a href="{{ route('shop.show', $product->id) }}" title="{{ $product->name }}">{{ $product->name }}</a>
                 </h4>
                 <div class="pcard-rating">
                     <div class="pcard-stars">
@@ -52,12 +48,28 @@
                     </div>
                     <span class="pcard-reviews">({{ $product->reviews_count ?? 0 }})</span>
                 </div>
-                <div class="pcard-price">
-                    @if($product->isOnSale())
-                        <span class="pcard-price-current">{{ $product->formatted_sale_price }}</span>
-                        <span class="pcard-price-old">{{ $product->formatted_price }}</span>
+                
+                {{-- Price & Quick Cart Button --}}
+                <div class="pcard-bottom-row mt-auto">
+                    <div class="pcard-price">
+                        @if($product->isOnSale())
+                            <span class="pcard-price-current text-nowrap">{{ $product->formatted_sale_price }}</span>
+                            <span class="pcard-price-old text-nowrap">{{ $product->formatted_price }}</span>
+                        @else
+                            <span class="pcard-price-current text-nowrap">{{ $product->formatted_price }}</span>
+                        @endif
+                    </div>
+
+                    @if($product->isInStock())
+                    <button class="pcard-quick-cart-btn" onclick="addToCart({{ $product->id }})" title="Ajouter au panier" aria-label="Ajouter au panier">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="pcard-quick-cart-label d-none">Ajouter au panier</span>
+                    </button>
                     @else
-                        <span class="pcard-price-current">{{ $product->formatted_price }}</span>
+                    <span class="pcard-quick-out" title="Rupture">
+                        <i class="fas fa-ban"></i>
+                        <span class="pcard-quick-out-label d-none">Rupture</span>
+                    </span>
                     @endif
                 </div>
             </div>
@@ -66,8 +78,8 @@
     @empty
     <div class="col-12">
         <div class="shop-empty">
-            <i class="fas fa-print shop-empty-icon"></i>
-            <h5>Aucun produit trouvé</h5>
+            <i class="fas fa-camera shop-empty-icon"></i>
+            <h5>Aucun équipement trouvé</h5>
             <p>Modifiez vos filtres ou votre recherche pour voir plus de résultats.</p>
             <a href="{{ route('shop.index') }}" class="shop-apply-btn d-inline-flex gap-2 align-items-center">
                 <i class="fas fa-redo"></i> Réinitialiser les filtres

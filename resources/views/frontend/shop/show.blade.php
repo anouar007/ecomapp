@@ -1,10 +1,18 @@
 @extends('layouts.frontend')
 
-@section('meta_title', $product->name . ' — ' . setting('app_name', 'Speed Platform'))
-@section('meta_description', Str::limit(strip_tags($product->description), 155))
-@section('meta_keywords', $product->name . ', ' . ($product->category_name ?? '') . ', acheter ' . $product->name . ', ' . setting('app_name', 'boutique') . ', Maroc')
+@section('meta_title', $product->name . ' — ' . setting('app_name', 'Full Frame House') . ' Maroc')
+@section('meta_description', Str::limit(strip_tags($product->description), 155) ?: 'Achetez ' . $product->name . ' au meilleur prix au Maroc chez ' . setting('app_name', 'Full Frame House') . '. Garantie 2 ans et livraison express.')
+@section('meta_keywords', $product->name . ', ' . ($product->category_name ?? 'caméra') . ', acheter ' . $product->name . ' Maroc, prix ' . $product->name . ', ' . setting('app_name', 'Full Frame House'))
 @section('meta_type', 'product')
-@section('meta_image', $product->main_image ? asset('storage/' . $product->main_image) : asset('images/og-default.jpg'))
+@section('meta_image', $product->thumbnail)
+
+@section('extra_meta')
+<meta property="product:price:amount" content="{{ $product->isOnSale() ? $product->sale_price : $product->price }}">
+<meta property="product:price:currency" content="{{ setting('currency_code', 'MAD') }}">
+<meta property="product:availability" content="{{ $product->isInStock() ? 'in stock' : 'out of stock' }}">
+<meta property="product:condition" content="new">
+<meta property="product:retailer_item_id" content="{{ $product->sku ?? ('PROD-' . $product->id) }}">
+@endsection
 
 @section('json_ld')
 @php
@@ -18,7 +26,7 @@
     "@type": "Product",
     "name": "{{ addslashes($product->name) }}",
     "image": [
-      "{{ $product->main_image ? asset('storage/' . $product->main_image) : asset('images/og-default.jpg') }}"
+      "{{ $product->thumbnail }}"
     ],
     "description": "{{ addslashes(Str::limit(strip_tags($product->description), 155)) }}",
     "sku": "{{ $product->sku ?? 'PROD-' . $product->id }}",
@@ -38,7 +46,7 @@
       "availability": "{{ $product->isInStock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
       "seller": {
         "@type": "Organization",
-        "name": "{{ addslashes(setting('app_name', 'Speed Platform')) }}"
+        "name": "{{ addslashes(setting('app_name', 'Full Frame House')) }}"
       }
     }
     @if($reviewCount > 0)
@@ -137,12 +145,8 @@
                 <div class="col-lg-6 pdp-image-panel">
                     {{-- Main Image --}}
                     <div class="pdp-main-image-wrap" id="zoomWrap" onmousemove="pdpZoom(event)">
-                        @if($product->main_image)
-                            <img id="mainImage" src="{{ Storage::url($product->main_image) }}"
-                                 alt="{{ $product->name }}" class="pdp-main-image">
-                        @else
-                            <div class="pdp-no-image"><i class="fas fa-print"></i></div>
-                        @endif
+                        <img id="mainImage" src="{{ $product->thumbnail }}"
+                             alt="{{ $product->name }}" class="pdp-main-image">
 
                         {{-- Badges --}}
                         <div class="pdp-badges">
@@ -161,13 +165,13 @@
                     <div class="pdp-thumbs">
                         {{-- First thumb = main image --}}
                         <div class="pdp-thumb active"
-                             onclick="pdpChangeImage('{{ Storage::url($product->main_image) }}', this)">
-                            <img src="{{ Storage::url($product->main_image) }}" alt="Main">
+                             onclick="pdpChangeImage('{{ $product->thumbnail }}', this)">
+                            <img src="{{ $product->thumbnail }}" alt="Main" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                         </div>
                         @foreach($product->images as $img)
                         <div class="pdp-thumb"
-                             onclick="pdpChangeImage('{{ Storage::url($img->image_path) }}', this)">
-                            <img src="{{ Storage::url($img->image_path) }}" alt="Vue {{ $loop->iteration + 1 }}">
+                             onclick="pdpChangeImage('{{ $img->url }}', this)">
+                            <img src="{{ $img->url }}" alt="Vue {{ $loop->iteration + 1 }}" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                         </div>
                         @endforeach
                     </div>
@@ -252,9 +256,10 @@
 
                     {{-- Trust Pills --}}
                     <div class="pdp-trust-row">
-                        <div class="pdp-trust-pill"><i class="fas fa-truck"></i> Livraison rapide</div>
-                        <div class="pdp-trust-pill"><i class="fas fa-undo"></i> Retours 30j</div>
-                        <div class="pdp-trust-pill"><i class="fas fa-shield-alt"></i> Paiement sécurisé</div>
+                        <div class="pdp-trust-pill"><i class="fas fa-shield-halved"></i> Garantie 2 Ans</div>
+                        <div class="pdp-trust-pill"><i class="fas fa-truck-fast"></i> Livraison Sécurisée 24/48h</div>
+                        <div class="pdp-trust-pill"><i class="fas fa-file-invoice"></i> Facturation ICE</div>
+                        <div class="pdp-trust-pill"><i class="fas fa-video"></i> Démo Showroom Casablanca</div>
                     </div>
                 </div>
 
@@ -378,12 +383,8 @@
                     <div class="pcard">
                         <div class="pcard-img">
                             <a href="{{ route('shop.show', $related->id) }}">
-                                @if($related->main_image)
-                                    <img src="{{ Storage::url($related->main_image) }}"
-                                         alt="{{ $related->name }}" loading="lazy">
-                                @else
-                                    <div class="pcard-no-img"><i class="fas fa-print"></i></div>
-                                @endif
+                                <img src="{{ $related->thumbnail }}"
+                                     alt="{{ $related->name }}" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                             </a>
                             {{-- Badges --}}
                             @if(!$related->isInStock())

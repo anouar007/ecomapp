@@ -104,9 +104,9 @@ class OrderController extends Controller
                 ];
             }
 
-            $taxRate = floatval(setting('tax_rate', 0)) / 100;
+            $taxRate = floatval(setting('tax_rate', 20)) / 100;
             $total = $subtotal + ($validated['shipping_cost'] ?? 0) - ($validated['discount'] ?? 0);
-            $tax = $total - ($total / (1 + $taxRate));
+            $tax = $taxRate > 0 ? ($total - ($total / (1 + $taxRate))) : 0;
             $subtotalNet = $total - $tax;
 
             // Create order

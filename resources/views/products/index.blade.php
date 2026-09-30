@@ -1,36 +1,36 @@
 @extends('layouts.app')
 
-@section('title', 'Products Management')
+@section('title', 'Gestion des produits')
 
 @section('content')
-    <!-- Page Header -->
+    <!-- En-tête de page -->
     <div class="brand-header">
         <div>
             <h1 class="brand-title">
                 <div class="brand-header-icon">
                     <i class="fas fa-box"></i>
                 </div>
-                Products Management
+                Gestion des produits
             </h1>
-            <p class="brand-subtitle">Manage your product catalog, pricing, and availability</p>
+            <p class="brand-subtitle">Gérez votre catalogue de produits, les tarifs et la disponibilité en stock</p>
         </div>
         <a href="{{ route('products.create') }}" class="btn-brand-primary">
-            <i class="fas fa-plus me-2"></i> Add New Product
+            <i class="fas fa-plus me-2"></i> Ajouter un nouveau produit
         </a>
     </div>
 
-    <!-- Filter Bar -->
+    <!-- Barre de filtres -->
     <div class="brand-filter-bar">
         <form method="GET" action="{{ route('products.index') }}" class="d-flex align-items-center gap-3 flex-wrap">
             <div class="brand-search-wrapper">
                 <i class="fas fa-search"></i>
                 <input type="text" name="search" class="form-control" 
-                       placeholder="Search products by name, SKU..."
+                       placeholder="Rechercher par nom, SKU..."
                        value="{{ request('search') }}">
             </div>
             
             <select name="category" class="form-select w-auto">
-                <option value="">All Categories</option>
+                <option value="">Toutes les catégories</option>
                 @foreach($categories as $category)
                     <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
                         {{ $category->name }}
@@ -39,65 +39,65 @@
             </select>
 
             <button type="submit" class="btn-brand-primary">
-                <i class="fas fa-filter me-1"></i> Filter
+                <i class="fas fa-filter me-1"></i> Filtrer
             </button>
-            <a href="{{ route('products.index') }}" class="btn-brand-light" title="Reset">
+            <a href="{{ route('products.index') }}" class="btn-brand-light" title="Réinitialiser">
                 <i class="fas fa-redo"></i>
             </a>
             
             @if(request('search') || request('category'))
             <div class="ms-2">
                 <span class="badge bg-light text-secondary px-3 py-2" style="border-radius: 8px;">
-                    Found {{ $products->total() }} results
+                    {{ $products->total() }} résultat(s) trouvé(s)
                 </span>
             </div>
             @endif
 
             <div class="ms-auto d-flex gap-2">
                 <button type="button" class="btn-brand-outline" data-bs-toggle="modal" data-bs-target="#importModal">
-                    <i class="fas fa-file-upload me-2" style="color: var(--primary-color)"></i>Import Excel
+                    <i class="fas fa-file-upload me-2" style="color: var(--primary-color)"></i>Importer Excel
                 </button>
                 <a href="{{ route('export.products') }}" class="btn-brand-outline">
-                    <i class="fas fa-file-csv me-2" style="color: var(--success-color)"></i>Export CSV
+                    <i class="fas fa-file-csv me-2" style="color: var(--success-color)"></i>Exporter CSV
                 </a>
             </div>
         </form>
     </div>
 
-    <!-- Import Modal -->
+    <!-- Modal Import -->
     <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content border-0 shadow">
                 <div class="modal-header border-0 bg-light">
                     <h5 class="modal-title fw-bold" id="importModalLabel">
-                        <i class="fas fa-file-upload me-2 text-primary"></i>Import Products from Excel
+                        <i class="fas fa-file-upload me-2 text-primary"></i>Importer des produits depuis Excel
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                 </div>
                 <form action="{{ route('products.import') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
                         <div class="mb-4">
-                            <label class="form-label fw-bold">Upload Excel File</label>
+                            <label class="form-label fw-bold">Sélectionner le fichier Excel</label>
                             <input type="file" name="file" class="form-control" accept=".xlsx,.xls,.csv" required>
-                            <div class="form-text">Supported formats: .xlsx, .xls, .csv (max 10MB)</div>
+                            <div class="form-text">Formats pris en charge : .xlsx, .xls, .csv (max 10 Mo)</div>
                         </div>
                         
                         <div class="alert alert-info border-0 rounded-3 mb-0">
-                            <h6 class="fw-bold mb-2"><i class="fas fa-info-circle me-2"></i>Required Columns</h6>
-                            <p class="mb-2 small">Your file must have these column headers:</p>
+                            <h6 class="fw-bold mb-2"><i class="fas fa-info-circle me-2"></i>Colonnes requises</h6>
+                            <p class="mb-2 small">Votre fichier doit comporter ces en-têtes de colonnes :</p>
                             <code class="d-block bg-white p-2 rounded small">name, sku, description, price, cost_price, stock, min_stock, category, status</code>
                             <p class="mb-0 mt-2 small">
                                 <a href="{{ route('products.template') }}" class="fw-bold">
-                                    <i class="fas fa-download me-1"></i>Download Sample Template
+                                    <i class="fas fa-download me-1"></i>Télécharger le modèle type
                                 </a>
                             </p>
                         </div>
                     </div>
                     <div class="modal-footer border-0 bg-light">
-                        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Annuler</button>
                         <button type="submit" class="btn-brand-primary">
-                            <i class="fas fa-upload me-2"></i>Import Products
+                            <i class="fas fa-upload me-2"></i>Importer les produits
                         </button>
                     </div>
                 </form>
@@ -105,47 +105,45 @@
         </div>
     </div>
 
-    <!-- Bulk Actions Bar (Hidden by default) -->
+    <!-- Barre d'actions groupées -->
     <div id="bulkActionsBar" class="bulk-actions-bar" style="display: none;">
         <div class="d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center gap-3">
                 <span class="selected-count fw-bold">
                     <i class="fas fa-check-circle me-2"></i>
-                    <span id="selectedCount">0</span> product(s) selected
+                    <span id="selectedCount">0</span> produit(s) sélectionné(s)
                 </span>
                 <button type="button" class="btn btn-sm btn-light" onclick="clearSelection()">
-                    <i class="fas fa-times me-1"></i>Clear
+                    <i class="fas fa-times me-1"></i>Annuler
                 </button>
             </div>
             <div class="d-flex align-items-center gap-2">
-                <!-- Stock Amount Input (for increase/decrease) -->
                 <div class="input-group input-group-sm" style="width: 140px;" id="stockAmountGroup" style="display: none;">
-                    <span class="input-group-text">Qty</span>
+                    <span class="input-group-text">Qté</span>
                     <input type="number" id="stockAmount" class="form-control" value="10" min="1" max="9999">
                 </div>
                 
-                <!-- Action Buttons -->
                 <div class="btn-group">
-                    <button type="button" class="btn btn-success btn-sm" onclick="executeBulkAction('increase_stock')" title="Increase Stock">
-                        <i class="fas fa-plus me-1"></i>Add Stock
+                    <button type="button" class="btn btn-success btn-sm" onclick="executeBulkAction('increase_stock')" title="Ajouter du stock">
+                        <i class="fas fa-plus me-1"></i>Ajouter stock
                     </button>
-                    <button type="button" class="btn btn-warning btn-sm" onclick="executeBulkAction('decrease_stock')" title="Decrease Stock">
-                        <i class="fas fa-minus me-1"></i>Remove Stock
+                    <button type="button" class="btn btn-warning btn-sm" onclick="executeBulkAction('decrease_stock')" title="Retirer du stock">
+                        <i class="fas fa-minus me-1"></i>Retirer stock
                     </button>
                 </div>
-                <button type="button" class="btn btn-info btn-sm text-white" onclick="executeBulkAction('duplicate')" title="Duplicate">
-                    <i class="fas fa-copy me-1"></i>Duplicate
+                <button type="button" class="btn btn-info btn-sm text-white" onclick="executeBulkAction('duplicate')" title="Dupliquer">
+                    <i class="fas fa-copy me-1"></i>Dupliquer
                 </button>
                 <div class="btn-group">
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="executeBulkAction('activate')" title="Activate">
-                        <i class="fas fa-check me-1"></i>Activate
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="executeBulkAction('activate')" title="Activer">
+                        <i class="fas fa-check me-1"></i>Activer
                     </button>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="executeBulkAction('deactivate')" title="Deactivate">
-                        <i class="fas fa-ban me-1"></i>Deactivate
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="executeBulkAction('deactivate')" title="Désactiver">
+                        <i class="fas fa-ban me-1"></i>Désactiver
                     </button>
                 </div>
-                <button type="button" class="btn btn-danger btn-sm" onclick="executeBulkAction('delete')" title="Delete">
-                    <i class="fas fa-trash me-1"></i>Delete
+                <button type="button" class="btn btn-danger btn-sm" onclick="executeBulkAction('delete')" title="Supprimer">
+                    <i class="fas fa-trash me-1"></i>Supprimer
                 </button>
             </div>
         </div>
@@ -160,12 +158,12 @@
                         <th style="width: 50px; padding-left: 1.5rem;">
                             <input type="checkbox" class="form-check-input" id="selectAll" onchange="toggleSelectAll(this)">
                         </th>
-                        <th>Product Details</th>
+                        <th>Détails du produit</th>
                         <th>SKU</th>
-                        <th>Category</th>
-                        <th>Pricing</th>
-                        <th>Inventory</th>
-                        <th>Status</th>
+                        <th>Catégorie</th>
+                        <th>Prix</th>
+                        <th>Stock & Inventaire</th>
+                        <th>Statut</th>
                         <th class="text-end" style="padding-right: 1.5rem;">Actions</th>
                     </tr>
                 </thead>
@@ -180,13 +178,7 @@
                         <td>
                             <div class="d-flex align-items-center gap-3">
                                 <div class="brand-avatar">
-                                    @if($product->image)
-                                        <img src="{{ asset('storage/' . $product->image) }}" alt="">
-                                    @elseif($product->images->count() > 0)
-                                        <img src="{{ asset('storage/' . $product->images->first()->image_path) }}" alt="">
-                                    @else
-                                        <i class="fas fa-image"></i>
-                                    @endif
+                                    <img src="{{ $product->thumbnail }}" alt="{{ $product->name }}" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                                 </div>
                                 <div>
                                     <div class="fw-bold text-dark">{{ $product->name }}</div>
@@ -213,7 +205,7 @@
                         <td>
                             <div class="fw-bold text-dark">{{ currency($product->price) }}</div>
                             @if($product->cost_price)
-                                <div class="text-muted" style="font-size: 0.7rem;">Cost: {{ currency($product->cost_price) }}</div>
+                                <div class="text-muted" style="font-size: 0.7rem;">Coût : {{ currency($product->cost_price) }}</div>
                             @endif
                         </td>
                         <td>
@@ -221,25 +213,38 @@
                                 $stock = $product->stock;
                                 $min = $product->min_stock ?? 5;
                                 $badgeClass = 'success';
-                                $badgeText = 'In Stock: ' . $stock;
+                                $badgeText = 'En stock : ' . $stock;
                                 if ($stock <= 0) {
                                     $badgeClass = 'danger';
-                                    $badgeText = 'Out of Stock';
+                                    $badgeText = 'Rupture de stock';
                                 } elseif ($stock <= $min) {
                                     $badgeClass = 'warning';
-                                    $badgeText = 'Low Stock: ' . $stock;
+                                    $badgeText = 'Stock faible : ' . $stock;
                                 }
                             @endphp
                             <span class="brand-badge {{ $badgeClass }}">{{ $badgeText }}</span>
                         </td>
                         <td>
-                            <span class="brand-badge {{ $product->status === 'active' ? 'success' : 'info' }}">
-                                {{ ucfirst($product->status) }}
+                            @php
+                                $st = strtolower($product->status);
+                                $statusClass = match($st) {
+                                    'active', 'actif' => 'success',
+                                    'inactive', 'inactif' => 'danger',
+                                    default => 'info'
+                                };
+                                $statusText = match($st) {
+                                    'active' => 'Actif',
+                                    'inactive' => 'Inactif',
+                                    default => ucfirst($product->status)
+                                };
+                            @endphp
+                            <span class="brand-badge {{ $statusClass }}">
+                                {{ $statusText }}
                             </span>
                         </td>
                         <td style="padding-right: 1.5rem;">
                             <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ route('products.edit', $product) }}" class="btn-action-icon" title="Edit Product">
+                                <a href="{{ route('products.edit', $product) }}" class="btn-action-icon" title="Modifier le produit">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <form method="POST" 
@@ -250,7 +255,7 @@
                                       data-item-name="{{ $product->name }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn-action-icon danger" title="Delete Product">
+                                    <button type="submit" class="btn-action-icon danger" title="Supprimer le produit">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </form>
@@ -264,11 +269,11 @@
                                 <div class="brand-avatar mx-auto mb-3" style="width: 64px; height: 64px; font-size: 24px;">
                                     <i class="fas fa-search"></i>
                                 </div>
-                                <h5 class="fw-bold text-dark">No products found</h5>
-                                <p class="text-muted">Try refining your search or filter to find what you're looking for.</p>
+                                <h5 class="fw-bold text-dark">Aucun produit trouvé</h5>
+                                <p class="text-muted">Essayez d'ajuster vos critères de recherche ou vos filtres.</p>
                                 @if(request('search') || request('category'))
                                     <a href="{{ route('products.index') }}" class="btn-brand-primary mt-3">
-                                        Clear All Filters
+                                        Effacer tous les filtres
                                     </a>
                                 @endif
                             </div>

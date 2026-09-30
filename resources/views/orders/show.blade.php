@@ -232,8 +232,12 @@
                             <tr>
                                 <td style="padding-left: 24px;">
                                     <div style="display: flex; align-items: center; gap: 16px;">
-                                        <div style="width: 48px; height: 48px; background: #f1f5f9; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #cbd5e1;">
-                                            <i class="fas fa-image fa-lg"></i>
+                                        <div style="width: 48px; height: 48px; background: #f1f5f9; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                            @if($item->product)
+                                                <img src="{{ $item->product->thumbnail }}" alt="{{ $item->product_name }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                                            @else
+                                                <img src="{{ asset('images/camera/cat_cameras.jpg') }}" alt="{{ $item->product_name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                            @endif
                                         </div>
                                         <div>
                                             <div style="font-weight: 600; color: #1e293b; font-size: 15px;">{{ $item->product_name }}</div>
@@ -284,7 +288,7 @@
                     <span class="info-value">{{ currency($order->subtotal) }}</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">Tax</span>
+                    <span class="info-label">{{ setting('tax_label', 'TVA') }} ({{ floatval(setting('tax_rate', 20)) }}%)</span>
                     <span class="info-value">{{ currency($order->tax) }}</span>
                 </div>
                 <!-- Shipping -->

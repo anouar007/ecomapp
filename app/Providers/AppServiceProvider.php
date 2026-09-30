@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,27 +25,29 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrapFive();
         \App\Models\Order::observe(\App\Observers\OrderObserver::class);
 
+        // Implicitly grant "Admin" role all permissions
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('Admin') ? true : null;
+        });
+
         try {
-            // Only attempt to load settings if the table exists to prevent migration errors
-            if (\Schema::hasTable('settings')) {
-                // Override App Name
-                if ($appName = \App\Models\Setting::get('app_name')) {
-                    config(['app.name' => $appName]);
-                }
-
-                // Override Timezone
-                if ($timezone = \App\Models\Setting::get('timezone')) {
-                    config(['app.timezone' => $timezone]);
-                    date_default_timezone_set($timezone);
-                }
-
-                // Override Locale
-                if ($locale = \App\Models\Setting::get('language')) {
-                    config(['app.locale' => $locale]);
-                    \App::setLocale($locale);
-                }
+            // Override App Name
+            if ($appName = \App\Models\Setting::get('app_name')) {
+                config(['app.name' => $appName]);
             }
-        } catch (\Exception $e) {
+
+            // Override Timezone
+            if ($timezone = \App\Models\Setting::get('timezone')) {
+                config(['app.timezone' => $timezone]);
+                date_default_timezone_set($timezone);
+            }
+
+            // Override Locale
+            if ($locale = \App\Models\Setting::get('language')) {
+                config(['app.locale' => $locale]);
+                \App::setLocale($locale);
+            }
+        } catch (\Throwable $e) {
             // Fail silently during early setup/migrations
         }
     }

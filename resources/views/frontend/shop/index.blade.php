@@ -3,14 +3,14 @@
 @php
     $activeCategory = $categories->where('slug', request('category'))->first();
     $pageTitle = $activeCategory
-        ? ($activeCategory->name . ' — ' . setting('app_name', 'Speed Platform'))
-        : (request('q') ? 'Résultats pour "' . request('q') . '" — ' . setting('app_name') : 'Boutique — ' . setting('app_name', 'Speed Platform'));
+        ? ($activeCategory->name . ' — ' . setting('app_name', 'Full Frame House'))
+        : (request('q') ? 'Résultats pour "' . request('q') . '" — ' . setting('app_name', 'Full Frame House') : 'Catalogue Matériel Cinéma & Caméras — ' . setting('app_name', 'Full Frame House'));
     $pageDescription = $activeCategory
-        ? ('Découvrez notre gamme de ' . $activeCategory->name . '. Livraison partout au Maroc, installation et SAV inclus. ' . $activeCategory->products_count . ' produits disponibles.')
-        : 'Parcourez notre catalogue complet de machines d\'impression grand format, traceurs de découpe, encres et consommables. Livraison Maroc, devis gratuit.';
+        ? ('Découvrez notre gamme de ' . $activeCategory->name . '. Garantie constructeur 2 ans, showroom à Casablanca et livraison express partout au Maroc.')
+        : 'Parcourez notre catalogue complet de caméras cinéma, boîtiers hybrides, objectifs prime, stabilisateurs et éclairage studio au Maroc.';
     $pageKeywords = $activeCategory
-        ? ($activeCategory->name . ', ' . setting('app_name', 'boutique') . ', acheter ' . $activeCategory->name . ' Maroc, prix ' . $activeCategory->name)
-        : setting('app_name', 'boutique') . ', machines impression, traceur découpe, encres, consommables, Maroc';
+        ? ($activeCategory->name . ', ' . setting('app_name', 'Full Frame House') . ', acheter ' . $activeCategory->name . ' Maroc, prix ' . $activeCategory->name)
+        : setting('app_name', 'Full Frame House') . ', caméras cinéma, objectifs photo, stabilisateurs, éclairage vidéo, Casablanca, Maroc';
 @endphp
 
 @section('meta_title', $pageTitle)
@@ -70,7 +70,7 @@
 @section('content')
 
 {{-- =============================================
-     SHOP HERO STRIP (dark, matching home page)
+     SHOP HERO STRIP (Cinema Viewfinder Theme)
      ============================================= --}}
 <section class="shop-hero">
     <div class="shop-hero-backdrop"></div>
@@ -78,19 +78,19 @@
         <div class="shop-hero-content" data-aos="fade-up">
             <div class="hero-eyebrow mb-3">
                 <span class="hero-eyebrow-dot"></span>
-                {{ request('q') ? 'Résultats de recherche' : (request('category') ? 'Catalogue Spécialisé' : 'Solutions d\'Impression') }}
+                {{ request('q') ? 'Résultats de recherche' : (request('category') ? 'Catalogue Spécialisé' : 'Matériel Audiovisuel Pro') }}
             </div>
             <h1 class="shop-hero-title">
                 @if(request('q'))
-                    Résultats pour <span class="text-white">« {{ request('q') }} »</span>
+                    Résultats pour <span class="text-brand-red">« {{ request('q') }} »</span>
                 @elseif(request('category'))
-                    <span class="text-white">{{ $categories->where('slug', request('category'))->first()->name ?? 'Produits' }}</span>
+                    <span class="text-brand-red">{{ $categories->where('slug', request('category'))->first()->name ?? 'Produits' }}</span>
                 @else
-                    Équipements <span class="text-primary-light">Premium</span> & Consommables
+                    Caméras & <span class="text-brand-red">Optiques de Cinéma</span>
                 @endif
             </h1>
             <p class="shop-hero-sub">
-                Explorez notre sélection de machines éco-solvant, traceurs de découpe et encres certifiées pour une production d'excellence.
+                Explorez notre sélection de boîtiers plein format 4K/8K, objectifs prime ultra-lumineux, gimbals et matériel studio livrés partout au Maroc.
             </p>
 
             {{-- Breadcrumb --}}
@@ -100,7 +100,7 @@
                 <a href="{{ route('shop.index') }}">Boutique</a>
                 @if(request('category'))
                     <span class="shop-bc-sep mx-2 opacity-50">/</span>
-                    <span class="text-white fw-bold">{{ $categories->where('slug', request('category'))->first()->name ?? 'Catégorie' }}</span>
+                    <span class="text-brand-black fw-bold">{{ $categories->where('slug', request('category'))->first()->name ?? 'Catégorie' }}</span>
                 @endif
             </nav>
         </div>
@@ -111,43 +111,88 @@
      MAIN SHOP LAYOUT
      ============================================= --}}
 <section class="shop-body">
-    <div class="container">
-        <div class="row g-5">
+    <div class="container px-2 px-md-3">
+        {{-- ── MOBILE CATEGORY HORIZONTAL SCROLLER ── --}}
+        @php
+            $catIcons = [
+                'cameras-hybrides'       => 'fa-camera',
+                'objectifs-optiques'     => 'fa-circle-notch',
+                'stabilisateurs-gimbals' => 'fa-video',
+                'eclairage-studio'       => 'fa-lightbulb',
+                'audio-micros-sans-fil'  => 'fa-microphone',
+                'drones-cine'            => 'fa-helicopter',
+            ];
+        @endphp
+        <div class="shop-mobile-categories-wrap d-lg-none">
+            <div class="shop-mobile-cat-scroll">
+                <button type="button" class="mobile-cat-pill {{ !request('category') ? 'active' : '' }}" data-slug="">
+                    <i class="fas fa-th-large"></i>
+                    <span>Tous</span>
+                </button>
+                @foreach($categories as $cat)
+                    @php $icon = $catIcons[$cat->slug] ?? 'fa-tag'; @endphp
+                    <button type="button" class="mobile-cat-pill {{ request('category') == $cat->slug ? 'active' : '' }}" data-slug="{{ $cat->slug }}">
+                        <i class="fas {{ $icon }}"></i>
+                        <span>{{ $cat->name }}</span>
+                        @if($cat->products_count > 0)
+                            <span class="mobile-cat-badge">{{ $cat->products_count }}</span>
+                        @endif
+                    </button>
+                @endforeach
+            </div>
+        </div>
 
-            {{-- ── MOBILE CATEGORY SCROLLER ── --}}
-            <div class="shop-mobile-categories d-lg-none py-3 mb-2 overflow-auto" style="white-space: nowrap; -webkit-overflow-scrolling: touch;">
-                <div class="container-fluid px-3 d-flex gap-2">
-                    <a href="#" class="btn btn-sm rounded-pill px-4 py-2 fw-bold border category-filter {{ !request('category') ? 'btn-primary text-white border-primary' : 'btn-white text-muted' }}" data-slug="">
-                        Tous
-                    </a>
-                    @foreach($categories as $cat)
-                        <a href="#" class="btn btn-sm rounded-pill px-4 py-2 fw-bold border category-filter {{ request('category') == $cat->slug ? 'btn-primary text-white border-primary' : 'btn-white text-muted' }}" data-slug="{{ $cat->slug }}">
-                            {{ $cat->name }}
-                        </a>
-                    @endforeach
+        {{-- ── MOBILE STICKY CONTROL TOOLBAR (Filters, Sort, View Toggle) ── --}}
+        <div class="shop-mobile-toolbar d-lg-none">
+            <div class="d-flex align-items-center justify-content-between gap-2">
+                {{-- Filter trigger button --}}
+                <button type="button" class="btn-mobile-tool" data-bs-toggle="offcanvas" data-bs-target="#shopFilterSheet" id="mobileFilterTrigger">
+                    <i class="fas fa-sliders-h text-danger"></i>
+                    <span>Filtres</span>
+                    <span class="badge rounded-pill bg-danger d-none" id="mobileFilterBadge">0</span>
+                </button>
+
+                {{-- Sort Dropdown --}}
+                <div class="dropdown flex-grow-1">
+                    <button class="btn-mobile-tool w-100 justify-content-between" type="button" id="mobileSortDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="d-flex align-items-center gap-1 text-truncate">
+                            <i class="fas fa-sort-amount-down text-muted"></i>
+                            <span id="mobileSortLabel">Plus récents</span>
+                        </span>
+                        <i class="fas fa-chevron-down opacity-50 ms-1" style="font-size: 0.65rem;"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2" aria-labelledby="mobileSortDropdownBtn" style="z-index: 1095;">
+                        <li><button class="dropdown-item rounded-3 py-2 mobile-sort-item {{ request('sort') == 'newest' || !request('sort') ? 'active' : '' }}" type="button" data-sort="newest"><i class="fas fa-clock me-2"></i>Plus récents</button></li>
+                        <li><button class="dropdown-item rounded-3 py-2 mobile-sort-item {{ request('sort') == 'price_asc' ? 'active' : '' }}" type="button" data-sort="price_asc"><i class="fas fa-arrow-up-1-9 me-2"></i>Prix croissant</button></li>
+                        <li><button class="dropdown-item rounded-3 py-2 mobile-sort-item {{ request('sort') == 'price_desc' ? 'active' : '' }}" type="button" data-sort="price_desc"><i class="fas fa-arrow-down-9-1 me-2"></i>Prix décroissant</button></li>
+                    </ul>
                 </div>
+
+                {{-- View Mode Toggle (2-cols vs 1-col) --}}
+                <button type="button" class="btn-mobile-tool btn-mobile-view-toggle" id="mobileViewToggle" title="Basculer 1 colonne / 2 colonnes" aria-label="Affichage">
+                    <i class="fas fa-th-large" id="viewToggleIcon"></i>
+                </button>
             </div>
 
-            {{-- ── MOBILE FLOATING FILTER BUTTON (FAB) ── --}}
-            <button class="btn btn-primary btn-fab d-lg-none shadow-lg d-flex align-items-center justify-content-center" 
-                    type="button" data-bs-toggle="offcanvas" data-bs-target="#shopFiltersBottom">
-                <i class="fas fa-sliders-h fs-4"></i>
-            </button>
+            {{-- Result Count & Removable Filter Chips --}}
+            <div class="mobile-active-strip d-flex align-items-center justify-content-between pt-2">
+                <div class="mobile-results-count text-muted">
+                    <span id="mobileProductTotal" class="fw-bold text-dark">{{ $products->total() }}</span> articles trouvés
+                </div>
+                <div class="mobile-chips-scroll" id="mobileActiveChipsContainer"></div>
+            </div>
+        </div>
 
-
-
-            {{-- ── SIDEBAR (Desktop) / OFFCANVAS (Mobile) ── --}}
+        <div class="row gx-2 gx-lg-5 gy-4">
+            {{-- ── SIDEBAR (Desktop) ── --}}
             <div class="col-lg-3 d-none d-lg-block">
                 <div class="shop-sidebar sticky-top" style="top: 100px;">
                     @include('frontend.shop.partials.sidebar-content')
                 </div>
             </div>
 
-
-
             {{-- ── PRODUCT GRID ── --}}
             <div class="col-lg-9">
-
                 {{-- Toolbar (Desktop only) --}}
                 <div class="shop-toolbar mb-4 d-none d-lg-flex">
                     <div class="shop-toolbar-left">
@@ -158,7 +203,7 @@
                                 Tous les équipements
                             @endif
                         </span>
-                        <span class="shop-toolbar-count">{{ $products->total() }} produit{{ $products->total() != 1 ? 's' : '' }}</span>
+                        <span class="shop-toolbar-count" id="desktopProductTotalBadge">{{ $products->total() }} produit{{ $products->total() != 1 ? 's' : '' }}</span>
                     </div>
                     <div class="d-flex align-items-center gap-2">
                         <label class="shop-sort-label">Trier :</label>
@@ -170,24 +215,24 @@
                     </div>
                 </div>
 
-                {{-- Active Filters --}}
-                @if(request('q') || request('category') || request('min_price') || request('max_price'))
-                <div class="shop-active-filters mb-4">
+                {{-- Active Filters (Desktop) --}}
+                <div class="shop-active-filters mb-4 {{ (request('q') || request('category') || request('min_price') || request('max_price')) ? '' : 'd-none' }}" id="desktopActiveFilters">
                     <span class="shop-active-label">Filtres actifs :</span>
-                    @if(request('q'))
-                        <span class="shop-filter-tag">Recherche : {{ request('q') }}</span>
-                    @endif
-                    @if(request('category'))
-                        <span class="shop-filter-tag">Catégorie : {{ $categories->where('slug', request('category'))->first()->name ?? request('category') }}</span>
-                    @endif
-                    @if(request('min_price') || request('max_price'))
-                        <span class="shop-filter-tag">Prix : {{ request('min_price', '0') }} — {{ request('max_price', '∞') }} DH</span>
-                    @endif
-                    <a href="{{ route('shop.index') }}" class="shop-clear-link">
+                    <span id="desktopActiveFilterChips">
+                        @if(request('q'))
+                            <span class="shop-filter-tag">Recherche : {{ request('q') }}</span>
+                        @endif
+                        @if(request('category'))
+                            <span class="shop-filter-tag">Catégorie : {{ $categories->where('slug', request('category'))->first()->name ?? request('category') }}</span>
+                        @endif
+                        @if(request('min_price') || request('max_price'))
+                            <span class="shop-filter-tag">Prix : {{ request('min_price', '0') }} — {{ request('max_price', '∞') }} DH</span>
+                        @endif
+                    </span>
+                    <a href="#" class="shop-clear-link" id="desktopResetFiltersBtn">
                         <i class="fas fa-times me-1"></i>Effacer tout
                     </a>
                 </div>
-                @endif
 
                 {{-- Product Grid (AJAX-swapped partial) --}}
                 <div id="productGridContainer">
@@ -199,36 +244,93 @@
                     <div class="shop-loader-spinner"></div>
                 </div>
             </div>
-
         </div>
     </div>
 </section>
 
-{{-- ── OFFCANVAS COMPONENTS (Moved outside main containers) ── --}}
-<div class="offcanvas offcanvas-bottom border-0 shadow-lg d-lg-none" tabindex="-1" id="shopFiltersBottom" style="height: 70vh; border-radius: 28px 28px 0 0;">
-    <div class="offcanvas-header bg-white border-bottom py-3 px-4">
-        <h5 class="offcanvas-title fw-bold">Options de filtrage</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+{{-- ── MOBILE DEDICATED BOTTOM SHEET FILTER DRAWER ── --}}
+<div class="offcanvas offcanvas-bottom shop-bottom-sheet d-lg-none" tabindex="-1" id="shopFilterSheet" aria-labelledby="shopFilterSheetLabel">
+    <div class="sheet-drag-handle"></div>
+    <div class="offcanvas-header border-bottom py-3 px-4">
+        <div class="d-flex align-items-center gap-2">
+            <i class="fas fa-sliders-h text-danger fs-5"></i>
+            <h5 class="offcanvas-title fw-bold mb-0" id="shopFilterSheetLabel">Filtres & Options</h5>
+        </div>
+        <button type="button" class="btn-reset-filters text-danger border-0 bg-transparent fw-bold small" id="sheetResetBtn">
+            Réinitialiser
+        </button>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fermer"></button>
     </div>
-    <div class="offcanvas-body p-4 bg-light">
-        @include('frontend.shop.partials.sidebar-content')
-        <div class="mt-4 pb-5">
-            <button class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-lg" data-bs-dismiss="offcanvas">
-                Voir les {{ $products->total() }} produits
-            </button>
+    <div class="offcanvas-body p-4">
+        {{-- Section 1: Search inside shop --}}
+        <div class="filter-section mb-4">
+            <label class="filter-section-title"><i class="fas fa-search me-2 text-danger"></i>Rechercher dans la boutique</label>
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0 text-muted ps-3"><i class="fas fa-search"></i></span>
+                <input type="text" class="form-control bg-light border-start-0 ps-1" id="sheetSearchInput" placeholder="Modèle, boîtier, marque..." value="{{ request('q') }}">
+            </div>
+        </div>
+
+        {{-- Section 2: Categories --}}
+        <div class="filter-section mb-4">
+            <label class="filter-section-title"><i class="fas fa-th-large me-2 text-danger"></i>Catégories</label>
+            <div class="d-flex flex-wrap gap-2" id="sheetCategoryChips">
+                <button type="button" class="sheet-cat-chip {{ !request('category') ? 'active' : '' }}" data-slug="">
+                    Tous ({{ \App\Models\Product::where('status','active')->count() }})
+                </button>
+                @foreach($categories as $cat)
+                <button type="button" class="sheet-cat-chip {{ request('category') == $cat->slug ? 'active' : '' }}" data-slug="{{ $cat->slug }}">
+                    {{ $cat->name }} ({{ $cat->products_count }})
+                </button>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Section 3: Price Range --}}
+        <div class="filter-section mb-4">
+            <label class="filter-section-title"><i class="fas fa-tag me-2 text-danger"></i>Budget (MAD)</label>
+            <div class="row g-2 mb-2">
+                <div class="col-6">
+                    <input type="number" class="form-control rounded-3" id="sheetMinPrice" placeholder="Min MAD" value="{{ request('min_price') }}" min="0">
+                </div>
+                <div class="col-6">
+                    <input type="number" class="form-control rounded-3" id="sheetMaxPrice" placeholder="Max MAD" value="{{ request('max_price') }}" min="0">
+                </div>
+            </div>
+            {{-- Quick budget chips --}}
+            <div class="d-flex flex-wrap gap-1 mt-2">
+                <button type="button" class="sheet-budget-chip" data-min="0" data-max="5000">&lt; 5,000 DH</button>
+                <button type="button" class="sheet-budget-chip" data-min="5000" data-max="20000">5,000 – 20,000 DH</button>
+                <button type="button" class="sheet-budget-chip" data-min="20000" data-max="">&gt; 20,000 DH</button>
+            </div>
+        </div>
+
+        {{-- Section 4: Sorting --}}
+        <div class="filter-section mb-4">
+            <label class="filter-section-title"><i class="fas fa-sort-amount-down me-2 text-danger"></i>Trier par</label>
+            <div class="d-flex flex-column gap-2" id="sheetSortGroup">
+                <label class="sheet-radio-tile {{ request('sort') == 'newest' || !request('sort') ? 'selected' : '' }}">
+                    <input type="radio" name="sheet_sort_radio" value="newest" {{ request('sort') == 'newest' || !request('sort') ? 'checked' : '' }}>
+                    <span>Plus récents (Nouveautés)</span>
+                    <i class="fas fa-check check-icon"></i>
+                </label>
+                <label class="sheet-radio-tile {{ request('sort') == 'price_asc' ? 'selected' : '' }}">
+                    <input type="radio" name="sheet_sort_radio" value="price_asc" {{ request('sort') == 'price_asc' ? 'checked' : '' }}>
+                    <span>Prix : croissant (Moins cher)</span>
+                    <i class="fas fa-check check-icon"></i>
+                </label>
+                <label class="sheet-radio-tile {{ request('sort') == 'price_desc' ? 'selected' : '' }}">
+                    <input type="radio" name="sheet_sort_radio" value="price_desc" {{ request('sort') == 'price_desc' ? 'checked' : '' }}>
+                    <span>Prix : décroissant (Haut de gamme)</span>
+                    <i class="fas fa-check check-icon"></i>
+                </label>
+            </div>
         </div>
     </div>
-</div>
-
-<div class="offcanvas offcanvas-start border-0 shadow-lg d-lg-none" tabindex="-1" id="shopSidebarOffcanvas" style="width: 320px;">
-    <div class="offcanvas-header bg-white border-bottom py-3">
-        <h5 class="offcanvas-title fw-bold" id="shopSidebarOffcanvasLabel">
-            <i class="fas fa-filter me-2 text-primary"></i>Filtres
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body p-4 bg-light">
-        @include('frontend.shop.partials.sidebar-content')
+    <div class="offcanvas-footer p-3 bg-white border-top">
+        <button class="btn btn-danger w-100 py-3 rounded-pill fw-bold shadow-lg" id="sheetApplyBtn">
+            Appliquer les filtres
+        </button>
     </div>
 </div>
 
@@ -236,81 +338,410 @@
 
 @push('scripts')
 <script>
-let currentCategory = "{{ request('category') }}";
+// Shop State Manager
+const shopState = {
+    category: "{{ request('category', '') }}",
+    sort: "{{ request('sort', 'newest') }}",
+    q: "{{ request('q', '') }}",
+    min_price: "{{ request('min_price', '') }}",
+    max_price: "{{ request('max_price', '') }}",
+    viewMode: localStorage.getItem('camera_shop_view') || (window.innerWidth < 768 ? 'grid-1' : 'grid-2')
+};
 
-function updateSort(val) {
-    const select = document.getElementById('sortSelect');
-    if (select) select.value = val;
-    fetchProducts();
-}
+// Category Titles Map
+const categoryNamesMap = {
+    '': 'Tous les équipements',
+    @foreach($categories as $cat)
+        '{{ $cat->slug }}': '{{ addslashes($cat->name) }}',
+    @endforeach
+};
+
+// Sort Labels Map
+const sortLabelsMap = {
+    'newest': 'Plus récents',
+    'price_asc': 'Prix croissant',
+    'price_desc': 'Prix décroissant'
+};
 
 function getParams() {
     const p = new URLSearchParams();
-    if (currentCategory) p.append('category', currentCategory);
-    const sort     = document.getElementById('sortSelect').value;
-    const q        = document.querySelector('input[name="q"]').value;
-    const minPrice = document.querySelector('input[name="min_price"]').value;
-    const maxPrice = document.querySelector('input[name="max_price"]').value;
-    if (sort)     p.append('sort',      sort);
-    if (q)        p.append('q',         q);
-    if (minPrice) p.append('min_price', minPrice);
-    if (maxPrice) p.append('max_price', maxPrice);
+    if (shopState.category) p.append('category', shopState.category);
+    if (shopState.sort && shopState.sort !== 'newest') p.append('sort', shopState.sort);
+    if (shopState.q) p.append('q', shopState.q);
+    if (shopState.min_price) p.append('min_price', shopState.min_price);
+    if (shopState.max_price) p.append('max_price', shopState.max_price);
     return p;
 }
 
+function updateUIState() {
+    // 1. Category scroller pills & sheet chips
+    document.querySelectorAll('.mobile-cat-pill, .sheet-cat-chip, .shop-cat-link').forEach(el => {
+        const slug = el.getAttribute('data-slug');
+        if (slug === shopState.category) {
+            el.classList.add('active');
+        } else {
+            el.classList.remove('active');
+        }
+    });
+
+    // 2. Desktop title & Sort Selects
+    const titleEl = document.getElementById('categoryTitle');
+    if (titleEl) {
+        titleEl.textContent = categoryNamesMap[shopState.category] || 'Produits';
+    }
+
+    const sortSelect = document.getElementById('sortSelect');
+    if (sortSelect) sortSelect.value = shopState.sort;
+
+    // Mobile sort label
+    const mobileSortLabel = document.getElementById('mobileSortLabel');
+    if (mobileSortLabel) {
+        mobileSortLabel.textContent = sortLabelsMap[shopState.sort] || 'Trier';
+    }
+
+    // Mobile sort dropdown items active class
+    document.querySelectorAll('.mobile-sort-item').forEach(item => {
+        if (item.getAttribute('data-sort') === shopState.sort) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
+    });
+
+    // Sheet radio tiles
+    document.querySelectorAll('.sheet-radio-tile').forEach(tile => {
+        const radio = tile.querySelector('input');
+        if (radio && radio.value === shopState.sort) {
+            radio.checked = true;
+            tile.classList.add('selected');
+        } else {
+            if (radio) radio.checked = false;
+            tile.classList.remove('selected');
+        }
+    });
+
+    // 3. Inputs sync
+    const desktopSearch = document.querySelector('input[name="q"].shop-search-input');
+    if (desktopSearch) desktopSearch.value = shopState.q;
+    const sheetSearch = document.getElementById('sheetSearchInput');
+    if (sheetSearch) sheetSearch.value = shopState.q;
+
+    const desktopMin = document.querySelector('input[name="min_price"].shop-price-input');
+    if (desktopMin) desktopMin.value = shopState.min_price;
+    const sheetMin = document.getElementById('sheetMinPrice');
+    if (sheetMin) sheetMin.value = shopState.min_price;
+
+    const desktopMax = document.querySelector('input[name="max_price"].shop-price-input');
+    if (desktopMax) desktopMax.value = shopState.max_price;
+    const sheetMax = document.getElementById('sheetMaxPrice');
+    if (sheetMax) sheetMax.value = shopState.max_price;
+
+    // 4. Active filters count badge on mobile
+    let activeFilterCount = 0;
+    if (shopState.category) activeFilterCount++;
+    if (shopState.q) activeFilterCount++;
+    if (shopState.min_price || shopState.max_price) activeFilterCount++;
+    if (shopState.sort && shopState.sort !== 'newest') activeFilterCount++;
+
+    const filterBadge = document.getElementById('mobileFilterBadge');
+    if (filterBadge) {
+        if (activeFilterCount > 0) {
+            filterBadge.textContent = activeFilterCount;
+            filterBadge.classList.remove('d-none');
+        } else {
+            filterBadge.classList.add('d-none');
+        }
+    }
+
+    // 5. Render active filter chips on mobile and desktop
+    renderActiveFilterChips();
+
+    // 6. View Mode
+    applyViewMode(shopState.viewMode);
+}
+
+function renderActiveFilterChips() {
+    const mobileContainer = document.getElementById('mobileActiveChipsContainer');
+    let chipsHtml = '';
+
+    if (shopState.category) {
+        const catName = categoryNamesMap[shopState.category] || shopState.category;
+        chipsHtml += `<span class="mobile-chip" onclick="removeFilter('category')">${catName} <i class="fas fa-times ms-1"></i></span>`;
+    }
+    if (shopState.q) {
+        chipsHtml += `<span class="mobile-chip" onclick="removeFilter('q')">« ${shopState.q} » <i class="fas fa-times ms-1"></i></span>`;
+    }
+    if (shopState.min_price || shopState.max_price) {
+        const min = shopState.min_price || '0';
+        const max = shopState.max_price || '∞';
+        chipsHtml += `<span class="mobile-chip" onclick="removeFilter('price')">${min}-${max} DH <i class="fas fa-times ms-1"></i></span>`;
+    }
+    if (chipsHtml) {
+        chipsHtml += `<span class="mobile-chip-clear" onclick="resetAllFilters()">Tout effacer</span>`;
+    }
+
+    if (mobileContainer) {
+        mobileContainer.innerHTML = chipsHtml;
+    }
+}
+
+function removeFilter(type) {
+    if (type === 'category') shopState.category = '';
+    if (type === 'q') shopState.q = '';
+    if (type === 'price') { shopState.min_price = ''; shopState.max_price = ''; }
+    fetchProducts();
+}
+
+function resetAllFilters() {
+    shopState.category = '';
+    shopState.q = '';
+    shopState.min_price = '';
+    shopState.max_price = '';
+    shopState.sort = 'newest';
+    fetchProducts();
+}
+
+function applyViewMode(mode) {
+    const gridContainer = document.getElementById('productGridContainer');
+    const toggleIcon = document.getElementById('viewToggleIcon');
+    const toggleBtn = document.getElementById('mobileViewToggle');
+    if (!gridContainer) return;
+
+    if (mode === 'grid-1') {
+        gridContainer.classList.add('shop-grid-1col');
+        if (toggleIcon) toggleIcon.className = 'fas fa-th-large';
+        if (toggleBtn) {
+            toggleBtn.setAttribute('title', 'Passer en grille (2 colonnes)');
+            toggleBtn.setAttribute('aria-label', 'Passer en grille (2 colonnes)');
+        }
+    } else {
+        gridContainer.classList.remove('shop-grid-1col');
+        if (toggleIcon) toggleIcon.className = 'fas fa-square';
+        if (toggleBtn) {
+            toggleBtn.setAttribute('title', 'Passer en grand format (1 colonne)');
+            toggleBtn.setAttribute('aria-label', 'Passer en grand format (1 colonne)');
+        }
+    }
+}
+
 function fetchProducts(url = "{{ route('shop.index') }}") {
-    const grid   = document.getElementById('productGridContainer');
+    const grid = document.getElementById('productGridContainer');
     const loader = document.getElementById('loader');
-    grid.style.opacity = '0.4';
-    loader.classList.remove('d-none');
-    const fetchUrl = url.includes('?') ? url : `${url}?${getParams().toString()}`;
+    if (!grid) return;
+
+    grid.style.opacity = '0.35';
+    if (loader) loader.classList.remove('d-none');
+
+    const params = getParams();
+    const fetchUrl = url.includes('?') ? url : `${url}?${params.toString()}`;
     window.history.pushState(null, '', fetchUrl);
+
     fetch(fetchUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
         .then(r => r.text())
         .then(html => {
             grid.innerHTML = html;
             grid.style.opacity = '1';
-            loader.classList.add('d-none');
+            if (loader) loader.classList.add('d-none');
+
+            // Update item count numbers
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            const paginationCountMatch = html.match(/(\d+)\s+produit/i);
+            
+            // Re-apply view mode on new content
+            applyViewMode(shopState.viewMode);
             attachPaginationListeners();
+            updateUIState();
+
+            // Smooth scroll on mobile if triggered from sheet or filters
+            if (window.innerWidth < 992) {
+                const mobileToolbar = document.querySelector('.shop-mobile-toolbar');
+                if (mobileToolbar) {
+                    mobileToolbar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
         })
         .catch(err => {
-            console.error(err);
+            console.error('Fetch products error:', err);
             grid.style.opacity = '1';
-            loader.classList.add('d-none');
+            if (loader) loader.classList.add('d-none');
         });
 }
 
 function attachPaginationListeners() {
-    document.querySelectorAll('.pagination a').forEach(link => {
+    document.querySelectorAll('.shop-pagination a').forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
             fetchProducts(this.href);
-            document.getElementById('productGridContainer').scrollIntoView({ behavior: 'smooth' });
+            window.scrollTo({ top: 150, behavior: 'smooth' });
         });
     });
 }
 
-document.querySelectorAll('.category-filter').forEach(link => {
-    link.addEventListener('click', function(e) {
-        e.preventDefault();
-        document.querySelectorAll('.category-filter').forEach(el => el.classList.remove('active'));
-        this.classList.add('active');
-        currentCategory = this.dataset.slug;
-        document.getElementById('categoryTitle').innerText = this.querySelector('span').innerText;
-        fetchProducts();
-    });
-});
+document.addEventListener('DOMContentLoaded', function() {
+    updateUIState();
+    attachPaginationListeners();
 
-document.getElementById('sortSelect').addEventListener('change', () => fetchProducts());
-document.getElementById('priceFilterForm').addEventListener('submit', function(e) { e.preventDefault(); fetchProducts(); });
-document.getElementById('searchForm').addEventListener('submit', function(e) { e.preventDefault(); fetchProducts(); });
-attachPaginationListeners();
+    // 1. Mobile Category Scroller clicks
+    document.querySelectorAll('.mobile-cat-pill').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            shopState.category = this.getAttribute('data-slug') || '';
+            fetchProducts();
+            // Scroll selected pill into view
+            this.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        });
+    });
+
+    // 2. Desktop Category clicks
+    document.querySelectorAll('.shop-cat-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            shopState.category = this.getAttribute('data-slug') || '';
+            fetchProducts();
+        });
+    });
+
+    // 3. Desktop Sort Select
+    const sortSelect = document.getElementById('sortSelect');
+    if (sortSelect) {
+        sortSelect.addEventListener('change', function() {
+            shopState.sort = this.value;
+            fetchProducts();
+        });
+    }
+
+    // 4. Mobile Sort Dropdown Items
+    document.querySelectorAll('.mobile-sort-item').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            shopState.sort = this.getAttribute('data-sort');
+            fetchProducts();
+        });
+    });
+
+    // 5. Mobile View Mode Toggle (2-cols vs 1-col)
+    const viewToggleBtn = document.getElementById('mobileViewToggle');
+    if (viewToggleBtn) {
+        viewToggleBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            shopState.viewMode = (shopState.viewMode === 'grid-2') ? 'grid-1' : 'grid-2';
+            localStorage.setItem('camera_shop_view', shopState.viewMode);
+            applyViewMode(shopState.viewMode);
+        });
+    }
+
+    // 6. Mobile Sheet Category Chips
+    document.querySelectorAll('.sheet-cat-chip').forEach(chip => {
+        chip.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelectorAll('.sheet-cat-chip').forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            shopState.category = this.getAttribute('data-slug') || '';
+        });
+    });
+
+    // 7. Mobile Sheet Budget Chips
+    document.querySelectorAll('.sheet-budget-chip').forEach(chip => {
+        chip.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('sheetMinPrice').value = this.getAttribute('data-min');
+            document.getElementById('sheetMaxPrice').value = this.getAttribute('data-max');
+        });
+    });
+
+    // 8. Mobile Sheet Radio Tiles
+    document.querySelectorAll('.sheet-radio-tile').forEach(tile => {
+        tile.addEventListener('click', function() {
+            document.querySelectorAll('.sheet-radio-tile').forEach(t => t.classList.remove('selected'));
+            this.classList.add('selected');
+            const radio = this.querySelector('input');
+            if (radio) {
+                radio.checked = true;
+                shopState.sort = radio.value;
+            }
+        });
+    });
+
+    // 9. Mobile Sheet Apply Button
+    const sheetApplyBtn = document.getElementById('sheetApplyBtn');
+    if (sheetApplyBtn) {
+        sheetApplyBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            shopState.q = document.getElementById('sheetSearchInput').value.trim();
+            shopState.min_price = document.getElementById('sheetMinPrice').value.trim();
+            shopState.max_price = document.getElementById('sheetMaxPrice').value.trim();
+
+            const checkedRadio = document.querySelector('input[name="sheet_sort_radio"]:checked');
+            if (checkedRadio) shopState.sort = checkedRadio.value;
+
+            // Close offcanvas
+            const sheetEl = document.getElementById('shopFilterSheet');
+            const bsOffcanvas = bootstrap.Offcanvas.getInstance(sheetEl);
+            if (bsOffcanvas) bsOffcanvas.hide();
+
+            fetchProducts();
+        });
+    }
+
+    // 10. Mobile Sheet Reset Button
+    const sheetResetBtn = document.getElementById('sheetResetBtn');
+    if (sheetResetBtn) {
+        sheetResetBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('sheetSearchInput').value = '';
+            document.getElementById('sheetMinPrice').value = '';
+            document.getElementById('sheetMaxPrice').value = '';
+            shopState.category = '';
+            document.querySelectorAll('.sheet-cat-chip').forEach(c => {
+                if (c.getAttribute('data-slug') === '') c.classList.add('active');
+                else c.classList.remove('active');
+            });
+            resetAllFilters();
+            const sheetEl = document.getElementById('shopFilterSheet');
+            const bsOffcanvas = bootstrap.Offcanvas.getInstance(sheetEl);
+            if (bsOffcanvas) bsOffcanvas.hide();
+        });
+    }
+
+    // 11. Desktop Reset Filters
+    const desktopResetBtn = document.getElementById('desktopResetFiltersBtn');
+    if (desktopResetBtn) {
+        desktopResetBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            resetAllFilters();
+        });
+    }
+
+    // 12. Desktop Forms
+    const desktopPriceForm = document.getElementById('priceFilterForm');
+    if (desktopPriceForm) {
+        desktopPriceForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            shopState.min_price = this.querySelector('input[name="min_price"]').value.trim();
+            shopState.max_price = this.querySelector('input[name="max_price"]').value.trim();
+            fetchProducts();
+        });
+    }
+
+    const desktopSearchForm = document.getElementById('searchForm');
+    if (desktopSearchForm) {
+        desktopSearchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            shopState.q = this.querySelector('input[name="q"]').value.trim();
+            fetchProducts();
+        });
+    }
+});
 
 function addToCart(id) {
     const btn = document.querySelector(`button[onclick="addToCart(${id})"]`);
-    const originalHtml = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    let originalHtml = '';
+    if (btn) {
+        originalHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    }
 
     fetch(`/cart/add/${id}`, {
         method: 'POST',
@@ -323,20 +754,35 @@ function addToCart(id) {
     })
     .then(r => r.json())
     .then(data => {
-        btn.disabled = false;
-        btn.innerHTML = originalHtml;
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check text-white"></i>';
+            setTimeout(() => { btn.innerHTML = originalHtml; }, 1600);
+        }
         if (data.success) {
-            Swal.fire({ toast:true, position:'top-end', icon:'success', title:'Ajouté au panier !',
-                showConfirmButton:false, timer:2500, background:'#1a1a2e', color:'#fff' });
-            const badge = document.getElementById('header-cart-count');
-            if (badge && data.cartCount !== undefined) badge.innerText = data.cartCount;
+            Swal.fire({ 
+                toast: true, 
+                position: 'top-end', 
+                icon: 'success', 
+                title: 'Ajouté au panier !',
+                showConfirmButton: false, 
+                timer: 2000, 
+                background: '#0f172a', 
+                color: '#fff' 
+            });
+            const badgeDesktop = document.getElementById('header-cart-count');
+            const badgeMobile = document.getElementById('header-cart-count-mobile');
+            if (badgeDesktop && data.cartCount !== undefined) badgeDesktop.innerText = data.cartCount;
+            if (badgeMobile && data.cartCount !== undefined) badgeMobile.innerText = data.cartCount;
             if (typeof refreshMiniCart === 'function') refreshMiniCart();
         }
     })
     .catch(err => {
         console.error(err);
-        btn.disabled = false;
-        btn.innerHTML = originalHtml;
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+        }
     });
 }
 </script>

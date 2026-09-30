@@ -83,10 +83,19 @@
                         <small class="text-muted">{{ $movement->created_at->format('H:i:s') }}</small>
                     </td>
                     <td>
-                        <div>
-                            <strong>{{ $movement->product->name }}</strong>
-                            <br><small class="text-muted"><code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 11px;">{{ $movement->product->sku }}</code></small>
+                        @if($movement->product)
+                        <div class="d-flex align-items-center gap-2">
+                            <div style="width: 38px; height: 38px; border-radius: 6px; overflow: hidden; flex-shrink: 0; background: #f1f5f9; display: inline-flex; align-items: center; justify-content: center;">
+                                <img src="{{ $movement->product->thumbnail }}" alt="{{ $movement->product->name }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                            </div>
+                            <div>
+                                <strong>{{ $movement->product->name }}</strong>
+                                <br><small class="text-muted"><code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 11px;">{{ $movement->product->sku }}</code></small>
+                            </div>
                         </div>
+                        @else
+                        <span class="text-muted">Product Removed</span>
+                        @endif
                     </td>
                     <td>
                         <span class="badge badge-{{ $movement->type_color }}">

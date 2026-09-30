@@ -1,77 +1,94 @@
 @extends('layouts.app')
 
-@section('title', 'Orders Management')
+@section('title', 'Gestion des commandes')
 
 @section('content')
-    <!-- Page Header -->
+    <!-- En-tête de page -->
     <div class="brand-header">
         <div>
             <h1 class="brand-title">
                 <div class="brand-header-icon">
                     <i class="fas fa-shopping-basket"></i>
                 </div>
-                Orders Management
+                Gestion des commandes
             </h1>
-            <p class="brand-subtitle">Track and manage customer orders, fulfillment status, and logistics</p>
+            <p class="brand-subtitle">Suivez et gérez les commandes clients, l'état de livraison et les paiements</p>
         </div>
         <a href="{{ route('orders.create') }}" class="btn-brand-primary">
-            <i class="fas fa-plus me-2"></i> Create New Order
+            <i class="fas fa-plus me-2"></i> Créer une nouvelle commande
         </a>
     </div>
 
-    <!-- Filter Bar -->
+    <!-- Barre de filtres -->
     <div class="brand-filter-bar">
         <form method="GET" action="{{ route('orders.index') }}" class="d-flex align-items-end gap-3 flex-wrap">
             <div class="brand-search-wrapper flex-grow-1">
                 <i class="fas fa-search"></i>
                 <input type="text" name="search" class="form-control" 
                        value="{{ request('search') }}" 
-                       placeholder="Order #, name, or email...">
+                       placeholder="N° de commande, nom ou e-mail...">
             </div>
             
-            <div style="min-width: 140px;">
-                <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;">Status</label>
+            <div style="min-width: 150px;">
+                <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;">Statut de livraison</label>
                 <select name="status" class="form-select">
-                    <option value="">All Statuses</option>
-                    @foreach(['pending', 'processing', 'shipped', 'delivered', 'cancelled'] as $st)
-                        <option value="{{ $st }}" {{ request('status') == $st ? 'selected' : '' }}>{{ ucfirst($st) }}</option>
+                    <option value="">Tous les statuts</option>
+                    @php
+                        $statusNames = [
+                            'pending' => 'En attente',
+                            'processing' => 'En cours',
+                            'shipped' => 'Expédiée',
+                            'delivered' => 'Livrée',
+                            'cancelled' => 'Annulée'
+                        ];
+                    @endphp
+                    @foreach($statusNames as $stKey => $stLabel)
+                        <option value="{{ $stKey }}" {{ request('status') == $stKey ? 'selected' : '' }}>{{ $stLabel }}</option>
                     @endforeach
                 </select>
             </div>
 
-            <div style="min-width: 140px;">
-                <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;">Payment</label>
+            <div style="min-width: 150px;">
+                <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;">Paiement</label>
                 <select name="payment_status" class="form-select">
-                    <option value="">All Statuses</option>
-                    @foreach(['pending', 'paid', 'failed', 'refunded'] as $pst)
-                        <option value="{{ $pst }}" {{ request('payment_status') == $pst ? 'selected' : '' }}>{{ ucfirst($pst) }}</option>
+                    <option value="">Tous les paiements</option>
+                    @php
+                        $paymentStatusNames = [
+                            'pending' => 'En attente',
+                            'paid' => 'Payé',
+                            'failed' => 'Échoué',
+                            'refunded' => 'Remboursé'
+                        ];
+                    @endphp
+                    @foreach($paymentStatusNames as $pstKey => $pstLabel)
+                        <option value="{{ $pstKey }}" {{ request('payment_status') == $pstKey ? 'selected' : '' }}>{{ $pstLabel }}</option>
                     @endforeach
                 </select>
             </div>
 
             <div class="d-flex gap-2">
                 <button type="submit" class="btn-brand-primary">
-                    <i class="fas fa-filter me-1"></i> Filter
+                    <i class="fas fa-filter me-1"></i> Filtrer
                 </button>
-                <a href="{{ route('orders.index') }}" class="btn-brand-light" title="Reset">
+                <a href="{{ route('orders.index') }}" class="btn-brand-light" title="Réinitialiser">
                     <i class="fas fa-redo"></i>
                 </a>
             </div>
         </form>
     </div>
 
-    <!-- Orders Table -->
+    <!-- Tableau des commandes -->
     <div class="brand-table-card">
         <div class="table-responsive">
             <table class="brand-table">
                 <thead>
                     <tr>
-                        <th style="padding-left: 1.5rem;">Order #</th>
-                        <th>Customer</th>
-                        <th class="text-center">Items</th>
+                        <th style="padding-left: 1.5rem;">N° Commande</th>
+                        <th>Client</th>
+                        <th class="text-center">Articles</th>
                         <th class="text-end">Total</th>
-                        <th class="text-center">Fulfillment</th>
-                        <th class="text-center">Payment</th>
+                        <th class="text-center">Livraison</th>
+                        <th class="text-center">Paiement</th>
                         <th>Date</th>
                         <th class="text-end" style="padding-right: 1.5rem;">Actions</th>
                     </tr>
@@ -97,24 +114,56 @@
                             {{ $order->formatted_total }}
                         </td>
                         <td class="text-center">
-                            <span class="brand-badge {{ $order->status === 'delivered' ? 'success' : ($order->status === 'cancelled' ? 'danger' : 'info') }}">
-                                {{ ucfirst($order->status) }}
+                            @php
+                                $statusClass = match(strtolower($order->status)) {
+                                    'delivered', 'livrée' => 'success',
+                                    'cancelled', 'annulée' => 'danger',
+                                    'shipped', 'expédiée' => 'info',
+                                    'processing', 'en cours' => 'primary',
+                                    default => 'warning'
+                                };
+                                $statusText = match(strtolower($order->status)) {
+                                    'delivered' => 'Livrée',
+                                    'shipped' => 'Expédiée',
+                                    'processing' => 'En cours',
+                                    'pending' => 'En attente',
+                                    'cancelled' => 'Annulée',
+                                    default => ucfirst($order->status)
+                                };
+                            @endphp
+                            <span class="brand-badge {{ $statusClass }}">
+                                {{ $statusText }}
                             </span>
                         </td>
                         <td class="text-center">
-                            <span class="brand-badge {{ $order->payment_status === 'paid' ? 'success' : ($order->payment_status === 'failed' ? 'danger' : 'warning') }}">
-                                {{ ucfirst($order->payment_status) }}
+                            @php
+                                $pClass = match(strtolower($order->payment_status)) {
+                                    'paid', 'payé' => 'success',
+                                    'failed', 'échoué' => 'danger',
+                                    'refunded', 'remboursé' => 'info',
+                                    default => 'warning'
+                                };
+                                $pText = match(strtolower($order->payment_status)) {
+                                    'paid' => 'Payé',
+                                    'failed' => 'Échoué',
+                                    'refunded' => 'Remboursé',
+                                    'pending' => 'En attente',
+                                    default => ucfirst($order->payment_status)
+                                };
+                            @endphp
+                            <span class="brand-badge {{ $pClass }}">
+                                {{ $pText }}
                             </span>
                         </td>
                         <td>
-                            <div class="text-muted small">{{ $order->created_at->format('M d, Y') }}</div>
+                            <div class="text-muted small">{{ $order->created_at->format('d/m/Y') }}</div>
                         </td>
                         <td style="padding-right: 1.5rem;">
                             <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ route('orders.show', $order) }}" class="btn-action-icon" title="View Order">
+                                <a href="{{ route('orders.show', $order) }}" class="btn-action-icon" title="Voir la commande">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{{ route('orders.edit', $order) }}" class="btn-action-icon" title="Edit Order">
+                                <a href="{{ route('orders.edit', $order) }}" class="btn-action-icon" title="Modifier la commande">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 @if(in_array($order->status, ['pending', 'cancelled']))
@@ -123,10 +172,10 @@
                                           style="display: inline;"
                                           data-confirm-delete="true"
                                           data-item-type="order"
-                                          data-item-name="Order #{{ $order->order_number }}">
+                                          data-item-name="Commande #{{ $order->order_number }}">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn-action-icon danger" title="Delete">
+                                        <button type="submit" class="btn-action-icon danger" title="Supprimer">
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </form>
@@ -141,8 +190,8 @@
                                 <div class="brand-avatar mx-auto mb-3" style="width: 64px; height: 64px; font-size: 24px;">
                                     <i class="fas fa-shopping-cart text-muted"></i>
                                 </div>
-                                <h5 class="fw-bold text-dark">No orders found</h5>
-                                <p class="text-muted">No order records matching your current selection.</p>
+                                <h5 class="fw-bold text-dark">Aucune commande trouvée</h5>
+                                <p class="text-muted">Aucun enregistrement ne correspond à vos critères de recherche.</p>
                             </div>
                         </td>
                     </tr>

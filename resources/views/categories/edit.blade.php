@@ -205,7 +205,7 @@
                 <div class="mb-3">
                     <p class="text-muted mb-2"><small>Current Image:</small></p>
                     <div class="current-image-preview">
-                        <img src="{{ Storage::url($category->image) }}" alt="{{ $category->name }}">
+                        <img src="{{ $category->image_url }}" alt="{{ $category->name }}" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                     </div>
                     <div class="form-check mt-2">
                         <input type="checkbox" class="form-check-input" id="remove_image" name="remove_image" value="1">

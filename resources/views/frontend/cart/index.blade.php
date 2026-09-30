@@ -1,6 +1,6 @@
 @extends('layouts.frontend')
 
-@section('meta_title', 'Mon Panier - Speed Platform')
+@section('meta_title', 'Mon Panier — ' . setting('app_name', 'LUMINA Cine & Optics'))
 
 @section('content')
 <div class="bg-light py-5">
@@ -31,13 +31,12 @@
                                         <td class="py-4 px-4">
                                             <div class="d-flex align-items-center">
                                                 <div class="flex-shrink-0 me-3">
-                                                    @if($details['image'])
-                                                    <img src="{{ Storage::url($details['image']) }}" alt="{{ $details['name'] }}" class="rounded-3 shadow-sm object-fit-cover" style="width: 70px; height: 70px;">
-                                                    @else
-                                                    <div class="bg-light rounded-3 d-flex align-items-center justify-content-center text-muted" style="width: 70px; height: 70px;">
-                                                        <i class="fas fa-image"></i>
-                                                    </div>
-                                                    @endif
+                                                    @php
+                                                        $cartImg = (isset($details['image']) && (str_starts_with($details['image'], 'http') || str_starts_with($details['image'], '/') || str_starts_with($details['image'], 'images/'))) 
+                                                            ? asset(ltrim($details['image'], '/')) 
+                                                            : (isset($details['image']) ? Storage::url($details['image']) : asset('images/camera/cat_cameras.jpg'));
+                                                    @endphp
+                                                    <img src="{{ $cartImg }}" alt="{{ $details['name'] }}" class="rounded-3 shadow-sm object-fit-cover" style="width: 70px; height: 70px;">
                                                 </div>
                                                 <div>
                                                     <h6 class="fw-bold mb-1 ml-3"><a href="{{ route('shop.show', $id) }}" class="text-decoration-none text-dark">{{ $details['name'] }}</a></h6>
@@ -47,17 +46,17 @@
                                         </td>
                                         <td class="text-center py-4 px-4 fw-bold">{{ currency($details['price']) }}</td>
                                         <td class="text-center py-4 px-4">
-                                            <div class="quantity-control bg-light rounded-pill d-flex align-items-center px-2 py-1 border mx-auto" style="width: 100px;">
-                                                <button class="btn btn-sm btn-link text-dark text-decoration-none p-0 w-100" onclick="updateQty({{ $id }}, {{ $details['quantity'] - 1 }})">
+                                            <div class="quantity-control bg-light rounded-pill d-flex align-items-center px-2 py-1 border mx-auto" style="width: 105px;">
+                                                <button class="btn btn-sm btn-link text-dark text-decoration-none p-0 w-100" type="button" onclick="changeCartQty({{ $id }}, -1)" aria-label="Diminuer">
                                                     <i class="fas fa-minus small"></i>
                                                 </button>
-                                                <input type="text" class="form-control form-control-sm border-0 bg-transparent text-center fw-bold p-0" value="{{ $details['quantity'] }}" readonly>
-                                                <button class="btn btn-sm btn-link text-dark text-decoration-none p-0 w-100" onclick="updateQty({{ $id }}, {{ $details['quantity'] + 1 }})">
+                                                <input type="text" class="form-control form-control-sm border-0 bg-transparent text-center fw-bold p-0" id="cart-item-qty-{{ $id }}" value="{{ $details['quantity'] }}" readonly>
+                                                <button class="btn btn-sm btn-link text-dark text-decoration-none p-0 w-100" type="button" onclick="changeCartQty({{ $id }}, 1)" aria-label="Augmenter">
                                                     <i class="fas fa-plus small"></i>
                                                 </button>
                                             </div>
                                         </td>
-                                        <td class="text-end py-4 px-4 fw-bold text-primary h5 mb-0">{{ currency($details['price'] * $details['quantity']) }}</td>
+                                        <td class="text-end py-4 px-4 fw-bold text-primary h5 mb-0" id="cart-item-total-{{ $id }}">{{ currency($details['price'] * $details['quantity']) }}</td>
                                         <td class="text-end py-4 px-4">
                                             <button class="btn btn-link text-danger p-2 opacity-50 hover-opacity-100 rounded-circle hover-bg-danger-light transition-all" onclick="removeItem({{ $id }})" title="Remove item">
                                                 <i class="fas fa-trash-alt"></i>
@@ -78,16 +77,16 @@
                         <h5 class="fw-bold mb-4 font-heading">Récapitulatif</h5>
                         <div class="d-flex justify-content-between mb-3 text-muted">
                             <span>Sous-total</span>
-                            <span class="fw-bold text-dark">{{ currency($total) }}</span>
+                            <span class="fw-bold text-dark" id="cart-summary-subtotal">{{ currency($total) }}</span>
                         </div>
                         <div class="d-flex justify-content-between mb-3 text-muted">
                             <span>Livraison</span>
-                            <span class="text-success fw-bold">Gratuit</span>
+                            <span class="text-dark fw-bold">Dès 20 DH <small class="text-muted fw-normal">(selon ville)</small></span>
                         </div>
                         <hr class="my-4 opacity-10">
                         <div class="d-flex justify-content-between mb-4 align-items-center">
                             <span class="h5 fw-bold mb-0">Total</span>
-                            <span class="h4 fw-bold text-primary mb-0">{{ currency($total) }}</span>
+                            <span class="h4 fw-bold text-primary mb-0" id="cart-summary-total">{{ currency($total) }}</span>
                         </div>
                         <button class="btn btn-dark w-100 py-3 rounded-pill fw-bold mb-3 shadow-lg hover-scale-sm transition-transform" onclick="location.href='{{ route('checkout.index') }}'">
                             Passer la commande <i class="fas fa-arrow-right ms-2"></i>

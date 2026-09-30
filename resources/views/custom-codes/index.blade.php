@@ -1,47 +1,42 @@
 @extends('layouts.app')
 
-@section('title', 'Costom Code Manager')
+@section('title', 'Gestionnaire de codes personnalisés')
 
 @section('content')
-@extends('layouts.app')
-
-@section('title', 'Custom Code Manager')
-
-@section('content')
-    <!-- Page Header -->
+    <!-- En-tête de page -->
     <div class="brand-header">
         <div>
             <h1 class="brand-title">
                 <div class="brand-header-icon">
                     <i class="fas fa-code"></i>
                 </div>
-                Custom Code Manager
+                Codes personnalisés
             </h1>
-            <p class="brand-subtitle">Manage custom CSS, JS, and HTML snippets</p>
+            <p class="brand-subtitle">Gérez vos scripts et styles personnalisés (CSS, JS, balises HTML)</p>
         </div>
         <a href="{{ route('custom-codes.create') }}" class="btn-brand-primary">
-            <i class="fas fa-plus me-2"></i> Add New Snippet
+            <i class="fas fa-plus me-2"></i> Ajouter un extrait de code
         </a>
     </div>
 
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
         </div>
     @endif
 
-    <!-- Codes Table -->
+    <!-- Tableau des codes -->
     <div class="brand-table-card">
         <div class="table-responsive">
             <table class="brand-table">
                 <thead>
                     <tr>
-                        <th style="padding-left: 1.5rem;">Snippet Details</th>
+                        <th style="padding-left: 1.5rem;">Détails de l'extrait</th>
                         <th>Type</th>
-                        <th>Position</th>
-                        <th>Priority</th>
-                        <th>Status</th>
+                        <th>Emplacement</th>
+                        <th>Priorité</th>
+                        <th>Statut</th>
                         <th class="text-end" style="padding-right: 1.5rem;">Actions</th>
                     </tr>
                 </thead>
@@ -50,7 +45,7 @@
                     <tr>
                         <td style="padding-left: 1.5rem;">
                             <div class="fw-bold text-dark">{{ $code->title }}</div>
-                            <div class="text-muted small">Updated {{ $code->updated_at->diffForHumans() }}</div>
+                            <div class="text-muted small">Mis à jour {{ $code->updated_at->diffForHumans() }}</div>
                         </td>
                         <td>
                             @php
@@ -68,7 +63,15 @@
                         <td>
                             <span class="text-muted small">
                                 <i class="fas fa-map-marker-alt me-1"></i>
-                                {{ ucwords(str_replace('_', ' ', $code->position)) }}
+                                @php
+                                    $pos = match($code->position) {
+                                        'header' => 'En-tête (Header)',
+                                        'footer' => 'Pied de page (Footer)',
+                                        'body_start' => 'Début du Body',
+                                        default => ucwords(str_replace('_', ' ', $code->position))
+                                    };
+                                @endphp
+                                {{ $pos }}
                             </span>
                         </td>
                         <td>
@@ -78,18 +81,18 @@
                         </td>
                         <td>
                             <span class="brand-badge {{ $code->is_active ? 'success' : 'danger' }}">
-                                {{ $code->is_active ? 'Active' : 'Inactive' }}
+                                {{ $code->is_active ? 'Actif' : 'Inactif' }}
                             </span>
                         </td>
                         <td style="padding-right: 1.5rem;">
                             <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ route('custom-codes.edit', $code) }}" class="btn-action-icon" title="Edit Snippet">
+                                <a href="{{ route('custom-codes.edit', $code) }}" class="btn-action-icon" title="Modifier l'extrait">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <form action="{{ route('custom-codes.destroy', $code) }}" method="POST" class="d-inline delete-form">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn-action-icon danger" onclick="return confirm('Are you sure you want to delete this snippet?')" title="Delete Snippet">
+                                    <button type="submit" class="btn-action-icon danger" onclick="return confirm('Voulez-vous vraiment supprimer cet extrait de code ?')" title="Supprimer">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </form>
@@ -103,10 +106,10 @@
                                 <div class="brand-avatar mx-auto mb-3" style="width: 64px; height: 64px; font-size: 24px;">
                                     <i class="fas fa-code"></i>
                                 </div>
-                                <h5 class="fw-bold text-dark">No custom codes found</h5>
-                                <p class="text-muted">Start by adding your first custom snippet.</p>
+                                <h5 class="fw-bold text-dark">Aucun code personnalisé trouvé</h5>
+                                <p class="text-muted">Commencez par ajouter votre premier extrait de code.</p>
                                 <a href="{{ route('custom-codes.create') }}" class="btn-brand-primary mt-3">
-                                    Add New Snippet
+                                    Ajouter un extrait
                                 </a>
                             </div>
                         </td>

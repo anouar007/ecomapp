@@ -203,11 +203,7 @@
                     <div class="col-md-3">
                         <div class="card h-100 border-0 shadow-sm rounded-4 product-card overflow-hidden">
                             <a href="{{ route('shop.show', $prod->id) }}" class="position-relative d-block bg-white p-3 text-center">
-                                @if($prod->main_image)
-                                <img src="{{ Storage::url($prod->main_image) }}" class="img-fluid" alt="{{ $prod->name }}" style="height: 180px; object-fit: contain;">
-                                @else
-                                <i class="fas fa-image fa-3x text-muted opacity-25 my-4"></i>
-                                @endif
+                                <img src="{{ $prod->thumbnail }}" class="img-fluid" alt="{{ $prod->name }}" style="height: 180px; object-fit: contain;" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                             </a>
                             <div class="card-body p-3 text-center">
                                 <h6 class="fw-bold mb-1"><a href="{{ route('shop.show', $prod->id) }}" class="text-decoration-none text-dark">{{ $prod->name }}</a></h6>

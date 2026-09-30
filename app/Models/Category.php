@@ -43,6 +43,18 @@ class Category extends Model
                 $category->slug = Str::slug($category->name);
             }
         });
+
+        static::saved(function () {
+            \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
+            \Illuminate\Support\Facades\Cache::forget('frontend_nav_categories');
+            \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
+        });
+
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
+            \Illuminate\Support\Facades\Cache::forget('frontend_nav_categories');
+            \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
+        });
     }
 
     /**
@@ -115,5 +127,37 @@ class Category extends Model
     public function getBreadcrumbAttribute()
     {
         return $this->ancestors()->pluck('name')->push($this->name)->implode(' > ');
+    }
+
+    /**
+     * Get resolved image URL.
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        if (empty($this->image)) {
+            return null;
+        }
+
+        if (str_starts_with($this->image, 'http://') || str_starts_with($this->image, 'https://')) {
+            return $this->image;
+        }
+
+        if (str_starts_with($this->image, 'images/') || str_starts_with($this->image, '/images/')) {
+            return asset(ltrim($this->image, '/'));
+        }
+
+        if (str_starts_with($this->image, 'storage/') || str_starts_with($this->image, '/storage/')) {
+            return asset(ltrim($this->image, '/'));
+        }
+
+        return asset('storage/' . ltrim($this->image, '/'));
+    }
+
+    /**
+     * Get guaranteed thumbnail URL with fallback.
+     */
+    public function getThumbnailAttribute(): string
+    {
+        return $this->image_url ?? asset('images/camera/cat_cameras.jpg');
     }
 }

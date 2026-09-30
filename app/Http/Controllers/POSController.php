@@ -67,9 +67,7 @@ class POSController extends Controller
                     'price' => $product->price,
                     'stock' => $product->stock,
                     'category' => $categoryName,
-                    'image' => $product->images->first() 
-                        ? asset('storage/' . $product->images->first()->image_path)
-                        : null,
+                    'image' => $product->thumbnail,
                 ];
             });
 
@@ -138,8 +136,8 @@ class POSController extends Controller
             }
             
             $total = $subtotal - $discount;
-            $taxRate = setting('tax_rate', 10) / 100;
-            $tax = $total - ($total / (1 + $taxRate));
+            $taxRate = floatval(setting('tax_rate', 20)) / 100;
+            $tax = $taxRate > 0 ? ($total - ($total / (1 + $taxRate))) : 0;
             $subtotalNet = $total - $tax;
 
             // Check if customer exists and has credit limit
@@ -213,7 +211,7 @@ class POSController extends Controller
                     'customer_phone' => $customer->phone,
                     'subtotal' => $subtotalNet,
                     'tax_amount' => $tax,
-                    'tax_rate' => floatval(setting('tax_rate', 0)),
+                    'tax_rate' => floatval(setting('tax_rate', 20)),
                     'ice' => $customer->ice ?? null,
                     'discount_amount' => 0,
                     'total_amount' => $total,

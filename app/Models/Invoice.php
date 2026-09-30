@@ -104,43 +104,68 @@ class Invoice extends Model
     }
 
     /**
+     * Optional runtime override for rendering the document as quote (devis) or invoice (facture).
+     */
+    public ?string $view_as = null;
+
+    /**
      * Check if the document is a quote.
      */
-    public function isQuote()
+    public function isQuote($overrideType = null): bool
     {
-        return $this->type === 'quote';
+        $type = $overrideType ?? $this->view_as ?? $this->type;
+        return in_array(strtolower($type), ['quote', 'devis']);
     }
 
     /**
      * Check if the document is an invoice.
      */
-    public function isInvoice()
+    public function isInvoice($overrideType = null): bool
     {
-        return $this->type === 'invoice';
+        $type = $overrideType ?? $this->view_as ?? $this->type;
+        return in_array(strtolower($type), ['invoice', 'facture']);
     }
 
     /**
      * Get the document type label.
      */
-    public function getTypeLabel()
+    public function getTypeLabel($overrideType = null)
     {
-        return $this->isQuote() ? __('Quote') : __('Invoice');
+        return $this->isQuote($overrideType) ? __('Quote') : __('Invoice');
     }
 
     /**
      * Get the document number label.
      */
-    public function getNumberLabel()
+    public function getNumberLabel($overrideType = null)
     {
-        return $this->isQuote() ? __('Quote No') : __('Invoice No');
+        return $this->isQuote($overrideType) ? __('Quote No') : __('Invoice No');
     }
 
     /**
      * Get the bill to label.
      */
-    public function getBillToLabel()
+    public function getBillToLabel($overrideType = null)
     {
-        return $this->isQuote() ? __('Quote To') : __('Bill To');
+        return $this->isQuote($overrideType) ? __('Quote To') : __('Bill To');
+    }
+
+    /**
+     * Get the formatted display number (e.g. DEV-xxx when rendered as quote, INV-xxx when as invoice).
+     */
+    public function getDisplayNumberAttribute(): string
+    {
+        $num = $this->invoice_number;
+        if ($this->isQuote()) {
+            if (str_starts_with($num, 'INV-')) {
+                return 'DEV-' . substr($num, 4);
+            }
+        } else {
+            if (str_starts_with($num, 'DEV-')) {
+                return 'INV-' . substr($num, 4);
+            }
+        }
+        return $num;
     }
 
     /**
@@ -219,6 +244,63 @@ class Invoice extends Model
         }
 
         return sprintf('INV-%s-%s-%04d', $year, $month, $nextNumber);
+    }
+
+    /**
+     * Get dynamic effective tax rate (taken dynamically from settings, fallback to stored value).
+     */
+    public function getTaxRateAttribute($value): float
+    {
+        $settingRate = setting('tax_rate');
+        if ($settingRate !== null && $settingRate !== '') {
+            return floatval($settingRate);
+        }
+        return floatval($value ?: 20);
+    }
+
+    /**
+     * Get dynamic tax label from settings (e.g., "TVA" or "Tax").
+     */
+    public function getTaxLabelAttribute(): string
+    {
+        return (string) (setting('tax_label', 'TVA') ?: 'TVA');
+    }
+
+    /**
+     * Get formatted tax rate string (e.g., "20%" or "14.5%").
+     */
+    public function getFormattedTaxRateAttribute(): string
+    {
+        $rate = $this->tax_rate;
+        return (floor($rate) == $rate ? number_format($rate, 0) : number_format($rate, 2)) . '%';
+    }
+
+    /**
+     * Dynamic Subtotal (HT) based on dynamic tax rate from settings.
+     */
+    public function getSubtotalAttribute($value): float
+    {
+        $settingRate = setting('tax_rate');
+        if ($settingRate !== null && $settingRate !== '') {
+            $rate = floatval($settingRate) / 100;
+            if ($rate <= 0) {
+                return floatval($this->total_amount);
+            }
+            return round(floatval($this->total_amount) / (1 + $rate), 2);
+        }
+        return floatval($value ?: $this->total_amount);
+    }
+
+    /**
+     * Dynamic Tax Amount (TVA) based on dynamic tax rate from settings.
+     */
+    public function getTaxAmountAttribute($value): float
+    {
+        $settingRate = setting('tax_rate');
+        if ($settingRate !== null && $settingRate !== '') {
+            return round(floatval($this->total_amount) - $this->subtotal, 2);
+        }
+        return floatval($value ?: 0);
     }
 
     /**

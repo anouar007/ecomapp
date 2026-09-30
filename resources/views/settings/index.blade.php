@@ -284,8 +284,8 @@ ashed #cbd5e1;
 @section('content')
 <div class="settings-container">
     <div class="settings-header">
-        <h1 class="settings-title">Settings</h1>
-        <p class="settings-subtitle">Customize your application preferences and configurations</p>
+        <h1 class="settings-title">Paramètres</h1>
+        <p class="settings-subtitle">Personnalisez les préférences, configurations et informations de votre boutique</p>
     </div>
 
     @if(session('success'))
@@ -313,35 +313,35 @@ ashed #cbd5e1;
         <div class="settings-tabs">
             <button class="settings-tab" onclick="switchTab('general')">
                 <i class="fas fa-sliders-h"></i>
-                <span>General</span>
+                <span>Général</span>
             </button>
             <button class="settings-tab" onclick="switchTab('company')">
                 <i class="fas fa-building"></i>
-                <span>Company Info</span>
+                <span>Entreprise</span>
             </button>
             <button class="settings-tab" onclick="switchTab('guarantee')">
                 <i class="fas fa-shield-alt"></i>
-                <span>Guarantee & Warranty</span>
+                <span>Garantie & SAV</span>
             </button>
             <button class="settings-tab" onclick="switchTab('theme')">
                 <i class="fas fa-palette"></i>
-                <span>Theme</span>
+                <span>Thème & Couleurs</span>
             </button>
             <button class="settings-tab" onclick="switchTab('social')">
                 <i class="fas fa-share-alt"></i>
-                <span>Social Media</span>
+                <span>Réseaux sociaux</span>
             </button>
             <button class="settings-tab" onclick="switchTab('frontend')">
                 <i class="fas fa-desktop"></i>
-                <span>Frontend</span>
+                <span>Boutique en ligne</span>
             </button>
             <button class="settings-tab" onclick="switchTab('localization')">
                 <i class="fas fa-globe"></i>
-                <span>Localization</span>
+                <span>Langue & Région</span>
             </button>
             <button class="settings-tab" onclick="switchTab('advanced')">
                 <i class="fas fa-cogs"></i>
-                <span>Advanced</span>
+                <span>Avancé</span>
             </button>
         </div>
 
@@ -798,18 +798,24 @@ ashed #cbd5e1;
                     </div>
 
                     <div class="settings-section">
-                        <h3 class="section-title">Tax Configuration</h3>
+                        <h3 class="section-title">Tax Configuration (TVA)</h3>
                         
                         <div class="form-group">
-                            <label class="form-label">Tax Rate (%)</label>
+                            <label class="form-label">Tax Rate (%) / Taux TVA (%)</label>
                             <input type="number" name="settings[tax_rate]" class="form-input" min="0" max="100" step="0.01"
-                                   value="{{ setting('tax_rate', 0) }}">
+                                   value="{{ setting('tax_rate', 20) }}">
+                            <small style="display: block; margin-top: 4px; font-size: 12px; color: #64748b;">
+                                Ce taux s'applique dynamiquement sur l'ensemble des devis, factures, commandes et POS (ex. 20 pour 20%).
+                            </small>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Tax Label</label>
+                            <label class="form-label">Tax Label / Libellé de Taxe (ex: TVA)</label>
                             <input type="text" name="settings[tax_label]" class="form-input"
-                                   value="{{ setting('tax_label', 'Tax') }}" placeholder="Tax">
+                                   value="{{ setting('tax_label', 'TVA') }}" placeholder="TVA">
+                            <small style="display: block; margin-top: 4px; font-size: 12px; color: #64748b;">
+                                Libellé affiché sur les devis, factures et récapitulatifs (ex: TVA).
+                            </small>
                         </div>
                     </div>
                 </div>

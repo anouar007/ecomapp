@@ -14,13 +14,7 @@
                 <div class="card h-100 border-0 shadow-sm rounded-4 product-card overflow-hidden">
                     <div class="position-relative">
                         <a href="{{ route('shop.show', $item->product->id) }}">
-                            @if($item->product->main_image)
-                            <img src="{{ Storage::url($item->product->main_image) }}" class="card-img-top" alt="{{ $item->product->name }}" style="height: 250px; object-fit: cover;">
-                            @else
-                            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                                <i class="fas fa-image fa-3x text-muted opacity-25"></i>
-                            </div>
-                            @endif
+                            <img src="{{ $item->product->thumbnail }}" class="card-img-top" alt="{{ $item->product->name }}" style="height: 250px; object-fit: cover;" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                         </a>
                         <button class="btn btn-light shadow-sm rounded-circle position-absolute top-0 end-0 m-3 wishlist-btn text-danger" 
                                 onclick="removeFromWishlist(event, {{ $item->product->id }}, this)"

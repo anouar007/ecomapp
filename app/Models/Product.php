@@ -35,6 +35,23 @@ class Product extends Model
     ];
 
     /**
+     * Booted method to flush relevant front-end caches.
+     */
+    protected static function booted(): void
+    {
+        static::saved(function () {
+            \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
+            \Illuminate\Support\Facades\Cache::forget('frontend_nav_categories');
+            \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
+        });
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
+            \Illuminate\Support\Facades\Cache::forget('frontend_nav_categories');
+            \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
+        });
+    }
+
+    /**
      * Check if the product is currently on sale.
      */
     public function isOnSale()
@@ -298,12 +315,20 @@ class Product extends Model
     public function getMainImageAttribute()
     {
         // 1. Check for primary image in dedicated table
-        if ($this->relationLoaded('primaryImage') && $this->primaryImage) {
+        if ($this->relationLoaded('primaryImage')) {
+            if ($this->primaryImage) {
+                return $this->primaryImage->image_path;
+            }
+        } elseif ($this->primaryImage) {
             return $this->primaryImage->image_path;
         }
 
         // 2. Check for any image in dedicated table
-        if ($this->relationLoaded('images') && $this->images->count() > 0) {
+        if ($this->relationLoaded('images')) {
+            if ($this->images->count() > 0) {
+                return $this->images->first()->image_path;
+            }
+        } elseif ($this->images && $this->images->count() > 0) {
             return $this->images->first()->image_path;
         }
 
@@ -313,6 +338,39 @@ class Product extends Model
         }
 
         return null;
+    }
+
+    /**
+     * Get the resolved URL for the product thumbnail image.
+     */
+    public function getThumbnailAttribute()
+    {
+        $img = $this->main_image;
+        if (!$img) {
+            return asset('images/camera/cat_cameras.jpg');
+        }
+
+        if (str_starts_with($img, 'http://') || str_starts_with($img, 'https://')) {
+            return $img;
+        }
+
+        if (str_starts_with($img, 'images/') || str_starts_with($img, '/images/')) {
+            return asset(ltrim($img, '/'));
+        }
+
+        if (str_starts_with($img, 'storage/') || str_starts_with($img, '/storage/')) {
+            return asset(ltrim($img, '/'));
+        }
+
+        return asset('storage/' . ltrim($img, '/'));
+    }
+
+    /**
+     * Get the resolved URL for the product image (alias for thumbnail).
+     */
+    public function getImageUrlAttribute(): string
+    {
+        return $this->thumbnail;
     }
 }
 

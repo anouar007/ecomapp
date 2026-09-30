@@ -45,7 +45,11 @@ class InvoiceItem extends Model
      */
     public function getUnitPriceHtAttribute(): float
     {
-        $taxRate = $this->invoice->tax_rate / 100;
+        $rate = $this->invoice ? $this->invoice->tax_rate : floatval(setting('tax_rate', 20));
+        $taxRate = $rate / 100;
+        if ($taxRate <= 0) {
+            return floatval($this->unit_price);
+        }
         return floatval($this->unit_price) / (1 + $taxRate);
     }
 
@@ -54,7 +58,11 @@ class InvoiceItem extends Model
      */
     public function getTotalPriceHtAttribute(): float
     {
-        $taxRate = $this->invoice->tax_rate / 100;
+        $rate = $this->invoice ? $this->invoice->tax_rate : floatval(setting('tax_rate', 20));
+        $taxRate = $rate / 100;
+        if ($taxRate <= 0) {
+            return floatval($this->total_price);
+        }
         return floatval($this->total_price) / (1 + $taxRate);
     }
 

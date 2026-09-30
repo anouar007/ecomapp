@@ -113,8 +113,8 @@
                              <span style="font-weight: 600;" id="summarySubtotal">$0.00</span>
                          </div>
                          <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                             <span style="color: #64748b; font-size: 14px;">Tax (10%):</span>
-                             <span style="font-weight: 600;" id="summaryTax">$0.00</span>
+                             <span style="color: #64748b; font-size: 14px;" id="summaryTaxLabel">{{ setting('tax_label', 'TVA') }} ({{ floatval(setting('tax_rate', 20)) }}%):</span>
+                             <span style="font-weight: 600;" id="summaryTax">{{ currency(0) }}</span>
                          </div>
                          <div style="display: flex; justify-content: space-between; padding-top: 12px; border-top: 1px solid #e2e8f0;">
                              <span style="color: #1e293b; font-weight: 700;">Total:</span>
@@ -259,17 +259,19 @@
             subtotal += total;
         });
 
-        const taxRate = {{ setting('tax_rate', 10) }} / 100;
-        const tax = subtotal * taxRate;
-        const total = subtotal + tax;
+        const taxPercent = {{ floatval(setting('tax_rate', 20)) }};
+        const taxRate = taxPercent / 100;
+        const totalAmount = subtotal;
+        const taxAmount = taxRate > 0 ? (totalAmount - (totalAmount / (1 + taxRate))) : 0;
+        const subtotalNet = totalAmount - taxAmount;
 
-        document.getElementById('summarySubtotal').innerText = currency(subtotal);
-        document.getElementById('summaryTax').innerText = currency(tax);
-        document.getElementById('summaryTotal').innerText = currency(total);
+        document.getElementById('summarySubtotal').innerText = currency(subtotalNet);
+        document.getElementById('summaryTax').innerText = currency(taxAmount);
+        document.getElementById('summaryTotal').innerText = currency(totalAmount);
         
         // Update tax label
-        const taxLabel = document.querySelector('#summaryTax').previousElementSibling;
-        if(taxLabel) taxLabel.textContent = `Tax (${{ setting('tax_rate', 10) }}%):`;
+        const taxLabel = document.getElementById('summaryTaxLabel');
+        if(taxLabel) taxLabel.textContent = `{{ setting('tax_label', 'TVA') }} (${taxPercent}%):`;
     }
 
     function fillCustomerInfo() {

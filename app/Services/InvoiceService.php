@@ -41,7 +41,7 @@ class InvoiceService
             }
 
             // Calculate tax and total
-            $taxRate = $data['tax_rate'] ?? 20;
+            $taxRate = floatval($data['tax_rate'] ?? setting('tax_rate', 20));
             $discountAmount = $data['discount_amount'] ?? 0;
             $totalAmount = $subtotal - $discountAmount;
             $taxAmount = $totalAmount - ($totalAmount / (1 + ($taxRate / 100)));
@@ -92,9 +92,9 @@ class InvoiceService
             }
 
             $subtotal = $order->items->sum(fn($item) => $item->unit_price * $item->quantity);
-            $taxRate = 20;
+            $taxRate = floatval(setting('tax_rate', 20));
             $totalAmount = $subtotal;
-            $taxAmount = $totalAmount - ($totalAmount / (1 + ($taxRate / 100)));
+            $taxAmount = $taxRate > 0 ? ($totalAmount - ($totalAmount / (1 + ($taxRate / 100)))) : 0;
             $subtotalNet = $totalAmount - $taxAmount;
 
             $invoice = Invoice::create([

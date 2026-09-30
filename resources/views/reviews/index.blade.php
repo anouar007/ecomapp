@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Product Reviews')
+@section('title', 'Avis clients')
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/management.css') }}">
@@ -10,8 +10,8 @@
 <div class="page-header">
     <div style="display: flex; justify-content: space-between; align-items: center;">
         <div>
-            <h1 class="page-title"><i class="fas fa-star"></i> Product Reviews</h1>
-            <p class="page-subtitle">Manage customer feedback and ratings</p>
+            <h1 class="page-title"><i class="fas fa-star"></i> Avis clients</h1>
+            <p class="page-subtitle">Gérez les évaluations et retours d'expérience de vos clients</p>
         </div>
     </div>
 </div>
@@ -28,7 +28,7 @@
 </div>
 @endif
 
-<!-- Statistics Cards -->
+<!-- Cartes statistiques -->
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 32px;">
     <div style="background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0;">
         <div style="display: flex; align-items: center; gap: 16px;">
@@ -36,7 +36,7 @@
                 <i class="fas fa-star" style="color: white; font-size: 28px;"></i>
             </div>
             <div>
-                <p style="color: #64748b; font-size: 13px; margin: 0 0 4px 0; font-weight: 600;">Total Reviews</p>
+                <p style="color: #64748b; font-size: 13px; margin: 0 0 4px 0; font-weight: 600;">Total des avis</p>
                 <p style="font-size: 28px; font-weight: 700; color: #1e293b; margin: 0;" data-stat="total">{{ number_format($stats['total_reviews']) }}</p>
             </div>
         </div>
@@ -48,7 +48,7 @@
                 <i class="fas fa-clock" style="color: white; font-size: 28px;"></i>
             </div>
             <div>
-                <p style="color: #92400e; font-size: 13px; margin: 0 0 4px 0; font-weight: 600;">Pending Reviews</p>
+                <p style="color: #92400e; font-size: 13px; margin: 0 0 4px 0; font-weight: 600;">En attente de modération</p>
                 <p style="font-size: 28px; font-weight: 700; color: #b45309; margin: 0;" data-stat="pending">{{ number_format($stats['pending_reviews']) }}</p>
             </div>
         </div>
@@ -60,7 +60,7 @@
                 <i class="fas fa-check-circle" style="color: white; font-size: 28px;"></i>
             </div>
             <div>
-                <p style="color: #166534; font-size: 13px; margin: 0 0 4px 0; font-weight: 600;">Approved Reviews</p>
+                <p style="color: #166534; font-size: 13px; margin: 0 0 4px 0; font-weight: 600;">Avis approuvés</p>
                 <p style="font-size: 28px; font-weight: 700; color: #15803d; margin: 0;" data-stat="approved">{{ number_format($stats['approved_reviews']) }}</p>
             </div>
         </div>
@@ -72,41 +72,41 @@
                 <i class="fas fa-chart-line" style="color: white; font-size: 28px;"></i>
             </div>
             <div>
-                <p style="color: #5b21b6; font-size: 13px; margin: 0 0 4px 0; font-weight: 600;">Average Rating</p>
+                <p style="color: #5b21b6; font-size: 13px; margin: 0 0 4px 0; font-weight: 600;">Note moyenne</p>
                 <p style="font-size: 28px; font-weight: 700; color: #6d28d9; margin: 0;" data-stat="average">{{ $stats['average_rating'] }} <span style="font-size: 16px;">/ 5</span></p>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Filters -->
+<!-- Filtres -->
 <div class="card" style="margin-bottom: 24px;">
     <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-filter"></i> Filters</h3>
+        <h3 class="card-title"><i class="fas fa-filter"></i> Filtres</h3>
     </div>
     <div class="card-body">
         <form method="GET" action="{{ route('reviews.index') }}" style="display: flex; gap: 12px; flex-wrap: wrap;">
             <input type="text" name="search" class="form-control" style="flex: 1; min-width: 200px;" 
-                   placeholder="Search reviews..." value="{{ request('search') }}">
+                   placeholder="Rechercher dans les avis..." value="{{ request('search') }}">
             
             <select name="status" class="form-control" style="width: auto; min-width: 150px;">
-                <option value="">All Status</option>
-                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
-                <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                <option value="">Tous les statuts</option>
+                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>En attente</option>
+                <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approuvé</option>
+                <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejeté</option>
             </select>
             
             <select name="rating" class="form-control" style="width: auto; min-width: 150px;">
-                <option value="">All Ratings</option>
-                <option value="5" {{ request('rating') == '5' ? 'selected' : '' }}>★★★★★ (5 stars)</option>
-                <option value="4" {{ request('rating') == '4' ? 'selected' : '' }}>★★★★☆ (4 stars)</option>
-                <option value="3" {{ request('rating') == '3' ? 'selected' : '' }}>★★★☆☆ (3 stars)</option>
-                <option value="2" {{ request('rating') == '2' ? 'selected' : '' }}>★★☆☆☆ (2 stars)</option>
-                <option value="1" {{ request('rating') == '1' ? 'selected' : '' }}>★☆☆☆☆ (1 star)</option>
+                <option value="">Toutes les notes</option>
+                <option value="5" {{ request('rating') == '5' ? 'selected' : '' }}>★★★★★ (5 étoiles)</option>
+                <option value="4" {{ request('rating') == '4' ? 'selected' : '' }}>★★★★☆ (4 étoiles)</option>
+                <option value="3" {{ request('rating') == '3' ? 'selected' : '' }}>★★★☆☆ (3 étoiles)</option>
+                <option value="2" {{ request('rating') == '2' ? 'selected' : '' }}>★★☆☆☆ (2 étoiles)</option>
+                <option value="1" {{ request('rating') == '1' ? 'selected' : '' }}>★☆☆☆☆ (1 étoile)</option>
             </select>
             
             <select name="product_id" class="form-control" style="width: auto; min-width: 200px;">
-                <option value="">All Products</option>
+                <option value="">Tous les produits</option>
                 @foreach($products as $product)
                     <option value="{{ $product->id }}" {{ request('product_id') == $product->id ? 'selected' : '' }}>
                         {{ $product->name }}
@@ -114,27 +114,27 @@
                 @endforeach
             </select>
             
-            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Filter</button>
-            <a href="{{ route('reviews.index') }}" class="btn btn-secondary"><i class="fas fa-redo"></i> Reset</a>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Filtrer</button>
+            <a href="{{ route('reviews.index') }}" class="btn btn-secondary"><i class="fas fa-redo"></i> Réinitialiser</a>
         </form>
     </div>
 </div>
 
-<!-- Reviews Table -->
+<!-- Tableau des avis -->
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-list"></i> Reviews ({{ $reviews->total() }})</h3>
+        <h3 class="card-title"><i class="fas fa-list"></i> Avis clients ({{ $reviews->total() }})</h3>
     </div>
     <div class="table-responsive">
         <table class="table">
             <thead>
                 <tr>
-                    <th>Product</th>
-                    <th>Customer</th>
-                    <th>Rating</th>
-                    <th>Review</th>
+                    <th>Produit</th>
+                    <th>Client</th>
+                    <th>Note</th>
+                    <th>Avis</th>
                     <th>Date</th>
-                    <th>Status</th>
+                    <th>Statut</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -160,16 +160,16 @@
                         <br><small>{{ Str::limit($review->comment, 80) }}</small>
                     </td>
                     <td>
-                        <small>{{ $review->created_at->format('M d, Y') }}</small>
+                        <small>{{ $review->created_at->format('d/m/Y') }}</small>
                         <br><small class="text-muted">{{ $review->created_at->diffForHumans() }}</small>
                     </td>
                     <td data-status>
                         @if($review->status == 'approved')
-                            <span class="badge badge-success"><i class="fas fa-check-circle"></i> Approved</span>
+                            <span class="badge badge-success"><i class="fas fa-check-circle"></i> Approuvé</span>
                         @elseif($review->status == 'pending')
-                            <span class="badge badge-warning"><i class="fas fa-clock"></i> Pending</span>
+                            <span class="badge badge-warning"><i class="fas fa-clock"></i> En attente</span>
                         @else
-                            <span class="badge badge-danger"><i class="fas fa-times-circle"></i> Rejected</span>
+                            <span class="badge badge-danger"><i class="fas fa-times-circle"></i> Rejeté</span>
                         @endif
                     </td>
                     <td>
@@ -177,13 +177,13 @@
                             @if($review->status == 'pending')
                             <form action="{{ route('reviews.approve', $review) }}" method="POST" style="display: inline;" onsubmit="event.preventDefault(); approveReview({{ $review->id }});">
                                 @csrf
-                                <button type="submit" class="btn-action btn-action-success" title="Approve Review">
+                                <button type="submit" class="btn-action btn-action-success" title="Approuver l'avis">
                                     <i class="fas fa-check"></i>
                                 </button>
                             </form>
                             <form action="{{ route('reviews.reject', $review) }}" method="POST" style="display: inline;" onsubmit="event.preventDefault(); rejectReview({{ $review->id }});">
                                 @csrf
-                                <button type="submit" class="btn-action btn-action-warning" title="Reject Review">
+                                <button type="submit" class="btn-action btn-action-warning" title="Rejeter l'avis">
                                     <i class="fas fa-times"></i>
                                 </button>
                             </form>
@@ -191,7 +191,7 @@
                             <form action="{{ route('reviews.destroy', $review) }}" method="POST" style="display: inline;" onsubmit="event.preventDefault(); deleteReview({{ $review->id }});">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn-action btn-action-delete" title="Delete Review">
+                                <button type="submit" class="btn-action btn-action-delete" title="Supprimer l'avis">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
@@ -202,8 +202,8 @@
                 <tr>
                     <td colspan="7" class="empty-state">
                         <i class="fas fa-star"></i>
-                        <p>No reviews found</p>
-                        <small class="text-muted">Customer reviews will appear here once submitted</small>
+                        <p>Aucun avis trouvé</p>
+                        <small class="text-muted">Les avis des clients apparaîtront ici dès leur soumission.</small>
                     </td>
                 </tr>
                 @endforelse

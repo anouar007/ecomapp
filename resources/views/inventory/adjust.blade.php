@@ -90,9 +90,9 @@
                 <h6 class="card-title mb-0">Product Information</h6>
             </div>
             <div class="card-body">
-                @if($product->image)
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="img-fluid rounded mb-3">
-                @endif
+                <div class="text-center mb-3">
+                    <img src="{{ $product->thumbnail }}" alt="{{ $product->name }}" class="img-fluid rounded shadow-sm" style="max-height: 200px; width: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                </div>
                 
                 <table class="table table-sm table-borderless">
                     <tr>

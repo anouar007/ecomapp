@@ -929,7 +929,7 @@
                     <span id="discountDisplay" style="font-weight: 600; color: #10b981;">-{{ currency(0) }}</span>
                 </div>
                 <div class="bill-row">
-                    <span>Tax ({{ setting('tax_rate', 0) }}%)</span>
+                    <span>{{ setting('tax_label', 'TVA') }} ({{ floatval(setting('tax_rate', 20)) }}%)</span>
                     <span id="tax" style="font-weight: 600; color: #1e293b;">{{ currency(0) }}</span>
                 </div>
                 <div class="bill-total">
@@ -963,7 +963,7 @@
         decimals: {{ setting("currency_decimals", 2) }},
         decimal_separator: '{{ setting("decimal_separator", ".") }}',
         thousands_separator: '{{ setting("thousands_separator", ",") }}',
-        tax_rate: {{ setting("tax_rate", 0) }} / 100
+        tax_rate: {{ floatval(setting("tax_rate", 20)) }} / 100
     };
     
     // Override default POS display function to match new UI
@@ -988,12 +988,19 @@
             // Build image path correctly
             let imageSrc = '';
             if (product.image) {
-                imageSrc = product.image.startsWith('http') ? product.image : `/storage/${product.image}`;
+                if (product.image.startsWith('http://') || product.image.startsWith('https://') || product.image.startsWith('/')) {
+                    imageSrc = product.image;
+                } else if (product.image.startsWith('images/')) {
+                    imageSrc = `/${product.image}`;
+                } else {
+                    imageSrc = `/storage/${product.image}`;
+                }
             }
             
+            const fallbackSrc = '{{ asset("images/camera/cat_cameras.jpg") }}';
             const imageHtml = imageSrc 
-                ? `<img src="${imageSrc}" class="card-img" alt="${product.name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'no-image-placeholder\\'><i class=\\'fas fa-box\\'></i></div>'">`
-                : `<div class="no-image-placeholder"><i class="fas fa-box"></i></div>`;
+                ? `<img src="${imageSrc}" class="card-img" alt="${product.name}" loading="lazy" onerror="this.onerror=null; this.src='${fallbackSrc}';">`
+                : `<img src="${fallbackSrc}" class="card-img" alt="${product.name}" loading="lazy">`;
 
             // Stock status with colors
             let stockBadgeHtml = '';

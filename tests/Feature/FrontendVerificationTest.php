@@ -67,11 +67,11 @@ class FrontendVerificationTest extends TestCase
             'customer_name' => 'Registered Shopper',
             'customer_email' => $user->email,
             'customer_phone' => '555-0199',
-            'shipping_address' => '123 Registered Lane',
-            'shipping_city' => 'Guestville',
-            'shipping_state' => 'GS',
-            'shipping_zip' => '90210',
-            'shipping_country' => 'Guestland',
+            'shipping_address' => '123 Boulevard Anfa',
+            'shipping_city' => 'Casablanca',
+            'shipping_state' => 'Casablanca-Settat',
+            'shipping_zip' => '20000',
+            'shipping_country' => 'Morocco',
             // Payment method defaults to 'cod' in controller if not passed, pending status
         ]);
 
@@ -87,8 +87,13 @@ class FrontendVerificationTest extends TestCase
 
         $response->assertRedirect(route('checkout.success', $order->id));
         
-        // 9. Verify Order Created
-        $this->assertDatabaseHas('orders', ['id' => $order->id, 'total' => 100.00]); // 50 * 2 (Product price is 50, sale price logic in controller might override? Controller uses $product->price from session. Session creation used $product->price. Test product has price 50)
+        // 9. Verify Order Created with Dynamic Delivery (2 items @ 45 sale price + 20 DH Casablanca delivery = 110 DH)
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id, 
+            'shipping_city' => 'Casablanca',
+            'shipping_cost' => 20.00,
+            'total' => 110.00
+        ]);
         
         // 10. Verify Stock Decrement
         $this->assertEquals(8, $product->fresh()->stock); // 10 - 2

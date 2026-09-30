@@ -89,5 +89,19 @@
     "Print With Stamp": "Imprimer Avec Cachet",
     "Print No Stamp": "Imprimer Sans Cachet",
     "Address": "Adresse",
-    "No items found": "Aucun article trouvé"
+    "No items found": "Aucun article trouvé",
+    "Stopped this quote at the sum of": "Arrêté le présent devis à la somme de",
+    "Validity": "Validité",
+    "30 Days": "30 Jours",
+    "View Mode": "Mode d'affichage",
+    "Facture": "Facture",
+    "Devis": "Devis",
+    "Facture avec Cachet": "Facture avec Cachet",
+    "Facture sans Cachet": "Facture sans Cachet",
+    "Devis avec Cachet": "Devis avec Cachet",
+    "Devis sans Cachet": "Devis sans Cachet",
+    "Imprimer Facture (Cachet)": "Imprimer Facture (Cachet)",
+    "Imprimer Facture (Standard)": "Imprimer Facture (Standard)",
+    "Imprimer Devis (Cachet)": "Imprimer Devis (Cachet)",
+    "Imprimer Devis (Standard)": "Imprimer Devis (Standard)"
 }

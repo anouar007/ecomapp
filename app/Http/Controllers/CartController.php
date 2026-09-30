@@ -62,8 +62,9 @@ class CartController extends Controller
                 $cart[$id] = [
                     'name' => $product->name,
                     'quantity' => $quantity,
-                    'price' => $product->price,
-                    'image' => $product->main_image
+                    'price' => $product->isOnSale() ? (float)$product->sale_price : (float)$product->price,
+                    'image' => $product->thumbnail,
+                    'category_name' => $product->category_name ?? 'Matériel Pro'
                 ];
             }
 
@@ -92,16 +93,42 @@ class CartController extends Controller
      */
     public function update(Request $request)
     {
-        if ($request->id && $request->quantity) {
+        $id = $request->id;
+        $quantity = (int) $request->quantity;
+
+        if ($id && $quantity > 0) {
             $cart = session()->get('cart', []);
-            if (isset($cart[$request->id])) {
-                $cart[$request->id]['quantity'] = $request->quantity;
+            if (isset($cart[$id])) {
+                $product = Product::find($id);
+                if ($product && $product->stock < $quantity) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Seulement {$product->stock} article(s) disponible(s) en stock"
+                    ], 400);
+                }
+
+                $cart[$id]['quantity'] = $quantity;
                 session()->put('cart', $cart);
+
+                $total = 0;
+                foreach ($cart as $item) {
+                    $total += $item['price'] * $item['quantity'];
+                }
+                $itemTotal = $cart[$id]['price'] * $quantity;
+                $cartCount = array_sum(array_column($cart, 'quantity'));
+
+                return response()->json([
+                    'success' => true,
+                    'cartCount' => $cartCount,
+                    'quantity' => $quantity,
+                    'itemTotal' => currency($itemTotal),
+                    'cartTotal' => currency($total),
+                    'rawTotal' => $total,
+                ]);
             }
-            $cartCount = array_sum(array_column($cart, 'quantity'));
-            return response()->json(['success' => true, 'cartCount' => $cartCount]);
         }
-        return response()->json(['success' => false], 400);
+
+        return response()->json(['success' => false, 'message' => 'Article introuvable dans le panier'], 400);
     }
 
     /**
@@ -109,15 +136,28 @@ class CartController extends Controller
      */
     public function remove(Request $request)
     {
-        if ($request->id) {
+        $id = $request->id;
+        if ($id) {
             $cart = session()->get('cart', []);
-            if (isset($cart[$request->id])) {
-                unset($cart[$request->id]);
+            if (isset($cart[$id])) {
+                unset($cart[$id]);
                 session()->put('cart', $cart);
             }
+
+            $total = 0;
+            foreach ($cart as $item) {
+                $total += $item['price'] * $item['quantity'];
+            }
             $cartCount = array_sum(array_column($cart, 'quantity'));
-            return response()->json(['success' => true, 'cartCount' => $cartCount]);
+
+            return response()->json([
+                'success' => true,
+                'cartCount' => $cartCount,
+                'cartTotal' => currency($total),
+                'isEmpty' => count($cart) === 0
+            ]);
         }
+
         return response()->json(['success' => false], 400);
     }
 

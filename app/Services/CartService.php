@@ -35,7 +35,7 @@ class CartService
                 'id' => $product->id,
                 'name' => $product->name,
                 'price' => $product->isOnSale() ? $product->sale_price : $product->price,
-                'image' => $product->main_image,
+                'image' => $product->thumbnail,
                 'quantity' => $quantity,
             ];
         }
@@ -103,9 +103,9 @@ class CartService
             $itemCount += $item['quantity'];
         }
 
-        $taxRate = 0.20; // 20% tax
+        $taxRate = floatval(setting('tax_rate', 20)) / 100;
         $total = $subtotal;
-        $tax = $total - ($total / (1 + $taxRate));
+        $tax = $taxRate > 0 ? ($total - ($total / (1 + $taxRate))) : 0;
         $subtotalNet = $total - $tax;
 
         return [

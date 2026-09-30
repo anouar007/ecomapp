@@ -110,13 +110,19 @@
                 <div class="multi-image-upload" id="imagePreviewContainer">
                     @foreach($product->images as $image)
                     <div class="image-upload-box">
-                        <img src="{{ asset('storage/' . $image->image_path) }}" alt="Product image">
+                        <img src="{{ $image->url }}" alt="Product image" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                         @if($image->is_primary)
                             <span class="primary-badge">PRIMARY</span>
                         @endif
                         <span class="image-remove-btn" onclick="markImageForRemoval({{ $image->id }}, this)">×</span>
                     </div>
                     @endforeach
+                    @if($product->images->isEmpty() && ($product->image || $product->thumbnail))
+                    <div class="image-upload-box">
+                        <img src="{{ $product->thumbnail }}" alt="Product image" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                        <span class="primary-badge">CURRENT</span>
+                    </div>
+                    @endif
                     <div class="image-upload-box" onclick="document.getElementById('images').click()">
                         <div>
                             <i class="fas fa-plus" style="font-size: 24px; color: #94a3b8;"></i>

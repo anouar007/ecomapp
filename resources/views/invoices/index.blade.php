@@ -127,8 +127,8 @@
     </div>
 
     <!-- Invoices Table -->
-    <div class="brand-table-card">
-        <div class="table-responsive">
+    <div class="brand-table-card" style="overflow: visible;">
+        <div class="table-responsive" style="overflow: visible; min-height: 260px;">
             <table class="brand-table">
                 <thead>
                     <tr>
@@ -196,24 +196,45 @@
                         </td>
                         <td style="padding-right: 1.5rem;">
                             <div class="d-flex justify-content-end gap-1">
-                                <a href="{{ route('invoices.show', $invoice) }}" class="btn-action-icon" title="View Details">
+                                <button type="button" class="btn-action-icon text-primary" title="Aperçu Rapide" 
+                                        onclick="openInvoicePreview('{{ $invoice->id }}', '{{ $invoice->display_number ?? $invoice->invoice_number }}', '{{ $invoice->isQuote() ? 'devis' : 'facture' }}', {{ $invoice->with_stamp ? 'true' : 'false' }})">
                                     <i class="fas fa-eye"></i>
+                                </button>
+                                <a href="{{ route('invoices.show', $invoice) }}" class="btn-action-icon" title="Détails de la facture">
+                                    <i class="fas fa-external-link-alt"></i>
                                 </a>
 
                                 <!-- PDF Dropdown -->
                                 <div class="dropdown d-inline-block">
-                                    <button class="btn-action-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Download PDF Options">
+                                    <button class="btn-action-icon" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" data-bs-popper-config='{"strategy":"fixed"}' aria-expanded="false" title="Télécharger PDF (Facture / Devis)">
                                         <i class="fas fa-file-pdf"></i>
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 13px; border-radius: 10px;">
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="font-size: 12px; border-radius: 12px; min-width: 210px; padding: 6px; z-index: 99999;">
+                                        <li class="dropdown-header text-uppercase text-muted fw-bold" style="font-size: 9px; letter-spacing: 0.5px;">
+                                            <i class="fas fa-file-invoice text-primary me-1"></i> Facture
+                                        </li>
                                         <li>
-                                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('invoices.download', [$invoice, 'with_stamp' => 1]) }}">
-                                                <i class="fas fa-stamp" style="color: #6366f1; width: 14px;"></i> {{ __('Download With Stamp') }}
+                                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" href="{{ route('invoices.download', [$invoice, 'as' => 'facture', 'with_stamp' => 1]) }}">
+                                                <i class="fas fa-stamp" style="color: #6366f1; width: 14px;"></i> Facture avec Cachet
                                             </a>
                                         </li>
                                         <li>
-                                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('invoices.download', [$invoice, 'with_stamp' => 0]) }}">
-                                                <i class="far fa-file-pdf text-muted" style="width: 14px;"></i> {{ __('Download Without Stamp') }}
+                                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" href="{{ route('invoices.download', [$invoice, 'as' => 'facture', 'with_stamp' => 0]) }}">
+                                                <i class="far fa-file-pdf text-muted" style="width: 14px;"></i> Facture sans Cachet
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider my-1"></li>
+                                        <li class="dropdown-header text-uppercase text-muted fw-bold" style="font-size: 9px; letter-spacing: 0.5px;">
+                                            <i class="fas fa-file-signature text-warning me-1"></i> Devis
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" href="{{ route('invoices.download', [$invoice, 'as' => 'devis', 'with_stamp' => 1]) }}">
+                                                <i class="fas fa-stamp" style="color: #f59e0b; width: 14px;"></i> Devis avec Cachet
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" href="{{ route('invoices.download', [$invoice, 'as' => 'devis', 'with_stamp' => 0]) }}">
+                                                <i class="far fa-file-pdf text-muted" style="width: 14px;"></i> Devis sans Cachet
                                             </a>
                                         </li>
                                     </ul>
@@ -221,18 +242,35 @@
 
                                 <!-- Print Dropdown -->
                                 <div class="dropdown d-inline-block">
-                                    <button class="btn-action-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Print Options">
+                                    <button class="btn-action-icon" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" data-bs-popper-config='{"strategy":"fixed"}' aria-expanded="false" title="Imprimer (Facture / Devis)">
                                         <i class="fas fa-print"></i>
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 13px; border-radius: 10px;">
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="font-size: 12px; border-radius: 12px; min-width: 210px; padding: 6px; z-index: 99999;">
+                                        <li class="dropdown-header text-uppercase text-muted fw-bold" style="font-size: 9px; letter-spacing: 0.5px;">
+                                            <i class="fas fa-file-invoice text-primary me-1"></i> Facture
+                                        </li>
                                         <li>
-                                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" target="_blank" href="{{ route('invoices.print', [$invoice, 'with_stamp' => 1]) }}">
-                                                <i class="fas fa-stamp" style="color: #6366f1; width: 14px;"></i> {{ __('Print With Stamp') }}
+                                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'facture', 'with_stamp' => 1]) }}">
+                                                <i class="fas fa-stamp" style="color: #6366f1; width: 14px;"></i> Imprimer Facture (Cachet)
                                             </a>
                                         </li>
                                         <li>
-                                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" target="_blank" href="{{ route('invoices.print', [$invoice, 'with_stamp' => 0]) }}">
-                                                <i class="fas fa-print text-muted" style="width: 14px;"></i> {{ __('Print Without Stamp') }}
+                                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'facture', 'with_stamp' => 0]) }}">
+                                                <i class="fas fa-print text-muted" style="width: 14px;"></i> Imprimer Facture (Standard)
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider my-1"></li>
+                                        <li class="dropdown-header text-uppercase text-muted fw-bold" style="font-size: 9px; letter-spacing: 0.5px;">
+                                            <i class="fas fa-file-signature text-warning me-1"></i> Devis
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'devis', 'with_stamp' => 1]) }}">
+                                                <i class="fas fa-stamp" style="color: #f59e0b; width: 14px;"></i> Imprimer Devis (Cachet)
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'devis', 'with_stamp' => 0]) }}">
+                                                <i class="fas fa-print text-muted" style="width: 14px;"></i> Imprimer Devis (Standard)
                                             </a>
                                         </li>
                                     </ul>
@@ -240,10 +278,10 @@
 
                                 <!-- Guarantee Dropdown -->
                                 <div class="dropdown d-inline-block">
-                                    <button class="btn-action-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="{{ __('Guarantee Options') }}" style="color: #059669;">
+                                    <button class="btn-action-icon" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" data-bs-popper-config='{"strategy":"fixed"}' aria-expanded="false" title="{{ __('Guarantee Options') }}" style="color: #059669;">
                                         <i class="fas fa-shield-alt"></i>
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 13px; border-radius: 10px;">
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="font-size: 13px; border-radius: 10px; z-index: 99999;">
                                         <li>
                                             <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('invoices.guarantee', $invoice) }}">
                                                 <i class="fas fa-eye" style="color: #10b981; width: 14px;"></i> {{ __('View Guarantee') }}
@@ -298,4 +336,96 @@
         </div>
         @endif
     </div>
+
+    <!-- Quick Preview Modal -->
+    <div class="modal fade" id="invoicePreviewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered" style="max-width: 960px;">
+            <div class="modal-content" style="border-radius: 12px; overflow: hidden; border: none; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);">
+                <div class="modal-header py-2 px-3 bg-dark text-white d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="fw-bold" id="previewModalTitle" style="font-size: 14px;">Aperçu du document</span>
+                        <div class="btn-group btn-group-sm">
+                            <button type="button" class="btn btn-sm btn-outline-light" id="previewBtnFacture" onclick="setPreviewDocType('facture')">Facture</button>
+                            <button type="button" class="btn btn-sm btn-outline-light" id="previewBtnDevis" onclick="setPreviewDocType('devis')">Devis</button>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-light" id="previewBtnStamp" onclick="togglePreviewStamp()">
+                            <i class="fas fa-stamp me-1"></i> <span id="previewStampLabel">Avec Cachet</span>
+                        </button>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-sm btn-light" onclick="printFromPreview()"><i class="fas fa-print me-1"></i> Imprimer</button>
+                        <a href="#" id="previewDownloadLink" class="btn btn-sm btn-danger"><i class="fas fa-download me-1"></i> PDF</a>
+                        <button type="button" class="btn-close btn-close-white ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="modal-body p-0" style="background: #cbd5e1; height: 75vh;">
+                    <iframe id="previewIframe" src="about:blank" style="width: 100%; height: 100%; border: none;"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPreviewId = null;
+        let currentPreviewType = 'facture';
+        let currentPreviewStamp = true;
+
+        function openInvoicePreview(id, number, type, withStamp) {
+            currentPreviewId = id;
+            currentPreviewType = type || 'facture';
+            currentPreviewStamp = withStamp !== false;
+            document.getElementById('previewModalTitle').innerText = (currentPreviewType === 'devis' ? 'Devis #' : 'Facture #') + number;
+            updatePreviewUI();
+            const modalEl = document.getElementById('invoicePreviewModal');
+            const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            modal.show();
+        }
+
+        function setPreviewDocType(type) {
+            currentPreviewType = type;
+            updatePreviewUI();
+        }
+
+        function togglePreviewStamp() {
+            currentPreviewStamp = !currentPreviewStamp;
+            updatePreviewUI();
+        }
+
+        function updatePreviewUI() {
+            if (!currentPreviewId) return;
+            const btnF = document.getElementById('previewBtnFacture');
+            const btnD = document.getElementById('previewBtnDevis');
+            const btnS = document.getElementById('previewBtnStamp');
+            const stampLabel = document.getElementById('previewStampLabel');
+
+            if (currentPreviewType === 'facture') {
+                btnF.className = 'btn btn-sm btn-light text-dark fw-bold';
+                btnD.className = 'btn btn-sm btn-outline-light';
+            } else {
+                btnF.className = 'btn btn-sm btn-outline-light';
+                btnD.className = 'btn btn-sm btn-danger fw-bold';
+            }
+
+            if (currentPreviewStamp) {
+                btnS.className = 'btn btn-sm btn-success fw-bold';
+                stampLabel.innerText = 'Avec Cachet';
+            } else {
+                btnS.className = 'btn btn-sm btn-outline-light';
+                stampLabel.innerText = 'Sans Cachet';
+            }
+
+            const url = `/invoices/${currentPreviewId}/print?preview=1&as=${currentPreviewType}&with_stamp=${currentPreviewStamp ? 1 : 0}`;
+            document.getElementById('previewIframe').src = url;
+
+            const downloadUrl = `/invoices/${currentPreviewId}/download?as=${currentPreviewType}&with_stamp=${currentPreviewStamp ? 1 : 0}`;
+            document.getElementById('previewDownloadLink').href = downloadUrl;
+        }
+
+        function printFromPreview() {
+            const iframe = document.getElementById('previewIframe');
+            if (iframe && iframe.contentWindow) {
+                iframe.contentWindow.print();
+            }
+        }
+    </script>
 @endsection

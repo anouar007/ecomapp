@@ -13,7 +13,36 @@ class Setting extends Model
     protected $fillable = ['key', 'value', 'type', 'group'];
 
     /**
-     * Get a setting value with caching
+     * In-memory cache for the current request lifecycle.
+     */
+    protected static ?array $runtimeCache = null;
+
+    /**
+     * Load all settings once into memory from cache.
+     *
+     * @return array
+     */
+    public static function getAllSettings(): array
+    {
+        if (static::$runtimeCache !== null) {
+            return static::$runtimeCache;
+        }
+
+        try {
+            static::$runtimeCache = Cache::remember('all_settings_map', 86400, function () {
+                return static::all()->mapWithKeys(function ($setting) {
+                    return [$setting->key => $setting->getCastedValue()];
+                })->all();
+            });
+        } catch (\Throwable $e) {
+            static::$runtimeCache = [];
+        }
+
+        return static::$runtimeCache;
+    }
+
+    /**
+     * Get a setting value with ultra-fast memory & cache lookup
      *
      * @param string $key
      * @param mixed $default
@@ -21,10 +50,12 @@ class Setting extends Model
      */
     public static function get(string $key, $default = null)
     {
-        return Cache::remember("setting_{$key}", 3600, function () use ($key, $default) {
-            $setting = static::where('key', $key)->first();
-            return $setting ? $setting->getCastedValue() : $default;
-        });
+        $all = static::getAllSettings();
+        if (array_key_exists($key, $all)) {
+            return $all[$key];
+        }
+
+        return $default;
     }
 
     /**
@@ -47,6 +78,8 @@ class Setting extends Model
             ]
         );
         
+        static::$runtimeCache = null;
+        Cache::forget('all_settings_map');
         Cache::forget("setting_{$key}");
         
         return $setting;

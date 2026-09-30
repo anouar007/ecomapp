@@ -111,8 +111,8 @@ class InvoiceController extends Controller
         try {
             DB::beginTransaction();
 
-            // Get tax rate from settings
-            $taxRate = floatval(setting('tax_rate', 10));
+            // Get dynamic tax rate from settings
+            $taxRate = floatval(setting('tax_rate', 20));
 
             // Calculate totals
             $subtotal = 0;
@@ -203,6 +203,14 @@ class InvoiceController extends Controller
     public function show(Request $request, Invoice $invoice)
     {
         $invoice->load(['items.product', 'creator', 'order', 'payments']);
+        
+        $docType = $request->get('as', $request->get('type'));
+        if ($docType && in_array(strtolower($docType), ['devis', 'quote'])) {
+            $invoice->view_as = 'quote';
+        } elseif ($docType && in_array(strtolower($docType), ['facture', 'invoice'])) {
+            $invoice->view_as = 'invoice';
+        }
+
         $withStamp = $request->has('with_stamp') ? $request->boolean('with_stamp') : ($invoice->with_stamp ?? true);
         return view('invoices.show', compact('invoice', 'withStamp'));
     }
@@ -336,6 +344,14 @@ class InvoiceController extends Controller
     public function download(Request $request, Invoice $invoice)
     {
         $invoice->load(['items.product', 'creator', 'order']);
+        
+        $docType = $request->get('as', $request->get('type'));
+        if ($docType && in_array(strtolower($docType), ['devis', 'quote'])) {
+            $invoice->view_as = 'quote';
+        } elseif ($docType && in_array(strtolower($docType), ['facture', 'invoice'])) {
+            $invoice->view_as = 'invoice';
+        }
+
         $withStamp = $request->has('with_stamp') ? $request->boolean('with_stamp') : ($invoice->with_stamp ?? true);
 
         try {
@@ -347,7 +363,9 @@ class InvoiceController extends Controller
             $pdf = Pdf::loadView('invoices.pdf', compact('invoice', 'withStamp'))
                 ->setPaper('a4', 'portrait');
 
-            $filename = ($invoice->isQuote() ? 'Quote-' : 'Invoice-') . str_replace(['#', '/', '\\', ' '], '-', $invoice->invoice_number) . ($withStamp ? '-Stamped' : '') . '.pdf';
+            $prefix = $invoice->isQuote() ? 'Devis-' : 'Facture-';
+            $num = $invoice->display_number ?? $invoice->invoice_number;
+            $filename = $prefix . str_replace(['#', '/', '\\', ' '], '-', $num) . ($withStamp ? '-Cachet' : '') . '.pdf';
 
             return $pdf->download($filename);
         } catch (\Exception $e) {
@@ -362,6 +380,14 @@ class InvoiceController extends Controller
     public function print(Request $request, Invoice $invoice)
     {
         $invoice->load(['items.product', 'creator', 'order']);
+        
+        $docType = $request->get('as', $request->get('type'));
+        if ($docType && in_array(strtolower($docType), ['devis', 'quote'])) {
+            $invoice->view_as = 'quote';
+        } elseif ($docType && in_array(strtolower($docType), ['facture', 'invoice'])) {
+            $invoice->view_as = 'invoice';
+        }
+
         $withStamp = $request->has('with_stamp') ? $request->boolean('with_stamp') : ($invoice->with_stamp ?? true);
         return view('invoices.print', compact('invoice', 'withStamp'));
     }
@@ -454,7 +480,7 @@ class InvoiceController extends Controller
         try {
             DB::beginTransaction();
 
-            $taxRate = floatval(setting('tax_rate', 0));
+            $taxRate = floatval(setting('tax_rate', 20));
             $totalAmount = $order->total;
             $taxAmount = $totalAmount - ($totalAmount / (1 + ($taxRate / 100)));
             $subtotalNet = $totalAmount - $taxAmount;
