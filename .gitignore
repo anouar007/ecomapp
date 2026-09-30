@@ -29,3 +29,4 @@ debug_*.php
 *.tar.gz
 database_backup.sql
 storage_uploads.tar.gz
+/.htaccess
