@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             CameraProductsSeeder::class,
             LensProductsSeeder::class,
             LightingStudioProductsSeeder::class,
+            AudioPodcastProductsSeeder::class,
         ]);
     }
 }

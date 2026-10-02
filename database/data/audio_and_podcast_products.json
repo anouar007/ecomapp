@@ -1,0 +1,946 @@
+[
+  {
+    "nom": "Alvoxcon UM-220",
+    "description": "Microphone USB de haute qualité. Type: Microphone USB. Directivité: Cardioïde.",
+    "prix": 890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone USB",
+      "Directivité": "Cardioïde",
+      "Connectivité": "USB",
+      "Usage": "Podcast, streaming, jeu vidéo"
+    }
+  },
+  {
+    "nom": "DJI Mic 2 Double",
+    "description": "Système de microphone sans fil professionnel. Type: Microphone sans fil. Fonctionnalités: Réduction de bruit intelligente, enregistrement interne 32-bit float.",
+    "prix": 3290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone sans fil",
+      "Format": "32-bit float",
+      "Portée": "250 mètres",
+      "Fonctionnalités": "Réduction de bruit intelligente, enregistrement interne",
+      "Autonomie": "Jusqu'à 18 heures avec le boîtier"
+    }
+  },
+  {
+    "nom": "DJI Mic 2 Single",
+    "description": "Système de microphone sans fil professionnel. Type: Microphone sans fil. Fonctionnalités: Réduction de bruit intelligente, enregistrement interne 32-bit float.",
+    "prix": 3700.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Microphone sans fil",
+      "Format": "32-bit float",
+      "Portée": "250 mètres",
+      "Fonctionnalités": "Réduction de bruit intelligente, enregistrement interne",
+      "Autonomie": "Jusqu'à 18 heures avec le boîtier"
+    }
+  },
+  {
+    "nom": "DJI Mic 3 (1 TX + 1 RX)",
+    "description": "Nouvelle génération de micro sans fil. Type: Microphone sans fil nouvelle génération. Fonctionnalités: Réduction de bruit avancée, enregistrement 32-bit float.",
+    "prix": 2390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone sans fil nouvelle génération",
+      "Connectivité": "Bluetooth direct et 2.4 GHz",
+      "Fonctionnalités": "Réduction de bruit avancée, enregistrement 32-bit float",
+      "Autonomie": "Jusqu'à 20 heures avec le boîtier"
+    }
+  },
+  {
+    "nom": "DJI Mic 3 (2 TX + 1 RX + Charging Case)",
+    "description": "Nouvelle génération de micro sans fil. Type: Microphone sans fil nouvelle génération. Fonctionnalités: Réduction de bruit avancée, enregistrement 32-bit float.",
+    "prix": 3490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone sans fil nouvelle génération",
+      "Connectivité": "Bluetooth direct et 2.4 GHz",
+      "Fonctionnalités": "Réduction de bruit avancée, enregistrement 32-bit float",
+      "Autonomie": "Jusqu'à 20 heures avec le boîtier"
+    }
+  },
+  {
+    "nom": "DJI Mic Double",
+    "description": "Système de microphone sans fil compact. Type: Microphone sans fil compact. Fonctionnalités: Enregistrement interne de secours, couplage automatique.",
+    "prix": 2900.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Microphone sans fil compact",
+      "Portée": "200 mètres",
+      "Fonctionnalités": "Enregistrement interne de secours, couplage automatique",
+      "Autonomie": "Jusqu'à 15 heures avec le boîtier"
+    }
+  },
+  {
+    "nom": "DJI Mic Mini (2 TX + 1 RX)",
+    "description": "Microphone sans fil ultra-compact. Type: Microphone sans fil ultra-compact. Fonctionnalités: Réduction de bruit basique, appairage instantané.",
+    "prix": 1290.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Microphone sans fil ultra-compact",
+      "Poids": "9 g par émetteur",
+      "Connectivité": "USB-C / Lightning direct",
+      "Fonctionnalités": "Réduction de bruit basique, appairage instantané"
+    }
+  },
+  {
+    "nom": "DJI MIC MINI 2 (1 TX + 1 RX)",
+    "description": "Microphone sans fil compact amélioré. Type: Microphone sans fil compact amélioré. Fonctionnalités: Enregistrement interne, réduction de bruit intelligente.",
+    "prix": 890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone sans fil compact amélioré",
+      "Poids": "9 g par émetteur",
+      "Connectivité": "USB-C / Lightning / 3.5mm",
+      "Fonctionnalités": "Enregistrement interne, réduction de bruit intelligente"
+    }
+  },
+  {
+    "nom": "DJI Mic Mini 2 (2 TX + 1 RX mobile)",
+    "description": "Microphone sans fil compact amélioré. Type: Microphone sans fil compact amélioré. Fonctionnalités: Enregistrement interne, réduction de bruit intelligente.",
+    "prix": 1290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone sans fil compact amélioré",
+      "Poids": "9 g par émetteur",
+      "Connectivité": "USB-C / Lightning / 3.5mm",
+      "Fonctionnalités": "Enregistrement interne, réduction de bruit intelligente"
+    }
+  },
+  {
+    "nom": "DJI Mic Mini 2 (2TX+RX+Case)",
+    "description": "Microphone sans fil compact amélioré. Type: Microphone sans fil compact amélioré. Fonctionnalités: Enregistrement interne, réduction de bruit intelligente.",
+    "prix": 1490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone sans fil compact amélioré",
+      "Poids": "9 g par émetteur",
+      "Connectivité": "USB-C / Lightning / 3.5mm",
+      "Fonctionnalités": "Enregistrement interne, réduction de bruit intelligente"
+    }
+  },
+  {
+    "nom": "DJI Mic Mini 2 (Single)",
+    "description": "Microphone sans fil compact amélioré. Type: Microphone sans fil compact amélioré. Fonctionnalités: Enregistrement interne, réduction de bruit intelligente.",
+    "prix": 689.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone sans fil compact amélioré",
+      "Poids": "9 g par émetteur",
+      "Connectivité": "USB-C / Lightning / 3.5mm",
+      "Fonctionnalités": "Enregistrement interne, réduction de bruit intelligente"
+    }
+  },
+  {
+    "nom": "DJI Mic Mini 2S",
+    "description": "Microphone sans fil compact avec Smart Charging. Type: Microphone sans fil compact avec Smart Charging. Fonctionnalités: Réduction de bruit, enregistrement interne, charge rapide.",
+    "prix": 1989.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone sans fil compact avec Smart Charging",
+      "Poids": "9 g par émetteur",
+      "Fonctionnalités": "Réduction de bruit, enregistrement interne, charge rapide"
+    }
+  },
+  {
+    "nom": "DJI Mic Mini 2S (1 TX + 1 Mobile RX + Boitier de Recharge)",
+    "description": "Microphone sans fil compact avec Smart Charging. Type: Microphone sans fil compact avec Smart Charging. Fonctionnalités: Réduction de bruit, enregistrement interne, charge rapide.",
+    "prix": 1390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone sans fil compact avec Smart Charging",
+      "Poids": "9 g par émetteur",
+      "Fonctionnalités": "Réduction de bruit, enregistrement interne, charge rapide"
+    }
+  },
+  {
+    "nom": "DJI Mic Single",
+    "description": "Système de microphone sans fil compact. Type: Microphone sans fil compact. Fonctionnalités: Enregistrement interne de secours, couplage automatique.",
+    "prix": 1900.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Microphone sans fil compact",
+      "Portée": "200 mètres",
+      "Fonctionnalités": "Enregistrement interne de secours, couplage automatique",
+      "Autonomie": "Jusqu'à 15 heures avec le boîtier"
+    }
+  },
+  {
+    "nom": "Godox Micro Portable sans Fil WH-M1",
+    "description": "Système de microphone sans fil portable. Type: Système de microphone sans fil portable. Fonctionnalités: Réduction de bruit, monitoring en temps réel.",
+    "prix": 1990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Système de microphone sans fil portable",
+      "Portée": "50 mètres",
+      "Fonctionnalités": "Réduction de bruit, monitoring en temps réel",
+      "Autonomie": "Jusqu'à 8 heures"
+    }
+  },
+  {
+    "nom": "Godox ML II-C4 Boitier",
+    "description": "Accessoire pour microphones Godox. Type: Accessoires pour microphones Godox. Fonctionnalités: Boîtiers de charge, supports, adaptateurs.",
+    "prix": 990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Accessoires pour microphones Godox",
+      "Fonctionnalités": "Boîtiers de charge, supports, adaptateurs",
+      "Usage": "Extension et protection des systèmes Godox"
+    }
+  },
+  {
+    "nom": "Godox ML-H",
+    "description": "Accessoire pour microphones Godox. Type: Accessoires pour microphones Godox. Fonctionnalités: Boîtiers de charge, supports, adaptateurs.",
+    "prix": 390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Accessoires pour microphones Godox",
+      "Fonctionnalités": "Boîtiers de charge, supports, adaptateurs",
+      "Usage": "Extension et protection des systèmes Godox"
+    }
+  },
+  {
+    "nom": "Godox UMic82",
+    "description": "Accessoire pour microphones Godox. Type: Accessoires pour microphones Godox. Fonctionnalités: Boîtiers de charge, supports, adaptateurs.",
+    "prix": 1790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Accessoires pour microphones Godox",
+      "Fonctionnalités": "Boîtiers de charge, supports, adaptateurs",
+      "Usage": "Extension et protection des systèmes Godox"
+    }
+  },
+  {
+    "nom": "Godox VD-Mic",
+    "description": "Microphone directionnel pour smartphone/caméra. Type: Microphone directionnel pour smartphone/caméra. Directivité: Supercardioïde. Fonctionnalités: Gain réglable, monitoring en temps réel.",
+    "prix": 990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone directionnel pour smartphone/caméra",
+      "Directivité": "Supercardioïde",
+      "Connectivité": "USB-C / Lightning",
+      "Fonctionnalités": "Gain réglable, monitoring en temps réel"
+    }
+  },
+  {
+    "nom": "Godox VDS-M2",
+    "description": "Système de microphone sans fil pour smartphone. Type: Système de microphone sans fil pour smartphone. Fonctionnalités: Double émetteur, réduction de bruit, charge via boîtier.",
+    "prix": 2490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Système de microphone sans fil pour smartphone",
+      "Portée": "50 mètres",
+      "Fonctionnalités": "Double émetteur, réduction de bruit, charge via boîtier"
+    }
+  },
+  {
+    "nom": "Godox VS-Mic",
+    "description": "Accessoire pour microphones Godox. Type: Accessoires pour microphones Godox. Fonctionnalités: Boîtiers de charge, supports, adaptateurs.",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Accessoires pour microphones Godox",
+      "Fonctionnalités": "Boîtiers de charge, supports, adaptateurs",
+      "Usage": "Extension et protection des systèmes Godox"
+    }
+  },
+  {
+    "nom": "Godox wec kit2",
+    "description": "Accessoire pour microphones Godox. Type: Accessoires pour microphones Godox. Fonctionnalités: Boîtiers de charge, supports, adaptateurs.",
+    "prix": 1490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Accessoires pour microphones Godox",
+      "Fonctionnalités": "Boîtiers de charge, supports, adaptateurs",
+      "Usage": "Extension et protection des systèmes Godox"
+    }
+  },
+  {
+    "nom": "Godox wes kit2",
+    "description": "Accessoire pour microphones Godox. Type: Accessoires pour microphones Godox. Fonctionnalités: Boîtiers de charge, supports, adaptateurs.",
+    "prix": 1490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Accessoires pour microphones Godox",
+      "Fonctionnalités": "Boîtiers de charge, supports, adaptateurs",
+      "Usage": "Extension et protection des systèmes Godox"
+    }
+  },
+  {
+    "nom": "Godox WMic S2",
+    "description": "Système de microphone sans fil UHF professionnel. Type: Système de microphone sans fil UHF. Fonctionnalités: Double canal, écran LCD, sortie XLR et 3.5mm.",
+    "prix": 2990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Système de microphone sans fil UHF",
+      "Portée": "100 mètres",
+      "Canaux": "UHF à fréquence réglable",
+      "Fonctionnalités": "Double canal, écran LCD, sortie XLR et 3.5mm"
+    }
+  },
+  {
+    "nom": "Handheld Microphones UHF Universal Wireless Microphone",
+    "description": "Microphone main sans fil UHF. Type: Microphone main sans fil UHF. Directivité: Cardioïde.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone main sans fil UHF",
+      "Directivité": "Cardioïde",
+      "Usage": "Karaoké, événements, présentations"
+    }
+  },
+  {
+    "nom": "Hollyland Casque sans Fil Solidcom SE 5S Global Version",
+    "description": "Système d'intercom sans fil professionnel. Type: Système d'intercom sans fil. Fonctionnalités: Full-duplex, annulation de bruit ambiante.",
+    "prix": 5690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Système d'intercom sans fil",
+      "Utilisateurs": "Jusqu'à 5 personnes",
+      "Portée": "Jusqu'à 350 mètres en ligne de vue",
+      "Fonctionnalités": "Full-duplex, annulation de bruit ambiante"
+    }
+  },
+  {
+    "nom": "Hollyland LARK MAX 2 Combo 4-Person",
+    "description": "Microphone sans fil compact haut de gamme. Type: Microphone sans fil compact. Fonctionnalités: Enregistrement interne 32-bit float, réduction de bruit EnvNoise.",
+    "prix": 3690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone sans fil compact",
+      "Fonctionnalités": "Enregistrement interne 32-bit float, réduction de bruit EnvNoise",
+      "Portée": "Jusqu'à 250 mètres",
+      "Autonomie": "Jusqu'à 40 heures avec le boîtier"
+    }
+  },
+  {
+    "nom": "Hollyland Solidcom SE 2S – Intercom sans fil 2 personnes",
+    "description": "Système d'intercom sans fil professionnel. Type: Système d'intercom sans fil. Fonctionnalités: Full-duplex, annulation de bruit ambiante.",
+    "prix": 2090.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Système d'intercom sans fil",
+      "Utilisateurs": "2 personnes",
+      "Portée": "Jusqu'à 350 mètres en ligne de vue",
+      "Fonctionnalités": "Full-duplex, annulation de bruit ambiante"
+    }
+  },
+  {
+    "nom": "Hollyland Solidcom SE 4S – Intercom sans fil 4 personnes",
+    "description": "Système d'intercom sans fil professionnel. Type: Système d'intercom sans fil. Fonctionnalités: Full-duplex, annulation de bruit ambiante.",
+    "prix": 4090.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Système d'intercom sans fil",
+      "Utilisateurs": "4 personnes",
+      "Portée": "Jusqu'à 350 mètres en ligne de vue",
+      "Fonctionnalités": "Full-duplex, annulation de bruit ambiante"
+    }
+  },
+  {
+    "nom": "Micro Hollyland LARK A1",
+    "description": "Microphone sans fil compact. Type: Microphone sans fil compact. Fonctionnalités: Enregistrement interne 32-bit float, réduction de bruit EnvNoise.",
+    "prix": 890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone sans fil compact",
+      "Fonctionnalités": "Enregistrement interne 32-bit float, réduction de bruit EnvNoise",
+      "Portée": "Jusqu'à 250 mètres",
+      "Autonomie": "Jusqu'à 40 heures avec le boîtier"
+    }
+  },
+  {
+    "nom": "Micro Hollyland Lark M2 Ultimate Combo",
+    "description": "Microphone sans fil compact. Type: Microphone sans fil compact. Fonctionnalités: Enregistrement interne 32-bit float, réduction de bruit EnvNoise.",
+    "prix": 1390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone sans fil compact",
+      "Fonctionnalités": "Enregistrement interne 32-bit float, réduction de bruit EnvNoise",
+      "Portée": "Jusqu'à 250 mètres",
+      "Autonomie": "Jusqu'à 40 heures avec le boîtier"
+    }
+  },
+  {
+    "nom": "Micro Hollyland Lark M2S Ultimate Combo",
+    "description": "Microphone sans fil compact. Type: Microphone sans fil compact. Fonctionnalités: Enregistrement interne 32-bit float, réduction de bruit EnvNoise.",
+    "prix": 1590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone sans fil compact",
+      "Fonctionnalités": "Enregistrement interne 32-bit float, réduction de bruit EnvNoise",
+      "Portée": "Jusqu'à 250 mètres",
+      "Autonomie": "Jusqu'à 40 heures avec le boîtier"
+    }
+  },
+  {
+    "nom": "Microphone Rode Lavalier GO",
+    "description": "Microphone cravate pour système sans fil. Type: Microphone cravate. Directivité: Omnidirectionnelle. Fonctionnalités: Clip discret, câble de 1,2 m.",
+    "prix": 990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone cravate",
+      "Directivité": "Omnidirectionnelle",
+      "Compatibilité": "Système RODE Wireless GO",
+      "Fonctionnalités": "Clip discret, câble de 1,2 m"
+    }
+  },
+  {
+    "nom": "Pack de creation de contenu",
+    "description": "Kit complet pour démarrer rapidement. Type: Kit complet.",
+    "prix": 3490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Kit complet",
+      "Inclus": "Microphone, lumière, trépied",
+      "Usage": "Démarrage rapide en création de contenu"
+    }
+  },
+  {
+    "nom": "RODE AI-1 USB-C Audio Interface",
+    "description": "Interface audio professionnelle. Type: Interface audio USB-C. Fonctionnalités: Préampli Revolution, monitoring sans latence, compatible iOS/Windows/Mac.",
+    "prix": 1690.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Interface audio USB-C",
+      "Entrées": "1 entrée XLR combinée",
+      "Fonctionnalités": "Préampli Revolution, monitoring sans latence, compatible iOS/Windows/Mac",
+      "Usage": "Enregistrement vocal, instrument"
+    }
+  },
+  {
+    "nom": "RODE AI-Micro",
+    "description": "Interface audio portable 2 canaux. Type: Interface audio portable 2 canaux. Fonctionnalités: Contrôle de gain indépendant, monitoring casque.",
+    "prix": 1290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Interface audio portable 2 canaux",
+      "Entrées": "2 entrées micro/instrument",
+      "Connectivité": "USB-C et Lightning",
+      "Fonctionnalités": "Contrôle de gain indépendant, monitoring casque",
+      "Usage": "Enregistrement mobile, interviews"
+    }
+  },
+  {
+    "nom": "RØDE Caster Duo",
+    "description": "Console de podcasting compacte. Type: Console de podcasting compacte. Fonctionnalités: Pads d'effets sonores, traitement APHEX, enregistrement USB.",
+    "prix": 5900.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Console de podcasting compacte",
+      "Entrées": "2 entrées micro XLR avec préampli Revolution",
+      "Fonctionnalités": "Pads d'effets sonores, traitement APHEX, enregistrement USB",
+      "Usage": "Podcast à deux, streaming, interviews"
+    }
+  },
+  {
+    "nom": "RODE HJA-4 3.5mm TRS",
+    "description": "Accessoire audio de haute qualité. Type: Accessoires audio. Fonctionnalités: Adaptateurs, câbles de haute qualité, montures résilientes.",
+    "prix": 390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Accessoires audio",
+      "Fonctionnalités": "Adaptateurs, câbles de haute qualité, montures résilientes",
+      "Usage": "Compatibilité et extension des systèmes RODE"
+    }
+  },
+  {
+    "nom": "RODE Interview GO",
+    "description": "Poignée de microphone avec entrée audio. Type: Poignée de microphone avec entrée audio. Fonctionnalités: Entrée micro 3.5mm, monture froide, protection anti-vent.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Poignée de microphone avec entrée audio",
+      "Fonctionnalités": "Entrée micro 3.5mm, monture froide, protection anti-vent",
+      "Usage": "Interviews mobiles avec smartphone"
+    }
+  },
+  {
+    "nom": "RODE NT-USB Mini",
+    "description": "Microphone à condensateur USB compact. Type: Microphone à condensateur USB compact. Directivité: Cardioïde. Fonctionnalités: Monture intégrée, monitoring casque.",
+    "prix": 1490.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Microphone à condensateur USB compact",
+      "Directivité": "Cardioïde",
+      "Fonctionnalités": "Monture intégrée, monitoring casque",
+      "Usage": "Podcast, streaming, voix off"
+    }
+  },
+  {
+    "nom": "RODE NT-USB+ Professional USB Microphone",
+    "description": "Microphone à condensateur USB/XLR. Type: Microphone à condensateur USB/XLR. Directivité: Cardioïde. Fonctionnalités: Traitement DSP intégré (APHEX), monitoring sans latence.",
+    "prix": 1990.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Microphone à condensateur USB/XLR",
+      "Directivité": "Cardioïde",
+      "Fonctionnalités": "Traitement DSP intégré (APHEX), monitoring sans latence",
+      "Usage": "Podcast, streaming, chant"
+    }
+  },
+  {
+    "nom": "RODE NT1-A",
+    "description": "Microphone à condensateur grande membrane. Type: Microphone à condensateur grande membrane. Directivité: Cardioïde.",
+    "prix": 2790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone à condensateur grande membrane",
+      "Directivité": "Cardioïde",
+      "Bruit propre": "4 dBA (ultra-silencieux)",
+      "Usage": "Studio d'enregistrement, voix off, chant"
+    }
+  },
+  {
+    "nom": "RODE NT2-A",
+    "description": "Microphone à condensateur multi-directivité. Type: Microphone à condensateur multi-directivité. Directivité: Cardioïde, omnidirectionnelle, figure en 8. Fonctionnalités: Filtre passe-haut et pad d'atténuation intégrés.",
+    "prix": 4900.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Microphone à condensateur multi-directivité",
+      "Directivité": "Cardioïde, omnidirectionnelle, figure en 8",
+      "Fonctionnalités": "Filtre passe-haut et pad d'atténuation intégrés",
+      "Usage": "Studio professionnel, instruments, voix"
+    }
+  },
+  {
+    "nom": "RODE NTG4+",
+    "description": "Microphone canon (shotgun). Type: Microphone canon (shotgun). Directivité: Supercardioïde. Fonctionnalités: Alimentation par pile AA ou phantom power, filtre passe-haut.",
+    "prix": 3790.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Microphone canon (shotgun)",
+      "Directivité": "Supercardioïde",
+      "Fonctionnalités": "Alimentation par pile AA ou phantom power, filtre passe-haut",
+      "Usage": "Cinéma, reportage, extérieur"
+    }
+  },
+  {
+    "nom": "RODE NTG5",
+    "description": "Microphone canon professionnel léger. Type: Microphone canon professionnel léger. Directivité: Supercardioïde. Fonctionnalités: Technologie RF-bias, résistance à l'humidité, ultra-léger.",
+    "prix": 6900.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Microphone canon professionnel léger",
+      "Directivité": "Supercardioïde",
+      "Fonctionnalités": "Technologie RF-bias, résistance à l'humidité, ultra-léger",
+      "Usage": "Production cinéma et broadcast haut de gamme"
+    }
+  },
+  {
+    "nom": "RODE PG2-R",
+    "description": "Microphone dynamique main. Type: Microphone dynamique main. Directivité: Cardioïde. Fonctionnalités: Robuste, interrupteur marche/arrêt.",
+    "prix": 1290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone dynamique main",
+      "Directivité": "Cardioïde",
+      "Fonctionnalités": "Robuste, interrupteur marche/arrêt",
+      "Usage": "Chant live, présentations, karaoké"
+    }
+  },
+  {
+    "nom": "RODE PodMic",
+    "description": "Microphone dynamique de broadcast. Type: Microphone dynamique de broadcast. Directivité: Cardioïde. Fonctionnalités: Monture intégrée, filtre anti-pop interne, robuste.",
+    "prix": 1490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone dynamique de broadcast",
+      "Directivité": "Cardioïde",
+      "Fonctionnalités": "Monture intégrée, filtre anti-pop interne, robuste",
+      "Usage": "Podcast, radio, streaming"
+    }
+  },
+  {
+    "nom": "RØDE PodMic USB",
+    "description": "Microphone dynamique de broadcast USB/XLR. Type: Microphone dynamique de broadcast USB/XLR. Directivité: Cardioïde. Fonctionnalités: Traitement DSP APHEX, sortie casque, connectivité hybride.",
+    "prix": 2490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone dynamique de broadcast USB/XLR",
+      "Directivité": "Cardioïde",
+      "Fonctionnalités": "Traitement DSP APHEX, sortie casque, connectivité hybride",
+      "Usage": "Podcast, streaming, création de contenu"
+    }
+  },
+  {
+    "nom": "RODE PSA1+",
+    "description": "Bras articulé professionnel. Type: Bras articulé professionnel. Fonctionnalités: Ressorts internes silencieux, gestion des câbles intégrée, charge jusqu'à 1,1 kg.",
+    "prix": 2100.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Bras articulé professionnel",
+      "Fonctionnalités": "Ressorts internes silencieux, gestion des câbles intégrée, charge jusqu'à 1,1 kg",
+      "Usage": "Support de microphone de studio ou broadcast"
+    }
+  },
+  {
+    "nom": "RODE SC10 Câble TRRS 3,5 mm à angle droit",
+    "description": "Accessoire audio de haute qualité. Type: Accessoires audio. Fonctionnalités: Adaptateurs, câbles de haute qualité, montures résilientes.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Accessoires audio",
+      "Fonctionnalités": "Adaptateurs, câbles de haute qualité, montures résilientes",
+      "Usage": "Compatibilité et extension des systèmes RODE"
+    }
+  },
+  {
+    "nom": "RODE SC11 Câble répartiteur en Y TRS 3,5 mm à angle droit",
+    "description": "Accessoire audio de haute qualité. Type: Accessoires audio. Fonctionnalités: Adaptateurs, câbles de haute qualité, montures résilientes.",
+    "prix": 390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Accessoires audio",
+      "Fonctionnalités": "Adaptateurs, câbles de haute qualité, montures résilientes",
+      "Usage": "Compatibilité et extension des systèmes RODE"
+    }
+  },
+  {
+    "nom": "RODE SC15 Câble accessoire USB Type-C vers Lightning",
+    "description": "Accessoire audio de haute qualité. Type: Accessoires audio. Fonctionnalités: Adaptateurs, câbles de haute qualité, montures résilientes.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Accessoires audio",
+      "Fonctionnalités": "Adaptateurs, câbles de haute qualité, montures résilientes",
+      "Usage": "Compatibilité et extension des systèmes RODE"
+    }
+  },
+  {
+    "nom": "RODE SC4 3,5 mm TRS femelle vers 3,5 mm TRRS mâle à angle droit",
+    "description": "Accessoire audio de haute qualité. Type: Accessoires audio. Fonctionnalités: Adaptateurs, câbles de haute qualité, montures résilientes.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Accessoires audio",
+      "Fonctionnalités": "Adaptateurs, câbles de haute qualité, montures résilientes",
+      "Usage": "Compatibilité et extension des systèmes RODE"
+    }
+  },
+  {
+    "nom": "RODE SC6",
+    "description": "Accessoire audio de haute qualité. Type: Accessoires audio. Fonctionnalités: Adaptateurs, câbles de haute qualité, montures résilientes.",
+    "prix": 390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Accessoires audio",
+      "Fonctionnalités": "Adaptateurs, câbles de haute qualité, montures résilientes",
+      "Usage": "Compatibilité et extension des systèmes RODE"
+    }
+  },
+  {
+    "nom": "RODE SC9 3,5 mm TRRS vers TRRS",
+    "description": "Accessoire audio de haute qualité. Type: Accessoires audio. Fonctionnalités: Adaptateurs, câbles de haute qualité, montures résilientes.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Accessoires audio",
+      "Fonctionnalités": "Adaptateurs, câbles de haute qualité, montures résilientes",
+      "Usage": "Compatibilité et extension des systèmes RODE"
+    }
+  },
+  {
+    "nom": "RODE SmartLav+",
+    "description": "Microphone cravate pour smartphone. Type: Microphone cravate pour smartphone. Directivité: Omnidirectionnelle. Fonctionnalités: Capsule de qualité broadcast, câble Kevlar renforcé.",
+    "prix": 920.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone cravate pour smartphone",
+      "Directivité": "Omnidirectionnelle",
+      "Connectivité": "TRRS 3,5 mm",
+      "Fonctionnalités": "Capsule de qualité broadcast, câble Kevlar renforcé",
+      "Usage": "Interviews, vlogging mobile"
+    }
+  },
+  {
+    "nom": "RODE VideoMic GO II",
+    "description": "Microphone directionnel pour caméra. Type: Microphone directionnel pour caméra. Directivité: Supercardioïde. Fonctionnalités: Monture Rycote, alimentation par pile AAA ou USB, filtre coupe-bas.",
+    "prix": 1490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone directionnel pour caméra",
+      "Directivité": "Supercardioïde",
+      "Fonctionnalités": "Monture Rycote, alimentation par pile AAA ou USB, filtre coupe-bas",
+      "Usage": "Vlogging, reportage, vidéo YouTube"
+    }
+  },
+  {
+    "nom": "RODE VideoMic Me",
+    "description": "Microphone directionnel pour caméra. Type: Microphone directionnel pour caméra. Directivité: Supercardioïde. Fonctionnalités: Monture Rycote, alimentation par pile AAA ou USB, filtre coupe-bas.",
+    "prix": 1290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone directionnel pour caméra",
+      "Directivité": "Supercardioïde",
+      "Fonctionnalités": "Monture Rycote, alimentation par pile AAA ou USB, filtre coupe-bas",
+      "Usage": "Vlogging, reportage, vidéo YouTube"
+    }
+  },
+  {
+    "nom": "RODE VideoMic Me-C",
+    "description": "Microphone directionnel pour caméra. Type: Microphone directionnel pour caméra. Directivité: Supercardioïde. Fonctionnalités: Monture Rycote, alimentation par pile AAA ou USB, filtre coupe-bas.",
+    "prix": 1190.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone directionnel pour caméra",
+      "Directivité": "Supercardioïde",
+      "Fonctionnalités": "Monture Rycote, alimentation par pile AAA ou USB, filtre coupe-bas",
+      "Usage": "Vlogging, reportage, vidéo YouTube"
+    }
+  },
+  {
+    "nom": "RODE VideoMic Me-L",
+    "description": "Microphone directionnel pour caméra. Type: Microphone directionnel pour caméra. Directivité: Supercardioïde. Fonctionnalités: Monture Rycote, alimentation par pile AAA ou USB, filtre coupe-bas.",
+    "prix": 1190.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone directionnel pour caméra",
+      "Directivité": "Supercardioïde",
+      "Fonctionnalités": "Monture Rycote, alimentation par pile AAA ou USB, filtre coupe-bas",
+      "Usage": "Vlogging, reportage, vidéo YouTube"
+    }
+  },
+  {
+    "nom": "RODE VideoMic NTG",
+    "description": "Microphone directionnel pour caméra. Type: Microphone directionnel pour caméra. Directivité: Supercardioïde. Fonctionnalités: Monture Rycote, alimentation par pile AAA ou USB, filtre coupe-bas.",
+    "prix": 2900.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone directionnel pour caméra",
+      "Directivité": "Supercardioïde",
+      "Fonctionnalités": "Monture Rycote, alimentation par pile AAA ou USB, filtre coupe-bas",
+      "Usage": "Vlogging, reportage, vidéo YouTube"
+    }
+  },
+  {
+    "nom": "Rode VideoMic Pro",
+    "description": "Microphone directionnel pour caméra. Type: Microphone directionnel pour caméra. Directivité: Supercardioïde. Fonctionnalités: Monture Rycote, alimentation par pile AAA ou USB, filtre coupe-bas.",
+    "prix": 1800.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone directionnel pour caméra",
+      "Directivité": "Supercardioïde",
+      "Fonctionnalités": "Monture Rycote, alimentation par pile AAA ou USB, filtre coupe-bas",
+      "Usage": "Vlogging, reportage, vidéo YouTube"
+    }
+  },
+  {
+    "nom": "RODE VideoMic Pro+",
+    "description": "Microphone directionnel pour caméra. Type: Microphone directionnel pour caméra. Directivité: Supercardioïde. Fonctionnalités: Monture Rycote, alimentation par pile AAA ou USB, filtre coupe-bas.",
+    "prix": 3900.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Microphone directionnel pour caméra",
+      "Directivité": "Supercardioïde",
+      "Fonctionnalités": "Monture Rycote, alimentation par pile AAA ou USB, filtre coupe-bas",
+      "Usage": "Vlogging, reportage, vidéo YouTube"
+    }
+  },
+  {
+    "nom": "RODE VideoMicro II",
+    "description": "Microphone compact pour caméra/smartphone. Type: Microphone compact pour caméra/smartphone. Directivité: Cardioïde. Fonctionnalités: Pas de pile requise, montage universel, bonnette anti-vent incluse.",
+    "prix": 1190.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone compact pour caméra/smartphone",
+      "Directivité": "Cardioïde",
+      "Fonctionnalités": "Pas de pile requise, montage universel, bonnette anti-vent incluse",
+      "Usage": "Vlogging mobile, vidéos courtes"
+    }
+  },
+  {
+    "nom": "RODE Vlogger Kit iOS Edition",
+    "description": "Kit de vlogging complet. Type: Kit de vlogging complet.",
+    "prix": 1900.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Kit de vlogging complet",
+      "Inclus": "Microphone VideoMic Me, trépied flexible, bonnette anti-vent",
+      "Usage": "Vlogging mobile, création de contenu"
+    }
+  },
+  {
+    "nom": "RODE Vlogger Kit Universal",
+    "description": "Kit de vlogging complet. Type: Kit de vlogging complet.",
+    "prix": 1900.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Kit de vlogging complet",
+      "Inclus": "Microphone VideoMic Me, trépied flexible, bonnette anti-vent",
+      "Usage": "Vlogging mobile, création de contenu"
+    }
+  },
+  {
+    "nom": "RODE Wireless GO II",
+    "description": "Système de microphone sans fil compact. Type: Système de microphone sans fil compact. Fonctionnalités: Double canal, appairage automatique, GainAssist.",
+    "prix": 3390.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Système de microphone sans fil compact",
+      "Format": "32-bit float (enregistrement interne)",
+      "Portée": "200 mètres",
+      "Fonctionnalités": "Double canal, appairage automatique, GainAssist"
+    }
+  },
+  {
+    "nom": "RODE Wireless GO II Single",
+    "description": "Système de microphone sans fil compact. Type: Système de microphone sans fil compact. Fonctionnalités: Double canal, appairage automatique, GainAssist.",
+    "prix": 2390.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Système de microphone sans fil compact",
+      "Format": "32-bit float (enregistrement interne)",
+      "Portée": "200 mètres",
+      "Fonctionnalités": "Double canal, appairage automatique, GainAssist"
+    }
+  },
+  {
+    "nom": "RodeCaster Pro II",
+    "description": "Console de production audio pour podcast. Type: Console de production audio pour podcast. Fonctionnalités: 8 pads Fader, traitement APHEX, enregistrement direct sur SD/USB.",
+    "prix": 8900.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Console de production audio pour podcast",
+      "Entrées": "4 entrées micro XLR avec préampli Revolution",
+      "Fonctionnalités": "8 pads Fader, traitement APHEX, enregistrement direct sur SD/USB",
+      "Usage": "Studio de podcast professionnel, diffusion en direct"
+    }
+  },
+  {
+    "nom": "Shure SM7DB",
+    "description": "Microphone dynamique de broadcast légendaire. Type: Microphone dynamique de broadcast légendaire. Directivité: Cardioïde. Fonctionnalités: Préampli Cloudlifter intégré (+28 dB), filtre anti-pop double, réponse en fréquence optimisée.",
+    "prix": 6690.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Microphone dynamique de broadcast légendaire",
+      "Directivité": "Cardioïde",
+      "Fonctionnalités": "Préampli Cloudlifter intégré (+28 dB), filtre anti-pop double, réponse en fréquence optimisée",
+      "Usage": "Podcast professionnel, voix off, chant rock"
+    }
+  },
+  {
+    "nom": "Smallrig microphone S 60 pour 2 personnes avec connecteur USB-C",
+    "description": "Microphone sans fil pour 2 personnes. Type: Microphone sans fil pour 2 personnes. Fonctionnalités: Double émetteur, récepteur compact, réduction de bruit.",
+    "prix": 890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone sans fil pour 2 personnes",
+      "Connectivité": "USB-C direct",
+      "Fonctionnalités": "Double émetteur, récepteur compact, réduction de bruit",
+      "Usage": "Interviews, vlogging à deux"
+    }
+  },
+  {
+    "nom": "Système de microphone sans fil Hollyland LARK MAX 2 Combo pour 2 personnes",
+    "description": "Microphone sans fil compact. Type: Microphone sans fil compact. Fonctionnalités: Enregistrement interne 32-bit float, réduction de bruit EnvNoise.",
+    "prix": 2850.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Microphone sans fil compact",
+      "Fonctionnalités": "Enregistrement interne 32-bit float, réduction de bruit EnvNoise",
+      "Portée": "Jusqu'à 250 mètres",
+      "Autonomie": "Jusqu'à 40 heures avec le boîtier"
+    }
+  },
+  {
+    "nom": "ZOOM H6",
+    "description": "Enregistreur audio portable professionnel. Type: Enregistreur audio portable. Fonctionnalités: Enregistrement 24-bit/96kHz, écran couleur, alimentation phantom.",
+    "prix": 4790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Enregistreur audio portable",
+      "Entrées": "4 entrées XLR/Jack + capsule stéréo interchangeable",
+      "Fonctionnalités": "Enregistrement 24-bit/96kHz, écran couleur, alimentation phantom",
+      "Usage": "Reportage, enregistrement sur le terrain, podcast mobile"
+    }
+  },
+  {
+    "nom": "Zoom H8",
+    "description": "Enregistreur audio portable avancé. Type: Enregistreur audio portable avancé. Fonctionnalités: Écran tactile couleur, 12 pistes simultanées, effets intégrés.",
+    "prix": 5890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Enregistreur audio portable avancé",
+      "Entrées": "6 entrées XLR/Jack + capsule stéréo",
+      "Fonctionnalités": "Écran tactile couleur, 12 pistes simultanées, effets intégrés",
+      "Usage": "Production musicale mobile, reportage complexe"
+    }
+  }
+]
