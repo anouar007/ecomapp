@@ -1,0 +1,2419 @@
+[
+    {
+        "name": "Ulanzi MT-08 Trépied avec poignée pour caméra d'action",
+        "category_id": 7,
+        "category_slug": "trepieds",
+        "category_name": "Trépieds",
+        "brand": "ULZ",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Trépied compact multifonctionnel Ulanzi pour caméras d'action, smartphones et hybrides compacts. Combine trépied de table stable et perche à selfie extensible avec rotule orientable à 360° et griffe porte-accessoires.",
+        "specs": {
+            "Type": "Trépied de table et perche à selfie télescopique",
+            "Matériau": "Aluminium et polymère haute densité",
+            "Rotule": "Mini rotule ball 360° inclinable à 90°",
+            "Fixation": "Vis standard 1\/4\\\"-20 et griffe Cold Shoe"
+        }
+    },
+    {
+        "name": "Ulanzi MT-16 Trépied selfie stick extensible",
+        "category_id": 7,
+        "category_slug": "trepieds",
+        "category_name": "Trépieds",
+        "brand": "ULZ",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Trépied compact multifonctionnel Ulanzi pour caméras d'action, smartphones et hybrides compacts. Combine trépied de table stable et perche à selfie extensible avec rotule orientable à 360° et griffe porte-accessoires.",
+        "specs": {
+            "Type": "Trépied de table et perche à selfie télescopique",
+            "Matériau": "Aluminium et polymère haute densité",
+            "Rotule": "Mini rotule ball 360° inclinable à 90°",
+            "Fixation": "Vis standard 1\/4\\\"-20 et griffe Cold Shoe"
+        }
+    },
+    {
+        "name": "Ulanzi MT-46 Trépied de voyage en aluminium",
+        "category_id": 7,
+        "category_slug": "trepieds",
+        "category_name": "Trépieds",
+        "brand": "ULZ",
+        "price": 690,
+        "cost_price": 552,
+        "stock": 10,
+        "description": "Trépied compact multifonctionnel Ulanzi pour caméras d'action, smartphones et hybrides compacts. Combine trépied de table stable et perche à selfie extensible avec rotule orientable à 360° et griffe porte-accessoires.",
+        "specs": {
+            "Type": "Trépied de table et perche à selfie télescopique",
+            "Matériau": "Aluminium et polymère haute densité",
+            "Rotule": "Mini rotule ball 360° inclinable à 90°",
+            "Fixation": "Vis standard 1\/4\\\"-20 et griffe Cold Shoe"
+        }
+    },
+    {
+        "name": "Ulanzi Zero-F Support de téléphone avec griffe froide",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "ULZ",
+        "price": 190,
+        "cost_price": 152,
+        "stock": 10,
+        "description": "Support de smartphone tout en métal avec compatibilité Arca-Swiss et griffe porte-accessoire pour microphone ou éclairage compact. Permet un maintien ferme et sans vibration pour le tournage mobile.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium usiné CNC",
+            "Compatibilité": "Smartphones de 65 à 95 mm de largeur",
+            "Fixation": "Plaque Arca-Swiss intégrée et taraudage 1\/4\\\"-20"
+        }
+    },
+    {
+        "name": "Ulanzi CG01 Poignée de stabilisateur pour smartphone",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "SMR",
+        "price": 250,
+        "cost_price": 200,
+        "stock": 10,
+        "description": "Poignée de commande ou support ergonomique SmallRig spécialement conçu pour les stabilisateurs DJI série RS (RS 2, RS 3, RS 4). Améliore le confort de prise en main sous des angles bas et permet le contrôle à distance de la mise au point et du déclenchement caméra.",
+        "specs": {
+            "Compatibilité": "Gimbals DJI RS 2, RS 3, RS 3 Pro, RS 4, RS 4 Pro",
+            "Connexion": "Port NATO sécurisé avec goupilles anti-chute",
+            "Matériaux": "Alliage d'aluminium aéronautique et poignée silicone ergonomique",
+            "Points de montage": "Filetages 1\/4\\\"-20, ARRI 3\/8\\\"-16 et griffes Cold Shoe"
+        }
+    },
+    {
+        "name": "Ulanzi Go-Quick II Support de cou à dégagement rapide",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "ULZ",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Support tour de cou à dégagement rapide et verrouillage magnétique pour caméras d'action (GoPro, DJI Osmo Action, Insta360) et smartphones. Permet de filmer des plans POV immersifs captivants les mains libres en tout confort.",
+        "specs": {
+            "Type": "Support tour de cou ergonomique POV",
+            "Système de fixation": "Attache rapide magnétique sécurisée d'un seul clic",
+            "Matériau": "Silicone doux agréable pour la peau et armature métallique souple"
+        }
+    },
+    {
+        "name": "Ulanzi SC-02 Support à ventouse pour caméra d'action",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "ULZ",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Support à ventouse puissante sous vide pour caméras d'action et smartphones. Garantit une fixation sûre sur carrosseries, pare-brise et surfaces lisses pour des prises de vue embarquées dynamiques à haute vitesse.",
+        "specs": {
+            "Type": "Ventouse industrielle à verrouillage par pompe à vide",
+            "Matériaux": "Alliage d'aluminium usiné et caoutchouc haute adhérence",
+            "Charge admissible": "Résiste aux vibrations et forces de vent extrêmes",
+            "Rotule": "Double rotule 360° pour un cadrage parfait"
+        }
+    },
+    {
+        "name": "Ulanzi VL49 Lumière vidéo LED RGB portable",
+        "category_id": 3,
+        "category_slug": "lumieres-materiel-de-studio",
+        "category_name": "Lumières \/ Matériel de studio",
+        "brand": "ULZ",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Mini projecteur vidéo LED RGB portable Ulanzi VL49. Équipé d'une batterie rechargeable intégrée de 2000 mAh, de 60 LED haute intensité avec réglage de teinte HSL sur 360 couleurs et de 3 supports Cold Shoe pour coupler plusieurs lampes ensemble.",
+        "specs": {
+            "Éclairage": "RGB complet 360° + mode bicolore 2500K - 9000K",
+            "Batterie": "Lithium intégrée 2000 mAh (jusqu'à 10h d'autonomie)",
+            "Recharge": "Port USB Type-C rapide",
+            "Fixation": "Pied griffe flash Cold Shoe avec filetage 1\/4\\\" et fixation magnétique"
+        }
+    },
+    {
+        "name": "Peak Design Everyday Sling 3L",
+        "category_id": 6,
+        "category_slug": "sacs-de-camera",
+        "category_name": "Sacs de caméra",
+        "brand": "PD",
+        "price": 890,
+        "cost_price": 712,
+        "stock": 10,
+        "description": "Sac bandoulière urbain et épuré Peak Design Everyday Sling 3 Litres. Idéal pour transporter en toute sécurité un boîtier hybride et 1 à 2 objectifs avec séparateurs FlexFold origami modulables, tissu extérieur 100% recyclé résistant aux intempéries et fermetures éclair étanches UltraZip.",
+        "specs": {
+            "Capacité": "3 Litres",
+            "Matériau": "Toile nylon 400D doublement imprégnée DWR et imperméable",
+            "Séparateurs": "Séparateurs FlexFold configurables à l'infini",
+            "Portage": "Sangle d'épaule rembourrée à réglage rapide en un geste",
+            "Garantie": "Garantie à vie constructeur Peak Design"
+        }
+    },
+    {
+        "name": "Peak Design Everyday Sling 6L",
+        "category_id": 6,
+        "category_slug": "sacs-de-camera",
+        "category_name": "Sacs de caméra",
+        "brand": "PD",
+        "price": 1190,
+        "cost_price": 952,
+        "stock": 10,
+        "description": "Sac bandoulière urbain et épuré Peak Design Everyday Sling 6 Litres. Idéal pour transporter en toute sécurité un boîtier hybride et 1 à 2 objectifs avec séparateurs FlexFold origami modulables, tissu extérieur 100% recyclé résistant aux intempéries et fermetures éclair étanches UltraZip.",
+        "specs": {
+            "Capacité": "6 Litres",
+            "Matériau": "Toile nylon 400D doublement imprégnée DWR et imperméable",
+            "Séparateurs": "Séparateurs FlexFold configurables à l'infini",
+            "Portage": "Sangle d'épaule rembourrée à réglage rapide en un geste",
+            "Garantie": "Garantie à vie constructeur Peak Design"
+        }
+    },
+    {
+        "name": "Peak Design Slide Sangle d'appareil photo",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "PD",
+        "price": 690,
+        "cost_price": 552,
+        "stock": 10,
+        "description": "Sangle d'appareil photo professionnelle Peak Design avec système de fixation révolutionnaire Anchor Link ultra-sécurisé. Offre un confort exceptionnel à l'épaule ou en bandoulière avec poignées de réglage rapide de la longueur.",
+        "specs": {
+            "Système d'attache": "Connecteurs d'ancrage Anchor Link brevetés (résistance 90 kg par ancre)",
+            "Matériau": "Sangle en nylon tissé type ceinture de sécurité avec rembourrage interne",
+            "Ajustement": "Double boucle de réglage rapide en aluminium"
+        }
+    },
+    {
+        "name": "Peak Design Slide Lite Sangle d'appareil photo",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "PD",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Sangle d'appareil photo professionnelle Peak Design avec système de fixation révolutionnaire Anchor Link ultra-sécurisé. Offre un confort exceptionnel à l'épaule ou en bandoulière avec poignées de réglage rapide de la longueur.",
+        "specs": {
+            "Système d'attache": "Connecteurs d'ancrage Anchor Link brevetés (résistance 90 kg par ancre)",
+            "Matériau": "Sangle en nylon tissé type ceinture de sécurité avec rembourrage interne",
+            "Ajustement": "Double boucle de réglage rapide en aluminium"
+        }
+    },
+    {
+        "name": "Peak Design Leash Sangle légère",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "PD",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Sangle d'appareil photo professionnelle Peak Design avec système de fixation révolutionnaire Anchor Link ultra-sécurisé. Offre un confort exceptionnel à l'épaule ou en bandoulière avec poignées de réglage rapide de la longueur.",
+        "specs": {
+            "Système d'attache": "Connecteurs d'ancrage Anchor Link brevetés (résistance 90 kg par ancre)",
+            "Matériau": "Sangle en nylon tissé type ceinture de sécurité avec rembourrage interne",
+            "Ajustement": "Double boucle de réglage rapide en aluminium"
+        }
+    },
+    {
+        "name": "Peak Design Capture Clip V3",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "PD",
+        "price": 790,
+        "cost_price": 632,
+        "stock": 10,
+        "description": "Clip de portage pour appareil photo Peak Design Capture Clip V3. Permet de fixer solidement votre reflex ou hybride sur la bretelle de votre sac à dos ou votre ceinture, pour dégainer votre appareil instantanément d'une simple pression sur le bouton de déverrouillage.",
+        "specs": {
+            "Matériau": "Aluminium usiné CNC anodisé noir",
+            "Charge max": "Supporte plus de 90 kg de charge",
+            "Plaque rapide": "Plaque standard compatible Arca-Swiss incluse",
+            "Fixation": "S'adapte aux sangles et ceintures jusqu'à 6.4 cm de large"
+        }
+    },
+    {
+        "name": "Peak Design Travel Tripod Aluminium",
+        "category_id": 7,
+        "category_slug": "trepieds",
+        "category_name": "Trépieds",
+        "brand": "PD",
+        "price": 5900,
+        "cost_price": 4720,
+        "stock": 10,
+        "description": "Trépied de voyage révolutionnaire Peak Design Travel Tripod (Alliage d'aluminium anodisé usiné CNC). Conçu pour éliminer tout volume inutile, il se replie au diamètre d'une gourde tout en offrant une hauteur de déploiement de 152 cm, une rotule ergonomique ultra-fluide et une stabilité de niveau professionnel.",
+        "specs": {
+            "Matériau des pieds": "Alliage d'aluminium anodisé usiné CNC",
+            "Charge admissible": "Jusqu'à 9.1 kg (idéal pour reflex plein format et téléobjectifs)",
+            "Hauteur maximale": "152.4 cm (avec colonne déployée)",
+            "Longueur replié": "39.1 cm (diamètre ultra-fin de 7.9 cm)",
+            "Poids": "1.56 kg",
+            "Rotule": "Rotule ball ergonomique compacte avec bague de verrouillage rapide Arca-Swiss"
+        }
+    },
+    {
+        "name": "Peak Design Travel Tripod Carbon Fiber",
+        "category_id": 7,
+        "category_slug": "trepieds",
+        "category_name": "Trépieds",
+        "brand": "PD",
+        "price": 8900,
+        "cost_price": 7120,
+        "stock": 10,
+        "description": "Trépied de voyage révolutionnaire Peak Design Travel Tripod (Fibre de carbone 5 sections). Conçu pour éliminer tout volume inutile, il se replie au diamètre d'une gourde tout en offrant une hauteur de déploiement de 152 cm, une rotule ergonomique ultra-fluide et une stabilité de niveau professionnel.",
+        "specs": {
+            "Matériau des pieds": "Fibre de carbone 5 sections",
+            "Charge admissible": "Jusqu'à 9.1 kg (idéal pour reflex plein format et téléobjectifs)",
+            "Hauteur maximale": "152.4 cm (avec colonne déployée)",
+            "Longueur replié": "39.1 cm (diamètre ultra-fin de 7.9 cm)",
+            "Poids": "1.27 kg",
+            "Rotule": "Rotule ball ergonomique compacte avec bague de verrouillage rapide Arca-Swiss"
+        }
+    },
+    {
+        "name": "Tilta 15mm LWS Baseplate Type I",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "TLT",
+        "price": 1490,
+        "cost_price": 1192,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo professionnel de haute précision, conçu pour apporter fiabilité, ergonomie et modularité à votre système de prise de vue sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "Tilta V-Mount Plate Type I avec pinces 15mm",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "TLT",
+        "price": 1890,
+        "cost_price": 1512,
+        "stock": 10,
+        "description": "Plaque d'adaptation ou accessoire de distribution d'alimentation pour batteries professionnelles V-Mount \/ V-Lock. Permet d'alimenter simultanément boîtier, moniteur, transmetteur sans fil et moteur de follow focus sur votre rig cinéma.",
+        "specs": {
+            "Format de batterie": "V-Mount \/ V-Lock standard",
+            "Ports de sortie": "Sorties D-Tap multiples et fiches CC régulées",
+            "Fixation rig": "Compatible pinces de tiges 15 mm LWS standard cinéma"
+        }
+    },
+    {
+        "name": "Tilta Advanced Top Handle avec fixation ARRI",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "TLT",
+        "price": 1290,
+        "cost_price": 1032,
+        "stock": 10,
+        "description": "Poignée ergonomique supérieure ou latérale en aluminium usiné CNC pour cages de caméras. Améliore la stabilité lors des prises de vue au poing et intègre de multiples points de fixation (Cold Shoe, filetages 1\/4\"-20 et ARRI 3\/8\"-16).",
+        "specs": {
+            "Type": "Poignée de prise en main pour cage de tournage vidéo",
+            "Fixation": "Fixation ARRI 3\/8\\\"-16 anti-torsion, rail NATO ou vis 1\/4\\\" selon modèle",
+            "Matériaux": "Alliage d'aluminium aéronautique et finitions ergonomiques",
+            "Points de montage": "Griffes Cold Shoe et filetages pour moniteur et micro"
+        }
+    },
+    {
+        "name": "Tilta Lightweight Top Handle NATO",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "TLT",
+        "price": 890,
+        "cost_price": 712,
+        "stock": 10,
+        "description": "Poignée ergonomique supérieure ou latérale en aluminium usiné CNC pour cages de caméras. Améliore la stabilité lors des prises de vue au poing et intègre de multiples points de fixation (Cold Shoe, filetages 1\/4\"-20 et ARRI 3\/8\"-16).",
+        "specs": {
+            "Type": "Poignée de prise en main pour cage de tournage vidéo",
+            "Fixation": "Fixation ARRI 3\/8\\\"-16 anti-torsion, rail NATO ou vis 1\/4\\\" selon modèle",
+            "Matériaux": "Alliage d'aluminium aéronautique et finitions ergonomiques",
+            "Points de montage": "Griffes Cold Shoe et filetages pour moniteur et micro"
+        }
+    },
+    {
+        "name": "Tilta Adjustable Super Clamp",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "TLT",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Pince de fixation mécanique robuste (Crab Clamp \/ Super Clamp) avec mors en caoutchouc antidérapant. Permet de fixer solidement des accessoires sur barres de trépied, guidons ou rebords.",
+        "specs": {
+            "Serrage": "Mâchoires réglables de 15 à 55 mm avec patins de protection",
+            "Filetages": "Pas de vis intégrés 1\/4\\\"-20 et 3\/8\\\"-16"
+        }
+    },
+    {
+        "name": "Tilta Mini Articulating Arm with Clamp",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "TLT",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Bras magique articulé de haute précision avec rotules orientables à 360° et levier de blocage central puissant. Permet de positionner et d'immobiliser un moniteur vidéo ou une torche LED sous n'importe quel angle.",
+        "specs": {
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Charge admissible": "Jusqu'à 3.5 kg"
+        }
+    },
+    {
+        "name": "Zhiyun Smooth 5S Stabilisateur pour smartphone",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "ZHY",
+        "price": 1490,
+        "cost_price": 1192,
+        "stock": 10,
+        "description": "Stabilisateur gimbal 3 axes professionnel Zhiyun pour smartphones et appareils photo hybrides. Doté de moteurs puissants à réponse ultra-rapide, de commandes complètes sur la poignée, de modes de suivi créatifs (Vortex, Pan Follow, Lock) et d'un éclairage d'appoint intégré pour des vidéos fluides et professionnelles.",
+        "specs": {
+            "Axes de stabilisation": "3 axes motorisés (Pan, Tilt, Roll)",
+            "Autonomie": "Jusqu'à 12 à 15 heures selon utilisation",
+            "Connectivité": "Bluetooth et application de contrôle dédiée Zhiyun",
+            "Fonctionnalités": "Suivi de sujet intelligent, molette de zoom\/focus, timelapse"
+        }
+    },
+    {
+        "name": "Zhiyun Smooth-Q4 Stabilisateur compact",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "ZHY",
+        "price": 990,
+        "cost_price": 792,
+        "stock": 10,
+        "description": "Stabilisateur gimbal 3 axes professionnel Zhiyun pour smartphones et appareils photo hybrides. Doté de moteurs puissants à réponse ultra-rapide, de commandes complètes sur la poignée, de modes de suivi créatifs (Vortex, Pan Follow, Lock) et d'un éclairage d'appoint intégré pour des vidéos fluides et professionnelles.",
+        "specs": {
+            "Axes de stabilisation": "3 axes motorisés (Pan, Tilt, Roll)",
+            "Autonomie": "Jusqu'à 12 à 15 heures selon utilisation",
+            "Connectivité": "Bluetooth et application de contrôle dédiée Zhiyun",
+            "Fonctionnalités": "Suivi de sujet intelligent, molette de zoom\/focus, timelapse"
+        }
+    },
+    {
+        "name": "Zhiyun Smooth-X2 Stabilisateur extensible",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "ZHY",
+        "price": 890,
+        "cost_price": 712,
+        "stock": 10,
+        "description": "Stabilisateur gimbal 3 axes professionnel Zhiyun pour smartphones et appareils photo hybrides. Doté de moteurs puissants à réponse ultra-rapide, de commandes complètes sur la poignée, de modes de suivi créatifs (Vortex, Pan Follow, Lock) et d'un éclairage d'appoint intégré pour des vidéos fluides et professionnelles.",
+        "specs": {
+            "Axes de stabilisation": "3 axes motorisés (Pan, Tilt, Roll)",
+            "Autonomie": "Jusqu'à 12 à 15 heures selon utilisation",
+            "Connectivité": "Bluetooth et application de contrôle dédiée Zhiyun",
+            "Fonctionnalités": "Suivi de sujet intelligent, molette de zoom\/focus, timelapse"
+        }
+    },
+    {
+        "name": "Zhiyun Crane M3 Stabilisateur pour hybrides légers",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "ZHY",
+        "price": 2490,
+        "cost_price": 1992,
+        "stock": 10,
+        "description": "Stabilisateur gimbal 3 axes professionnel Zhiyun pour smartphones et appareils photo hybrides. Doté de moteurs puissants à réponse ultra-rapide, de commandes complètes sur la poignée, de modes de suivi créatifs (Vortex, Pan Follow, Lock) et d'un éclairage d'appoint intégré pour des vidéos fluides et professionnelles.",
+        "specs": {
+            "Axes de stabilisation": "3 axes motorisés (Pan, Tilt, Roll)",
+            "Autonomie": "Jusqu'à 12 à 15 heures selon utilisation",
+            "Connectivité": "Bluetooth et application de contrôle dédiée Zhiyun",
+            "Fonctionnalités": "Suivi de sujet intelligent, molette de zoom\/focus, timelapse"
+        }
+    },
+    {
+        "name": "Zhiyun Crane 4 Stabilisateur professionnel",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "ZHY",
+        "price": 4900,
+        "cost_price": 3920,
+        "stock": 10,
+        "description": "Stabilisateur gimbal 3 axes professionnel Zhiyun pour smartphones et appareils photo hybrides. Doté de moteurs puissants à réponse ultra-rapide, de commandes complètes sur la poignée, de modes de suivi créatifs (Vortex, Pan Follow, Lock) et d'un éclairage d'appoint intégré pour des vidéos fluides et professionnelles.",
+        "specs": {
+            "Axes de stabilisation": "3 axes motorisés (Pan, Tilt, Roll)",
+            "Autonomie": "Jusqu'à 12 à 15 heures selon utilisation",
+            "Connectivité": "Bluetooth et application de contrôle dédiée Zhiyun",
+            "Fonctionnalités": "Suivi de sujet intelligent, molette de zoom\/focus, timelapse"
+        }
+    },
+    {
+        "name": "Zhiyun Weebill 3 Stabilisateur compact",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "ZHY",
+        "price": 2990,
+        "cost_price": 2392,
+        "stock": 10,
+        "description": "Stabilisateur gimbal 3 axes professionnel Zhiyun pour smartphones et appareils photo hybrides. Doté de moteurs puissants à réponse ultra-rapide, de commandes complètes sur la poignée, de modes de suivi créatifs (Vortex, Pan Follow, Lock) et d'un éclairage d'appoint intégré pour des vidéos fluides et professionnelles.",
+        "specs": {
+            "Axes de stabilisation": "3 axes motorisés (Pan, Tilt, Roll)",
+            "Autonomie": "Jusqu'à 12 à 15 heures selon utilisation",
+            "Connectivité": "Bluetooth et application de contrôle dédiée Zhiyun",
+            "Fonctionnalités": "Suivi de sujet intelligent, molette de zoom\/focus, timelapse"
+        }
+    },
+    {
+        "name": "DJI Osmo Mobile 8P Creator Combo",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "DJI",
+        "price": 1890,
+        "cost_price": 1512,
+        "stock": 10,
+        "description": "Stabilisateur 3 axes compact pour smartphone DJI Osmo Mobile. Intègre la technologie de suivi intelligent ActiveTrack, une perche d'extension télescopique intégrée, un trépied pliable et des raccourcis magnétiques rapides pour sublimer vos vidéos mobiles.",
+        "specs": {
+            "Type": "Gimbal pour smartphone avec fixation magnétique rapide",
+            "Suivi intelligent": "Algorithme ActiveTrack haute précision",
+            "Autonomie": "Batterie longue durée avec recharge USB-C",
+            "Application": "DJI Mimo avec modes Story, Hyperlapse, Panorama"
+        }
+    },
+    {
+        "name": "DJI Osmo Mobile 8P Standard Combo",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "DJI",
+        "price": 1490,
+        "cost_price": 1192,
+        "stock": 10,
+        "description": "Stabilisateur 3 axes compact pour smartphone DJI Osmo Mobile. Intègre la technologie de suivi intelligent ActiveTrack, une perche d'extension télescopique intégrée, un trépied pliable et des raccourcis magnétiques rapides pour sublimer vos vidéos mobiles.",
+        "specs": {
+            "Type": "Gimbal pour smartphone avec fixation magnétique rapide",
+            "Suivi intelligent": "Algorithme ActiveTrack haute précision",
+            "Autonomie": "Batterie longue durée avec recharge USB-C",
+            "Application": "DJI Mimo avec modes Story, Hyperlapse, Panorama"
+        }
+    },
+    {
+        "name": "DJI Osmo Mobile 8P Advanced Tracking Combo",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "DJI",
+        "price": 1690,
+        "cost_price": 1352,
+        "stock": 10,
+        "description": "Stabilisateur 3 axes compact pour smartphone DJI Osmo Mobile. Intègre la technologie de suivi intelligent ActiveTrack, une perche d'extension télescopique intégrée, un trépied pliable et des raccourcis magnétiques rapides pour sublimer vos vidéos mobiles.",
+        "specs": {
+            "Type": "Gimbal pour smartphone avec fixation magnétique rapide",
+            "Suivi intelligent": "Algorithme ActiveTrack haute précision",
+            "Autonomie": "Batterie longue durée avec recharge USB-C",
+            "Application": "DJI Mimo avec modes Story, Hyperlapse, Panorama"
+        }
+    },
+    {
+        "name": "Stabilisateur DJI RS4 Mini Combo",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "DJI",
+        "price": 3990,
+        "cost_price": 3192,
+        "stock": 10,
+        "description": "Stabilisateur professionnel pour caméra de cinéma et hybride plein format DJI RS. Équipé d'algorithmes de stabilisation de 4ème génération, de verrous d'axes automatiques, d'un écran tactile couleur OLED et d'une capacité de charge supérieure pour les optiques et caméras les plus exigeantes.",
+        "specs": {
+            "Compatibilité": "Caméras cinéma, reflex et hybrides plein format",
+            "Verrouillage des axes": "Verrous d'axes automatiques pour mise en service instantanée",
+            "Écran": "Écran tactile couleur OLED avec interface intuitive",
+            "Capacité de charge": "Moteurs puissants à couple élevé"
+        }
+    },
+    {
+        "name": "Stabilisateur DJI RS 4 Combo",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "DJI",
+        "price": 6900,
+        "cost_price": 5520,
+        "stock": 10,
+        "description": "Stabilisateur professionnel pour caméra de cinéma et hybride plein format DJI RS. Équipé d'algorithmes de stabilisation de 4ème génération, de verrous d'axes automatiques, d'un écran tactile couleur OLED et d'une capacité de charge supérieure pour les optiques et caméras les plus exigeantes.",
+        "specs": {
+            "Compatibilité": "Caméras cinéma, reflex et hybrides plein format",
+            "Verrouillage des axes": "Verrous d'axes automatiques pour mise en service instantanée",
+            "Écran": "Écran tactile couleur OLED avec interface intuitive",
+            "Capacité de charge": "Moteurs puissants à couple élevé"
+        }
+    },
+    {
+        "name": "Stabilisateur DJI RS 5",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "DJI",
+        "price": 5900,
+        "cost_price": 4720,
+        "stock": 10,
+        "description": "Stabilisateur professionnel pour caméra de cinéma et hybride plein format DJI RS. Équipé d'algorithmes de stabilisation de 4ème génération, de verrous d'axes automatiques, d'un écran tactile couleur OLED et d'une capacité de charge supérieure pour les optiques et caméras les plus exigeantes.",
+        "specs": {
+            "Compatibilité": "Caméras cinéma, reflex et hybrides plein format",
+            "Verrouillage des axes": "Verrous d'axes automatiques pour mise en service instantanée",
+            "Écran": "Écran tactile couleur OLED avec interface intuitive",
+            "Capacité de charge": "Moteurs puissants à couple élevé"
+        }
+    },
+    {
+        "name": "Stabilisateur DJI RS 5 Combo",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "DJI",
+        "price": 7900,
+        "cost_price": 6320,
+        "stock": 10,
+        "description": "Stabilisateur professionnel pour caméra de cinéma et hybride plein format DJI RS. Équipé d'algorithmes de stabilisation de 4ème génération, de verrous d'axes automatiques, d'un écran tactile couleur OLED et d'une capacité de charge supérieure pour les optiques et caméras les plus exigeantes.",
+        "specs": {
+            "Compatibilité": "Caméras cinéma, reflex et hybrides plein format",
+            "Verrouillage des axes": "Verrous d'axes automatiques pour mise en service instantanée",
+            "Écran": "Écran tactile couleur OLED avec interface intuitive",
+            "Capacité de charge": "Moteurs puissants à couple élevé"
+        }
+    },
+    {
+        "name": "Stabilisateur DJI RS 3 Mini",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "DJI",
+        "price": 2990,
+        "cost_price": 2392,
+        "stock": 10,
+        "description": "Stabilisateur professionnel pour caméra de cinéma et hybride plein format DJI RS. Équipé d'algorithmes de stabilisation de 4ème génération, de verrous d'axes automatiques, d'un écran tactile couleur OLED et d'une capacité de charge supérieure pour les optiques et caméras les plus exigeantes.",
+        "specs": {
+            "Compatibilité": "Caméras cinéma, reflex et hybrides plein format",
+            "Verrouillage des axes": "Verrous d'axes automatiques pour mise en service instantanée",
+            "Écran": "Écran tactile couleur OLED avec interface intuitive",
+            "Capacité de charge": "Moteurs puissants à couple élevé"
+        }
+    },
+    {
+        "name": "DJI Osmo 360 Standard Combo",
+        "category_id": 1,
+        "category_slug": "camera",
+        "category_name": "Camera",
+        "brand": "DJI",
+        "price": 5900,
+        "cost_price": 4720,
+        "stock": 10,
+        "description": "Caméra d'action 360° DJI Osmo 360 Standard Combo. Capturez des vidéos panoramiques immersives à 360 degrés en ultra-haute définition avec stabilisation avancée RockSteady et HorizonSteady pour des prises de vue d'action sans secousse.",
+        "specs": {
+            "Format de capture": "Vidéo sphérique 360° et mode mono-objectif grand-angle",
+            "Stabilisation": "RockSteady 3.0+ et HorizonSteady à 360°",
+            "Étanchéité": "Boîtier étanche sans caisson",
+            "Autonomie": "Batterie haute capacité avec recharge rapide",
+            "Contenu": "Caméra DJI Osmo 360, batterie standard, fixations rapides et câbles"
+        }
+    },
+    {
+        "name": "Canon LP-E6NH Batterie haute capacité",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "CAN",
+        "price": 890,
+        "cost_price": 712,
+        "stock": 10,
+        "description": "Batterie rechargeable haute capacité ou coupleur secteur certifié pour appareils photo reflex et hybrides Canon EOS. Assure une autonomie maximale et une sécurité thermique totale pour les séances photo et tournages vidéo intensifs.",
+        "specs": {
+            "Marque": "Canon \/ Compatible certifié",
+            "Type": "Lithium-Ion haute densité sans effet mémoire",
+            "Protection": "Circuit de décodage complet avec protection contre les surcharges"
+        }
+    },
+    {
+        "name": "Canon LP-E17 Batterie 1040mAh Type C",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "CAN",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Batterie rechargeable haute capacité ou coupleur secteur certifié pour appareils photo reflex et hybrides Canon EOS. Assure une autonomie maximale et une sécurité thermique totale pour les séances photo et tournages vidéo intensifs.",
+        "specs": {
+            "Marque": "Canon \/ Compatible certifié",
+            "Type": "Lithium-Ion haute densité sans effet mémoire",
+            "Protection": "Circuit de décodage complet avec protection contre les surcharges"
+        }
+    },
+    {
+        "name": "Canon DR - LPE6 - AEU Batterie",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "CAN",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Batterie rechargeable haute capacité ou coupleur secteur certifié pour appareils photo reflex et hybrides Canon EOS. Assure une autonomie maximale et une sécurité thermique totale pour les séances photo et tournages vidéo intensifs.",
+        "specs": {
+            "Marque": "Canon \/ Compatible certifié",
+            "Type": "Lithium-Ion haute densité sans effet mémoire",
+            "Protection": "Circuit de décodage complet avec protection contre les surcharges"
+        }
+    },
+    {
+        "name": "Canon DR - LPE17M - AEU Batterie",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "CAN",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Batterie rechargeable haute capacité ou coupleur secteur certifié pour appareils photo reflex et hybrides Canon EOS. Assure une autonomie maximale et une sécurité thermique totale pour les séances photo et tournages vidéo intensifs.",
+        "specs": {
+            "Marque": "Canon \/ Compatible certifié",
+            "Type": "Lithium-Ion haute densité sans effet mémoire",
+            "Protection": "Circuit de décodage complet avec protection contre les surcharges"
+        }
+    },
+    {
+        "name": "Nikon Z30 Mirrorless Camera avec objectif 16-50mm",
+        "category_id": 1,
+        "category_slug": "camera",
+        "category_name": "Camera",
+        "brand": "NIK",
+        "price": 7400,
+        "cost_price": 5920,
+        "stock": 10,
+        "description": "Appareil photo hybride sans miroir Nikon Z30 avec objectif zoom NIKKOR Z DX 16-50mm f\/3.5-6.3 VR. Ultra-compact et conçu spécifiquement pour les créateurs de contenu et vlogueurs, il offre l'enregistrement vidéo 4K UHD sans recadrage, un écran tactile orientable et un autofocus précis avec détection des yeux.",
+        "specs": {
+            "Capteur": "CMOS format DX 20.9 mégapixels",
+            "Vidéo": "4K UHD jusqu'à 30p sans recadrage, Full HD jusqu'à 120p",
+            "Écran": "Écran tactile orientable de 3.0 pouces (7.5 cm)",
+            "Autofocus": "AF hybride avec détection des yeux et des animaux (humains, chiens, chats)",
+            "Audio": "Microphone stéréo intégré et entrée micro jack 3.5 mm",
+            "Connectivité": "Wi-Fi, Bluetooth 5.0, USB Type-C avec alimentation en continu"
+        }
+    },
+    {
+        "name": "Sony NP-FZ100 Batterie originale",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "SONY",
+        "price": 1390,
+        "cost_price": 1112,
+        "stock": 10,
+        "description": "Batterie originale ou accessoire d'alimentation certifié pour boîtiers Sony Alpha. Fournit une alimentation continue et stable sans avertissement à l'écran, avec compatibilité totale sur les séries A7, A9, FX3 et FX30.",
+        "specs": {
+            "Compatibilité": "Boîtiers Sony Alpha et caméras cinéma FX",
+            "Technologie": "InfoLITHIUM avec affichage précis du pourcentage de charge restante"
+        }
+    },
+    {
+        "name": "Sony DR - FZ100 AEU Batterie",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "SONY",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Batterie originale ou accessoire d'alimentation certifié pour boîtiers Sony Alpha. Fournit une alimentation continue et stable sans avertissement à l'écran, avec compatibilité totale sur les séries A7, A9, FX3 et FX30.",
+        "specs": {
+            "Compatibilité": "Boîtiers Sony Alpha et caméras cinéma FX",
+            "Technologie": "InfoLITHIUM avec affichage précis du pourcentage de charge restante"
+        }
+    },
+    {
+        "name": "Sony DR - FW50 - AEU Batterie",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "SONY",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Batterie originale ou accessoire d'alimentation certifié pour boîtiers Sony Alpha. Fournit une alimentation continue et stable sans avertissement à l'écran, avec compatibilité totale sur les séries A7, A9, FX3 et FX30.",
+        "specs": {
+            "Compatibilité": "Boîtiers Sony Alpha et caméras cinéma FX",
+            "Technologie": "InfoLITHIUM avec affichage précis du pourcentage de charge restante"
+        }
+    },
+    {
+        "name": "Sony Type C - FW50 Batterie",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "SONY",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Batterie originale ou accessoire d'alimentation certifié pour boîtiers Sony Alpha. Fournit une alimentation continue et stable sans avertissement à l'écran, avec compatibilité totale sur les séries A7, A9, FX3 et FX30.",
+        "specs": {
+            "Compatibilité": "Boîtiers Sony Alpha et caméras cinéma FX",
+            "Technologie": "InfoLITHIUM avec affichage précis du pourcentage de charge restante"
+        }
+    },
+    {
+        "name": "Sony Type C - FZ100 Batterie",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "SONY",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Batterie originale ou accessoire d'alimentation certifié pour boîtiers Sony Alpha. Fournit une alimentation continue et stable sans avertissement à l'écran, avec compatibilité totale sur les séries A7, A9, FX3 et FX30.",
+        "specs": {
+            "Compatibilité": "Boîtiers Sony Alpha et caméras cinéma FX",
+            "Technologie": "InfoLITHIUM avec affichage précis du pourcentage de charge restante"
+        }
+    },
+    {
+        "name": "Godox Flash V1Pro Pour Sony\/Canon\/Nikon",
+        "category_id": 3,
+        "category_slug": "lumieres-materiel-de-studio",
+        "category_name": "Lumières \/ Matériel de studio",
+        "brand": "GDX",
+        "price": 2490,
+        "cost_price": 1992,
+        "stock": 10,
+        "description": "Flash cobra professionnel à tête ronde Godox V1Pro. Équipé d'une tête ronde offrant un étalement de la lumière doux et naturel, d'un sous-flash détachable SU-1 pour déboucher les ombres en direct, du TTL automatique et de la synchronisation HSS 1\/8000s.",
+        "specs": {
+            "Tête": "Tête ronde magnétique pour accessoires Godox AK-R1",
+            "Puissance": "76 Ws avec réglage de 1\/1 à 1\/256",
+            "Sous-flash": "Sous-flash détachable inclus pour éclairage d'appoint frontal",
+            "Synchronisation": "HSS jusqu'à 1\/8000s, synchro premier\/second rideau",
+            "Alimentation": "Batterie lithium rechargeable haute capacité avec port USB-C direct"
+        }
+    },
+    {
+        "name": "Godox Flash annulaire macro MF-R76",
+        "category_id": 3,
+        "category_slug": "lumieres-materiel-de-studio",
+        "category_name": "Lumières \/ Matériel de studio",
+        "brand": "GDX",
+        "price": 1290,
+        "cost_price": 1032,
+        "stock": 10,
+        "description": "Flash macro annulaire professionnel Godox MF-R76. Spécialement conçu pour la macrophotographie, la dentisterie et la photographie scientifique, il illumine le sujet avec une lumière diffuse et homogène sans ombres dures, avec réglage indépendant des deux tubes flash gauche\/droite.",
+        "specs": {
+            "Type": "Flash annulaire macro à double tube indépendant",
+            "Bagues d'adaptation": "8 bagues incluses (49, 52, 55, 58, 62, 67, 72, 77 mm)",
+            "Lampe pilote": "Deux lampes d'assistance à la mise au point LED réglables",
+            "Alimentation": "Batterie lithium rechargeable longue durée VB26"
+        }
+    },
+    {
+        "name": "SmallRig VT-08 Support de montage avec trépied intégré",
+        "category_id": 7,
+        "category_slug": "trepieds",
+        "category_name": "Trépieds",
+        "brand": "SMR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Accessoire et système de support trépied SmallRig de qualité professionnelle. Offre une stabilité maximale et une fluidité absolue sur le terrain pour les configurations vidéo reflex, hybrides et caméras cinéma.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium aéronautique robuste",
+            "Compatibilité": "Plaques Arca-Swiss, têtes de trépied standard et tiges 15 mm",
+            "Finition": "Anodisation noire anti-rayures"
+        }
+    },
+    {
+        "name": "SmallRig Kit trépied pour vlog sur smartphone 4364 VK-20 II",
+        "category_id": 7,
+        "category_slug": "trepieds",
+        "category_name": "Trépieds",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Accessoire et système de support trépied SmallRig de qualité professionnelle. Offre une stabilité maximale et une fluidité absolue sur le terrain pour les configurations vidéo reflex, hybrides et caméras cinéma.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium aéronautique robuste",
+            "Compatibilité": "Plaques Arca-Swiss, têtes de trépied standard et tiges 15 mm",
+            "Finition": "Anodisation noire anti-rayures"
+        }
+    },
+    {
+        "name": "SmallRig Kit de fixation pour trépied avec 2 plaques et 2 pinces 15mm",
+        "category_id": 7,
+        "category_slug": "trepieds",
+        "category_name": "Trépieds",
+        "brand": "SMR",
+        "price": 890,
+        "cost_price": 712,
+        "stock": 10,
+        "description": "Accessoire et système de support trépied SmallRig de qualité professionnelle. Offre une stabilité maximale et une fluidité absolue sur le terrain pour les configurations vidéo reflex, hybrides et caméras cinéma.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium aéronautique robuste",
+            "Compatibilité": "Plaques Arca-Swiss, têtes de trépied standard et tiges 15 mm",
+            "Finition": "Anodisation noire anti-rayures"
+        }
+    },
+    {
+        "name": "SmallRig Plaque d'adaptation pour batterie V-Mount avec pince 15mm",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "SMR",
+        "price": 1790,
+        "cost_price": 1432,
+        "stock": 10,
+        "description": "Plaque d'adaptation ou accessoire de distribution d'alimentation pour batteries professionnelles V-Mount \/ V-Lock. Permet d'alimenter simultanément boîtier, moniteur, transmetteur sans fil et moteur de follow focus sur votre rig cinéma.",
+        "specs": {
+            "Format de batterie": "V-Mount \/ V-Lock standard",
+            "Ports de sortie": "Sorties D-Tap multiples et fiches CC régulées",
+            "Fixation rig": "Compatible pinces de tiges 15 mm LWS standard cinéma"
+        }
+    },
+    {
+        "name": "SmallRig Kit de plaque de base de type Arca avec support de tige LWS 15mm",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 1290,
+        "cost_price": 1032,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo professionnel de haute précision, conçu pour apporter fiabilité, ergonomie et modularité à votre système de prise de vue sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "SmallRig Poignée supérieure avec fixation anti-torsion ARRI 3\/8\"-16",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Poignée ergonomique supérieure ou latérale en aluminium usiné CNC pour cages de caméras. Améliore la stabilité lors des prises de vue au poing et intègre de multiples points de fixation (Cold Shoe, filetages 1\/4\"-20 et ARRI 3\/8\"-16).",
+        "specs": {
+            "Type": "Poignée de prise en main pour cage de tournage vidéo",
+            "Fixation": "Fixation ARRI 3\/8\\\"-16 anti-torsion, rail NATO ou vis 1\/4\\\" selon modèle",
+            "Matériaux": "Alliage d'aluminium aéronautique et finitions ergonomiques",
+            "Points de montage": "Griffes Cold Shoe et filetages pour moniteur et micro"
+        }
+    },
+    {
+        "name": "SmallRig Kit de poignée supérieure à dégagement rapide HawkLock H21",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 1490,
+        "cost_price": 1192,
+        "stock": 10,
+        "description": "Poignée ergonomique supérieure ou latérale en aluminium usiné CNC pour cages de caméras. Améliore la stabilité lors des prises de vue au poing et intègre de multiples points de fixation (Cold Shoe, filetages 1\/4\"-20 et ARRI 3\/8\"-16).",
+        "specs": {
+            "Type": "Poignée de prise en main pour cage de tournage vidéo",
+            "Fixation": "Fixation ARRI 3\/8\\\"-16 anti-torsion, rail NATO ou vis 1\/4\\\" selon modèle",
+            "Matériaux": "Alliage d'aluminium aéronautique et finitions ergonomiques",
+            "Points de montage": "Griffes Cold Shoe et filetages pour moniteur et micro"
+        }
+    },
+    {
+        "name": "SmallRig Pince à crabe multifonctionnelle 2164 avec bras à rotule",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Bras magique articulé de haute précision avec rotules orientables à 360° et levier de blocage central puissant. Permet de positionner et d'immobiliser un moniteur vidéo ou une torche LED sous n'importe quel angle.",
+        "specs": {
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Charge admissible": "Jusqu'à 3.5 kg"
+        }
+    },
+    {
+        "name": "SmallRig Kit de filtres ND variables pour certaines matte boxes",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "SMR",
+        "price": 1890,
+        "cost_price": 1512,
+        "stock": 10,
+        "description": "Kit de filtres à densité neutre variable (VND) haute performance pour Matte Box SmallRig. Permet une réduction d'exposition continue de 1 à 8 diaphragmes avec une clarté optique irréprochable et un revêtement nano anti-reflet sans effet de croix en X.",
+        "specs": {
+            "Type": "Kit filtre ND variable pour matte box cinéma",
+            "Plage de réduction": "Densité réglable de ND2 à ND32 \/ ND64",
+            "Traitement": "Revêtement nano multicouche hydrofuge et anti-rayures",
+            "Matériaux": "Verre optique haute résolution et cadre aluminium"
+        }
+    },
+    {
+        "name": "SmallRig Cage pour Sony FX3 \/ FX30",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 2290,
+        "cost_price": 1832,
+        "stock": 10,
+        "description": "Cage de caméra professionnelle sur mesure en alliage d'aluminium aéronautique. Protège le boîtier des chocs tout en offrant des dizaines de points de montage pour équiper votre setup cinéma (moniteur, poignée, micro, SSD).",
+        "specs": {
+            "Compatibilité": "Boîtiers hybrides et caméras cinéma spécifiques",
+            "Matériaux": "Alliage d'aluminium usiné CNC et coussinets de protection",
+            "Points d'ancrage": "Filetages 1\/4\\\"-20, ARRI 3\/8\\\"-16, Cold Shoe, rail NATO, plaque Arca intégrée"
+        }
+    },
+    {
+        "name": "SmallRig Support SSD Samsung T5 v2 pour cages BMPCC 6K\/4K",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Cage de caméra professionnelle sur mesure en alliage d'aluminium aéronautique. Protège le boîtier des chocs tout en offrant des dizaines de points de montage pour équiper votre setup cinéma (moniteur, poignée, micro, SSD).",
+        "specs": {
+            "Compatibilité": "Boîtiers hybrides et caméras cinéma spécifiques",
+            "Matériaux": "Alliage d'aluminium usiné CNC et coussinets de protection",
+            "Points d'ancrage": "Filetages 1\/4\\\"-20, ARRI 3\/8\\\"-16, Cold Shoe, rail NATO, plaque Arca intégrée"
+        }
+    },
+    {
+        "name": "SmallRig Système de mise au point F50 avec amortissement progressif",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 1990,
+        "cost_price": 1592,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo professionnel de haute précision, conçu pour apporter fiabilité, ergonomie et modularité à votre système de prise de vue sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "SmallRig Système de montage de batterie compact à monture en V",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "SMR",
+        "price": 1290,
+        "cost_price": 1032,
+        "stock": 10,
+        "description": "Plaque d'adaptation ou accessoire de distribution d'alimentation pour batteries professionnelles V-Mount \/ V-Lock. Permet d'alimenter simultanément boîtier, moniteur, transmetteur sans fil et moteur de follow focus sur votre rig cinéma.",
+        "specs": {
+            "Format de batterie": "V-Mount \/ V-Lock standard",
+            "Ports de sortie": "Sorties D-Tap multiples et fiches CC régulées",
+            "Fixation rig": "Compatible pinces de tiges 15 mm LWS standard cinéma"
+        }
+    },
+    {
+        "name": "SmallRig Poignée de contrôle de mise au point pour DJI série RS",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "DJI",
+        "price": 1490,
+        "cost_price": 1192,
+        "stock": 10,
+        "description": "Poignée de commande ou support ergonomique SmallRig spécialement conçu pour les stabilisateurs DJI série RS (RS 2, RS 3, RS 4). Améliore le confort de prise en main sous des angles bas et permet le contrôle à distance de la mise au point et du déclenchement caméra.",
+        "specs": {
+            "Compatibilité": "Gimbals DJI RS 2, RS 3, RS 3 Pro, RS 4, RS 4 Pro",
+            "Connexion": "Port NATO sécurisé avec goupilles anti-chute",
+            "Matériaux": "Alliage d'aluminium aéronautique et poignée silicone ergonomique",
+            "Points de montage": "Filetages 1\/4\\\"-20, ARRI 3\/8\\\"-16 et griffes Cold Shoe"
+        }
+    },
+    {
+        "name": "SmallRig Poignée double de contrôle de mise au point pour DJI série RS",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 2490,
+        "cost_price": 1992,
+        "stock": 10,
+        "description": "Poignée ergonomique supérieure ou latérale en aluminium usiné CNC pour cages de caméras. Améliore la stabilité lors des prises de vue au poing et intègre de multiples points de fixation (Cold Shoe, filetages 1\/4\"-20 et ARRI 3\/8\"-16).",
+        "specs": {
+            "Type": "Poignée de prise en main pour cage de tournage vidéo",
+            "Fixation": "Fixation ARRI 3\/8\\\"-16 anti-torsion, rail NATO ou vis 1\/4\\\" selon modèle",
+            "Matériaux": "Alliage d'aluminium aéronautique et finitions ergonomiques",
+            "Points de montage": "Griffes Cold Shoe et filetages pour moniteur et micro"
+        }
+    },
+    {
+        "name": "SmallRig Poignée latérale gauche rotative OTAN",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 1390,
+        "cost_price": 1112,
+        "stock": 10,
+        "description": "Poignée ergonomique supérieure ou latérale en aluminium usiné CNC pour cages de caméras. Améliore la stabilité lors des prises de vue au poing et intègre de multiples points de fixation (Cold Shoe, filetages 1\/4\"-20 et ARRI 3\/8\"-16).",
+        "specs": {
+            "Type": "Poignée de prise en main pour cage de tournage vidéo",
+            "Fixation": "Fixation ARRI 3\/8\\\"-16 anti-torsion, rail NATO ou vis 1\/4\\\" selon modèle",
+            "Matériaux": "Alliage d'aluminium aéronautique et finitions ergonomiques",
+            "Points de montage": "Griffes Cold Shoe et filetages pour moniteur et micro"
+        }
+    },
+    {
+        "name": "SmallRig Poignée latérale rotative avec déclencheur REC",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 1490,
+        "cost_price": 1192,
+        "stock": 10,
+        "description": "Poignée ergonomique supérieure ou latérale en aluminium usiné CNC pour cages de caméras. Améliore la stabilité lors des prises de vue au poing et intègre de multiples points de fixation (Cold Shoe, filetages 1\/4\"-20 et ARRI 3\/8\"-16).",
+        "specs": {
+            "Type": "Poignée de prise en main pour cage de tournage vidéo",
+            "Fixation": "Fixation ARRI 3\/8\\\"-16 anti-torsion, rail NATO ou vis 1\/4\\\" selon modèle",
+            "Matériaux": "Alliage d'aluminium aéronautique et finitions ergonomiques",
+            "Points de montage": "Griffes Cold Shoe et filetages pour moniteur et micro"
+        }
+    },
+    {
+        "name": "SmallRig Poignée latérale rotative avec pince OTAN",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 990,
+        "cost_price": 792,
+        "stock": 10,
+        "description": "Poignée ergonomique supérieure ou latérale en aluminium usiné CNC pour cages de caméras. Améliore la stabilité lors des prises de vue au poing et intègre de multiples points de fixation (Cold Shoe, filetages 1\/4\"-20 et ARRI 3\/8\"-16).",
+        "specs": {
+            "Type": "Poignée de prise en main pour cage de tournage vidéo",
+            "Fixation": "Fixation ARRI 3\/8\\\"-16 anti-torsion, rail NATO ou vis 1\/4\\\" selon modèle",
+            "Matériaux": "Alliage d'aluminium aéronautique et finitions ergonomiques",
+            "Points de montage": "Griffes Cold Shoe et filetages pour moniteur et micro"
+        }
+    },
+    {
+        "name": "SmallRig Poignée supérieure rotative avec pince OTAN",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 990,
+        "cost_price": 792,
+        "stock": 10,
+        "description": "Poignée ergonomique supérieure ou latérale en aluminium usiné CNC pour cages de caméras. Améliore la stabilité lors des prises de vue au poing et intègre de multiples points de fixation (Cold Shoe, filetages 1\/4\"-20 et ARRI 3\/8\"-16).",
+        "specs": {
+            "Type": "Poignée de prise en main pour cage de tournage vidéo",
+            "Fixation": "Fixation ARRI 3\/8\\\"-16 anti-torsion, rail NATO ou vis 1\/4\\\" selon modèle",
+            "Matériaux": "Alliage d'aluminium aéronautique et finitions ergonomiques",
+            "Points de montage": "Griffes Cold Shoe et filetages pour moniteur et micro"
+        }
+    },
+    {
+        "name": "SmallRig Poignée supérieure avec déclencheur à distance",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 990,
+        "cost_price": 792,
+        "stock": 10,
+        "description": "Poignée ergonomique supérieure ou latérale en aluminium usiné CNC pour cages de caméras. Améliore la stabilité lors des prises de vue au poing et intègre de multiples points de fixation (Cold Shoe, filetages 1\/4\"-20 et ARRI 3\/8\"-16).",
+        "specs": {
+            "Type": "Poignée de prise en main pour cage de tournage vidéo",
+            "Fixation": "Fixation ARRI 3\/8\\\"-16 anti-torsion, rail NATO ou vis 1\/4\\\" selon modèle",
+            "Matériaux": "Alliage d'aluminium aéronautique et finitions ergonomiques",
+            "Points de montage": "Griffes Cold Shoe et filetages pour moniteur et micro"
+        }
+    },
+    {
+        "name": "SmallRig Poignée supérieure NATO Lite",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Poignée ergonomique supérieure ou latérale en aluminium usiné CNC pour cages de caméras. Améliore la stabilité lors des prises de vue au poing et intègre de multiples points de fixation (Cold Shoe, filetages 1\/4\"-20 et ARRI 3\/8\"-16).",
+        "specs": {
+            "Type": "Poignée de prise en main pour cage de tournage vidéo",
+            "Fixation": "Fixation ARRI 3\/8\\\"-16 anti-torsion, rail NATO ou vis 1\/4\\\" selon modèle",
+            "Matériaux": "Alliage d'aluminium aéronautique et finitions ergonomiques",
+            "Points de montage": "Griffes Cold Shoe et filetages pour moniteur et micro"
+        }
+    },
+    {
+        "name": "SmallRig Poignée supérieure pour appareils Sony\/Panasonic avec adaptateur audio",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 1190,
+        "cost_price": 952,
+        "stock": 10,
+        "description": "Poignée ergonomique supérieure ou latérale en aluminium usiné CNC pour cages de caméras. Améliore la stabilité lors des prises de vue au poing et intègre de multiples points de fixation (Cold Shoe, filetages 1\/4\"-20 et ARRI 3\/8\"-16).",
+        "specs": {
+            "Type": "Poignée de prise en main pour cage de tournage vidéo",
+            "Fixation": "Fixation ARRI 3\/8\\\"-16 anti-torsion, rail NATO ou vis 1\/4\\\" selon modèle",
+            "Matériaux": "Alliage d'aluminium aéronautique et finitions ergonomiques",
+            "Points de montage": "Griffes Cold Shoe et filetages pour moniteur et micro"
+        }
+    },
+    {
+        "name": "SmallRig Plaque de montage horizontale-verticale pour Sony a7C II et a7CR",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 790,
+        "cost_price": 632,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo professionnel de haute précision, conçu pour apporter fiabilité, ergonomie et modularité à votre système de prise de vue sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "SmallRig Plaque de dégagement rapide de type Arca pour nacelles DJI RS",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "DJI",
+        "price": 190,
+        "cost_price": 152,
+        "stock": 10,
+        "description": "Stabilisateur professionnel pour caméra de cinéma et hybride plein format DJI RS. Équipé d'algorithmes de stabilisation de 4ème génération, de verrous d'axes automatiques, d'un écran tactile couleur OLED et d'une capacité de charge supérieure pour les optiques et caméras les plus exigeantes.",
+        "specs": {
+            "Compatibilité": "Caméras cinéma, reflex et hybrides plein format",
+            "Verrouillage des axes": "Verrous d'axes automatiques pour mise en service instantanée",
+            "Écran": "Écran tactile couleur OLED avec interface intuitive",
+            "Capacité de charge": "Moteurs puissants à couple élevé"
+        }
+    },
+    {
+        "name": "SmallRig Plaque de batterie Mini V-Lock avec pince en forme de griffe",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Plaque d'adaptation ou accessoire de distribution d'alimentation pour batteries professionnelles V-Mount \/ V-Lock. Permet d'alimenter simultanément boîtier, moniteur, transmetteur sans fil et moteur de follow focus sur votre rig cinéma.",
+        "specs": {
+            "Format de batterie": "V-Mount \/ V-Lock standard",
+            "Ports de sortie": "Sorties D-Tap multiples et fiches CC régulées",
+            "Fixation rig": "Compatible pinces de tiges 15 mm LWS standard cinéma"
+        }
+    },
+    {
+        "name": "SmallRig Plaque de batterie V-Lock avec kit de base LWS 15mm",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "SMR",
+        "price": 1890,
+        "cost_price": 1512,
+        "stock": 10,
+        "description": "Plaque d'adaptation ou accessoire de distribution d'alimentation pour batteries professionnelles V-Mount \/ V-Lock. Permet d'alimenter simultanément boîtier, moniteur, transmetteur sans fil et moteur de follow focus sur votre rig cinéma.",
+        "specs": {
+            "Format de batterie": "V-Mount \/ V-Lock standard",
+            "Ports de sortie": "Sorties D-Tap multiples et fiches CC régulées",
+            "Fixation rig": "Compatible pinces de tiges 15 mm LWS standard cinéma"
+        }
+    },
+    {
+        "name": "SmallRig Plaque de batterie V-Lock avec pince pour tige de 15mm et bras réglable",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "SMR",
+        "price": 790,
+        "cost_price": 632,
+        "stock": 10,
+        "description": "Plaque d'adaptation ou accessoire de distribution d'alimentation pour batteries professionnelles V-Mount \/ V-Lock. Permet d'alimenter simultanément boîtier, moniteur, transmetteur sans fil et moteur de follow focus sur votre rig cinéma.",
+        "specs": {
+            "Format de batterie": "V-Mount \/ V-Lock standard",
+            "Ports de sortie": "Sorties D-Tap multiples et fiches CC régulées",
+            "Fixation rig": "Compatible pinces de tiges 15 mm LWS standard cinéma"
+        }
+    },
+    {
+        "name": "SmallRig Plaque de batterie V-Lock avec pince pour tige LWS de 15mm",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Plaque d'adaptation ou accessoire de distribution d'alimentation pour batteries professionnelles V-Mount \/ V-Lock. Permet d'alimenter simultanément boîtier, moniteur, transmetteur sans fil et moteur de follow focus sur votre rig cinéma.",
+        "specs": {
+            "Format de batterie": "V-Mount \/ V-Lock standard",
+            "Ports de sortie": "Sorties D-Tap multiples et fiches CC régulées",
+            "Fixation rig": "Compatible pinces de tiges 15 mm LWS standard cinéma"
+        }
+    },
+    {
+        "name": "SmallRig Support de téléphone à dégagement rapide de type Arca pour DJI RS 4 Mini",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "DJI",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Stabilisateur professionnel pour caméra de cinéma et hybride plein format DJI RS. Équipé d'algorithmes de stabilisation de 4ème génération, de verrous d'axes automatiques, d'un écran tactile couleur OLED et d'une capacité de charge supérieure pour les optiques et caméras les plus exigeantes.",
+        "specs": {
+            "Compatibilité": "Caméras cinéma, reflex et hybrides plein format",
+            "Verrouillage des axes": "Verrous d'axes automatiques pour mise en service instantanée",
+            "Écran": "Écran tactile couleur OLED avec interface intuitive",
+            "Capacité de charge": "Moteurs puissants à couple élevé"
+        }
+    },
+    {
+        "name": "SmallRig Support de téléphone en métal 4384",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Support de smartphone tout en métal avec compatibilité Arca-Swiss et griffe porte-accessoire pour microphone ou éclairage compact. Permet un maintien ferme et sans vibration pour le tournage mobile.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium usiné CNC",
+            "Compatibilité": "Smartphones de 65 à 95 mm de largeur",
+            "Fixation": "Plaque Arca-Swiss intégrée et taraudage 1\/4\\\"-20"
+        }
+    },
+    {
+        "name": "SmallRig Support de téléphone en métal avec compatibilité Arca-Swiss",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Support de smartphone tout en métal avec compatibilité Arca-Swiss et griffe porte-accessoire pour microphone ou éclairage compact. Permet un maintien ferme et sans vibration pour le tournage mobile.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium usiné CNC",
+            "Compatibilité": "Smartphones de 65 à 95 mm de largeur",
+            "Fixation": "Plaque Arca-Swiss intégrée et taraudage 1\/4\\\"-20"
+        }
+    },
+    {
+        "name": "SmallRig Support de téléphone en métal avec griffe porte-accessoires",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Support de smartphone tout en métal avec compatibilité Arca-Swiss et griffe porte-accessoire pour microphone ou éclairage compact. Permet un maintien ferme et sans vibration pour le tournage mobile.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium usiné CNC",
+            "Compatibilité": "Smartphones de 65 à 95 mm de largeur",
+            "Fixation": "Plaque Arca-Swiss intégrée et taraudage 1\/4\\\"-20"
+        }
+    },
+    {
+        "name": "SmallRig Support de téléphone pour stabilisateurs DJI série RS",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "DJI",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Poignée de commande ou support ergonomique SmallRig spécialement conçu pour les stabilisateurs DJI série RS (RS 2, RS 3, RS 4). Améliore le confort de prise en main sous des angles bas et permet le contrôle à distance de la mise au point et du déclenchement caméra.",
+        "specs": {
+            "Compatibilité": "Gimbals DJI RS 2, RS 3, RS 3 Pro, RS 4, RS 4 Pro",
+            "Connexion": "Port NATO sécurisé avec goupilles anti-chute",
+            "Matériaux": "Alliage d'aluminium aéronautique et poignée silicone ergonomique",
+            "Points de montage": "Filetages 1\/4\\\"-20, ARRI 3\/8\\\"-16 et griffes Cold Shoe"
+        }
+    },
+    {
+        "name": "SmallRig Support pour moniteur HawkLock H21 compatible avec stabilisateurs DJI",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "DJI",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Poignée de commande ou support ergonomique SmallRig spécialement conçu pour les stabilisateurs DJI série RS (RS 2, RS 3, RS 4). Améliore le confort de prise en main sous des angles bas et permet le contrôle à distance de la mise au point et du déclenchement caméra.",
+        "specs": {
+            "Compatibilité": "Gimbals DJI RS 2, RS 3, RS 3 Pro, RS 4, RS 4 Pro",
+            "Connexion": "Port NATO sécurisé avec goupilles anti-chute",
+            "Matériaux": "Alliage d'aluminium aéronautique et poignée silicone ergonomique",
+            "Points de montage": "Filetages 1\/4\\\"-20, ARRI 3\/8\\\"-16 et griffes Cold Shoe"
+        }
+    },
+    {
+        "name": "SmallRig Support de moniteur à dégagement rapide HawkLock H21 avec pince OTAN",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Pince de fixation mécanique robuste (Crab Clamp \/ Super Clamp) avec mors en caoutchouc antidérapant. Permet de fixer solidement des accessoires sur barres de trépied, guidons ou rebords.",
+        "specs": {
+            "Serrage": "Mâchoires réglables de 15 à 55 mm avec patins de protection",
+            "Filetages": "Pas de vis intégrés 1\/4\\\"-20 et 3\/8\\\"-16"
+        }
+    },
+    {
+        "name": "SmallRig Support de moniteur pivotant et inclinable avec 2 vis 1\/4\"-20",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Support de moniteur de terrain inclinable à 180° et pivotant à 360° avec friction ajustable sans outil. Maintient solidement votre écran de contrôle sans jeu mécanique.",
+        "specs": {
+            "Mouvements": "Rotation 360° et bascule 180°",
+            "Charge maximale": "Supporte les moniteurs jusqu'à 7 pouces (1.5 kg)"
+        }
+    },
+    {
+        "name": "SmallRig Support de moniteur pivotant et inclinable avec vis 1\/4\"-20",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Support de moniteur de terrain inclinable à 180° et pivotant à 360° avec friction ajustable sans outil. Maintient solidement votre écran de contrôle sans jeu mécanique.",
+        "specs": {
+            "Mouvements": "Rotation 360° et bascule 180°",
+            "Charge maximale": "Supporte les moniteurs jusqu'à 7 pouces (1.5 kg)"
+        }
+    },
+    {
+        "name": "SmallRig Support de moniteur pivotant et inclinable avec griffe porte-accessoires",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Support de moniteur de terrain inclinable à 180° et pivotant à 360° avec friction ajustable sans outil. Maintient solidement votre écran de contrôle sans jeu mécanique.",
+        "specs": {
+            "Mouvements": "Rotation 360° et bascule 180°",
+            "Charge maximale": "Supporte les moniteurs jusqu'à 7 pouces (1.5 kg)"
+        }
+    },
+    {
+        "name": "SmallRig Support de moniteur pivotant et inclinable avec support de type ARRI",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Support de moniteur de terrain inclinable à 180° et pivotant à 360° avec friction ajustable sans outil. Maintient solidement votre écran de contrôle sans jeu mécanique.",
+        "specs": {
+            "Mouvements": "Rotation 360° et bascule 180°",
+            "Charge maximale": "Supporte les moniteurs jusqu'à 7 pouces (1.5 kg)"
+        }
+    },
+    {
+        "name": "SmallRig Support de moniteur pour DJI série RS",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Support de moniteur de terrain inclinable à 180° et pivotant à 360° avec friction ajustable sans outil. Maintient solidement votre écran de contrôle sans jeu mécanique.",
+        "specs": {
+            "Mouvements": "Rotation 360° et bascule 180°",
+            "Charge maximale": "Supporte les moniteurs jusqu'à 7 pouces (1.5 kg)"
+        }
+    },
+    {
+        "name": "SmallRig Support de montage de bureau DT-10 Encore",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo professionnel de haute précision, conçu pour apporter fiabilité, ergonomie et modularité à votre système de prise de vue sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "SmallRig Support de fixation à ventouse pour caméras d'action",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo professionnel de haute précision, conçu pour apporter fiabilité, ergonomie et modularité à votre système de prise de vue sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "SmallRig Support de fixation OTAN pour DJI RS 2\/RS 3\/RS 4",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "DJI",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Stabilisateur professionnel pour caméra de cinéma et hybride plein format DJI RS. Équipé d'algorithmes de stabilisation de 4ème génération, de verrous d'axes automatiques, d'un écran tactile couleur OLED et d'une capacité de charge supérieure pour les optiques et caméras les plus exigeantes.",
+        "specs": {
+            "Compatibilité": "Caméras cinéma, reflex et hybrides plein format",
+            "Verrouillage des axes": "Verrous d'axes automatiques pour mise en service instantanée",
+            "Écran": "Écran tactile couleur OLED avec interface intuitive",
+            "Capacité de charge": "Moteurs puissants à couple élevé"
+        }
+    },
+    {
+        "name": "SmallRig Support de cou à dégagement rapide pour caméras d'action",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Support tour de cou à dégagement rapide et verrouillage magnétique pour caméras d'action (GoPro, DJI Osmo Action, Insta360) et smartphones. Permet de filmer des plans POV immersifs captivants les mains libres en tout confort.",
+        "specs": {
+            "Type": "Support tour de cou ergonomique POV",
+            "Système de fixation": "Attache rapide magnétique sécurisée d'un seul clic",
+            "Matériau": "Silicone doux agréable pour la peau et armature métallique souple"
+        }
+    },
+    {
+        "name": "SmallRig Support de cou à dégagement rapide pour caméras d'action et smartphones",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Support tour de cou à dégagement rapide et verrouillage magnétique pour caméras d'action (GoPro, DJI Osmo Action, Insta360) et smartphones. Permet de filmer des plans POV immersifs captivants les mains libres en tout confort.",
+        "specs": {
+            "Type": "Support tour de cou ergonomique POV",
+            "Système de fixation": "Attache rapide magnétique sécurisée d'un seul clic",
+            "Matériau": "Silicone doux agréable pour la peau et armature métallique souple"
+        }
+    },
+    {
+        "name": "SmallRig Support de bras magique pour réglage d'écran à une main (5,7\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 890,
+        "cost_price": 712,
+        "stock": 10,
+        "description": "Bras magique articulé de haute précision avec rotules orientables à 360° et levier de blocage central puissant. Permet de positionner et d'immobiliser un moniteur vidéo ou une torche LED sous n'importe quel angle.",
+        "specs": {
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Charge admissible": "Jusqu'à 3.5 kg"
+        }
+    },
+    {
+        "name": "SmallRig Support de bras magique avec vis 1\/4\"-20 (11\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Bras magique articulé de haute précision avec rotules orientables à 360° et levier de blocage central puissant. Permet de positionner et d'immobiliser un moniteur vidéo ou une torche LED sous n'importe quel angle.",
+        "specs": {
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Charge admissible": "Jusqu'à 3.5 kg"
+        }
+    },
+    {
+        "name": "SmallRig Support de bras magique avec vis 1\/4\"-20 (7\") 5308",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Bras magique articulé de haute précision avec rotules orientables à 360° et levier de blocage central puissant. Permet de positionner et d'immobiliser un moniteur vidéo ou une torche LED sous n'importe quel angle.",
+        "specs": {
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Charge admissible": "Jusqu'à 3.5 kg"
+        }
+    },
+    {
+        "name": "SmallRig Support d'objectif universel à tige LWS de 15 mm",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo professionnel de haute précision, conçu pour apporter fiabilité, ergonomie et modularité à votre système de prise de vue sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "SmallRig Support d'objectif universel 15 mm LWS avec réglage vertical de 1,4\"",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo professionnel de haute précision, conçu pour apporter fiabilité, ergonomie et modularité à votre système de prise de vue sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "SmallRig Support d'objectif universel 15 mm LWS avec réglage vertical de 2,1 pouces",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo professionnel de haute précision, conçu pour apporter fiabilité, ergonomie et modularité à votre système de prise de vue sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "SmallRig Panneau de commande pour certains monoblocs vidéo LED",
+        "category_id": 3,
+        "category_slug": "lumieres-materiel-de-studio",
+        "category_name": "Lumières \/ Matériel de studio",
+        "brand": "SMR",
+        "price": 990,
+        "cost_price": 792,
+        "stock": 10,
+        "description": "Panneau de contrôle et télécommande pour monoblocs d'éclairage LED vidéo de studio. Permet d'ajuster avec précision la luminosité, la température de couleur et les effets lumineux à distance sans toucher aux projecteurs perchés.",
+        "specs": {
+            "Fonction": "Contrôle à distance sans fil pour torches LED de studio",
+            "Écran": "Affichage numérique des paramètres de puissance et Kelvin"
+        }
+    },
+    {
+        "name": "SmallRig Pare-soleil pour Sony a7S III\/a7C\/ZV-1\/FX3",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Pare-soleil pour écran LCD de boîtier hybride. Bloque les reflets et la lumière vive du soleil en extérieur pour garantir une visibilité parfaite et une mise au point précise sur l'écran.",
+        "specs": {
+            "Compatibilité": "Écrans orientables d'appareils photo spécifiques",
+            "Fixation": "Fixation rapide sécurisée sans gêner la fermeture de l'écran"
+        }
+    },
+    {
+        "name": "SmallRig Ensemble de tiges en fibre de carbone 15 mm",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo professionnel de haute précision, conçu pour apporter fiabilité, ergonomie et modularité à votre système de prise de vue sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "SmallRig Chariot pour trépied photographique robuste à verrouillage rapide",
+        "category_id": 7,
+        "category_slug": "trepieds",
+        "category_name": "Trépieds",
+        "brand": "SMR",
+        "price": 1490,
+        "cost_price": 1192,
+        "stock": 10,
+        "description": "Accessoire et système de support trépied SmallRig de qualité professionnelle. Offre une stabilité maximale et une fluidité absolue sur le terrain pour les configurations vidéo reflex, hybrides et caméras cinéma.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium aéronautique robuste",
+            "Compatibilité": "Plaques Arca-Swiss, têtes de trépied standard et tiges 15 mm",
+            "Finition": "Anodisation noire anti-rayures"
+        }
+    },
+    {
+        "name": "SmallRig Chargeur à 4 canaux + kit de 4 batteries série L\/NP-F970",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "SMR",
+        "price": 1990,
+        "cost_price": 1592,
+        "stock": 10,
+        "description": "Plaque d'adaptation ou accessoire de distribution d'alimentation pour batteries professionnelles V-Mount \/ V-Lock. Permet d'alimenter simultanément boîtier, moniteur, transmetteur sans fil et moteur de follow focus sur votre rig cinéma.",
+        "specs": {
+            "Format de batterie": "V-Mount \/ V-Lock standard",
+            "Ports de sortie": "Sorties D-Tap multiples et fiches CC régulées",
+            "Fixation rig": "Compatible pinces de tiges 15 mm LWS standard cinéma"
+        }
+    },
+    {
+        "name": "SmallRig Batterie rechargeable série L\/NP-F970 USB-C",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "SMR",
+        "price": 890,
+        "cost_price": 712,
+        "stock": 10,
+        "description": "Plaque d'adaptation ou accessoire de distribution d'alimentation pour batteries professionnelles V-Mount \/ V-Lock. Permet d'alimenter simultanément boîtier, moniteur, transmetteur sans fil et moteur de follow focus sur votre rig cinéma.",
+        "specs": {
+            "Format de batterie": "V-Mount \/ V-Lock standard",
+            "Ports de sortie": "Sorties D-Tap multiples et fiches CC régulées",
+            "Fixation rig": "Compatible pinces de tiges 15 mm LWS standard cinéma"
+        }
+    },
+    {
+        "name": "SmallRig Câble d'alimentation D-Tap vers Sony NP-FZ100",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "SONY",
+        "price": 690,
+        "cost_price": 552,
+        "stock": 10,
+        "description": "Batterie originale ou accessoire d'alimentation certifié pour boîtiers Sony Alpha. Fournit une alimentation continue et stable sans avertissement à l'écran, avec compatibilité totale sur les séries A7, A9, FX3 et FX30.",
+        "specs": {
+            "Compatibilité": "Boîtiers Sony Alpha et caméras cinéma FX",
+            "Technologie": "InfoLITHIUM avec affichage précis du pourcentage de charge restante"
+        }
+    },
+    {
+        "name": "SmallRig Câble d'alimentation 2,1 mm CC vers batterie factice NP-FZ100 (60 cm)",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Plaque d'adaptation ou accessoire de distribution d'alimentation pour batteries professionnelles V-Mount \/ V-Lock. Permet d'alimenter simultanément boîtier, moniteur, transmetteur sans fil et moteur de follow focus sur votre rig cinéma.",
+        "specs": {
+            "Format de batterie": "V-Mount \/ V-Lock standard",
+            "Ports de sortie": "Sorties D-Tap multiples et fiches CC régulées",
+            "Fixation rig": "Compatible pinces de tiges 15 mm LWS standard cinéma"
+        }
+    },
+    {
+        "name": "SmallRig Câble d'alimentation D-Tap vers 2 broches pour Blackmagic 4K\/6K",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "SMR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Plaque d'adaptation ou accessoire de distribution d'alimentation pour batteries professionnelles V-Mount \/ V-Lock. Permet d'alimenter simultanément boîtier, moniteur, transmetteur sans fil et moteur de follow focus sur votre rig cinéma.",
+        "specs": {
+            "Format de batterie": "V-Mount \/ V-Lock standard",
+            "Ports de sortie": "Sorties D-Tap multiples et fiches CC régulées",
+            "Fixation rig": "Compatible pinces de tiges 15 mm LWS standard cinéma"
+        }
+    },
+    {
+        "name": "SmallRig Répartiteur mâle D-Tap vers femelle D-Tap 4 ports (25\")",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Plaque d'adaptation ou accessoire de distribution d'alimentation pour batteries professionnelles V-Mount \/ V-Lock. Permet d'alimenter simultanément boîtier, moniteur, transmetteur sans fil et moteur de follow focus sur votre rig cinéma.",
+        "specs": {
+            "Format de batterie": "V-Mount \/ V-Lock standard",
+            "Ports de sortie": "Sorties D-Tap multiples et fiches CC régulées",
+            "Fixation rig": "Compatible pinces de tiges 15 mm LWS standard cinéma"
+        }
+    },
+    {
+        "name": "SmallRig Câble adaptateur Ultra-Slim HDMI femelle type A vers micro-HDMI mâle type D",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 190,
+        "cost_price": 152,
+        "stock": 10,
+        "description": "Câble vidéo Ultra-Slim HDMI \/ micro-HDMI haute vitesse ou d'alimentation conçu spécifiquement pour les configurations sur cage et stabilisateur. Son profil fin et flexible préserve les connecteurs du boîtier.",
+        "specs": {
+            "Type": "Câble vidéo ultra-fin et flexible haute vitesse",
+            "Connecteurs": "Connecteurs plaqués or haute conductivité"
+        }
+    },
+    {
+        "name": "SmallRig Câble 3042B Micro-HDMI vers HDMI (13,8\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 190,
+        "cost_price": 152,
+        "stock": 10,
+        "description": "Câble vidéo Ultra-Slim HDMI \/ micro-HDMI haute vitesse ou d'alimentation conçu spécifiquement pour les configurations sur cage et stabilisateur. Son profil fin et flexible préserve les connecteurs du boîtier.",
+        "specs": {
+            "Type": "Câble vidéo ultra-fin et flexible haute vitesse",
+            "Connecteurs": "Connecteurs plaqués or haute conductivité"
+        }
+    },
+    {
+        "name": "SmallRig Câble Mini-HDMI vers HDMI (13,8\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 190,
+        "cost_price": 152,
+        "stock": 10,
+        "description": "Câble vidéo Ultra-Slim HDMI \/ micro-HDMI haute vitesse ou d'alimentation conçu spécifiquement pour les configurations sur cage et stabilisateur. Son profil fin et flexible préserve les connecteurs du boîtier.",
+        "specs": {
+            "Type": "Câble vidéo ultra-fin et flexible haute vitesse",
+            "Connecteurs": "Connecteurs plaqués or haute conductivité"
+        }
+    },
+    {
+        "name": "SmallRig Câble Ultra-Slim Micro-HDMI vers HDMI (22\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 190,
+        "cost_price": 152,
+        "stock": 10,
+        "description": "Câble vidéo Ultra-Slim HDMI \/ micro-HDMI haute vitesse ou d'alimentation conçu spécifiquement pour les configurations sur cage et stabilisateur. Son profil fin et flexible préserve les connecteurs du boîtier.",
+        "specs": {
+            "Type": "Câble vidéo ultra-fin et flexible haute vitesse",
+            "Connecteurs": "Connecteurs plaqués or haute conductivité"
+        }
+    },
+    {
+        "name": "SmallRig Goujon double extrémité 1\/4\"-20 à 1\/4\"-20 (paquet de 2)",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 90,
+        "cost_price": 72,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo professionnel de haute précision, conçu pour apporter fiabilité, ergonomie et modularité à votre système de prise de vue sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "SmallRig Rotule double avec griffe porte-accessoires et goujon 1\/4\"-20",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 190,
+        "cost_price": 152,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo professionnel de haute précision, conçu pour apporter fiabilité, ergonomie et modularité à votre système de prise de vue sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "SmallRig Bras articulé à rosette (11\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Bras magique articulé de haute précision avec rotules orientables à 360° et levier de blocage central puissant. Permet de positionner et d'immobiliser un moniteur vidéo ou une torche LED sous n'importe quel angle.",
+        "specs": {
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Charge admissible": "Jusqu'à 3.5 kg"
+        }
+    },
+    {
+        "name": "SmallRig Bras articulé (9,5\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Bras magique articulé de haute précision avec rotules orientables à 360° et levier de blocage central puissant. Permet de positionner et d'immobiliser un moniteur vidéo ou une torche LED sous n'importe quel angle.",
+        "specs": {
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Charge admissible": "Jusqu'à 3.5 kg"
+        }
+    },
+    {
+        "name": "SmallRig Bras articulé avec double rotule (vis 1\/4\"-20)",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 890,
+        "cost_price": 712,
+        "stock": 10,
+        "description": "Bras magique articulé de haute précision avec rotules orientables à 360° et levier de blocage central puissant. Permet de positionner et d'immobiliser un moniteur vidéo ou une torche LED sous n'importe quel angle.",
+        "specs": {
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Charge admissible": "Jusqu'à 3.5 kg"
+        }
+    },
+    {
+        "name": "SmallRig Bras articulé avec vis de positionnement ARRI 1\/4\"-20 et 3\/8\"-16 (11\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Bras magique articulé de haute précision avec rotules orientables à 360° et levier de blocage central puissant. Permet de positionner et d'immobiliser un moniteur vidéo ou une torche LED sous n'importe quel angle.",
+        "specs": {
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Charge admissible": "Jusqu'à 3.5 kg"
+        }
+    },
+    {
+        "name": "SmallRig Bras articulé avec vis de positionnement ARRI 1\/4\"-20 et 3\/8\"-16 (7\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Bras magique articulé de haute précision avec rotules orientables à 360° et levier de blocage central puissant. Permet de positionner et d'immobiliser un moniteur vidéo ou une torche LED sous n'importe quel angle.",
+        "specs": {
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Charge admissible": "Jusqu'à 3.5 kg"
+        }
+    },
+    {
+        "name": "SmallRig Bras magique à rosette à dégagement rapide HawkLock H21 (11\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 790,
+        "cost_price": 632,
+        "stock": 10,
+        "description": "Bras magique articulé de haute précision avec rotules orientables à 360° et levier de blocage central puissant. Permet de positionner et d'immobiliser un moniteur vidéo ou une torche LED sous n'importe quel angle.",
+        "specs": {
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Charge admissible": "Jusqu'à 3.5 kg"
+        }
+    },
+    {
+        "name": "SmallRig Bras magique à rosette à dégagement rapide HawkLock H21 (7\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 690,
+        "cost_price": 552,
+        "stock": 10,
+        "description": "Bras magique articulé de haute précision avec rotules orientables à 360° et levier de blocage central puissant. Permet de positionner et d'immobiliser un moniteur vidéo ou une torche LED sous n'importe quel angle.",
+        "specs": {
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Charge admissible": "Jusqu'à 3.5 kg"
+        }
+    },
+    {
+        "name": "SmallRig Bras magique de bureau avec kit de pince de type crabe",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Bras magique articulé de haute précision avec rotules orientables à 360° et levier de blocage central puissant. Permet de positionner et d'immobiliser un moniteur vidéo ou une torche LED sous n'importe quel angle.",
+        "specs": {
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Charge admissible": "Jusqu'à 3.5 kg"
+        }
+    },
+    {
+        "name": "SmallRig Bras magique long avec pince en forme de crabe",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Bras magique articulé de haute précision avec rotules orientables à 360° et levier de blocage central puissant. Permet de positionner et d'immobiliser un moniteur vidéo ou une torche LED sous n'importe quel angle.",
+        "specs": {
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Charge admissible": "Jusqu'à 3.5 kg"
+        }
+    },
+    {
+        "name": "SmallRig Bras magique miniature HawkLock à fixation rapide avec rotules à dégagement rapide",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Bras magique articulé de haute précision avec rotules orientables à 360° et levier de blocage central puissant. Permet de positionner et d'immobiliser un moniteur vidéo ou une torche LED sous n'importe quel angle.",
+        "specs": {
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Charge admissible": "Jusqu'à 3.5 kg"
+        }
+    },
+    {
+        "name": "SmallRig Bras magique avec double rotule (vis 1\/4\"-20 et pince NATO)",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Bras magique articulé de haute précision avec rotules orientables à 360° et levier de blocage central puissant. Permet de positionner et d'immobiliser un moniteur vidéo ou une torche LED sous n'importe quel angle.",
+        "specs": {
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Charge admissible": "Jusqu'à 3.5 kg"
+        }
+    },
+    {
+        "name": "SmallRig Bras magique avec pince de type crabe (11\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Bras magique articulé de haute précision avec rotules orientables à 360° et levier de blocage central puissant. Permet de positionner et d'immobiliser un moniteur vidéo ou une torche LED sous n'importe quel angle.",
+        "specs": {
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Charge admissible": "Jusqu'à 3.5 kg"
+        }
+    },
+    {
+        "name": "SmallRig Bras magique avec pince de type crabe (7\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Bras magique articulé de haute précision avec rotules orientables à 360° et levier de blocage central puissant. Permet de positionner et d'immobiliser un moniteur vidéo ou une torche LED sous n'importe quel angle.",
+        "specs": {
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Charge admissible": "Jusqu'à 3.5 kg"
+        }
+    },
+    {
+        "name": "SmallRig Bras magique universel avec double rotule (3\", 1\/4\"-20)",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 190,
+        "cost_price": 152,
+        "stock": 10,
+        "description": "Bras magique articulé de haute précision avec rotules orientables à 360° et levier de blocage central puissant. Permet de positionner et d'immobiliser un moniteur vidéo ou une torche LED sous n'importe quel angle.",
+        "specs": {
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Charge admissible": "Jusqu'à 3.5 kg"
+        }
+    },
+    {
+        "name": "SmallRig Anneau de stabilisation pour stabilisateurs DJI série RS",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "DJI",
+        "price": 4990,
+        "cost_price": 3992,
+        "stock": 10,
+        "description": "Poignée de commande ou support ergonomique SmallRig spécialement conçu pour les stabilisateurs DJI série RS (RS 2, RS 3, RS 4). Améliore le confort de prise en main sous des angles bas et permet le contrôle à distance de la mise au point et du déclenchement caméra.",
+        "specs": {
+            "Compatibilité": "Gimbals DJI RS 2, RS 3, RS 3 Pro, RS 4, RS 4 Pro",
+            "Connexion": "Port NATO sécurisé avec goupilles anti-chute",
+            "Matériaux": "Alliage d'aluminium aéronautique et poignée silicone ergonomique",
+            "Points de montage": "Filetages 1\/4\\\"-20, ARRI 3\/8\\\"-16 et griffes Cold Shoe"
+        }
+    },
+    {
+        "name": "SmallRig Harnais d'épaule SR007 HawkLock Pro",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 4990,
+        "cost_price": 3992,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo professionnel de haute précision, conçu pour apporter fiabilité, ergonomie et modularité à votre système de prise de vue sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "SmallRig Poignée de transport 3028D pour nacelles stabilisatrices DJI",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "DJI",
+        "price": 990,
+        "cost_price": 792,
+        "stock": 10,
+        "description": "Poignée de commande ou support ergonomique SmallRig spécialement conçu pour les stabilisateurs DJI série RS (RS 2, RS 3, RS 4). Améliore le confort de prise en main sous des angles bas et permet le contrôle à distance de la mise au point et du déclenchement caméra.",
+        "specs": {
+            "Compatibilité": "Gimbals DJI RS 2, RS 3, RS 3 Pro, RS 4, RS 4 Pro",
+            "Connexion": "Port NATO sécurisé avec goupilles anti-chute",
+            "Matériaux": "Alliage d'aluminium aéronautique et poignée silicone ergonomique",
+            "Points de montage": "Filetages 1\/4\\\"-20, ARRI 3\/8\\\"-16 et griffes Cold Shoe"
+        }
+    },
+    {
+        "name": "SmallRig Poignée pour mini-stabilisateur DJI RS 3",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "DJI",
+        "price": 890,
+        "cost_price": 712,
+        "stock": 10,
+        "description": "Stabilisateur professionnel pour caméra de cinéma et hybride plein format DJI RS. Équipé d'algorithmes de stabilisation de 4ème génération, de verrous d'axes automatiques, d'un écran tactile couleur OLED et d'une capacité de charge supérieure pour les optiques et caméras les plus exigeantes.",
+        "specs": {
+            "Compatibilité": "Caméras cinéma, reflex et hybrides plein format",
+            "Verrouillage des axes": "Verrous d'axes automatiques pour mise en service instantanée",
+            "Écran": "Écran tactile couleur OLED avec interface intuitive",
+            "Capacité de charge": "Moteurs puissants à couple élevé"
+        }
+    },
+    {
+        "name": "SmallRig Poignée latérale pour certaines nacelles stabilisatrices",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Poignée ergonomique supérieure ou latérale en aluminium usiné CNC pour cages de caméras. Améliore la stabilité lors des prises de vue au poing et intègre de multiples points de fixation (Cold Shoe, filetages 1\/4\"-20 et ARRI 3\/8\"-16).",
+        "specs": {
+            "Type": "Poignée de prise en main pour cage de tournage vidéo",
+            "Fixation": "Fixation ARRI 3\/8\\\"-16 anti-torsion, rail NATO ou vis 1\/4\\\" selon modèle",
+            "Matériaux": "Alliage d'aluminium aéronautique et finitions ergonomiques",
+            "Points de montage": "Griffes Cold Shoe et filetages pour moniteur et micro"
+        }
+    },
+    {
+        "name": "SmallRig Poignée latérale Mini avec double fixation à vis 1\/4\"-20",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Poignée ergonomique supérieure ou latérale en aluminium usiné CNC pour cages de caméras. Améliore la stabilité lors des prises de vue au poing et intègre de multiples points de fixation (Cold Shoe, filetages 1\/4\"-20 et ARRI 3\/8\"-16).",
+        "specs": {
+            "Type": "Poignée de prise en main pour cage de tournage vidéo",
+            "Fixation": "Fixation ARRI 3\/8\\\"-16 anti-torsion, rail NATO ou vis 1\/4\\\" selon modèle",
+            "Matériaux": "Alliage d'aluminium aéronautique et finitions ergonomiques",
+            "Points de montage": "Griffes Cold Shoe et filetages pour moniteur et micro"
+        }
+    },
+    {
+        "name": "SmallRig Poignée latérale avec vis de positionnement deux en un",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 790,
+        "cost_price": 632,
+        "stock": 10,
+        "description": "Poignée ergonomique supérieure ou latérale en aluminium usiné CNC pour cages de caméras. Améliore la stabilité lors des prises de vue au poing et intègre de multiples points de fixation (Cold Shoe, filetages 1\/4\"-20 et ARRI 3\/8\"-16).",
+        "specs": {
+            "Type": "Poignée de prise en main pour cage de tournage vidéo",
+            "Fixation": "Fixation ARRI 3\/8\\\"-16 anti-torsion, rail NATO ou vis 1\/4\\\" selon modèle",
+            "Matériaux": "Alliage d'aluminium aéronautique et finitions ergonomiques",
+            "Points de montage": "Griffes Cold Shoe et filetages pour moniteur et micro"
+        }
+    },
+    {
+        "name": "SmallRig Poignée latérale avec déclencheur REC pour certaines caméras",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 890,
+        "cost_price": 712,
+        "stock": 10,
+        "description": "Poignée ergonomique supérieure ou latérale en aluminium usiné CNC pour cages de caméras. Améliore la stabilité lors des prises de vue au poing et intègre de multiples points de fixation (Cold Shoe, filetages 1\/4\"-20 et ARRI 3\/8\"-16).",
+        "specs": {
+            "Type": "Poignée de prise en main pour cage de tournage vidéo",
+            "Fixation": "Fixation ARRI 3\/8\\\"-16 anti-torsion, rail NATO ou vis 1\/4\\\" selon modèle",
+            "Matériaux": "Alliage d'aluminium aéronautique et finitions ergonomiques",
+            "Points de montage": "Griffes Cold Shoe et filetages pour moniteur et micro"
+        }
+    },
+    {
+        "name": "SmallRig Poignée latérale pour smartphone",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Poignée ergonomique supérieure ou latérale en aluminium usiné CNC pour cages de caméras. Améliore la stabilité lors des prises de vue au poing et intègre de multiples points de fixation (Cold Shoe, filetages 1\/4\"-20 et ARRI 3\/8\"-16).",
+        "specs": {
+            "Type": "Poignée de prise en main pour cage de tournage vidéo",
+            "Fixation": "Fixation ARRI 3\/8\\\"-16 anti-torsion, rail NATO ou vis 1\/4\\\" selon modèle",
+            "Matériaux": "Alliage d'aluminium aéronautique et finitions ergonomiques",
+            "Points de montage": "Griffes Cold Shoe et filetages pour moniteur et micro"
+        }
+    },
+    {
+        "name": "SmallRig Trépied de table avec plaque de dégagement rapide de type Arca et mini rotule",
+        "category_id": 7,
+        "category_slug": "trepieds",
+        "category_name": "Trépieds",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Accessoire et système de support trépied SmallRig de qualité professionnelle. Offre une stabilité maximale et une fluidité absolue sur le terrain pour les configurations vidéo reflex, hybrides et caméras cinéma.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium aéronautique robuste",
+            "Compatibilité": "Plaques Arca-Swiss, têtes de trépied standard et tiges 15 mm",
+            "Finition": "Anodisation noire anti-rayures"
+        }
+    },
+    {
+        "name": "SmallRig Trépied Mini à dégagement rapide",
+        "category_id": 7,
+        "category_slug": "trepieds",
+        "category_name": "Trépieds",
+        "brand": "SMR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Accessoire et système de support trépied SmallRig de qualité professionnelle. Offre une stabilité maximale et une fluidité absolue sur le terrain pour les configurations vidéo reflex, hybrides et caméras cinéma.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium aéronautique robuste",
+            "Compatibilité": "Plaques Arca-Swiss, têtes de trépied standard et tiges 15 mm",
+            "Finition": "Anodisation noire anti-rayures"
+        }
+    },
+    {
+        "name": "SmallRig Support de diffusion en direct Encore PT-40 4537",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo professionnel de haute précision, conçu pour apporter fiabilité, ergonomie et modularité à votre système de prise de vue sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "SmallRig Support à ventouse portable SC-1K4193 pour caméras d'action",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Support à ventouse puissante sous vide pour caméras d'action et smartphones. Garantit une fixation sûre sur carrosseries, pare-brise et surfaces lisses pour des prises de vue embarquées dynamiques à haute vitesse.",
+        "specs": {
+            "Type": "Ventouse industrielle à verrouillage par pompe à vide",
+            "Matériaux": "Alliage d'aluminium usiné et caoutchouc haute adhérence",
+            "Charge admissible": "Résiste aux vibrations et forces de vent extrêmes",
+            "Rotule": "Double rotule 360° pour un cadrage parfait"
+        }
+    },
+    {
+        "name": "SmallRig Support de cou magnétique réglable pour caméra d'action",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "SMR",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Support tour de cou à dégagement rapide et verrouillage magnétique pour caméras d'action (GoPro, DJI Osmo Action, Insta360) et smartphones. Permet de filmer des plans POV immersifs captivants les mains libres en tout confort.",
+        "specs": {
+            "Type": "Support tour de cou ergonomique POV",
+            "Système de fixation": "Attache rapide magnétique sécurisée d'un seul clic",
+            "Matériau": "Silicone doux agréable pour la peau et armature métallique souple"
+        }
+    },
+    {
+        "name": "SmallRig Support de fixation à pince renforcée avec rotule à vis de 1\/4\"",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Pince de fixation mécanique robuste (Crab Clamp \/ Super Clamp) avec mors en caoutchouc antidérapant. Permet de fixer solidement des accessoires sur barres de trépied, guidons ou rebords.",
+        "specs": {
+            "Serrage": "Mâchoires réglables de 15 à 55 mm avec patins de protection",
+            "Filetages": "Pas de vis intégrés 1\/4\\\"-20 et 3\/8\\\"-16"
+        }
+    },
+    {
+        "name": "SmallRig Pince en forme de crabe avec bras magique pour smartphones (9,8\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Bras magique articulé de haute précision avec rotules orientables à 360° et levier de blocage central puissant. Permet de positionner et d'immobiliser un moniteur vidéo ou une torche LED sous n'importe quel angle.",
+        "specs": {
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Charge admissible": "Jusqu'à 3.5 kg"
+        }
+    },
+    {
+        "name": "SmallRig Pince pour guidon pour caméra d'action",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Support tour de cou à dégagement rapide et verrouillage magnétique pour caméras d'action (GoPro, DJI Osmo Action, Insta360) et smartphones. Permet de filmer des plans POV immersifs captivants les mains libres en tout confort.",
+        "specs": {
+            "Type": "Support tour de cou ergonomique POV",
+            "Système de fixation": "Attache rapide magnétique sécurisée d'un seul clic",
+            "Matériau": "Silicone doux agréable pour la peau et armature métallique souple"
+        }
+    },
+    {
+        "name": "SmallRig Pince en forme de crabe et bras magique (28 cm) avec griffe porte-accessoires",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Bras magique articulé de haute précision avec rotules orientables à 360° et levier de blocage central puissant. Permet de positionner et d'immobiliser un moniteur vidéo ou une torche LED sous n'importe quel angle.",
+        "specs": {
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Charge admissible": "Jusqu'à 3.5 kg"
+        }
+    },
+    {
+        "name": "SmallRig Boîte à matte avec pince réglable et kit VND",
+        "category_id": 13,
+        "category_slug": "matte-box",
+        "category_name": "Matte Box",
+        "brand": "SMR",
+        "price": 2490,
+        "cost_price": 1992,
+        "stock": 10,
+        "description": "Mini Matte Box légère modulaire SmallRig avec pince réglable et kit de filtre VND. Bloque la lumière parasite pour prévenir les reflets internes et offre un contrôle précis de l'exposition pour caméras cinéma et hybrides.",
+        "specs": {
+            "Structure": "Fibre de carbone et aluminium aéronautique",
+            "Bagues fournies": "Bagues d'adaptation 67, 72, 77, 82 mm",
+            "Porte-filtre": "Emplacement pour filtres 4x5.65\\\" et kit VND inclus"
+        }
+    }
+]

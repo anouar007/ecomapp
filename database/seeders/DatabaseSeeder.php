@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             MemoryCardProductsSeeder::class,
             ExtendedCatalogProductsSeeder::class,
             ExtendedCatalogBatch2Seeder::class,
+            ExtendedCatalogBatch3Seeder::class,
         ]);
     }
 }
