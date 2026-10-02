@@ -1,0 +1,75 @@
+[
+  {
+    "name": "Mini Matte Box Lite de SmallRig",
+    "price": "MAD 1.490,00",
+    "description": "Une matte box compacte et légère conçue pour les petits appareils photo hybrides et reflex numériques. Fabriquée en fibre de carbone, elle offre une protection optimale contre les reflets parasites tout en restant suffisamment discrète pour les configurations de voyage ou de gimbal.",
+    "technical_specs": {
+      "material": "Fibre de carbone et alliage d'aluminium",
+      "filter_size": "Compatible avec les filtres ronds et adaptateurs 4x5.65\"",
+      "mounting": "Système de pince réglable ou montage sur tiges 15mm",
+      "weight": "Ultra-léger (environ 250-300g)",
+      "compatibility": "Objectifs avec diamètre extérieur jusqu'à 82mm"
+    },
+    "category_slug": "matte-box"
+  },
+  {
+    "name": "Boîte à matte SmallRig avec pince réglable et kit VND",
+    "price": "MAD 2.490,00",
+    "description": "Cette matte box à pince est compatible avec les petits appareils photo hybrides ou reflex numériques. Elle inclut deux filtres CPL ronds SmallRig qui, utilisés avec le système d'engrenage du pare-soleil, permettent de créer un effet VND (Densité Neutre Variable) sans acheter de filtre VND dédié.",
+    "technical_specs": {
+      "material": "Fibre de carbone durable et légère",
+      "clamp_range": "67 mm à 82 mm de diamètre extérieur d'objectif",
+      "vnd_system": "Double filtre CPL+VND avec fixation magnétique à dégagement rapide",
+      "optical_quality": "Haute définition, couleurs précises (350-700 nm), distorsion chromatique minimale",
+      "vignetting": "Sans vignettage sur des focales ≥ 16 mm",
+      "included_accessories": "Capuchon anti-poussière, pare-soleil rabattable, housse de protection"
+    },
+    "category_slug": "matte-box"
+  },
+  {
+    "name": "Kit de filtres ND variables SmallRig pour certaines matte boxes",
+    "price": "MAD 1.390,00",
+    "description": "Un kit innovant comprenant trois filtres polarisants circulaires magnétiques qui peuvent être empilés pour créer un effet ND variable. Ce système permet un contrôle précis de l'exposition directement sur la matte box, éliminant l'effet de motif en 'X' grâce à des butées rigides.",
+    "technical_specs": {
+      "filter_type": "3 filtres CPL magnétiques empilables",
+      "nd_range": "CPL1+CPL2 = 2 à 5 stops | CPL1+CPL3 = 6 à 9 stops",
+      "compatibility": "Objectifs avec diamètre extérieur entre 67mm et 82mm (via système clamp matte box)",
+      "optical_glass": "Verre optique multicouches, transmission fidèle des couleurs (350-700 nm)",
+      "vignetting": "Aucun vignettage observé pour les objectifs d'une focale ≥ 16 mm"
+    },
+    "category_slug": "matte-box"
+  },
+  {
+    "name": "NEEWER PG002 Mini Matte Box",
+    "price": "MAD 1.790,00",
+    "description": "Un accessoire essentiel pour les vidéastes et cinéastes cherchant à contrôler l'éclairage et les reflets indésirables. Conçu en fibre de carbone légère et en aluminium de haute qualité, ce matte box est équipé de deux supports de filtres, offrant une flexibilité maximale sur le terrain.",
+    "technical_specs": {
+      "material": "Fibre de carbone et aluminium de haute qualité",
+      "filter_holders": "Deux supports de filtres 4\" x 5.65\" (format cinéma standard)",
+      "weight": "Environ 300 g",
+      "lens_compatibility": "Adapté aux objectifs jusqu'à 95 mm de diamètre (via bagues d'adaptation)",
+      "primary_use": "Réduction des reflets, gestion de l'éclairage et protection de l'objectif"
+    },
+    "category_slug": "matte-box"
+  },
+  {
+    "name": "NEEWER ND1.2 (4 Stops) Rectangular Filter ND Filter 4\" x 5.65\"",
+    "price": "MAD 890,00",
+    "description": "Un filtre à densité neutre (ND) fixe de format cinéma, destiné à être utilisé dans une matte box ou un porte-filtres compatible. Il réduit la quantité de lumière qui traverse l'objectif sans altérer les couleurs, permettant un meilleur contrôle de l'exposition en vidéo et photo, même en plein soleil.",
+    "technical_specs": {
+      "filter_type": "ND Fixe (Densité Neutre)",
+      "light_reduction": "4 stops (densité optique 1.2) — laisse environ 6,25% de la lumière passer",
+      "size": "4\" x 5.65\" (≈ 10.2 x 14.4 cm) — format cinéma / matte-box standard",
+      "material": "Verre optique HD usiné CNC et poli",
+      "color_cast": "Aucune dominante de couleur ajoutée"
+    },
+    "category_slug": "matte-box"
+  },
+  {
+    "name": "Insta360 Ace Pro Caméra d'action",
+    "price": "MAD 3.790,00",
+    "description": "Caméra d'action IA avec capteur 1/1.3\" et optique Leica, offrant une vidéo 4K/120fps et un écran tactile rabattable pour un cadrage parfait.",
+    "technical_specs": {"sensor": "1/1.3\" CMOS", "resolution": "4K/120fps, 8K/24fps", "ai_chip": "Insta360 AI Chip", "waterproof": "10m sans boîtier", "screen": "2.4\" Flip Touchscreen"},
+    "category_slug": "accessoires-insta360"
+  }
+]
