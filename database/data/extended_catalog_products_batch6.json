@@ -1,0 +1,26 @@
+[
+  {
+    "name": "CPL Filter 67mm Nano-C Series HMC",
+    "price": "MAD 290,00",
+    "description": "Filtre polarisant circulaire d'entrée de gamme haute performance avec revêtement HMC (Multi-Couches) pour réduire les reflets et améliorer le contraste des couleurs.",
+    "technical_specs": {
+      "size": "67mm",
+      "type": "CPL (Polarisant Circulaire)",
+      "coating": "HMC (18 couches)",
+      "frame": "Alliage d'aluminium ultra-fin"
+    },
+    "category_slug": "filtres-nd-cpl-polarise"
+  },
+  {
+    "name": "CPL Filter 67mm Circular Polarizer Nano-A series",
+    "price": "MAD 490,00",
+    "description": "Filtre polarisant de la série Nano-A, offrant une meilleure transmission de la lumière et une réduction des reflets sur les surfaces non métalliques comme l'eau et le verre.",
+    "technical_specs": {
+      "size": "67mm",
+      "type": "CPL",
+      "coating": "Nano-A (24 couches)",
+      "water_resistant": "Oui"
+    },
+    "category_slug": "filtres-nd-cpl-polarise"
+  }
+]
