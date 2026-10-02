@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             TripodSupportProductsSeeder::class,
             BatteryChargerProductsSeeder::class,
             MemoryCardProductsSeeder::class,
+            ExtendedCatalogProductsSeeder::class,
         ]);
     }
 }

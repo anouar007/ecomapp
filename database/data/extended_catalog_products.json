@@ -1,0 +1,2712 @@
+[
+    {
+        "name": "10 écouvillons de nettoyage pour capteur CMOS plein format 24 mm",
+        "category_id": 15,
+        "category_slug": "kit-de-nettoyage",
+        "category_name": "Kit de nettoyage",
+        "brand": "CLEAN",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Kit professionnel de 10 écouvillons de nettoyage sous vide spécialement conçus pour les capteurs CMOS plein format (24 mm). Permet d'éliminer en toute sécurité les micro-poussières, résidus gras et traces sur le filtre passe-bas sans rayer la surface du capteur.",
+        "specs": {
+            "Compatibilité capteur": "Plein format (Full Frame 24x36 mm)",
+            "Largeur de l'embout": "24 mm",
+            "Contenu": "10 écouvillons stériles emballés individuellement sous vide",
+            "Matériau de la tête": "Microfibre ultra-douce sans peluche",
+            "Usage": "Nettoyage à sec ou avec liquide de nettoyage pour capteur"
+        }
+    },
+    {
+        "name": "Accessoire d'alimentation X4",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "INSTA",
+        "price": 690,
+        "cost_price": 552,
+        "stock": 10,
+        "description": "Accessoire d'alimentation officiel ou certifié haute performance pour caméras Insta360, garantissant une autonomie prolongée et une recharge rapide et sécurisée.",
+        "specs": {
+            "Type": "Alimentation \/ Batterie \/ Hub de charge rapide pour caméra d'action",
+            "Sécurité": "Protection intelligente contre les surtensions et surchauffes",
+            "Compatibilité": "Caméras d'action Insta360"
+        }
+    },
+    {
+        "name": "Adaptateur Apple Lightning vers Headphone 3,5 mm",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 180,
+        "cost_price": 144,
+        "stock": 10,
+        "description": "Accessoire photographique et audiovisuel de haute précision, conçu pour compléter et fiabiliser votre équipement de prise de vue sur le terrain comme en studio.",
+        "specs": {
+            "Matériau": "Métal haute durabilité et finition anticorrosion",
+            "Compatibilité": "Matériel de prise de vue standard photo & vidéo"
+        }
+    },
+    {
+        "name": "Adaptateur de caméra Vrig Ca04",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "VRIG",
+        "price": 790,
+        "cost_price": 632,
+        "stock": 10,
+        "description": "Collier d'objectif rotatif et plaque de dégagement rapide Arca-Swiss Vrig CA04. Permet de basculer instantanément votre appareil photo entre le mode horizontal (paysage) et vertical (portrait) sur trépied sans démonter la rotule.",
+        "specs": {
+            "Modèle": "Vrig CA04",
+            "Compatibilité": "Monture Arca-Swiss et têtes de trépied standard",
+            "Rotation": "Rotation fluide à 90° avec repères d'alignement et clic de positionnement",
+            "Matériau": "Alliage d'aluminium aéronautique CNC et acier inoxydable"
+        }
+    },
+    {
+        "name": "Adaptateur de Filtre",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "FLT",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Bague adaptatrice de filtre usinée avec précision en alliage d'aluminium anodisé noir mat pour éviter les reflets indésirables. Permet d'adapter vos filtres vissants sur différents objectifs sans vignettage.",
+        "specs": {
+            "Type": "Bague adaptatrice de filtre (Step-Up \/ Step-Down)",
+            "Matériau": "Alliage d'aluminium aéronautique CNC",
+            "Traitement": "Finition noire mate anti-reflet",
+            "Compatibilité": "Objectifs photo standard et filtres UV \/ CPL \/ ND"
+        }
+    },
+    {
+        "name": "Adaptateur de Filtre",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "FLT",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Bague adaptatrice de filtre usinée avec précision en alliage d'aluminium anodisé noir mat pour éviter les reflets indésirables. Permet d'adapter vos filtres vissants sur différents objectifs sans vignettage.",
+        "specs": {
+            "Type": "Bague adaptatrice de filtre (Step-Up \/ Step-Down)",
+            "Matériau": "Alliage d'aluminium aéronautique CNC",
+            "Traitement": "Finition noire mate anti-reflet",
+            "Compatibilité": "Objectifs photo standard et filtres UV \/ CPL \/ ND"
+        }
+    },
+    {
+        "name": "Adaptateur de Filtre",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "FLT",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Bague adaptatrice de filtre usinée avec précision en alliage d'aluminium anodisé noir mat pour éviter les reflets indésirables. Permet d'adapter vos filtres vissants sur différents objectifs sans vignettage.",
+        "specs": {
+            "Type": "Bague adaptatrice de filtre (Step-Up \/ Step-Down)",
+            "Matériau": "Alliage d'aluminium aéronautique CNC",
+            "Traitement": "Finition noire mate anti-reflet",
+            "Compatibilité": "Objectifs photo standard et filtres UV \/ CPL \/ ND"
+        }
+    },
+    {
+        "name": "Adaptateur Pour Téléphone Mobile (Lightning) DJI Mic Mini",
+        "category_id": 11,
+        "category_slug": "materiel-de-podcast",
+        "category_name": "Matériel de Podcast",
+        "brand": "DJI",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Adaptateur officiel Lightning pour récepteur DJI Mic Mini permettant une connexion numérique directe sans latence sur les appareils Apple iOS équipés d'un port Lightning.",
+        "specs": {
+            "Connecteur": "Apple Lightning MFi certifié",
+            "Compatibilité": "DJI Mic Mini Receiver et iPhone \/ iPad Lightning",
+            "Signal": "Transmission audio numérique haute fidélité sans compression"
+        }
+    },
+    {
+        "name": "Aluminum Alloy Phone Clip",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "RIG",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Support et cage en alliage d'aluminium usiné CNC pour smartphone. Idéal pour la création de contenu vidéo stable, les tournages mobiles et le vlogging avec plusieurs supports pour micro et éclairage.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium haute précision CNC",
+            "Compatibilité": "Smartphones de 65 mm à 90 mm de largeur",
+            "Fixations": "Cold shoe supérieure et filetages standard 1\/4\\\"-20"
+        }
+    },
+    {
+        "name": "Ambitful 2.8m Light Stand AB280",
+        "category_id": 3,
+        "category_slug": "lumieres-materiel-de-studio",
+        "category_name": "Lumières \/ Matériel de studio",
+        "brand": "AMB",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Pied d'éclairage de studio professionnel de 2,8 mètres avec système d'amortissement à air comprimé. Protège votre matériel d'éclairage des chutes brusques lors du déverrouillage des sections télescopiques.",
+        "specs": {
+            "Hauteur maximale": "2,80 m (280 cm)",
+            "Système d'amortissement": "Amortisseur à air comprimé (Air Cushion)",
+            "Charge maximale": "Jusqu'à 10 kg",
+            "Matériau": "Alliage d'aluminium robuste et métal traité",
+            "Embout": "Spigot standard 5\/8\\\" réversible 1\/4\\\" et 3\/8\\\""
+        }
+    },
+    {
+        "name": "Anneau de stabilisation SmallRig pour stabilisateurs DJI série RS",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "SMR",
+        "price": 4990,
+        "cost_price": 3992,
+        "stock": 10,
+        "description": "Anneau de commande et de stabilisation portable SmallRig spécialement conçu pour les stabilisateurs DJI série RS (RS 2, RS 3 Pro, RS 4, RS 4 Pro). Permet une prise en main à deux mains pour une stabilité exceptionnelle et dispose de multiples points de fixation pour moniteurs, batteries V-Mount et transmetteurs.",
+        "specs": {
+            "Compatibilité": "DJI RS 2, RS 3 Pro, RS 4, RS 4 Pro",
+            "Structure": "Alliage d'aluminium aéronautique et fibre de carbone",
+            "Points de fixation": "Filetages 1\/4\\\"-20, 3\/8\\\"-16 ARRI, rails NATO et montures Cold Shoe",
+            "Alimentation": "Pieds de support intégrés et plaque de fixation batterie V-mount",
+            "Charge max": "Jusqu'à 8 kg"
+        }
+    },
+    {
+        "name": "APS-C Sensor Cleaning Swab Kit (10 Swabs + 20ml Cleaner)",
+        "category_id": 15,
+        "category_slug": "kit-de-nettoyage",
+        "category_name": "Kit de nettoyage",
+        "brand": "CLEAN",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Kit complet de nettoyage pour capteurs APS-C comprenant 10 écouvillons haute précision de 16 mm et un flacon de 20 ml de solution nettoyante optique sans alcool. Élimine efficacement les taches tenaces et particules de poussière.",
+        "specs": {
+            "Compatibilité capteur": "APS-C (16 mm)",
+            "Contenu": "10 écouvillons emballés sous vide + solution 20 ml",
+            "Formule liquide": "Sans alcool, sans résidu, séchage ultra-rapide",
+            "Matériau": "Microfibre micro-tissée antistatique",
+            "Usage": "Appareils photo reflex et hybrides Sony, Canon, Fujifilm, Nikon"
+        }
+    },
+    {
+        "name": "Batterie DJI Mavic Air 2",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "DJI",
+        "price": 1300,
+        "cost_price": 1040,
+        "stock": 10,
+        "description": "Batterie de vol intelligente haute densité pour drone DJI. Intègre un système de gestion de batterie intelligent (BMS) surveillant en temps réel la tension des cellules et la température pour un vol sécurisé.",
+        "specs": {
+            "Compatibilité": "Drone DJI",
+            "Chimie": "Lithium-Ion \/ LiPo haute performance",
+            "Protection": "Protection contre la surcharge, décharge excessive et basse température"
+        }
+    },
+    {
+        "name": "Blackpack Strap Quick Clip Mount",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 120,
+        "cost_price": 96,
+        "stock": 10,
+        "description": "Accessoire photographique et audiovisuel de haute précision, conçu pour compléter et fiabiliser votre équipement de prise de vue sur le terrain comme en studio.",
+        "specs": {
+            "Matériau": "Métal haute durabilité et finition anticorrosion",
+            "Compatibilité": "Matériel de prise de vue standard photo & vidéo"
+        }
+    },
+    {
+        "name": "Boîte à matte SmallRig avec pince réglable et kit VND",
+        "category_id": 13,
+        "category_slug": "matte-box",
+        "category_name": "Matte Box",
+        "brand": "SMR",
+        "price": 2490,
+        "cost_price": 1992,
+        "stock": 10,
+        "description": "Mini Matte Box professionnelle modulaire SmallRig avec bague de serrage et kit de filtre à densité neutre variable (VND). Bloque la lumière parasite pour éliminer le flare et permet un contrôle précis de l'exposition en vidéo cinéma.",
+        "specs": {
+            "Type": "Matte Box modulaire légère avec volet supérieur carbone",
+            "Compatibilité objectifs": "Bagues d'adaptation 67mm, 72mm, 77mm, 82mm incluses",
+            "Système de filtre": "Emplacement pour filtres 4x5.65\\\" et kit filtre VND inclus",
+            "Matériaux": "Fibre de carbone et alliage d'aluminium haute résistance",
+            "Fixation": "Pince de serrage rapide avec système de verrouillage sécurisé"
+        }
+    },
+    {
+        "name": "Boîtier de charge rapide utilitaire X5",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "INSTA",
+        "price": 890,
+        "cost_price": 712,
+        "stock": 10,
+        "description": "Accessoire d'alimentation officiel ou certifié haute performance pour caméras Insta360, garantissant une autonomie prolongée et une recharge rapide et sécurisée.",
+        "specs": {
+            "Type": "Alimentation \/ Batterie \/ Hub de charge rapide pour caméra d'action",
+            "Sécurité": "Protection intelligente contre les surtensions et surchauffes",
+            "Compatibilité": "Caméras d'action Insta360"
+        }
+    },
+    {
+        "name": "Boîtier de plongée Insta360 X3",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 1490,
+        "cost_price": 1192,
+        "stock": 10,
+        "description": "Boîtier étanche de plongée haute résistance spécialement conçu pour caméras 360°. Assure une étanchéité parfaite jusqu'à 50 mètres de profondeur tout en conservant une couture 360° transparente sous l'eau.",
+        "specs": {
+            "Type": "Caisson sous-marin invisible de plongée",
+            "Étanchéité": "Jusqu'à 50 mètres (IPX8 certifié)",
+            "Optique": "Dômes optiques haute transparence anti-distorsion",
+            "Fermeture": "Verrouillage mécanique sécurisé étanche",
+            "Usage": "Plongée sous-marine, sports nautiques, surf, snorkeling"
+        }
+    },
+    {
+        "name": "Boîtier de plongée X3 (Copie)",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Boîtier étanche de plongée haute résistance spécialement conçu pour caméras 360°. Assure une étanchéité parfaite jusqu'à 50 mètres de profondeur tout en conservant une couture 360° transparente sous l'eau.",
+        "specs": {
+            "Type": "Caisson sous-marin invisible de plongée",
+            "Étanchéité": "Jusqu'à 50 mètres (IPX8 certifié)",
+            "Optique": "Dômes optiques haute transparence anti-distorsion",
+            "Fermeture": "Verrouillage mécanique sécurisé étanche",
+            "Usage": "Plongée sous-marine, sports nautiques, surf, snorkeling"
+        }
+    },
+    {
+        "name": "Bonnette micro personnalisée avec logo \/ qualité professionnelle",
+        "category_id": 11,
+        "category_slug": "materiel-de-podcast",
+        "category_name": "Matériel de Podcast",
+        "brand": "AUDIO",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Bonnette anti-vent en mousse acoustique haute densité personnalisée pour microphones de studio et d'interview. Réduit considérablement les bruits de souffle, les plosives (P et B) et protège la capsule contre l'humidité.",
+        "specs": {
+            "Matériau": "Mousse acoustique haute résilience à cellules ouvertes",
+            "Atténuation": "Réduction des plosives et bruits de vent jusqu'à 15 dB",
+            "Usage": "Podcast, radio broadcast, interviews et enregistrement studio"
+        }
+    },
+    {
+        "name": "Bras articulé à rosette SmallRig (11\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Bras articulé robuste avec rotules orientables à 360° et levier de serrage unique ergonomique. Permet d'orienter et de verrouiller instantanément un moniteur vidéo, une lumière LED ou un microphone sous n'importe quel angle.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Fixation": "Vis 1\/4\\\"-20 et\/ou goupilles anti-torsion ARRI",
+            "Charge maximale": "Jusqu'à 3,5 kg"
+        }
+    },
+    {
+        "name": "Bras articulé SmallRig (9,5\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Bras articulé robuste avec rotules orientables à 360° et levier de serrage unique ergonomique. Permet d'orienter et de verrouiller instantanément un moniteur vidéo, une lumière LED ou un microphone sous n'importe quel angle.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Fixation": "Vis 1\/4\\\"-20 et\/ou goupilles anti-torsion ARRI",
+            "Charge maximale": "Jusqu'à 3,5 kg"
+        }
+    },
+    {
+        "name": "Bras articulé SmallRig avec double rotule (vis 1\/4\"-20)",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 890,
+        "cost_price": 712,
+        "stock": 10,
+        "description": "Bras articulé robuste avec rotules orientables à 360° et levier de serrage unique ergonomique. Permet d'orienter et de verrouiller instantanément un moniteur vidéo, une lumière LED ou un microphone sous n'importe quel angle.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Fixation": "Vis 1\/4\\\"-20 et\/ou goupilles anti-torsion ARRI",
+            "Charge maximale": "Jusqu'à 3,5 kg"
+        }
+    },
+    {
+        "name": "Bras articulé SmallRig avec vis de positionnement ARRI 1\/4\"-20 et 3\/8\"-16 (11\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Bras articulé robuste avec rotules orientables à 360° et levier de serrage unique ergonomique. Permet d'orienter et de verrouiller instantanément un moniteur vidéo, une lumière LED ou un microphone sous n'importe quel angle.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Fixation": "Vis 1\/4\\\"-20 et\/ou goupilles anti-torsion ARRI",
+            "Charge maximale": "Jusqu'à 3,5 kg"
+        }
+    },
+    {
+        "name": "Bras articulé SmallRig avec vis de positionnement ARRI 1\/4\"-20 et 3\/8\"-16 (7\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Bras articulé robuste avec rotules orientables à 360° et levier de serrage unique ergonomique. Permet d'orienter et de verrouiller instantanément un moniteur vidéo, une lumière LED ou un microphone sous n'importe quel angle.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Fixation": "Vis 1\/4\\\"-20 et\/ou goupilles anti-torsion ARRI",
+            "Charge maximale": "Jusqu'à 3,5 kg"
+        }
+    },
+    {
+        "name": "Bras D'extension De Trépied En Alliage D'aluminium",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 690,
+        "cost_price": 552,
+        "stock": 10,
+        "description": "Bras articulé robuste avec rotules orientables à 360° et levier de serrage unique ergonomique. Permet d'orienter et de verrouiller instantanément un moniteur vidéo, une lumière LED ou un microphone sous n'importe quel angle.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Fixation": "Vis 1\/4\\\"-20 et\/ou goupilles anti-torsion ARRI",
+            "Charge maximale": "Jusqu'à 3,5 kg"
+        }
+    },
+    {
+        "name": "Bras magique à rosette à dégagement rapide SmallRig HawkLock H21 (11\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 790,
+        "cost_price": 632,
+        "stock": 10,
+        "description": "Bras articulé robuste avec rotules orientables à 360° et levier de serrage unique ergonomique. Permet d'orienter et de verrouiller instantanément un moniteur vidéo, une lumière LED ou un microphone sous n'importe quel angle.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Fixation": "Vis 1\/4\\\"-20 et\/ou goupilles anti-torsion ARRI",
+            "Charge maximale": "Jusqu'à 3,5 kg"
+        }
+    },
+    {
+        "name": "Bras magique à rosette à dégagement rapide SmallRig HawkLock H21 (7\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 690,
+        "cost_price": 552,
+        "stock": 10,
+        "description": "Bras articulé robuste avec rotules orientables à 360° et levier de serrage unique ergonomique. Permet d'orienter et de verrouiller instantanément un moniteur vidéo, une lumière LED ou un microphone sous n'importe quel angle.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Fixation": "Vis 1\/4\\\"-20 et\/ou goupilles anti-torsion ARRI",
+            "Charge maximale": "Jusqu'à 3,5 kg"
+        }
+    },
+    {
+        "name": "Bras Magique avec Super Clamp",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 350,
+        "cost_price": 280,
+        "stock": 10,
+        "description": "Bras articulé robuste avec rotules orientables à 360° et levier de serrage unique ergonomique. Permet d'orienter et de verrouiller instantanément un moniteur vidéo, une lumière LED ou un microphone sous n'importe quel angle.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Fixation": "Vis 1\/4\\\"-20 et\/ou goupilles anti-torsion ARRI",
+            "Charge maximale": "Jusqu'à 3,5 kg"
+        }
+    },
+    {
+        "name": "Bras magique de bureau SmallRig avec kit de pince de type crabe",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Bras articulé robuste avec rotules orientables à 360° et levier de serrage unique ergonomique. Permet d'orienter et de verrouiller instantanément un moniteur vidéo, une lumière LED ou un microphone sous n'importe quel angle.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Fixation": "Vis 1\/4\\\"-20 et\/ou goupilles anti-torsion ARRI",
+            "Charge maximale": "Jusqu'à 3,5 kg"
+        }
+    },
+    {
+        "name": "Bras magique long SmallRig avec pince en forme de crabe",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Bras articulé robuste avec rotules orientables à 360° et levier de serrage unique ergonomique. Permet d'orienter et de verrouiller instantanément un moniteur vidéo, une lumière LED ou un microphone sous n'importe quel angle.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Fixation": "Vis 1\/4\\\"-20 et\/ou goupilles anti-torsion ARRI",
+            "Charge maximale": "Jusqu'à 3,5 kg"
+        }
+    },
+    {
+        "name": "Bras magique miniature HawkLock à fixation rapide SmallRig avec rotules à dégagement rapide",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Bras articulé robuste avec rotules orientables à 360° et levier de serrage unique ergonomique. Permet d'orienter et de verrouiller instantanément un moniteur vidéo, une lumière LED ou un microphone sous n'importe quel angle.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Fixation": "Vis 1\/4\\\"-20 et\/ou goupilles anti-torsion ARRI",
+            "Charge maximale": "Jusqu'à 3,5 kg"
+        }
+    },
+    {
+        "name": "Bras magique SmallRig avec double rotule (vis 1\/4\"-20 et pince NATO)",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Bras articulé robuste avec rotules orientables à 360° et levier de serrage unique ergonomique. Permet d'orienter et de verrouiller instantanément un moniteur vidéo, une lumière LED ou un microphone sous n'importe quel angle.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Fixation": "Vis 1\/4\\\"-20 et\/ou goupilles anti-torsion ARRI",
+            "Charge maximale": "Jusqu'à 3,5 kg"
+        }
+    },
+    {
+        "name": "Bras magique SmallRig avec pince de type crabe (11\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Bras articulé robuste avec rotules orientables à 360° et levier de serrage unique ergonomique. Permet d'orienter et de verrouiller instantanément un moniteur vidéo, une lumière LED ou un microphone sous n'importe quel angle.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Fixation": "Vis 1\/4\\\"-20 et\/ou goupilles anti-torsion ARRI",
+            "Charge maximale": "Jusqu'à 3,5 kg"
+        }
+    },
+    {
+        "name": "Bras magique SmallRig avec pince de type crabe (7\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Bras articulé robuste avec rotules orientables à 360° et levier de serrage unique ergonomique. Permet d'orienter et de verrouiller instantanément un moniteur vidéo, une lumière LED ou un microphone sous n'importe quel angle.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Fixation": "Vis 1\/4\\\"-20 et\/ou goupilles anti-torsion ARRI",
+            "Charge maximale": "Jusqu'à 3,5 kg"
+        }
+    },
+    {
+        "name": "Bras magique universel SmallRig avec double rotule (3\", 1\/4\"-20)",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 190,
+        "cost_price": 152,
+        "stock": 10,
+        "description": "Bras articulé robuste avec rotules orientables à 360° et levier de serrage unique ergonomique. Permet d'orienter et de verrouiller instantanément un moniteur vidéo, une lumière LED ou un microphone sous n'importe quel angle.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium et acier inoxydable",
+            "Rotation": "Double rotule 360° à friction réglable",
+            "Fixation": "Vis 1\/4\\\"-20 et\/ou goupilles anti-torsion ARRI",
+            "Charge maximale": "Jusqu'à 3,5 kg"
+        }
+    },
+    {
+        "name": "Câble adaptateur SmallRig Ultra-Slim HDMI femelle type A vers micro-HDMI mâle type D",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 190,
+        "cost_price": 152,
+        "stock": 10,
+        "description": "Câble de transmission vidéo ou d'alimentation ultra-flexible et résistant conçu pour les rigs de tournage. Réduit la tension sur les ports de la caméra et garantit une transmission de signal sans coupure.",
+        "specs": {
+            "Type": "Câble vidéo \/ alimentation ultra-souple haute fidélité",
+            "Blindage": "Triple blindage contre les interférences électromagnétiques",
+            "Connecteurs": "Plaqués or pour une conductivité optimale"
+        }
+    },
+    {
+        "name": "Câble d'alimentation pour batterie factice SmallRig D-Tap vers Sony NP-FZ100",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "BATT",
+        "price": 690,
+        "cost_price": 552,
+        "stock": 10,
+        "description": "Accessoire de charge et d'alimentation certifié conçu pour assurer une autonomie maximale et une fiabilité sans faille à votre matériel audiovisuel.",
+        "specs": {
+            "Type": "Batterie \/ Chargeur rapide",
+            "Sécurité": "Circuit de protection intelligent intégré"
+        }
+    },
+    {
+        "name": "Câble d'alimentation SmallRig 2,1 mm CC vers batterie factice NP-FZ100 (60 cm)",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "BATT",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Accessoire de charge et d'alimentation certifié conçu pour assurer une autonomie maximale et une fiabilité sans faille à votre matériel audiovisuel.",
+        "specs": {
+            "Type": "Batterie \/ Chargeur rapide",
+            "Sécurité": "Circuit de protection intelligent intégré"
+        }
+    },
+    {
+        "name": "Câble d'alimentation SmallRig D-Tap vers 2 broches pour Blackmagic Pocket Cinema Camera 4K\/6K",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Câble de transmission vidéo ou d'alimentation ultra-flexible et résistant conçu pour les rigs de tournage. Réduit la tension sur les ports de la caméra et garantit une transmission de signal sans coupure.",
+        "specs": {
+            "Type": "Câble vidéo \/ alimentation ultra-souple haute fidélité",
+            "Blindage": "Triple blindage contre les interférences électromagnétiques",
+            "Connecteurs": "Plaqués or pour une conductivité optimale"
+        }
+    },
+    {
+        "name": "Câble SmallRig 3042B Micro-HDMI vers HDMI (13,8\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 190,
+        "cost_price": 152,
+        "stock": 10,
+        "description": "Câble de transmission vidéo ou d'alimentation ultra-flexible et résistant conçu pour les rigs de tournage. Réduit la tension sur les ports de la caméra et garantit une transmission de signal sans coupure.",
+        "specs": {
+            "Type": "Câble vidéo \/ alimentation ultra-souple haute fidélité",
+            "Blindage": "Triple blindage contre les interférences électromagnétiques",
+            "Connecteurs": "Plaqués or pour une conductivité optimale"
+        }
+    },
+    {
+        "name": "Câble SmallRig Mini-HDMI vers HDMI (13,8\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 190,
+        "cost_price": 152,
+        "stock": 10,
+        "description": "Câble de transmission vidéo ou d'alimentation ultra-flexible et résistant conçu pour les rigs de tournage. Réduit la tension sur les ports de la caméra et garantit une transmission de signal sans coupure.",
+        "specs": {
+            "Type": "Câble vidéo \/ alimentation ultra-souple haute fidélité",
+            "Blindage": "Triple blindage contre les interférences électromagnétiques",
+            "Connecteurs": "Plaqués or pour une conductivité optimale"
+        }
+    },
+    {
+        "name": "Câble SmallRig Ultra-Slim Micro-HDMI vers HDMI (22\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 190,
+        "cost_price": 152,
+        "stock": 10,
+        "description": "Câble de transmission vidéo ou d'alimentation ultra-flexible et résistant conçu pour les rigs de tournage. Réduit la tension sur les ports de la caméra et garantit une transmission de signal sans coupure.",
+        "specs": {
+            "Type": "Câble vidéo \/ alimentation ultra-souple haute fidélité",
+            "Blindage": "Triple blindage contre les interférences électromagnétiques",
+            "Connecteurs": "Plaqués or pour une conductivité optimale"
+        }
+    },
+    {
+        "name": "Cage modulaire hybride SmallRig pour Sony a7 IV",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 690,
+        "cost_price": 552,
+        "stock": 10,
+        "description": "Cage de protection ergonomique en alliage d'aluminium usiné avec précision CNC. Épouse parfaitement les contours de l'appareil tout en maintenant un accès libre à la batterie, aux cartes mémoire et aux commandes. Équipée de multiples filetages 1\/4\"-20, 3\/8\"-16 ARRI, rails NATO et griffes Cold Shoe pour le montage d'accessoires.",
+        "specs": {
+            "Matériaux": "Alliage d'aluminium aéronautique anodisé",
+            "Fixation caméra": "Vis 1\/4\\\"-20 et verrous latéraux anti-torsion",
+            "Points de fixation": "Filetages 1\/4\\\"-20, ARRI 3\/8\\\"-16, Cold Shoe, rail NATO, plaque Arca-Swiss intégrée",
+            "Protection": "Patin en caoutchouc anti-rayures"
+        }
+    },
+    {
+        "name": "Cage pour appareil photo SmallRig « Black Mamba » pour Canon EOS R5 C, R5 et R6",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 1690,
+        "cost_price": 1352,
+        "stock": 10,
+        "description": "Cage de protection ergonomique en alliage d'aluminium usiné avec précision CNC. Épouse parfaitement les contours de l'appareil tout en maintenant un accès libre à la batterie, aux cartes mémoire et aux commandes. Équipée de multiples filetages 1\/4\"-20, 3\/8\"-16 ARRI, rails NATO et griffes Cold Shoe pour le montage d'accessoires.",
+        "specs": {
+            "Matériaux": "Alliage d'aluminium aéronautique anodisé",
+            "Fixation caméra": "Vis 1\/4\\\"-20 et verrous latéraux anti-torsion",
+            "Points de fixation": "Filetages 1\/4\\\"-20, ARRI 3\/8\\\"-16, Cold Shoe, rail NATO, plaque Arca-Swiss intégrée",
+            "Protection": "Patin en caoutchouc anti-rayures"
+        }
+    },
+    {
+        "name": "Cage pour appareil photo SmallRig « Black Mamba » pour Canon EOS R6 Mark II",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 1690,
+        "cost_price": 1352,
+        "stock": 10,
+        "description": "Cage de protection ergonomique en alliage d'aluminium usiné avec précision CNC. Épouse parfaitement les contours de l'appareil tout en maintenant un accès libre à la batterie, aux cartes mémoire et aux commandes. Équipée de multiples filetages 1\/4\"-20, 3\/8\"-16 ARRI, rails NATO et griffes Cold Shoe pour le montage d'accessoires.",
+        "specs": {
+            "Matériaux": "Alliage d'aluminium aéronautique anodisé",
+            "Fixation caméra": "Vis 1\/4\\\"-20 et verrous latéraux anti-torsion",
+            "Points de fixation": "Filetages 1\/4\\\"-20, ARRI 3\/8\\\"-16, Cold Shoe, rail NATO, plaque Arca-Swiss intégrée",
+            "Protection": "Patin en caoutchouc anti-rayures"
+        }
+    },
+    {
+        "name": "Cage pour appareil photo SmallRig avec poignée en silicone pour Sony a6400\/a6300\/a6100",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 790,
+        "cost_price": 632,
+        "stock": 10,
+        "description": "Cage de protection ergonomique en alliage d'aluminium usiné avec précision CNC. Épouse parfaitement les contours de l'appareil tout en maintenant un accès libre à la batterie, aux cartes mémoire et aux commandes. Équipée de multiples filetages 1\/4\"-20, 3\/8\"-16 ARRI, rails NATO et griffes Cold Shoe pour le montage d'accessoires.",
+        "specs": {
+            "Matériaux": "Alliage d'aluminium aéronautique anodisé",
+            "Fixation caméra": "Vis 1\/4\\\"-20 et verrous latéraux anti-torsion",
+            "Points de fixation": "Filetages 1\/4\\\"-20, ARRI 3\/8\\\"-16, Cold Shoe, rail NATO, plaque Arca-Swiss intégrée",
+            "Protection": "Patin en caoutchouc anti-rayures"
+        }
+    },
+    {
+        "name": "Cage pour appareil photo SmallRig pour Sony a7S III",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 990,
+        "cost_price": 792,
+        "stock": 10,
+        "description": "Cage de protection ergonomique en alliage d'aluminium usiné avec précision CNC. Épouse parfaitement les contours de l'appareil tout en maintenant un accès libre à la batterie, aux cartes mémoire et aux commandes. Équipée de multiples filetages 1\/4\"-20, 3\/8\"-16 ARRI, rails NATO et griffes Cold Shoe pour le montage d'accessoires.",
+        "specs": {
+            "Matériaux": "Alliage d'aluminium aéronautique anodisé",
+            "Fixation caméra": "Vis 1\/4\\\"-20 et verrous latéraux anti-torsion",
+            "Points de fixation": "Filetages 1\/4\\\"-20, ARRI 3\/8\\\"-16, Cold Shoe, rail NATO, plaque Arca-Swiss intégrée",
+            "Protection": "Patin en caoutchouc anti-rayures"
+        }
+    },
+    {
+        "name": "Cage pour caméra SmallRig pour Insta360 X5",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 690,
+        "cost_price": 552,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Cage SmallRig pour Sony a6500\/a6400\/a6300\/a6100",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 790,
+        "cost_price": 632,
+        "stock": 10,
+        "description": "Cage de protection ergonomique en alliage d'aluminium usiné avec précision CNC. Épouse parfaitement les contours de l'appareil tout en maintenant un accès libre à la batterie, aux cartes mémoire et aux commandes. Équipée de multiples filetages 1\/4\"-20, 3\/8\"-16 ARRI, rails NATO et griffes Cold Shoe pour le montage d'accessoires.",
+        "specs": {
+            "Matériaux": "Alliage d'aluminium aéronautique anodisé",
+            "Fixation caméra": "Vis 1\/4\\\"-20 et verrous latéraux anti-torsion",
+            "Points de fixation": "Filetages 1\/4\\\"-20, ARRI 3\/8\\\"-16, Cold Shoe, rail NATO, plaque Arca-Swiss intégrée",
+            "Protection": "Patin en caoutchouc anti-rayures"
+        }
+    },
+    {
+        "name": "Cage vidéo mobile SmallRig avec double poignée pour iPhone 15 Pro Max",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 1290,
+        "cost_price": 1032,
+        "stock": 10,
+        "description": "Cage de protection ergonomique en alliage d'aluminium usiné avec précision CNC. Épouse parfaitement les contours de l'appareil tout en maintenant un accès libre à la batterie, aux cartes mémoire et aux commandes. Équipée de multiples filetages 1\/4\"-20, 3\/8\"-16 ARRI, rails NATO et griffes Cold Shoe pour le montage d'accessoires.",
+        "specs": {
+            "Matériaux": "Alliage d'aluminium aéronautique anodisé",
+            "Fixation caméra": "Vis 1\/4\\\"-20 et verrous latéraux anti-torsion",
+            "Points de fixation": "Filetages 1\/4\\\"-20, ARRI 3\/8\\\"-16, Cold Shoe, rail NATO, plaque Arca-Swiss intégrée",
+            "Protection": "Patin en caoutchouc anti-rayures"
+        }
+    },
+    {
+        "name": "Cage vidéo mobile SmallRig Basic Edition pour iPhone 16 Pro",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 890,
+        "cost_price": 712,
+        "stock": 10,
+        "description": "Cage de protection ergonomique en alliage d'aluminium usiné avec précision CNC. Épouse parfaitement les contours de l'appareil tout en maintenant un accès libre à la batterie, aux cartes mémoire et aux commandes. Équipée de multiples filetages 1\/4\"-20, 3\/8\"-16 ARRI, rails NATO et griffes Cold Shoe pour le montage d'accessoires.",
+        "specs": {
+            "Matériaux": "Alliage d'aluminium aéronautique anodisé",
+            "Fixation caméra": "Vis 1\/4\\\"-20 et verrous latéraux anti-torsion",
+            "Points de fixation": "Filetages 1\/4\\\"-20, ARRI 3\/8\\\"-16, Cold Shoe, rail NATO, plaque Arca-Swiss intégrée",
+            "Protection": "Patin en caoutchouc anti-rayures"
+        }
+    },
+    {
+        "name": "Cage vidéo mobile SmallRig pour iPhone 13 Pro Max",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 890,
+        "cost_price": 712,
+        "stock": 10,
+        "description": "Cage de protection ergonomique en alliage d'aluminium usiné avec précision CNC. Épouse parfaitement les contours de l'appareil tout en maintenant un accès libre à la batterie, aux cartes mémoire et aux commandes. Équipée de multiples filetages 1\/4\"-20, 3\/8\"-16 ARRI, rails NATO et griffes Cold Shoe pour le montage d'accessoires.",
+        "specs": {
+            "Matériaux": "Alliage d'aluminium aéronautique anodisé",
+            "Fixation caméra": "Vis 1\/4\\\"-20 et verrous latéraux anti-torsion",
+            "Points de fixation": "Filetages 1\/4\\\"-20, ARRI 3\/8\\\"-16, Cold Shoe, rail NATO, plaque Arca-Swiss intégrée",
+            "Protection": "Patin en caoutchouc anti-rayures"
+        }
+    },
+    {
+        "name": "Caisson Invisible pour Insta360 X5",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 1790,
+        "cost_price": 1432,
+        "stock": 10,
+        "description": "Boîtier étanche de plongée haute résistance spécialement conçu pour caméras 360°. Assure une étanchéité parfaite jusqu'à 50 mètres de profondeur tout en conservant une couture 360° transparente sous l'eau.",
+        "specs": {
+            "Type": "Caisson sous-marin invisible de plongée",
+            "Étanchéité": "Jusqu'à 50 mètres (IPX8 certifié)",
+            "Optique": "Dômes optiques haute transparence anti-distorsion",
+            "Fermeture": "Verrouillage mécanique sécurisé étanche",
+            "Usage": "Plongée sous-marine, sports nautiques, surf, snorkeling"
+        }
+    },
+    {
+        "name": "Caisson Invisible X4 (Invisible Dive Case)",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 1390,
+        "cost_price": 1112,
+        "stock": 10,
+        "description": "Boîtier étanche de plongée haute résistance spécialement conçu pour caméras 360°. Assure une étanchéité parfaite jusqu'à 50 mètres de profondeur tout en conservant une couture 360° transparente sous l'eau.",
+        "specs": {
+            "Type": "Caisson sous-marin invisible de plongée",
+            "Étanchéité": "Jusqu'à 50 mètres (IPX8 certifié)",
+            "Optique": "Dômes optiques haute transparence anti-distorsion",
+            "Fermeture": "Verrouillage mécanique sécurisé étanche",
+            "Usage": "Plongée sous-marine, sports nautiques, surf, snorkeling"
+        }
+    },
+    {
+        "name": "Capuchon d'objectifs X4\/X5",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 350,
+        "cost_price": 280,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Chargeur Flash Godox V1",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "BATT",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Accessoire de charge et d'alimentation certifié conçu pour assurer une autonomie maximale et une fiabilité sans faille à votre matériel audiovisuel.",
+        "specs": {
+            "Type": "Batterie \/ Chargeur rapide",
+            "Sécurité": "Circuit de protection intelligent intégré"
+        }
+    },
+    {
+        "name": "CNC Phone Rig",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "RIG",
+        "price": 790,
+        "cost_price": 632,
+        "stock": 10,
+        "description": "Support et cage en alliage d'aluminium usiné CNC pour smartphone. Idéal pour la création de contenu vidéo stable, les tournages mobiles et le vlogging avec plusieurs supports pour micro et éclairage.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium haute précision CNC",
+            "Compatibilité": "Smartphones de 65 mm à 90 mm de largeur",
+            "Fixations": "Cold shoe supérieure et filetages standard 1\/4\\\"-20"
+        }
+    },
+    {
+        "name": "CPL Filter 67mm Nano-C Series HMC",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 67 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "67 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur"
+        }
+    },
+    {
+        "name": "CPL Filter 67 mm Circular Polarizer Nano-A series",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 67 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "67 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur"
+        }
+    },
+    {
+        "name": "CPL Filter 67mm Nano-X Series",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 890,
+        "cost_price": 712,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 67 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "67 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur",
+            "Revêtement": "Revêtement nano 28 couches haute définition"
+        }
+    },
+    {
+        "name": "CPL Filter 67mm True Color Circular Nano-X Series",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 1290,
+        "cost_price": 1032,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 67 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "67 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur",
+            "Technologie": "Film polarisant True Color (zéro dérive jaune\/chaude)",
+            "Revêtement": "Revêtement nano 28 couches haute définition"
+        }
+    },
+    {
+        "name": "CPL Filter 67mm Ultra-Mince à Revêtement Multi-Couche Bleu",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 67 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "67 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur"
+        }
+    },
+    {
+        "name": "CPL Filter 77 mm Circular Polarizer Nano-A series",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 690,
+        "cost_price": 552,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 77 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "77 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur"
+        }
+    },
+    {
+        "name": "CPL Filter 77MM, Slim, Green Coated",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 77 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "77 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur"
+        }
+    },
+    {
+        "name": "CPL Filter 77mm Circular polarizer - C Series HMC",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 77 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "77 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur"
+        }
+    },
+    {
+        "name": "CPL Filter 77mm Nano-X Series",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 990,
+        "cost_price": 792,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 77 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "77 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur",
+            "Revêtement": "Revêtement nano 28 couches haute définition"
+        }
+    },
+    {
+        "name": "CPL Filter 77mm True Color Circular Nano-X Series",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 1390,
+        "cost_price": 1112,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 77 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "77 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur",
+            "Technologie": "Film polarisant True Color (zéro dérive jaune\/chaude)",
+            "Revêtement": "Revêtement nano 28 couches haute définition"
+        }
+    },
+    {
+        "name": "CPL Filter 77mm Ultra-Mince à Revêtement Multi-Couche Bleu",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 77 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "77 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur"
+        }
+    },
+    {
+        "name": "CPL Filter 82mm Circular polarizer - C Series HMC",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 82 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "82 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur"
+        }
+    },
+    {
+        "name": "CPL Filter 82mm Circular Polarizer Nano-A series",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 790,
+        "cost_price": 632,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 82 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "82 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur"
+        }
+    },
+    {
+        "name": "CPL Filter 82MM CPL, Slim, Green Coated",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 690,
+        "cost_price": 552,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 82 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "82 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur"
+        }
+    },
+    {
+        "name": "CPL Filter 82mm Nano-X Series",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 1190,
+        "cost_price": 952,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 82 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "82 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur",
+            "Revêtement": "Revêtement nano 28 couches haute définition"
+        }
+    },
+    {
+        "name": "CPL Filter 82mm True Color Circular Nano-X Series",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 1490,
+        "cost_price": 1192,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 82 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "82 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur",
+            "Technologie": "Film polarisant True Color (zéro dérive jaune\/chaude)",
+            "Revêtement": "Revêtement nano 28 couches haute définition"
+        }
+    },
+    {
+        "name": "CPL Filter 82mm Ultra-low Reflection Nano-X Series",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 1390,
+        "cost_price": 1112,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 82 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "82 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur",
+            "Revêtement": "Revêtement nano 28 couches haute définition"
+        }
+    },
+    {
+        "name": "CPL Filter 82mm Ultra-Mince à Revêtement Multi-Couche Bleu",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 82 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "82 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur"
+        }
+    },
+    {
+        "name": "CPL Filtre 67 mm, Nano-X série",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 990,
+        "cost_price": 792,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 67 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "67 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur",
+            "Revêtement": "Revêtement nano 28 couches haute définition"
+        }
+    },
+    {
+        "name": "CPL Filtre 67 mm à réflexion ultra-faible Nano-X série",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 1090,
+        "cost_price": 872,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 67 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "67 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur",
+            "Revêtement": "Revêtement nano 28 couches haute définition"
+        }
+    },
+    {
+        "name": "CPL Filtre 77 mm Ultra-low Reflection Nano-Xcel Series",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 1290,
+        "cost_price": 1032,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 77 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "77 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur",
+            "Revêtement": "Revêtement nano 28 couches haute définition"
+        }
+    },
+    {
+        "name": "CPL Filtre 77mm Filtre Polarisant Circulaire",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 1190,
+        "cost_price": 952,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 77 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "77 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur"
+        }
+    },
+    {
+        "name": "CPL Filtre d'Ultra-Faible Réflexion 67mm",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 990,
+        "cost_price": 792,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 67 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "67 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur"
+        }
+    },
+    {
+        "name": "CPL Filtre d'Ultra-Faible Réflexion 82mm Filtre Polarisant Circulaire",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 1190,
+        "cost_price": 952,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 82 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "82 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur"
+        }
+    },
+    {
+        "name": "CPL Filtre True Color 67mm Filtre Polarisant Circulaire",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 1190,
+        "cost_price": 952,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 67 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "67 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur",
+            "Technologie": "Film polarisant True Color (zéro dérive jaune\/chaude)"
+        }
+    },
+    {
+        "name": "CPL Filtre True Color 77mm Filtre Polarisant Circulaire",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 1290,
+        "cost_price": 1032,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 77 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "77 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur",
+            "Technologie": "Film polarisant True Color (zéro dérive jaune\/chaude)"
+        }
+    },
+    {
+        "name": "CPL Filtre True Color 82mm Filtre Polarisant Circulaire",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "KNF",
+        "price": 1390,
+        "cost_price": 1112,
+        "stock": 10,
+        "description": "Filtre polarisant circulaire professionnel (CPL) de diamètre 82 mm. Élimine efficacement les reflets non métalliques sur l'eau et le verre, intensifie la saturation des couleurs et renforce le contraste des ciels et paysages.",
+        "specs": {
+            "Type": "Filtre Polarisant Circulaire (CPL)",
+            "Diamètre": "82 mm",
+            "Matériau du verre": "Verre optique professionnel haute clarté",
+            "Monture": "Profil ultra-mince en aluminium aéronautique anti-vignettage",
+            "Traitements": "Multicouche déperlant, oléofuge et anti-rayures",
+            "Usage": "Photographie de paysage, architecture et extérieur",
+            "Technologie": "Film polarisant True Color (zéro dérive jaune\/chaude)"
+        }
+    },
+    {
+        "name": "Cynova Osmo Action Dual usb-c adaptater",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 400,
+        "cost_price": 320,
+        "stock": 10,
+        "description": "Accessoire photographique et audiovisuel de haute précision, conçu pour compléter et fiabiliser votre équipement de prise de vue sur le terrain comme en studio.",
+        "specs": {
+            "Matériau": "Métal haute durabilité et finition anticorrosion",
+            "Compatibilité": "Matériel de prise de vue standard photo & vidéo"
+        }
+    },
+    {
+        "name": "Déclencheur de flash TTL Godox X3Pro C pour Canon",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 969,
+        "cost_price": 775.2,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Déclencheur de flash TTL Godox X3Pro N pour Nikon",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 969,
+        "cost_price": 775.2,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Déclencheur de flash TTL Godox X3Pro S pour Sony",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 969,
+        "cost_price": 775.2,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Desktop Mic Stand Gator Boom Arm",
+        "category_id": 11,
+        "category_slug": "materiel-de-podcast",
+        "category_name": "Matériel de Podcast",
+        "brand": "GATOR",
+        "price": 1890,
+        "cost_price": 1512,
+        "stock": 10,
+        "description": "Bras articulé de bureau broadcast professionnel avec ressorts internes dissimulés et gestion intégrée des câbles. Permet un positionnement fluide et silencieux du microphone sans vibrations parasites.",
+        "specs": {
+            "Type": "Bras articulé de studio broadcast pour micro",
+            "Rotation": "Rotation 360° silencieuse avec molette de serrage sécurisée",
+            "Fixation": "Pince de bureau robuste et embase de fixation traversante",
+            "Filetage": "5\/8\\\" et adaptateur 3\/8\\\" universel pour tous micros"
+        }
+    },
+    {
+        "name": "Dji Mavic Air 2 ND Filters Set ND4-8-32",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "DJI",
+        "price": 400,
+        "cost_price": 320,
+        "stock": 10,
+        "description": "Jeu de filtres ND magnétiques haute performance (ND4, ND8, ND32) conçu pour le drone DJI Mavic Air 2. Permet de réduire la vitesse d'obturation pour obtenir un flou de mouvement cinématographique sous forte luminosité.",
+        "specs": {
+            "Compatibilité": "DJI Mavic Air 2",
+            "Contenu du kit": "Filtres ND4, ND8, ND32",
+            "Verre optique": "Haute transmission lumineuse sans dérive chromatique",
+            "Poids": "Ultra-léger pour préserver l'équilibrage de la nacelle"
+        }
+    },
+    {
+        "name": "DJI Osmo Pocket 3 Magnetic Black Diffusion Cinematic Effect Filters",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "DJI",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Filtre magnétique haute précision conçu spécifiquement pour la caméra DJI Osmo Pocket 3. Se fixe instantanément sur l'objectif grâce à une fixation magnétique puissante sans gêner le calibrage de la nacelle.",
+        "specs": {
+            "Compatibilité": "DJI Osmo Pocket 3",
+            "Fixation": "Magnétique ultra-rapide",
+            "Verre": "Verre optique AGC haute définition avec traitement multicouche",
+            "Propriétés": "Résistant à l'eau, à l'huile et aux rayures"
+        }
+    },
+    {
+        "name": "DJI Osmo Pocket 3 Magnetic CPL Circular Polarizer Filter",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "DJI",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Filtre magnétique haute précision conçu spécifiquement pour la caméra DJI Osmo Pocket 3. Se fixe instantanément sur l'objectif grâce à une fixation magnétique puissante sans gêner le calibrage de la nacelle.",
+        "specs": {
+            "Compatibilité": "DJI Osmo Pocket 3",
+            "Fixation": "Magnétique ultra-rapide",
+            "Verre": "Verre optique AGC haute définition avec traitement multicouche",
+            "Propriétés": "Résistant à l'eau, à l'huile et aux rayures"
+        }
+    },
+    {
+        "name": "DJI Osmo Pocket 3 Magnetic UV Protection Filter",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "DJI",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Filtre magnétique haute précision conçu spécifiquement pour la caméra DJI Osmo Pocket 3. Se fixe instantanément sur l'objectif grâce à une fixation magnétique puissante sans gêner le calibrage de la nacelle.",
+        "specs": {
+            "Compatibilité": "DJI Osmo Pocket 3",
+            "Fixation": "Magnétique ultra-rapide",
+            "Verre": "Verre optique AGC haute définition avec traitement multicouche",
+            "Propriétés": "Résistant à l'eau, à l'huile et aux rayures"
+        }
+    },
+    {
+        "name": "DJI SDR Transmission Combo",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "DJI",
+        "price": 5900,
+        "cost_price": 4720,
+        "stock": 10,
+        "description": "Système de transmission vidéo professionnel sans fil basé sur la technologie Software Defined Radio (SDR). Assure une transmission vidéo Full HD 1080p 60fps jusqu'à 2 km avec une latence ultra-faible de 35 ms et une stabilité hors norme sur les plateaux de tournage.",
+        "specs": {
+            "Technologie": "Software Defined Radio (SDR) + Wi-Fi",
+            "Portée maximale": "Jusqu'à 2 km (en visibilité directe)",
+            "Résolution": "1080p à 60 ips",
+            "Latence": "Ultra-faible (35 ms)",
+            "Connectique": "Entrée\/Sortie SDI et HDMI, ports USB-C, alimentation NP-F",
+            "Compatibilité": "Gimbals DJI RS 3 Pro \/ RS 4 \/ RS 4 Pro et moniteurs de contrôle"
+        }
+    },
+    {
+        "name": "Dual Cold Shoe Mount Bracket",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Accessoire photographique et audiovisuel de haute précision, conçu pour compléter et fiabiliser votre équipement de prise de vue sur le terrain comme en studio.",
+        "specs": {
+            "Matériau": "Métal haute durabilité et finition anticorrosion",
+            "Compatibilité": "Matériel de prise de vue standard photo & vidéo"
+        }
+    },
+    {
+        "name": "Ensemble de tiges en fibre de carbone SmallRig 15 mm",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Accessoire photographique et audiovisuel de haute précision, conçu pour compléter et fiabiliser votre équipement de prise de vue sur le terrain comme en studio.",
+        "specs": {
+            "Matériau": "Métal haute durabilité et finition anticorrosion",
+            "Compatibilité": "Matériel de prise de vue standard photo & vidéo"
+        }
+    },
+    {
+        "name": "Étui à filtres K&F Concept à 4 poches",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "FLT",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Étui de transport rembourré et imperméable conçu pour ranger, organiser et protéger vos filtres d'objectifs photo contre les rayures, la poussière et les chocs lors de vos déplacements.",
+        "specs": {
+            "Type": "Pochette de rangement pour filtres d'objectifs",
+            "Matériau": "Nylon balistique résistant aux intempéries",
+            "Fermeture": "Velcro sécurisé \/ Zip renforcé",
+            "Doublure": "Compartiments souples anti-rayures",
+            "Capacité": "Jusqu'à 4 filtres"
+        }
+    },
+    {
+        "name": "Étui de plongée pour Insta360 Ace Pro",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 990,
+        "cost_price": 792,
+        "stock": 10,
+        "description": "Boîtier étanche de plongée haute résistance spécialement conçu pour caméras 360°. Assure une étanchéité parfaite jusqu'à 50 mètres de profondeur tout en conservant une couture 360° transparente sous l'eau.",
+        "specs": {
+            "Type": "Caisson sous-marin invisible de plongée",
+            "Étanchéité": "Jusqu'à 50 mètres (IPX8 certifié)",
+            "Optique": "Dômes optiques haute transparence anti-distorsion",
+            "Fermeture": "Verrouillage mécanique sécurisé étanche",
+            "Usage": "Plongée sous-marine, sports nautiques, surf, snorkeling"
+        }
+    },
+    {
+        "name": "Étui pour batterie et cartes SD",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "BATT",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Accessoire de charge et d'alimentation certifié conçu pour assurer une autonomie maximale et une fiabilité sans faille à votre matériel audiovisuel.",
+        "specs": {
+            "Type": "Batterie \/ Chargeur rapide",
+            "Sécurité": "Circuit de protection intelligent intégré"
+        }
+    },
+    {
+        "name": "Étui pour carte mémoire 24 emplacements pour carte SD",
+        "category_id": 9,
+        "category_slug": "carte-memoire-lecteur",
+        "category_name": "Carte mémoire \/ Lecteur",
+        "brand": "CARD",
+        "price": 250,
+        "cost_price": 200,
+        "stock": 10,
+        "description": "Boîtier de rangement étanche et antichoc pour cartes mémoire et batteries. Protège vos données et votre alimentation contre l'humidité, la poussière et les chutes lors des tournages en extérieur.",
+        "specs": {
+            "Capacité": "Compartiments moulés pour cartes SD, micro SD et batteries",
+            "Protection": "Boîtier rigide en polycarbonate avec joint d'étanchéité en silicone",
+            "Fermeture": "Système de verrouillage ergonomique à clip sécurisé"
+        }
+    },
+    {
+        "name": "Étui pour filtres circulaires K&F Concept à 3 poches (jusqu'à 62 mm)",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "FLT",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Étui de transport rembourré et imperméable conçu pour ranger, organiser et protéger vos filtres d'objectifs photo contre les rayures, la poussière et les chocs lors de vos déplacements.",
+        "specs": {
+            "Type": "Pochette de rangement pour filtres d'objectifs",
+            "Matériau": "Nylon balistique résistant aux intempéries",
+            "Fermeture": "Velcro sécurisé \/ Zip renforcé",
+            "Doublure": "Compartiments souples anti-rayures",
+            "Capacité": "Jusqu'à 3 filtres",
+            "Diamètre max": "62 mm"
+        }
+    },
+    {
+        "name": "Étui pour filtres circulaires K&F Concept à 3 poches (jusqu'à 82 mm)",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "FLT",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Étui de transport rembourré et imperméable conçu pour ranger, organiser et protéger vos filtres d'objectifs photo contre les rayures, la poussière et les chocs lors de vos déplacements.",
+        "specs": {
+            "Type": "Pochette de rangement pour filtres d'objectifs",
+            "Matériau": "Nylon balistique résistant aux intempéries",
+            "Fermeture": "Velcro sécurisé \/ Zip renforcé",
+            "Doublure": "Compartiments souples anti-rayures",
+            "Capacité": "Jusqu'à 3 filtres",
+            "Diamètre max": "82 mm"
+        }
+    },
+    {
+        "name": "Étui pour filtres circulaires K&F Concept à 4 poches (jusqu'à 95 mm)",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "FLT",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Étui de transport rembourré et imperméable conçu pour ranger, organiser et protéger vos filtres d'objectifs photo contre les rayures, la poussière et les chocs lors de vos déplacements.",
+        "specs": {
+            "Type": "Pochette de rangement pour filtres d'objectifs",
+            "Matériau": "Nylon balistique résistant aux intempéries",
+            "Fermeture": "Velcro sécurisé \/ Zip renforcé",
+            "Doublure": "Compartiments souples anti-rayures",
+            "Capacité": "Jusqu'à 4 filtres",
+            "Diamètre max": "95 mm"
+        }
+    },
+    {
+        "name": "FeelWorld W1000H",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "FW",
+        "price": 6890,
+        "cost_price": 5512,
+        "stock": 10,
+        "description": "Système de transmission vidéo sans fil HDMI et\/ou SDI FeelWorld offrant une portée de 300 mètres (1000 pieds) en ligne de mire avec interphone bidirectionnel duplex intégral et monitoring simultané sur smartphones\/tablettes.",
+        "specs": {
+            "Portée de transmission": "300 mètres (1000 pieds)",
+            "Latence": "0,08 seconde ultra-faible",
+            "Fonctionnalité clé": "Interphone sans fil full duplex pour réalisateur\/cadreur",
+            "Monitoring": "Prise en charge jusqu'à 4 appareils mobiles via application",
+            "Alimentation": "Batterie Sony série NP-F, USB Type-C ou entrée CC"
+        }
+    },
+    {
+        "name": "FeelWorld W1000S",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "FW",
+        "price": 7490,
+        "cost_price": 5992,
+        "stock": 10,
+        "description": "Système de transmission vidéo sans fil HDMI et\/ou SDI FeelWorld offrant une portée de 300 mètres (1000 pieds) en ligne de mire avec interphone bidirectionnel duplex intégral et monitoring simultané sur smartphones\/tablettes.",
+        "specs": {
+            "Portée de transmission": "300 mètres (1000 pieds)",
+            "Latence": "0,08 seconde ultra-faible",
+            "Fonctionnalité clé": "Interphone sans fil full duplex pour réalisateur\/cadreur",
+            "Monitoring": "Prise en charge jusqu'à 4 appareils mobiles via application",
+            "Alimentation": "Batterie Sony série NP-F, USB Type-C ou entrée CC"
+        }
+    },
+    {
+        "name": "Gaffer 4.8cm x 9m",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "ACC",
+        "price": 790,
+        "cost_price": 632,
+        "stock": 10,
+        "description": "Véritable adhésif toilé de studio (Gaffer) professionnel 4,8 cm x 9 m. Offre une très forte adhérence sur toutes surfaces tout en se retirant proprement sans laisser de résidus de colle.",
+        "specs": {
+            "Dimensions": "Largeur 4,8 cm x Longueur 9 m",
+            "Matériau": "Toile mate tissée haute densité sans reflet",
+            "Propriétés": "Déchirable à la main, étanche, sans résidu adhésif"
+        }
+    },
+    {
+        "name": "Godox Trigger X3 Nikon\/Sony\/Canon",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 990,
+        "cost_price": 792,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Godox VK1 (Lightning or Type C)",
+        "category_id": 3,
+        "category_slug": "lumieres-materiel-de-studio",
+        "category_name": "Lumières \/ Matériel de studio",
+        "brand": "GDX",
+        "price": 1890,
+        "cost_price": 1512,
+        "stock": 10,
+        "description": "Kit complet de vlogging et création de contenu mobile pour smartphone. Comprend une cage ou support ergonomique, un mini projecteur LED puissant et un microphone directionnel pour des vidéos professionnelles sur YouTube et TikTok.",
+        "specs": {
+            "Contenu du pack": "Cage\/Support smartphone, mini panneau LED, trépied de table, micro canon",
+            "Compatibilité": "Smartphones iOS et Android",
+            "Éclairage": "Lampe LED compacte rechargeable avec réglage d'intensité",
+            "Usage": "Vlogging, streaming en direct, interviews, réseaux sociaux"
+        }
+    },
+    {
+        "name": "GoPro Caisson de Protection GoPro Black 9\/10\/11\/12",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Accessoire photographique et audiovisuel de haute précision, conçu pour compléter et fiabiliser votre équipement de prise de vue sur le terrain comme en studio.",
+        "specs": {
+            "Matériau": "Métal haute durabilité et finition anticorrosion",
+            "Compatibilité": "Matériel de prise de vue standard photo & vidéo"
+        }
+    },
+    {
+        "name": "Gopro Waterproof Floating Handgrip Buoyancy Selfie Stick",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Accessoire photographique et audiovisuel de haute précision, conçu pour compléter et fiabiliser votre équipement de prise de vue sur le terrain comme en studio.",
+        "specs": {
+            "Matériau": "Métal haute durabilité et finition anticorrosion",
+            "Compatibilité": "Matériel de prise de vue standard photo & vidéo"
+        }
+    },
+    {
+        "name": "Goujon double extrémité SmallRig 1\/4\"-20 à 1\/4\"-20 (paquet de 2)",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 90,
+        "cost_price": 72,
+        "stock": 10,
+        "description": "Accessoire photographique et audiovisuel de haute précision, conçu pour compléter et fiabiliser votre équipement de prise de vue sur le terrain comme en studio.",
+        "specs": {
+            "Matériau": "Métal haute durabilité et finition anticorrosion",
+            "Compatibilité": "Matériel de prise de vue standard photo & vidéo"
+        }
+    },
+    {
+        "name": "GP15 Magnetic Quick Release Flexible Action Neck Mount for POV",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 690,
+        "cost_price": 552,
+        "stock": 10,
+        "description": "Accessoire photographique et audiovisuel de haute précision, conçu pour compléter et fiabiliser votre équipement de prise de vue sur le terrain comme en studio.",
+        "specs": {
+            "Matériau": "Métal haute durabilité et finition anticorrosion",
+            "Compatibilité": "Matériel de prise de vue standard photo & vidéo"
+        }
+    },
+    {
+        "name": "Harnais d'épaule SmallRig SR007 HawkLock Pro",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 4990,
+        "cost_price": 3992,
+        "stock": 10,
+        "description": "Système d'épaule professionnel SmallRig HawkLock Pro offrant une ergonomie supérieure pour les tournages longs au poing. Équipé d'un coussin d'épaule en silicone ergonomique, de poignées à rosette réglables et d'une plaque de base à fixation rapide.",
+        "specs": {
+            "Système": "Support d'épaule complet HawkLock Pro",
+            "Matériaux": "Alliage d'aluminium et silicone haute résilience",
+            "Réglages": "Poignées doubles pivotantes à rosettes ARRI",
+            "Compatibilité": "Tiges 15 mm standard LWS et caméras cinéma\/hybrides"
+        }
+    },
+    {
+        "name": "Head Strap & Chest Mount",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Accessoire photographique et audiovisuel de haute précision, conçu pour compléter et fiabiliser votre équipement de prise de vue sur le terrain comme en studio.",
+        "specs": {
+            "Matériau": "Métal haute durabilité et finition anticorrosion",
+            "Compatibilité": "Matériel de prise de vue standard photo & vidéo"
+        }
+    },
+    {
+        "name": "Head Strap & Chest Mount Set",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Accessoire photographique et audiovisuel de haute précision, conçu pour compléter et fiabiliser votre équipement de prise de vue sur le terrain comme en studio.",
+        "specs": {
+            "Matériau": "Métal haute durabilité et finition anticorrosion",
+            "Compatibilité": "Matériel de prise de vue standard photo & vidéo"
+        }
+    },
+    {
+        "name": "Insta360 3-Prong to 1\/4\" Adapter",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 140,
+        "cost_price": 112,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 70cm Invisible Selfie Stick",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Perche télescopique invisible officielle pour caméras Insta360. Effacée automatiquement de l'image par les algorithmes de la caméra pour créer des angles à la troisième personne et des effets de drone saisissants.",
+        "specs": {
+            "Type": "Perche à selfie invisible",
+            "Effet": "Invisible à 360° dans les rendus vidéo et photo",
+            "Matériau": "Aluminium aéronautique ou fibre de carbone haute résistance",
+            "Fixation": "Vis standard 1\/4\\\"-20 sur le dessus et taraudage 1\/4\\\" à la base"
+        }
+    },
+    {
+        "name": "Insta360 Ace Pro & Ace Carry Case",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 Ace Pro & Ace Cold Shoe",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 Ace Pro & Ace Float Guard",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 Ace Pro & Ace Mic Adapter",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Adaptateur de microphone officiel ultra-compact permettant de connecter un micro externe 3,5 mm tout en conservant un port USB-C pour recharger la caméra en continu.",
+        "specs": {
+            "Entrée audio": "Jack 3,5 mm pour micro externe",
+            "Port d'alimentation": "USB Type-C pour recharge en simultané",
+            "Design": "Profil bas et invisible dans les prises de vue à 360°"
+        }
+    },
+    {
+        "name": "Insta360 Ace Pro & Ace Power Accessories",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 Ace Pro & Ace Quick Reader",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 990,
+        "cost_price": 792,
+        "stock": 10,
+        "description": "Module de stockage externe et de transfert rapide pour Insta360. Permet de transférer vos rushs directement sur votre smartphone via Lightning ou USB-C sans consommer la batterie de la caméra ni nécessiter de connexion Wi-Fi.",
+        "specs": {
+            "Connecteurs": "USB Type-C & Lightning certifié Apple MFi",
+            "Compatibilité": "Smartphones iOS (iPhone\/iPad) et Android, PC\/Mac",
+            "Fonction": "Transfert direct haute vitesse et montage sur application Insta360"
+        }
+    },
+    {
+        "name": "Insta360 Ace Pro & Ace Standard Mount",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 Ace Pro & Ace Vertical-Horizontal Mount",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 Ace Pro ND Filter Set",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 1890,
+        "cost_price": 1512,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 Ace Pro Screen Protector",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 All-Purpose Tripod",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 Chest Strap",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 Extra Long Selfie Stick",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 1390,
+        "cost_price": 1112,
+        "stock": 10,
+        "description": "Perche télescopique invisible officielle pour caméras Insta360. Effacée automatiquement de l'image par les algorithmes de la caméra pour créer des angles à la troisième personne et des effets de drone saisissants.",
+        "specs": {
+            "Type": "Perche à selfie invisible",
+            "Effet": "Invisible à 360° dans les rendus vidéo et photo",
+            "Matériau": "Aluminium aéronautique ou fibre de carbone haute résistance",
+            "Fixation": "Vis standard 1\/4\\\"-20 sur le dessus et taraudage 1\/4\\\" à la base"
+        }
+    },
+    {
+        "name": "Insta360 Flexible Adhesive Mount",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 GPS Action Remote",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 1190,
+        "cost_price": 952,
+        "stock": 10,
+        "description": "Télécommande sans fil Bluetooth avec GPS intégré. Permet de contrôler à distance le déclenchement de la caméra et d'enregistrer des données télémétriques précises (vitesse, dénivelé, tracé GPS) à intégrer dans vos vidéos.",
+        "specs": {
+            "Connectivité": "Bluetooth 5.0 longue portée",
+            "Données intégrées": "Module GPS haute précision pour télémétrie sportive",
+            "Batterie": "Batterie rechargeable intégrée longue autonomie",
+            "Fixation": "Bracelet montre et support pour perche ou guidon"
+        }
+    },
+    {
+        "name": "Insta360 GPS Preview Remote",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 1990,
+        "cost_price": 1592,
+        "stock": 10,
+        "description": "Télécommande sans fil Bluetooth avec GPS intégré. Permet de contrôler à distance le déclenchement de la caméra et d'enregistrer des données télémétriques précises (vitesse, dénivelé, tracé GPS) à intégrer dans vos vidéos.",
+        "specs": {
+            "Connectivité": "Bluetooth 5.0 longue portée",
+            "Données intégrées": "Module GPS haute précision pour télémétrie sportive",
+            "Batterie": "Batterie rechargeable intégrée longue autonomie",
+            "Fixation": "Bracelet montre et support pour perche ou guidon"
+        }
+    },
+    {
+        "name": "Insta360 Hand Mount Bundle",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 Head Strap",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 Helmet Chin Mount",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 Kit de protection d'objectif autocollant X3",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 Lens caps stickers X3",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 Lens Guard stickers X3 (copie)",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 190,
+        "cost_price": 152,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 Motorcycle Bundle",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 990,
+        "cost_price": 792,
+        "stock": 10,
+        "description": "Kit de fixation moto robuste conçu pour installer solidement votre caméra Insta360 sur le guidon, le cadre ou le pare-choc. Offre une stabilité exceptionnelle même à haute vitesse et sous fortes vibrations.",
+        "specs": {
+            "Type": "Kit de montage moto tout-terrain ultra-robuste",
+            "Fixation": "Pince de guidon en alliage robuste avec mâchoires antidérapantes",
+            "Compatibilité": "Guidons de 17 mm à 30 mm de diamètre",
+            "Stabilité": "Bras d'extension et rotule de verrouillage haute résistance"
+        }
+    },
+    {
+        "name": "Insta360 Motorcycle Mount Bundle",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 890,
+        "cost_price": 712,
+        "stock": 10,
+        "description": "Kit de fixation moto robuste conçu pour installer solidement votre caméra Insta360 sur le guidon, le cadre ou le pare-choc. Offre une stabilité exceptionnelle même à haute vitesse et sous fortes vibrations.",
+        "specs": {
+            "Type": "Kit de montage moto tout-terrain ultra-robuste",
+            "Fixation": "Pince de guidon en alliage robuste avec mâchoires antidérapantes",
+            "Compatibilité": "Guidons de 17 mm à 30 mm de diamètre",
+            "Stabilité": "Bras d'extension et rotule de verrouillage haute résistance"
+        }
+    },
+    {
+        "name": "Insta360 Motorcycle Selfie Stick Support Clamp",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 990,
+        "cost_price": 792,
+        "stock": 10,
+        "description": "Perche télescopique invisible officielle pour caméras Insta360. Effacée automatiquement de l'image par les algorithmes de la caméra pour créer des angles à la troisième personne et des effets de drone saisissants.",
+        "specs": {
+            "Type": "Perche à selfie invisible",
+            "Effet": "Invisible à 360° dans les rendus vidéo et photo",
+            "Matériau": "Aluminium aéronautique ou fibre de carbone haute résistance",
+            "Fixation": "Vis standard 1\/4\\\"-20 sur le dessus et taraudage 1\/4\\\" à la base"
+        }
+    },
+    {
+        "name": "Insta360 Multi Mount",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 890,
+        "cost_price": 712,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 ONE X Invisible Selfie Stick",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Perche télescopique invisible officielle pour caméras Insta360. Effacée automatiquement de l'image par les algorithmes de la caméra pour créer des angles à la troisième personne et des effets de drone saisissants.",
+        "specs": {
+            "Type": "Perche à selfie invisible",
+            "Effet": "Invisible à 360° dans les rendus vidéo et photo",
+            "Matériau": "Aluminium aéronautique ou fibre de carbone haute résistance",
+            "Fixation": "Vis standard 1\/4\\\"-20 sur le dessus et taraudage 1\/4\\\" à la base"
+        }
+    },
+    {
+        "name": "Insta360 Perche à selfie invisible 1.14m",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Perche télescopique invisible officielle pour caméras Insta360. Effacée automatiquement de l'image par les algorithmes de la caméra pour créer des angles à la troisième personne et des effets de drone saisissants.",
+        "specs": {
+            "Type": "Perche à selfie invisible",
+            "Effet": "Invisible à 360° dans les rendus vidéo et photo",
+            "Matériau": "Aluminium aéronautique ou fibre de carbone haute résistance",
+            "Fixation": "Vis standard 1\/4\\\"-20 sur le dessus et taraudage 1\/4\\\" à la base"
+        }
+    },
+    {
+        "name": "Insta360 Power Selfie Stick",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 990,
+        "cost_price": 792,
+        "stock": 10,
+        "description": "Perche télescopique invisible officielle pour caméras Insta360. Effacée automatiquement de l'image par les algorithmes de la caméra pour créer des angles à la troisième personne et des effets de drone saisissants.",
+        "specs": {
+            "Type": "Perche à selfie invisible",
+            "Effet": "Invisible à 360° dans les rendus vidéo et photo",
+            "Matériau": "Aluminium aéronautique ou fibre de carbone haute résistance",
+            "Fixation": "Vis standard 1\/4\\\"-20 sur le dessus et taraudage 1\/4\\\" à la base"
+        }
+    },
+    {
+        "name": "Insta360 Quick Release Mount",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 790,
+        "cost_price": 632,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 Rear View Mirror Mount",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 690,
+        "cost_price": 552,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 Station de charge rapide pour X3",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "INSTA",
+        "price": 690,
+        "cost_price": 552,
+        "stock": 10,
+        "description": "Accessoire d'alimentation officiel ou certifié haute performance pour caméras Insta360, garantissant une autonomie prolongée et une recharge rapide et sécurisée.",
+        "specs": {
+            "Type": "Alimentation \/ Batterie \/ Hub de charge rapide pour caméra d'action",
+            "Sécurité": "Protection intelligente contre les surtensions et surchauffes",
+            "Compatibilité": "Caméras d'action Insta360"
+        }
+    },
+    {
+        "name": "Insta360 Suction Cup Car Mount",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 690,
+        "cost_price": 552,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 Third Person Bike Handlebar Mount",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 790,
+        "cost_price": 632,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 Third-Person Backpack Mount",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 1290,
+        "cost_price": 1032,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 X3 Horizontal Action Mount",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 X3 Mic Adapter",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Adaptateur de microphone officiel ultra-compact permettant de connecter un micro externe 3,5 mm tout en conservant un port USB-C pour recharger la caméra en continu.",
+        "specs": {
+            "Entrée audio": "Jack 3,5 mm pour micro externe",
+            "Port d'alimentation": "USB Type-C pour recharge en simultané",
+            "Design": "Profil bas et invisible dans les prises de vue à 360°"
+        }
+    },
+    {
+        "name": "Insta360 X3 Quick Reader",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 990,
+        "cost_price": 792,
+        "stock": 10,
+        "description": "Module de stockage externe et de transfert rapide pour Insta360. Permet de transférer vos rushs directement sur votre smartphone via Lightning ou USB-C sans consommer la batterie de la caméra ni nécessiter de connexion Wi-Fi.",
+        "specs": {
+            "Connecteurs": "USB Type-C & Lightning certifié Apple MFi",
+            "Compatibilité": "Smartphones iOS (iPhone\/iPad) et Android, PC\/Mac",
+            "Fonction": "Transfert direct haute vitesse et montage sur application Insta360"
+        }
+    },
+    {
+        "name": "Insta360 X3 Water Sports Rope Mount",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 1490,
+        "cost_price": 1192,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 X4 Adaptateur de microphone",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Adaptateur de microphone officiel ultra-compact permettant de connecter un micro externe 3,5 mm tout en conservant un port USB-C pour recharger la caméra en continu.",
+        "specs": {
+            "Entrée audio": "Jack 3,5 mm pour micro externe",
+            "Port d'alimentation": "USB Type-C pour recharge en simultané",
+            "Design": "Profil bas et invisible dans les prises de vue à 360°"
+        }
+    },
+    {
+        "name": "Insta360 X4 Kit de protection d'objectif standard",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Accessoire officiel de montage et de protection conçu pour enrichir l'écosystème de votre caméra d'action Insta360 avec un confort d'utilisation et une durabilité maximum.",
+        "specs": {
+            "Type": "Accessoire de fixation et support pour caméra Insta360",
+            "Matériau": "Alliage haute durabilité et polymère renforcé",
+            "Compatibilité": "Caméras Insta360"
+        }
+    },
+    {
+        "name": "Insta360 X5\/X4 Air mic Adaptateur",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "INSTA",
+        "price": 129,
+        "cost_price": 103.2,
+        "stock": 10,
+        "description": "Adaptateur de microphone officiel ultra-compact permettant de connecter un micro externe 3,5 mm tout en conservant un port USB-C pour recharger la caméra en continu.",
+        "specs": {
+            "Entrée audio": "Jack 3,5 mm pour micro externe",
+            "Port d'alimentation": "USB Type-C pour recharge en simultané",
+            "Design": "Profil bas et invisible dans les prises de vue à 360°"
+        }
+    }
+]
