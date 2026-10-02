@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             BatteryChargerProductsSeeder::class,
             MemoryCardProductsSeeder::class,
             ExtendedCatalogProductsSeeder::class,
+            ExtendedCatalogBatch2Seeder::class,
         ]);
     }
 }

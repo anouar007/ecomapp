@@ -1,0 +1,1598 @@
+[
+    {
+        "name": "K&F Concept – KF13.179 – Sling Bag 5L Urban Wander “Black”",
+        "category_id": 6,
+        "category_slug": "sacs-de-camera",
+        "category_name": "Sacs de caméra",
+        "brand": "KNF",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Sac bandoulière urbain K&F Concept KF13.179 Sling Bag 5L noir. Conçu pour les photographes nomades et créateurs de contenu, il accueille un boîtier hybride et deux objectifs compacts avec des séparateurs modulables rembourrés et une toile imperméable de haute qualité.",
+        "specs": {
+            "Capacité": "5 Litres",
+            "Matériau": "Nylon 900D hydrofuge résistant aux déchirures",
+            "Dimensions": "Environ 33 x 22 x 15 cm",
+            "Compartiments": "Séparateurs intérieurs amovibles et poche pour accessoires",
+            "Poids": "Environ 500 g"
+        }
+    },
+    {
+        "name": "K&F Concept Model KF13.044V5 (Beta V2) — 15 L",
+        "category_id": 6,
+        "category_slug": "sacs-de-camera",
+        "category_name": "Sacs de caméra",
+        "brand": "KNF",
+        "price": 790,
+        "cost_price": 632,
+        "stock": 10,
+        "description": "Sac à dos photo multifonction K&F Concept Beta V2 (KF13.044V5) 15L. Doté d'un compartiment supérieur pour effets personnels et d'un compartiment inférieur à accès latéral rapide pour votre matériel photo, avec sangle pour trépied et housse de pluie intégrée.",
+        "specs": {
+            "Capacité": "15 Litres",
+            "Configuration": "1 boîtier reflex\/hybride + 3 à 4 objectifs + flash",
+            "Compartiment PC": "Emplacement rembourré pour ordinateur portable jusqu'à 14\\\"",
+            "Protection": "Toile déperlante haute densité + housse de pluie fournie",
+            "Accès rapide": "Ouverture latérale pour dégainer son appareil instantanément"
+        }
+    },
+    {
+        "name": "K&F Concept 3in1 DSLR Camera Cleaning Kit",
+        "category_id": 15,
+        "category_slug": "kit-de-nettoyage",
+        "category_name": "Kit de nettoyage",
+        "brand": "KNF",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Kit de nettoyage optique 3-en-1 professionnel K&F Concept pour boîtiers reflex, hybrides et optiques. Comprend une soufflette d'air dépoussiérante à buse silicone, un stylo de nettoyage double face avec embout carbone et un chiffon en microfibre haute densité emballé sous vide.",
+        "specs": {
+            "Contenu du kit": "Soufflette d'air puissante, stylo nettoyant optique carbone, microfibre stérile",
+            "Matériau": "Silicone doux, brosse antistatique rétractable, microfibre micro-tissée",
+            "Usage": "Objectifs, lentilles, filtres, viseurs et capteurs d'appareils photo"
+        }
+    },
+    {
+        "name": "K&F Concept – Lens Protective Bag Size L \/ KF13.202",
+        "category_id": 6,
+        "category_slug": "sacs-de-camera",
+        "category_name": "Sacs de caméra",
+        "brand": "KNF",
+        "price": 180,
+        "cost_price": 144,
+        "stock": 10,
+        "description": "Étui de protection individuel pour objectif photo K&F Concept KF13.202 taille L. Fabriqué en néoprène épais et résistant à l'eau, il protège efficacement votre objectif contre les chocs, l'humidité et la poussière dans votre sac.",
+        "specs": {
+            "Taille": "Taille L (Large)",
+            "Matériau": "Néoprène haute densité résistant aux chocs",
+            "Fermeture": "Cordon de serrage sécurisé avec passant de ceinture et mousqueton",
+            "Compatibilité": "Téléobjectifs et zooms moyens"
+        }
+    },
+    {
+        "name": "K&F Concept Batterie Mini V-Lock KF28.0024V1",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "KNF",
+        "price": 5900,
+        "cost_price": 4720,
+        "stock": 10,
+        "description": "Batterie compacte professionnelle V-Mount K&F Concept KF28.0024V1 haute capacité. Équipée d'une puce BMS intelligente, de cellules haute densité et de sorties multiples USB-C Power Delivery 65W\/100W, D-Tap et USB-A pour alimenter simultanément caméras cinéma, moniteurs et lumières LED.",
+        "specs": {
+            "Type": "Batterie Mini V-Mount \/ V-Lock professionnelle",
+            "Connectique": "USB-C PD bidirectionnel, D-Tap, USB-A, sortie CC",
+            "Écran": "Affichage numérique LED de l'état de charge et autonomie restante",
+            "Sécurité": "Protection contre les surcharges, surchauffes et courts-circuits"
+        }
+    },
+    {
+        "name": "K&F Concept Bouchon d'objectif 58 mm",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "KNF",
+        "price": 90,
+        "cost_price": 72,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo de qualité professionnelle en alliage métallique robuste, conçu pour sécuriser, adapter et optimiser votre matériel de tournage sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "Manbily MT-02LH Trépied de voyage",
+        "category_id": 7,
+        "category_slug": "trepieds",
+        "category_name": "Trépieds",
+        "brand": "MAN",
+        "price": 890,
+        "cost_price": 712,
+        "stock": 10,
+        "description": "Trépied de voyage ultra-compact en alliage d'aluminium Manbily MT-02LH avec rotule panoramique à 360°. Léger, pliable et stable, il est le compagnon idéal des photographes nomades pour le paysage et le portrait.",
+        "specs": {
+            "Type": "Trépied de voyage compact avec rotule ball",
+            "Matériau": "Alliage d'aluminium haute résistance",
+            "Sections": "Jambes télescopiques à verrouillage rapide",
+            "Rotule": "Rotule panoramique 360° avec repères gradués et niveau à bulle",
+            "Plaque rapide": "Standard Arca-Swiss"
+        }
+    },
+    {
+        "name": "Manbily L Plate L-10",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "MAN",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo de qualité professionnelle en alliage métallique robuste, conçu pour sécuriser, adapter et optimiser votre matériel de tournage sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "Manbily VH-90 Tête de Trépied Vidéo Professionnelle",
+        "category_id": 7,
+        "category_slug": "trepieds",
+        "category_name": "Trépieds",
+        "brand": "MAN",
+        "price": 690,
+        "cost_price": 552,
+        "stock": 10,
+        "description": "Tête vidéo fluide professionnelle à amortissement hydraulique avec poignée panoramique amovible et plaque à dégagement rapide de type Arca-Swiss. Assure des mouvements de panoramique et d'inclinaison ultra-doux sans à-coups pour la vidéo.",
+        "specs": {
+            "Type": "Tête fluide vidéo bidirectionnelle (Pan & Tilt)",
+            "Rotation": "Panoramique 360° et inclinaison fluide de -70° à +90°",
+            "Fixation embase": "Filetage 3\/8\\\" universel pour trépieds et monopodes",
+            "Charge admissible": "Jusqu'à 5 kg",
+            "Niveau à bulle": "Intégré pour un alignement horizontal parfait"
+        }
+    },
+    {
+        "name": "Manbily KZ-20",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "MAN",
+        "price": 120,
+        "cost_price": 96,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo de qualité professionnelle en alliage métallique robuste, conçu pour sécuriser, adapter et optimiser votre matériel de tournage sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "Manbily Mini Tripod MT – 03",
+        "category_id": 7,
+        "category_slug": "trepieds",
+        "category_name": "Trépieds",
+        "brand": "MAN",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Mini trépied de table compact et robuste Manbily MT-03 avec rotule pivotante. Permet de poser votre caméra ou smartphone en toute stabilité sur une table ou de l'utiliser comme poignée de vlogging.",
+        "specs": {
+            "Type": "Mini trépied de table \/ poignée de vlogging",
+            "Matériau": "Aluminium et silicone antidérapant",
+            "Fixation": "Vis standard 1\/4\\\"-20"
+        }
+    },
+    {
+        "name": "Support de trépied Manbily PU-480",
+        "category_id": 7,
+        "category_slug": "trepieds",
+        "category_name": "Trépieds",
+        "brand": "MAN",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Plaque longue de support de téléobjectif Manbily PU-480 compatible Arca-Swiss. Équipée d'un double point d'appui réglable pour stabiliser les grands objectifs et éviter les contraintes sur la monture du boîtier.",
+        "specs": {
+            "Longueur": "480 mm",
+            "Compatibilité": "Plaque Arca-Swiss standard",
+            "Matériau": "Alliage d'aluminium usiné CNC anodisé noir",
+            "Vis de montage": "Vis 1\/4\\\"-20 et 3\/8\\\"-16 incluses"
+        }
+    },
+    {
+        "name": "Neewer GA 006 Dual Handgrip",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "NWR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Accessoire de stabilisation ergonomique conçu pour optimiser la prise en main et la polyvalence des stabilisateurs motorisés (DJI série RS, Ronin). Réduit la fatigue musculaire et permet l'ajout de moniteurs, transmetteurs et microphones.",
+        "specs": {
+            "Compatibilité": "Gimbals DJI RS 2, RS 3, RS 3 Pro, RS 4, RS 4 Pro, RS Mini",
+            "Fixation": "Pince rapide NATO sécurisée ou vis de montage standard",
+            "Matériau": "Alliage d'aluminium aéronautique usiné CNC et poignée antidérapante",
+            "Points de montage": "Filetages 1\/4\\\"-20, ARRI 3\/8\\\"-16 et griffes Cold Shoe"
+        }
+    },
+    {
+        "name": "NEEWER AC007 Pied \/ Support d'éclairage",
+        "category_id": 3,
+        "category_slug": "lumieres-materiel-de-studio",
+        "category_name": "Lumières \/ Matériel de studio",
+        "brand": "NWR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Pied d'éclairage de studio professionnel télescopique en aluminium avec molettes de serrage ergonomiques. Assure une assise large et stable pour vos projecteurs LED, flashs cobra, panneaux et réflecteurs.",
+        "specs": {
+            "Type": "Pied de studio télescopique pour équipement d'éclairage",
+            "Matériau": "Alliage d'aluminium haute résistance anticorrosion",
+            "Embout": "Spigot universel 5\/8\\\" avec vis 1\/4\\\" sur le dessus",
+            "Verrouillage": "Bagues de serrage rapides métalliques fiables"
+        }
+    },
+    {
+        "name": "Neewer ST49 Poignée latérale pour gimbal",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "NWR",
+        "price": 690,
+        "cost_price": 552,
+        "stock": 10,
+        "description": "Accessoire de stabilisation ergonomique conçu pour optimiser la prise en main et la polyvalence des stabilisateurs motorisés (DJI série RS, Ronin). Réduit la fatigue musculaire et permet l'ajout de moniteurs, transmetteurs et microphones.",
+        "specs": {
+            "Compatibilité": "Gimbals DJI RS 2, RS 3, RS 3 Pro, RS 4, RS 4 Pro, RS Mini",
+            "Fixation": "Pince rapide NATO sécurisée ou vis de montage standard",
+            "Matériau": "Alliage d'aluminium aéronautique usiné CNC et poignée antidérapante",
+            "Points de montage": "Filetages 1\/4\\\"-20, ARRI 3\/8\\\"-16 et griffes Cold Shoe"
+        }
+    },
+    {
+        "name": "NEEWER PG001\/PG003 Mini Follow Focus with A\/B Stops",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "NWR",
+        "price": 1890,
+        "cost_price": 1512,
+        "stock": 10,
+        "description": "Système de suivi de mise au point (Follow Focus) mécanique de précision avec butées A\/B réglables et amortissement fluide progressif. Offre un contrôle manuel précis et tactile de la bague de mise au point de vos objectifs cinéma ou photo.",
+        "specs": {
+            "Système": "Follow focus compact avec butées d'arrêt A\/B mécaniques",
+            "Volant": "Volant antidérapant avec bague blanche de repérage amovible",
+            "Fixation": "Compatible tige standard 15 mm avec courroie crantée 0.8 MOD",
+            "Amortissement": "Fluide et sans jeu mécanique"
+        }
+    },
+    {
+        "name": "NEEWER GP-65 (65‑in‑1)",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "NWR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Kit complet d'accessoires 65-en-1 Neewer GP-65 pour caméras d'action. Comprend harnais de poitrine, sangle de tête, ventouse de voiture, perche à selfie, poignée flottante, trépied flexible et mallette rigide de rangement.",
+        "specs": {
+            "Contenu": "65 accessoires indispensables pour tous types de sports et tournages",
+            "Compatibilité": "GoPro Hero 12\/11\/10\/9\/8, DJI Osmo Action, Insta360",
+            "Rangement": "Mallette de transport antichoc en EVA avec mousse prédécoupée"
+        }
+    },
+    {
+        "name": "Neewer Dual Cold Shoe Port Holder",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "NWR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo de qualité professionnelle en alliage métallique robuste, conçu pour sécuriser, adapter et optimiser votre matériel de tournage sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "Neewer LS-NAAR20 Kit d'anneaux d'adaptation de filtre",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "NWR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Kit complet d'anneaux d'adaptation de filtres pour objectifs photo (Step-Up \/ Step-Down). Permet d'utiliser vos filtres de grand diamètre sur l'ensemble de vos optiques de diamètres inférieurs.",
+        "specs": {
+            "Contenu": "Jeu d'anneaux de réduction et d'élévation en alliage d'aluminium",
+            "Finition": "Usinage CNC précis et traitement noir mat anti-réfléchissant",
+            "Compatibilité": "Objectifs et filtres de diamètres standards"
+        }
+    },
+    {
+        "name": "NEEWER CA-57 Rotatable Camera Lens Collar pour Canon R5\/R6",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "NWR",
+        "price": 890,
+        "cost_price": 712,
+        "stock": 10,
+        "description": "Collier d'objectif rotatif horizontal à vertical Neewer CA-57 pour appareils photo Canon EOS R5 et R6. Permet de basculer entre les modes paysage et portrait en une seconde sur trépied Arca-Swiss sans dérégler l'axe optique.",
+        "specs": {
+            "Compatibilité boîtiers": "Canon EOS R5, R5C, R6, R6 Mark II",
+            "Monture trépied": "Plaque de dégagement rapide Arca-Swiss 38 mm et taraudages 1\/4\\\" et 3\/8\\\"",
+            "Rotation": "Rotation continue à 360° avec repères d'arrêt à 90°",
+            "Matériau": "Alliage d'aluminium anodisé résistant à l'usure"
+        }
+    },
+    {
+        "name": "NEEWER ST83 Super Clamp with 3″ Dual Ballhead Magic Arm",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "NWR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Pince universelle robuste (Super Clamp) avec mâchoires en caoutchouc antidérapantes. Se fixe solidement sur tubes, barres, trépieds ou rebords de table avec filetages intégrés 1\/4\"-20 et 3\/8\"-16.",
+        "specs": {
+            "Plage de serrage": "De 15 mm à 54 mm de diamètre",
+            "Matériau": "Alliage d'aluminium aéronautique et acier inoxydable",
+            "Charge admissible": "Jusqu'à 2,5 kg",
+            "Filetages": "1\/4\\\"-20 et 3\/8\\\"-16 pour rotules et bras magiques"
+        }
+    },
+    {
+        "name": "NEEWER ND1.2 (4 Stops) Rectangular Filter 4\" x 5.65\"",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "NWR",
+        "price": 890,
+        "cost_price": 712,
+        "stock": 10,
+        "description": "Filtre rectangulaire cinéma professionnel 4\" x 5.65\" à densité neutre ND1.2 (réduction de 4 diaphragmes). Conçu pour les Matte Box professionnelles pour un contrôle rigoureux de l'exposition en vidéo cinéma 4K\/8K.",
+        "specs": {
+            "Dimensions": "Format standard 4 x 5.65 pouces (100 x 143 mm), épaisseur 4 mm",
+            "Densité": "ND1.2 (4 stops de réduction d'exposition)",
+            "Qualité optique": "Verre optique HD avec nano-revêtement double face sans dominante"
+        }
+    },
+    {
+        "name": "NEEWER SP-02 Smartphone Holder Tripod Mount Adapter",
+        "category_id": 7,
+        "category_slug": "trepieds",
+        "category_name": "Trépieds",
+        "brand": "MAN",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Mini trépied de table compact et robuste Manbily MT-03 avec rotule pivotante. Permet de poser votre caméra ou smartphone en toute stabilité sur une table ou de l'utiliser comme poignée de vlogging.",
+        "specs": {
+            "Type": "Mini trépied de table \/ poignée de vlogging",
+            "Matériau": "Aluminium et silicone antidérapant",
+            "Fixation": "Vis standard 1\/4\\\"-20"
+        }
+    },
+    {
+        "name": "NEEWER ST15 Articulating Magic Arm",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "NWR",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo de qualité professionnelle en alliage métallique robuste, conçu pour sécuriser, adapter et optimiser votre matériel de tournage sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "NEEWER Triple Suction Cup Car Mount Kit CA065",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "NWR",
+        "price": 1990,
+        "cost_price": 1592,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo de qualité professionnelle en alliage métallique robuste, conçu pour sécuriser, adapter et optimiser votre matériel de tournage sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "NICEFOTO DF80-1000A Lumière LED",
+        "category_id": 3,
+        "category_slug": "lumieres-materiel-de-studio",
+        "category_name": "Lumières \/ Matériel de studio",
+        "brand": "NCF",
+        "price": 1290,
+        "cost_price": 1032,
+        "stock": 10,
+        "description": "Éclairage vidéo LED professionnel haute puissance avec température de couleur réglable et indice de rendu des couleurs CRI 96+. Fournit un éclairage puissant, silencieux et sans scintillement pour le studio et la vidéo.",
+        "specs": {
+            "Indice de rendu des couleurs": "CRI ≥ 96, TLCI ≥ 97 (reproduction fidèle des tons chair)",
+            "Variation": "Gradation continue de 0% à 100%",
+            "Refroidissement": "Système de dissipation thermique ultra-silencieux pour prise de son",
+            "Alimentation": "Secteur ou batterie pour tournages nomades"
+        }
+    },
+    {
+        "name": "NiceFoto Mini‑Φ60g Softbox",
+        "category_id": 3,
+        "category_slug": "lumieres-materiel-de-studio",
+        "category_name": "Lumières \/ Matériel de studio",
+        "brand": "NCF",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Boîte à lumière octogonale ou parabolique pliable pour projecteurs LED de studio monture Bowens. Diffuse une lumière douce et homogène avec double toile de diffusion pour sublimer les portraits et tournages vidéo.",
+        "specs": {
+            "Monture": "Standard Bowens compatible avec la majorité des torches LED",
+            "Diffusion": "Double diffuseur interne et externe pour une lumière douce sans point chaud",
+            "Structure": "Baleines en acier haute résilience à montage et pliage rapide"
+        }
+    },
+    {
+        "name": "NiceFoto VB-1000A Panneau LED rectangulaire",
+        "category_id": 3,
+        "category_slug": "lumieres-materiel-de-studio",
+        "category_name": "Lumières \/ Matériel de studio",
+        "brand": "NCF",
+        "price": 1490,
+        "cost_price": 1192,
+        "stock": 10,
+        "description": "Éclairage vidéo LED professionnel haute puissance avec température de couleur réglable et indice de rendu des couleurs CRI 96+. Fournit un éclairage puissant, silencieux et sans scintillement pour le studio et la vidéo.",
+        "specs": {
+            "Indice de rendu des couleurs": "CRI ≥ 96, TLCI ≥ 97 (reproduction fidèle des tons chair)",
+            "Variation": "Gradation continue de 0% à 100%",
+            "Refroidissement": "Système de dissipation thermique ultra-silencieux pour prise de son",
+            "Alimentation": "Secteur ou batterie pour tournages nomades"
+        }
+    },
+    {
+        "name": "NICEFOTO DL80-1000A Lumière vidéo bi-couleur 100 W",
+        "category_id": 3,
+        "category_slug": "lumieres-materiel-de-studio",
+        "category_name": "Lumières \/ Matériel de studio",
+        "brand": "NCF",
+        "price": 1190,
+        "cost_price": 952,
+        "stock": 10,
+        "description": "Éclairage vidéo LED professionnel haute puissance avec température de couleur réglable et indice de rendu des couleurs CRI 96+. Fournit un éclairage puissant, silencieux et sans scintillement pour le studio et la vidéo.",
+        "specs": {
+            "Indice de rendu des couleurs": "CRI ≥ 96, TLCI ≥ 97 (reproduction fidèle des tons chair)",
+            "Variation": "Gradation continue de 0% à 100%",
+            "Refroidissement": "Système de dissipation thermique ultra-silencieux pour prise de son",
+            "Alimentation": "Secteur ou batterie pour tournages nomades"
+        }
+    },
+    {
+        "name": "NiceFoto NP‑F570 Batterie rechargeable",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "NCF",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Batterie rechargeable lithium-ion type Sony NP-F570 pour éclairages LED de studio, moniteurs de terrain et accessoires vidéo. Fournit une alimentation stable et fiable sans effet mémoire.",
+        "specs": {
+            "Type": "Batterie Lithium-Ion format NP-F570",
+            "Tension": "7.4V",
+            "Compatibilité": "Panneaux LED, moniteurs FeelWorld\/Lilliput, transmetteurs et accessoires vidéo"
+        }
+    },
+    {
+        "name": "NiceFoto VB-2000A Lumière vidéo LED bi-couleur",
+        "category_id": 3,
+        "category_slug": "lumieres-materiel-de-studio",
+        "category_name": "Lumières \/ Matériel de studio",
+        "brand": "NCF",
+        "price": 1890,
+        "cost_price": 1512,
+        "stock": 10,
+        "description": "Éclairage vidéo LED professionnel haute puissance avec température de couleur réglable et indice de rendu des couleurs CRI 96+. Fournit un éclairage puissant, silencieux et sans scintillement pour le studio et la vidéo.",
+        "specs": {
+            "Indice de rendu des couleurs": "CRI ≥ 96, TLCI ≥ 97 (reproduction fidèle des tons chair)",
+            "Variation": "Gradation continue de 0% à 100%",
+            "Refroidissement": "Système de dissipation thermique ultra-silencieux pour prise de son",
+            "Alimentation": "Secteur ou batterie pour tournages nomades"
+        }
+    },
+    {
+        "name": "NiceFoto S-06A Système de support de fond pour studio",
+        "category_id": 3,
+        "category_slug": "lumieres-materiel-de-studio",
+        "category_name": "Lumières \/ Matériel de studio",
+        "brand": "NCF",
+        "price": 890,
+        "cost_price": 712,
+        "stock": 10,
+        "description": "Système complet de support de fond photo et vidéo de studio NiceFoto S-06A. Comprend deux pieds robustes à amortisseur et une barre transversale télescopique extensible pour rouleaux de papier ou toiles de fond.",
+        "specs": {
+            "Largeur max": "Jusqu'à 3 mètres extensible",
+            "Hauteur max": "Jusqu'à 2,6 mètres",
+            "Capacité de charge": "Jusqu'à 8 kg",
+            "Livré avec": "Sac de transport rembourré et pinces de fixation"
+        }
+    },
+    {
+        "name": "NICEFOTO LS-180",
+        "category_id": 3,
+        "category_slug": "lumieres-materiel-de-studio",
+        "category_name": "Lumières \/ Matériel de studio",
+        "brand": "NCF",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Pied d'éclairage de studio professionnel télescopique en aluminium avec molettes de serrage ergonomiques. Assure une assise large et stable pour vos projecteurs LED, flashs cobra, panneaux et réflecteurs.",
+        "specs": {
+            "Type": "Pied de studio télescopique pour équipement d'éclairage",
+            "Matériau": "Alliage d'aluminium haute résistance anticorrosion",
+            "Embout": "Spigot universel 5\/8\\\" avec vis 1\/4\\\" sur le dessus",
+            "Verrouillage": "Bagues de serrage rapides métalliques fiables"
+        }
+    },
+    {
+        "name": "NICEFOTO LS-200A",
+        "category_id": 3,
+        "category_slug": "lumieres-materiel-de-studio",
+        "category_name": "Lumières \/ Matériel de studio",
+        "brand": "NCF",
+        "price": 250,
+        "cost_price": 200,
+        "stock": 10,
+        "description": "Pied d'éclairage de studio professionnel télescopique en aluminium avec molettes de serrage ergonomiques. Assure une assise large et stable pour vos projecteurs LED, flashs cobra, panneaux et réflecteurs.",
+        "specs": {
+            "Type": "Pied de studio télescopique pour équipement d'éclairage",
+            "Matériau": "Alliage d'aluminium haute résistance anticorrosion",
+            "Embout": "Spigot universel 5\/8\\\" avec vis 1\/4\\\" sur le dessus",
+            "Verrouillage": "Bagues de serrage rapides métalliques fiables"
+        }
+    },
+    {
+        "name": "NICEFOTO LS-220A",
+        "category_id": 3,
+        "category_slug": "lumieres-materiel-de-studio",
+        "category_name": "Lumières \/ Matériel de studio",
+        "brand": "NCF",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Pied d'éclairage de studio professionnel télescopique en aluminium avec molettes de serrage ergonomiques. Assure une assise large et stable pour vos projecteurs LED, flashs cobra, panneaux et réflecteurs.",
+        "specs": {
+            "Type": "Pied de studio télescopique pour équipement d'éclairage",
+            "Matériau": "Alliage d'aluminium haute résistance anticorrosion",
+            "Embout": "Spigot universel 5\/8\\\" avec vis 1\/4\\\" sur le dessus",
+            "Verrouillage": "Bagues de serrage rapides métalliques fiables"
+        }
+    },
+    {
+        "name": "NICEFOTO LS-280B",
+        "category_id": 3,
+        "category_slug": "lumieres-materiel-de-studio",
+        "category_name": "Lumières \/ Matériel de studio",
+        "brand": "NCF",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Pied d'éclairage de studio professionnel télescopique en aluminium avec molettes de serrage ergonomiques. Assure une assise large et stable pour vos projecteurs LED, flashs cobra, panneaux et réflecteurs.",
+        "specs": {
+            "Type": "Pied de studio télescopique pour équipement d'éclairage",
+            "Matériau": "Alliage d'aluminium haute résistance anticorrosion",
+            "Embout": "Spigot universel 5\/8\\\" avec vis 1\/4\\\" sur le dessus",
+            "Verrouillage": "Bagues de serrage rapides métalliques fiables"
+        }
+    },
+    {
+        "name": "RODE SC1 3.5mm TRRS Microphone Extension Cable",
+        "category_id": 11,
+        "category_slug": "materiel-de-podcast",
+        "category_name": "Matériel de Podcast",
+        "brand": "RODE",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Câble audio ou de transmission numérique professionnel RODE haute fidélité blindé. Conçu pour garantir un enregistrement audio cristallin sans interférences ni bruits parasites.",
+        "specs": {
+            "Type": "Câble audio \/ données blindé professionnel RODE",
+            "Connecteurs": "Connecteurs plaqués or résistants à la corrosion",
+            "Blindage": "Blindage tressé haute densité contre les interférences RF"
+        }
+    },
+    {
+        "name": "RODE SC16 Câble USB Type-C droit vers USB Type-C à angle droit",
+        "category_id": 11,
+        "category_slug": "materiel-de-podcast",
+        "category_name": "Matériel de Podcast",
+        "brand": "RODE",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Câble audio ou de transmission numérique professionnel RODE haute fidélité blindé. Conçu pour garantir un enregistrement audio cristallin sans interférences ni bruits parasites.",
+        "specs": {
+            "Type": "Câble audio \/ données blindé professionnel RODE",
+            "Connecteurs": "Connecteurs plaqués or résistants à la corrosion",
+            "Blindage": "Blindage tressé haute densité contre les interférences RF"
+        }
+    },
+    {
+        "name": "RODE DCS-1 Dual",
+        "category_id": 11,
+        "category_slug": "materiel-de-podcast",
+        "category_name": "Matériel de Podcast",
+        "brand": "RODE",
+        "price": 350,
+        "cost_price": 280,
+        "stock": 10,
+        "description": "Double griffe porte-accessoire RODE DCS-1. Se fixe sur la griffe flash de votre caméra pour y monter simultanément deux récepteurs sans fil (ex: RODE Wireless GO) ou un micro et une torche LED compacte.",
+        "specs": {
+            "Type": "Double support Cold Shoe en aluminium",
+            "Guidage des câbles": "Fentes intégrées pour le maintien des câbles audio RODE",
+            "Poids": "Ultra-léger (28 g)"
+        }
+    },
+    {
+        "name": "RODE SC17 Câble USB-C vers USB-C",
+        "category_id": 11,
+        "category_slug": "materiel-de-podcast",
+        "category_name": "Matériel de Podcast",
+        "brand": "RODE",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Câble audio ou de transmission numérique professionnel RODE haute fidélité blindé. Conçu pour garantir un enregistrement audio cristallin sans interférences ni bruits parasites.",
+        "specs": {
+            "Type": "Câble audio \/ données blindé professionnel RODE",
+            "Connecteurs": "Connecteurs plaqués or résistants à la corrosion",
+            "Blindage": "Blindage tressé haute densité contre les interférences RF"
+        }
+    },
+    {
+        "name": "RODE SC2",
+        "category_id": 11,
+        "category_slug": "materiel-de-podcast",
+        "category_name": "Matériel de Podcast",
+        "brand": "RODE",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Câble audio ou de transmission numérique professionnel RODE haute fidélité blindé. Conçu pour garantir un enregistrement audio cristallin sans interférences ni bruits parasites.",
+        "specs": {
+            "Type": "Câble audio \/ données blindé professionnel RODE",
+            "Connecteurs": "Connecteurs plaqués or résistants à la corrosion",
+            "Blindage": "Blindage tressé haute densité contre les interférences RF"
+        }
+    },
+    {
+        "name": "RODE SC22 Câble USB-C vers USB-C",
+        "category_id": 11,
+        "category_slug": "materiel-de-podcast",
+        "category_name": "Matériel de Podcast",
+        "brand": "RODE",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Câble audio ou de transmission numérique professionnel RODE haute fidélité blindé. Conçu pour garantir un enregistrement audio cristallin sans interférences ni bruits parasites.",
+        "specs": {
+            "Type": "Câble audio \/ données blindé professionnel RODE",
+            "Connecteurs": "Connecteurs plaqués or résistants à la corrosion",
+            "Blindage": "Blindage tressé haute densité contre les interférences RF"
+        }
+    },
+    {
+        "name": "RODE SC3 3,5 mm TRRS femelle vers 3,5 mm TRS mâle à angle droit",
+        "category_id": 11,
+        "category_slug": "materiel-de-podcast",
+        "category_name": "Matériel de Podcast",
+        "brand": "RODE",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Câble audio ou de transmission numérique professionnel RODE haute fidélité blindé. Conçu pour garantir un enregistrement audio cristallin sans interférences ni bruits parasites.",
+        "specs": {
+            "Type": "Câble audio \/ données blindé professionnel RODE",
+            "Connecteurs": "Connecteurs plaqués or résistants à la corrosion",
+            "Blindage": "Blindage tressé haute densité contre les interférences RF"
+        }
+    },
+    {
+        "name": "SmallRig 4303 Support de bureau pour bras de microphone",
+        "category_id": 11,
+        "category_slug": "materiel-de-podcast",
+        "category_name": "Matériel de Podcast",
+        "brand": "SMR",
+        "price": 1290,
+        "cost_price": 1032,
+        "stock": 10,
+        "description": "Support de bureau professionnel SmallRig 4303 pour bras articulé de microphone. Permet une fixation robuste et stable sur le bord d'un bureau ou plan de travail sans endommager le meuble grâce à des patins de protection.",
+        "specs": {
+            "Type": "Pince de fixation de table pour perche\/bras de micro",
+            "Matériau": "Alliage d'aluminium robuste et acier",
+            "Épaisseur de bureau compatible": "Jusqu'à 60 mm d'épaisseur",
+            "Protection": "Patins en caoutchouc silicone antidérapants"
+        }
+    },
+    {
+        "name": "SmallRig 82mm UV & 95mm VND Filter Kit",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "SMR",
+        "price": 1490,
+        "cost_price": 1192,
+        "stock": 10,
+        "description": "Kit de filtres combiné UV haute clarté 82 mm et filtre à densité neutre variable (VND) 95 mm. Offre une protection permanente de la lentille frontale et un contrôle continu de l'exposition pour la vidéo.",
+        "specs": {
+            "Type": "Kit filtre de protection UV et filtre variable VND",
+            "Verre": "Verre optique allemand haute résolution multicouche",
+            "Propriétés": "Revêtement hydrophobe, oléophobe et anti-rayures"
+        }
+    },
+    {
+        "name": "Smallrig A7 III & A7R III Cage",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 1990,
+        "cost_price": 1592,
+        "stock": 10,
+        "description": "Cage pour caméra professionnelle usinée avec précision CNC en alliage d'aluminium aéronautique. Offre une protection intégrale et de multiples points d'ancrage (1\/4\"-20, ARRI 3\/8\"-16, Cold Shoe, rails NATO et plaque Arca-Swiss intégrée).",
+        "specs": {
+            "Matériaux": "Alliage d'aluminium et coussinets en caoutchouc anti-rayures",
+            "Points de fixation": "Filetages 1\/4\\\"-20, 3\/8\\\"-16 ARRI, rails NATO, Cold Shoe, plaque Arca intégrée",
+            "Accès": "Accès dégagé à tous les boutons, trappes batterie et connecteurs"
+        }
+    },
+    {
+        "name": "Smallrig A7 IV - A7r IV - A7r V - A7s III Cage",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 2190,
+        "cost_price": 1752,
+        "stock": 10,
+        "description": "Cage pour caméra professionnelle usinée avec précision CNC en alliage d'aluminium aéronautique. Offre une protection intégrale et de multiples points d'ancrage (1\/4\"-20, ARRI 3\/8\"-16, Cold Shoe, rails NATO et plaque Arca-Swiss intégrée).",
+        "specs": {
+            "Matériaux": "Alliage d'aluminium et coussinets en caoutchouc anti-rayures",
+            "Points de fixation": "Filetages 1\/4\\\"-20, 3\/8\\\"-16 ARRI, rails NATO, Cold Shoe, plaque Arca intégrée",
+            "Accès": "Accès dégagé à tous les boutons, trappes batterie et connecteurs"
+        }
+    },
+    {
+        "name": "SmallRig Cage pour GoPro HERO13\/12\/11\/10\/9 Black",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Cage de protection légère ou kit de fixation haute résistance conçu pour protéger votre caméra d'action et multiplier les points de montage pour microphones, éclairages et trépieds.",
+        "specs": {
+            "Compatibilité": "Caméras d'action GoPro \/ DJI Osmo Action",
+            "Matériaux": "Alliage d'aluminium ou polymère technique haute résistance",
+            "Accès": "Permet le changement de batterie et l'accès aux ports sans démontage"
+        }
+    },
+    {
+        "name": "SmallRig Camera Cage pour DJI Osmo Action 5 Pro\/4\/3",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Cage de protection légère ou kit de fixation haute résistance conçu pour protéger votre caméra d'action et multiplier les points de montage pour microphones, éclairages et trépieds.",
+        "specs": {
+            "Compatibilité": "Caméras d'action GoPro \/ DJI Osmo Action",
+            "Matériaux": "Alliage d'aluminium ou polymère technique haute résistance",
+            "Accès": "Permet le changement de batterie et l'accès aux ports sans démontage"
+        }
+    },
+    {
+        "name": "SmallRig Dual-Head Crab-Style Clamp",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo de qualité professionnelle en alliage métallique robuste, conçu pour sécuriser, adapter et optimiser votre matériel de tournage sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "Smallrig FX30 - FX3 Cage",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 2290,
+        "cost_price": 1832,
+        "stock": 10,
+        "description": "Cage pour caméra professionnelle usinée avec précision CNC en alliage d'aluminium aéronautique. Offre une protection intégrale et de multiples points d'ancrage (1\/4\"-20, ARRI 3\/8\"-16, Cold Shoe, rails NATO et plaque Arca-Swiss intégrée).",
+        "specs": {
+            "Matériaux": "Alliage d'aluminium et coussinets en caoutchouc anti-rayures",
+            "Points de fixation": "Filetages 1\/4\\\"-20, 3\/8\\\"-16 ARRI, rails NATO, Cold Shoe, plaque Arca intégrée",
+            "Accès": "Accès dégagé à tous les boutons, trappes batterie et connecteurs"
+        }
+    },
+    {
+        "name": "SmallRig Kit de fixation pour caméra de vélo",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "SMR",
+        "price": 1490,
+        "cost_price": 1192,
+        "stock": 10,
+        "description": "Cage de protection légère ou kit de fixation haute résistance conçu pour protéger votre caméra d'action et multiplier les points de montage pour microphones, éclairages et trépieds.",
+        "specs": {
+            "Compatibilité": "Caméras d'action GoPro \/ DJI Osmo Action",
+            "Matériaux": "Alliage d'aluminium ou polymère technique haute résistance",
+            "Accès": "Permet le changement de batterie et l'accès aux ports sans démontage"
+        }
+    },
+    {
+        "name": "SmallRig ND Filter Kit pour DJI Osmo Action 5 Pro & 4",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Kit de filtres magnétiques à densité neutre (ND) de haute précision pour DJI Osmo Action ou Pocket. Réduit la lumière entrante pour capturer des vidéos cinématiques fluides avec des vitesses d'obturation respectant la règle des 180°.",
+        "specs": {
+            "Compatibilité": "Caméras d'action DJI Osmo Pocket \/ Action",
+            "Verre": "Verre optique haute définition avec traitement multicouche double face",
+            "Monture": "Fixation magnétique instantanée et ultra-légère"
+        }
+    },
+    {
+        "name": "SmallRig ND Filter kit pour DJI Osmo Pocket 3\/4",
+        "category_id": 12,
+        "category_slug": "filtres-nd-cpl-polarise",
+        "category_name": "Filtres ND \/ CPL polarisé",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Kit de filtres magnétiques à densité neutre (ND) de haute précision pour DJI Osmo Action ou Pocket. Réduit la lumière entrante pour capturer des vidéos cinématiques fluides avec des vitesses d'obturation respectant la règle des 180°.",
+        "specs": {
+            "Compatibilité": "Caméras d'action DJI Osmo Pocket \/ Action",
+            "Verre": "Verre optique haute définition avec traitement multicouche double face",
+            "Monture": "Fixation magnétique instantanée et ultra-légère"
+        }
+    },
+    {
+        "name": "SmallRig Rhinoceros Cage Kit pour Sony a7R V, a7 IV & a7S III",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 1790,
+        "cost_price": 1432,
+        "stock": 10,
+        "description": "Cage pour caméra professionnelle usinée avec précision CNC en alliage d'aluminium aéronautique. Offre une protection intégrale et de multiples points d'ancrage (1\/4\"-20, ARRI 3\/8\"-16, Cold Shoe, rails NATO et plaque Arca-Swiss intégrée).",
+        "specs": {
+            "Matériaux": "Alliage d'aluminium et coussinets en caoutchouc anti-rayures",
+            "Points de fixation": "Filetages 1\/4\\\"-20, 3\/8\\\"-16 ARRI, rails NATO, Cold Shoe, plaque Arca intégrée",
+            "Accès": "Accès dégagé à tous les boutons, trappes batterie et connecteurs"
+        }
+    },
+    {
+        "name": "SmallRig Super Clamp with 1\/4\"-20 and 3\/8\"-16 Threads (Pair)",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Pince universelle robuste (Super Clamp) avec mâchoires en caoutchouc antidérapantes. Se fixe solidement sur tubes, barres, trépieds ou rebords de table avec filetages intégrés 1\/4\"-20 et 3\/8\"-16.",
+        "specs": {
+            "Plage de serrage": "De 15 mm à 54 mm de diamètre",
+            "Matériau": "Alliage d'aluminium aéronautique et acier inoxydable",
+            "Charge admissible": "Jusqu'à 2,5 kg",
+            "Filetages": "1\/4\\\"-20 et 3\/8\\\"-16 pour rotules et bras magiques"
+        }
+    },
+    {
+        "name": "Socle de charge triple pour batteries INSTA360 X4",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "INSTA",
+        "price": 790,
+        "cost_price": 632,
+        "stock": 10,
+        "description": "Station de charge rapide triple pour batteries Insta360 X4. Permet de recharger jusqu'à 3 batteries simultanément en toute sécurité avec indicateurs LED individuels et gestion intelligente du courant de charge.",
+        "specs": {
+            "Compatibilité": "Batteries officielles Insta360 X4",
+            "Capacité de charge": "3 batteries simultanément",
+            "Connecteur d'entrée": "USB Type-C haute vitesse",
+            "Voyants": "Indicateurs LED d'état pour chaque emplacement"
+        }
+    },
+    {
+        "name": "SONY Type C - FZ100",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "SONY",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Batterie factice coupleur d'alimentation USB Type-C vers Sony NP-FZ100. Permet d'alimenter en continu votre boîtier Sony (séries A7 IV, A7S III, FX3, A7R V) directement via une batterie externe Power Bank ou chargeur secteur PD.",
+        "specs": {
+            "Entrée": "USB Type-C PD 9V\/12V",
+            "Sortie": "Format batterie Sony NP-FZ100 (8.4V)",
+            "Compatibilité": "Sony A7 III, A7 IV, A7R V, A7S III, A1, A9 II, FX3, FX30",
+            "Usage": "Streaming continu, timelapse et tournages studio de longue durée"
+        }
+    },
+    {
+        "name": "Super Clamp",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 190,
+        "cost_price": 152,
+        "stock": 10,
+        "description": "Pince universelle robuste (Super Clamp) avec mâchoires en caoutchouc antidérapantes. Se fixe solidement sur tubes, barres, trépieds ou rebords de table avec filetages intégrés 1\/4\"-20 et 3\/8\"-16.",
+        "specs": {
+            "Plage de serrage": "De 15 mm à 54 mm de diamètre",
+            "Matériau": "Alliage d'aluminium aéronautique et acier inoxydable",
+            "Charge admissible": "Jusqu'à 2,5 kg",
+            "Filetages": "1\/4\\\"-20 et 3\/8\\\"-16 pour rotules et bras magiques"
+        }
+    },
+    {
+        "name": "Super Clamp & Magic Arm",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Pince universelle robuste (Super Clamp) avec mâchoires en caoutchouc antidérapantes. Se fixe solidement sur tubes, barres, trépieds ou rebords de table avec filetages intégrés 1\/4\"-20 et 3\/8\"-16.",
+        "specs": {
+            "Plage de serrage": "De 15 mm à 54 mm de diamètre",
+            "Matériau": "Alliage d'aluminium aéronautique et acier inoxydable",
+            "Charge admissible": "Jusqu'à 2,5 kg",
+            "Filetages": "1\/4\\\"-20 et 3\/8\\\"-16 pour rotules et bras magiques"
+        }
+    },
+    {
+        "name": "Super Clamp & Magic Arm (Premium)",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 690,
+        "cost_price": 552,
+        "stock": 10,
+        "description": "Pince universelle robuste (Super Clamp) avec mâchoires en caoutchouc antidérapantes. Se fixe solidement sur tubes, barres, trépieds ou rebords de table avec filetages intégrés 1\/4\"-20 et 3\/8\"-16.",
+        "specs": {
+            "Plage de serrage": "De 15 mm à 54 mm de diamètre",
+            "Matériau": "Alliage d'aluminium aéronautique et acier inoxydable",
+            "Charge admissible": "Jusqu'à 2,5 kg",
+            "Filetages": "1\/4\\\"-20 et 3\/8\\\"-16 pour rotules et bras magiques"
+        }
+    },
+    {
+        "name": "Super Clamp & Magic Arm (Standard)",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Pince universelle robuste (Super Clamp) avec mâchoires en caoutchouc antidérapantes. Se fixe solidement sur tubes, barres, trépieds ou rebords de table avec filetages intégrés 1\/4\"-20 et 3\/8\"-16.",
+        "specs": {
+            "Plage de serrage": "De 15 mm à 54 mm de diamètre",
+            "Matériau": "Alliage d'aluminium aéronautique et acier inoxydable",
+            "Charge admissible": "Jusqu'à 2,5 kg",
+            "Filetages": "1\/4\\\"-20 et 3\/8\\\"-16 pour rotules et bras magiques"
+        }
+    },
+    {
+        "name": "Super pince double tête SmallRig 5453",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 690,
+        "cost_price": 552,
+        "stock": 10,
+        "description": "Pince universelle robuste (Super Clamp) avec mâchoires en caoutchouc antidérapantes. Se fixe solidement sur tubes, barres, trépieds ou rebords de table avec filetages intégrés 1\/4\"-20 et 3\/8\"-16.",
+        "specs": {
+            "Plage de serrage": "De 15 mm à 54 mm de diamètre",
+            "Matériau": "Alliage d'aluminium aéronautique et acier inoxydable",
+            "Charge admissible": "Jusqu'à 2,5 kg",
+            "Filetages": "1\/4\\\"-20 et 3\/8\\\"-16 pour rotules et bras magiques"
+        }
+    },
+    {
+        "name": "Super Pince SmallRig 735 Filetage 1\/4\" + 3\/8\"",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Pince universelle robuste (Super Clamp) avec mâchoires en caoutchouc antidérapantes. Se fixe solidement sur tubes, barres, trépieds ou rebords de table avec filetages intégrés 1\/4\"-20 et 3\/8\"-16.",
+        "specs": {
+            "Plage de serrage": "De 15 mm à 54 mm de diamètre",
+            "Matériau": "Alliage d'aluminium aéronautique et acier inoxydable",
+            "Charge admissible": "Jusqu'à 2,5 kg",
+            "Filetages": "1\/4\\\"-20 et 3\/8\\\"-16 pour rotules et bras magiques"
+        }
+    },
+    {
+        "name": "Support à dégagement rapide SmallRig avec adaptateur pour griffe porte-accessoires DJI Osmo Action 5 Pro\/4\/3",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Cage de protection légère ou kit de fixation haute résistance conçu pour protéger votre caméra d'action et multiplier les points de montage pour microphones, éclairages et trépieds.",
+        "specs": {
+            "Compatibilité": "Caméras d'action GoPro \/ DJI Osmo Action",
+            "Matériaux": "Alliage d'aluminium ou polymère technique haute résistance",
+            "Accès": "Permet le changement de batterie et l'accès aux ports sans démontage"
+        }
+    },
+    {
+        "name": "Support à ventouse portable SmallRig SC-1K4193 pour caméras d'action",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Support de fixation à ventouse ultra-puissante pour caméras d'action. Assure une adhérence extrême sur surfaces lisses et non poreuses (pare-brise, carrosserie de voiture, vitres) pour des plans dynamiques spectaculaires.",
+        "specs": {
+            "Type": "Support à ventouse haute résistance pour caméra d'action",
+            "Adhérence": "Pression sous vide puissante avec levier de verrouillage rapide",
+            "Articulations": "Rotule 360° pour un angle de prise de vue ajustable",
+            "Charge admissible": "Résistant aux fortes vibrations et vents à haute vitesse"
+        }
+    },
+    {
+        "name": "Support d'objectif universel à tige LWS de 15 mm",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Support de téléobjectif universel pour système de tiges LWS 15 mm. Soulage le poids des objectifs longs et lourds pour protéger la monture de l'appareil photo contre les tensions mécaniques et torsions.",
+        "specs": {
+            "Compatibilité": "Système standard de tiges 15 mm LWS espacées de 60 mm",
+            "Réglage en hauteur": "Ajustement vertical micrométrique par molette de serrage",
+            "Soutien": "Support en Y rembourré en caoutchouc avec sangle de sécurité"
+        }
+    },
+    {
+        "name": "Support d'objectif universel SmallRig 15 mm LWS avec réglage vertical de 1,4\"",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Support de téléobjectif universel pour système de tiges LWS 15 mm. Soulage le poids des objectifs longs et lourds pour protéger la monture de l'appareil photo contre les tensions mécaniques et torsions.",
+        "specs": {
+            "Compatibilité": "Système standard de tiges 15 mm LWS espacées de 60 mm",
+            "Réglage en hauteur": "Ajustement vertical micrométrique par molette de serrage",
+            "Soutien": "Support en Y rembourré en caoutchouc avec sangle de sécurité"
+        }
+    },
+    {
+        "name": "Support d'objectif universel SmallRig 15 mm LWS avec réglage vertical de 2,1 pouces",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Support de téléobjectif universel pour système de tiges LWS 15 mm. Soulage le poids des objectifs longs et lourds pour protéger la monture de l'appareil photo contre les tensions mécaniques et torsions.",
+        "specs": {
+            "Compatibilité": "Système standard de tiges 15 mm LWS espacées de 60 mm",
+            "Réglage en hauteur": "Ajustement vertical micrométrique par molette de serrage",
+            "Soutien": "Support en Y rembourré en caoutchouc avec sangle de sécurité"
+        }
+    },
+    {
+        "name": "Support de bras magique SmallRig avec vis 1\/4\"-20 (11\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo de qualité professionnelle en alliage métallique robuste, conçu pour sécuriser, adapter et optimiser votre matériel de tournage sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "Support de bras magique SmallRig avec vis 1\/4\"-20 (7\") 5308",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo de qualité professionnelle en alliage métallique robuste, conçu pour sécuriser, adapter et optimiser votre matériel de tournage sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "Support de bras magique SmallRig pour réglage d'écran à une main (5,7\")",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 890,
+        "cost_price": 712,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo de qualité professionnelle en alliage métallique robuste, conçu pour sécuriser, adapter et optimiser votre matériel de tournage sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "Support de cou à dégagement rapide SmallRig pour caméras d'action",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Support tour de cou ergonomique à dégagement rapide pour caméras d'action et smartphones. Permet de capturer des vidéos immersives à la première personne (POV) les mains libres lors de vos sessions sportives, vlogs ou tutoriels.",
+        "specs": {
+            "Type": "Support tour de cou POV mains libres",
+            "Matériau": "Silicone doux pour la peau avec armature flexible en métal à mémoire de forme",
+            "Système de fixation": "Bouton de dégagement rapide à verrouillage magnétique sécurisé",
+            "Compatibilité": "GoPro, DJI Osmo Action, Insta360 et smartphones"
+        }
+    },
+    {
+        "name": "Support de cou à dégagement rapide SmallRig pour caméras d'action (Compact)",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "SMR",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Support tour de cou ergonomique à dégagement rapide pour caméras d'action et smartphones. Permet de capturer des vidéos immersives à la première personne (POV) les mains libres lors de vos sessions sportives, vlogs ou tutoriels.",
+        "specs": {
+            "Type": "Support tour de cou POV mains libres",
+            "Matériau": "Silicone doux pour la peau avec armature flexible en métal à mémoire de forme",
+            "Système de fixation": "Bouton de dégagement rapide à verrouillage magnétique sécurisé",
+            "Compatibilité": "GoPro, DJI Osmo Action, Insta360 et smartphones"
+        }
+    },
+    {
+        "name": "Support de cou à dégagement rapide SmallRig pour caméras d'action et smartphones",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Support tour de cou ergonomique à dégagement rapide pour caméras d'action et smartphones. Permet de capturer des vidéos immersives à la première personne (POV) les mains libres lors de vos sessions sportives, vlogs ou tutoriels.",
+        "specs": {
+            "Type": "Support tour de cou POV mains libres",
+            "Matériau": "Silicone doux pour la peau avec armature flexible en métal à mémoire de forme",
+            "Système de fixation": "Bouton de dégagement rapide à verrouillage magnétique sécurisé",
+            "Compatibilité": "GoPro, DJI Osmo Action, Insta360 et smartphones"
+        }
+    },
+    {
+        "name": "Support de cou magnétique réglable pour caméra d'action",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "SMR",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Support tour de cou ergonomique à dégagement rapide pour caméras d'action et smartphones. Permet de capturer des vidéos immersives à la première personne (POV) les mains libres lors de vos sessions sportives, vlogs ou tutoriels.",
+        "specs": {
+            "Type": "Support tour de cou POV mains libres",
+            "Matériau": "Silicone doux pour la peau avec armature flexible en métal à mémoire de forme",
+            "Système de fixation": "Bouton de dégagement rapide à verrouillage magnétique sécurisé",
+            "Compatibilité": "GoPro, DJI Osmo Action, Insta360 et smartphones"
+        }
+    },
+    {
+        "name": "Support de fixation à pince renforcée avec rotule à vis de 1\/4\"",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo de qualité professionnelle en alliage métallique robuste, conçu pour sécuriser, adapter et optimiser votre matériel de tournage sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "Support de fixation à ventouse SmallRig pour caméras d'action",
+        "category_id": 14,
+        "category_slug": "accessoires-insta360",
+        "category_name": "Accessoires Insta360",
+        "brand": "SMR",
+        "price": 390,
+        "cost_price": 312,
+        "stock": 10,
+        "description": "Support de fixation à ventouse ultra-puissante pour caméras d'action. Assure une adhérence extrême sur surfaces lisses et non poreuses (pare-brise, carrosserie de voiture, vitres) pour des plans dynamiques spectaculaires.",
+        "specs": {
+            "Type": "Support à ventouse haute résistance pour caméra d'action",
+            "Adhérence": "Pression sous vide puissante avec levier de verrouillage rapide",
+            "Articulations": "Rotule 360° pour un angle de prise de vue ajustable",
+            "Charge admissible": "Résistant aux fortes vibrations et vents à haute vitesse"
+        }
+    },
+    {
+        "name": "Support de fixation OTAN SmallRig pour DJI RS 2\/RS 3\/RS 3 Pro\/RS 4\/RS 4 Pro",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo de qualité professionnelle en alliage métallique robuste, conçu pour sécuriser, adapter et optimiser votre matériel de tournage sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "Support de moniteur à dégagement rapide SmallRig HawkLock H21 avec pince OTAN",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Support de moniteur de terrain pivotant à 360° et inclinable à 180° avec friction réglable. Permet de maintenir votre moniteur ou lumière LED sous l'angle de vision idéal sans nécessiter de clé de serrage à chaque réglage.",
+        "specs": {
+            "Ajustement": "Rotation panoramique 360° et inclinaison avant\/arrière 180°",
+            "Fixation moniteur": "Vis 1\/4\\\"-20 avec patin en caoutchouc anti-torsion",
+            "Fixation basse": "Griffe Cold Shoe, vis ARRI anti-torsion ou rail NATO selon modèle",
+            "Charge max": "Supporte les moniteurs 5 pouces et 7 pouces jusqu'à 1,5 kg"
+        }
+    },
+    {
+        "name": "Support de moniteur Manbily HS-03",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "MAN",
+        "price": 249,
+        "cost_price": 199.2,
+        "stock": 10,
+        "description": "Support de moniteur de terrain pivotant à 360° et inclinable à 180° avec friction réglable. Permet de maintenir votre moniteur ou lumière LED sous l'angle de vision idéal sans nécessiter de clé de serrage à chaque réglage.",
+        "specs": {
+            "Ajustement": "Rotation panoramique 360° et inclinaison avant\/arrière 180°",
+            "Fixation moniteur": "Vis 1\/4\\\"-20 avec patin en caoutchouc anti-torsion",
+            "Fixation basse": "Griffe Cold Shoe, vis ARRI anti-torsion ou rail NATO selon modèle",
+            "Charge max": "Supporte les moniteurs 5 pouces et 7 pouces jusqu'à 1,5 kg"
+        }
+    },
+    {
+        "name": "Support de moniteur pivotant et inclinable SmallRig avec 2 vis 1\/4\"-20",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Support de moniteur de terrain pivotant à 360° et inclinable à 180° avec friction réglable. Permet de maintenir votre moniteur ou lumière LED sous l'angle de vision idéal sans nécessiter de clé de serrage à chaque réglage.",
+        "specs": {
+            "Ajustement": "Rotation panoramique 360° et inclinaison avant\/arrière 180°",
+            "Fixation moniteur": "Vis 1\/4\\\"-20 avec patin en caoutchouc anti-torsion",
+            "Fixation basse": "Griffe Cold Shoe, vis ARRI anti-torsion ou rail NATO selon modèle",
+            "Charge max": "Supporte les moniteurs 5 pouces et 7 pouces jusqu'à 1,5 kg"
+        }
+    },
+    {
+        "name": "Support de moniteur pivotant et inclinable SmallRig avec vis 1\/4\"-20",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Support de moniteur de terrain pivotant à 360° et inclinable à 180° avec friction réglable. Permet de maintenir votre moniteur ou lumière LED sous l'angle de vision idéal sans nécessiter de clé de serrage à chaque réglage.",
+        "specs": {
+            "Ajustement": "Rotation panoramique 360° et inclinaison avant\/arrière 180°",
+            "Fixation moniteur": "Vis 1\/4\\\"-20 avec patin en caoutchouc anti-torsion",
+            "Fixation basse": "Griffe Cold Shoe, vis ARRI anti-torsion ou rail NATO selon modèle",
+            "Charge max": "Supporte les moniteurs 5 pouces et 7 pouces jusqu'à 1,5 kg"
+        }
+    },
+    {
+        "name": "Support de moniteur SmallRig pivotant et inclinable avec griffe porte-accessoires",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Support de moniteur de terrain pivotant à 360° et inclinable à 180° avec friction réglable. Permet de maintenir votre moniteur ou lumière LED sous l'angle de vision idéal sans nécessiter de clé de serrage à chaque réglage.",
+        "specs": {
+            "Ajustement": "Rotation panoramique 360° et inclinaison avant\/arrière 180°",
+            "Fixation moniteur": "Vis 1\/4\\\"-20 avec patin en caoutchouc anti-torsion",
+            "Fixation basse": "Griffe Cold Shoe, vis ARRI anti-torsion ou rail NATO selon modèle",
+            "Charge max": "Supporte les moniteurs 5 pouces et 7 pouces jusqu'à 1,5 kg"
+        }
+    },
+    {
+        "name": "Support de moniteur SmallRig pivotant et inclinable avec support de type ARRI",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Support de moniteur de terrain pivotant à 360° et inclinable à 180° avec friction réglable. Permet de maintenir votre moniteur ou lumière LED sous l'angle de vision idéal sans nécessiter de clé de serrage à chaque réglage.",
+        "specs": {
+            "Ajustement": "Rotation panoramique 360° et inclinaison avant\/arrière 180°",
+            "Fixation moniteur": "Vis 1\/4\\\"-20 avec patin en caoutchouc anti-torsion",
+            "Fixation basse": "Griffe Cold Shoe, vis ARRI anti-torsion ou rail NATO selon modèle",
+            "Charge max": "Supporte les moniteurs 5 pouces et 7 pouces jusqu'à 1,5 kg"
+        }
+    },
+    {
+        "name": "Support de moniteur SmallRig pour DJI série RS",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Accessoire de stabilisation ergonomique conçu pour optimiser la prise en main et la polyvalence des stabilisateurs motorisés (DJI série RS, Ronin). Réduit la fatigue musculaire et permet l'ajout de moniteurs, transmetteurs et microphones.",
+        "specs": {
+            "Compatibilité": "Gimbals DJI RS 2, RS 3, RS 3 Pro, RS 4, RS 4 Pro, RS Mini",
+            "Fixation": "Pince rapide NATO sécurisée ou vis de montage standard",
+            "Matériau": "Alliage d'aluminium aéronautique usiné CNC et poignée antidérapante",
+            "Points de montage": "Filetages 1\/4\\\"-20, ARRI 3\/8\\\"-16 et griffes Cold Shoe"
+        }
+    },
+    {
+        "name": "Support de montage de bureau SmallRig DT-10 Encore",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo de qualité professionnelle en alliage métallique robuste, conçu pour sécuriser, adapter et optimiser votre matériel de tournage sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "Support de téléphone à dégagement rapide de type Arca SmallRig pour DJI RS 4 Mini\/RS 3 Mini",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Accessoire de stabilisation ergonomique conçu pour optimiser la prise en main et la polyvalence des stabilisateurs motorisés (DJI série RS, Ronin). Réduit la fatigue musculaire et permet l'ajout de moniteurs, transmetteurs et microphones.",
+        "specs": {
+            "Compatibilité": "Gimbals DJI RS 2, RS 3, RS 3 Pro, RS 4, RS 4 Pro, RS Mini",
+            "Fixation": "Pince rapide NATO sécurisée ou vis de montage standard",
+            "Matériau": "Alliage d'aluminium aéronautique usiné CNC et poignée antidérapante",
+            "Points de montage": "Filetages 1\/4\\\"-20, ARRI 3\/8\\\"-16 et griffes Cold Shoe"
+        }
+    },
+    {
+        "name": "Support de téléphone en métal SmallRig 4384",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 290,
+        "cost_price": 232,
+        "stock": 10,
+        "description": "Support de smartphone robuste en métal avec plaque compatible Arca-Swiss et griffe porte-accessoire intégrée. Permet de monter votre téléphone en orientation paysage ou portrait sur n'importe quel trépied ou rig vidéo.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium usiné CNC de qualité aéronautique",
+            "Compatibilité": "Smartphones de 65 mm à 95 mm de largeur",
+            "Fixation": "Plaque Arca-Swiss intégrée et filetage inférieur 1\/4\\\"-20",
+            "Extension": "Monture Cold Shoe supérieure pour microphone ou projecteur LED"
+        }
+    },
+    {
+        "name": "Support de téléphone en métal SmallRig avec compatibilité Arca-Swiss",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Support de smartphone robuste en métal avec plaque compatible Arca-Swiss et griffe porte-accessoire intégrée. Permet de monter votre téléphone en orientation paysage ou portrait sur n'importe quel trépied ou rig vidéo.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium usiné CNC de qualité aéronautique",
+            "Compatibilité": "Smartphones de 65 mm à 95 mm de largeur",
+            "Fixation": "Plaque Arca-Swiss intégrée et filetage inférieur 1\/4\\\"-20",
+            "Extension": "Monture Cold Shoe supérieure pour microphone ou projecteur LED"
+        }
+    },
+    {
+        "name": "Support de téléphone en métal SmallRig avec griffe porte-accessoires",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Support de smartphone robuste en métal avec plaque compatible Arca-Swiss et griffe porte-accessoire intégrée. Permet de monter votre téléphone en orientation paysage ou portrait sur n'importe quel trépied ou rig vidéo.",
+        "specs": {
+            "Matériau": "Alliage d'aluminium usiné CNC de qualité aéronautique",
+            "Compatibilité": "Smartphones de 65 mm à 95 mm de largeur",
+            "Fixation": "Plaque Arca-Swiss intégrée et filetage inférieur 1\/4\\\"-20",
+            "Extension": "Monture Cold Shoe supérieure pour microphone ou projecteur LED"
+        }
+    },
+    {
+        "name": "Support de téléphone SmallRig pour stabilisateurs DJI série RS",
+        "category_id": 5,
+        "category_slug": "stabilisateurs",
+        "category_name": "Stabilisateurs",
+        "brand": "SMR",
+        "price": 490,
+        "cost_price": 392,
+        "stock": 10,
+        "description": "Accessoire de stabilisation ergonomique conçu pour optimiser la prise en main et la polyvalence des stabilisateurs motorisés (DJI série RS, Ronin). Réduit la fatigue musculaire et permet l'ajout de moniteurs, transmetteurs et microphones.",
+        "specs": {
+            "Compatibilité": "Gimbals DJI RS 2, RS 3, RS 3 Pro, RS 4, RS 4 Pro, RS Mini",
+            "Fixation": "Pince rapide NATO sécurisée ou vis de montage standard",
+            "Matériau": "Alliage d'aluminium aéronautique usiné CNC et poignée antidérapante",
+            "Points de montage": "Filetages 1\/4\\\"-20, ARRI 3\/8\\\"-16 et griffes Cold Shoe"
+        }
+    },
+    {
+        "name": "Support pour moniteur SmallRig HawkLock H21 compatible avec stabilisateurs DJI",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Accessoire photo et vidéo de qualité professionnelle en alliage métallique robuste, conçu pour sécuriser, adapter et optimiser votre matériel de tournage sur le terrain.",
+        "specs": {
+            "Matériau": "Alliage métallique haute durabilité",
+            "Compatibilité": "Équipement photo et vidéo standard"
+        }
+    },
+    {
+        "name": "Support SSD SmallRig Samsung T5 v2 pour cages BMPCC 6K\/4K et Z CAM E2",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 590,
+        "cost_price": 472,
+        "stock": 10,
+        "description": "Cage pour caméra professionnelle usinée avec précision CNC en alliage d'aluminium aéronautique. Offre une protection intégrale et de multiples points d'ancrage (1\/4\"-20, ARRI 3\/8\"-16, Cold Shoe, rails NATO et plaque Arca-Swiss intégrée).",
+        "specs": {
+            "Matériaux": "Alliage d'aluminium et coussinets en caoutchouc anti-rayures",
+            "Points de fixation": "Filetages 1\/4\\\"-20, 3\/8\\\"-16 ARRI, rails NATO, Cold Shoe, plaque Arca intégrée",
+            "Accès": "Accès dégagé à tous les boutons, trappes batterie et connecteurs"
+        }
+    },
+    {
+        "name": "Système de mise au point SmallRig F50 avec amortissement progressif",
+        "category_id": 10,
+        "category_slug": "accessoires",
+        "category_name": "Accessoires",
+        "brand": "SMR",
+        "price": 1990,
+        "cost_price": 1592,
+        "stock": 10,
+        "description": "Système de suivi de mise au point (Follow Focus) mécanique de précision avec butées A\/B réglables et amortissement fluide progressif. Offre un contrôle manuel précis et tactile de la bague de mise au point de vos objectifs cinéma ou photo.",
+        "specs": {
+            "Système": "Follow focus compact avec butées d'arrêt A\/B mécaniques",
+            "Volant": "Volant antidérapant avec bague blanche de repérage amovible",
+            "Fixation": "Compatible tige standard 15 mm avec courroie crantée 0.8 MOD",
+            "Amortissement": "Fluide et sans jeu mécanique"
+        }
+    },
+    {
+        "name": "Système de montage de batterie compact SmallRig à monture en V",
+        "category_id": 8,
+        "category_slug": "batterie-chargeur",
+        "category_name": "Batterie \/ Chargeur",
+        "brand": "SMR",
+        "price": 1290,
+        "cost_price": 1032,
+        "stock": 10,
+        "description": "Système de plaque de montage compact SmallRig pour batterie à monture en V. Permet de fixer une batterie V-Lock sur des tiges 15 mm LWS ou sur une cage caméra avec angle d'inclinaison réglable pour un accès rapide aux commandes arrière.",
+        "specs": {
+            "Type": "Plaque d'adaptation de batterie V-Mount pliable",
+            "Compatibilité": "Batteries V-Lock standard et cages SmallRig",
+            "Matériau": "Alliage d'aluminium aéronautique usiné CNC",
+            "Réglage": "Mécanisme d'inclinaison rapide sans outil"
+        }
+    },
+    {
+        "name": "Tête Fluide Vidéo de Trépied",
+        "category_id": 7,
+        "category_slug": "trepieds",
+        "category_name": "Trépieds",
+        "brand": "MAN",
+        "price": 690,
+        "cost_price": 552,
+        "stock": 10,
+        "description": "Tête vidéo fluide professionnelle à amortissement hydraulique avec poignée panoramique amovible et plaque à dégagement rapide de type Arca-Swiss. Assure des mouvements de panoramique et d'inclinaison ultra-doux sans à-coups pour la vidéo.",
+        "specs": {
+            "Type": "Tête fluide vidéo bidirectionnelle (Pan & Tilt)",
+            "Rotation": "Panoramique 360° et inclinaison fluide de -70° à +90°",
+            "Fixation embase": "Filetage 3\/8\\\" universel pour trépieds et monopodes",
+            "Charge admissible": "Jusqu'à 5 kg",
+            "Niveau à bulle": "Intégré pour un alignement horizontal parfait"
+        }
+    }
+]
