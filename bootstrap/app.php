@@ -19,6 +19,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+        $middleware->web(append: [
+            \App\Http\Middleware\SetLocale::class,
+        ]);
         
         // Register Spatie permission middleware
         $middleware->alias([

@@ -5,17 +5,10 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CustomerDashboardController;
+use App\Http\Controllers\LanguageController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes  
-|--------------------------------------------------------------------------
-|
-| Core application routes for authentication and protected dashboards.
-| Shop routes are in routes/shop.php
-| Admin routes are in routes/admin.php
-|
-*/
+// Language Switcher
+Route::get('/lang/{locale}', [LanguageController::class, 'switch'])->name('lang.switch');
 
 // Guest routes
 Route::middleware('guest')->group(function () {

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ setting('language', 'fr') }}" dir="{{ setting('text_direction', 'ltr') }}">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -114,9 +114,10 @@
     </script>
     @endif
     
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css">
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
@@ -235,12 +236,12 @@
                         <!-- Navigation links -->
                         <ul class="navbar-nav me-auto mb-0 gap-1 mb-3 mb-lg-0 align-items-lg-center">
                             <li class="nav-item">
-                                <a class="nav-link-custom {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Accueil</a>
+                                <a class="nav-link-custom {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">{{ __('Home') }}</a>
                             </li>
                             {{-- Boutique with Categories Hover Dropdown --}}
                             <li class="nav-item nav-item-dropdown position-relative">
                                 <a class="nav-link-custom {{ request()->routeIs('shop.*') ? 'active' : '' }}" href="{{ route('shop.index') }}" id="boutiqueNavLink">
-                                    <span>Boutique</span>
+                                    <span>{{ __('Shop') }}</span>
                                     <i class="fas fa-chevron-down nav-chevron-icon"></i>
                                 </a>
 
@@ -249,9 +250,9 @@
                                     <div class="nav-dropdown-header">
                                         <div class="d-flex align-items-center gap-2">
                                             <span class="tally-dot"></span>
-                                            <span class="nav-dropdown-title">RAYONS & ÉQUIPEMENTS</span>
+                                            <span class="nav-dropdown-title">{{ strtoupper(__('Sections & Equipment')) }}</span>
                                         </div>
-                                        <a href="{{ route('shop.index') }}" class="nav-dropdown-viewall">Tout voir</a>
+                                        <a href="{{ route('shop.index') }}" class="nav-dropdown-viewall">{{ __('View All') }}</a>
                                     </div>
 
                                     <div class="nav-dropdown-grid">
@@ -271,7 +272,7 @@
                                                 </div>
                                                 <div class="nav-cat-text">
                                                     <span class="nav-cat-name">{{ $navCat->name }}</span>
-                                                    <span class="nav-cat-count">{{ $navCat->products_count }} réf.</span>
+                                                    <span class="nav-cat-count">{{ $navCat->products_count }} {{ __('refs.') }}</span>
                                                 </div>
                                             </a>
                                         @endforeach
@@ -279,26 +280,39 @@
 
                                     <div class="nav-dropdown-footer">
                                         <a href="{{ route('shop.index') }}" class="nav-dropdown-footer-link">
-                                            <span>Consulter toutes les catégories</span>
-                                            <i class="fas fa-arrow-right"></i>
+                                            <span>{{ __('Browse all categories') }}</span>
+                                            <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }}"></i>
                                         </a>
                                     </div>
                                 </div>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link-custom {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">À Propos</a>
+                                <a class="nav-link-custom {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">{{ __('About') }}</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link-custom {{ request()->routeIs('contact') ? 'active' : '' }}" href="{{ route('contact') }}">Contact</a>
+                                <a class="nav-link-custom {{ request()->routeIs('contact') ? 'active' : '' }}" href="{{ route('contact') }}">{{ __('Contact') }}</a>
                             </li>
                         </ul>
 
-                        <!-- Mobile in-menu search button -->
+                        <!-- Mobile in-menu search button + language switcher -->
                         <div class="d-lg-none mt-2 mb-3">
                             <button type="button" class="btn-search-mobile-bar w-100" id="inMenuSearchTrigger">
                                 <i class="fas fa-search text-danger"></i>
-                                <span>Rechercher un équipement...</span>
+                                <span>{{ __('Search equipment...') }}</span>
                             </button>
+                            {{-- Mobile Language Switcher --}}
+                            <div class="d-flex justify-content-center gap-2 mt-3">
+                                <a href="{{ route('lang.switch', 'fr') }}"
+                                   class="lang-btn {{ app()->getLocale() === 'fr' ? 'lang-btn-active' : '' }}"
+                                   style="padding: 6px 16px; font-size: 0.82rem;">
+                                    🇫🇷 Français
+                                </a>
+                                <a href="{{ route('lang.switch', 'ar') }}"
+                                   class="lang-btn {{ app()->getLocale() === 'ar' ? 'lang-btn-active' : '' }}"
+                                   style="padding: 6px 16px; font-size: 0.82rem;">
+                                    🇲🇦 العربية
+                                </a>
+                            </div>
                         </div>
 
                         <!-- Search Form with Dynamic Live Search (Desktop) -->
@@ -330,15 +344,15 @@
                                 <!-- Frequent Searches Chips (Shown on focus when input is empty) -->
                                 <div class="search-quick-tags p-3 border-bottom" id="headerSearchTags">
                                     <div class="search-section-label">
-                                        <i class="fas fa-fire me-1 text-danger"></i> RECHERCHES FRÉQUENTES
+                                        <i class="fas fa-fire me-1 text-danger"></i> {{ strtoupper(__('Frequent Searches')) }}
                                     </div>
                                     <div class="d-flex flex-wrap gap-2 mt-2">
                                         <button type="button" class="search-tag-chip" data-search="Sony Alpha">Sony Alpha</button>
                                         <button type="button" class="search-tag-chip" data-search="Blackmagic">Blackmagic</button>
-                                        <button type="button" class="search-tag-chip" data-search="Objectif">Objectifs</button>
-                                        <button type="button" class="search-tag-chip" data-search="Stabilisateur">Stabilisateurs</button>
-                                        <button type="button" class="search-tag-chip" data-search="Micro sans fil">Micros sans fil</button>
-                                        <button type="button" class="search-tag-chip" data-search="Drone">Drones</button>
+                                        <button type="button" class="search-tag-chip" data-search="{{ app()->getLocale() === 'ar' ? 'عدسات' : 'Objectif' }}">{{ app()->getLocale() === 'ar' ? 'عدسات' : 'Objectifs' }}</button>
+                                        <button type="button" class="search-tag-chip" data-search="{{ app()->getLocale() === 'ar' ? 'أجهزة الاستقرار' : 'Stabilisateur' }}">{{ app()->getLocale() === 'ar' ? 'أجهزة الاستقرار' : 'Stabilisateurs' }}</button>
+                                        <button type="button" class="search-tag-chip" data-search="{{ app()->getLocale() === 'ar' ? 'ميكروفون' : 'Micro sans fil' }}">{{ app()->getLocale() === 'ar' ? 'ميكروفونات' : 'Micros sans fil' }}</button>
+                                        <button type="button" class="search-tag-chip" data-search="Drone">{{ app()->getLocale() === 'ar' ? 'طائرات' : 'Drones' }}</button>
                                     </div>
                                 </div>
 
@@ -350,17 +364,17 @@
                                     <div class="search-empty-icon mb-2">
                                         <i class="fas fa-search-minus fa-2x text-muted opacity-50"></i>
                                     </div>
-                                    <div class="fw-bold text-dark mb-1">Aucun produit trouvé</div>
-                                    <div class="small text-muted mb-2">Aucun résultat ne correspond à « <span class="empty-query-text text-danger fw-semibold"></span> »</div>
-                                    <div class="small text-muted">Essayez avec un nom de modèle, marque ou catégorie.</div>
+                                    <div class="fw-bold text-dark mb-1">{{ __('No product found') }}</div>
+                                    <div class="small text-muted mb-2">{{ __('No results match') }} « <span class="empty-query-text text-danger fw-semibold"></span> »</div>
+                                    <div class="small text-muted">{{ __('Try model name, brand or category') }}</div>
                                 </div>
 
                                 <!-- View All Footer -->
                                 <div class="search-dropdown-footer p-2 text-center border-top d-none" id="headerSearchFooter">
                                     <a href="#" class="search-view-all-link" id="headerSearchViewAll">
-                                        <span>Voir tous les résultats</span>
+                                        <span>{{ __('View all results') }}</span>
                                         <span class="search-count-pill badge bg-danger ms-1" id="headerSearchCountBadge">0</span>
-                                        <i class="fas fa-arrow-right ms-1"></i>
+                                        <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }} ms-1"></i>
                                     </a>
                                 </div>
                             </div>
@@ -369,7 +383,7 @@
                         <!-- Desktop-only actions -->
                         <div class="d-none d-lg-flex align-items-center gap-3 ms-3">
                             @auth
-                                <a href="{{ route('dashboard') }}" class="action-btn-circle text-decoration-none" title="Mon compte">
+                                <a href="{{ route('dashboard') }}" class="action-btn-circle text-decoration-none" title="{{ __('My Account') }}">
                                     <i class="far fa-user"></i>
                                 </a>
                             @endauth
@@ -381,6 +395,23 @@
                                 <span id="header-cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style="font-size: 0.6rem;">
                                     {{ count(session('cart', [])) }}
                                 </span>
+                            </div>
+
+                            {{-- Language Switcher --}}
+                            <div class="lang-switcher d-flex align-items-center gap-1">
+                                <a href="{{ route('lang.switch', 'fr') }}"
+                                   class="lang-btn {{ app()->getLocale() === 'fr' ? 'lang-btn-active' : '' }}"
+                                   title="Français">
+                                    <span class="fi fi-fr"></span>
+                                    <span class="lang-label">FR</span>
+                                </a>
+                                <span class="lang-divider">|</span>
+                                <a href="{{ route('lang.switch', 'ar') }}"
+                                   class="lang-btn {{ app()->getLocale() === 'ar' ? 'lang-btn-active' : '' }}"
+                                   title="العربية">
+                                    <span class="fi fi-ma"></span>
+                                    <span class="lang-label">AR</span>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -600,7 +631,11 @@
                         <span class="tally-dot"></span> {{ setting('app_name', 'LUMINA Cine & Optics') }}
                     </h5>
                     <p class="small lh-lg mb-4 text-slate-400">
-                        Votre partenaire de référence en équipement audiovisuel, caméras de cinéma, objectifs broadcast, stabilisateurs et éclairage studio au Maroc. Showroom, démonstrations et livraison sécurisée dans tout le Royaume.
+                        @if(app()->getLocale() === 'ar')
+                            شريكك المرجعي في المعدات الصوتية البصرية، كاميرات السينما، عدسات البث، أجهزة الاستقرار وإضاءة الاستوديو في المغرب. معرض، عروض توضيحية وتوصيل آمن في جميع أنحاء المملكة.
+                        @else
+                            Votre partenaire de référence en équipement audiovisuel, caméras de cinéma, objectifs broadcast, stabilisateurs et éclairage studio au Maroc. Showroom, démonstrations et livraison sécurisée dans tout le Royaume.
+                        @endif
                     </p>
                     @php
                         $sfb  = setting('social_facebook',  '');
@@ -642,28 +677,27 @@
                         @endif
                         {{-- If none configured, show placeholder text --}}
                         @if(!$validUrl($sfb) && !$validUrl($stw) && !$validUrl($sig) && !$validUrl($sli) && !$validUrl($swa))
-                        <span class="text-muted small fst-italic">Réseaux sociaux bientôt disponibles</span>
+                        <span class="text-muted small fst-italic">{{ __('Follow us') }}</span>
                         @endif
                     </div>
                 </div>
                 
                 <div class="col-lg-3 col-6">
-                    <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">Boutique</h6>
+                    <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">{{ __('Shop') }}</h6>
                     <ul class="list-unstyled">
-                        <li><a href="{{ route('shop.index') }}" class="footer-link small">Tous les produits</a></li>
-                        <li><a href="{{ route('about') }}" class="footer-link small">À Propos de {{ setting('app_name', 'LUMINA') }}</a></li>
-                        <li><a href="{{ route('contact') }}" class="footer-link small">Showroom & Contact</a></li>
-                        <li><a href="{{ route('shop.index', ['category' => 'cameras-hybrides']) }}" class="footer-link small">Caméras Cinéma</a></li>
+                        <li><a href="{{ route('shop.index') }}" class="footer-link small">{{ __('Featured Products') }}</a></li>
+                        <li><a href="{{ route('about') }}" class="footer-link small">{{ __('About') }} {{ setting('app_name', 'LUMINA') }}</a></li>
+                        <li><a href="{{ route('contact') }}" class="footer-link small">Showroom & {{ __('Contact') }}</a></li>
                     </ul>
                 </div>
 
                 <div class="col-lg-3 col-6">
-                    <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">Assistance</h6>
+                    <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">{{ __('Customer Service') }}</h6>
                     <ul class="list-unstyled">
-                        <li><a href="{{ route('contact') }}" class="footer-link small">Centre d'aide & Devis</a></li>
-                        <li><a href="{{ route('customer.orders') }}" class="footer-link small">Suivre ma commande</a></li>
-                        <li><a href="{{ route('about') }}#garantie" class="footer-link small">Garantie Constructeur</a></li>
-                        <li><a href="{{ route('contact') }}#faq" class="footer-link small">Questions Fréquentes</a></li>
+                        <li><a href="{{ route('contact') }}" class="footer-link small">{{ __('Request a Quote') }}</a></li>
+                        <li><a href="{{ route('customer.orders') }}" class="footer-link small">{{ __('Track Order') }}</a></li>
+                        <li><a href="{{ route('about') }}#garantie" class="footer-link small">{{ __('Warranty') }}</a></li>
+                        <li><a href="{{ route('contact') }}#faq" class="footer-link small">{{ __('FAQ') }}</a></li>
                     </ul>
                 </div>
 
@@ -673,7 +707,7 @@
             
             <div class="row align-items-center">
                 <div class="col-md-12 text-center text-md-start mb-3 mb-md-0">
-                    <p class="small text-center mb-0">&copy; {{ date('Y') }} {{ setting('app_name', 'LUMINA Cine & Optics') }}. Tous droits réservés. Développé par <a href="https://elegantboost.com/" target="_blank" class="text-white text-decoration-none fw-bold hover-primary transition-all">Elegant Boost</a>.</p>
+                    <p class="small text-center mb-0">&copy; {{ date('Y') }} {{ setting('app_name', 'LUMINA Cine & Optics') }}. {{ __('All rights reserved') }}. {{ app()->getLocale() === 'ar' ? 'تطوير' : 'Développé par' }} <a href="https://elegantboost.com/" target="_blank" class="text-white text-decoration-none fw-bold hover-primary transition-all">Elegant Boost</a>.</p>
                 </div>
             </div>
         </div>
