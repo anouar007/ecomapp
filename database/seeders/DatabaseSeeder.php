@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             StoreCategoriesSeeder::class,
             CameraProductsSeeder::class,
+            LensProductsSeeder::class,
         ]);
     }
 }

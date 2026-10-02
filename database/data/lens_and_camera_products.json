@@ -1,0 +1,563 @@
+[
+  {
+    "nom": "Insta360 GO 3S Noir-Caméra Vlog 4K Petite",
+    "description": "Caméra d'action ultra-compacte et légère, idéale pour le vlogging mains libres en 4K.",
+    "prix": 3699.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Caméra d'action ultra-compacte",
+      "Capteur": "1/1.95 pouce CMOS",
+      "Vidéo": "4K à 30 ips, 2.7K à 60 ips",
+      "Stabilisation": "FlowState avec Horizon Lock",
+      "Étanchéité": "IPX8 (étanche jusqu'à 10m avec boîtier)",
+      "Poids": "Environ 39 g"
+    }
+  },
+  {
+    "nom": "Objectif Canon RF 24-70mm f/2.8 L IS USM",
+    "description": "Objectif zoom standard professionnel à ouverture constante f/2.8 avec stabilisation optique.",
+    "prix": 17900.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Monture": "Canon RF",
+      "Focale": "24-70 mm",
+      "Ouverture": "f/2.8 constant",
+      "Stabilisation": "Oui, 5 stops (IS optique)",
+      "Autofocus": "Moteur Nano USM",
+      "Poids": "Environ 900 g",
+      "Diamètre du filtre": "82 mm"
+    }
+  },
+  {
+    "nom": "Objectif d'art Sigma 24-70mm f/2.8 DG DN II (Sony E)",
+    "description": "Objectif zoom standard haut de gamme de la gamme Art, optimisé pour l'hybride Sony.",
+    "prix": 13900.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E",
+      "Focale": "24-70 mm",
+      "Ouverture": "f/2.8 constant",
+      "Stabilisation": "Non (utilise la stabilisation du boîtier)",
+      "Autofocus": "Moteur HLA (High-response Linear Actuator)",
+      "Poids": "Environ 670 g",
+      "Diamètre du filtre": "82 mm"
+    }
+  },
+  {
+    "nom": "Objectif Olympus M.Zuiko Digital 75mm f/1.8 (Noir) (Occasion)",
+    "description": "Téléobjectif à focale fixe lumineux pour le système Micro Four Thirds, idéal pour le portrait.",
+    "prix": 1990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Micro Four Thirds",
+      "Focale": "75 mm (équivalent 150 mm)",
+      "Ouverture": "f/1.8",
+      "Stabilisation": "Non",
+      "Autofocus": "Moteur MSC (Movie & Still Compatible)",
+      "Poids": "Environ 305 g",
+      "Diamètre du filtre": "58 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sigma 16-28mm f2.8 DG DN",
+    "description": "Objectif grand-angle lumineux et compact, parfait pour le paysage et l'astrophotographie.",
+    "prix": 12900.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E",
+      "Focale": "16-28 mm",
+      "Ouverture": "f/2.8 constant",
+      "Stabilisation": "Non",
+      "Autofocus": "Moteur pas à pas",
+      "Poids": "Environ 450 g",
+      "Diamètre du filtre": "72 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sigma 24-70mm F2.8 DG DN II ART",
+    "description": "Deuxième génération du zoom standard de référence, offrant une netteté et une rapidité exceptionnelles.",
+    "prix": 12890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E",
+      "Focale": "24-70 mm",
+      "Ouverture": "f/2.8 constant",
+      "Stabilisation": "Non",
+      "Autofocus": "Moteur HLA haute vitesse",
+      "Poids": "Environ 670 g",
+      "Diamètre du filtre": "82 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sony E 10-20mm f/4 PZ G",
+    "description": "Objectif grand-angle zoom à puissance (PZ) ultra-léger pour les capteurs APS-C.",
+    "prix": 7900.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (APS-C)",
+      "Focale": "10-20 mm (équivalent 15-30 mm)",
+      "Ouverture": "f/4 constant",
+      "Stabilisation": "Non",
+      "Autofocus": "Moteur PZ (Power Zoom) linéaire XD",
+      "Poids": "Environ 178 g",
+      "Diamètre du filtre": "62 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sony E PZ 18-105 mm f/4 G OSS",
+    "description": "Zoom polyvalent à ouverture constante avec moteur de zoom motorisé, idéal pour la vidéo.",
+    "prix": 6700.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (APS-C)",
+      "Focale": "18-105 mm (équivalent 27-157.5 mm)",
+      "Ouverture": "f/4 constant",
+      "Stabilisation": "Oui, optique (OSS)",
+      "Autofocus": "Moteur PZ (Power Zoom) interne",
+      "Poids": "Environ 427 g",
+      "Diamètre du filtre": "72 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sony FE 12-24mm f/2.8 GM",
+    "description": "Objectif ultra grand-angle professionnel à ouverture constante f/2.8, le plus large de la gamme GM.",
+    "prix": 26900.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "12-24 mm",
+      "Ouverture": "f/2.8 constant",
+      "Stabilisation": "Non",
+      "Autofocus": "4 moteurs XD linéaires",
+      "Poids": "Environ 847 g",
+      "Diamètre du filtre": "Filtre arrière intégré"
+    }
+  },
+  {
+    "nom": "Objectif Sony FE 14mm f1.8 GM",
+    "description": "Objectif ultra grand-angle à focale fixe, extrêmement lumineux et compact pour la gamme GM.",
+    "prix": 18300.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "14 mm",
+      "Ouverture": "f/1.8",
+      "Stabilisation": "Non",
+      "Autofocus": "2 moteurs XD linéaires",
+      "Poids": "Environ 460 g",
+      "Diamètre du filtre": "Filtre arrière intégré"
+    }
+  },
+  {
+    "nom": "Objectif Sony FE 16-25mm f/2.8 G (Sony E)",
+    "description": "Zoom grand-angle compact et léger de la gamme G, parfait pour le vlogging et le paysage.",
+    "prix": 14900.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "16-25 mm",
+      "Ouverture": "f/2.8 constant",
+      "Stabilisation": "Non",
+      "Autofocus": "2 moteurs XD linéaires",
+      "Poids": "Environ 409 g",
+      "Diamètre du filtre": "67 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sony FE 16-35mm f/2.8 GM II (Sony E)",
+    "description": "Deuxième génération du zoom grand-angle de référence, plus léger et avec un autofocus amélioré.",
+    "prix": 25390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "16-35 mm",
+      "Ouverture": "f/2.8 constant",
+      "Stabilisation": "Non",
+      "Autofocus": "4 moteurs XD linéaires",
+      "Poids": "Environ 547 g",
+      "Diamètre du filtre": "82 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sony FE 16-35mm f2.8 GM",
+    "description": "Première génération du zoom grand-angle professionnel de la gamme Master.",
+    "prix": 17490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "16-35 mm",
+      "Ouverture": "f/2.8 constant",
+      "Stabilisation": "Non",
+      "Autofocus": "Moteur DDSSM",
+      "Poids": "Environ 680 g",
+      "Diamètre du filtre": "82 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sony FE 16-35mm F4 ZA OSS",
+    "description": "Zoom grand-angle compact développé avec Zeiss, doté d'une stabilisation optique intégrée.",
+    "prix": 7900.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "16-35 mm",
+      "Ouverture": "f/4 constant",
+      "Stabilisation": "Oui, optique (OSS)",
+      "Autofocus": "Moteur DDSSM",
+      "Poids": "Environ 518 g",
+      "Diamètre du filtre": "72 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sony FE 24 mm f/2.8 G",
+    "description": "Objectif grand-angle à focale fixe ultra-compact et léger de la gamme G.",
+    "prix": 8199.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "24 mm",
+      "Ouverture": "f/2.8",
+      "Stabilisation": "Non",
+      "Autofocus": "2 moteurs XD linéaires",
+      "Poids": "Environ 219 g",
+      "Diamètre du filtre": "49 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sony FE 24-105mm f/4 G OSS",
+    "description": "Zoom polyvalent de voyage à ouverture constante f/4 avec stabilisation optique.",
+    "prix": 10490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "24-105 mm",
+      "Ouverture": "f/4 constant",
+      "Stabilisation": "Oui, optique (OSS)",
+      "Autofocus": "Moteur DDSSM",
+      "Poids": "Environ 663 g",
+      "Diamètre du filtre": "77 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sony FE 24-50mm f/2.8 G (Sony E)",
+    "description": "Zoom standard lumineux et compact, offrant un excellent compromis entre taille et performance.",
+    "prix": 14400.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "24-50 mm",
+      "Ouverture": "f/2.8 constant",
+      "Stabilisation": "Non",
+      "Autofocus": "2 moteurs XD linéaires",
+      "Poids": "Environ 440 g",
+      "Diamètre du filtre": "67 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sony FE 24-70mm f/2.8 GM",
+    "description": "Le zoom standard de référence pour les professionnels, offrant une netteté exceptionnelle.",
+    "prix": 14990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "24-70 mm",
+      "Ouverture": "f/2.8 constant",
+      "Stabilisation": "Non",
+      "Autofocus": "Moteur DDSSM",
+      "Poids": "Environ 886 g",
+      "Diamètre du filtre": "82 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sony FE 24-70mm f/2.8 GM II (Sony E)",
+    "description": "Deuxième génération du zoom standard phare, considérablement allégé avec un autofocus de pointe.",
+    "prix": 20890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "24-70 mm",
+      "Ouverture": "f/2.8 constant",
+      "Stabilisation": "Non",
+      "Autofocus": "4 moteurs XD linéaires",
+      "Poids": "Environ 695 g",
+      "Diamètre du filtre": "82 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sony FE 35mm f1.4 GM",
+    "description": "Focale fixe grand-angle lumineuse de la gamme Master, idéale pour le reportage et la rue.",
+    "prix": 16500.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "35 mm",
+      "Ouverture": "f/1.4",
+      "Stabilisation": "Non",
+      "Autofocus": "2 moteurs XD linéaires",
+      "Poids": "Environ 524 g",
+      "Diamètre du filtre": "67 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sony FE 35mm f1.8",
+    "description": "Focale fixe grand-angle compacte, légère et abordable avec une excellente qualité d'image.",
+    "prix": 6900.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "35 mm",
+      "Ouverture": "f/1.8",
+      "Stabilisation": "Non",
+      "Autofocus": "Moteur DDSSM",
+      "Poids": "Environ 280 g",
+      "Diamètre du filtre": "55 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sony FE 40mm f2.5 G",
+    "description": "Focale fixe standard ultra-compacte de la gamme G, parfaite pour la photo de rue discrète.",
+    "prix": 6900.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "40 mm",
+      "Ouverture": "f/2.5",
+      "Stabilisation": "Non",
+      "Autofocus": "2 moteurs XD linéaires",
+      "Poids": "Environ 173 g",
+      "Diamètre du filtre": "49 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sony FE 50mm f/1.4 GM (Sony E)",
+    "description": "Le 50mm de référence de la gamme Master, combinant luminosité f/1.4 et compacité.",
+    "prix": 16800.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "50 mm",
+      "Ouverture": "f/1.4",
+      "Stabilisation": "Non",
+      "Autofocus": "2 moteurs XD linéaires",
+      "Poids": "Environ 516 g",
+      "Diamètre du filtre": "67 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sony FE 50mm f/1.8",
+    "description": "Focale fixe standard économique et légère, idéale pour apprendre le portrait et la faible luminosité.",
+    "prix": 2450.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "50 mm",
+      "Ouverture": "f/1.8",
+      "Stabilisation": "Non",
+      "Autofocus": "Moteur DDSSM",
+      "Poids": "Environ 186 g",
+      "Diamètre du filtre": "49 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sony FE 50mm f1.4 GM",
+    "description": "Variante du 50mm f/1.4 GM, offrant un bokeh crémeux et une résolution de niveau professionnel.",
+    "prix": 16900.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "50 mm",
+      "Ouverture": "f/1.4",
+      "Stabilisation": "Non",
+      "Autofocus": "2 moteurs XD linéaires",
+      "Poids": "Environ 516 g",
+      "Diamètre du filtre": "67 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sony FE 70-200 mm f/2.8 GM OSS",
+    "description": "Téléobjectif zoom professionnel de référence, indispensable pour le sport, le mariage et le portrait.",
+    "prix": 18700.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "70-200 mm",
+      "Ouverture": "f/2.8 constant",
+      "Stabilisation": "Oui, optique (OSS)",
+      "Autofocus": "Moteur DDSSM",
+      "Poids": "Environ 1480 g",
+      "Diamètre du filtre": "77 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sony FE 85 mm f/1.4 GM",
+    "description": "Le téléobjectif à focale fixe de référence pour le portrait, offrant un bokeh exceptionnel.",
+    "prix": 16250.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "85 mm",
+      "Ouverture": "f/1.4",
+      "Stabilisation": "Non",
+      "Autofocus": "Moteur DDSSM",
+      "Poids": "Environ 820 g",
+      "Diamètre du filtre": "77 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sony FE 85mm F1.4 GM II - SEL85F14GM2",
+    "description": "Deuxième génération du 85mm f/1.4, beaucoup plus léger avec un autofocus ultra-rapide.",
+    "prix": 19890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "85 mm",
+      "Ouverture": "f/1.4",
+      "Stabilisation": "Non",
+      "Autofocus": "4 moteurs XD linéaires",
+      "Poids": "Environ 642 g",
+      "Diamètre du filtre": "77 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sony FE 90 mm f/2.8 Macro G OSS",
+    "description": "Objectif macro de référence au format plein format, avec un grandissement 1:1 et une stabilisation optique.",
+    "prix": 11900.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "90 mm",
+      "Ouverture": "f/2.8",
+      "Stabilisation": "Oui, optique (OSS)",
+      "Autofocus": "Moteur DDSSM",
+      "Poids": "Environ 602 g",
+      "Diamètre du filtre": "62 mm",
+      "Grandissement": "1:1 (Macro)"
+    }
+  },
+  {
+    "nom": "Objectif Sony FE PZ 16-35 mm f/4 G",
+    "description": "Zoom grand-angle à motorisation PZ (Power Zoom), conçu spécifiquement pour les vidéastes et créateurs de contenu.",
+    "prix": null,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "16-35 mm",
+      "Ouverture": "f/4 constant",
+      "Stabilisation": "Non",
+      "Autofocus": "Moteur PZ (Power Zoom) linéaire XD",
+      "Poids": "Environ 353 g",
+      "Diamètre du filtre": "72 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sony Sonnar T* FE 35mm f/2.8 ZA",
+    "description": "Focale fixe compacte développée avec Zeiss, offrant un rendu des couleurs et un contraste remarquables.",
+    "prix": 6899.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "35 mm",
+      "Ouverture": "f/2.8",
+      "Stabilisation": "Non",
+      "Autofocus": "Moteur pas à pas",
+      "Poids": "Environ 120 g",
+      "Diamètre du filtre": "49 mm"
+    }
+  },
+  {
+    "nom": "Objectif Sony Vario-Tessar T* FE 24-70 mm f/4 ZA OSS",
+    "description": "Zoom standard compact développé avec Zeiss, souvent vendu en kit avec les boîtiers plein format Sony.",
+    "prix": 6300.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "24-70 mm",
+      "Ouverture": "f/4 constant",
+      "Stabilisation": "Oui, optique (OSS)",
+      "Autofocus": "Moteur pas à pas",
+      "Poids": "Environ 426 g",
+      "Diamètre du filtre": "67 mm"
+    }
+  },
+  {
+    "nom": "Objectif Tamron 28-200 mm f/2.8-5.6 Di III RXD (Sony E)",
+    "description": "Zoom tout-en-un polyvalent et léger, offrant une ouverture de f/2.8 à 28mm pour une grande versatilité.",
+    "prix": 11900.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "28-200 mm",
+      "Ouverture": "f/2.8-5.6",
+      "Stabilisation": "Non",
+      "Autofocus": "Moteur RXD (Rapid eXtra-silent stepping Drive)",
+      "Poids": "Environ 575 g",
+      "Diamètre du filtre": "67 mm"
+    }
+  },
+  {
+    "nom": "Objectif Tamron 28-75mm f2.8 Di III VXD G2",
+    "description": "Deuxième génération du zoom standard lumineux de Tamron, avec un autofocus VXD ultra-rapide et une conception améliorée.",
+    "prix": 11900.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "28-75 mm",
+      "Ouverture": "f/2.8 constant",
+      "Stabilisation": "Non",
+      "Autofocus": "Moteur VXD (Voice-coil eXtreme-torque Drive)",
+      "Poids": "Environ 540 g",
+      "Diamètre du filtre": "67 mm"
+    }
+  },
+  {
+    "nom": "Sony FE 70-200mm f/4 Macro G OSS II (SEL70200G2)",
+    "description": "Téléobjectif zoom compact de la gamme G avec capacités macro (1:2) et une stabilisation optique de nouvelle génération.",
+    "prix": 20999.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Monture": "Sony E (Plein format)",
+      "Focale": "70-200 mm",
+      "Ouverture": "f/4 constant",
+      "Stabilisation": "Oui, optique (OSS) avec mode actif",
+      "Autofocus": "4 moteurs XD linéaires",
+      "Poids": "Environ 840 g",
+      "Diamètre du filtre": "77 mm",
+      "Grandissement": "1:2 (Macro)"
+    }
+  }
+]
