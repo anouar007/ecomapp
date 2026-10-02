@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
             ExtendedCatalogBatch5Seeder::class,
             ExtendedCatalogBatch6Seeder::class,
             ExtendedCatalogBatch7Seeder::class,
+            ExtendedCatalogBatch8Seeder::class,
         ]);
     }
 }

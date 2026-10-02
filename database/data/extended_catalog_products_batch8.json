@@ -1,0 +1,92 @@
+[
+  {
+    "name": "10 écouvillons de nettoyage pour capteur CMOS plein format 24 mm",
+    "price": "MAD 390,00",
+    "description": "Pack de 10 écouvillons de nettoyage double face spécialement conçus pour les capteurs plein format (Full-Frame). Chaque bâtonnet est doté d'une tête en microfibre de haute qualité pour éliminer efficacement la poussière, les résidus et les traces sans laisser de peluches ni rayer le capteur sensible.",
+    "technical_specs": {
+      "taille": "24 mm (compatible capteurs plein format / Full-Frame)",
+      "quantité": "10 bâtonnets double face",
+      "matériau": "Microfibre sans peluche de qualité optique",
+      "compatibilité": "Capteurs CMOS plein format (Sony A7, Canon EOS R5/R6, Nikon Z6/Z7, etc.)",
+      "emballage": "Individuellement scellé sous vide pour une propreté garantie"
+    },
+    "category_slug": "kit-de-nettoyage"
+  },
+  {
+    "name": "APS-C Sensor Cleaning Swab Kit (10 Swabs + 20ml Cleaner)",
+    "price": "MAD 390,00",
+    "description": "Kit complet pour le nettoyage des capteurs APS-C. Il comprend 10 bâtonnets de nettoyage double tête et une solution de nettoyage de 20 ml pour offrir une propreté impeccable de votre capteur sans laisser de résidus. La conception douce et non abrasive élimine les impuretés en toute sécurité.",
+    "technical_specs": {
+      "taille": "16 mm (compatible capteurs APS-C)",
+      "contenu": "10 écouvillons double face + 1 flacon de liquide nettoyant 20 ml",
+      "matériau": "Microfibre optique et liquide sans alcool à évaporation rapide",
+      "compatibilité": "Capteurs CMOS APS-C (Sony A6000 series, Fujifilm X, Canon EOS R7/R10, Nikon Z50, etc.)",
+      "sécurité": "Formule sans résidus, sans danger pour les filtres passe-bas du capteur"
+    },
+    "category_slug": "kit-de-nettoyage"
+  },
+  {
+    "name": "K&F CONCEPT 20 en 1 Kit Nettoyage Clavier PC Téléphone Caméra Tablette",
+    "price": "MAD 190,00",
+    "description": "Kit de nettoyage multifonctionnel ultra-complet comprenant 20 outils essentiels. Il permet de nettoyer efficacement la surface des écrans, claviers, objectifs d'appareils photo, téléphones portables, tablettes et autres appareils électroniques en éliminant la poussière et les empreintes digitales.",
+    "technical_specs": {
+      "contenu": "20 pièces (chiffon microfibre, liquide nettoyant, brosse douce, soufflette, stylo nettoyant double embout, carte à épingles, etc.)",
+      "compatibilité": "Universelle (PC, Mac, smartphones, tablettes, objectifs, capteurs, claviers)",
+      "portabilité": "Compact et facile à transporter",
+      "marque": "K&F Concept"
+    },
+    "category_slug": "kit-de-nettoyage"
+  },
+  {
+    "name": "Kit de nettoyage de capteur APS-C (16 bâtonnets, liquide, gants)",
+    "price": "MAD 490,00",
+    "description": "Solution professionnelle complète pour l'entretien des capteurs APS-C. Ce kit premium inclut 16 bâtonnets de nettoyage, un liquide de nettoyage spécialisé et des gants de protection pour garantir une manipulation hygiénique et sans risque lors du nettoyage de votre appareil photo.",
+    "technical_specs": {
+      "taille": "16 mm (format APS-C)",
+      "contenu": "16 écouvillons double face, liquide nettoyant 20 ml, gants de protection",
+      "matériau": "Microfibre haute densité et solution sans traces",
+      "compatibilité": "Tous les boîtiers hybrides et reflex APS-C",
+      "avantage": "Quantité doublée d'écouvillons pour un usage prolongé ou en studio"
+    },
+    "category_slug": "kit-de-nettoyage"
+  },
+  {
+    "name": "Kit de nettoyage de capteur plein format 24 mm",
+    "price": "MAD 390,00",
+    "description": "Kit de nettoyage ergonomique conçu spécifiquement pour les capteurs plein format. Grâce à son format de 24 mm et à son liquide de nettoyage sans résidus, ce kit assure un entretien sûr et optimal de votre appareil photo, améliorant ainsi la qualité de vos images en éliminant les taches sur le capteur.",
+    "technical_specs": {
+      "taille": "24 mm (format plein format / Full-Frame)",
+      "contenu": "Écouvillons double face et liquide nettoyant dédié",
+      "matériau": "Tissu ultra-doux sans danger pour le capteur",
+      "compatibilité": "Capteurs plein format (35mm)",
+      "action": "Élimine la poussière, les traces de doigts et les résidus organiques"
+    },
+    "category_slug": "kit-de-nettoyage"
+  },
+  {
+    "name": "Kit de nettoyage et de remplacement de capteur Full-Frame",
+    "price": "MAD 490,00",
+    "description": "Kit haut de gamme pour le nettoyage et l'entretien des capteurs plein format. Il offre une solution professionnelle avec des bâtonnets de qualité supérieure et une formule de nettoyage avancée pour garantir une propreté optimale sans endommager les couches sensibles du capteur CMOS.",
+    "technical_specs": {
+      "taille": "24 mm (Full-Frame)",
+      "contenu": "Bâtonnets de nettoyage premium + solution de nettoyage professionnelle",
+      "technologie": "Microfibre anti-statique pour repousser la poussière après nettoyage",
+      "compatibilité": "Boîtiers plein format (Sony Alpha 7, Canon EOS R5/R6, Nikon Z6/Z7/Z8, Panasonic S5)",
+      "sécurité": "Testé pour ne pas rayer ni endommager le filtre passe-bas"
+    },
+    "category_slug": "kit-de-nettoyage"
+  },
+  {
+    "name": "Kit de nettoyage K&F Concept pour appareils photo au format APS-C 16 mm",
+    "price": "MAD 290,00",
+    "description": "Kit de nettoyage compact et économique de K&F Concept, spécialement dimensionné pour les capteurs APS-C de 16 mm. Idéal pour les photographes en déplacement qui souhaitent maintenir leur capteur propre et garantir des images nettes, sans taches ni points noirs.",
+    "technical_specs": {
+      "taille": "16 mm (format APS-C)",
+      "marque": "K&F Concept",
+      "contenu": "Écouvillons de nettoyage double face emballés individuellement",
+      "compatibilité": "Capteurs APS-C (Fujifilm X, Sony E-mount APS-C, Canon EOS M/R APS-C)",
+      "caractéristique": "Emballage sous vide pour une stérilité jusqu'à l'utilisation"
+    },
+    "category_slug": "kit-de-nettoyage"
+  }
+]
