@@ -1,0 +1,1200 @@
+[
+  {
+    "nom": "Camera Canon PowerShot G7 X Mark III",
+    "description": "Appareil photo compact haut de gamme idéal pour le vlogging et la photographie de qualité.",
+    "prix": null,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Capteur": "CMOS empilé de 1 pouce, 20,1 MP",
+      "Objectif": "Canon 8,8-36,8 mm f/1,8-2,8 (équivalent 24-100 mm)",
+      "Vidéo": "4K UHD à 30 ips, Full HD à 120 ips",
+      "Stabilisation": "Stabilisation optique de l'image (IS)",
+      "Écran": "Écran tactile inclinable de 3,0 pouces",
+      "Connectivité": "Wi-Fi, Bluetooth, USB-C, Micro HDMI",
+      "Poids": "Environ 304 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Caméra cinéma plein format Sony FX3A",
+    "description": "Caméra cinéma plein format offrant des performances exceptionnelles en faible luminosité et en vidéo 4K.",
+    "prix": 40490.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format Exmor R CMOS, 12,1 MP",
+      "Monture": "Sony E",
+      "Vidéo": "4K 120p, Full HD 240p, 10-bit 4:2:2",
+      "Sensibilité": "ISO 80-102 400 (étendu jusqu'à 409 600)",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 5,5 stops)",
+      "Écran": "Écran tactile LCD inclinable de 3,0 pouces",
+      "Poids": "Environ 715 g (boîtier uniquement)"
+    }
+  },
+  {
+    "nom": "Caméra cinéma Sony FX5",
+    "description": "Caméra cinéma professionnelle conçue pour la production vidéo et cinématographique haut de gamme.",
+    "prix": null,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format Exmor R CMOS, 24,2 MP",
+      "Monture": "Sony E",
+      "Vidéo": "4K 60p, 8K 30p, 10-bit 4:2:2, S-Cinetone",
+      "Sensibilité": "ISO 80-25 600 (dual native ISO)",
+      "Stabilisation": "Stabilisation active sur 5 axes",
+      "Écran": "Écran tactile LCD articulé de 3,2 pouces",
+      "Poids": "Environ 850 g (boîtier uniquement)"
+    }
+  },
+  {
+    "nom": "Caméra d'action 360° Insta360 Ace Pro 2",
+    "description": "Caméra d'action 360° avancée avec fonctionnalités IA et vidéo haute résolution.",
+    "prix": 4990.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Capteur CMOS de 1 pouce co-développé avec Leica, 50 MP",
+      "Vidéo": "8K 30fps, 4K 120fps, HDR vidéo",
+      "Stabilisation": "FlowState 3.0 avec Horizon Lock",
+      "Écran": "Double écran tactile (avant 2,4 et arrière 2,5 pouces)",
+      "Étanchéité": "Étanche jusqu'à 10 mètres sans boîtier",
+      "Poids": "Environ 177 g"
+    }
+  },
+  {
+    "nom": "Caméra Insta360 X6 Standard",
+    "description": "Bundle standard de la dernière caméra 360° avec des capacités de résolution 8K.",
+    "prix": 8249.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Double capteur 1/1,28 pouce, 48 MP au total",
+      "Vidéo": "8K 30fps en 360°, 4K 60fps en mode objectif unique",
+      "Stabilisation": "FlowState avec verrouillage de l'horizon à 360°",
+      "Étanchéité": "Étanche jusqu'à 15 mètres",
+      "Fonctionnalités": "Perche à selfie invisible, remplacement des objectifs",
+      "Poids": "Environ 205 g"
+    }
+  },
+  {
+    "nom": "Camera instantané FUJIFILM instax mini 12",
+    "description": "Appareil photo instantané analogique amusant et facile à utiliser, disponible en plusieurs couleurs.",
+    "prix": 1090.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Appareil photo instantané analogique",
+      "Objectif": "60 mm, f/12,7",
+      "Flash": "Flash automatique avec mode selfie",
+      "Format de film": "Fujifilm Instax Mini",
+      "Alimentation": "2 piles AA",
+      "Poids": "Environ 306 g (sans les piles)"
+    }
+  },
+  {
+    "nom": "Camera Sony A7 V (ILCE-7M5)",
+    "description": "Caméra hybride plein format de nouvelle génération avec autofocus IA avancé.",
+    "prix": 27890.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format Exmor R CMOS, 33 MP",
+      "Monture": "Sony E",
+      "Vidéo": "4K 60p (suréchantillonné 7K), 10-bit 4:2:2",
+      "Autofocus": "AF hybride rapide avec IA (reconnaissance humaine, animale, végétale)",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 8 stops)",
+      "Écran": "Écran tactile LCD entièrement articulé de 3,2 pouces",
+      "Poids": "Environ 660 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Camera Sony Alpha 6600",
+    "description": "Caméra hybride APS-C haut de gamme avec une excellente autonomie et un autofocus rapide.",
+    "prix": 11500.0,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Capteur": "APS-C Exmor CMOS, 24,2 MP",
+      "Monture": "Sony E",
+      "Vidéo": "4K 30p, Full HD 120p",
+      "Autofocus": "AF hybride rapide avec suivi en temps réel et Eye AF",
+      "Stabilisation": "Stabilisation sur 5 axes",
+      "Batterie": "NP-FZ100 (grande autonomie)",
+      "Poids": "Environ 503 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Camera Sony Alpha 7 II",
+    "description": "Caméra hybride plein format fiable avec stabilisation sur 5 axes.",
+    "prix": 7900.0,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Capteur": "Plein format Exmor CMOS, 24,3 MP",
+      "Monture": "Sony E",
+      "Vidéo": "Full HD 1080p à 60 ips",
+      "Stabilisation": "Stabilisation sur 5 axes (premier plein format à l'avoir)",
+      "Écran": "Écran LCD inclinable de 3,0 pouces",
+      "Poids": "Environ 599 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Caméscope professionnel Canon XA60B UHD 4K",
+    "description": "Caméscope professionnel 4K UHD idéal pour la diffusion et la vidéo d'entreprise.",
+    "prix": 12990.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "CMOS 1/2,3 pouce, 3 capteurs (système 3-CMOS)",
+      "Objectif": "Zoom optique 20x (26,8-576 mm équivalent)",
+      "Vidéo": "4K UHD 50p/60p, Full HD 120p",
+      "Stabilisation": "Stabilisation optique avancée à 5 axes",
+      "Connectivité": "Wi-Fi, USB-C, 2x entrées XLR audio",
+      "Poids": "Environ 1,3 kg"
+    }
+  },
+  {
+    "nom": "Canon EOS 2000D + Objectif EF-S 18-55mm IS II",
+    "description": "Kit DSLR d'entrée de gamme parfait pour les débutants en photographie.",
+    "prix": 4990.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "APS-C CMOS, 24,1 MP",
+      "Monture": "Canon EF/EF-S",
+      "Vidéo": "Full HD 1080p à 30 ips",
+      "Autofocus": "AF à 9 points (1 point croisé)",
+      "Écran": "Écran LCD fixe de 3,0 pouces",
+      "Connectivité": "Wi-Fi, NFC",
+      "Poids": "Environ 475 g (boîtier uniquement)"
+    }
+  },
+  {
+    "nom": "Canon EOS 250D Camera + Objectif EF-S 18-55mm IS STM",
+    "description": "DSLR compact et léger avec vidéo 4K et écran tactile articulé.",
+    "prix": 6890.0,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Capteur": "APS-C CMOS, 24,1 MP",
+      "Monture": "Canon EF/EF-S",
+      "Vidéo": "4K UHD 25p, Full HD 60p",
+      "Autofocus": "AF Dual Pixel CMOS sur l'écran",
+      "Écran": "Écran tactile LCD entièrement articulé de 3,0 pouces",
+      "Poids": "Environ 450 g (boîtier uniquement)"
+    }
+  },
+  {
+    "nom": "Canon EOS R3 Mirrorless Camera",
+    "description": "Caméra hybride plein format phare conçue pour le sport professionnel et la faune.",
+    "prix": 51000.0,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Capteur": "Plein format CMOS empilé rétro-éclairé, 24,1 MP",
+      "Monture": "Canon RF",
+      "Vidéo": "6K 60p RAW, 4K 120p",
+      "Autofocus": "AF à détection de l'œil, du visage, de la tête et du corps avec IA",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 8 stops)",
+      "Poids": "Environ 1015 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Canon EOS R6 Mark II Mirrorless Camera",
+    "description": "Caméra hybride plein format polyvalente avec prise de vue en continu à haute vitesse.",
+    "prix": 20890.0,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Capteur": "Plein format CMOS, 24,2 MP",
+      "Monture": "Canon RF",
+      "Vidéo": "4K 60p (suréchantillonné), Full HD 180p",
+      "Autofocus": "AF Dual Pixel CMOS II avec suivi intelligent des sujets",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 8 stops)",
+      "Poids": "Environ 670 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "DJI Osmo 360 Action Camera Adventure Combo",
+    "description": "Kit de caméra d'action 360° robuste avec accessoires de montage pour l'aventure.",
+    "prix": 6690.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Capteur 360° de 1 pouce",
+      "Vidéo": "8K 360° natif, 4K 120fps en mode objectif unique (170°)",
+      "Stabilisation": "Stabilisation électronique avancée (Horizon Steady)",
+      "Stockage": "128 Go intégrés",
+      "Étanchéité": "Conception robuste résistante aux intempéries",
+      "Poids": "Environ 220 g"
+    }
+  },
+  {
+    "nom": "DJI Osmo 360 Action Camera Standard Combo",
+    "description": "Kit standard pour la caméra d'action 360° durable.",
+    "prix": 5389.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Capteur 360° de 1 pouce",
+      "Vidéo": "8K 360° natif, 4K 120fps en mode objectif unique (170°)",
+      "Stabilisation": "Stabilisation électronique avancée (Horizon Steady)",
+      "Stockage": "128 Go intégrés",
+      "Étanchéité": "Conception robuste résistante aux intempéries",
+      "Poids": "Environ 220 g"
+    }
+  },
+  {
+    "nom": "Dji Osmo 360 II",
+    "description": "Deuxième génération de la caméra d'action 360° innovante de DJI.",
+    "prix": 7990.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Capteur 360° de 1 pouce",
+      "Vidéo": "8K 360° natif, 4K 120fps en mode objectif unique (170°)",
+      "Stabilisation": "Stabilisation électronique avancée (Horizon Steady)",
+      "Stockage": "128 Go intégrés",
+      "Étanchéité": "Conception robuste résistante aux intempéries",
+      "Poids": "Environ 220 g"
+    }
+  },
+  {
+    "nom": "DJI Osmo 360 II Combo",
+    "description": "Bundle complet avec batteries supplémentaires et accessoires pour l'Osmo 360 II.",
+    "prix": 8490.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Capteur 360° de 1 pouce",
+      "Vidéo": "8K 360° natif, 4K 120fps en mode objectif unique (170°)",
+      "Stabilisation": "Stabilisation électronique avancée (Horizon Steady)",
+      "Stockage": "128 Go intégrés",
+      "Étanchéité": "Conception robuste résistante aux intempéries",
+      "Poids": "Environ 220 g"
+    }
+  },
+  {
+    "nom": "DJI Osmo Action 4 Camera Adventure Combo",
+    "description": "Kit de caméra d'action premium avec équipement de montage extensif pour les sports extrêmes.",
+    "prix": null,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Capteur": "CMOS 1/1,3 pouce, 10-bit D-Log M",
+      "Vidéo": "4K 120fps, Full HD 240fps",
+      "Stabilisation": "RockSteady 3.0 et HorizonSteady",
+      "Écran": "Double écran tactile (avant 1,4 et arrière 2,25 pouces)",
+      "Étanchéité": "Étanche jusqu'à 18 mètres",
+      "Poids": "Environ 145 g"
+    }
+  },
+  {
+    "nom": "DJI Osmo Action 4 Camera Standard Combo",
+    "description": "Package standard pour la DJI Osmo Action 4 avec capteur 1/1,3 pouce.",
+    "prix": 2890.0,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Capteur": "CMOS 1/1,3 pouce, 10-bit D-Log M",
+      "Vidéo": "4K 120fps, Full HD 240fps",
+      "Stabilisation": "RockSteady 3.0 et HorizonSteady",
+      "Écran": "Double écran tactile (avant 1,4 et arrière 2,25 pouces)",
+      "Étanchéité": "Étanche jusqu'à 18 mètres",
+      "Poids": "Environ 145 g"
+    }
+  },
+  {
+    "nom": "DJI Osmo Action 5 Pro Adventure Combo",
+    "description": "Caméra d'action niveau pro avec plage dynamique améliorée et accessoires d'aventure.",
+    "prix": 4890.0,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Capteur": "CMOS 1/1,3 pouce avec plage dynamique améliorée",
+      "Vidéo": "4K 120fps, 10-bit D-Log M, HLG",
+      "Stabilisation": "RockSteady 3.0+ et HorizonBalanced",
+      "Autonomie": "Jusqu'à 4 heures d'enregistrement continu",
+      "Étanchéité": "Étanche jusqu'à 20 mètres",
+      "Poids": "Environ 148 g"
+    }
+  },
+  {
+    "nom": "DJI Osmo Action 5 Pro Standard Combo",
+    "description": "Kit standard pour la caméra d'action DJI Osmo Action 5 Pro.",
+    "prix": 3890.0,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Capteur": "CMOS 1/1,3 pouce avec plage dynamique améliorée",
+      "Vidéo": "4K 120fps, 10-bit D-Log M, HLG",
+      "Stabilisation": "RockSteady 3.0+ et HorizonBalanced",
+      "Autonomie": "Jusqu'à 4 heures d'enregistrement continu",
+      "Étanchéité": "Étanche jusqu'à 20 mètres",
+      "Poids": "Environ 148 g"
+    }
+  },
+  {
+    "nom": "DJI Osmo Action 6 Adventure Combo",
+    "description": "Bundle d'aventure de la dernière génération de caméra d'action avec stabilisation supérieure.",
+    "prix": 5890.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Capteur carré de 1/1,1 pouce, 38 MP",
+      "Objectif": "Ouverture variable f/2,0 - f/4,0",
+      "Vidéo": "8K 30fps, 4K 120fps",
+      "Stabilisation": "RockSteady 4.0 avec HorizonSteady amélioré",
+      "Stockage": "50 Go intégrés + emplacement microSD",
+      "Poids": "Environ 150 g"
+    }
+  },
+  {
+    "nom": "DJI Osmo Action 6 Standard Combo",
+    "description": "Bundle standard pour la nouvelle caméra DJI Osmo Action 6.",
+    "prix": 4890.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Capteur carré de 1/1,1 pouce, 38 MP",
+      "Objectif": "Ouverture variable f/2,0 - f/4,0",
+      "Vidéo": "8K 30fps, 4K 120fps",
+      "Stabilisation": "RockSteady 4.0 avec HorizonSteady amélioré",
+      "Stockage": "50 Go intégrés + emplacement microSD",
+      "Poids": "Environ 150 g"
+    }
+  },
+  {
+    "nom": "DJI Osmo Nano Standard Combo (128 Go)",
+    "description": "Caméra d'action compacte avec 128 Go de stockage, parfaite pour le vlogging quotidien.",
+    "prix": 4139.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "CMOS 1/1,3 pouce",
+      "Vidéo": "4K 60fps, champ de vision ultra-large de 143°",
+      "Format": "Caméra portable légère (wearable)",
+      "Autonomie": "Jusqu'à 200 minutes d'enregistrement",
+      "Connectivité": "Wi-Fi, Bluetooth, USB-C",
+      "Poids": "Environ 95 g"
+    }
+  },
+  {
+    "nom": "DJI Osmo Pocket 3 Creator Combo",
+    "description": "Kit de vlogging ultime avec caméra sur nacelle à capteur 1 pouce et micro sans fil.",
+    "prix": 5990.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "CMOS 1 pouce, 9,4 MP",
+      "Vidéo": "4K 120fps, 10-bit D-Log M",
+      "Stabilisation": "Nacelle mécanique 3 axes",
+      "Écran": "Écran tactile OLED rotatif de 2,0 pouces",
+      "Autofocus": "AF hybride rapide avec suivi de produit",
+      "Poids": "Environ 179 g"
+    }
+  },
+  {
+    "nom": "DJI Osmo Pocket 3 Standard",
+    "description": "Version standard de la caméra sur nacelle ultra-portable à capteur 1 pouce.",
+    "prix": 4890.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "CMOS 1 pouce, 9,4 MP",
+      "Vidéo": "4K 120fps, 10-bit D-Log M",
+      "Stabilisation": "Nacelle mécanique 3 axes",
+      "Écran": "Écran tactile OLED rotatif de 2,0 pouces",
+      "Autofocus": "AF hybride rapide avec suivi de produit",
+      "Poids": "Environ 179 g"
+    }
+  },
+  {
+    "nom": "DJI Osmo Pocket 4 Creator Combo",
+    "description": "Bundle créateur nouvelle génération avec caméra sur nacelle avancée et accessoires.",
+    "prix": 7490.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "CMOS 1 pouce amélioré",
+      "Vidéo": "4K 240fps, zoom sans perte 2x",
+      "Stabilisation": "Nacelle mécanique 3 axes de nouvelle génération",
+      "Stockage": "107 Go intégrés",
+      "Écran": "Écran tactile OLED de 2,0 pouces",
+      "Poids": "Environ 185 g"
+    }
+  },
+  {
+    "nom": "DJI Osmo Pocket 4 PRO",
+    "description": "Caméra sur nacelle de poche professionnelle avec fonctionnalités premium.",
+    "prix": 8390.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "CMOS 1 pouce amélioré",
+      "Vidéo": "4K 240fps, zoom sans perte 2x",
+      "Stabilisation": "Nacelle mécanique 3 axes de nouvelle génération",
+      "Stockage": "107 Go intégrés",
+      "Écran": "Écran tactile OLED de 2,0 pouces",
+      "Poids": "Environ 185 g"
+    }
+  },
+  {
+    "nom": "DJI Osmo Pocket 4 Standard Combo",
+    "description": "Package standard pour la caméra sur nacelle DJI Osmo Pocket 4.",
+    "prix": 5990.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "CMOS 1 pouce amélioré",
+      "Vidéo": "4K 240fps, zoom sans perte 2x",
+      "Stabilisation": "Nacelle mécanique 3 axes de nouvelle génération",
+      "Stockage": "107 Go intégrés",
+      "Écran": "Écran tactile OLED de 2,0 pouces",
+      "Poids": "Environ 185 g"
+    }
+  },
+  {
+    "nom": "FUJIFILM X-T4 (Occasion) – Mirrorless Camera",
+    "description": "Caméra hybride APS-C haut de gamme d'occasion avec excellente stabilisation intégrée.",
+    "prix": 8900.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "APS-C X-Trans CMOS 4 rétro-éclairé, 26,1 MP",
+      "Monture": "Fujifilm X",
+      "Vidéo": "4K 60p, Full HD 240p",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 6,5 stops)",
+      "Obturateur": "Mécanique et électronique (jusqu'à 1/8000s)",
+      "Poids": "Environ 607 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "FUJIFILM X-T4 Mirrorless Camera (Black)",
+    "description": "Caméra hybride APS-C phare toute neuve avec un design rétro classique.",
+    "prix": 17900.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "APS-C X-Trans CMOS 4 rétro-éclairé, 26,1 MP",
+      "Monture": "Fujifilm X",
+      "Vidéo": "4K 60p, Full HD 240p",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 6,5 stops)",
+      "Obturateur": "Mécanique et électronique (jusqu'à 1/8000s)",
+      "Poids": "Environ 607 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "GoPro HERO 11 Noir Caméra d'action",
+    "description": "Caméra d'action durable avec vidéo 5.3K et stabilisation HyperSmooth 5.0.",
+    "prix": 2900.0,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Capteur": "Capteur personnalisé 1/1,9 pouce, 27 MP",
+      "Vidéo": "5.3K 60fps, 4K 120fps",
+      "Stabilisation": "HyperSmooth 5.0 avec AutoBoost et Horizon Lock",
+      "Écran": "Écran tactile arrière de 2,27 pouces et écran avant",
+      "Étanchéité": "Étanche jusqu'à 10 mètres",
+      "Poids": "Environ 154 g"
+    }
+  },
+  {
+    "nom": "GoPro HERO 12 Noir Caméra d'action",
+    "description": "Caméra d'action avancée avec autonomie améliorée et vidéo HDR.",
+    "prix": 3490.0,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Capteur": "Capteur personnalisé 1/1,9 pouce, 27 MP",
+      "Vidéo": "5.3K 60fps, 4K 120fps, HDR vidéo amélioré",
+      "Stabilisation": "HyperSmooth 6.0",
+      "Connectivité": "Bluetooth, Wi-Fi, compatibilité avec accessoires Bluetooth",
+      "Autonomie": "Batterie Enduro améliorée",
+      "Poids": "Environ 154 g"
+    }
+  },
+  {
+    "nom": "GoPro HERO13 Noir Caméra d'action",
+    "description": "Dernier modèle GoPro avec performances améliorées en faible luminosité et nouveaux objectifs.",
+    "prix": 4750.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Capteur personnalisé 1/1,9 pouce, 27 MP",
+      "Vidéo": "5.3K 60fps, 4K 120fps, support des nouveaux objectifs (Macro, Ultra Wide)",
+      "Stabilisation": "HyperSmooth 6.0 avec Horizon Lock",
+      "Fonctionnalités": "Détection automatique des objectifs, GPS intégré",
+      "Poids": "Environ 156 g"
+    }
+  },
+  {
+    "nom": "Insta360 Ace Pro Caméra d'action",
+    "description": "Caméra d'action premium co-développée avec Leica pour une qualité d'image époustouflante.",
+    "prix": 3790.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Capteur 1/1,3 pouce co-développé avec Leica, 50 MP",
+      "Vidéo": "8K 24fps, 4K 120fps",
+      "Stabilisation": "FlowState avec Horizon Lock",
+      "Écran": "Double écran tactile (avant 2,4 et arrière 2,5 pouces)",
+      "Poids": "Environ 177 g"
+    }
+  },
+  {
+    "nom": "Insta360 Luna Ultra Standard",
+    "description": "Bundle standard du système de caméra innovant Luna Ultra.",
+    "prix": 8849.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Capteur haute résolution pour création de contenu 360°",
+      "Vidéo": "8K 360°, modes de création avancés",
+      "Stabilisation": "FlowState avec verrouillage de l'horizon",
+      "Fonctionnalités": "Bundle créateur avec accessoires de montage",
+      "Poids": "Environ 210 g"
+    }
+  },
+  {
+    "nom": "Insta360 X3 Camera 5.7K, 360°",
+    "description": "Caméra 360° populaire capturant des vidéos immersives en 5.7K.",
+    "prix": 3990.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Double capteur 1/2 pouce, 48 MP au total",
+      "Vidéo": "5.7K 30fps en 360°, 4K 30fps en mode objectif unique",
+      "Stabilisation": "FlowState avec verrouillage de l'horizon",
+      "Écran": "Écran tactile de 2,29 pouces",
+      "Poids": "Environ 180 g"
+    }
+  },
+  {
+    "nom": "Insta360 X4 AIR Starter Bundle",
+    "description": "Kit de démarrage léger pour la caméra 360° 8K X4.",
+    "prix": 4089.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Double capteur 1/1,28 pouce, 48 MP au total",
+      "Vidéo": "8K 30fps en 360°, 4K 60fps en mode objectif unique",
+      "Stabilisation": "FlowState avec verrouillage de l'horizon à 360°",
+      "Écran": "Écran tactile de 2,5 pouces",
+      "Poids": "Environ 203 g"
+    }
+  },
+  {
+    "nom": "Insta360 X4 Camera 360° - 8K",
+    "description": "Caméra 360° phare enregistrant en résolution 8K époustouflante.",
+    "prix": 4500.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Double capteur 1/1,28 pouce, 48 MP au total",
+      "Vidéo": "8K 30fps en 360°, 4K 60fps en mode objectif unique",
+      "Stabilisation": "FlowState avec verrouillage de l'horizon à 360°",
+      "Écran": "Écran tactile de 2,5 pouces",
+      "Poids": "Environ 203 g"
+    }
+  },
+  {
+    "nom": "Insta360 X5 360° 8K Camera",
+    "description": "Caméra 360° de nouvelle génération avec résolution 8K et édition IA avancée.",
+    "prix": 5799.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Double capteur 1/1,28 pouce, système de puces IA triple",
+      "Vidéo": "8K 30fps, 5.7K 60fps en 360°, PureVideo pour faible luminosité",
+      "Stabilisation": "FlowState avec verrouillage de l'horizon à 360°",
+      "Fonctionnalités": "Objectifs remplaçables, étanche jusqu'à 15 m",
+      "Poids": "Environ 205 g"
+    }
+  },
+  {
+    "nom": "Insta360 X6 Essentiel Bundle",
+    "description": "Bundle d'accessoires essentiels pour la caméra Insta360 X6.",
+    "prix": 9449.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Double capteur 1/1,28 pouce, 48 MP au total",
+      "Vidéo": "8K 30fps en 360°, 4K 60fps en mode objectif unique",
+      "Stabilisation": "FlowState avec verrouillage de l'horizon à 360°",
+      "Étanchéité": "Étanche jusqu'à 15 mètres",
+      "Fonctionnalités": "Perche à selfie invisible, remplacement des objectifs",
+      "Poids": "Environ 205 g"
+    }
+  },
+  {
+    "nom": "Insta360 X6 Motorcycle Bundle",
+    "description": "Kit de montage spécialisé et bundle caméra pour les motards.",
+    "prix": 9999.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Double capteur 1/1,28 pouce, 48 MP au total",
+      "Vidéo": "8K 30fps en 360°, 4K 60fps en mode objectif unique",
+      "Stabilisation": "FlowState avec verrouillage de l'horizon à 360°",
+      "Étanchéité": "Étanche jusqu'à 15 mètres",
+      "Fonctionnalités": "Perche à selfie invisible, remplacement des objectifs",
+      "Poids": "Environ 205 g"
+    }
+  },
+  {
+    "nom": "Insta60 Luna Ultra Creator Bundel",
+    "description": "Bundle créateur complet pour la caméra Luna Ultra avec accessoires pro.",
+    "prix": 11549.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Capteur haute résolution pour création de contenu 360°",
+      "Vidéo": "8K 360°, modes de création avancés",
+      "Stabilisation": "FlowState avec verrouillage de l'horizon",
+      "Fonctionnalités": "Bundle créateur avec accessoires de montage",
+      "Poids": "Environ 210 g"
+    }
+  },
+  {
+    "nom": "Kit de création de contenu Canon EOS R50",
+    "description": "Kit de création de contenu tout-en-un avec le léger hybride EOS R50.",
+    "prix": 8490.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "APS-C CMOS, 24,2 MP",
+      "Monture": "Canon RF",
+      "Vidéo": "4K 30p (suréchantillonné 6K), Full HD 120p",
+      "Autofocus": "AF Dual Pixel CMOS II avec suivi intelligent des sujets",
+      "Écran": "Écran tactile LCD entièrement articulé de 3,0 pouces",
+      "Poids": "Environ 375 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Nikon COOLPIX P1100",
+    "description": "Appareil photo compact superzoom avec des capacités de zoom optique massives.",
+    "prix": 12490.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "CMOS rétro-éclairé de 1/1,7 pouce, 16 MP",
+      "Objectif": "Zoom optique 125x (24-3000 mm équivalent), f/2.8-f/8",
+      "Vidéo": "4K UHD 30fps, Full HD 60fps",
+      "Stabilisation": "Réduction de vibration (VR) optique",
+      "Écran": "Écran LCD inclinable de 3,2 pouces",
+      "Poids": "Environ 1 430 g"
+    }
+  },
+  {
+    "nom": "NIKON D7500 + Objectif 18-140mm VR KIT",
+    "description": "Kit DSLR polyvalent avec un objectif zoom à grande plage pour le voyage et l'usage quotidien.",
+    "prix": 12390.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "APS-C CMOS, 20,9 MP",
+      "Monture": "Nikon F",
+      "Vidéo": "4K UHD 30fps, Full HD 60fps",
+      "Autofocus": "Module AF Multi-CAM 3500FX II à 51 points",
+      "Écran": "Écran tactile LCD inclinable de 3,2 pouces",
+      "Poids": "Environ 720 g (boîtier uniquement)"
+    }
+  },
+  {
+    "nom": "Nikon Hybride Z5II + Z 24-50mm KIT",
+    "description": "Kit de caméra hybride plein format d'entrée de gamme avec un objectif zoom compact.",
+    "prix": 18990.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format CMOS rétro-éclairé, 24,5 MP",
+      "Monture": "Nikon Z",
+      "Vidéo": "4K UHD 60fps, Full HD 120fps",
+      "Autofocus": "AF hybride avec détection des sujets par IA",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 6,5 stops)",
+      "Poids": "Environ 680 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Nikon Z f–Boîtier plein format rétro",
+    "description": "Caméra hybride plein format au style rétro classique et aux performances modernes.",
+    "prix": 28590.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format CMOS rétro-éclairé, 24,5 MP",
+      "Monture": "Nikon Z",
+      "Vidéo": "4K UHD 60fps, Full HD 120fps",
+      "Autofocus": "AF hybride avec détection des sujets par IA",
+      "Design": "Style rétro inspiré du Nikon FM2 avec molettes mécaniques",
+      "Poids": "Environ 710 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Nikon Z30 Mirrorless Camera avec objectif 16-50 mm",
+    "description": "Caméra de vlogging compacte avec écran articulé et objectif de kit.",
+    "prix": 7400.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "APS-C CMOS, 20,9 MP",
+      "Monture": "Nikon Z",
+      "Vidéo": "4K UHD 30fps, Full HD 120fps",
+      "Écran": "Écran tactile LCD inclinable de 3,2 pouces",
+      "Poids": "Environ 450 g (boîtier uniquement)"
+    }
+  },
+  {
+    "nom": "Nikon Z5 II Mirrorless Camera",
+    "description": "Boîtier de caméra hybride plein format abordable et amélioré.",
+    "prix": 17290.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format CMOS rétro-éclairé, 24,5 MP",
+      "Monture": "Nikon Z",
+      "Vidéo": "4K UHD 60fps, Full HD 120fps",
+      "Autofocus": "AF hybride avec détection des sujets par IA",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 6,5 stops)",
+      "Poids": "Environ 680 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Nikon Z5 II Mirrorless Camera + objectif 24-200mm",
+    "description": "Kit de voyage plein format polyvalent avec un puissant objectif zoom tout-en-un.",
+    "prix": 23490.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format CMOS rétro-éclairé, 24,5 MP",
+      "Monture": "Nikon Z",
+      "Vidéo": "4K UHD 60fps, Full HD 120fps",
+      "Autofocus": "AF hybride avec détection des sujets par IA",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 6,5 stops)",
+      "Poids": "Environ 680 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Nikon Z5 Kit Mirrorless Camera + objectif 24-50mm",
+    "description": "Kit hybride plein format standard, idéal pour les débutants.",
+    "prix": 11900.0,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Capteur": "Plein format CMOS, 24,3 MP",
+      "Monture": "Nikon Z",
+      "Vidéo": "4K UHD 30fps (avec crop), Full HD 60fps",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 5 stops)",
+      "Écran": "Écran tactile LCD inclinable de 3,2 pouces",
+      "Poids": "Environ 675 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Nikon Z5 Mirrorless Camera",
+    "description": "Boîtier autonome de la caméra hybride plein format Z5 accessible.",
+    "prix": 10790.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format CMOS, 24,3 MP",
+      "Monture": "Nikon Z",
+      "Vidéo": "4K UHD 30fps (avec crop), Full HD 60fps",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 5 stops)",
+      "Écran": "Écran tactile LCD inclinable de 3,2 pouces",
+      "Poids": "Environ 675 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "NIKON Z50 + 16-50 mm f/3.5-6.3 DX",
+    "description": "Kit de caméra hybride APS-C compact idéal pour la photographie quotidienne.",
+    "prix": 9490.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "APS-C CMOS, 20,9 MP",
+      "Monture": "Nikon Z",
+      "Vidéo": "4K UHD 30fps, Full HD 120fps",
+      "Écran": "Écran tactile LCD inclinable de 3,2 pouces",
+      "Poids": "Environ 450 g (boîtier uniquement)"
+    }
+  },
+  {
+    "nom": "Nikon Z50 II Mirrorless Camera + Objectif 16-50 mm",
+    "description": "Caméra hybride APS-C de deuxième génération avec autofocus amélioré.",
+    "prix": 9900.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "APS-C CMOS, 20,9 MP",
+      "Monture": "Nikon Z",
+      "Vidéo": "4K UHD 60fps, Full HD 120fps",
+      "Autofocus": "AF hybride avec détection des sujets par IA (humains, animaux, véhicules)",
+      "Écran": "Écran tactile LCD entièrement articulé de 3,2 pouces",
+      "Poids": "Environ 460 g (boîtier uniquement)"
+    }
+  },
+  {
+    "nom": "Nikon Z6 II – Camera Boîtier NU",
+    "description": "Boîtier uniquement, caméra hybride plein format avec double processeur.",
+    "prix": 14199.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format CMOS rétro-éclairé, 24,5 MP",
+      "Monture": "Nikon Z",
+      "Vidéo": "4K UHD 60fps, Full HD 120fps",
+      "Processeur": "Double EXPEED 6",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 5 stops)",
+      "Poids": "Environ 705 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Nikon Z6 III Mirrorless Camera",
+    "description": "Dernière caméra hybride plein format avec capteur partiellement empilé.",
+    "prix": 22900.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format CMOS partiellement empilé, 24,5 MP",
+      "Monture": "Nikon Z",
+      "Vidéo": "6K 60p RAW interne, 4K 120p",
+      "Autofocus": "AF hybride avec détection des sujets par IA de nouvelle génération",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 8 stops)",
+      "Poids": "Environ 760 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "NIKON Z7 II Boitier Nu",
+    "description": "Boîtier de caméra hybride plein format haute résolution pour le paysage et le studio.",
+    "prix": 29990.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format CMOS rétro-éclairé, 45,7 MP",
+      "Monture": "Nikon Z",
+      "Vidéo": "4K UHD 60fps, Full HD 120fps",
+      "Processeur": "Double EXPEED 6",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 5 stops)",
+      "Poids": "Environ 705 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Nikon Z8 Boitier nu",
+    "description": "Mini caméra hybride plein format phare avec capacités vidéo 8K.",
+    "prix": 34790.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format CMOS empilé, 45,7 MP",
+      "Monture": "Nikon Z",
+      "Vidéo": "8K 60p RAW, 4K 120p",
+      "Autofocus": "AF hybride 3D avec détection des sujets par IA",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 6 stops)",
+      "Poids": "Environ 910 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Nikon Z9 Nu",
+    "description": "Caméra hybride phare professionnelle ultime sans obturateur mécanique.",
+    "prix": 46490.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format CMOS empilé, 45,7 MP",
+      "Monture": "Nikon Z",
+      "Vidéo": "8K 60p, 4K 120p",
+      "Autofocus": "AF hybride 3D avec détection des sujets par IA (9 types de sujets)",
+      "Obturateur": "Entièrement électronique (aucun obturateur mécanique)",
+      "Poids": "Environ 1 340 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Nikon ZR Cinema Camera",
+    "description": "Caméra cinéma dédiée de Nikon pour la réalisation de films professionnels.",
+    "prix": 24890.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format CMOS empilé, 45,7 MP",
+      "Monture": "Nikon Z",
+      "Vidéo": "8K 60p RAW, 4K 120p",
+      "Autofocus": "AF hybride 3D avec détection des sujets par IA",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 6 stops)",
+      "Poids": "Environ 910 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Osmo pocket 4p vlog combo",
+    "description": "Bundle de vlogging spécialisé pour l'Osmo Pocket 4 avec éclairage et micro.",
+    "prix": 9990.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "CMOS 1 pouce amélioré",
+      "Vidéo": "4K 240fps, zoom sans perte 2x",
+      "Stabilisation": "Nacelle mécanique 3 axes de nouvelle génération",
+      "Stockage": "107 Go intégrés",
+      "Écran": "Écran tactile OLED de 2,0 pouces",
+      "Poids": "Environ 185 g"
+    }
+  },
+  {
+    "nom": "Sony a1 II Mirrorless Camera",
+    "description": "Deuxième génération du flagship ultime de Sony à haute vitesse et haute résolution.",
+    "prix": null,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format Exmor RS CMOS empilé, 50,1 MP",
+      "Monture": "Sony E",
+      "Vidéo": "8K 30p, 4K 120p, 10-bit 4:2:2",
+      "Autofocus": "AF hybride rapide avec IA (reconnaissance de 7 types de sujets)",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 8 stops)",
+      "Poids": "Environ 730 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Sony a6400 Mirrorless Camera avec objectif 16-50mm",
+    "description": "Caméra hybride APS-C populaire avec suivi en temps réel et objectif de kit.",
+    "prix": 9990.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "APS-C Exmor CMOS, 24,2 MP",
+      "Monture": "Sony E",
+      "Vidéo": "4K 30p, Full HD 120p",
+      "Autofocus": "AF hybride rapide avec suivi en temps réel et Eye AF",
+      "Écran": "Écran tactile LCD inclinable à 180°",
+      "Poids": "Environ 403 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Sony a6700 Mirrorless Camera",
+    "description": "Caméra hybride APS-C avancée avec traitement IA et vidéo 4K 120p.",
+    "prix": 18900.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "APS-C Exmor R CMOS rétro-éclairé, 26,0 MP",
+      "Monture": "Sony E",
+      "Vidéo": "4K 120p, Full HD 240p, 10-bit 4:2:2",
+      "Autofocus": "AF hybride rapide avec IA (reconnaissance de 7 types de sujets)",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 5 stops)",
+      "Poids": "Environ 493 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Sony A7 III - Camera Full-Frame",
+    "description": "La caméra hybride plein format de référence pour les utilisateurs hybrides.",
+    "prix": 13890.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format Exmor R CMOS rétro-éclairé, 24,2 MP",
+      "Monture": "Sony E",
+      "Vidéo": "4K 30p, Full HD 120p",
+      "Autofocus": "AF hybride à 693 points avec Eye AF",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 5 stops)",
+      "Poids": "Environ 650 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Sony a7R IV Mirrorless Camera",
+    "description": "Caméra plein format haute résolution de 61 MP pour un détail ultime.",
+    "prix": 22900.0,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Capteur": "Plein format Exmor R CMOS rétro-éclairé, 61,0 MP",
+      "Monture": "Sony E",
+      "Vidéo": "4K 30p, Full HD 120p",
+      "Autofocus": "AF hybride à 567 points avec Eye AF en temps réel",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 5,5 stops)",
+      "Poids": "Environ 665 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Sony a7R V Mirrorless Camera",
+    "description": "Caméra haute résolution de nouvelle génération avec autofocus IA avancé.",
+    "prix": 35900.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format Exmor R CMOS rétro-éclairé, 61,0 MP",
+      "Monture": "Sony E",
+      "Vidéo": "4K 60p, Full HD 120p, 10-bit 4:2:2",
+      "Autofocus": "AF hybride avec IA (reconnaissance de 8 types de sujets)",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 8 stops)",
+      "Poids": "Environ 723 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Sony a7S III Mirrorless Camera",
+    "description": "La caméra plein format ultime pour la vidéo professionnelle et la faible luminosité.",
+    "prix": 31900.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format Exmor R CMOS, 12,1 MP",
+      "Monture": "Sony E",
+      "Vidéo": "4K 120p, Full HD 240p, 10-bit 4:2:2",
+      "Sensibilité": "ISO 80-102 400 (étendu jusqu'à 409 600)",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 5,5 stops)",
+      "Poids": "Environ 699 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Sony Alpha 6600 (ILCE-6600) Boîtier Très Bonne Occasion",
+    "description": "Boîtier flagship APS-C d'occasion en excellent état.",
+    "prix": 7900.0,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Capteur": "APS-C Exmor CMOS, 24,2 MP",
+      "Monture": "Sony E",
+      "Vidéo": "4K 30p, Full HD 120p",
+      "Autofocus": "AF hybride rapide avec suivi en temps réel et Eye AF",
+      "Stabilisation": "Stabilisation sur 5 axes",
+      "Batterie": "NP-FZ100 (grande autonomie)",
+      "Poids": "Environ 503 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Sony Alpha 7C II Boitier Nu Gris",
+    "description": "Boîtier hybride plein format compact au style élégant argenté/gris.",
+    "prix": 21900.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format Exmor R CMOS, 33,0 MP",
+      "Monture": "Sony E",
+      "Vidéo": "4K 60p, Full HD 120p, 10-bit 4:2:2",
+      "Autofocus": "AF hybride avec IA (reconnaissance de 7 types de sujets)",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 7 stops)",
+      "Poids": "Environ 514 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Sony Alpha 7C II Boitier Nu Noir",
+    "description": "Boîtier hybride plein format compact en noir classique.",
+    "prix": 21900.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format Exmor R CMOS, 33,0 MP",
+      "Monture": "Sony E",
+      "Vidéo": "4K 60p, Full HD 120p, 10-bit 4:2:2",
+      "Autofocus": "AF hybride avec IA (reconnaissance de 7 types de sujets)",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 7 stops)",
+      "Poids": "Environ 514 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Sony FX2 Digital Cinema Camera",
+    "description": "Caméra cinéma numérique d'entrée de gamme avec capteur plein format.",
+    "prix": 33900.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format Exmor R CMOS, 33 MP",
+      "Monture": "Sony E",
+      "Vidéo": "4K 60p, 10-bit 4:2:2, S-Cinetone",
+      "Autofocus": "AF hybride rapide avec IA",
+      "Stabilisation": "Stabilisation active sur 5 axes",
+      "Poids": "Environ 700 g (boîtier uniquement)"
+    }
+  },
+  {
+    "nom": "Sony FX3 Full-Frame Cinema Camera",
+    "description": "Caméra cinéma plein format compacte conçue pour les cinéastes en solo.",
+    "prix": 40490.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format Exmor R CMOS, 12,1 MP",
+      "Monture": "Sony E",
+      "Vidéo": "4K 120p, Full HD 240p, 10-bit 4:2:2",
+      "Sensibilité": "ISO 80-102 400 (étendu jusqu'à 409 600)",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 5,5 stops)",
+      "Écran": "Écran tactile LCD inclinable de 3,0 pouces",
+      "Poids": "Environ 715 g (boîtier uniquement)"
+    }
+  },
+  {
+    "nom": "Sony FX30 Digital Cinema Camera",
+    "description": "Caméra cinéma numérique Super 35mm avec fonctionnalités vidéo professionnelles.",
+    "prix": 40490.0,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Capteur": "Super 35mm Exmor R CMOS, 26,0 MP",
+      "Monture": "Sony E",
+      "Vidéo": "4K 120p, Full HD 240p, 10-bit 4:2:2",
+      "Sensibilité": "ISO 80-25 600 (dual native ISO)",
+      "Stabilisation": "Stabilisation active sur 5 axes",
+      "Poids": "Environ 679 g (boîtier uniquement)"
+    }
+  },
+  {
+    "nom": "Sony FX6 Full-Frame Cinema Camera (boîtier uniquement)",
+    "description": "Caméra cinéma plein format professionnelle pour la diffusion et le cinéma.",
+    "prix": 65790.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format Exmor R CMOS, 10,2 MP",
+      "Monture": "Sony E",
+      "Vidéo": "4K 120p, Full HD 240p, 10-bit 4:2:2",
+      "Sensibilité": "ISO 80-12 800 (dual native ISO)",
+      "Stabilisation": "Stabilisation électronique avancée",
+      "Poids": "Environ 890 g (boîtier uniquement)"
+    }
+  },
+  {
+    "nom": "Sony ZV-E1 Mirrorless Camera (Noir)",
+    "description": "Caméra de vlogging plein format avec fonctionnalités IA et rendu cinématographique.",
+    "prix": 23490.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "Plein format Exmor R CMOS, 12,1 MP",
+      "Monture": "Sony E",
+      "Vidéo": "4K 120p, Full HD 240p, 10-bit 4:2:2",
+      "Fonctionnalités": "Mode présentation, produit, fond flou automatique (Bokeh Switch)",
+      "Stabilisation": "Stabilisation dynamique active (avec crop)",
+      "Poids": "Environ 483 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Sony ZV-E10 II Mirrorless Camera (Noir) Avec Objectif 16-50mm OSS II",
+    "description": "Caméra de vlogging de deuxième génération avec capteur amélioré et objectif de kit.",
+    "prix": 12900.0,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Capteur": "APS-C Exmor R CMOS rétro-éclairé, 26,0 MP",
+      "Monture": "Sony E",
+      "Vidéo": "4K 60p, Full HD 120p, 10-bit 4:2:2",
+      "Autofocus": "AF hybride avec IA (reconnaissance de 7 types de sujets)",
+      "Stabilisation": "Stabilisation sur 5 axes (jusqu'à 5 stops)",
+      "Poids": "Environ 380 g (avec batterie et carte)"
+    }
+  },
+  {
+    "nom": "Sony ZV-E10 Mirrorless Camera (Noir)",
+    "description": "Caméra de vlogging APS-C populaire avec écran articulé et excellent autofocus.",
+    "prix": 8500.0,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Capteur": "APS-C Exmor CMOS, 24,2 MP",
+      "Monture": "Sony E",
+      "Vidéo": "4K 30p, Full HD 120p",
+      "Fonctionnalités": "Mode présentation, produit, fond flou automatique",
+      "Écran": "Écran tactile LCD entièrement articulé de 3,0 pouces",
+      "Poids": "Environ 343 g (avec batterie et carte)"
+    }
+  }
+]
