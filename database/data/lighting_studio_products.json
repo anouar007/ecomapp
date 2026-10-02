@@ -1,0 +1,2914 @@
+[
+  {
+    "nom": "5 in 1 Circular photography reflector 107cm/43inch",
+    "description": "Réflecteur circulaire 5-en-1 de 107 cm pour maîtriser la lumière en studio ou en extérieur.",
+    "prix": 290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Réflecteur 5-en-1",
+      "Dimensions": "107 cm (43 pouces)",
+      "Surfaces": "Or, Argent, Blanc, Noir, Translucide",
+      "Poids": "Environ 500 g",
+      "Format": "Pliable avec housse de transport"
+    }
+  },
+  {
+    "nom": "Accessoire de projection Godox AK-R21 pour têtes de flash",
+    "description": "Kit d'accessoires de projection magnétique pour personnaliser la lumière des flashs Godox.",
+    "prix": 1790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Compatibilité": "Flashs Godox avec monture magnétique",
+      "Contenu": "Filtres de couleur, gobos, snoot",
+      "Fixation": "Magnétique",
+      "Poids": "Environ 300 g"
+    }
+  },
+  {
+    "nom": "Adaptateur de monture Bowens SmallRig pour monolight LED bicolore RC 60B",
+    "description": "Adaptateur permettant d'utiliser des modificateurs de lumière à monture Bowens sur le projecteur SmallRig RC 60B.",
+    "prix": 290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Compatibilité": "SmallRig RC 60B",
+      "Monture": "Bowens",
+      "Matériau": "Alliage d'aluminium",
+      "Poids": "Environ 150 g"
+    }
+  },
+  {
+    "nom": "AMBITFUL boîte à lumière pour Studio Photo LED",
+    "description": "Boîte à lumière (softbox) professionnelle pour diffuser la lumière LED de manière douce et uniforme.",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox",
+      "Monture": "Universelle / Godox",
+      "Tailles disponibles": "40 cm, 60 cm, 80 cm",
+      "Matériau": "Tissu nylon réfléchissant haute densité",
+      "Inclus": "Grille nid d'abeille (selon modèle)"
+    }
+  },
+  {
+    "nom": "AMBITFUL GC30R Tube lumineux gonflable en couleur RGB",
+    "description": "Tube lumineux RGB compact et innovant, idéal pour les effets de lumière créatifs en vidéo.",
+    "prix": 1290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Tube LED RGB",
+      "Température de couleur": "RGB + 2500K-9000K",
+      "Alimentation": "Batterie rechargeable intégrée",
+      "Contrôle": "Application mobile et boutons physiques",
+      "Poids": "Environ 400 g"
+    }
+  },
+  {
+    "nom": "Ambitful K10",
+    "description": "Panneau LED compact et polyvalent pour l'éclairage vidéo et la photographie de produit.",
+    "prix": 890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Panneau LED",
+      "Température de couleur": "Bicolore (3000K-6500K)",
+      "IRC": ">95",
+      "Alimentation": "Batterie NP-F ou secteur",
+      "Poids": "Environ 600 g"
+    }
+  },
+  {
+    "nom": "AMBITFUL MF-01 Bras croisé en métal robuste en acier inoxydable",
+    "description": "Bras croisé (cross arm) en acier inoxydable pour stabiliser les pieds d'éclairage et les fonds.",
+    "prix": 990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Matériau": "Acier inoxydable",
+      "Longueur": "Réglable jusqu'à 2 mètres",
+      "Charge maximale": "15 kg",
+      "Fixation": "Vis standard 1/4\" et 3/8\""
+    }
+  },
+  {
+    "nom": "AMBITFULL 150x200cm Portable Green Screen",
+    "description": "Écran vert portable pliable pour le détourage vidéo et photo (chroma key).",
+    "prix": 1890.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Écran Chroma Key",
+      "Dimensions": "150 x 200 cm",
+      "Matériau": "Tissu pliable anti-reflet",
+      "Structure": "Armature métallique flexible",
+      "Poids": "Environ 1,2 kg"
+    }
+  },
+  {
+    "nom": "Anneau lumineux vidéo LED bicolore SmallRig Vibe P30 67 mm",
+    "description": "Anneau lumineux compact se vissant directement sur l'objectif (67 mm) pour un éclairage facial idéal.",
+    "prix": 390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Ring Light d'objectif",
+      "Diamètre de filtre": "67 mm",
+      "Température de couleur": "Bicolore (3000K-6500K)",
+      "Alimentation": "USB-C",
+      "Poids": "Environ 80 g"
+    }
+  },
+  {
+    "nom": "Anneau lumineux vidéo LED SmallRig Vibe P30 avec adaptateur de filtre fileté universel de 67 mm",
+    "description": "Kit complet de l'anneau lumineux Vibe P30 avec adaptateur pour une compatibilité étendue.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Ring Light d'objectif + Adaptateur",
+      "Diamètre de filtre": "67 mm",
+      "Température de couleur": "Bicolore (3000K-6500K)",
+      "Alimentation": "USB-C",
+      "Poids": "Environ 120 g"
+    }
+  },
+  {
+    "nom": "Bâton lumineux LED RGB Godox LC1000R",
+    "description": "Bâton lumineux RGB puissant et polyvalent pour les effets de lumière cinématographiques.",
+    "prix": 2690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Tube LED RGB",
+      "Puissance": "Haute luminosité",
+      "Effets": "36000+ couleurs, effets dynamiques",
+      "Alimentation": "Batterie intégrée rechargeable",
+      "Poids": "Environ 1,1 kg"
+    }
+  },
+  {
+    "nom": "Bâton lumineux LED RGB miniature Godox LC500R Mini",
+    "description": "Version compacte du bâton lumineux RGB, parfaite pour les éclairages d'appoint créatifs.",
+    "prix": 1690.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Tube LED RGB Mini",
+      "Longueur": "Compacte (environ 30 cm)",
+      "Effets": "RGB complet, scènes prédéfinies",
+      "Alimentation": "USB-C",
+      "Poids": "Environ 350 g"
+    }
+  },
+  {
+    "nom": "Flash annulaire macro Godox MF-R76",
+    "description": "Flash annulaire dédié à la photographie macro, offrant un éclairage uniforme sans ombre.",
+    "prix": 1990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Flash Macro Annulaire",
+      "Nombre guide": "NG 14 (à 105mm, ISO 100)",
+      "Contrôle": "Indépendant des côtés gauche et droit",
+      "Compatibilité": "Montures Canon, Nikon, Sony, Fuji",
+      "Poids": "Environ 300 g"
+    }
+  },
+  {
+    "nom": "Flash de studio Godox SK400III-V",
+    "description": "Flash de studio fiable et puissant, idéal pour les photographes en herbe et les petits studios.",
+    "prix": null,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Flash de studio (Monolight)",
+      "Puissance": "400Ws",
+      "Temps de recyclage": "0,1-2,1 secondes",
+      "Modélisation": "Lampe halogène 150W",
+      "Poids": "Environ 2,2 kg"
+    }
+  },
+  {
+    "nom": "flash Godox AD200 PRO II",
+    "description": "Deuxième génération du flash portable hybride le plus populaire, plus rapide et plus puissant.",
+    "prix": 4490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Flash portable hybride",
+      "Puissance": "200Ws",
+      "Vitesse d'éclair": "1/290s à 1/22000s (HSS)",
+      "Autonomie": "Jusqu'à 500 éclairs à pleine puissance",
+      "Poids": "Environ 610 g"
+    }
+  },
+  {
+    "nom": "Flash Godox AD300 PRO",
+    "description": "Flash portable offrant un compromis parfait entre la puissance de l'AD200 et la polyvalence de l'AD400.",
+    "prix": 5900.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Flash portable hybride",
+      "Puissance": "300Ws",
+      "Vitesse d'éclair": "1/250s à 1/8000s (HSS)",
+      "Modélisation": "LED 10W intégrée",
+      "Poids": "Environ 1,2 kg"
+    }
+  },
+  {
+    "nom": "Flash Godox AD400 PRO",
+    "description": "Flash de studio portable haute puissance, conçu pour les photographes de mode et de publicité.",
+    "prix": 6400.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Flash portable haute puissance",
+      "Puissance": "400Ws",
+      "Vitesse d'éclair": "1/200s à 1/8000s (HSS)",
+      "Système": "Godox X sans fil intégré",
+      "Poids": "Environ 2,9 kg"
+    }
+  },
+  {
+    "nom": "Flash Godox AD600 PRO",
+    "description": "Le flash portable de référence pour les professionnels, égalant la puissance d'un flash de studio.",
+    "prix": 8900.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Flash portable professionnel",
+      "Puissance": "600Ws",
+      "Vitesse d'éclair": "1/200s à 1/8000s (HSS)",
+      "Monture": "Bowens",
+      "Poids": "Environ 3,1 kg"
+    }
+  },
+  {
+    "nom": "Flash Godox AD600PRO II",
+    "description": "Deuxième génération du AD600 Pro, avec un refroidissement amélioré et un autofocus plus rapide.",
+    "prix": 9900.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Flash portable professionnel",
+      "Puissance": "600Ws",
+      "Vitesse d'éclair": "1/200s à 1/8000s (HSS)",
+      "Améliorations": "Refroidissement actif, interface améliorée",
+      "Poids": "Environ 3,1 kg"
+    }
+  },
+  {
+    "nom": "Flash Godox R200",
+    "description": "Flash de studio compact et léger avec une tête rotative, idéal pour les photographes en déplacement.",
+    "prix": 2990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Flash de studio compact",
+      "Puissance": "200Ws",
+      "Temps de recyclage": "0,01-2,1 secondes",
+      "Modélisation": "LED intégrée",
+      "Poids": "Environ 1,2 kg"
+    }
+  },
+  {
+    "nom": "Flash Godox V1 pour Canon / Sony / Nikon",
+    "description": "Flash cobra rond professionnel offrant un éclairage naturel et un recyclage ultra-rapide.",
+    "prix": 1970.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Flash cobra (Speedlight)",
+      "Nombre guide": "NG 92 (à 105mm, ISO 100)",
+      "Tête": "Ronde avec zoom motorisé",
+      "Alimentation": "Batterie Li-ion rechargeable",
+      "Poids": "Environ 530 g"
+    }
+  },
+  {
+    "nom": "Flash Godox V100 pour (Sony,Nikon,Canon)",
+    "description": "Flash cobra compact et puissant avec une tête ronde pour un éclairage doux et naturel.",
+    "prix": 3449.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Flash cobra (Speedlight)",
+      "Nombre guide": "NG 100 (à 105mm, ISO 100)",
+      "Tête": "Ronde avec zoom motorisé",
+      "Alimentation": "Batterie Li-ion intégrée",
+      "Poids": "Environ 550 g"
+    }
+  },
+  {
+    "nom": "Flash Godox V860 III pour (Nikon Sony Canon)",
+    "description": "Le flash cobra haut de gamme de Godox avec batterie Li-ion et temps de recyclage de 1,5 seconde.",
+    "prix": 1790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Flash cobra (Speedlight)",
+      "Nombre guide": "NG 60 (à 200mm, ISO 100)",
+      "Temps de recyclage": "1,5 seconde à pleine puissance",
+      "Alimentation": "Batterie Li-ion V860",
+      "Poids": "Environ 530 g"
+    }
+  },
+  {
+    "nom": "Fond Papier 2.72X11m",
+    "description": "Rouleau de fond papier professionnel pour studio, disponible en plusieurs couleurs.",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Fond de studio",
+      "Dimensions": "2,72 m x 11 m",
+      "Matériau": "Papier de qualité photographique",
+      "Couleurs disponibles": "Noir, Blanc, Gris, Vert, Bleu, etc.",
+      "Poids": "Environ 4 kg"
+    }
+  },
+  {
+    "nom": "Fond vert/bleu 2-in-1 /100x150 cm",
+    "description": "Fond portable réversible vert et bleu, idéal pour le chroma key en petit espace.",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Fond Chroma Key portable",
+      "Dimensions": "100 x 150 cm ou 150 x 200 cm",
+      "Matériau": "Tissu pliable anti-reflet",
+      "Couleurs": "Vert et Bleu réversibles",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "Godox 2.8m Light Stand",
+    "description": "Pied d'éclairage robuste en acier, capable de supporter des flashs et softboxes de taille moyenne.",
+    "prix": 690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Pied d'éclairage",
+      "Hauteur maximale": "2,8 mètres",
+      "Hauteur minimale": "1,1 mètre",
+      "Charge maximale": "7 kg",
+      "Matériau": "Acier robuste"
+    }
+  },
+  {
+    "nom": "Godox 33\" Softlight Umbrella",
+    "description": "Parapluie de studio translucide pour diffuser la lumière de manière douce et large.",
+    "prix": 390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Parapluie de diffusion",
+      "Diamètre": "33 pouces (84 cm)",
+      "Matériau": "Tissu translucide blanc",
+      "Monture": "Tige métallique avec embout standard",
+      "Poids": "Environ 400 g"
+    }
+  },
+  {
+    "nom": "Godox AK R1 KIT",
+    "description": "Kit d'accessoires magnétiques pour flashs, incluant des filtres de couleur et des grilles.",
+    "prix": 890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Kit d'accessoires pour flash",
+      "Compatibilité": "Flashs Godox avec monture magnétique",
+      "Contenu": "Filtres CTB, CTO, filtres de couleur, grille",
+      "Fixation": "Magnétique",
+      "Poids": "Environ 200 g"
+    }
+  },
+  {
+    "nom": "Godox AK-R22",
+    "description": "Kit d'accessoires de projection avancé pour créer des formes et des motifs lumineux.",
+    "prix": 290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Accessoires de projection",
+      "Compatibilité": "Système AK-R",
+      "Contenu": "Gobos et filtres de couleur",
+      "Fixation": "Magnétique",
+      "Poids": "Environ 150 g"
+    }
+  },
+  {
+    "nom": "Godox BD-04 Kit Barndoor",
+    "description": "Kit de volets de direction (barndoors) pour contrôler précisément la direction de la lumière.",
+    "prix": 390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Barndoors (Volets)",
+      "Compatibilité": "Flashs et projecteurs Godox",
+      "Matériau": "Métal robuste",
+      "Fonction": "Contrôle de la direction de la lumière",
+      "Poids": "Environ 300 g"
+    }
+  },
+  {
+    "nom": "Godox BLP",
+    "description": "Pack de batteries et accessoires pour une autonomie prolongée des flashs portables Godox.",
+    "prix": 3490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Pack d'alimentation",
+      "Compatibilité": "Série AD (AD600, AD400, etc.)",
+      "Capacité": "Haute capacité pour de nombreux éclairs",
+      "Temps de charge": "Environ 2 heures",
+      "Poids": "Environ 1,5 kg"
+    }
+  },
+  {
+    "nom": "Godox C30R",
+    "description": "Tube lumineux RGB compact et puissant, idéal pour les éclairages d'ambiance et les effets vidéo.",
+    "prix": 1290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Tube LED RGB",
+      "Température de couleur": "RGB + 2500K-9000K",
+      "IRC": ">96",
+      "Contrôle": "Application mobile et Bluetooth",
+      "Poids": "Environ 500 g"
+    }
+  },
+  {
+    "nom": "Godox DP600III",
+    "description": "Flash de studio de 600Ws, offrant une puissance suffisante pour les grands espaces et les modificateurs volumineux.",
+    "prix": 3990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Flash de studio (Monolight)",
+      "Puissance": "600Ws",
+      "Temps de recyclage": "0,01-2,5 secondes",
+      "Modélisation": "Lampe halogène 250W",
+      "Poids": "Environ 2,5 kg"
+    }
+  },
+  {
+    "nom": "Godox FL150R",
+    "description": "Panneau LED flexible RGB, parfait pour s'adapter à des surfaces courbes ou des espaces étroits.",
+    "prix": 4390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Panneau LED flexible RGB",
+      "Température de couleur": "RGB + 2500K-9000K",
+      "IRC": ">96",
+      "Contrôle": "Télécommande et application",
+      "Poids": "Environ 800 g"
+    }
+  },
+  {
+    "nom": "Godox FL150S",
+    "description": "Panneau LED flexible bicolore, idéal pour un éclairage d'appoint doux et naturel.",
+    "prix": 3990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Panneau LED flexible",
+      "Température de couleur": "Bicolore (3000K-6500K)",
+      "IRC": ">96",
+      "Contrôle": "Télécommande et application",
+      "Poids": "Environ 800 g"
+    }
+  },
+  {
+    "nom": "Godox Flash AD 200 PRO",
+    "description": "Le flash portable hybride original, compact, puissant et extrêmement polyvalent.",
+    "prix": 3490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Flash portable hybride",
+      "Puissance": "200Ws",
+      "Vitesse d'éclair": "1/200s à 1/8000s (HSS)",
+      "Autonomie": "Jusqu'à 500 éclairs à pleine puissance",
+      "Poids": "Environ 610 g"
+    }
+  },
+  {
+    "nom": "Godox Flash MF12-DK1",
+    "description": "Kit de flash macro double, offrant un contrôle indépendant de chaque côté pour des ombres créatives.",
+    "prix": 2990.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Flash Macro Double",
+      "Nombre guide": "NG 12 (à 105mm, ISO 100)",
+      "Contrôle": "Indépendant gauche/droite",
+      "Compatibilité": "Canon, Nikon, Sony, Fuji",
+      "Poids": "Environ 400 g"
+    }
+  },
+  {
+    "nom": "Godox Flash V1Pro Pour Sony-Canon-Nikon",
+    "description": "Version professionnelle du flash cobra rond, avec des fonctionnalités avancées et une construction robuste.",
+    "prix": 2869.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Flash cobra (Speedlight)",
+      "Nombre guide": "NG 92 (à 105mm, ISO 100)",
+      "Tête": "Ronde avec zoom motorisé",
+      "Alimentation": "Batterie Li-ion rechargeable",
+      "Poids": "Environ 530 g"
+    }
+  },
+  {
+    "nom": "Godox Flash V480 pour Nikon/Canon/Sony",
+    "description": "Flash cobra économique et fiable, parfait pour les débutants et les photographes amateurs.",
+    "prix": 1490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Flash cobra (Speedlight)",
+      "Nombre guide": "NG 48 (à 105mm, ISO 100)",
+      "Tête": "Inclinable et orientable",
+      "Alimentation": "4 piles AA",
+      "Poids": "Environ 300 g"
+    }
+  },
+  {
+    "nom": "Godox Grid pour P35R",
+    "description": "Grille nid d'abeille pour le panneau LED P35R, permettant de concentrer le faisceau lumineux.",
+    "prix": 290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Grille (Grid)",
+      "Compatibilité": "Panneau LED P35R",
+      "Angle de faisceau": "Réduit la dispersion de la lumière",
+      "Matériau": "Plastique ABS robuste",
+      "Poids": "Environ 100 g"
+    }
+  },
+  {
+    "nom": "Godox LD150RS",
+    "description": "Projecteur LED RGB de haute puissance, conçu pour les productions vidéo et cinématographiques exigeantes.",
+    "prix": 11900.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED RGB",
+      "Puissance": "150W",
+      "Température de couleur": "RGB + 2500K-9000K",
+      "IRC/TLCI": ">96 / >97",
+      "Poids": "Environ 3,5 kg"
+    }
+  },
+  {
+    "nom": "Godox LED Light Flash ML60II BI Kit",
+    "description": "Kit de projecteur LED bicolore compact, incluant un support et un diffuseur pour une utilisation immédiate.",
+    "prix": 2190.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED bicolore",
+      "Puissance": "60W",
+      "Température de couleur": "2800K-6500K",
+      "IRC": ">96",
+      "Poids": "Environ 1,1 kg"
+    }
+  },
+  {
+    "nom": "Godox LED LIGHT FLASH RS60P 2K",
+    "description": "Projecteur LED portable de 60W avec une sortie de haute qualité, idéal pour les créateurs de contenu.",
+    "prix": 5850.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED portable",
+      "Puissance": "60W",
+      "Température de couleur": "Bicolore ou RGB (selon modèle)",
+      "IRC": ">96",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "Godox LED500C",
+    "description": "Panneau LED RVB abordable et polyvalent, parfait pour les vidéastes et les photographes de produit.",
+    "prix": 1990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Panneau LED RVB",
+      "Puissance": "30W",
+      "Température de couleur": "RGB + 3300K-5600K",
+      "IRC": ">95",
+      "Poids": "Environ 600 g"
+    }
+  },
+  {
+    "nom": "Godox Litemons LA150R",
+    "description": "Projecteur LED RGB de 150W, offrant une puissance et une qualité de lumière exceptionnelles pour le studio.",
+    "prix": 4490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED RGB",
+      "Puissance": "150W",
+      "Température de couleur": "RGB + 2500K-9000K",
+      "IRC/TLCI": ">96 / >97",
+      "Poids": "Environ 3,2 kg"
+    }
+  },
+  {
+    "nom": "Godox Litemons LE600Bi Monolight LED bicolore (noir)",
+    "description": "Monolight LED bicolore de 600W, conçu pour remplacer les flashs de studio traditionnels avec une lumière continue.",
+    "prix": 4990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Monolight LED bicolore",
+      "Puissance": "600W",
+      "Température de couleur": "2700K-6500K",
+      "IRC/TLCI": ">96 / >97",
+      "Poids": "Environ 4,5 kg"
+    }
+  },
+  {
+    "nom": "Godox LR150 Bi-Color LED Ring Light",
+    "description": "Anneau lumineux professionnel de 150W, idéal pour les portraits, la beauté et les vidéos de présentation.",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Ring Light professionnel",
+      "Puissance": "150W",
+      "Température de couleur": "Bicolore (3000K-6500K)",
+      "IRC": ">95",
+      "Poids": "Environ 2,5 kg"
+    }
+  },
+  {
+    "nom": "Godox QR-P120 Boîte à lumière parabolique de 120 cm avec grille pliable",
+    "description": "Softbox parabolique de 120 cm pour un éclairage doux et enveloppant, avec grille pour contrôler la diffusion.",
+    "prix": 2690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox parabolique",
+      "Dimensions": "120 cm de diamètre",
+      "Monture": "Bowens",
+      "Inclus": "Grille nid d'abeille pliable",
+      "Poids": "Environ 2,5 kg"
+    }
+  },
+  {
+    "nom": "Godox SK400II",
+    "description": "Flash de studio de 400Ws, fiable et économique, avec un système de déclenchement sans fil intégré.",
+    "prix": 2390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Flash de studio (Monolight)",
+      "Puissance": "400Ws",
+      "Temps de recyclage": "0,1-2,1 secondes",
+      "Modélisation": "Lampe halogène 150W",
+      "Poids": "Environ 2,2 kg"
+    }
+  },
+  {
+    "nom": "Godox SN02 Snoot avec grille en nid d'abeille pour Mini Master, E Series et Mini Pioneer",
+    "description": "Snoot (concentrateur de lumière) avec grille pour créer un faisceau lumineux étroit et contrôlé.",
+    "prix": 290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Snoot avec grille",
+      "Compatibilité": "Godox Mini Master, E Series, Mini Pioneer",
+      "Fonction": "Concentre la lumière en un point précis",
+      "Matériau": "Métal et plastique résistant",
+      "Poids": "Environ 200 g"
+    }
+  },
+  {
+    "nom": "Godox Triger X3 Nikon/Sony/Canon",
+    "description": "Déclencheur sans fil TTL haut de gamme avec écran tactile et contrôle à distance des paramètres.",
+    "prix": 990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Déclencheur sans fil (Transceiver)",
+      "Compatibilité": "Nikon, Sony, Canon (selon modèle)",
+      "Portée": "Jusqu'à 100 mètres",
+      "Fonctionnalités": "TTL, HSS, contrôle de groupe",
+      "Poids": "Environ 100 g"
+    }
+  },
+  {
+    "nom": "Godox XPro II TTL Canon-Sony",
+    "description": "Deuxième génération du déclencheur XPro, avec une interface améliorée et une connectivité Bluetooth.",
+    "prix": 890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Déclencheur sans fil (Transceiver)",
+      "Compatibilité": "Canon, Sony",
+      "Portée": "Jusqu'à 100 mètres",
+      "Fonctionnalités": "TTL, HSS, contrôle de groupe, Bluetooth",
+      "Poids": "Environ 100 g"
+    }
+  },
+  {
+    "nom": "K&F Concept Support d'Éclairage en Métal avec Sac de Rangement et Vis 1/4",
+    "description": "Support d'éclairage léger et portable, parfait pour les panneaux LED et les petits flashs.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Support d'éclairage",
+      "Hauteur maximale": "Environ 2 mètres",
+      "Charge maximale": "3 kg",
+      "Matériau": "Alliage d'aluminium",
+      "Poids": "Environ 800 g"
+    }
+  },
+  {
+    "nom": "K&F Concept Support de Lumière en Acier Inoxydable",
+    "description": "Support d'éclairage robuste en acier inoxydable, offrant une stabilité supérieure pour les équipements lourds.",
+    "prix": 690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Support d'éclairage",
+      "Hauteur maximale": "Environ 2,5 mètres",
+      "Charge maximale": "5 kg",
+      "Matériau": "Acier inoxydable",
+      "Poids": "Environ 1,5 kg"
+    }
+  },
+  {
+    "nom": "K&F Concept Support en aluminium",
+    "description": "Support d'éclairage en aluminium, combinant légèreté et résistance pour une utilisation en studio ou en extérieur.",
+    "prix": 990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Support d'éclairage",
+      "Hauteur maximale": "Environ 2,8 mètres",
+      "Charge maximale": "7 kg",
+      "Matériau": "Alliage d'aluminium",
+      "Poids": "Environ 1,2 kg"
+    }
+  },
+  {
+    "nom": "K&F Concept torche - Lumière vidéo bicolore",
+    "description": "Torche LED bicolore compacte, idéale pour l'éclairage d'appoint en vidéo et en photographie.",
+    "prix": 390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Torche LED",
+      "Température de couleur": "Bicolore (3000K-6500K)",
+      "IRC": ">95",
+      "Alimentation": "Batterie rechargeable ou USB",
+      "Poids": "Environ 200 g"
+    }
+  },
+  {
+    "nom": "K&F Concept Trépied d'Éclairage en Métal avec Sac de Rangement et Vis 1/4\"",
+    "description": "Trépied d'éclairage en métal, stable et facile à transporter, avec sac de rangement inclus.",
+    "prix": 390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Trépied d'éclairage",
+      "Hauteur maximale": "Environ 2 mètres",
+      "Charge maximale": "4 kg",
+      "Matériau": "Métal",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "K&F Concept Trépied en Métal avec Sac de Rangement et Vis 1/4\"",
+    "description": "Trépied polyvalent en métal, adapté pour les appareils photo, les téléphones et les petites lumières.",
+    "prix": 290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Trépied polyvalent",
+      "Hauteur maximale": "Environ 1,5 mètre",
+      "Charge maximale": "3 kg",
+      "Matériau": "Métal",
+      "Poids": "Environ 700 g"
+    }
+  },
+  {
+    "nom": "Kit de 2 flashs macro Godox MF12",
+    "description": "Kit de deux flashs macro pour un éclairage stéréo ou un contrôle créatif des ombres en macrophotographie.",
+    "prix": 2890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Kit Flash Macro Double",
+      "Nombre guide": "NG 12 (à 105mm, ISO 100) par flash",
+      "Contrôle": "Indépendant pour chaque unité",
+      "Compatibilité": "Canon, Nikon, Sony, Fuji",
+      "Poids": "Environ 400 g (kit complet)"
+    }
+  },
+  {
+    "nom": "Kit de projecteur monolight LED RGB Godox RS60R 1K avec accessoire de projection",
+    "description": "Kit complet de projecteur LED RGB avec accessoires pour une utilisation immédiate en studio.",
+    "prix": 4190.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Kit Projecteur LED RGB",
+      "Puissance": "60W",
+      "Température de couleur": "RGB + 2500K-9000K",
+      "Inclus": "Projecteur, support, accessoires de projection",
+      "Poids": "Environ 2 kg"
+    }
+  },
+  {
+    "nom": "Kit de projecteur Monolight RGB LED 2 lampes Godox RS60R",
+    "description": "Kit de deux projecteurs LED RGB pour un éclairage stéréo ou des configurations d'éclairage complexes.",
+    "prix": 5490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Kit de 2 Projecteurs LED RGB",
+      "Puissance": "60W par unité",
+      "Température de couleur": "RGB + 2500K-9000K",
+      "Inclus": "2 projecteurs, supports, accessoires",
+      "Poids": "Environ 4 kg"
+    }
+  },
+  {
+    "nom": "La tête de flash Godox DP400III",
+    "description": "Tête de flash de studio de 400Ws, fiable et puissante, avec un temps de recyclage rapide.",
+    "prix": 2990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Tête de flash de studio",
+      "Puissance": "400Ws",
+      "Temps de recyclage": "0,01-2,1 secondes",
+      "Modélisation": "Lampe halogène 150W",
+      "Poids": "Environ 2,2 kg"
+    }
+  },
+  {
+    "nom": "Lampe LED portable bicolore Godox ML100Bi",
+    "description": "Lampe LED portable bicolore, compacte et puissante, idéale pour les reportages et les vidéos en extérieur.",
+    "prix": 2490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Lampe LED portable",
+      "Puissance": "100W",
+      "Température de couleur": "Bicolore (2800K-6500K)",
+      "IRC": ">96",
+      "Poids": "Environ 1,5 kg"
+    }
+  },
+  {
+    "nom": "Lampe LED portable RGB Godox ML100R",
+    "description": "Version RGB de la lampe portable ML100, offrant des possibilités créatives infinies avec des millions de couleurs.",
+    "prix": 2990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Lampe LED portable RGB",
+      "Puissance": "100W",
+      "Température de couleur": "RGB + 2500K-9000K",
+      "IRC": ">96",
+      "Poids": "Environ 1,5 kg"
+    }
+  },
+  {
+    "nom": "Lampe vidéo LED détachable pour téléphone portable SmallRig Vibe P48",
+    "description": "Petite lampe LED conçue pour se fixer directement sur un téléphone portable, améliorant la qualité des vidéos mobiles.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Lampe LED pour smartphone",
+      "Fixation": "Pince ou vissage",
+      "Température de couleur": "Bicolore ou RGB",
+      "Alimentation": "USB-C",
+      "Poids": "Environ 50 g"
+    }
+  },
+  {
+    "nom": "Lampe vidéo LED détachable pour téléphone portable SmallRig Vibe P48 (blanche)",
+    "description": "Version blanche de la lampe Vibe P48, s'intégrant discrètement à la configuration mobile.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Lampe LED pour smartphone",
+      "Fixation": "Pince ou vissage",
+      "Température de couleur": "Bicolore ou RGB",
+      "Alimentation": "USB-C",
+      "Poids": "Environ 50 g"
+    }
+  },
+  {
+    "nom": "Lampe vidéo LED portable à pince avec batterie rechargeable.",
+    "description": "Lampe LED polyvalente avec pince, parfaite pour éclairer des détails ou servir de lumière d'appoint.",
+    "prix": 390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Lampe LED à pince",
+      "Température de couleur": "Bicolore",
+      "Alimentation": "Batterie rechargeable intégrée",
+      "Fixation": "Pince robuste",
+      "Poids": "Environ 150 g"
+    }
+  },
+  {
+    "nom": "Lampe vidéo LED portable et focalisable SmallRig RF 10C",
+    "description": "Lampe LED focalisable, permettant d'ajuster la largeur du faisceau lumineux selon les besoins.",
+    "prix": 990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Lampe LED focalisable",
+      "Angle de faisceau": "Réglable",
+      "Température de couleur": "Bicolore ou RGB",
+      "Alimentation": "Batterie rechargeable",
+      "Poids": "Environ 300 g"
+    }
+  },
+  {
+    "nom": "Lentille de Fresnel de mise au point SmallRig RA-F150 pour monoblocs LED",
+    "description": "Lentille de Fresnel pour concentrer et diriger la lumière des monoblocs LED avec précision.",
+    "prix": 1490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Lentille de Fresnel",
+      "Compatibilité": "Monoblocs LED SmallRig (et autres avec adaptateur)",
+      "Fonction": "Concentre et contrôle le faisceau lumineux",
+      "Matériau": "Verre optique et métal",
+      "Poids": "Environ 500 g"
+    }
+  },
+  {
+    "nom": "Light Stand 2.7m",
+    "description": "Pied d'éclairage standard de 2,7 mètres, robuste et fiable pour la plupart des configurations de studio.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Pied d'éclairage",
+      "Hauteur maximale": "2,7 mètres",
+      "Hauteur minimale": "1 mètre",
+      "Charge maximale": "5 kg",
+      "Matériau": "Acier"
+    }
+  },
+  {
+    "nom": "Manbily 65cm Lantern Softbox",
+    "description": "Softbox en forme de lanterne de 65 cm, offrant un éclairage omnidirectionnel doux et enveloppant.",
+    "prix": 690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox Lanterne",
+      "Dimensions": "65 cm de diamètre",
+      "Monture": "Bowens",
+      "Éclairage": "Omnidirectionnel",
+      "Poids": "Environ 800 g"
+    }
+  },
+  {
+    "nom": "Manbily Bi-Color Lights CFL-100Bi",
+    "description": "Projecteur LED bicolore de 100W, compact et abordable, idéal pour les petits studios et les créateurs de contenu.",
+    "prix": 1990.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Projecteur LED bicolore",
+      "Puissance": "100W",
+      "Température de couleur": "3000K-6500K",
+      "IRC": ">95",
+      "Poids": "Environ 1,5 kg"
+    }
+  },
+  {
+    "nom": "Manbily Bi-Color Lights CFL-200Bi",
+    "description": "Projecteur LED bicolore de 200W, offrant une puissance accrue pour éclairer des sujets plus grands ou des espaces plus vastes.",
+    "prix": 2990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED bicolore",
+      "Puissance": "200W",
+      "Température de couleur": "3000K-6500K",
+      "IRC": ">95",
+      "Poids": "Environ 2,5 kg"
+    }
+  },
+  {
+    "nom": "Manbily Bi-Color Lights CFL-200C RGB",
+    "description": "Version RGB du projecteur 200W, ajoutant des possibilités créatives avec des millions de couleurs.",
+    "prix": 3990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED RGB",
+      "Puissance": "200W",
+      "Température de couleur": "RGB + 2500K-9000K",
+      "IRC": ">95",
+      "Poids": "Environ 2,5 kg"
+    }
+  },
+  {
+    "nom": "Manbily Bi-Color Lights CFL-300Bi",
+    "description": "Projecteur LED bicolore de 300W, conçu pour les studios professionnels nécessitant une lumière continue puissante.",
+    "prix": 3790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED bicolore",
+      "Puissance": "300W",
+      "Température de couleur": "3000K-6500K",
+      "IRC": ">95",
+      "Poids": "Environ 3,5 kg"
+    }
+  },
+  {
+    "nom": "Manbily Bi-Color Lights CFL-400Bi",
+    "description": "Le projecteur LED bicolore le plus puissant de la gamme Manbily, pour les exigences de production les plus élevées.",
+    "prix": 5990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED bicolore",
+      "Puissance": "400W",
+      "Température de couleur": "3000K-6500K",
+      "IRC": ">95",
+      "Poids": "Environ 4,5 kg"
+    }
+  },
+  {
+    "nom": "Manbily KF-0",
+    "description": "Accessoire de support ou adaptateur Manbily, conçu pour une compatibilité étendue avec les équipements de studio.",
+    "prix": 290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Accessoire de support",
+      "Matériau": "Métal",
+      "Compatibilité": "Systèmes Manbily",
+      "Poids": "Environ 200 g"
+    }
+  },
+  {
+    "nom": "Manbily RGB COLOR LIGHTS CFL-100C",
+    "description": "Projecteur LED RGB de 100W, parfait pour ajouter des touches de couleur créatives dans vos vidéos.",
+    "prix": 2490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED RGB",
+      "Puissance": "100W",
+      "Température de couleur": "RGB + 2500K-9000K",
+      "IRC": ">95",
+      "Poids": "Environ 1,5 kg"
+    }
+  },
+  {
+    "nom": "Manbily RGB COLOR LIGHTS CFL-200C",
+    "description": "Projecteur LED RGB de 200W, offrant une puissance et une saturation de couleur supérieures pour les effets spéciaux.",
+    "prix": 3490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED RGB",
+      "Puissance": "200W",
+      "Température de couleur": "RGB + 2500K-9000K",
+      "IRC": ">95",
+      "Poids": "Environ 2,5 kg"
+    }
+  },
+  {
+    "nom": "Manbily RGB Light LS-260",
+    "description": "Tube lumineux RGB compact et léger, idéal pour les éclairages d'ambiance et les effets de contour.",
+    "prix": 590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Tube LED RGB",
+      "Longueur": "Compacte",
+      "Température de couleur": "RGB",
+      "Alimentation": "USB",
+      "Poids": "Environ 200 g"
+    }
+  },
+  {
+    "nom": "Manbily RGB Pocket Lights MFL-07",
+    "description": "Lampe de poche RGB ultra-compacte, parfaite pour les éclairages d'appoint créatifs et les petits espaces.",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Lampe de poche RGB",
+      "Température de couleur": "RGB",
+      "Alimentation": "Batterie intégrée",
+      "Contrôle": "Boutons physiques",
+      "Poids": "Environ 100 g"
+    }
+  },
+  {
+    "nom": "NICEFOTO AT-200AU",
+    "description": "Projecteur LED de 200W, offrant un excellent rapport qualité-prix pour les studios de taille moyenne.",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED",
+      "Puissance": "200W",
+      "Température de couleur": "Bicolore ou Blanc",
+      "IRC": ">95",
+      "Poids": "Environ 2,5 kg"
+    }
+  },
+  {
+    "nom": "NiceFoto B-22",
+    "description": "Support ou accessoire NiceFoto, conçu pour une utilisation fiable en studio.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Accessoire de studio",
+      "Matériau": "Métal",
+      "Compatibilité": "Systèmes NiceFoto",
+      "Poids": "Environ 500 g"
+    }
+  },
+  {
+    "nom": "NiceFoto BL-1000B",
+    "description": "Projecteur LED de 1000W, conçu pour les grandes productions nécessitant une puissance lumineuse considérable.",
+    "prix": 1990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED haute puissance",
+      "Puissance": "1000W",
+      "Température de couleur": "Bicolore",
+      "IRC": ">95",
+      "Poids": "Environ 8 kg"
+    }
+  },
+  {
+    "nom": "NICEFOTO DF80-1000A",
+    "description": "Flash de studio de 1000Ws, offrant une puissance massive pour les photographes de mode et de publicité.",
+    "prix": 1990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Flash de studio",
+      "Puissance": "1000Ws",
+      "Temps de recyclage": "Rapide",
+      "Modélisation": "Lampe halogène",
+      "Poids": "Environ 3,5 kg"
+    }
+  },
+  {
+    "nom": "NICEFOTO DF90-2000A",
+    "description": "Flash de studio de 2000Ws, la solution ultime pour les grands espaces et les modificateurs de très grande taille.",
+    "prix": 2490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Flash de studio",
+      "Puissance": "2000Ws",
+      "Temps de recyclage": "Rapide",
+      "Modélisation": "Lampe halogène",
+      "Poids": "Environ 5 kg"
+    }
+  },
+  {
+    "nom": "NICEFOTO DL80-1000A",
+    "description": "Flash de studio de 1000Ws avec des fonctionnalités avancées pour un contrôle précis de la lumière.",
+    "prix": 3290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Flash de studio",
+      "Puissance": "1000Ws",
+      "Contrôle": "Avancé",
+      "Modélisation": "Lampe halogène",
+      "Poids": "Environ 3,5 kg"
+    }
+  },
+  {
+    "nom": "NICEFOTO DL90-2000A",
+    "description": "Flash de studio de 2000Ws avec des fonctionnalités avancées pour les professionnels exigeants.",
+    "prix": 3790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Flash de studio",
+      "Puissance": "2000Ws",
+      "Contrôle": "Avancé",
+      "Modélisation": "Lampe halogène",
+      "Poids": "Environ 5 kg"
+    }
+  },
+  {
+    "nom": "NICEFOTO DP80-1000B NO GRID",
+    "description": "Flash de studio de 1000Ws, version économique sans grille, offrant une excellente puissance brute.",
+    "prix": 1190.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Flash de studio",
+      "Puissance": "1000Ws",
+      "Inclus": "Sans grille",
+      "Modélisation": "Lampe halogène",
+      "Poids": "Environ 3,5 kg"
+    }
+  },
+  {
+    "nom": "NiceFoto DS80-1000B",
+    "description": "Flash de studio de 1000Ws, fiable et robuste, conçu pour une utilisation intensive en studio.",
+    "prix": 1790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Flash de studio",
+      "Puissance": "1000Ws",
+      "Temps de recyclage": "Rapide",
+      "Modélisation": "Lampe halogène",
+      "Poids": "Environ 3,5 kg"
+    }
+  },
+  {
+    "nom": "NiceFoto FC-2000A",
+    "description": "Projecteur ou accessoire NiceFoto de haute capacité, conçu pour les configurations professionnelles.",
+    "prix": 2990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Équipement de studio",
+      "Capacité": "Haute",
+      "Matériau": "Métal robuste",
+      "Poids": "Environ 4 kg"
+    }
+  },
+  {
+    "nom": "NiceFoto L-Φ50CM",
+    "description": "Softbox rond de 50 cm, idéal pour un éclairage doux et directionnel sur les portraits ou les produits.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox rond",
+      "Dimensions": "50 cm de diamètre",
+      "Monture": "Universelle / NiceFoto",
+      "Poids": "Environ 600 g"
+    }
+  },
+  {
+    "nom": "NICEFOTO LED 60G",
+    "description": "Panneau LED compact de 60W, parfait pour les éclairages d'appoint et les petites configurations.",
+    "prix": 850.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Panneau LED",
+      "Puissance": "60W",
+      "Température de couleur": "Bicolore",
+      "IRC": ">95",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "NiceFoto LED 90 PRO",
+    "description": "Panneau LED professionnel de 90W, offrant une lumière douce et uniforme pour les vidéos et les photos.",
+    "prix": 1490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Panneau LED",
+      "Puissance": "90W",
+      "Température de couleur": "Bicolore",
+      "IRC": ">95",
+      "Poids": "Environ 1,5 kg"
+    }
+  },
+  {
+    "nom": "NiceFoto LR-480 ALL",
+    "description": "Anneau lumineux professionnel de 480 LED, idéal pour les portraits, la beauté et les vidéos de présentation.",
+    "prix": 990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Ring Light professionnel",
+      "Nombre de LED": "480",
+      "Température de couleur": "Bicolore",
+      "IRC": ">95",
+      "Poids": "Environ 2 kg"
+    }
+  },
+  {
+    "nom": "NiceFoto LS-230 A",
+    "description": "Support ou accessoire NiceFoto, conçu pour une utilisation fiable et stable en studio.",
+    "prix": 290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Accessoire de studio",
+      "Matériau": "Métal",
+      "Compatibilité": "Systèmes NiceFoto",
+      "Poids": "Environ 300 g"
+    }
+  },
+  {
+    "nom": "NiceFoto Mini-Φ50g",
+    "description": "Mini softbox rond de 50 cm avec grille, pour un contrôle précis de la lumière douce.",
+    "prix": 590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Mini Softbox rond",
+      "Dimensions": "50 cm de diamètre",
+      "Inclus": "Grille",
+      "Poids": "Environ 600 g"
+    }
+  },
+  {
+    "nom": "NiceFoto Mini‑Φ60g",
+    "description": "Mini softbox rond de 60 cm avec grille, offrant une surface de diffusion légèrement plus grande.",
+    "prix": 690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Mini Softbox rond",
+      "Dimensions": "60 cm de diamètre",
+      "Inclus": "Grille",
+      "Poids": "Environ 700 g"
+    }
+  },
+  {
+    "nom": "NiceFoto NP‑F570",
+    "description": "Batterie de rechange NP-F570, compatible avec de nombreux panneaux LED et accessoires de studio.",
+    "prix": 390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie",
+      "Modèle": "NP-F570",
+      "Capacité": "Haute capacité",
+      "Compatibilité": "Panneaux LED et accessoires",
+      "Poids": "Environ 200 g"
+    }
+  },
+  {
+    "nom": "NiceFoto NP‑F770",
+    "description": "Batterie de rechange NP-F770, offrant une autonomie prolongée pour les équipements de studio.",
+    "prix": 290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie",
+      "Modèle": "NP-F770",
+      "Capacité": "Très haute capacité",
+      "Compatibilité": "Panneaux LED et accessoires",
+      "Poids": "Environ 300 g"
+    }
+  },
+  {
+    "nom": "NiceFoto S-06A",
+    "description": "Support ou accessoire NiceFoto, conçu pour une utilisation fiable et stable en studio.",
+    "prix": 1190.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Accessoire de studio",
+      "Matériau": "Métal robuste",
+      "Compatibilité": "Systèmes NiceFoto",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "NiceFoto SL-600 A",
+    "description": "Projecteur LED de 600W, conçu pour les studios professionnels nécessitant une lumière continue puissante.",
+    "prix": 1590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED",
+      "Puissance": "600W",
+      "Température de couleur": "Bicolore",
+      "IRC": ">95",
+      "Poids": "Environ 5 kg"
+    }
+  },
+  {
+    "nom": "NiceFoto SL-80A",
+    "description": "Projecteur LED compact de 80W, idéal pour les petites configurations et les créateurs de contenu.",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED",
+      "Puissance": "80W",
+      "Température de couleur": "Bicolore",
+      "IRC": ">95",
+      "Poids": "Environ 1,2 kg"
+    }
+  },
+  {
+    "nom": "NiceFoto Softbox 120cm",
+    "description": "Grand softbox de 120 cm, parfait pour un éclairage doux et enveloppant sur les portraits en pied ou les groupes.",
+    "prix": 1590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox",
+      "Dimensions": "120 cm",
+      "Monture": "Bowens",
+      "Poids": "Environ 1,5 kg"
+    }
+  },
+  {
+    "nom": "NICEFOTO SoftBox 70cm",
+    "description": "Softbox de 70 cm, offrant un bon compromis entre taille et contrôle de la lumière pour les portraits.",
+    "prix": 950.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox",
+      "Dimensions": "70 cm",
+      "Monture": "Bowens",
+      "Poids": "Environ 800 g"
+    }
+  },
+  {
+    "nom": "NiceFoto Softbox 90cm",
+    "description": "Softbox de 90 cm, idéal pour un éclairage doux et directionnel sur les portraits et les produits.",
+    "prix": 1190.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox",
+      "Dimensions": "90 cm",
+      "Monture": "Bowens",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "NICEFOTO SoftBox 90cm",
+    "description": "Variante du softbox de 90 cm, offrant une qualité de construction robuste et une diffusion uniforme.",
+    "prix": 1290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox",
+      "Dimensions": "90 cm",
+      "Monture": "Bowens",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "NICEFOTO SoftBox Mini-Φ60g 60 cm",
+    "description": "Mini softbox rond de 60 cm avec grille, pour un contrôle précis de la lumière douce.",
+    "prix": 690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Mini Softbox rond",
+      "Dimensions": "60 cm de diamètre",
+      "Inclus": "Grille",
+      "Poids": "Environ 700 g"
+    }
+  },
+  {
+    "nom": "NiceFoto Stand LS-280S",
+    "description": "Pied d'éclairage robuste de 2,8 mètres, conçu pour supporter les projecteurs et les softboxes de taille moyenne.",
+    "prix": 690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Pied d'éclairage",
+      "Hauteur maximale": "2,8 mètres",
+      "Charge maximale": "7 kg",
+      "Matériau": "Acier",
+      "Poids": "Environ 1,5 kg"
+    }
+  },
+  {
+    "nom": "NiceFoto TC-210RGB.W",
+    "description": "Tube lumineux RGB de 210 cm, idéal pour les effets de lumière créatifs en vidéo et en photographie.",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Tube LED RGB",
+      "Longueur": "210 cm",
+      "Température de couleur": "RGB",
+      "Alimentation": "Secteur ou batterie",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "NiceFoto TC-298RGB.W",
+    "description": "Tube lumineux RGB de 298 cm, offrant une surface d'éclairage plus grande pour les effets de contour.",
+    "prix": 1290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Tube LED RGB",
+      "Longueur": "298 cm",
+      "Température de couleur": "RGB",
+      "Alimentation": "Secteur ou batterie",
+      "Poids": "Environ 1,5 kg"
+    }
+  },
+  {
+    "nom": "NiceFoto TC‑600RGB.W",
+    "description": "Tube lumineux RGB de 600 cm, conçu pour les grandes productions nécessitant des effets de lumière étendus.",
+    "prix": 1990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Tube LED RGB",
+      "Longueur": "600 cm",
+      "Température de couleur": "RGB",
+      "Alimentation": "Secteur",
+      "Poids": "Environ 3 kg"
+    }
+  },
+  {
+    "nom": "NiceFoto VB-1000A",
+    "description": "Projecteur ou équipement de studio NiceFoto de 1000W, offrant une puissance fiable pour les professionnels.",
+    "prix": 2890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Équipement de studio",
+      "Puissance": "1000W",
+      "Matériau": "Métal robuste",
+      "Poids": "Environ 4 kg"
+    }
+  },
+  {
+    "nom": "NiceFoto VB-2000A",
+    "description": "Projecteur ou équipement de studio NiceFoto de 2000W, conçu pour les exigences de production les plus élevées.",
+    "prix": 3490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Équipement de studio",
+      "Puissance": "2000W",
+      "Matériau": "Métal robuste",
+      "Poids": "Environ 6 kg"
+    }
+  },
+  {
+    "nom": "NiceFotoL-Φ65 CM",
+    "description": "Softbox rond de 65 cm, idéal pour un éclairage doux et directionnel sur les portraits ou les produits.",
+    "prix": 590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox rond",
+      "Dimensions": "65 cm de diamètre",
+      "Monture": "Universelle / NiceFoto",
+      "Poids": "Environ 700 g"
+    }
+  },
+  {
+    "nom": "NiceFotoL-Φ80 CM",
+    "description": "Softbox rond de 80 cm, offrant une surface de diffusion plus grande pour un éclairage encore plus doux.",
+    "prix": 690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox rond",
+      "Dimensions": "80 cm de diamètre",
+      "Monture": "Universelle / NiceFoto",
+      "Poids": "Environ 800 g"
+    }
+  },
+  {
+    "nom": "Pack de creation de contenu",
+    "description": "Kit complet pour les créateurs de contenu, incluant lumière, support et accessoires essentiels.",
+    "prix": 3490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Kit de création de contenu",
+      "Inclus": "Lumière LED, trépied, support téléphone, accessoires",
+      "Compatibilité": "Universelle",
+      "Poids": "Environ 2 kg"
+    }
+  },
+  {
+    "nom": "Panel LED Godox Litemons LP400Bi (Bi-Color)",
+    "description": "Panneau LED bicolore de 400W, offrant une puissance et une qualité de lumière exceptionnelles pour le studio.",
+    "prix": 1490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Panneau LED bicolore",
+      "Puissance": "400W",
+      "Température de couleur": "2700K-6500K",
+      "IRC/TLCI": ">96 / >97",
+      "Poids": "Environ 4 kg"
+    }
+  },
+  {
+    "nom": "Panel LED Godox Litemons LP1200BI (Bi-Color)",
+    "description": "Panneau LED bicolore de 1200W, conçu pour les grandes productions nécessitant une lumière continue très puissante.",
+    "prix": 2690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Panneau LED bicolore",
+      "Puissance": "1200W",
+      "Température de couleur": "2700K-6500K",
+      "IRC/TLCI": ">96 / >97",
+      "Poids": "Environ 10 kg"
+    }
+  },
+  {
+    "nom": "Panel LED Godox Litemons LP400R(RGB)",
+    "description": "Panneau LED RGB de 400W, offrant des possibilités créatives infinies avec des millions de couleurs.",
+    "prix": null,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Panneau LED RGB",
+      "Puissance": "400W",
+      "Température de couleur": "RGB + 2500K-9000K",
+      "IRC/TLCI": ">96 / >97",
+      "Poids": "Environ 4 kg"
+    }
+  },
+  {
+    "nom": "Panel LED Godox Litemons LP600R(RGB)",
+    "description": "Panneau LED RGB de 600W, combinant une puissance élevée avec une flexibilité de couleur totale.",
+    "prix": 1990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Panneau LED RGB",
+      "Puissance": "600W",
+      "Température de couleur": "RGB + 2500K-9000K",
+      "IRC/TLCI": ">96 / >97",
+      "Poids": "Environ 6 kg"
+    }
+  },
+  {
+    "nom": "Panneau de commande SmallRig pour certains monoblocs vidéo LED",
+    "description": "Panneau de commande dédié pour contrôler à distance les paramètres des monoblocs LED SmallRig.",
+    "prix": 990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Panneau de commande",
+      "Compatibilité": "Monoblocs LED SmallRig",
+      "Fonctionnalités": "Contrôle de l'intensité, de la température de couleur et des effets",
+      "Connexion": "Câble ou sans fil",
+      "Poids": "Environ 300 g"
+    }
+  },
+  {
+    "nom": "Panneaux LED Ambitful P35R LED Video Light",
+    "description": "Panneau LED RVB compact et polyvalent, parfait pour les vidéastes et les photographes de produit.",
+    "prix": 1590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Panneau LED RVB",
+      "Puissance": "35W",
+      "Température de couleur": "RGB + 3300K-5600K",
+      "IRC": ">95",
+      "Poids": "Environ 500 g"
+    }
+  },
+  {
+    "nom": "Pannel LED bicolore Godox Litemons LP600Bi",
+    "description": "Panneau LED bicolore de 600W, offrant une lumière douce et uniforme pour les vidéos et les photos.",
+    "prix": null,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Panneau LED bicolore",
+      "Puissance": "600W",
+      "Température de couleur": "2700K-6500K",
+      "IRC/TLCI": ">96 / >97",
+      "Poids": "Environ 6 kg"
+    }
+  },
+  {
+    "nom": "Pied d'éclairage photographique réglable Ambitful GM280R en alliage d'aluminium",
+    "description": "Pied d'éclairage robuste et léger en alliage d'aluminium, avec un système de réglage rapide.",
+    "prix": 890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Pied d'éclairage",
+      "Hauteur maximale": "2,8 mètres",
+      "Charge maximale": "7 kg",
+      "Matériau": "Alliage d'aluminium",
+      "Poids": "Environ 1,2 kg"
+    }
+  },
+  {
+    "nom": "Pixel K80 RGB Light",
+    "description": "Lampe LED RGB compacte et abordable, idéale pour les éclairages d'ambiance et les effets de contour.",
+    "prix": 1790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Lampe LED RGB",
+      "Puissance": "80W",
+      "Température de couleur": "RGB + 2500K-9000K",
+      "IRC": ">95",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "Poignée double de contrôle de mise au point SmallRig pour DJI série RS",
+    "description": "Poignée double ergonomique pour un contrôle précis de la mise au point sur les stabilisateurs DJI RS.",
+    "prix": 2490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Poignée de contrôle",
+      "Compatibilité": "DJI série RS",
+      "Fonction": "Contrôle de la mise au point",
+      "Matériau": "Alliage d'aluminium",
+      "Poids": "Environ 400 g"
+    }
+  },
+  {
+    "nom": "Projecteur Amaran 150C RGB",
+    "description": "Projecteur LED RGB de 150W d'Amaran, offrant une qualité de lumière professionnelle à un prix abordable.",
+    "prix": 4490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED RGB",
+      "Puissance": "150W",
+      "Température de couleur": "RGB + 2500K-9000K",
+      "IRC/TLCI": ">95 / >96",
+      "Poids": "Environ 3 kg"
+    }
+  },
+  {
+    "nom": "Projecteur Amaran 200xs",
+    "description": "Projecteur LED bicolore compact de 200W, parfait pour les créateurs de contenu et les petits studios.",
+    "prix": 4790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED bicolore",
+      "Puissance": "200W",
+      "Température de couleur": "2700K-6500K",
+      "IRC/TLCI": ">95 / >96",
+      "Poids": "Environ 3,5 kg"
+    }
+  },
+  {
+    "nom": "Projecteur Amaran 300C RGB",
+    "description": "Projecteur LED RGB de 300W, combinant une puissance élevée avec une flexibilité de couleur totale.",
+    "prix": 5990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED RGB",
+      "Puissance": "300W",
+      "Température de couleur": "RGB + 2500K-9000K",
+      "IRC/TLCI": ">95 / >96",
+      "Poids": "Environ 5 kg"
+    }
+  },
+  {
+    "nom": "Projecteur Godox Litemons LA200R RGB LED",
+    "description": "Projecteur LED RGB de 200W, offrant une puissance et une qualité de lumière exceptionnelles pour le studio.",
+    "prix": 3350.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED RGB",
+      "Puissance": "200W",
+      "Température de couleur": "RGB + 2500K-9000K",
+      "IRC/TLCI": ">96 / >97",
+      "Poids": "Environ 4 kg"
+    }
+  },
+  {
+    "nom": "Projecteur Godox Litemons LA300Bi LED bicolore (noir)",
+    "description": "Projecteur LED bicolore de 300W, conçu pour les studios professionnels nécessitant une lumière continue puissante.",
+    "prix": 3850.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED bicolore",
+      "Puissance": "300W",
+      "Température de couleur": "2700K-6500K",
+      "IRC/TLCI": ">96 / >97",
+      "Poids": "Environ 5 kg"
+    }
+  },
+  {
+    "nom": "Projecteur Godox Litemons LA600R RGB LED",
+    "description": "Projecteur LED RGB de 600W, la solution ultime pour les grandes productions nécessitant des effets de couleur puissants.",
+    "prix": 8690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED RGB",
+      "Puissance": "600W",
+      "Température de couleur": "RGB + 2500K-9000K",
+      "IRC/TLCI": ">96 / >97",
+      "Poids": "Environ 8 kg"
+    }
+  },
+  {
+    "nom": "Projecteur Godox Litemons LE200Bi Bi-Color LED (noir)",
+    "description": "Projecteur LED bicolore de 200W, offrant un excellent rapport qualité-prix pour les studios de taille moyenne.",
+    "prix": 2490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED bicolore",
+      "Puissance": "200W",
+      "Température de couleur": "2700K-6500K",
+      "IRC/TLCI": ">96 / >97",
+      "Poids": "Environ 4 kg"
+    }
+  },
+  {
+    "nom": "Projecteur Godox Litemons LE300Bi Bi-Color LED",
+    "description": "Projecteur LED bicolore de 300W, conçu pour les studios professionnels nécessitant une lumière continue puissante.",
+    "prix": 2850.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED bicolore",
+      "Puissance": "300W",
+      "Température de couleur": "2700K-6500K",
+      "IRC/TLCI": ">96 / >97",
+      "Poids": "Environ 5 kg"
+    }
+  },
+  {
+    "nom": "Projecteur Godox SL100D",
+    "description": "Projecteur LED daylight de 100W, compact et silencieux, idéal pour les petites configurations et les reportages.",
+    "prix": 2290.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Projecteur LED Daylight",
+      "Puissance": "100W",
+      "Température de couleur": "5600K",
+      "IRC/TLCI": ">96 / >97",
+      "Poids": "Environ 1,5 kg"
+    }
+  },
+  {
+    "nom": "Projecteur Godox SL150 III",
+    "description": "Troisième génération du projecteur LED 150W, avec des améliorations en termes de refroidissement et de contrôle.",
+    "prix": 2990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED Daylight",
+      "Puissance": "150W",
+      "Température de couleur": "5600K",
+      "IRC/TLCI": ">96 / >97",
+      "Poids": "Environ 2 kg"
+    }
+  },
+  {
+    "nom": "Projecteur Godox SL150IIIBI",
+    "description": "Version bicolore du SL150 III, offrant une flexibilité de température de couleur pour s'adapter à n'importe quel environnement.",
+    "prix": 4390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED bicolore",
+      "Puissance": "150W",
+      "Température de couleur": "2800K-6500K",
+      "IRC/TLCI": ">96 / >97",
+      "Poids": "Environ 2 kg"
+    }
+  },
+  {
+    "nom": "Projecteur Godox SL200III",
+    "description": "Projecteur LED daylight de 200W, offrant une puissance accrue pour éclairer des sujets plus grands ou des espaces plus vastes.",
+    "prix": 4390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED Daylight",
+      "Puissance": "200W",
+      "Température de couleur": "5600K",
+      "IRC/TLCI": ">96 / >97",
+      "Poids": "Environ 2,5 kg"
+    }
+  },
+  {
+    "nom": "Projecteur Godox SL200IIIBI",
+    "description": "Version bicolore du SL200 III, combinant une puissance de 200W avec une flexibilité de température de couleur.",
+    "prix": 4890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED bicolore",
+      "Puissance": "200W",
+      "Température de couleur": "2800K-6500K",
+      "IRC/TLCI": ">96 / >97",
+      "Poids": "Environ 2,5 kg"
+    }
+  },
+  {
+    "nom": "Projecteur Godox SL300IIIBI",
+    "description": "Projecteur LED bicolore de 300W, conçu pour les studios professionnels nécessitant une lumière continue puissante.",
+    "prix": 6990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED bicolore",
+      "Puissance": "300W",
+      "Température de couleur": "2800K-6500K",
+      "IRC/TLCI": ">96 / >97",
+      "Poids": "Environ 3,5 kg"
+    }
+  },
+  {
+    "nom": "Projecteur Godox SL60 II D",
+    "description": "Deuxième génération du projecteur LED daylight de 60W, compact et abordable pour les débutants.",
+    "prix": 1890.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Projecteur LED Daylight",
+      "Puissance": "60W",
+      "Température de couleur": "5600K",
+      "IRC/TLCI": ">96 / >97",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "Projecteur Godox SL60IIBI",
+    "description": "Version bicolore du SL60 II, offrant une flexibilité de température de couleur dans un format compact.",
+    "prix": 2290.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Projecteur LED bicolore",
+      "Puissance": "60W",
+      "Température de couleur": "2800K-6500K",
+      "IRC/TLCI": ">96 / >97",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "Projecteur Godox SZ150R",
+    "description": "Projecteur LED RGB de 150W avec un design compact, idéal pour les effets de lumière créatifs en studio.",
+    "prix": 6900.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED RGB",
+      "Puissance": "150W",
+      "Température de couleur": "RGB + 2500K-9000K",
+      "IRC/TLCI": ">96 / >97",
+      "Poids": "Environ 3 kg"
+    }
+  },
+  {
+    "nom": "Projecteur KF 60W Color Temperature COB Light",
+    "description": "Projecteur LED COB de 60W, offrant une lumière douce et uniforme à un prix abordable.",
+    "prix": 1490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED COB",
+      "Puissance": "60W",
+      "Température de couleur": "Bicolore",
+      "IRC": ">95",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "Projecteur LED RGB Godox Litemons LA300R",
+    "description": "Projecteur LED RGB de 300W, combinant une puissance élevée avec une flexibilité de couleur totale.",
+    "prix": 4490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED RGB",
+      "Puissance": "300W",
+      "Température de couleur": "RGB + 2500K-9000K",
+      "IRC/TLCI": ">96 / >97",
+      "Poids": "Environ 5 kg"
+    }
+  },
+  {
+    "nom": "Projecteur Minilight LED RGB SmallRig RC 60C (Édition Lite)",
+    "description": "Version allégée du projecteur RGB 60W, offrant une qualité de lumière professionnelle à un prix réduit.",
+    "prix": 2490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED RGB",
+      "Puissance": "60W",
+      "Température de couleur": "RGB + 2500K-9000K",
+      "IRC/TLCI": ">95 / >96",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "Projecteur SmallRig RC 60B COB LED (Lite Edition)",
+    "description": "Version allégée du projecteur COB bicolore 60W, parfait pour les créateurs de contenu.",
+    "prix": 1990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED COB",
+      "Puissance": "60W",
+      "Température de couleur": "2700K-6500K",
+      "IRC/TLCI": ">95 / >96",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "Projecteur SmallRig RC120D pour photographie – modèle 4039 (2700 K – 6500 K)",
+    "description": "Projecteur LED daylight de 120W, conçu spécifiquement pour la photographie avec une sortie de lumière stable.",
+    "prix": 2990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Projecteur LED Daylight",
+      "Puissance": "120W",
+      "Température de couleur": "2700K-6500K",
+      "IRC/TLCI": ">95 / >96",
+      "Poids": "Environ 2 kg"
+    }
+  },
+  {
+    "nom": "Réflecteur 100*150cm",
+    "description": "Grand réflecteur rectangulaire de 100x150 cm, idéal pour contrôler la lumière en studio ou en extérieur.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Réflecteur",
+      "Dimensions": "100 x 150 cm",
+      "Surfaces": "Or, Argent, Blanc, Noir, Translucide",
+      "Format": "Pliable avec housse de transport",
+      "Poids": "Environ 800 g"
+    }
+  },
+  {
+    "nom": "Réflecteur Ambitful 5in1",
+    "description": "Réflecteur 5-en-1 de haute qualité, offrant une polyvalence maximale pour la gestion de la lumière.",
+    "prix": 440.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Réflecteur 5-en-1",
+      "Dimensions": "100x150 cm, 150x200 cm, 80x120 cm",
+      "Surfaces": "Or, Argent, Blanc, Noir, Translucide",
+      "Format": "Pliable avec housse de transport",
+      "Poids": "Environ 800 g - 1,5 kg"
+    }
+  },
+  {
+    "nom": "Relecteur Ambitful 5in1",
+    "description": "Réflecteur 5-en-1 compact, parfait pour les photographes en déplacement.",
+    "prix": 190.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Réflecteur 5-en-1",
+      "Dimensions": "110 cm, 60 cm, 80 cm",
+      "Surfaces": "Or, Argent, Blanc, Noir, Translucide",
+      "Format": "Pliable avec housse de transport",
+      "Poids": "Environ 500 g"
+    }
+  },
+  {
+    "nom": "Ring Light LR-480AII",
+    "description": "Anneau lumineux professionnel de 480 LED, idéal pour les portraits, la beauté et les vidéos de présentation.",
+    "prix": 990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Ring Light professionnel",
+      "Nombre de LED": "480",
+      "Température de couleur": "Bicolore",
+      "IRC": ">95",
+      "Poids": "Environ 2 kg"
+    }
+  },
+  {
+    "nom": "SmallRig FP-90 parabolique pliable Softbox (35.4 x 23.6)",
+    "description": "Softbox parabolique pliable de 90 cm, facile à transporter et à installer, offrant un éclairage doux et directionnel.",
+    "prix": 1490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox parabolique pliable",
+      "Dimensions": "90 cm (35.4 x 23.6 pouces)",
+      "Monture": "Bowens",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "SmallRig Kit trépied en fibre de carbone FT-S303",
+    "description": "Trépied professionnel en fibre de carbone, combinant une légèreté exceptionnelle avec une rigidité maximale.",
+    "prix": 6890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Trépied en fibre de carbone",
+      "Hauteur maximale": "Environ 1,8 mètre",
+      "Charge maximale": "15 kg",
+      "Matériau": "Fibre de carbone",
+      "Poids": "Environ 1,5 kg"
+    }
+  },
+  {
+    "nom": "SmallRig LA-O65 Octagonal Softbox",
+    "description": "Softbox octogonal de 65 cm, parfait pour un éclairage doux et directionnel sur les portraits ou les produits.",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox octogonal",
+      "Dimensions": "65 cm",
+      "Monture": "Bowens",
+      "Poids": "Environ 700 g"
+    }
+  },
+  {
+    "nom": "SmallRig LA-O90 Octagonal Softbox (35\")",
+    "description": "Softbox octogonal de 90 cm, offrant une surface de diffusion plus grande pour un éclairage encore plus doux.",
+    "prix": 1290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox octogonal",
+      "Dimensions": "90 cm (35 pouces)",
+      "Monture": "Bowens",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "SmallRig RA-D30 Mini Parabolic Softbox",
+    "description": "Mini softbox parabolique de 30 cm, idéal pour un éclairage doux et contrôlé sur les petits sujets.",
+    "prix": 590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Mini Softbox parabolique",
+      "Dimensions": "30 cm",
+      "Monture": "Bowens",
+      "Poids": "Environ 400 g"
+    }
+  },
+  {
+    "nom": "SmallRig RA-D55 Parabolic Softbox (21.6 x 14.6\")",
+    "description": "Softbox parabolique de 55 cm, offrant un bon compromis entre taille et contrôle de la lumière pour les portraits.",
+    "prix": 990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox parabolique",
+      "Dimensions": "55 cm (21.6 x 14.6 pouces)",
+      "Monture": "Bowens",
+      "Poids": "Environ 800 g"
+    }
+  },
+  {
+    "nom": "SmallRig RA-D60 Mini Parabolic Softbox (23.6\")",
+    "description": "Mini softbox parabolique de 60 cm, pour un contrôle précis de la lumière douce.",
+    "prix": 690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Mini Softbox parabolique",
+      "Dimensions": "60 cm (23.6 pouces)",
+      "Monture": "Bowens",
+      "Poids": "Environ 600 g"
+    }
+  },
+  {
+    "nom": "SmallRig RA-D85 Parabolic Softbox",
+    "description": "Softbox parabolique de 85 cm, idéal pour un éclairage doux et enveloppant sur les portraits en buste.",
+    "prix": 1790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox parabolique",
+      "Dimensions": "85 cm",
+      "Monture": "Bowens",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "SmallRig RM 25C Mini LED Video Light",
+    "description": "Lampe LED vidéo miniature, parfaite pour les éclairages d'appoint créatifs et les petits espaces.",
+    "prix": 990.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Lampe LED miniature",
+      "Température de couleur": "Bicolore ou RGB",
+      "Alimentation": "Batterie intégrée",
+      "Poids": "Environ 100 g"
+    }
+  },
+  {
+    "nom": "Smallrig Support de Lumière en Aluminium 110\"/280cm",
+    "description": "Support d'éclairage robuste en aluminium, capable de supporter des équipements lourds jusqu'à 2,8 mètres de hauteur.",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Support d'éclairage",
+      "Hauteur maximale": "2,8 mètres (110 pouces)",
+      "Charge maximale": "7 kg",
+      "Matériau": "Alliage d'aluminium",
+      "Poids": "Environ 1,5 kg"
+    }
+  },
+  {
+    "nom": "SmallRig Vibe P108 Pro Mini LED Video Light",
+    "description": "Lampe LED vidéo professionnelle de 108 LED, offrant une lumière douce et uniforme pour les vidéos.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Lampe LED vidéo",
+      "Nombre de LED": "108",
+      "Température de couleur": "Bicolore",
+      "Alimentation": "USB-C",
+      "Poids": "Environ 150 g"
+    }
+  },
+  {
+    "nom": "SmallRig Vibe P96 Pro Mini LED Video Light",
+    "description": "Lampe LED vidéo compacte de 96 LED, idéale pour les créateurs de contenu mobiles.",
+    "prix": 390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Lampe LED vidéo",
+      "Nombre de LED": "96",
+      "Température de couleur": "Bicolore",
+      "Alimentation": "USB-C",
+      "Poids": "Environ 120 g"
+    }
+  },
+  {
+    "nom": "SmallRig Vibe P96L RGB Video Light",
+    "description": "Version RGB de la lampe Vibe P96, ajoutant des possibilités créatives avec des millions de couleurs.",
+    "prix": 590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Lampe LED vidéo RGB",
+      "Nombre de LED": "96",
+      "Température de couleur": "RGB",
+      "Alimentation": "USB-C",
+      "Poids": "Environ 120 g"
+    }
+  },
+  {
+    "nom": "Snoot Ambitful AL-18 PRO",
+    "description": "Snoot professionnel pour concentrer la lumière en un faisceau étroit, idéal pour les effets de lumière dramatiques.",
+    "prix": 1990.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Snoot",
+      "Compatibilité": "Projecteurs Ambitful",
+      "Fonction": "Concentre la lumière en un point précis",
+      "Matériau": "Métal robuste",
+      "Poids": "Environ 300 g"
+    }
+  },
+  {
+    "nom": "Softbox 60cm Sixteen Angle Bowens Mount Softbox",
+    "description": "Softbox à 16 angles de 60 cm, offrant une diffusion de lumière très douce et circulaire, avec monture Bowens.",
+    "prix": 890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox à 16 angles",
+      "Dimensions": "60 cm",
+      "Monture": "Bowens",
+      "Poids": "Environ 700 g"
+    }
+  },
+  {
+    "nom": "Softbox 120cm Sixteen Angel Bowens Mount Softbox",
+    "description": "Grand softbox à 16 angles de 120 cm, parfait pour un éclairage doux et enveloppant sur les portraits en pied.",
+    "prix": 1490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox à 16 angles",
+      "Dimensions": "120 cm",
+      "Monture": "Bowens",
+      "Poids": "Environ 1,5 kg"
+    }
+  },
+  {
+    "nom": "Softbox 65cm Lantern Bowens Mount Softbox",
+    "description": "Softbox en forme de lanterne de 65 cm, offrant un éclairage omnidirectionnel doux et enveloppant.",
+    "prix": 690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox Lanterne",
+      "Dimensions": "65 cm de diamètre",
+      "Monture": "Bowens",
+      "Éclairage": "Omnidirectionnel",
+      "Poids": "Environ 800 g"
+    }
+  },
+  {
+    "nom": "Softbox 85cm Lantern Mount Softbox",
+    "description": "Softbox en forme de lanterne de 85 cm, pour un éclairage omnidirectionnel encore plus large et doux.",
+    "prix": 890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox Lanterne",
+      "Dimensions": "85 cm de diamètre",
+      "Monture": "Bowens",
+      "Éclairage": "Omnidirectionnel",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "Softbox 90cm Octagonal Bowens Mount Softbox",
+    "description": "Softbox octogonal de 90 cm, idéal pour un éclairage doux et directionnel sur les portraits et les produits.",
+    "prix": 990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox octogonal",
+      "Dimensions": "90 cm",
+      "Monture": "Bowens",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "Softbox Ambitful 70cm avec Grid",
+    "description": "Softbox de 70 cm avec grille, offrant un contrôle précis de la lumière douce pour les portraits.",
+    "prix": 990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox avec grille",
+      "Dimensions": "70 cm",
+      "Monture": "Bowens",
+      "Inclus": "Grille nid d'abeille",
+      "Poids": "Environ 800 g"
+    }
+  },
+  {
+    "nom": "Softbox Ambitful 90cm avec Grid",
+    "description": "Softbox de 90 cm avec grille, pour un contrôle précis de la lumière douce sur des sujets plus grands.",
+    "prix": 1090.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Softbox avec grille",
+      "Dimensions": "90 cm",
+      "Monture": "Bowens",
+      "Inclus": "Grille nid d'abeille",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "Softbox Ambitful FW 60x90cm",
+    "description": "Softbox rectangulaire (Fast Fold) de 60x90 cm, facile à plier et à transporter, idéal pour les portraits.",
+    "prix": 690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox Fast Fold",
+      "Dimensions": "60 x 90 cm",
+      "Monture": "Bowens",
+      "Poids": "Environ 800 g"
+    }
+  },
+  {
+    "nom": "Softbox Ambitful QD90",
+    "description": "Softbox à montage rapide (Quick Release) de 90 cm, pour une installation et un démontage en quelques secondes.",
+    "prix": 990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox à montage rapide",
+      "Dimensions": "90 cm",
+      "Monture": "Bowens",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "Softbox Godox QR-P60T avec grid",
+    "description": "Softbox parabolique à montage rapide de 60 cm avec grille, pour un contrôle précis de la lumière.",
+    "prix": 990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox parabolique à montage rapide",
+      "Dimensions": "60 cm",
+      "Monture": "Bowens",
+      "Inclus": "Grille",
+      "Poids": "Environ 700 g"
+    }
+  },
+  {
+    "nom": "Softbox Godox CS-65D Lantern",
+    "description": "Softbox en forme de lanterne de 65 cm, offrant un éclairage omnidirectionnel doux et enveloppant.",
+    "prix": 990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox Lanterne",
+      "Dimensions": "65 cm de diamètre",
+      "Monture": "Bowens",
+      "Éclairage": "Omnidirectionnel",
+      "Poids": "Environ 800 g"
+    }
+  },
+  {
+    "nom": "Softbox Godox FL-SF60*60 avec Grid",
+    "description": "Softbox carré de 60x60 cm avec grille, idéal pour un éclairage doux et contrôlé sur les produits.",
+    "prix": 4890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox carré",
+      "Dimensions": "60 x 60 cm",
+      "Monture": "Bowens",
+      "Inclus": "Grille",
+      "Poids": "Environ 700 g"
+    }
+  },
+  {
+    "nom": "Softbox Godox QR-P90T Avec Grid",
+    "description": "Softbox parabolique à montage rapide de 90 cm avec grille, pour un contrôle précis de la lumière douce.",
+    "prix": 1590.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Softbox parabolique à montage rapide",
+      "Dimensions": "90 cm",
+      "Monture": "Bowens",
+      "Inclus": "Grille",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "Softbox Godox QR70",
+    "description": "Softbox à montage rapide de 70 cm, pour une installation et un démontage en quelques secondes.",
+    "prix": 1090.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Softbox à montage rapide",
+      "Dimensions": "70 cm",
+      "Monture": "Bowens",
+      "Poids": "Environ 800 g"
+    }
+  },
+  {
+    "nom": "Softbox KF 55cm Octagonal Bowon Mount",
+    "description": "Softbox octogonal de 55 cm, parfait pour un éclairage doux et directionnel sur les portraits ou les produits.",
+    "prix": 690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox octogonal",
+      "Dimensions": "55 cm",
+      "Monture": "Bowens",
+      "Poids": "Environ 600 g"
+    }
+  },
+  {
+    "nom": "Softbox KF 65cm Octagonal Bowon Mount",
+    "description": "Softbox octogonal de 65 cm, offrant une surface de diffusion plus grande pour un éclairage encore plus doux.",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox octogonal",
+      "Dimensions": "65 cm",
+      "Monture": "Bowens",
+      "Poids": "Environ 700 g"
+    }
+  },
+  {
+    "nom": "Softbox ML-SF50 For ML100Bi",
+    "description": "Softbox dédié de 50 cm, conçu spécifiquement pour le projecteur Godox ML100Bi.",
+    "prix": 690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox dédié",
+      "Dimensions": "50 cm",
+      "Compatibilité": "Godox ML100Bi",
+      "Poids": "Environ 500 g"
+    }
+  },
+  {
+    "nom": "Softbox Parabolique Ambitful QD 120cm",
+    "description": "Grand softbox parabolique à montage rapide de 120 cm, pour un éclairage doux et enveloppant sur les portraits en pied.",
+    "prix": 1390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Softbox parabolique à montage rapide",
+      "Dimensions": "120 cm",
+      "Monture": "Bowens",
+      "Poids": "Environ 1,5 kg"
+    }
+  },
+  {
+    "nom": "Stand 2.7m Stainless steel",
+    "description": "Pied d'éclairage robuste en acier inoxydable de 2,7 mètres, offrant une stabilité supérieure pour les équipements lourds.",
+    "prix": 590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Pied d'éclairage",
+      "Hauteur maximale": "2,7 mètres",
+      "Charge maximale": "7 kg",
+      "Matériau": "Acier inoxydable",
+      "Poids": "Environ 1,5 kg"
+    }
+  },
+  {
+    "nom": "Stand Ambitful AL-280",
+    "description": "Pied d'éclairage robuste et léger en alliage d'aluminium, avec un système de réglage rapide.",
+    "prix": 690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Pied d'éclairage",
+      "Hauteur maximale": "2,8 mètres",
+      "Charge maximale": "7 kg",
+      "Matériau": "Alliage d'aluminium",
+      "Poids": "Environ 1,2 kg"
+    }
+  },
+  {
+    "nom": "Stand d'éclairage SmallRig à coussin d'air",
+    "description": "Pied d'éclairage professionnel avec système de coussin d'air (air-cushioned) pour un descente douce et sécurisée de l'équipement.",
+    "prix": 590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Pied d'éclairage à coussin d'air",
+      "Hauteur maximale": "Environ 2,5 mètres",
+      "Charge maximale": "7 kg",
+      "Matériau": "Alliage d'aluminium",
+      "Poids": "Environ 1,5 kg"
+    }
+  },
+  {
+    "nom": "Stand d'éclairage SmallRig RA-S200",
+    "description": "Pied d'éclairage robuste et fiable, conçu pour supporter les projecteurs et les softboxes de taille moyenne.",
+    "prix": 390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Pied d'éclairage",
+      "Hauteur maximale": "Environ 2 mètres",
+      "Charge maximale": "5 kg",
+      "Matériau": "Acier",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "Strip Softbox GODOX FL-SF30120 avec GRID",
+    "description": "Softbox en bande (strip) de 30x120 cm avec grille, idéal pour créer des lumières de contour ou des effets de bordure.",
+    "prix": 4390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Strip Softbox",
+      "Dimensions": "30 x 120 cm",
+      "Monture": "Bowens",
+      "Inclus": "Grille",
+      "Poids": "Environ 1,5 kg"
+    }
+  },
+  {
+    "nom": "Support C-Stand",
+    "description": "Support C-Stand (Century Stand) professionnel, offrant une stabilité et une polyvalence maximales pour les équipements lourds.",
+    "prix": 1190.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "C-Stand",
+      "Hauteur maximale": "Environ 2,5 mètres",
+      "Charge maximale": "15 kg",
+      "Matériau": "Acier robuste",
+      "Poids": "Environ 4 kg"
+    }
+  },
+  {
+    "nom": "Système de transmission vidéo Hollyland Mars 4K",
+    "description": "Système de transmission vidéo sans fil 4K, offrant une faible latence et une portée étendue pour les productions vidéo.",
+    "prix": 4990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Transmission vidéo sans fil",
+      "Résolution": "4K",
+      "Latence": "Faible latence",
+      "Portée": "Jusqu'à 150 mètres",
+      "Poids": "Environ 300 g (ensemble)"
+    }
+  },
+  {
+    "nom": "Table complète de prise de vue transportable GODOX FPT-100",
+    "description": "Table de prise de vue pliable et transportable, idéale pour la photographie de produit en studio ou en extérieur.",
+    "prix": 1990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Table de prise de vue",
+      "Dimensions": "100 cm (selon modèle)",
+      "Matériau": "Structure en aluminium, plateau en tissu ou plastique",
+      "Fonctionnalité": "Pliable et transportable",
+      "Poids": "Environ 3 kg"
+    }
+  },
+  {
+    "nom": "Téléprompteur multifonctionnel SmallRig pour tablettes et les caméras",
+    "description": "Téléprompteur professionnel compatible avec les tablettes et les caméras, facilitant la lecture de scripts lors des enregistrements.",
+    "prix": 1890.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Téléprompteur",
+      "Compatibilité": "Tablettes et caméras",
+      "Matériau": "Verre optique et métal",
+      "Fonctionnalité": "Multifonctionnel, facile à assembler",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "Torche Dual Trempertature LED Video Light (White)",
+    "description": "Torche LED bicolore compacte, idéale pour l'éclairage d'appoint en vidéo et en photographie.",
+    "prix": 390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Torche LED",
+      "Température de couleur": "Bicolore (3000K-6500K)",
+      "IRC": ">95",
+      "Alimentation": "Batterie rechargeable ou USB",
+      "Poids": "Environ 200 g"
+    }
+  },
+  {
+    "nom": "Torche Led RGB Godox MA5R 360 Couleurs",
+    "description": "Torche LED RGB compacte offrant 360 degrés de lumière colorée, parfaite pour les effets créatifs.",
+    "prix": 890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Torche LED RGB",
+      "Température de couleur": "RGB",
+      "Alimentation": "Batterie intégrée",
+      "Contrôle": "Application mobile et boutons physiques",
+      "Poids": "Environ 150 g"
+    }
+  },
+  {
+    "nom": "Torche RGB LED Video Light (Black)",
+    "description": "Torche LED RGB compacte, idéale pour les éclairages d'ambiance et les effets de contour.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Torche LED RGB",
+      "Température de couleur": "RGB",
+      "Alimentation": "USB",
+      "Poids": "Environ 150 g"
+    }
+  },
+  {
+    "nom": "Torche RGB LED Video light (Blue)",
+    "description": "Version bleue de la torche LED RGB, s'intégrant discrètement à la configuration vidéo.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Torche LED RGB",
+      "Température de couleur": "RGB",
+      "Alimentation": "USB",
+      "Poids": "Environ 150 g"
+    }
+  },
+  {
+    "nom": "Torche RGB LED Video Light (White)",
+    "description": "Version blanche de la torche LED RGB, offrant une finition propre et professionnelle.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Torche LED RGB",
+      "Température de couleur": "RGB",
+      "Alimentation": "USB",
+      "Poids": "Environ 150 g"
+    }
+  },
+  {
+    "nom": "Trépied professionnel SmallRig CT25 en alliage d'aluminium",
+    "description": "Trépied professionnel robuste en alliage d'aluminium, conçu pour supporter les équipements de studio lourds.",
+    "prix": 1290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Trépied professionnel",
+      "Hauteur maximale": "Environ 2,5 mètres",
+      "Charge maximale": "10 kg",
+      "Matériau": "Alliage d'aluminium",
+      "Poids": "Environ 2 kg"
+    }
+  },
+  {
+    "nom": "Trépied SmallRig x Potato Jet TRIBEX Carbon II avec rotule fluide",
+    "description": "Trépied en fibre de carbone haut de gamme avec rotule fluide, offrant une stabilité et une douceur de mouvement exceptionnelles.",
+    "prix": 9890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Trépied en fibre de carbone avec rotule fluide",
+      "Hauteur maximale": "Environ 1,8 mètre",
+      "Charge maximale": "15 kg",
+      "Matériau": "Fibre de carbone",
+      "Poids": "Environ 2,5 kg"
+    }
+  },
+  {
+    "nom": "Trépied vidéo SmallRig CT210 avec tête fluide et colonne centrale réversible",
+    "description": "Trépied vidéo polyvalent avec tête fluide et colonne centrale réversible, idéal pour les prises de vue en contre-plongée.",
+    "prix": 1790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Trépied vidéo",
+      "Hauteur maximale": "Environ 1,8 mètre",
+      "Charge maximale": "8 kg",
+      "Matériau": "Alliage d'aluminium",
+      "Poids": "Environ 2 kg"
+    }
+  },
+  {
+    "nom": "Tube LED Ambitful A2 PRO",
+    "description": "Tube LED professionnel, offrant une lumière douce et uniforme pour les vidéos et les photos.",
+    "prix": 1490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Tube LED",
+      "Température de couleur": "Bicolore ou RGB",
+      "IRC": ">95",
+      "Alimentation": "Batterie rechargeable",
+      "Poids": "Environ 500 g"
+    }
+  },
+  {
+    "nom": "Tube LED Ambitful A2Pro 2-Light Kit",
+    "description": "Kit de deux tubes LED A2 Pro, pour des configurations d'éclairage stéréo ou complexes.",
+    "prix": 2990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Kit de 2 Tubes LED",
+      "Température de couleur": "Bicolore ou RGB",
+      "IRC": ">95",
+      "Alimentation": "Batterie rechargeable",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "Tube LED Godox TL120 K4 KIT(RGB)",
+    "description": "Kit de tube LED RGB de 120 cm, incluant des accessoires pour une utilisation immédiate en studio.",
+    "prix": null,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Kit Tube LED RGB",
+      "Longueur": "120 cm",
+      "Température de couleur": "RGB",
+      "Inclus": "Tube, support, accessoires",
+      "Poids": "Environ 1,5 kg"
+    }
+  },
+  {
+    "nom": "Tube LED Godox TL180",
+    "description": "Tube LED de 180 cm, offrant une surface d'éclairage étendue pour les effets de contour ou les éclairages d'ambiance.",
+    "prix": 4390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Tube LED",
+      "Longueur": "180 cm",
+      "Température de couleur": "Bicolore ou RGB",
+      "IRC": ">95",
+      "Poids": "Environ 1 kg"
+    }
+  },
+  {
+    "nom": "Tube LED Manbily Light LS-650 RGB",
+    "description": "Tube LED RGB de 650 mm, idéal pour les effets de lumière créatifs en vidéo et en photographie.",
+    "prix": 1690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Tube LED RGB",
+      "Longueur": "650 mm",
+      "Température de couleur": "RGB",
+      "Alimentation": "Batterie rechargeable",
+      "Poids": "Environ 600 g"
+    }
+  },
+  {
+    "nom": "Tube LED Manbily LS-650 BI COLOR",
+    "description": "Tube LED bicolore de 650 mm, offrant une lumière douce et uniforme pour les vidéos et les photos.",
+    "prix": 1190.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Tube LED bicolore",
+      "Longueur": "650 mm",
+      "Température de couleur": "3000K-6500K",
+      "IRC": ">95",
+      "Poids": "Environ 600 g"
+    }
+  },
+  {
+    "nom": "Tube LED RGB Godox TL30",
+    "description": "Tube LED RGB compact de 30 cm, parfait pour les éclairages d'appoint créatifs et les petits espaces.",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Tube LED RGB",
+      "Longueur": "30 cm",
+      "Température de couleur": "RGB",
+      "Alimentation": "Batterie intégrée",
+      "Poids": "Environ 200 g"
+    }
+  },
+  {
+    "nom": "Tube LED RGB Godox TL60",
+    "description": "Tube LED RGB de 60 cm, offrant un bon compromis entre taille et puissance pour les effets de lumière.",
+    "prix": 1690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Tube LED RGB",
+      "Longueur": "60 cm",
+      "Température de couleur": "RGB",
+      "Alimentation": "Batterie rechargeable",
+      "Poids": "Environ 400 g"
+    }
+  },
+  {
+    "nom": "Tube lumineux LED Godox TL120",
+    "description": "Tube lumineux LED de 120 cm, idéal pour les effets de lumière créatifs en vidéo et en photographie.",
+    "prix": 3390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Tube LED",
+      "Longueur": "120 cm",
+      "Température de couleur": "Bicolore ou RGB",
+      "IRC": ">95",
+      "Poids": "Environ 800 g"
+    }
+  }
+]

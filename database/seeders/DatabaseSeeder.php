@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             StoreCategoriesSeeder::class,
             CameraProductsSeeder::class,
             LensProductsSeeder::class,
+            LightingStudioProductsSeeder::class,
         ]);
     }
 }
