@@ -1,0 +1,875 @@
+[
+  {
+    "nom": "Batterie Canon DR - LPE17M - AEU",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: Environ 1040 mAh. Compatibilité: Canon EOS R50, R10, R8, 200D, 250D, 750D, 760D, 800D, 850D.",
+    "prix": 590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "Environ 1040 mAh",
+      "Tension": "7.2V",
+      "Compatibilité": "Canon EOS R50, R10, R8, 200D, 250D, 750D, 760D, 800D, 850D",
+      "Fonctionnalités": "Puce de décodage, protection contre la surcharge",
+      "Usage": "Alimentation pour hybrides et reflex Canon d'entrée/milieu de gamme"
+    }
+  },
+  {
+    "nom": "Batterie Canon DR - LPE6 - AEU",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: Environ 1865 mAh. Compatibilité: Canon EOS 5D Mark II/III/IV, 6D, 60D, 70D, 80D, 90D.",
+    "prix": 590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "Environ 1865 mAh",
+      "Tension": "7.2V",
+      "Compatibilité": "Canon EOS 5D Mark II/III/IV, 6D, 60D, 70D, 80D, 90D",
+      "Fonctionnalités": "Puce d'information batterie, protection thermique",
+      "Usage": "Alimentation pour reflex et hybrides plein format Canon"
+    }
+  },
+  {
+    "nom": "Batterie Canon LP-E17",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: Environ 1040 mAh. Compatibilité: Canon EOS R50, R10, R8, 200D, 250D, 750D, 760D, 800D, 850D.",
+    "prix": 390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "Environ 1040 mAh",
+      "Tension": "7.2V",
+      "Compatibilité": "Canon EOS R50, R10, R8, 200D, 250D, 750D, 760D, 800D, 850D",
+      "Fonctionnalités": "Puce de décodage, protection contre la surcharge",
+      "Usage": "Alimentation pour hybrides et reflex Canon d'entrée/milieu de gamme"
+    }
+  },
+  {
+    "nom": "Batterie de vol intelligente DJI Air 3",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie de vol intelligente LiPo. Capacité: 4241 mAh. Compatibilité: DJI Air 3.",
+    "prix": 1990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie de vol intelligente LiPo",
+      "Capacité": "4241 mAh",
+      "Tension": "15.4V",
+      "Compatibilité": "DJI Air 3",
+      "Fonctionnalités": "Gestion intelligente de l'alimentation, protection contre la décharge profonde",
+      "Usage": "Alimentation pour drone DJI Air 3"
+    }
+  },
+  {
+    "nom": "Batterie NP-750",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: 4400 mAh. Compatibilité: Caméras vidéo, lumières LED compatibles NP-F.",
+    "prix": 290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "4400 mAh",
+      "Tension": "7.4V",
+      "Compatibilité": "Caméras vidéo, lumières LED compatibles NP-F",
+      "Fonctionnalités": "Charge via USB-C, haute capacité",
+      "Usage": "Alimentation longue durée pour équipements vidéo"
+    }
+  },
+  {
+    "nom": "Batterie NP-FZ100 2600mAh, Type C pour SONY",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: 2280 mAh (Original) / 2600 mAh (Tierce). Compatibilité: Sony A7 III, A7R III/IV/V, A7S III, A9, A1, A6700.",
+    "prix": 590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "2280 mAh (Original) / 2600 mAh (Tierce)",
+      "Tension": "7.2V",
+      "Compatibilité": "Sony A7 III, A7R III/IV/V, A7S III, A9, A1, A6700",
+      "Fonctionnalités": "Puce d'information, charge USB-C (selon modèle), haute densité énergétique",
+      "Usage": "Alimentation pour hybrides plein format et APS-C haut de gamme Sony"
+    }
+  },
+  {
+    "nom": "Batterie NP-FZ100 pour Camera Sony (Copie)",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: 2280 mAh (Original) / 2600 mAh (Tierce). Compatibilité: Sony A7 III, A7R III/IV/V, A7S III, A9, A1, A6700.",
+    "prix": 390.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "2280 mAh (Original) / 2600 mAh (Tierce)",
+      "Tension": "7.2V",
+      "Compatibilité": "Sony A7 III, A7R III/IV/V, A7S III, A9, A1, A6700",
+      "Fonctionnalités": "Puce d'information, charge USB-C (selon modèle), haute densité énergétique",
+      "Usage": "Alimentation pour hybrides plein format et APS-C haut de gamme Sony"
+    }
+  },
+  {
+    "nom": "Batterie NP-FZ100 pour Camera Sony (Original)",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: 2280 mAh (Original) / 2600 mAh (Tierce). Compatibilité: Sony A7 III, A7R III/IV/V, A7S III, A9, A1, A6700.",
+    "prix": 1390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "2280 mAh (Original) / 2600 mAh (Tierce)",
+      "Tension": "7.2V",
+      "Compatibilité": "Sony A7 III, A7R III/IV/V, A7S III, A9, A1, A6700",
+      "Fonctionnalités": "Puce d'information, charge USB-C (selon modèle), haute densité énergétique",
+      "Usage": "Alimentation pour hybrides plein format et APS-C haut de gamme Sony"
+    }
+  },
+  {
+    "nom": "Batterie pour GoPro HERO 5/6/7/8",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: Environ 1220 mAh. Compatibilité: GoPro HERO 5, 6, 7, 8 Black.",
+    "prix": 290.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "Environ 1220 mAh",
+      "Tension": "3.85V",
+      "Compatibilité": "GoPro HERO 5, 6, 7, 8 Black",
+      "Fonctionnalités": "Compacte, légère, décharge rapide pour vidéo 4K",
+      "Usage": "Alimentation pour caméras d'action GoPro"
+    }
+  },
+  {
+    "nom": "Batterie rechargeable pour appareil photo SmallRig série L/NP-F970 USB-C",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion série L. Capacité: Environ 6600 mAh / 47.5 Wh. Compatibilité: Moniteurs, lumières LED, enregistreurs avec monture NP-F.",
+    "prix": 890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion série L",
+      "Capacité": "Environ 6600 mAh / 47.5 Wh",
+      "Tension": "7.4V",
+      "Compatibilité": "Moniteurs, lumières LED, enregistreurs avec monture NP-F",
+      "Fonctionnalités": "Indicateur LED de niveau de charge, port USB-C pour charge ou sortie",
+      "Usage": "Alimentation pour matériel de studio et de terrain"
+    }
+  },
+  {
+    "nom": "Batterie SmallRig VB99 Lite mini V-Mount 5245",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie V-Mount (V-Lock). Capacité: Variable (ex: 6700mAh / 99Wh pour avion). Compatibilité: Caméras cinéma, lumières LED, moniteurs avec plaque V-Mount.",
+    "prix": 1490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie V-Mount (V-Lock)",
+      "Capacité": "Variable (ex: 6700mAh / 99Wh pour avion)",
+      "Tension": "14.4V / 14.8V",
+      "Compatibilité": "Caméras cinéma, lumières LED, moniteurs avec plaque V-Mount",
+      "Fonctionnalités": "Sorties D-Tap, USB-C PD, écran LCD d'information, montage sur trépied",
+      "Usage": "Alimentation professionnelle pour production vidéo et cinéma"
+    }
+  },
+  {
+    "nom": "Batterie SmallRig X-Touch Smart Triple-Proof à monture V X221",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Accessoire d'alimentation.",
+    "prix": 2990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Accessoire d'alimentation",
+      "Fonctionnalités": "Adaptation, charge ou extension d'autonomie",
+      "Usage": "Complément pour kit photo/vidéo"
+    }
+  },
+  {
+    "nom": "Battery Ace pro Et Ace",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion propriétaire. Capacité: Variable selon le modèle (ex: 1800 mAh pour X3). Compatibilité: Insta360 X3, X4, X5, Ace Pro.",
+    "prix": 690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion propriétaire",
+      "Capacité": "Variable selon le modèle (ex: 1800 mAh pour X3)",
+      "Tension": "3.85V",
+      "Compatibilité": "Insta360 X3, X4, X5, Ace Pro",
+      "Fonctionnalités": "Décharge à haut débit pour l'enregistrement 8K/5.7K",
+      "Usage": "Alimentation pour caméras 360° et d'action Insta360"
+    }
+  },
+  {
+    "nom": "Battery V-Mount SmallRig 4431B VB212",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie V-Mount (V-Lock). Capacité: Variable (ex: 6700mAh / 99Wh pour avion). Compatibilité: Caméras cinéma, lumières LED, moniteurs avec plaque V-Mount.",
+    "prix": 3490.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Batterie V-Mount (V-Lock)",
+      "Capacité": "Variable (ex: 6700mAh / 99Wh pour avion)",
+      "Tension": "14.4V / 14.8V",
+      "Compatibilité": "Caméras cinéma, lumières LED, moniteurs avec plaque V-Mount",
+      "Fonctionnalités": "Sorties D-Tap, USB-C PD, écran LCD d'information, montage sur trépied",
+      "Usage": "Alimentation professionnelle pour production vidéo et cinéma"
+    }
+  },
+  {
+    "nom": "CANON Type C- LPE6",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: Environ 1865 mAh. Compatibilité: Canon EOS 5D Mark II/III/IV, 6D, 60D, 70D, 80D, 90D.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "Environ 1865 mAh",
+      "Tension": "7.2V",
+      "Compatibilité": "Canon EOS 5D Mark II/III/IV, 6D, 60D, 70D, 80D, 90D",
+      "Fonctionnalités": "Puce d'information batterie, protection thermique",
+      "Usage": "Alimentation pour reflex et hybrides plein format Canon"
+    }
+  },
+  {
+    "nom": "Centre de charge des batteries DJI Air 3",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Station de charge / Hub. Compatibilité: Drones DJI (Mavic, Mini, Air, FPV).",
+    "prix": 990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Station de charge / Hub",
+      "Compatibilité": "Drones DJI (Mavic, Mini, Air, FPV)",
+      "Fonctionnalités": "Charge séquentielle ou simultanée, gestion intelligente de la batterie",
+      "Usage": "Recharge rapide et sécurisée des batteries de vol"
+    }
+  },
+  {
+    "nom": "Chargeur SmallRig à 4 canaux + kit de 4 batteries série L/NP-F970",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Chargeur de batterie (Hub ou Simple). Compatibilité: Spécifique au modèle de batterie (NP-FZ100, LP-E6NH, FW-50, etc.).",
+    "prix": 1990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Chargeur de batterie (Hub ou Simple)",
+      "Compatibilité": "Spécifique au modèle de batterie (NP-FZ100, LP-E6NH, FW-50, etc.)",
+      "Fonctionnalités": "Charge USB-C, indicateur LED, protection contre la surcharge, charge double/triple",
+      "Usage": "Recharge pratique des batteries d'appareils photo"
+    }
+  },
+  {
+    "nom": "DJI 65W Portable USB-C TYPE C Charger Adapter",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Accessoire d'alimentation.",
+    "prix": 1400.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Accessoire d'alimentation",
+      "Fonctionnalités": "Adaptation, charge ou extension d'autonomie",
+      "Usage": "Complément pour kit photo/vidéo"
+    }
+  },
+  {
+    "nom": "DJI Batterie de vol intelligente pour Mavic Mini",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Accessoire d'alimentation.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Accessoire d'alimentation",
+      "Fonctionnalités": "Adaptation, charge ou extension d'autonomie",
+      "Usage": "Complément pour kit photo/vidéo"
+    }
+  },
+  {
+    "nom": "DJI Batterie Hub de charge bidirectionnel pour Mini 2",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Station de charge / Hub. Compatibilité: Drones DJI (Mavic, Mini, Air, FPV).",
+    "prix": 600.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Station de charge / Hub",
+      "Compatibilité": "Drones DJI (Mavic, Mini, Air, FPV)",
+      "Fonctionnalités": "Charge séquentielle ou simultanée, gestion intelligente de la batterie",
+      "Usage": "Recharge rapide et sécurisée des batteries de vol"
+    }
+  },
+  {
+    "nom": "DJI Batterie intelligente FPV pour vol longue durée",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Accessoire d'alimentation.",
+    "prix": 1400.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Accessoire d'alimentation",
+      "Fonctionnalités": "Adaptation, charge ou extension d'autonomie",
+      "Usage": "Complément pour kit photo/vidéo"
+    }
+  },
+  {
+    "nom": "Godox Batterie VB26 Pour Flash Godox V1",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: Environ 2600 mAh. Compatibilité: Flash Godox V1, V860III.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "Environ 2600 mAh",
+      "Tension": "7.2V",
+      "Compatibilité": "Flash Godox V1, V860III",
+      "Fonctionnalités": "Recharge rapide, indicateur LED, environ 480 éclairs à pleine puissance",
+      "Usage": "Alimentation pour flashs cobra Godox"
+    }
+  },
+  {
+    "nom": "Godox VB26B Battery for V1",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: Environ 2600 mAh. Compatibilité: Flash Godox V1, V860III.",
+    "prix": 590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "Environ 2600 mAh",
+      "Tension": "7.2V",
+      "Compatibilité": "Flash Godox V1, V860III",
+      "Fonctionnalités": "Recharge rapide, indicateur LED, environ 480 éclairs à pleine puissance",
+      "Usage": "Alimentation pour flashs cobra Godox"
+    }
+  },
+  {
+    "nom": "Insta360 Ace Pro & Ace Power Accessoires",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion propriétaire. Capacité: Variable selon le modèle (ex: 1800 mAh pour X3). Compatibilité: Insta360 X3, X4, X5, Ace Pro.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion propriétaire",
+      "Capacité": "Variable selon le modèle (ex: 1800 mAh pour X3)",
+      "Tension": "3.85V",
+      "Compatibilité": "Insta360 X3, X4, X5, Ace Pro",
+      "Fonctionnalités": "Décharge à haut débit pour l'enregistrement 8K/5.7K",
+      "Usage": "Alimentation pour caméras 360° et d'action Insta360"
+    }
+  },
+  {
+    "nom": "Insta360 X3 Battery",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion propriétaire. Capacité: Variable selon le modèle (ex: 1800 mAh pour X3). Compatibilité: Insta360 X3, X4, X5, Ace Pro.",
+    "prix": 690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion propriétaire",
+      "Capacité": "Variable selon le modèle (ex: 1800 mAh pour X3)",
+      "Tension": "3.85V",
+      "Compatibilité": "Insta360 X3, X4, X5, Ace Pro",
+      "Fonctionnalités": "Décharge à haut débit pour l'enregistrement 8K/5.7K",
+      "Usage": "Alimentation pour caméras 360° et d'action Insta360"
+    }
+  },
+  {
+    "nom": "Insta360 X3 Chargeur",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion propriétaire. Capacité: Variable selon le modèle (ex: 1800 mAh pour X3). Compatibilité: Insta360 X3, X4, X5, Ace Pro.",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion propriétaire",
+      "Capacité": "Variable selon le modèle (ex: 1800 mAh pour X3)",
+      "Tension": "3.85V",
+      "Compatibilité": "Insta360 X3, X4, X5, Ace Pro",
+      "Fonctionnalités": "Décharge à haut débit pour l'enregistrement 8K/5.7K",
+      "Usage": "Alimentation pour caméras 360° et d'action Insta360"
+    }
+  },
+  {
+    "nom": "Insta360 X5 Batterie Rechargeable",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion propriétaire. Capacité: Variable selon le modèle (ex: 1800 mAh pour X3). Compatibilité: Insta360 X3, X4, X5, Ace Pro.",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion propriétaire",
+      "Capacité": "Variable selon le modèle (ex: 1800 mAh pour X3)",
+      "Tension": "3.85V",
+      "Compatibilité": "Insta360 X3, X4, X5, Ace Pro",
+      "Fonctionnalités": "Décharge à haut débit pour l'enregistrement 8K/5.7K",
+      "Usage": "Alimentation pour caméras 360° et d'action Insta360"
+    }
+  },
+  {
+    "nom": "K&F Concept FW-50 Chargeur et 2 Batteries Kit pour Sony",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Chargeur de batterie (Hub ou Simple). Compatibilité: Spécifique au modèle de batterie (NP-FZ100, LP-E6NH, FW-50, etc.).",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Chargeur de batterie (Hub ou Simple)",
+      "Compatibilité": "Spécifique au modèle de batterie (NP-FZ100, LP-E6NH, FW-50, etc.)",
+      "Fonctionnalités": "Charge USB-C, indicateur LED, protection contre la surcharge, charge double/triple",
+      "Usage": "Recharge pratique des batteries d'appareils photo"
+    }
+  },
+  {
+    "nom": "K&F Concept NP-FZ100 (2 Batteries) pour Sony",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: 2280 mAh (Original) / 2600 mAh (Tierce). Compatibilité: Sony A7 III, A7R III/IV/V, A7S III, A9, A1, A6700.",
+    "prix": 890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "2280 mAh (Original) / 2600 mAh (Tierce)",
+      "Tension": "7.2V",
+      "Compatibilité": "Sony A7 III, A7R III/IV/V, A7S III, A9, A1, A6700",
+      "Fonctionnalités": "Puce d'information, charge USB-C (selon modèle), haute densité énergétique",
+      "Usage": "Alimentation pour hybrides plein format et APS-C haut de gamme Sony"
+    }
+  },
+  {
+    "nom": "K&F Concept Batterie LP-E17 pour Canon",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: Environ 1040 mAh. Compatibilité: Canon EOS R50, R10, R8, 200D, 250D, 750D, 760D, 800D, 850D.",
+    "prix": 290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "Environ 1040 mAh",
+      "Tension": "7.2V",
+      "Compatibilité": "Canon EOS R50, R10, R8, 200D, 250D, 750D, 760D, 800D, 850D",
+      "Fonctionnalités": "Puce de décodage, protection contre la surcharge",
+      "Usage": "Alimentation pour hybrides et reflex Canon d'entrée/milieu de gamme"
+    }
+  },
+  {
+    "nom": "K&F Concept Batterie LP-E6NH",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: Environ 1865 mAh. Compatibilité: Canon EOS 5D Mark II/III/IV, 6D, 60D, 70D, 80D, 90D.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "Environ 1865 mAh",
+      "Tension": "7.2V",
+      "Compatibilité": "Canon EOS 5D Mark II/III/IV, 6D, 60D, 70D, 80D, 90D",
+      "Fonctionnalités": "Puce d'information batterie, protection thermique",
+      "Usage": "Alimentation pour reflex et hybrides plein format Canon"
+    }
+  },
+  {
+    "nom": "K&F Concept Batterie Mini V-Lock (Standard)",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie V-Mount (V-Lock). Capacité: Variable (ex: 6700mAh / 99Wh pour avion). Compatibilité: Caméras cinéma, lumières LED, moniteurs avec plaque V-Mount.",
+    "prix": 1990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie V-Mount (V-Lock)",
+      "Capacité": "Variable (ex: 6700mAh / 99Wh pour avion)",
+      "Tension": "14.4V / 14.8V",
+      "Compatibilité": "Caméras cinéma, lumières LED, moniteurs avec plaque V-Mount",
+      "Fonctionnalités": "Sorties D-Tap, USB-C PD, écran LCD d'information, montage sur trépied",
+      "Usage": "Alimentation professionnelle pour production vidéo et cinéma"
+    }
+  },
+  {
+    "nom": "K&F Concept Batterie Mini V-Lock (Pro)",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie V-Mount (V-Lock). Capacité: Variable (ex: 6700mAh / 99Wh pour avion). Compatibilité: Caméras cinéma, lumières LED, moniteurs avec plaque V-Mount.",
+    "prix": 2490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie V-Mount (V-Lock)",
+      "Capacité": "Variable (ex: 6700mAh / 99Wh pour avion)",
+      "Tension": "14.4V / 14.8V",
+      "Compatibilité": "Caméras cinéma, lumières LED, moniteurs avec plaque V-Mount",
+      "Fonctionnalités": "Sorties D-Tap, USB-C PD, écran LCD d'information, montage sur trépied",
+      "Usage": "Alimentation professionnelle pour production vidéo et cinéma"
+    }
+  },
+  {
+    "nom": "K&F Concept Chargeur hub NP-FZ100 pour Sony (Double)",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Chargeur de batterie (Hub ou Simple). Compatibilité: Spécifique au modèle de batterie (NP-FZ100, LP-E6NH, FW-50, etc.).",
+    "prix": 590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Chargeur de batterie (Hub ou Simple)",
+      "Compatibilité": "Spécifique au modèle de batterie (NP-FZ100, LP-E6NH, FW-50, etc.)",
+      "Fonctionnalités": "Charge USB-C, indicateur LED, protection contre la surcharge, charge double/triple",
+      "Usage": "Recharge pratique des batteries d'appareils photo"
+    }
+  },
+  {
+    "nom": "K&F Concept Chargeur hub et 2 batteries KIT pour GoPro",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: Environ 1220 mAh. Compatibilité: GoPro HERO 5, 6, 7, 8 Black.",
+    "prix": 590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "Environ 1220 mAh",
+      "Tension": "3.85V",
+      "Compatibilité": "GoPro HERO 5, 6, 7, 8 Black",
+      "Fonctionnalités": "Compacte, légère, décharge rapide pour vidéo 4K",
+      "Usage": "Alimentation pour caméras d'action GoPro"
+    }
+  },
+  {
+    "nom": "K&F Concept Chargeur hub et 2 batteries KIT pour Insta360 X4",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion propriétaire. Capacité: Variable selon le modèle (ex: 1800 mAh pour X3). Compatibilité: Insta360 X3, X4, X5, Ace Pro.",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion propriétaire",
+      "Capacité": "Variable selon le modèle (ex: 1800 mAh pour X3)",
+      "Tension": "3.85V",
+      "Compatibilité": "Insta360 X3, X4, X5, Ace Pro",
+      "Fonctionnalités": "Décharge à haut débit pour l'enregistrement 8K/5.7K",
+      "Usage": "Alimentation pour caméras 360° et d'action Insta360"
+    }
+  },
+  {
+    "nom": "K&F Concept Chargeur hub et 3 batteries KIT pour DJI Osmo 360/Action 5 PRO/Action 4/Action 6",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Station de charge / Hub. Compatibilité: Drones DJI (Mavic, Mini, Air, FPV).",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Station de charge / Hub",
+      "Compatibilité": "Drones DJI (Mavic, Mini, Air, FPV)",
+      "Fonctionnalités": "Charge séquentielle ou simultanée, gestion intelligente de la batterie",
+      "Usage": "Recharge rapide et sécurisée des batteries de vol"
+    }
+  },
+  {
+    "nom": "K&F Concept Chargeur hub et 3 batteries KIT pour GoPro",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: Environ 1220 mAh. Compatibilité: GoPro HERO 5, 6, 7, 8 Black.",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "Environ 1220 mAh",
+      "Tension": "3.85V",
+      "Compatibilité": "GoPro HERO 5, 6, 7, 8 Black",
+      "Fonctionnalités": "Compacte, légère, décharge rapide pour vidéo 4K",
+      "Usage": "Alimentation pour caméras d'action GoPro"
+    }
+  },
+  {
+    "nom": "K&F Concept Chargeur hub et 3 batteries KIT pour GoPro KF28.0032V1",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: Environ 1220 mAh. Compatibilité: GoPro HERO 5, 6, 7, 8 Black.",
+    "prix": 690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "Environ 1220 mAh",
+      "Tension": "3.85V",
+      "Compatibilité": "GoPro HERO 5, 6, 7, 8 Black",
+      "Fonctionnalités": "Compacte, légère, décharge rapide pour vidéo 4K",
+      "Usage": "Alimentation pour caméras d'action GoPro"
+    }
+  },
+  {
+    "nom": "K&F Concept Chargeur hub LP-E17 pour Canon",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Chargeur de batterie (Hub ou Simple). Compatibilité: Spécifique au modèle de batterie (NP-FZ100, LP-E6NH, FW-50, etc.).",
+    "prix": 290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Chargeur de batterie (Hub ou Simple)",
+      "Compatibilité": "Spécifique au modèle de batterie (NP-FZ100, LP-E6NH, FW-50, etc.)",
+      "Fonctionnalités": "Charge USB-C, indicateur LED, protection contre la surcharge, charge double/triple",
+      "Usage": "Recharge pratique des batteries d'appareils photo"
+    }
+  },
+  {
+    "nom": "K&F Concept Chargeur hub NP-FZ100 pour Sony (Simple)",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Chargeur de batterie (Hub ou Simple). Compatibilité: Spécifique au modèle de batterie (NP-FZ100, LP-E6NH, FW-50, etc.).",
+    "prix": 390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Chargeur de batterie (Hub ou Simple)",
+      "Compatibilité": "Spécifique au modèle de batterie (NP-FZ100, LP-E6NH, FW-50, etc.)",
+      "Fonctionnalités": "Charge USB-C, indicateur LED, protection contre la surcharge, charge double/triple",
+      "Usage": "Recharge pratique des batteries d'appareils photo"
+    }
+  },
+  {
+    "nom": "K&F Concept Chargeur NP-FZ100 pour Sony",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Chargeur de batterie (Hub ou Simple). Compatibilité: Spécifique au modèle de batterie (NP-FZ100, LP-E6NH, FW-50, etc.).",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Chargeur de batterie (Hub ou Simple)",
+      "Compatibilité": "Spécifique au modèle de batterie (NP-FZ100, LP-E6NH, FW-50, etc.)",
+      "Fonctionnalités": "Charge USB-C, indicateur LED, protection contre la surcharge, charge double/triple",
+      "Usage": "Recharge pratique des batteries d'appareils photo"
+    }
+  },
+  {
+    "nom": "K&F Concept FW-50 Batterie",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion (Tierce). Capacité: Équivalente ou supérieure à l'original. Compatibilité: Sony, Canon, Nikon, GoPro, etc. (selon modèle).",
+    "prix": 290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion (Tierce)",
+      "Capacité": "Équivalente ou supérieure à l'original",
+      "Tension": "Conforme aux spécifications du fabricant",
+      "Compatibilité": "Sony, Canon, Nikon, GoPro, etc. (selon modèle)",
+      "Fonctionnalités": "Puce de décodage, protection multi-niveaux, excellent rapport qualité-prix",
+      "Usage": "Alternative économique aux batteries d'origine"
+    }
+  },
+  {
+    "nom": "K&F Concept LP-E6/LP-E6N/LP-E6NH Battery Charger",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Chargeur de batterie (Hub ou Simple). Compatibilité: Spécifique au modèle de batterie (NP-FZ100, LP-E6NH, FW-50, etc.).",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Chargeur de batterie (Hub ou Simple)",
+      "Compatibilité": "Spécifique au modèle de batterie (NP-FZ100, LP-E6NH, FW-50, etc.)",
+      "Fonctionnalités": "Charge USB-C, indicateur LED, protection contre la surcharge, charge double/triple",
+      "Usage": "Recharge pratique des batteries d'appareils photo"
+    }
+  },
+  {
+    "nom": "K&F Concept LP-E6NH (2 batteries) pour Camera Canon",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: Environ 1865 mAh. Compatibilité: Canon EOS 5D Mark II/III/IV, 6D, 60D, 70D, 80D, 90D.",
+    "prix": 990.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "Environ 1865 mAh",
+      "Tension": "7.2V",
+      "Compatibilité": "Canon EOS 5D Mark II/III/IV, 6D, 60D, 70D, 80D, 90D",
+      "Fonctionnalités": "Puce d'information batterie, protection thermique",
+      "Usage": "Alimentation pour reflex et hybrides plein format Canon"
+    }
+  },
+  {
+    "nom": "K&F Concept LP-E6NH Batterie pour Camera Canon",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: Environ 1865 mAh. Compatibilité: Canon EOS 5D Mark II/III/IV, 6D, 60D, 70D, 80D, 90D.",
+    "prix": 590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "Environ 1865 mAh",
+      "Tension": "7.2V",
+      "Compatibilité": "Canon EOS 5D Mark II/III/IV, 6D, 60D, 70D, 80D, 90D",
+      "Fonctionnalités": "Puce d'information batterie, protection thermique",
+      "Usage": "Alimentation pour reflex et hybrides plein format Canon"
+    }
+  },
+  {
+    "nom": "K&F Concept LP-E6NH Chargeur et 2 Batteries pour Canon",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Chargeur de batterie (Hub ou Simple). Compatibilité: Spécifique au modèle de batterie (NP-FZ100, LP-E6NH, FW-50, etc.).",
+    "prix": 890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Chargeur de batterie (Hub ou Simple)",
+      "Compatibilité": "Spécifique au modèle de batterie (NP-FZ100, LP-E6NH, FW-50, etc.)",
+      "Fonctionnalités": "Charge USB-C, indicateur LED, protection contre la surcharge, charge double/triple",
+      "Usage": "Recharge pratique des batteries d'appareils photo"
+    }
+  },
+  {
+    "nom": "K&F Concept NP-FZ100 Batterie pour Sony",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: 2280 mAh (Original) / 2600 mAh (Tierce). Compatibilité: Sony A7 III, A7R III/IV/V, A7S III, A9, A1, A6700.",
+    "prix": 590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "2280 mAh (Original) / 2600 mAh (Tierce)",
+      "Tension": "7.2V",
+      "Compatibilité": "Sony A7 III, A7R III/IV/V, A7S III, A9, A1, A6700",
+      "Fonctionnalités": "Puce d'information, charge USB-C (selon modèle), haute densité énergétique",
+      "Usage": "Alimentation pour hybrides plein format et APS-C haut de gamme Sony"
+    }
+  },
+  {
+    "nom": "K&F Concept NP-FZ100 Batterie pour Sony (Eco)",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: 2280 mAh (Original) / 2600 mAh (Tierce). Compatibilité: Sony A7 III, A7R III/IV/V, A7S III, A9, A1, A6700.",
+    "prix": 390.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "2280 mAh (Original) / 2600 mAh (Tierce)",
+      "Tension": "7.2V",
+      "Compatibilité": "Sony A7 III, A7R III/IV/V, A7S III, A9, A1, A6700",
+      "Fonctionnalités": "Puce d'information, charge USB-C (selon modèle), haute densité énergétique",
+      "Usage": "Alimentation pour hybrides plein format et APS-C haut de gamme Sony"
+    }
+  },
+  {
+    "nom": "K&F NP-FW50 Battery Charger with LCD Screen",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Chargeur de batterie (Hub ou Simple). Compatibilité: Spécifique au modèle de batterie (NP-FZ100, LP-E6NH, FW-50, etc.).",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Chargeur de batterie (Hub ou Simple)",
+      "Compatibilité": "Spécifique au modèle de batterie (NP-FZ100, LP-E6NH, FW-50, etc.)",
+      "Fonctionnalités": "Charge USB-C, indicateur LED, protection contre la surcharge, charge double/triple",
+      "Usage": "Recharge pratique des batteries d'appareils photo"
+    }
+  },
+  {
+    "nom": "NiceFoto NP-F770",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion série L. Capacité: Environ 4400 mAh. Compatibilité: Équipements vidéo avec monture NP-F.",
+    "prix": 290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion série L",
+      "Capacité": "Environ 4400 mAh",
+      "Tension": "7.4V",
+      "Compatibilité": "Équipements vidéo avec monture NP-F",
+      "Fonctionnalités": "Indicateur de charge, construction robuste",
+      "Usage": "Alimentation pour éclairage et moniteurs"
+    }
+  },
+  {
+    "nom": "NP-750 4400mAh (USB Charging)",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: 4400 mAh. Compatibilité: Caméras vidéo, lumières LED compatibles NP-F.",
+    "prix": 390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "4400 mAh",
+      "Tension": "7.4V",
+      "Compatibilité": "Caméras vidéo, lumières LED compatibles NP-F",
+      "Fonctionnalités": "Charge via USB-C, haute capacité",
+      "Usage": "Alimentation longue durée pour équipements vidéo"
+    }
+  },
+  {
+    "nom": "SmallRig Chargeur de batterie pour caméra NP-FZ100 à 4 canaux",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Chargeur de batterie (Hub ou Simple). Compatibilité: Spécifique au modèle de batterie (NP-FZ100, LP-E6NH, FW-50, etc.).",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Chargeur de batterie (Hub ou Simple)",
+      "Compatibilité": "Spécifique au modèle de batterie (NP-FZ100, LP-E6NH, FW-50, etc.)",
+      "Fonctionnalités": "Charge USB-C, indicateur LED, protection contre la surcharge, charge double/triple",
+      "Usage": "Recharge pratique des batteries d'appareils photo"
+    }
+  },
+  {
+    "nom": "SmallRig NP-FZ100 USB-C Batterie (2400mAh, Blue)",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: 2280 mAh (Original) / 2600 mAh (Tierce). Compatibilité: Sony A7 III, A7R III/IV/V, A7S III, A9, A1, A6700.",
+    "prix": 690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "2280 mAh (Original) / 2600 mAh (Tierce)",
+      "Tension": "7.2V",
+      "Compatibilité": "Sony A7 III, A7R III/IV/V, A7S III, A9, A1, A6700",
+      "Fonctionnalités": "Puce d'information, charge USB-C (selon modèle), haute densité énergétique",
+      "Usage": "Alimentation pour hybrides plein format et APS-C haut de gamme Sony"
+    }
+  },
+  {
+    "nom": "SmallRig VB99 Pro V Mount Battery 6700mAh 99Wh Camera Battery-4430B",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie V-Mount (V-Lock). Capacité: Variable (ex: 6700mAh / 99Wh pour avion). Compatibilité: Caméras cinéma, lumières LED, moniteurs avec plaque V-Mount.",
+    "prix": 2490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie V-Mount (V-Lock)",
+      "Capacité": "Variable (ex: 6700mAh / 99Wh pour avion)",
+      "Tension": "14.4V / 14.8V",
+      "Compatibilité": "Caméras cinéma, lumières LED, moniteurs avec plaque V-Mount",
+      "Fonctionnalités": "Sorties D-Tap, USB-C PD, écran LCD d'information, montage sur trépied",
+      "Usage": "Alimentation professionnelle pour production vidéo et cinéma"
+    }
+  },
+  {
+    "nom": "SONY DR - FZ100 AEU",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: 2280 mAh (Original) / 2600 mAh (Tierce). Compatibilité: Sony A7 III, A7R III/IV/V, A7S III, A9, A1, A6700.",
+    "prix": 590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "2280 mAh (Original) / 2600 mAh (Tierce)",
+      "Tension": "7.2V",
+      "Compatibilité": "Sony A7 III, A7R III/IV/V, A7S III, A9, A1, A6700",
+      "Fonctionnalités": "Puce d'information, charge USB-C (selon modèle), haute densité énergétique",
+      "Usage": "Alimentation pour hybrides plein format et APS-C haut de gamme Sony"
+    }
+  },
+  {
+    "nom": "SONY DR - FW50 - AEU",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: Environ 1020 mAh. Compatibilité: Sony A6000, A6300, A6400, A7, A7R, A7S.",
+    "prix": 590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "Environ 1020 mAh",
+      "Tension": "7.2V",
+      "Compatibilité": "Sony A6000, A6300, A6400, A7, A7R, A7S",
+      "Fonctionnalités": "Compacte, puce d'information",
+      "Usage": "Alimentation pour hybrides Sony d'entrée/milieu de gamme"
+    }
+  },
+  {
+    "nom": "SONY Type C - FW50",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie Lithium-Ion. Capacité: Environ 1020 mAh. Compatibilité: Sony A6000, A6300, A6400, A7, A7R, A7S.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Batterie Lithium-Ion",
+      "Capacité": "Environ 1020 mAh",
+      "Tension": "7.2V",
+      "Compatibilité": "Sony A6000, A6300, A6400, A7, A7R, A7S",
+      "Fonctionnalités": "Compacte, puce d'information",
+      "Usage": "Alimentation pour hybrides Sony d'entrée/milieu de gamme"
+    }
+  },
+  {
+    "nom": "Station de charge de batterie DJI pour Mavic Pro",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Station de charge / Hub. Compatibilité: Drones DJI (Mavic, Mini, Air, FPV).",
+    "prix": 450.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Station de charge / Hub",
+      "Compatibilité": "Drones DJI (Mavic, Mini, Air, FPV)",
+      "Fonctionnalités": "Charge séquentielle ou simultanée, gestion intelligente de la batterie",
+      "Usage": "Recharge rapide et sécurisée des batteries de vol"
+    }
+  },
+  {
+    "nom": "Station de Charge Rapide Insta360 Ace Pro/Ace",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Chargeur de batterie (Hub ou Simple). Compatibilité: Spécifique au modèle de batterie (NP-FZ100, LP-E6NH, FW-50, etc.).",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Chargeur de batterie (Hub ou Simple)",
+      "Compatibilité": "Spécifique au modèle de batterie (NP-FZ100, LP-E6NH, FW-50, etc.)",
+      "Fonctionnalités": "Charge USB-C, indicateur LED, protection contre la surcharge, charge double/triple",
+      "Usage": "Recharge pratique des batteries d'appareils photo"
+    }
+  },
+  {
+    "nom": "V Mount Battery K&F KF28.0024",
+    "description": "Accessoire d'alimentation de haute qualité. Type: Batterie V-Mount (V-Lock). Capacité: Variable (ex: 6700mAh / 99Wh pour avion). Compatibilité: Caméras cinéma, lumières LED, moniteurs avec plaque V-Mount.",
+    "prix": 5900.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Batterie V-Mount (V-Lock)",
+      "Capacité": "Variable (ex: 6700mAh / 99Wh pour avion)",
+      "Tension": "14.4V / 14.8V",
+      "Compatibilité": "Caméras cinéma, lumières LED, moniteurs avec plaque V-Mount",
+      "Fonctionnalités": "Sorties D-Tap, USB-C PD, écran LCD d'information, montage sur trépied",
+      "Usage": "Alimentation professionnelle pour production vidéo et cinéma"
+    }
+  }
+]
