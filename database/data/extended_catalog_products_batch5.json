@@ -1,0 +1,221 @@
+[
+  {
+    "name": "Blackmagic Design ATEM Mini Pro ISO HDMI Live Stream Switcher",
+    "price": "MAD 7.500,00",
+    "category_slug": "materiel-de-podcast",
+    "brand": "BMD",
+    "description": "Le mélangeur de production en direct ATEM Mini Pro ISO de Blackmagic Design est un switcher à quatre entrées HDMI doté d’un panneau de contrôle intégré, conçu pour la diffusion en direct multicaméra jusqu'à la 1080p HD. Il permet l'enregistrement ISO de chaque entrée sur un disque USB et génère un fichier projet DaVinci Resolve pour un montage post-production fluide.",
+    "technical_specs": {
+      "entrées": "4 x HDMI (jusqu'à 1080p60)",
+      "sorties": "1 x HDMI Programme, 1 x USB-C (webcam/enregistrement)",
+      "enregistrement": "Enregistrement direct sur disque USB (Programme + 4 pistes ISO)",
+      "audio": "Mixeur audio Fairlight intégré (compresseur, EQ, limiteur)",
+      "effets": "2 keyers en amont, 1 keyer en aval, DVE, transitions (mix, fondu, essuyage)",
+      "connectivité": "Ethernet pour streaming direct, USB-C pour stockage et webcam"
+    }
+  },
+  {
+    "name": "Casques Hollyland Solidcom SE Wireless Headset-6S",
+    "price": "MAD 10.500,00",
+    "category_slug": "son",
+    "brand": "HLD",
+    "description": "Le Hollyland Solidcom SE-6S est un système d’intercommunication sans fil full-duplex conçu pour les grandes équipes. Avec 6 casques légers et ergonomiques, il offre une transmission sans interférences sur une portée de 350 mètres, avec des microphones HD à suppression de bruit pour une communication claire en environnement bruyant.",
+    "technical_specs": {
+      "nombre_de_casques": "6 (1 maître + 5 distants)",
+      "portée": "Jusqu'à 350 mètres en champ libre",
+      "fréquence": "Bande RF dédiée 1.9 GHz",
+      "autonomie": "Jusqu'à 10h (maître) / 12h (distants)",
+      "audio": "HD avec réduction de bruit ENC (Environmental Noise Cancellation)",
+      "charge": "Station de charge 6 emplacements incluse, batteries amovibles"
+    }
+  },
+  {
+    "name": "Desktop Mic Stand Gator Boom Arm",
+    "price": "MAD 1.890,00",
+    "category_slug": "materiel-de-podcast",
+    "brand": "GATOR",
+    "description": "Le support de microphone articulé de bureau Gator est une solution polyvalente et robuste, idéale pour maintenir votre microphone en position optimale lors de podcasts, de streams en direct ou d'enregistrements vocaux. Compatible avec la plupart des microphones standards du marché.",
+    "technical_specs": {
+      "type": "Bras articulé de bureau (Boom Arm)",
+      "compatibilité": "Filetage standard 5/8\"-27 et adaptateur 3/8\"",
+      "construction": "Acier robuste avec ressorts à tension ajustable",
+      "montage": "Pince de bureau ou perçage (matériel inclus)",
+      "gestion_des_câbles": "Canaux internes pour un passage de câble propre"
+    }
+  },
+  {
+    "name": "Hollyland Casque sans Fil Solidcom SE 5S Global Version",
+    "price": "MAD 5.690,00",
+    "category_slug": "son",
+    "brand": "HLD",
+    "description": "Le Hollyland Solidcom SE 5S Global Version est un système d'intercom sans fil full-duplex pour 5 personnes. Il garantit une communication claire et instantanée avec une réduction de bruit ENC et une portée étendue, parfait pour les tournages, événements et productions en direct.",
+    "technical_specs": {
+      "nombre_de_casques": "5 (1 maître + 4 distants)",
+      "portée": "Jusqu'à 350 mètres",
+      "fréquence": "2,4 GHz avec saut automatique de fréquence (AFH)",
+      "autonomie": "Jusqu'à 10h (maître) / 12h (distants)",
+      "audio": "Rapport signal/bruit de 71 dB, microphones orientables avec mute"
+    }
+  },
+  {
+    "name": "Hollyland Solidcom SE 2S – Intercom sans fil 2 personnes",
+    "price": "MAD 2.090,00",
+    "category_slug": "son",
+    "brand": "HLD",
+    "description": "Le Hollyland Solidcom SE 2S est un kit d'intercom sans fil compact pour deux utilisateurs. Il offre une communication full-duplex sans latence, idéal pour la coordination entre un réalisateur et un cadreur ou pour les petites équipes de production.",
+    "technical_specs": {
+      "nombre_de_casques": "2 (1 maître + 1 distant)",
+      "portée": "Jusqu'à 350 mètres",
+      "fréquence": "2,4 GHz numérique",
+      "autonomie": "Jusqu'à 10h (maître) / 12h (distant)",
+      "poids": "Environ 185 g par casque avec batterie"
+    }
+  },
+  {
+    "name": "Hollyland Solidcom SE 4S – Intercom sans fil 4 personnes",
+    "price": "MAD 4.090,00",
+    "category_slug": "son",
+    "brand": "HLD",
+    "description": "Le Hollyland Solidcom SE 4S est un système d’intercom sans fil professionnel pour quatre membres d’équipe. Il inclut un casque maître et trois casques distants, avec une communication full-duplex et une réduction de bruit ENC pour une clarté optimale sur le terrain.",
+    "technical_specs": {
+      "nombre_de_casques": "4 (1 maître + 3 distants)",
+      "portée": "Jusqu'à 350 mètres",
+      "fréquence": "2,4 GHz avec saut automatique de fréquence",
+      "autonomie": "Jusqu'à 10h (maître) / 12h (distants)",
+      "charge": "Station de charge 6 emplacements incluse"
+    }
+  },
+  {
+    "name": "Live Stream Switcher MT-L4UHD",
+    "price": "MAD 3.900,00",
+    "category_slug": "materiel-de-podcast",
+    "brand": "MT",
+    "description": "Le MT-L4UHD est un switcher de streaming compact et performant, conçu pour gérer plusieurs sources vidéo et offrir une qualité d'image Ultra HD. Il est idéal pour les créateurs de contenu souhaitant professionnaliser leurs diffusions en direct avec des transitions fluides.",
+    "technical_specs": {
+      "résolution": "4K Ultra HD (3840 x 2160)",
+      "capteur": "CMOS 26 MP (pour les sources intégrées)",
+      "vidéo": "4K @ 60 fps, Full HD @ 120 fps",
+      "iso": "100 – 51200 (extensible)",
+      "dimensions": "135 x 100 x 80 mm",
+      "poids": "850 g"
+    }
+  },
+  {
+    "name": "RODE AI-1 USB-C Audio Interface",
+    "price": "MAD 1.690,00",
+    "category_slug": "materiel-de-podcast",
+    "brand": "RODE",
+    "description": "L'interface audio RODE AI-1 est une solution de qualité studio parfaitement adaptée à l’enregistrement de voix, d’instruments et de voix off sur ordinateur. Elle offre un préamplificateur discret de classe A à faible bruit et un monitoring sans latence.",
+    "technical_specs": {
+      "entrées": "1 x Combo XLR/Jack 6,35 mm avec alimentation fantôme +48V",
+      "sorties": "2 x Jack 6,35 mm symétriques (moniteurs), 1 x Jack 6,35 mm (casque)",
+      "résolution": "Jusqu'à 96 kHz / 24 bits",
+      "connexion": "USB-C (alimenté par le bus, compatible Mac/Windows)",
+      "logiciel_inclus": "Ableton Live Lite"
+    }
+  },
+  {
+    "name": "RØDE Caster Duo",
+    "price": "MAD 5.900,00",
+    "category_slug": "materiel-de-podcast",
+    "brand": "RODE",
+    "description": "Le RØDECaster Duo est une console de mixage audio compacte et complète, spécialement conçue pour les créateurs de contenu, podcasteurs et streamers. Elle intègre des préamplis de haute qualité, des effets APHEX® et des pads SMART pour une production audio professionnelle simplifiée.",
+    "technical_specs": {
+      "entrées": "2 x XLR avec alimentation fantôme +48V",
+      "sorties": "2 x sorties casque, 2 x sorties TRS 6,35 mm pour moniteurs",
+      "effets_intégrés": "Réverbération, compresseur, égalisation, filtre passe-haut (APHEX®)",
+      "connectivité": "USB-C, Bluetooth 5.0, carte microSD",
+      "dimensions": "270 x 210 x 82 mm",
+      "poids": "1,1 kg"
+    }
+  },
+  {
+    "name": "RODE PodMic",
+    "price": "MAD 1.490,00",
+    "category_slug": "materiel-de-podcast",
+    "brand": "RODE",
+    "description": "Le RODE PodMic est un microphone dynamique à bobine mobile conçu spécifiquement pour la parole et la diffusion (podcasting, streaming, radio). Il offre un son riche et équilibré, avec une construction robuste tout en métal et un filtre anti-pop interne intégré.",
+    "technical_specs": {
+      "type": "Microphone dynamique",
+      "directivité": "Cardioïde",
+      "réponse_en_fréquence": "20 Hz – 20 kHz",
+      "impédance_de_sortie": "320 Ω",
+      "connexion": "XLR 3 broches (nécessite une interface audio ou un mixeur)",
+      "poids": "690 g"
+    }
+  },
+  {
+    "name": "RØDE PodMic USB",
+    "price": "MAD 2.490,00",
+    "category_slug": "materiel-de-podcast",
+    "brand": "RODE",
+    "description": "Le RØDE PodMic USB est un microphone dynamique ultra-polyvalent offrant une double connectivité XLR et USB-C. Il intègre le préampli Revolution Preamp™ et un traitement DSP APHEX® pour un son de qualité broadcast, que ce soit branché sur une interface ou directement sur un ordinateur.",
+    "technical_specs": {
+      "type": "Microphone dynamique",
+      "directivité": "Cardioïde",
+      "connectique": "XLR 3 broches + USB-C (24-bit / 48 kHz)",
+      "traitement": "DSP APHEX® intégré (compression, filtre passe-haut)",
+      "sortie_casque": "Jack 3,5 mm avec contrôle de volume et monitoring sans latence",
+      "accessoires_inclus": "Câble USB-C, filtre anti-pop externe"
+    }
+  },
+  {
+    "name": "RodeCaster Pro II",
+    "price": "MAD 8.900,00",
+    "category_slug": "materiel-de-podcast",
+    "brand": "RODE",
+    "description": "Le RØDECaster Pro II est la solution audio tout-en-un ultime pour les créateurs de contenu exigeants. Cette console de production intègre des préamplis Revolution Preamps™, un écran tactile HD, des pads SMART programmables et une connectivité avancée pour des productions podcast et streaming de niveau professionnel.",
+    "technical_specs": {
+      "entrées": "4 x Combo XLR/Jack Neutrik® avec préamplis Revolution Preamps™ (76 dB de gain)",
+      "sorties": "4 x sorties casque indépendantes, sorties ligne symétriques",
+      "contrôles": "6 faders physiques, écran tactile HD 5,5 pouces, 8 pads SMART",
+      "effets": "Moteur d'effets APHEX® (compresseur, De-esser, EQ, réverbération)",
+      "connectivité": "Double USB-C, Bluetooth 5.0, enregistrement sur microSD ou USB",
+      "alimentation": "Secteur ou via USB-C (Power Delivery)"
+    }
+  },
+  {
+    "name": "Shure SM7DB",
+    "price": "MAD 6.690,00",
+    "category_slug": "materiel-de-podcast",
+    "brand": "SHURE",
+    "description": "Le Shure SM7DB est un microphone dynamique vocal de référence, doté d'un préamplificateur intégré offrant jusqu'à +28 dB de gain propre. Il élimine le besoin d'un activateur de gain externe tout en conservant le son chaud et classique du légendaire SM7B, idéal pour le podcasting et le streaming.",
+    "technical_specs": {
+      "type": "Microphone dynamique",
+      "directivité": "Cardioïde",
+      "préampli_intégré": "Gain supplémentaire de +18 dB ou +28 dB (commutable)",
+      "réponse_en_fréquence": "50 Hz – 20 kHz (présence boost et bass roll-off commutables)",
+      "impédance": "150 Ω",
+      "connexion": "XLR 3 broches",
+      "accessoires_inclus": "Support articulé A7WS, bonnette anti-vent, couvercle de commutateur"
+    }
+  },
+  {
+    "name": "SmallRig 4303 Support de bureau pour bras de microphone",
+    "price": "MAD 1.290,00",
+    "category_slug": "materiel-de-podcast",
+    "brand": "SMR",
+    "description": "Le support de bureau SmallRig 4303 est une solution de montage robuste pour les bras de microphone. Doté de trois articulations à amortissement hydraulique, il permet des réglages silencieux et fluides sous plusieurs angles, avec une capacité de charge de 1,5 kg pour une stabilité maximale.",
+    "technical_specs": {
+      "matériau": "Alliage d'aluminium",
+      "capacité_de_charge": "1,5 kg",
+      "mécanisme": "3 articulations à amortissement hydraulique (réglage silencieux)",
+      "compatibilité": "Filetages 1/4\"-20, 3/8\"-16, 5/8\"-27, support cold shoe inclus",
+      "épaisseur_max_bureau": "Jusqu'à 7 cm",
+      "accessoires_inclus": "10 serre-câbles, 2 adaptateurs de filetage"
+    }
+  },
+  {
+    "name": "Support de bureau SmallRig pour la photographie aérienne/le streaming en direct",
+    "price": "MAD 990,00",
+    "category_slug": "accessoires",
+    "brand": "SMR",
+    "description": "Ce support de bureau SmallRig est conçu pour offrir une plateforme stable et modulable pour les caméras, les smartphones ou les microphones lors de sessions de streaming en direct ou de photographie de produit/aérienne. Sa construction en alliage d'aluminium assure une durabilité et une flexibilité d'installation optimales.",
+    "technical_specs": {
+      "matériau": "Alliage d'aluminium robuste",
+      "montage": "Base stable avec points de fixation 1/4\"-20 et 3/8\"-16",
+      "compatibilité": "Caméras compactes, smartphones (avec pince), microphones, lumières LED",
+      "utilisation": "Streaming, photographie de produit, configuration de bureau"
+    }
+  }
+]
