@@ -1,0 +1,435 @@
+[
+  {
+    "nom": "Camera Lens bag",
+    "description": "Étui de protection de haute qualité pour matériel photographique. Type: Étui pour objectif. Matériau: Néoprène et nylon résistant à l'eau. Fonctionnalités: Fermeture éclair double, sangle de ceinture amovible, protection rembourrée.",
+    "prix": 180.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Étui pour objectif",
+      "Matériau": "Néoprène et nylon résistant à l'eau",
+      "Tailles disponibles": "LP-10, LP-13, LP-15, LP-17, LP-28",
+      "Fonctionnalités": "Fermeture éclair double, sangle de ceinture amovible, protection rembourrée",
+      "Usage": "Transport et protection d'objectifs photo individuels"
+    }
+  },
+  {
+    "nom": "K&F Camera Bag Large Backpack 23L",
+    "description": "Sac à dos photo grand format. Capacité: 23 litres. Matériau: Nylon imperméable et résistant à l'abrasion. Fonctionnalités: Compartiment rembourré pour ordinateur portable 15.6\", séparateurs modulables, housse de pluie incluse.",
+    "prix": 1290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Sac à dos photo grand format",
+      "Capacité": "23 litres",
+      "Matériau": "Nylon imperméable et résistant à l'abrasion",
+      "Fonctionnalités": "Compartiment rembourré pour ordinateur portable 15.6\", séparateurs modulables, housse de pluie incluse",
+      "Usage": "Randonnée photo, voyages, transport de boîtier et plusieurs objectifs"
+    }
+  },
+  {
+    "nom": "K&F Concept - KF13.130 V1 – Alpha Sling 4L",
+    "description": "Sacoche en bandoulière compacte. Capacité: 4L. Matériau: Nylon déperlant et maille respirante. Fonctionnalités: Accès rapide latéral, sangle ajustable, compartiment rembourré pour petit boîtier et 1-2 objectifs.",
+    "prix": 390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Sacoche en bandoulière compacte",
+      "Capacité": "4 litres",
+      "Matériau": "Nylon déperlant et maille respirante",
+      "Fonctionnalités": "Accès rapide latéral, sangle ajustable, compartiment rembourré pour petit boîtier et 1-2 objectifs",
+      "Usage": "Photographie de rue, balades légères, vlogging"
+    }
+  },
+  {
+    "nom": "K&F Concept - KF13.167 – Sling Bag 1L Nature Wander Black",
+    "description": "Sacoche en bandoulière ultra-compacte. Capacité: 1L. Matériau: Nylon déperlant et maille respirante. Fonctionnalités: Accès rapide latéral, sangle ajustable, compartiment rembourré pour petit boîtier.",
+    "prix": 290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Sacoche en bandoulière compacte",
+      "Capacité": "1 litre",
+      "Matériau": "Nylon déperlant et maille respirante",
+      "Fonctionnalités": "Accès rapide latéral, sangle ajustable, compartiment rembourré pour petit boîtier",
+      "Usage": "Photographie de rue, balades légères, vlogging"
+    }
+  },
+  {
+    "nom": "K&F Concept - KF13.179 – Sling Bag 5L Urban Wander Black",
+    "description": "Sacoche en bandoulière polyvalente. Capacité: 5L. Matériau: Nylon déperlant et maille respirante. Fonctionnalités: Accès rapide latéral, sangle ajustable, compartiment rembourré pour boîtier et 2 objectifs.",
+    "prix": 390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Sacoche en bandoulière compacte",
+      "Capacité": "5 litres",
+      "Matériau": "Nylon déperlant et maille respirante",
+      "Fonctionnalités": "Accès rapide latéral, sangle ajustable, compartiment rembourré pour boîtier et 2 objectifs",
+      "Usage": "Photographie de rue, balades légères, vlogging"
+    }
+  },
+  {
+    "nom": "K&F Concept - KF13.179V 1 – Sling Bag 5L Urban Wander",
+    "description": "Sacoche en bandoulière polyvalente. Capacité: 5L. Matériau: Nylon déperlant et maille respirante. Fonctionnalités: Accès rapide latéral, sangle ajustable, compartiment rembourré pour boîtier et 2 objectifs.",
+    "prix": 390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Sacoche en bandoulière compacte",
+      "Capacité": "5 litres",
+      "Matériau": "Nylon déperlant et maille respirante",
+      "Fonctionnalités": "Accès rapide latéral, sangle ajustable, compartiment rembourré pour boîtier et 2 objectifs",
+      "Usage": "Photographie de rue, balades légères, vlogging"
+    }
+  },
+  {
+    "nom": "K&F Concept - Lens Protective Bag Size XL / KF13.203",
+    "description": "Étui de protection pour objectif. Matériau: Néoprène haute densité et doublure douce. Fonctionnalités: Fermeture éclair robuste, anneau d'attache pour mousqueton, protection contre les chocs et l'humidité.",
+    "prix": 390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Étui de protection pour objectif",
+      "Tailles": "XL",
+      "Matériau": "Néoprène haute densité et doublure douce",
+      "Fonctionnalités": "Fermeture éclair robuste, anneau d'attache pour mousqueton, protection contre les chocs et l'humidité",
+      "Usage": "Protection individuelle des objectifs dans un sac plus grand"
+    }
+  },
+  {
+    "nom": "K&F Concept - Lens Protective Bag Size L / KF13.202",
+    "description": "Étui de protection pour objectif. Matériau: Néoprène haute densité et doublure douce. Fonctionnalités: Fermeture éclair robuste, anneau d'attache pour mousqueton, protection contre les chocs et l'humidité.",
+    "prix": 350.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Étui de protection pour objectif",
+      "Tailles": "L",
+      "Matériau": "Néoprène haute densité et doublure douce",
+      "Fonctionnalités": "Fermeture éclair robuste, anneau d'attache pour mousqueton, protection contre les chocs et l'humidité",
+      "Usage": "Protection individuelle des objectifs dans un sac plus grand"
+    }
+  },
+  {
+    "nom": "K&F Concept - Lens Protective Bag Size M - KF13.201",
+    "description": "Étui de protection pour objectif. Matériau: Néoprène haute densité et doublure douce. Fonctionnalités: Fermeture éclair robuste, anneau d'attache pour mousqueton, protection contre les chocs et l'humidité.",
+    "prix": 230.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Étui de protection pour objectif",
+      "Tailles": "M",
+      "Matériau": "Néoprène haute densité et doublure douce",
+      "Fonctionnalités": "Fermeture éclair robuste, anneau d'attache pour mousqueton, protection contre les chocs et l'humidité",
+      "Usage": "Protection individuelle des objectifs dans un sac plus grand"
+    }
+  },
+  {
+    "nom": "K&F Concept - Lens Protective Bag Size S - KF13.189",
+    "description": "Étui de protection pour objectif. Matériau: Néoprène haute densité et doublure douce. Fonctionnalités: Fermeture éclair robuste, anneau d'attache pour mousqueton, protection contre les chocs et l'humidité.",
+    "prix": 290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Étui de protection pour objectif",
+      "Tailles": "S",
+      "Matériau": "Néoprène haute densité et doublure douce",
+      "Fonctionnalités": "Fermeture éclair robuste, anneau d'attache pour mousqueton, protection contre les chocs et l'humidité",
+      "Usage": "Protection individuelle des objectifs dans un sac plus grand"
+    }
+  },
+  {
+    "nom": "K&F Concept 25L Alpha Backpack Air Backpack",
+    "description": "Sac à dos photo professionnel. Capacité: 25 litres. Matériau: Nylon 1680D imperméable. Fonctionnalités: Système de suspension dorsal aéré, accès arrière anti-vol, support pour trépied, compartiment PC 15\".",
+    "prix": 1490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Sac à dos photo professionnel",
+      "Capacité": "25 litres",
+      "Matériau": "Nylon 1680D imperméable",
+      "Fonctionnalités": "Système de suspension dorsal aéré, accès arrière anti-vol, support pour trépied, compartiment PC 15\"",
+      "Usage": "Expéditions photo, reportages longue durée, transport de matériel lourd"
+    }
+  },
+  {
+    "nom": "K&F CONCEPT Backpack 25L Nature Wander 09 Black (KF13.210)",
+    "description": "Sac à dos photo outdoor. Capacité: 25L. Matériau: Tissu résistant à l'eau avec revêtement déperlant. Fonctionnalités: Séparateurs velcro modulables, sangles de compression, housse de pluie intégrée, poche trépied.",
+    "prix": 1390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Sac à dos photo outdoor",
+      "Capacité": "25 litres",
+      "Matériau": "Tissu résistant à l'eau avec revêtement déperlant",
+      "Fonctionnalités": "Séparateurs velcro modulables, sangles de compression, housse de pluie intégrée, poche trépied",
+      "Usage": "Randonnée, nature, photographie de paysage"
+    }
+  },
+  {
+    "nom": "K&F Concept Beta Series DSLR Backpack",
+    "description": "Sac à dos DSLR polyvalent. Capacité: Environ 15-18 litres. Matériau: Polyester renforcé et imperméable. Fonctionnalités: Compartiment principal modulable, poche avant pour accessoires, sangles rembourrées.",
+    "prix": 890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Sac à dos DSLR polyvalent",
+      "Capacité": "Environ 15-18 litres",
+      "Matériau": "Polyester renforcé et imperméable",
+      "Fonctionnalités": "Compartiment principal modulable, poche avant pour accessoires, sangles rembourrées",
+      "Usage": "Usage quotidien, photographie amateur et semi-professionnelle"
+    }
+  },
+  {
+    "nom": "K&F Concept Camera Alpha Backpack Air 25L Nature Wander 01",
+    "description": "Sac à dos photo professionnel. Capacité: 25 litres. Matériau: Nylon 1680D imperméable. Fonctionnalités: Système de suspension dorsal aéré, accès arrière anti-vol, support pour trépied, compartiment PC 15\".",
+    "prix": 1490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Sac à dos photo professionnel",
+      "Capacité": "25 litres",
+      "Matériau": "Nylon 1680D imperméable",
+      "Fonctionnalités": "Système de suspension dorsal aéré, accès arrière anti-vol, support pour trépied, compartiment PC 15\"",
+      "Usage": "Expéditions photo, reportages longue durée, transport de matériel lourd"
+    }
+  },
+  {
+    "nom": "K&F Concept Camera Backpack 20L",
+    "description": "Sac à dos photo outdoor. Capacité: 20L. Matériau: Tissu résistant à l'eau avec revêtement déperlant. Fonctionnalités: Séparateurs velcro modulables, sangles de compression, housse de pluie intégrée, poche trépied.",
+    "prix": 1390.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Sac à dos photo outdoor",
+      "Capacité": "20 litres",
+      "Matériau": "Tissu résistant à l'eau avec revêtement déperlant",
+      "Fonctionnalités": "Séparateurs velcro modulables, sangles de compression, housse de pluie intégrée, poche trépied",
+      "Usage": "Randonnée, nature, photographie de paysage"
+    }
+  },
+  {
+    "nom": "K&F Concept Camera Backpack for Photographers Large Waterproof 18L",
+    "description": "Sac à dos étanche pour photographes. Capacité: 18 litres. Matériau: Nylon imperméable haute densité. Fonctionnalités: Fermetures étanches, séparateurs rembourrés, sangle de poitrine et de taille.",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Sac à dos étanche pour photographes",
+      "Capacité": "18 litres",
+      "Matériau": "Nylon imperméable haute densité",
+      "Fonctionnalités": "Fermetures étanches, séparateurs rembourrés, sangle de poitrine et de taille",
+      "Usage": "Conditions météorologiques difficiles, photographie en extérieur"
+    }
+  },
+  {
+    "nom": "K&F Concept KF13.134 – Backpack 22L Nature Wander 10",
+    "description": "Sac à dos photo outdoor. Capacité: 22L. Matériau: Tissu résistant à l'eau avec revêtement déperlant. Fonctionnalités: Séparateurs velcro modulables, sangles de compression, housse de pluie intégrée, poche trépied.",
+    "prix": 890.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Sac à dos photo outdoor",
+      "Capacité": "22 litres",
+      "Matériau": "Tissu résistant à l'eau avec revêtement déperlant",
+      "Fonctionnalités": "Séparateurs velcro modulables, sangles de compression, housse de pluie intégrée, poche trépied",
+      "Usage": "Randonnée, nature, photographie de paysage"
+    }
+  },
+  {
+    "nom": "K&F Concept KF13.205 – Backpack 18L Nature Wander 05",
+    "description": "Sac à dos photo outdoor. Capacité: 18L. Matériau: Tissu résistant à l'eau avec revêtement déperlant. Fonctionnalités: Séparateurs velcro modulables, sangles de compression, housse de pluie intégrée, poche trépied.",
+    "prix": 690.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Sac à dos photo outdoor",
+      "Capacité": "18 litres",
+      "Matériau": "Tissu résistant à l'eau avec revêtement déperlant",
+      "Fonctionnalités": "Séparateurs velcro modulables, sangles de compression, housse de pluie intégrée, poche trépied",
+      "Usage": "Randonnée, nature, photographie de paysage"
+    }
+  },
+  {
+    "nom": "K&F Concept KF13.211 – Backpack 25 Nature Wander",
+    "description": "Sac à dos photo outdoor. Capacité: 25L. Matériau: Tissu résistant à l'eau avec revêtement déperlant. Fonctionnalités: Séparateurs velcro modulables, sangles de compression, housse de pluie intégrée, poche trépied.",
+    "prix": 1490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Sac à dos photo outdoor",
+      "Capacité": "25 litres",
+      "Matériau": "Tissu résistant à l'eau avec revêtement déperlant",
+      "Fonctionnalités": "Séparateurs velcro modulables, sangles de compression, housse de pluie intégrée, poche trépied",
+      "Usage": "Randonnée, nature, photographie de paysage"
+    }
+  },
+  {
+    "nom": "K&F Concept Model -15 L-KF13.044V5",
+    "description": "Sac à dos multifonction. Capacité: 15 litres. Matériau: Toile Oxford résistante. Fonctionnalités: Conversion sac à dos / sacoche, compartiment PC, organisation interne modulable.",
+    "prix": 590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Sac à dos multifonction",
+      "Capacité": "15 litres",
+      "Matériau": "Toile Oxford résistante",
+      "Fonctionnalités": "Conversion sac à dos / sacoche, compartiment PC, organisation interne modulable",
+      "Usage": "Ville, voyage léger, photographie hybride"
+    }
+  },
+  {
+    "nom": "K&F Concept Sac A Dos 30L",
+    "description": "Grand sac à dos photo. Capacité: 30 litres. Matériau: Nylon balistique résistant. Fonctionnalités: Grands compartiments modulables, support trépied robuste, ceinture de hanche rembourrée.",
+    "prix": 1390.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Grand sac à dos photo",
+      "Capacité": "30 litres",
+      "Matériau": "Nylon balistique résistant",
+      "Fonctionnalités": "Grands compartiments modulables, support trépied robuste, ceinture de hanche rembourrée",
+      "Usage": "Expéditions longues, matériel studio portable, voyages photo"
+    }
+  },
+  {
+    "nom": "K&F Concept Sac à Dos Multi-Fonction (KF13.044)",
+    "description": "Sac à dos multifonction. Capacité: 15 litres. Matériau: Toile Oxford résistante. Fonctionnalités: Conversion sac à dos / sacoche, compartiment PC, organisation interne modulable.",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": false,
+    "specifications_techniques": {
+      "Type": "Sac à dos multifonction",
+      "Capacité": "15 litres",
+      "Matériau": "Toile Oxford résistante",
+      "Fonctionnalités": "Conversion sac à dos / sacoche, compartiment PC, organisation interne modulable",
+      "Usage": "Ville, voyage léger, photographie hybride"
+    }
+  },
+  {
+    "nom": "K&F Concept Sac En Bandoulière",
+    "description": "Sacoche photo classique. Capacité: Environ 8-10 litres. Matériau: Cuir synthétique et toile résistante. Fonctionnalités: Rabats de protection, poches latérales, bandoulière rembourrée ajustable.",
+    "prix": 790.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Sacoche photo classique",
+      "Capacité": "Environ 8-10 litres",
+      "Matériau": "Cuir synthétique et toile résistante",
+      "Fonctionnalités": "Rabats de protection, poches latérales, bandoulière rembourrée ajustable",
+      "Usage": "Photographie de rue, reportage léger"
+    }
+  },
+  {
+    "nom": "K&F Concept Sling Bag 10L Nature Wander Black + Camouflage",
+    "description": "Sacoche en bandoulière outdoor. Capacité: 10L. Matériau: Nylon déperlant et maille respirante. Fonctionnalités: Accès rapide latéral, sangle ajustable, compartiment rembourré pour boîtier et objectifs.",
+    "prix": 590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Sacoche en bandoulière outdoor",
+      "Capacité": "10 litres",
+      "Matériau": "Nylon déperlant et maille respirante",
+      "Fonctionnalités": "Accès rapide latéral, sangle ajustable, compartiment rembourré pour boîtier et objectifs",
+      "Usage": "Photographie de rue, balades légères, vlogging"
+    }
+  },
+  {
+    "nom": "K&F Concept Sling Bag 10L Nature Wander Black",
+    "description": "Sacoche en bandoulière outdoor. Capacité: 10L. Matériau: Nylon déperlant et maille respirante. Fonctionnalités: Accès rapide latéral, sangle ajustable, compartiment rembourré pour boîtier et objectifs.",
+    "prix": 590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Sacoche en bandoulière outdoor",
+      "Capacité": "10 litres",
+      "Matériau": "Nylon déperlant et maille respirante",
+      "Fonctionnalités": "Accès rapide latéral, sangle ajustable, compartiment rembourré pour boîtier et objectifs",
+      "Usage": "Photographie de rue, balades légères, vlogging"
+    }
+  },
+  {
+    "nom": "K&F Concept Sling bag 10L Nature wander (Black+ Gris)",
+    "description": "Sacoche en bandoulière outdoor. Capacité: 10L. Matériau: Nylon déperlant et maille respirante. Fonctionnalités: Accès rapide latéral, sangle ajustable, compartiment rembourré pour boîtier et objectifs.",
+    "prix": 590.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Sacoche en bandoulière outdoor",
+      "Capacité": "10 litres",
+      "Matériau": "Nylon déperlant et maille respirante",
+      "Fonctionnalités": "Accès rapide latéral, sangle ajustable, compartiment rembourré pour boîtier et objectifs",
+      "Usage": "Photographie de rue, balades légères, vlogging"
+    }
+  },
+  {
+    "nom": "K&F KF13.163 – Sling Bag 10L Nature Wander",
+    "description": "Sacoche en bandoulière outdoor. Capacité: 10L. Matériau: Nylon déperlant et maille respirante. Fonctionnalités: Accès rapide latéral, sangle ajustable, compartiment rembourré pour boîtier et objectifs.",
+    "prix": 490.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Sacoche en bandoulière outdoor",
+      "Capacité": "10 litres",
+      "Matériau": "Nylon déperlant et maille respirante",
+      "Fonctionnalités": "Accès rapide latéral, sangle ajustable, compartiment rembourré pour boîtier et objectifs",
+      "Usage": "Photographie de rue, balades légères, vlogging"
+    }
+  },
+  {
+    "nom": "K&F Sling Bag 5L Urban Wander Black KF13.168V 2",
+    "description": "Sacoche en bandoulière urbaine. Capacité: 5L. Matériau: Nylon déperlant et maille respirante. Fonctionnalités: Accès rapide latéral, sangle ajustable, compartiment rembourré pour petit boîtier et 1-2 objectifs.",
+    "prix": 350.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Sacoche en bandoulière compacte",
+      "Capacité": "5 litres",
+      "Matériau": "Nylon déperlant et maille respirante",
+      "Fonctionnalités": "Accès rapide latéral, sangle ajustable, compartiment rembourré pour petit boîtier et 1-2 objectifs",
+      "Usage": "Photographie de rue, balades légères, vlogging"
+    }
+  },
+  {
+    "nom": "Sac de transport SmallRig pour DJI Osmo Pocket 3",
+    "description": "Housse de transport rigide. Matériau: EVA semi-rigide avec intérieur en velours. Fonctionnalités: Protection contre les chocs, compacte, mousqueton d'attache.",
+    "prix": 290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Housse de transport rigide",
+      "Compatibilité": "DJI Osmo Pocket 3",
+      "Matériau": "EVA semi-rigide avec intérieur en velours",
+      "Fonctionnalités": "Protection contre les chocs, compacte, mousqueton d'attache",
+      "Usage": "Transport sécurisé de la caméra et de ses petits accessoires"
+    }
+  },
+  {
+    "nom": "Sacoche pour objectif",
+    "description": "Étui souple pour objectif. Matériau: Néoprène et tissu imperméable. Fonctionnalités: Fond renforcé, cordon de serrage ou fermeture éclair, attache ceinture.",
+    "prix": 290.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Étui souple pour objectif",
+      "Matériau": "Néoprène et tissu imperméable",
+      "Fonctionnalités": "Fond renforcé, cordon de serrage ou fermeture éclair, attache ceinture",
+      "Usage": "Protection rapide et légère pour objectif en déplacement"
+    }
+  },
+  {
+    "nom": "SONY LCS-U21 Housse de Transport Souple Universelle",
+    "description": "Housse de transport souple universelle. Matériau: Nylon souple avec rembourrage interne. Fonctionnalités: Fermeture éclair double sens, bandoulière réglable, poche avant pour cartes SD et batterie.",
+    "prix": 679.00,
+    "devise": "MAD",
+    "en_stock": true,
+    "specifications_techniques": {
+      "Type": "Housse de transport souple universelle",
+      "Compatibilité": "Appareils hybrides et compacts avec objectif monté",
+      "Matériau": "Nylon souple avec rembourrage interne",
+      "Fonctionnalités": "Fermeture éclair double sens, bandoulière réglable, poche avant pour cartes SD et batterie",
+      "Usage": "Protection et transport quotidien d'un kit hybride compact"
+    }
+  }
+]
