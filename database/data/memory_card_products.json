@@ -1,0 +1,409 @@
+[
+  {
+    "name": "Carte CFexpress Type B professionnelle Lexar 256 Go",
+    "price": "MAD 4.900,00",
+    "description": "Carte mémoire professionnelle haute performance conçue pour les appareils photo et caméras cinéma exigeants. Offre des vitesses d'écriture soutenues pour l'enregistrement vidéo 4K/8K et la prise de vue en rafale.",
+    "technical_specs": {
+      "capacity": "256 Go",
+      "type": "CFexpress Type B",
+      "interface": "PCIe 3.0 / NVMe",
+      "use_case": "Vidéo 4K/8K, rafale haute vitesse"
+    }
+  },
+  {
+    "name": "Carte mémoire microSDXC Insta360 128 Go",
+    "price": "MAD 590,00",
+    "description": "Carte mémoire officielle conçue pour les caméras Insta360. Elle garantit un enregistrement fluide et stable des vidéos haute résolution sans interruption.",
+    "technical_specs": {
+      "capacity": "128 Go",
+      "type": "microSDXC",
+      "interface": "UHS-I",
+      "speed_class": "V30, A1",
+      "min_write_speed": "30 Mo/s"
+    }
+  },
+  {
+    "name": "Carte mémoire microSDXC SanDisk Extreme 128 Go avec adaptateur SD",
+    "price": "MAD 300,00",
+    "description": "Carte polyvalente idéale pour les smartphones Android, les drones et les caméras d'action. Permet la capture de vidéos Full HD et 4K avec des performances d'application améliorées.",
+    "technical_specs": {
+      "capacity": "128 Go",
+      "type": "microSDXC",
+      "interface": "UHS-I",
+      "speed_class": "V30, U3, A2",
+      "included": "Adaptateur SD"
+    }
+  },
+  {
+    "name": "Carte mémoire microSDXC SanDisk Extreme 256 Go avec adaptateur SD",
+    "price": "MAD 600,00",
+    "description": "Version haute capacité de la gamme Extreme, offrant un stockage généreux pour les longues sessions d'enregistrement vidéo 4K UHD et les photos en rafale.",
+    "technical_specs": {
+      "capacity": "256 Go",
+      "type": "microSDXC",
+      "interface": "UHS-I",
+      "speed_class": "V30, U3, A2",
+      "included": "Adaptateur SD"
+    }
+  },
+  {
+    "name": "Carte mémoire microSDXC SanDisk Extreme 512 Go avec adaptateur SD",
+    "price": "MAD 800,00",
+    "description": "Solution de stockage maximale pour les créateurs de contenu. Résistante aux conditions extrêmes (eau, chocs, rayons X, températures de -13°C à 185°C).",
+    "technical_specs": {
+      "capacity": "512 Go",
+      "type": "microSDXC",
+      "interface": "UHS-I",
+      "speed_class": "V30, U3, A2",
+      "read_speed": "Jusqu'à 160 Mo/s",
+      "included": "Adaptateur SD"
+    }
+  },
+  {
+    "name": "Carte mémoire microSDXC SanDisk Extreme 64 Go avec adaptateur SD",
+    "price": "MAD 250,00",
+    "description": "Carte d'entrée de gamme fiable de la série Extreme, parfaite pour la vidéo Full HD et une utilisation quotidienne sur smartphone ou caméra d'action.",
+    "technical_specs": {
+      "capacity": "64 Go",
+      "type": "microSDXC",
+      "interface": "UHS-I",
+      "speed_class": "V30, U3, A2",
+      "included": "Adaptateur SD"
+    }
+  },
+  {
+    "name": "Carte mémoire SanDisk Extreme PRO 128 Go",
+    "price": "MAD 490,00",
+    "description": "Carte SD professionnelle offrant des vitesses de transfert élevées pour les photographes et vidéastes exigeants. Idéale pour les vidéos 4K et la prise de vue en rafale.",
+    "technical_specs": {
+      "capacity": "128 Go",
+      "type": "SDXC",
+      "interface": "UHS-I",
+      "speed_class": "V30, U3",
+      "read_speed": "Jusqu'à 200 Mo/s",
+      "write_speed": "Jusqu'à 140 Mo/s"
+    }
+  },
+  {
+    "name": "Carte mémoire SanDisk Extreme PRO 256 Go",
+    "price": "MAD 750,00",
+    "description": "Version 256 Go de la carte Extreme PRO, offrant un espace de stockage accru sans compromis sur les performances de vitesse et la durabilité.",
+    "technical_specs": {
+      "capacity": "256 Go",
+      "type": "SDXC",
+      "interface": "UHS-I",
+      "speed_class": "V30, U3",
+      "read_speed": "Jusqu'à 200 Mo/s",
+      "write_speed": "Jusqu'à 140 Mo/s"
+    }
+  },
+  {
+    "name": "Carte mémoire SanDisk Extreme PRO 32 Go",
+    "price": "MAD 250,00",
+    "description": "Carte SD compacte et performante pour les appareils photo reflex et hybrides, garantissant des vitesses d'écriture minimales de 30 Mo/s.",
+    "technical_specs": {
+      "capacity": "32 Go",
+      "type": "SDHC",
+      "interface": "UHS-I",
+      "speed_class": "V30, U3",
+      "read_speed": "Jusqu'à 100 Mo/s"
+    }
+  },
+  {
+    "name": "Carte mémoire SanDisk Extreme PRO 64 Go",
+    "price": "MAD 300,00",
+    "description": "Carte SDHC haute performance pour la vidéo Full HD et 4K, avec une construction robuste résistante aux conditions environnementales difficiles.",
+    "technical_specs": {
+      "capacity": "64 Go",
+      "type": "SDXC",
+      "interface": "UHS-I",
+      "speed_class": "V30, U3",
+      "read_speed": "Jusqu'à 170 Mo/s"
+    }
+  },
+  {
+    "name": "Carte mémoire Sandisk Extreme Pro SDXC UHS-I 512GB/1700MB 1400MB V30",
+    "price": "MAD 5.500,00",
+    "description": "Carte mémoire professionnelle de très haute capacité avec des vitesses de transfert ultra-rapides grâce à la technologie SanDisk QuickFlow. Idéale pour les workflows vidéo 8K et 4K intensifs.",
+    "technical_specs": {
+      "capacity": "512 Go",
+      "type": "SDXC",
+      "interface": "UHS-I",
+      "speed_class": "V30, U3",
+      "read_speed": "Jusqu'à 170 Mo/s (ou 190 Mo/s avec lecteur compatible)",
+      "write_speed": "Jusqu'à 140 Mo/s"
+    }
+  },
+  {
+    "name": "Carte mémoire Sony CFexpress Type A TOUGH 80 Go",
+    "price": "MAD 2.400,00",
+    "description": "Carte mémoire ultra-résistante conçue pour les appareils photo Sony Alpha. Elle offre une durabilité exceptionnelle (résistance à la flexion, aux chocs et à l'eau) et des vitesses de transfert très élevées.",
+    "technical_specs": {
+      "capacity": "80 Go",
+      "type": "CFexpress Type A",
+      "read_speed": "Jusqu'à 700 Mo/s",
+      "write_speed": "Jusqu'à 650 Mo/s",
+      "durability": "TOUGH (résistante aux chocs, à l'eau et à la flexion)"
+    }
+  },
+  {
+    "name": "Carte SDXC Lexar 128 Go Professionnel Argent Plus UHS-I V30",
+    "price": "MAD 590,00",
+    "description": "Carte SD haute performance de la série Silver Plus, offrant des vitesses d'écriture rapides pour un enregistrement vidéo 4K fluide et des transferts de fichiers efficaces.",
+    "technical_specs": {
+      "capacity": "128 Go",
+      "type": "SDXC",
+      "interface": "UHS-I",
+      "speed_class": "V30",
+      "read_speed": "255 Mo/s",
+      "write_speed": "180 Mo/s"
+    }
+  },
+  {
+    "name": "Carte SDXC Lexar 256 Go Professionnel Argent Plus UHS-I V30",
+    "price": "MAD 890,00",
+    "description": "Version 256 Go de la carte Silver Plus, offrant un stockage étendu pour les longues sessions de tournage en 4K sans sacrifier les vitesses de transfert.",
+    "technical_specs": {
+      "capacity": "256 Go",
+      "type": "SDXC",
+      "interface": "UHS-I",
+      "speed_class": "V30",
+      "read_speed": "255 Mo/s",
+      "write_speed": "180 Mo/s"
+    }
+  },
+  {
+    "name": "Étui pour carte mémoire SmallRig 2832B",
+    "price": "MAD 140,00",
+    "description": "Étui de rangement compact et résistant aux chocs pour organiser et protéger vos cartes mémoire lors de vos déplacements.",
+    "technical_specs": {
+      "capacity": "25 emplacements",
+      "compatibility": "SD, microSD, CF, CFexpress, Nano SIM, Micro SIM",
+      "material": "Alliage d'aluminium et silicone",
+      "model": "2832B"
+    }
+  },
+  {
+    "name": "Insta 360 Carte mémoire microSD 256 GB (PRO)",
+    "price": "MAD 890,00",
+    "description": "Carte microSD haute performance officiellement certifiée pour les caméras Insta360, garantissant un enregistrement stable en 5.7K et 8K sans perte de données.",
+    "technical_specs": {
+      "capacity": "256 Go",
+      "type": "microSDXC",
+      "interface": "UHS-I",
+      "speed_class": "V30, A1",
+      "format": "exFAT"
+    }
+  },
+  {
+    "name": "Insta360 Carte Mémoire MicroSD 512 Go (PRO)",
+    "price": "MAD 990,00",
+    "description": "La capacité maximale pour les utilisateurs intensifs d'Insta360. Permet des heures d'enregistrement continu en haute résolution sans avoir à changer de carte.",
+    "technical_specs": {
+      "capacity": "512 Go",
+      "type": "microSDXC",
+      "interface": "UHS-I",
+      "speed_class": "V30, A1",
+      "format": "exFAT"
+    }
+  },
+  {
+    "name": "Insta360 Carte mémoire 64GB",
+    "price": "MAD 390,00",
+    "description": "Carte mémoire d'entrée de gamme certifiée Insta360, idéale pour un usage occasionnel ou pour les modèles de caméra nécessitant moins de stockage.",
+    "technical_specs": {
+      "capacity": "64 Go",
+      "type": "microSDXC",
+      "interface": "UHS-I",
+      "speed_class": "V30"
+    }
+  },
+  {
+    "name": "K&F Concept Carte Mémoire 32G Micro SD",
+    "price": "MAD 140,00",
+    "description": "Carte mémoire économique et fiable pour un stockage de base sur smartphones, tablettes ou petites caméras d'action.",
+    "technical_specs": {
+      "capacity": "32 Go",
+      "type": "microSDHC",
+      "interface": "UHS-I",
+      "speed_class": "U1, Class 10"
+    }
+  },
+  {
+    "name": "K&F Concept Carte Mémoire 64G Micro SD",
+    "price": "MAD 190,00",
+    "description": "Carte haute capacité offrant un bon rapport qualité-prix pour la photographie et la vidéo Full HD sur une large gamme d'appareils compatibles.",
+    "technical_specs": {
+      "capacity": "64 Go",
+      "type": "microSDXC",
+      "interface": "UHS-I",
+      "speed_class": "V30, A1"
+    }
+  },
+  {
+    "name": "K&F Concept Carte Mémoire 64GB",
+    "price": "MAD 190,00",
+    "description": "Variante de la carte 64 Go K&F Concept, optimisée pour une compatibilité étendue avec les drones, les dashcams et les appareils photo.",
+    "technical_specs": {
+      "capacity": "64 Go",
+      "type": "microSDXC",
+      "interface": "UHS-I",
+      "speed_class": "V30, A1"
+    }
+  },
+  {
+    "name": "Lecteur de cartes mémoire SmallRig 5 en 1 pour la photographie de voyage",
+    "price": "MAD 390,00",
+    "description": "Lecteur de cartes compact et polyvalent, parfait pour les photographes en voyage. Permet un transfert rapide des données vers un ordinateur ou un smartphone.",
+    "technical_specs": {
+      "interfaces": "USB-C, USB-A, SD, microSD, Lightning",
+      "compatibility": "Windows, macOS, iOS, Android",
+      "material": "Alliage d'aluminium"
+    }
+  },
+  {
+    "name": "Lecteur SD to Type C",
+    "price": "MAD 490,00",
+    "description": "Lecteur de carte SD simple et efficace avec connexion USB Type-C, idéal pour les ordinateurs portables modernes et les tablettes.",
+    "technical_specs": {
+      "interface_in": "SD / microSD",
+      "interface_out": "USB Type-C",
+      "transfer_speed": "Haute vitesse (UHS-I compatible)"
+    }
+  },
+  {
+    "name": "Lexar 128GB V60 1800x SDXC UHS-II GOLD Series",
+    "price": "MAD 990,00",
+    "description": "Carte professionnelle de la série Gold, conçue pour les vidéastes et photographes exigeants. L'interface UHS-II permet des vitesses d'écriture soutenues pour la vidéo 4K et 8K.",
+    "technical_specs": {
+      "capacity": "128 Go",
+      "type": "SDXC",
+      "interface": "UHS-II",
+      "speed_class": "V60, U3",
+      "read_speed": "Jusqu'à 270 Mo/s (1800x)",
+      "write_speed": "Jusqu'à 150 Mo/s"
+    }
+  },
+  {
+    "name": "Lexar 160GB Professional CFexpress Type A Card GOLD",
+    "price": "MAD 1.490,00",
+    "description": "Carte CFexpress Type A haute performance, offrant une alternative rapide et fiable aux cartes SD traditionnelles pour les appareils photo Sony et Nikon compatibles.",
+    "technical_specs": {
+      "capacity": "160 Go",
+      "type": "CFexpress Type A",
+      "read_speed": "Jusqu'à 800 Mo/s",
+      "write_speed": "Jusqu'à 700 Mo/s"
+    }
+  },
+  {
+    "name": "Lexar 256GB V60 1800x SDXC UHS-II GOLD Series",
+    "price": "MAD 1.290,00",
+    "description": "Version 256 Go de la carte Gold UHS-II, offrant un espace de stockage doublé pour les projets vidéo de longue durée sans compromis sur la vitesse.",
+    "technical_specs": {
+      "capacity": "256 Go",
+      "type": "SDXC",
+      "interface": "UHS-II",
+      "speed_class": "V60, U3",
+      "read_speed": "Jusqu'à 270 Mo/s",
+      "write_speed": "Jusqu'à 150 Mo/s"
+    }
+  },
+  {
+    "name": "Lexar SL500 1TB Disque Dur SSD Portable",
+    "price": "MAD 2.239,00",
+    "description": "SSD portable robuste et compact, idéal pour sauvegarder et transporter de grands volumes de données (vidéos, photos) avec des vitesses de transfert élevées.",
+    "technical_specs": {
+      "capacity": "1 To",
+      "type": "SSD Portable",
+      "interface": "USB 3.2 Gen 2 Type-C",
+      "read_speed": "Jusqu'à 550 Mo/s",
+      "durability": "Résistant aux chocs"
+    }
+  },
+  {
+    "name": "Lexar SL500 2TB Disque Dur SSD Portable",
+    "price": "MAD 2.790,00",
+    "description": "Version 2 To du SSD portable SL500, offrant une capacité massive pour les professionnels de la création de contenu qui ont besoin de stocker des bibliothèques de fichiers volumineux.",
+    "technical_specs": {
+      "capacity": "2 To",
+      "type": "SSD Portable",
+      "interface": "USB 3.2 Gen 2 Type-C",
+      "read_speed": "Jusqu'à 550 Mo/s"
+    }
+  },
+  {
+    "name": "Lexar SL500 4TB Disque Dur SSD Portable",
+    "price": "MAD 4.890,00",
+    "description": "La capacité ultime de la gamme SL500, conçue pour les studios et les professionnels nécessitant un stockage portable de très haute capacité et fiable.",
+    "technical_specs": {
+      "capacity": "4 To",
+      "type": "SSD Portable",
+      "interface": "USB 3.2 Gen 2 Type-C",
+      "read_speed": "Jusqu'à 550 Mo/s"
+    }
+  },
+  {
+    "name": "Lightning 3 in 2 SD",
+    "price": "MAD 390,00",
+    "description": "Lecteur de cartes compact avec connecteur Lightning, permettant de transférer des photos et vidéos directement depuis une carte SD/microSD vers un iPhone ou un iPad.",
+    "technical_specs": {
+      "interface_in": "SD / microSD",
+      "interface_out": "Apple Lightning",
+      "compatibility": "iOS (iPhone/iPad)"
+    }
+  },
+  {
+    "name": "SmallRig 4-in-1 USB-C Hub",
+    "price": "MAD 390,00",
+    "description": "Hub USB-C compact et polyvalent, ajoutant plusieurs ports essentiels à votre ordinateur portable ou tablette, incluant des lecteurs de cartes intégrés.",
+    "technical_specs": {
+      "ports": "USB-C, USB-A, SD, microSD",
+      "interface": "USB-C",
+      "material": "Alliage d'aluminium"
+    }
+  },
+  {
+    "name": "Sony CFexpress 240GB Type A Tough 1700MB/s",
+    "price": "MAD 4.900,00",
+    "description": "Carte CFexpress Type A haut de gamme de Sony, offrant des vitesses de transfert ultra-rapides pour les vidéos 4K 120p et 8K, avec une durabilité TOUGH exceptionnelle.",
+    "technical_specs": {
+      "capacity": "240 Go",
+      "type": "CFexpress Type A",
+      "read_speed": "Jusqu'à 1700 Mo/s",
+      "write_speed": "Jusqu'à 1480 Mo/s",
+      "durability": "TOUGH (résistante aux chocs, à l'eau et à la flexion)"
+    }
+  },
+  {
+    "name": "Sony TOUGH CFexpress Serie G Type A 160Gb – Carte Mémoire",
+    "price": "MAD 4.900,00",
+    "description": "Carte mémoire professionnelle de la série G, combinant la robustesse légendaire TOUGH de Sony avec les vitesses fulgurantes du format CFexpress Type A.",
+    "technical_specs": {
+      "capacity": "160 Go",
+      "type": "CFexpress Type A",
+      "series": "G Series",
+      "read_speed": "Jusqu'à 1700 Mo/s",
+      "write_speed": "Jusqu'à 1480 Mo/s"
+    }
+  },
+  {
+    "name": "Station d'accueil SmallRig CFexpress Type A 9 en 1",
+    "price": "MAD 990,00",
+    "description": "Station d'accueil complète et robuste, offrant une connectivité étendue pour les créateurs de contenu, incluant des lecteurs de cartes CFexpress Type A et SD, ainsi que plusieurs ports USB et vidéo.",
+    "technical_specs": {
+      "ports": "CFexpress Type A, SD, USB-C, USB-A, HDMI, Ethernet, etc.",
+      "total_ports": "9",
+      "compatibility": "Windows, macOS"
+    }
+  },
+  {
+    "name": "USB to Type C 8 in 1",
+    "price": "MAD 490,00",
+    "description": "Hub multifonction 8 en 1 avec connecteur USB-C, idéal pour étendre les capacités de connexion d'un ordinateur portable moderne avec des ports hérités et des lecteurs de cartes.",
+    "technical_specs": {
+      "ports": "8 (incluant USB-A, USB-C, HDMI, SD, microSD)",
+      "interface": "USB Type-C",
+      "compatibility": "Windows, macOS, Android"
+    }
+  }
+]
