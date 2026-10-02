@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             LightingStudioProductsSeeder::class,
             AudioPodcastProductsSeeder::class,
             CameraBagProductsSeeder::class,
+            TripodSupportProductsSeeder::class,
         ]);
     }
 }
