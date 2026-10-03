@@ -1,8 +1,7 @@
 @extends('layouts.frontend')
 
 @section('meta_title', $product->name . ' — ' . setting('app_name', 'Full Frame House') . ' Maroc')
-@section('meta_description', Str::limit(strip_tags($product->description), 155) ?: 'Achetez ' . $product->name . ' au meilleur prix au Maroc chez ' . setting('app_name', 'Full Frame House') . '. Garantie 2 ans et livraison express.')
-@section('meta_keywords', $product->name . ', ' . ($product->category_name ?? 'caméra') . ', acheter ' . $product->name . ' Maroc, prix ' . $product->name . ', ' . setting('app_name', 'Full Frame House'))
+@section('meta_description', Str::limit(strip_tags($product->description), 155) ?: $product->name . ' — ' . setting('app_name', 'Full Frame House'))
 @section('meta_type', 'product')
 @section('meta_image', $product->thumbnail)
 
@@ -25,29 +24,16 @@
     "@context": "https://schema.org/",
     "@type": "Product",
     "name": "{{ addslashes($product->name) }}",
-    "image": [
-      "{{ $product->thumbnail }}"
-    ],
+    "image": ["{{ $product->thumbnail }}"],
     "description": "{{ addslashes(Str::limit(strip_tags($product->description), 155)) }}",
     "sku": "{{ $product->sku ?? 'PROD-' . $product->id }}",
-    "mpn": "{{ $product->sku ?? 'PROD-' . $product->id }}",
-    @if($product->category_name)
-    "brand": {
-      "@type": "Brand",
-      "name": "{{ addslashes($product->category_name) }}"
-    },
-    @endif
     "offers": {
       "@type": "Offer",
       "url": "{{ url()->current() }}",
       "priceCurrency": "{{ setting('currency_code', 'MAD') }}",
       "price": "{{ $product->isOnSale() ? $product->sale_price : $product->price }}",
       "itemCondition": "https://schema.org/NewCondition",
-      "availability": "{{ $product->isInStock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
-      "seller": {
-        "@type": "Organization",
-        "name": "{{ addslashes(setting('app_name', 'Full Frame House')) }}"
-      }
+      "availability": "{{ $product->isInStock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}"
     }
     @if($reviewCount > 0)
     ,
@@ -59,62 +45,20 @@
       "worstRating": "1"
     }
     @endif
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Accueil",
-        "item": "{{ url('/') }}"
-      },
-      {
-        "@type": "ListItem",
-        "position": 2,
-        "name": "Boutique",
-        "item": "{{ route('shop.index') }}"
-      }
-      @if($product->category_name && optional($product->category)->slug)
-      ,{
-        "@type": "ListItem",
-        "position": 3,
-        "name": "{{ addslashes($product->category_name) }}",
-        "item": "{{ route('shop.index', ['category' => optional($product->category)->slug]) }}"
-      },
-      {
-        "@type": "ListItem",
-        "position": 4,
-        "name": "{{ addslashes($product->name) }}",
-        "item": "{{ url()->current() }}"
-      }
-      @else
-      ,{
-        "@type": "ListItem",
-        "position": 3,
-        "name": "{{ addslashes($product->name) }}",
-        "item": "{{ url()->current() }}"
-      }
-      @endif
-    ]
   }
 ]
 </script>
 @endsection
 
-
 @section('content')
 
-{{-- =============================================
-     PRODUCT HERO STRIP (dark, matching site design)
-     ============================================= --}}
+{{-- BREADCRUMB --}}
 <section class="pdp-breadcrumb-bar">
     <div class="container">
         <nav class="pdp-breadcrumb" aria-label="breadcrumb">
             <a href="{{ url('/') }}"><i class="fas fa-home"></i></a>
             <span class="pdp-bc-sep">/</span>
-            <a href="{{ route('shop.index') }}">Catalogue</a>
+            <a href="{{ route('shop.index') }}">{{ __('Catalogue') }}</a>
             @if($product->category_name)
                 <span class="pdp-bc-sep">/</span>
                 <a href="{{ route('shop.index', ['category' => optional($product->category)->slug]) }}">{{ $product->category_name }}</a>
@@ -125,9 +69,7 @@
     </div>
 </section>
 
-{{-- =============================================
-     MAIN PRODUCT LAYOUT
-     ============================================= --}}
+{{-- MAIN PRODUCT LAYOUT --}}
 <section class="pdp-body">
     <div class="container">
 
@@ -141,54 +83,45 @@
         <div class="pdp-card">
             <div class="row g-0">
 
-                {{-- ── IMAGE PANEL ── --}}
+                {{-- IMAGE PANEL --}}
                 <div class="col-lg-6 pdp-image-panel">
-                    {{-- Main Image --}}
                     <div class="pdp-main-image-wrap" id="zoomWrap" onmousemove="pdpZoom(event)">
                         <img id="mainImage" src="{{ $product->thumbnail }}"
                              alt="{{ $product->name }}" class="pdp-main-image">
 
-                        {{-- Badges --}}
                         <div class="pdp-badges">
                             @if(!$product->isInStock())
-                                <span class="pdp-badge pdp-badge--oos">Rupture de stock</span>
+                                <span class="pdp-badge pdp-badge--oos">{{ __('Out of stock') }}</span>
                             @elseif($product->created_at->diffInDays(now()) < 14)
-                                <span class="pdp-badge pdp-badge--new">Nouveau</span>
+                                <span class="pdp-badge pdp-badge--new">{{ __('New') }}</span>
                             @elseif($product->isOnSale())
                                 <span class="pdp-badge pdp-badge--sale">−{{ $product->discount_percentage }}%</span>
                             @endif
                         </div>
                     </div>
 
-                    {{-- Thumbnail Strip --}}
                     @if($product->images->count() > 0)
                     <div class="pdp-thumbs">
-                        {{-- First thumb = main image --}}
-                        <div class="pdp-thumb active"
-                             onclick="pdpChangeImage('{{ $product->thumbnail }}', this)">
-                            <img src="{{ $product->thumbnail }}" alt="Main" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                        <div class="pdp-thumb active" onclick="pdpChangeImage('{{ $product->thumbnail }}', this)">
+                            <img src="{{ $product->thumbnail }}" alt="{{ __('Product') }}" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                         </div>
                         @foreach($product->images as $img)
-                        <div class="pdp-thumb"
-                             onclick="pdpChangeImage('{{ $img->url }}', this)">
-                            <img src="{{ $img->url }}" alt="Vue {{ $loop->iteration + 1 }}" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                        <div class="pdp-thumb" onclick="pdpChangeImage('{{ $img->url }}', this)">
+                            <img src="{{ $img->url }}" alt="{{ __('View') }} {{ $loop->iteration + 1 }}" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                         </div>
                         @endforeach
                     </div>
                     @endif
                 </div>
 
-                {{-- ── INFO PANEL ── --}}
+                {{-- INFO PANEL --}}
                 <div class="col-lg-6 pdp-info-panel">
-                    {{-- Category --}}
                     @if($product->category_name)
                     <div class="pdp-cat-label">{{ $product->category_name }}</div>
                     @endif
 
-                    {{-- Title --}}
                     <h1 class="pdp-title">{{ $product->name }}</h1>
 
-                    {{-- Rating Row --}}
                     @if($reviews->total() > 0)
                     <div class="pdp-rating-row">
                         <div class="pdp-stars">
@@ -197,11 +130,10 @@
                                 <i class="fa{{ $i < round($avg) ? 's' : 'r' }} fa-star"></i>
                             @endfor
                         </div>
-                        <span class="pdp-rating-count">{{ number_format($avg, 1) }} ({{ $reviews->total() }} avis)</span>
+                        <span class="pdp-rating-count">{{ number_format($avg, 1) }} ({{ $reviews->total() }} {{ __('reviews') }})</span>
                     </div>
                     @endif
 
-                    {{-- Price --}}
                     <div class="pdp-price-row">
                         @if($product->isOnSale())
                             <span class="pdp-price-main">{{ $product->formatted_sale_price }}</span>
@@ -212,26 +144,23 @@
                         @endif
                         @if($product->isInStock())
                             <span class="pdp-stock-badge pdp-stock-badge--in">
-                                <i class="fas fa-check-circle me-1"></i>En stock
+                                <i class="fas fa-check-circle me-1"></i>{{ __('In stock') }}
                             </span>
                         @else
                             <span class="pdp-stock-badge pdp-stock-badge--out">
-                                <i class="fas fa-times-circle me-1"></i>Rupture
+                                <i class="fas fa-times-circle me-1"></i>{{ __('Out of stock') }}
                             </span>
                         @endif
                     </div>
 
-                    {{-- Description --}}
                     @if($product->description)
                     <div class="pdp-description">
                         {!! nl2br(e($product->description)) !!}
                     </div>
                     @endif
 
-                    {{-- Divider --}}
                     <div class="pdp-divider"></div>
 
-                    {{-- Add to Cart Form --}}
                     <form id="addToCartForm" onsubmit="pdpAddToCart(event)">
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -249,33 +178,29 @@
                             <button type="submit" id="addToCartBtn" class="pdp-add-btn"
                                     {{ !$product->isInStock() ? 'disabled' : '' }}>
                                 <i class="fas fa-cart-plus me-2"></i>
-                                <span id="addToCartText">Ajouter au panier</span>
+                                <span id="addToCartText">{{ __('Add to Cart') }}</span>
                             </button>
                         </div>
                     </form>
 
-                    {{-- Trust Pills --}}
                     <div class="pdp-trust-row">
-                        <div class="pdp-trust-pill"><i class="fas fa-shield-halved"></i> Garantie 2 Ans</div>
-                        <div class="pdp-trust-pill"><i class="fas fa-truck-fast"></i> Livraison Sécurisée 24/48h</div>
-                        <div class="pdp-trust-pill"><i class="fas fa-file-invoice"></i> Facturation ICE</div>
-                        <div class="pdp-trust-pill"><i class="fas fa-video"></i> Démo Showroom Casablanca</div>
+                        <div class="pdp-trust-pill"><i class="fas fa-shield-halved"></i> {{ __('2-Year Warranty') }}</div>
+                        <div class="pdp-trust-pill"><i class="fas fa-truck-fast"></i> {{ __('Secure Delivery 24/48h') }}</div>
+                        <div class="pdp-trust-pill"><i class="fas fa-file-invoice"></i> {{ __('ICE Invoicing') }}</div>
+                        <div class="pdp-trust-pill"><i class="fas fa-video"></i> {{ __('Showroom Demo Casablanca') }}</div>
                     </div>
                 </div>
 
             </div>
         </div>
 
-        {{-- =============================================
-             REVIEWS + WRITE A REVIEW
-             ============================================= --}}
+        {{-- REVIEWS --}}
         <div class="row g-4 mt-4">
-            {{-- Reviews List --}}
             <div class="col-lg-8">
                 <div class="pdp-section-card">
                     <h3 class="pdp-section-title">
                         <i class="fas fa-star me-2 text-accent"></i>
-                        Avis clients <span class="pdp-section-count">({{ $reviews->total() }})</span>
+                        {{ __('Customer reviews') }} <span class="pdp-section-count">({{ $reviews->total() }})</span>
                     </h3>
 
                     @forelse($reviews as $review)
@@ -290,13 +215,13 @@
                         </div>
                         <p class="pdp-review-body">{{ $review->comment }}</p>
                         <div class="pdp-review-meta">
-                            Par <strong>{{ $review->customer_name }}</strong> · {{ $review->created_at->format('d M Y') }}
+                            {{ __('By') }} <strong>{{ $review->customer_name }}</strong> · {{ $review->created_at->format('d M Y') }}
                         </div>
                     </div>
                     @empty
                     <div class="pdp-review-empty">
                         <i class="far fa-comment-dots"></i>
-                        <p>Aucun avis pour le moment. Soyez le premier à partager le vôtre !</p>
+                        <p>{{ __('No reviews yet. Be the first!') }}</p>
                     </div>
                     @endforelse
 
@@ -312,7 +237,7 @@
             <div class="col-lg-4">
                 <div class="pdp-section-card">
                     <h3 class="pdp-section-title">
-                        <i class="fas fa-pen me-2 text-accent"></i>Laisser un avis
+                        <i class="fas fa-pen me-2 text-accent"></i>{{ __('Write a review') }}
                     </h3>
                     <form action="{{ route('reviews.store') }}" method="POST" class="pdp-review-form">
                         @csrf
@@ -320,61 +245,59 @@
 
                         @guest
                         <div class="pdp-form-group">
-                            <label class="pdp-form-label">Votre nom</label>
+                            <label class="pdp-form-label">{{ __('Your name') }}</label>
                             <input type="text" name="customer_name" class="pdp-form-input"
-                                   placeholder="Jean Dupont" value="{{ old('customer_name') }}" required>
+                                   placeholder="{{ app()->getLocale() === 'ar' ? 'مثال: محمد الأمين' : 'ex. Jean Dupont' }}" value="{{ old('customer_name') }}" required>
                             @error('customer_name')<span class="pdp-form-error">{{ $message }}</span>@enderror
                         </div>
                         <div class="pdp-form-group">
-                            <label class="pdp-form-label">Votre email</label>
+                            <label class="pdp-form-label">{{ __('Your email') }}</label>
                             <input type="email" name="customer_email" class="pdp-form-input"
-                                   placeholder="jean@exemple.com" value="{{ old('customer_email') }}" required>
+                                   placeholder="email@exemple.com" value="{{ old('customer_email') }}" required>
                             @error('customer_email')<span class="pdp-form-error">{{ $message }}</span>@enderror
                         </div>
                         @endguest
 
                         <div class="pdp-form-group">
-                            <label class="pdp-form-label">Note</label>
+                            <label class="pdp-form-label">{{ __('Rating') }}</label>
                             <select name="rating" class="pdp-form-select" required>
-                                <option value="5">★★★★★ Excellent (5/5)</option>
-                                <option value="4">★★★★☆ Très bien (4/5)</option>
-                                <option value="3">★★★☆☆ Bien (3/5)</option>
-                                <option value="2">★★☆☆☆ Moyen (2/5)</option>
-                                <option value="1">★☆☆☆☆ Mauvais (1/5)</option>
+                                <option value="5">★★★★★ {{ __('Excellent (5/5)') }}</option>
+                                <option value="4">★★★★☆ {{ __('Very good (4/5)') }}</option>
+                                <option value="3">★★★☆☆ {{ __('Good (3/5)') }}</option>
+                                <option value="2">★★☆☆☆ {{ __('Average (2/5)') }}</option>
+                                <option value="1">★☆☆☆☆ {{ __('Bad (1/5)') }}</option>
                             </select>
                         </div>
 
                         <div class="pdp-form-group">
-                            <label class="pdp-form-label">Titre</label>
+                            <label class="pdp-form-label">{{ __('Title') }}</label>
                             <input type="text" name="title" class="pdp-form-input"
-                                   placeholder="Résumé de votre expérience" value="{{ old('title') }}" required>
+                                   placeholder="{{ __('Summary of your experience') }}" value="{{ old('title') }}" required>
                             @error('title')<span class="pdp-form-error">{{ $message }}</span>@enderror
                         </div>
 
                         <div class="pdp-form-group">
-                            <label class="pdp-form-label">Commentaire</label>
+                            <label class="pdp-form-label">{{ __('Comment') }}</label>
                             <textarea name="comment" class="pdp-form-input" rows="4"
-                                      placeholder="Comment avez-vous trouvé ce produit ?" required>{{ old('comment') }}</textarea>
+                                      placeholder="{{ __('How did you find this product?') }}" required>{{ old('comment') }}</textarea>
                             @error('comment')<span class="pdp-form-error">{{ $message }}</span>@enderror
                         </div>
 
                         <button type="submit" class="pdp-submit-btn w-100">
-                            <i class="fas fa-paper-plane me-2"></i>Publier l'avis
+                            <i class="fas fa-paper-plane me-2"></i>{{ __('Publish review') }}
                         </button>
                     </form>
                 </div>
             </div>
         </div>
 
-        {{-- =============================================
-             RELATED PRODUCTS — uses pcard style from shop
-             ============================================= --}}
+        {{-- RELATED PRODUCTS --}}
         @if($relatedProducts->count() > 0)
         <div class="pdp-related mt-5">
             <div class="pdp-related-header">
-                <h3 class="pdp-related-title">Produits similaires</h3>
+                <h3 class="pdp-related-title">{{ __('Related products') }}</h3>
                 <a href="{{ route('shop.index') }}" class="pdp-related-link">
-                    Voir tout <i class="fas fa-arrow-right ms-1"></i>
+                    {{ __('See all') }} <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left ms-1' : 'fa-arrow-right ms-1' }}"></i>
                 </a>
             </div>
             <div class="row g-4">
@@ -386,16 +309,14 @@
                                 <img src="{{ $related->thumbnail }}"
                                      alt="{{ $related->name }}" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                             </a>
-                            {{-- Badges --}}
                             @if(!$related->isInStock())
-                                <div class="pcard-badges"><span class="pcard-badge pcard-badge--oos">Rupture</span></div>
+                                <div class="pcard-badges"><span class="pcard-badge pcard-badge--oos">{{ __('Out of Stock (badge)') }}</span></div>
                             @elseif($related->isOnSale())
                                 <div class="pcard-badges"><span class="pcard-badge pcard-badge--sale">−{{ $related->discount_percentage }}%</span></div>
                             @endif
-                            {{-- Overlay --}}
                             <div class="pcard-overlay">
                                 <a href="{{ route('shop.show', $related->id) }}" class="pcard-overlay-btn pcard-overlay-btn--ghost">
-                                    <i class="fas fa-eye"></i> Voir
+                                    <i class="fas fa-eye"></i> {{ __('View') }}
                                 </a>
                             </div>
                         </div>
@@ -429,7 +350,6 @@
 
 @push('scripts')
 <script>
-// ── Zoom ──────────────────────────────────────────
 function pdpZoom(e) {
     const wrap = document.getElementById('zoomWrap');
     const img  = document.getElementById('mainImage');
@@ -439,7 +359,6 @@ function pdpZoom(e) {
     img.style.transformOrigin = `${x}% ${y}%`;
 }
 
-// ── Gallery ───────────────────────────────────────
 function pdpChangeImage(src, thumb) {
     const mainImg = document.getElementById('mainImage');
     if (!mainImg) return;
@@ -452,7 +371,6 @@ function pdpChangeImage(src, thumb) {
     thumb.classList.add('active');
 }
 
-// ── Quantity ──────────────────────────────────────
 function pdpChangeQty(delta) {
     const inp = document.getElementById('pdpQty');
     const max = parseInt(inp.max) || 9999;
@@ -460,7 +378,6 @@ function pdpChangeQty(delta) {
     inp.value = val;
 }
 
-// ── Add to Cart ───────────────────────────────────
 function pdpAddToCart(event) {
     event.preventDefault();
     const btn      = document.getElementById('addToCartBtn');
@@ -470,9 +387,9 @@ function pdpAddToCart(event) {
 
     btn.disabled = true;
     const orig = btnText.innerHTML;
-    btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ajout…';
+    btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {{ __('Adding...') }}';
 
-    fetch(`/cart/add/${productId}`, {
+    fetch(`{{ url('/cart/add') }}/${productId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -486,22 +403,27 @@ function pdpAddToCart(event) {
         btn.disabled = false;
         btnText.innerHTML = orig;
         if (data.success) {
-            const badge = document.getElementById('header-cart-count');
-            if (badge && data.cartCount !== undefined) badge.textContent = data.cartCount;
+            ['header-cart-count', 'header-cart-count-mobile'].forEach(id => {
+                const badge = document.getElementById(id);
+                if (badge && data.cartCount !== undefined) badge.textContent = data.cartCount;
+            });
+            if (typeof window.updateFloatingCheckout === 'function') {
+                window.updateFloatingCheckout(data.cartCount, data.cartTotal);
+            }
             if (typeof refreshMiniCart === 'function') refreshMiniCart();
             Swal.fire({ toast:true, position:'top-end', icon:'success',
-                title:'Ajouté au panier !',
+                title:'{{ __('Added to cart!') }}',
                 text:'{{ addslashes($product->name) }}',
                 showConfirmButton:false, timer:2500,
                 background:'#1a1a2e', color:'#fff' });
         } else {
-            throw new Error(data.message || 'Erreur');
+            throw new Error(data.message || '{{ __('Error') }}');
         }
     })
     .catch(err => {
         btn.disabled = false;
         btnText.innerHTML = orig;
-        Swal.fire({ icon:'error', title:'Erreur', text: err.message || 'Impossible d\'ajouter au panier.' });
+        Swal.fire({ icon:'error', title:'{{ __('Error') }}', text: err.message || '{{ __('Cannot add to cart.') }}' });
     });
 }
 </script>

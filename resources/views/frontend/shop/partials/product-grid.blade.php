@@ -11,9 +11,9 @@
                 {{-- Badges --}}
                 <div class="pcard-badges">
                     @if(!$product->isInStock())
-                        <span class="pcard-badge pcard-badge--oos">Rupture</span>
+                        <span class="pcard-badge pcard-badge--oos">{{ __('Out of Stock (badge)') }}</span>
                     @elseif($product->created_at->diffInDays(now()) < 14)
-                        <span class="pcard-badge pcard-badge--new">Nouveau</span>
+                        <span class="pcard-badge pcard-badge--new">{{ __('New') }}</span>
                     @elseif($product->isOnSale())
                         <span class="pcard-badge pcard-badge--sale">−{{ $product->discount_percentage }}%</span>
                     @endif
@@ -22,12 +22,12 @@
                 {{-- Desktop Hover overlay actions --}}
                 <div class="pcard-overlay d-none d-md-flex">
                     @if($product->isInStock())
-                    <button class="pcard-overlay-btn" onclick="addToCart({{ $product->id }})" title="Ajouter au panier">
-                        <i class="fas fa-cart-plus"></i> Ajouter
+                    <button class="pcard-overlay-btn" onclick="addToCart({{ $product->id }})" title="{{ __('Add to cart') }}">
+                        <i class="fas fa-cart-plus"></i> {{ __('Add') }}
                     </button>
                     @endif
-                    <a href="{{ route('shop.show', $product->id) }}" class="pcard-overlay-btn pcard-overlay-btn--ghost" title="Voir le produit">
-                        <i class="fas fa-eye"></i> Détails
+                    <a href="{{ route('shop.show', $product->id) }}" class="pcard-overlay-btn pcard-overlay-btn--ghost" title="{{ __('View Product') }}">
+                        <i class="fas fa-eye"></i> {{ __('Details') }}
                     </a>
                 </div>
             </div>
@@ -61,14 +61,14 @@
                     </div>
 
                     @if($product->isInStock())
-                    <button class="pcard-quick-cart-btn" onclick="addToCart({{ $product->id }})" title="Ajouter au panier" aria-label="Ajouter au panier">
+                    <button class="pcard-quick-cart-btn" onclick="addToCart({{ $product->id }})" title="{{ __('Add to cart') }}" aria-label="{{ __('Add to cart') }}">
                         <i class="fas fa-shopping-bag"></i>
-                        <span class="pcard-quick-cart-label d-none">Ajouter au panier</span>
+                        <span class="pcard-quick-cart-label d-none">{{ __('Add to cart') }}</span>
                     </button>
                     @else
-                    <span class="pcard-quick-out" title="Rupture">
+                    <span class="pcard-quick-out" title="{{ __('Out of stock') }}">
                         <i class="fas fa-ban"></i>
-                        <span class="pcard-quick-out-label d-none">Rupture</span>
+                        <span class="pcard-quick-out-label d-none">{{ __('Out of stock') }}</span>
                     </span>
                     @endif
                 </div>
@@ -79,10 +79,10 @@
     <div class="col-12">
         <div class="shop-empty">
             <i class="fas fa-camera shop-empty-icon"></i>
-            <h5>Aucun équipement trouvé</h5>
-            <p>Modifiez vos filtres ou votre recherche pour voir plus de résultats.</p>
+            <h5>{{ __('No product found') }}</h5>
+            <p>{{ __('Modify your filters or search to see more results.') }}</p>
             <a href="{{ route('shop.index') }}" class="shop-apply-btn d-inline-flex gap-2 align-items-center">
-                <i class="fas fa-redo"></i> Réinitialiser les filtres
+                <i class="fas fa-redo"></i> {{ __('Reset filters') }}
             </a>
         </div>
     </div>

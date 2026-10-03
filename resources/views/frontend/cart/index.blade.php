@@ -19,8 +19,8 @@
                                         <th scope="col" class="py-3 px-4 text-muted small text-uppercase fw-bold ls-1">{{ __('Product') }}</th>
                                         <th scope="col" class="py-3 px-4 text-muted small text-uppercase text-center fw-bold ls-1">{{ __('Price') }}</th>
                                         <th scope="col" class="py-3 px-4 text-muted small text-uppercase text-center fw-bold ls-1" style="width: 150px;">{{ __('Quantity') }}</th>
-                                        <th scope="col" class="py-3 px-4 text-muted small text-uppercase text-end fw-bold ls-1">{{ __('Total') }}</th>
-                                        <th scope="col" class="py-3 px-4"></th>
+                                        <th scope="col" class="py-3 px-4 text-muted small text-uppercase {{ app()->getLocale() === 'ar' ? 'text-start' : 'text-end' }} fw-bold ls-1">{{ __('Total') }}</th>
+                                        <th scope="col" class="py-3 px-4 {{ app()->getLocale() === 'ar' ? 'text-start' : 'text-end' }}" style="width: 60px;"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -29,8 +29,8 @@
                                     @php $total += $details['price'] * $details['quantity']; @endphp
                                     <tr class="border-bottom transition-all hover-bg-light" id="cart-row-{{ $id }}">
                                         <td class="py-4 px-4">
-                                            <div class="d-flex align-items-center">
-                                                <div class="flex-shrink-0 me-3">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div class="flex-shrink-0">
                                                     @php
                                                         $cartImg = (isset($details['image']) && (str_starts_with($details['image'], 'http') || str_starts_with($details['image'], '/') || str_starts_with($details['image'], 'images/')))
                                                             ? asset(ltrim($details['image'], '/'))
@@ -39,8 +39,8 @@
                                                     <img src="{{ $cartImg }}" alt="{{ $details['name'] }}" class="rounded-3 shadow-sm object-fit-cover" style="width: 70px; height: 70px;">
                                                 </div>
                                                 <div>
-                                                    <h6 class="fw-bold mb-1 ml-3"><a href="{{ route('shop.show', $id) }}" class="text-decoration-none text-dark">{{ $details['name'] }}</a></h6>
-                                                    <p class="text-muted small mb-0 ml-3">{{ $details['category_name'] ?? __('Product') }}</p>
+                                                    <h6 class="fw-bold mb-1"><a href="{{ route('shop.show', $id) }}" class="text-decoration-none text-dark">{{ $details['name'] }}</a></h6>
+                                                    <p class="text-muted small mb-0">{{ $details['category_name'] ?? __('Product') }}</p>
                                                 </div>
                                             </div>
                                         </td>
@@ -56,9 +56,9 @@
                                                 </button>
                                             </div>
                                         </td>
-                                        <td class="text-end py-4 px-4 fw-bold text-primary h5 mb-0" id="cart-item-total-{{ $id }}">{{ currency($details['price'] * $details['quantity']) }}</td>
-                                        <td class="text-end py-4 px-4">
-                                            <button class="btn btn-link text-danger p-2 opacity-50 hover-opacity-100 rounded-circle hover-bg-danger-light transition-all" onclick="removeItem({{ $id }})" title="{{ __('Delete') }}">
+                                        <td class="{{ app()->getLocale() === 'ar' ? 'text-start' : 'text-end' }} py-4 px-4 fw-bold text-primary h5 mb-0" id="cart-item-total-{{ $id }}">{{ currency($details['price'] * $details['quantity']) }}</td>
+                                        <td class="{{ app()->getLocale() === 'ar' ? 'text-start' : 'text-end' }} py-4 px-4">
+                                            <button type="button" class="btn-cart-delete" onclick="removeItem({{ $id }})" title="{{ __('Delete') }}" aria-label="{{ __('Delete') }}">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </td>

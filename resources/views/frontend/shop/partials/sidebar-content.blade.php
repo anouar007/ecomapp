@@ -1,12 +1,12 @@
 {{-- Search --}}
 <div class="shop-filter-card mb-4">
-    <h6 class="shop-filter-title"><i class="fas fa-search me-2"></i>Recherche</h6>
+    <h6 class="shop-filter-title"><i class="fas fa-search me-2"></i>{{ __('Search') }}</h6>
     <form id="searchForm">
         <div class="shop-search-wrap">
             <input type="text" name="q" class="shop-search-input"
-                   placeholder="Nom du produit…" value="{{ request('q') }}">
+                   placeholder="{{ __('Product name...') }}" value="{{ request('q') }}">
             <button type="submit" class="shop-search-btn">
-                <i class="fas fa-arrow-right"></i>
+                <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }}"></i>
             </button>
         </div>
     </form>
@@ -14,11 +14,11 @@
 
 {{-- Categories --}}
 <div class="shop-filter-card mb-4">
-    <h6 class="shop-filter-title"><i class="fas fa-th-large me-2"></i>Catégories</h6>
+    <h6 class="shop-filter-title"><i class="fas fa-th-large me-2"></i>{{ __('Categories') }}</h6>
     <ul class="shop-cat-list">
         <li>
             <a href="#" class="shop-cat-link category-filter {{ !request('category') ? 'active' : '' }}" data-slug="">
-                <span>Tous les produits</span>
+                <span>{{ __('All products') }}</span>
                 <span class="shop-cat-count">{{ \App\Models\Product::where('status','active')->count() }}</span>
             </a>
         </li>
@@ -35,7 +35,7 @@
 
 {{-- Price Range --}}
 <div class="shop-filter-card mb-4">
-    <h6 class="shop-filter-title"><i class="fas fa-tag me-2"></i>Fourchette de prix</h6>
+    <h6 class="shop-filter-title"><i class="fas fa-tag me-2"></i>{{ __('Price Range') }}</h6>
     <form id="priceFilterForm">
         <div class="shop-price-inputs">
             <input type="number" name="min_price" class="shop-price-input"
@@ -45,23 +45,23 @@
                    placeholder="Max" value="{{ request('max_price') }}" min="0">
         </div>
         <button type="submit" class="shop-apply-btn w-100 mt-3">
-            <i class="fas fa-filter me-2"></i>Appliquer
+            <i class="fas fa-filter me-2"></i>{{ __('Apply') }}
         </button>
     </form>
 </div>
 
 {{-- Quick Links --}}
 <div class="shop-filter-card">
-    <h6 class="shop-filter-title"><i class="fas fa-bolt me-2"></i>Raccourcis</h6>
+    <h6 class="shop-filter-title"><i class="fas fa-bolt me-2"></i>{{ __('Quick Links') }}</h6>
     <div class="d-flex flex-column gap-2">
         <a href="{{ route('shop.index') }}?sort=newest" class="shop-quick-link">
-            <i class="fas fa-star me-2 text-accent"></i>Nouveautés
+            <i class="fas fa-star me-2 text-accent"></i>{{ __('New Arrivals') }}
         </a>
         <a href="{{ route('shop.index') }}?sort=price_asc" class="shop-quick-link">
-            <i class="fas fa-sort-amount-up me-2 text-accent"></i>Prix croissant
+            <i class="fas fa-sort-amount-up me-2 text-accent"></i>{{ __('Price: Low to High') }}
         </a>
         <a href="{{ route('shop.index') }}?sort=price_desc" class="shop-quick-link">
-            <i class="fas fa-sort-amount-down me-2 text-accent"></i>Prix décroissant
+            <i class="fas fa-sort-amount-down me-2 text-accent"></i>{{ __('Price: High to Low') }}
         </a>
     </div>
 </div>

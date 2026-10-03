@@ -122,8 +122,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link rel="stylesheet" href="{{ asset('css/frontend.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/camera-theme.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/frontend.css') }}?v={{ file_exists(public_path('css/frontend.css')) ? filemtime(public_path('css/frontend.css')) : time() }}">
+    <link rel="stylesheet" href="{{ asset('css/camera-theme.css') }}?v={{ file_exists(public_path('css/camera-theme.css')) ? filemtime(public_path('css/camera-theme.css')) : time() }}">
     <!-- Custom Head Codes -->
     @php
         $headCodes = \App\Models\CustomCode::where('is_active', true)
@@ -210,11 +210,11 @@
 
                     <!-- Mobile: always-visible actions (search + cart + user) + toggler -->
                     <div class="d-flex align-items-center gap-2 ms-auto d-lg-none">
-                        <button class="action-btn-circle bg-transparent" type="button" id="mobileSearchTriggerBtn" title="Rechercher" aria-label="Rechercher">
+                        <button class="action-btn-circle bg-transparent" type="button" id="mobileSearchTriggerBtn" title="{{ __('Search') }}" aria-label="{{ __('Search') }}">
                             <i class="fas fa-search"></i>
                         </button>
                         @auth
-                            <a href="{{ route('dashboard') }}" class="action-btn-circle text-decoration-none" title="Mon compte">
+                            <a href="{{ route('dashboard') }}" class="action-btn-circle text-decoration-none" title="{{ __('My Account') }}">
                                 <i class="far fa-user"></i>
                             </a>
                         @endauth
@@ -223,7 +223,7 @@
                                 <i class="fas fa-shopping-bag"></i>
                             </button>
                             <span id="header-cart-count-mobile" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style="font-size: 0.6rem;">
-                                {{ count(session('cart', [])) }}
+                                {{ array_sum(array_column(session('cart', []), 'quantity')) }}
                             </span>
                         </div>
                         <button class="navbar-toggler border-0 p-1" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-expanded="false" aria-label="Menu" id="navbarMainToggler">
@@ -318,29 +318,29 @@
                         <!-- Search Form with Dynamic Live Search (Desktop) -->
                         <form action="{{ route('shop.index') }}" method="GET" class="header-search-wrap mx-lg-4 flex-grow-1 flex-lg-grow-0 mb-3 mb-lg-0 d-none d-lg-block" style="max-width: 420px;" id="headerSearchForm" autocomplete="off">
                             <div class="input-group search-input-group">
-                                <span class="input-group-text ps-3 search-icon-slot">
+                                <span class="input-group-text {{ app()->getLocale() === 'ar' ? 'pe-3' : 'ps-3' }} search-icon-slot">
                                     <i class="fas fa-search search-icon-default"></i>
                                     <span class="spinner-border spinner-border-sm text-danger search-spinner d-none" role="status" aria-hidden="true"></span>
                                 </span>
-                                <input class="form-control ps-2 header-search-input" 
+                                <input class="form-control {{ app()->getLocale() === 'ar' ? 'pe-2' : 'ps-2' }} header-search-input" 
                                        type="search" 
                                        name="q" 
                                        id="headerSearchInput" 
-                                       placeholder="Rechercher boîtier, objectif, micro..." 
-                                       aria-label="Rechercher" 
+                                       placeholder="{{ __('Search cameras, lenses, mics...') }}" 
+                                       aria-label="{{ __('Search') }}" 
                                        value="{{ request('q') }}" 
-                                       autocomplete="off"
+                                       autocomplete="off" 
                                        spellcheck="false">
-                                <button class="btn btn-search-clear d-none" type="button" id="headerSearchClear" aria-label="Effacer">
+                                <button class="btn btn-search-clear d-none" type="button" id="headerSearchClear" aria-label="{{ __('Clear') }}">
                                     <i class="fas fa-times"></i>
                                 </button>
-                                <button class="btn btn-search-submit d-none d-sm-inline-flex" type="submit" aria-label="Lancer la recherche" title="Rechercher">
-                                    <i class="fas fa-arrow-right"></i>
+                                <button class="btn btn-search-submit d-none d-sm-inline-flex" type="submit" aria-label="{{ __('Search') }}" title="{{ __('Search') }}">
+                                    <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }}"></i>
                                 </button>
                             </div>
 
                             <!-- Live Search Floating Dropdown -->
-                            <div class="header-search-dropdown shadow-lg d-none" id="headerSearchDropdown" role="region" aria-label="Résultats de recherche">
+                            <div class="header-search-dropdown shadow-lg d-none" id="headerSearchDropdown" role="region" aria-label="{{ __('Search Results') }}">
                                 <!-- Frequent Searches Chips (Shown on focus when input is empty) -->
                                 <div class="search-quick-tags p-3 border-bottom" id="headerSearchTags">
                                     <div class="search-section-label">
@@ -393,7 +393,7 @@
                                     <i class="fas fa-shopping-bag"></i>
                                 </button>
                                 <span id="header-cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style="font-size: 0.6rem;">
-                                    {{ count(session('cart', [])) }}
+                                    {{ array_sum(array_column(session('cart', []), 'quantity')) }}
                                 </span>
                             </div>
 
@@ -426,7 +426,7 @@
     </main>
 
     <!-- Pro Full-Screen Mobile Search Overlay -->
-    <div class="pro-mobile-search-overlay" id="proMobileSearchOverlay" role="dialog" aria-modal="true" aria-label="Recherche mobile">
+    <div class="pro-mobile-search-overlay" id="proMobileSearchOverlay" role="dialog" aria-modal="true" aria-label="{{ __('Search') }}">
         <!-- Top Sticky Header -->
         <div class="pro-mobile-search-header">
             <form action="{{ route('shop.index') }}" method="GET" class="pro-mobile-search-form" id="proMobileSearchForm" autocomplete="off">
@@ -439,18 +439,18 @@
                            name="q" 
                            id="proMobileSearchInput" 
                            class="pro-search-input" 
-                           placeholder="Rechercher boîtier, optique, micro..." 
-                           aria-label="Rechercher un produit ou un rayon"
+                           placeholder="{{ __('Search cameras, lenses, mics...') }}" 
+                           aria-label="{{ __('Search') }}"
                            autocomplete="off" 
                            autocapitalize="off" 
                            spellcheck="false">
-                    <button type="button" class="pro-search-clear d-none" id="proMobileSearchClear" aria-label="Effacer la recherche">
+                    <button type="button" class="pro-search-clear d-none" id="proMobileSearchClear" aria-label="{{ __('Clear') }}">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
             </form>
-            <button type="button" class="pro-mobile-search-close" id="proMobileSearchCloseBtn" aria-label="Fermer la recherche">
-                Annuler
+            <button type="button" class="pro-mobile-search-close" id="proMobileSearchCloseBtn" aria-label="{{ __('Cancel') }}">
+                {{ __('Cancel') }}
             </button>
         </div>
 
@@ -460,7 +460,7 @@
             <div class="pro-search-suggestions" id="proMobileSearchSuggestions">
                 <div class="pro-search-section">
                     <div class="pro-section-title">
-                        <i class="fas fa-fire text-danger me-1"></i> RECHERCHES FRÉQUENTES
+                        <i class="fas fa-fire text-danger me-1"></i> {{ strtoupper(__('Frequent Searches')) }}
                     </div>
                     <div class="pro-tags-grid">
                         <button type="button" class="pro-tag-chip" data-query="DJI Mic 2">
@@ -473,10 +473,10 @@
                             <i class="fas fa-search"></i> Blackmagic 6K
                         </button>
                         <button type="button" class="pro-tag-chip" data-query="Objectif 24-70">
-                            <i class="fas fa-search"></i> Objectif 24-70
+                            <i class="fas fa-search"></i> {{ app()->getLocale() === 'ar' ? 'عدسة 24-70' : 'Objectif 24-70' }}
                         </button>
                         <button type="button" class="pro-tag-chip" data-query="Stabilisateur RS 4">
-                            <i class="fas fa-search"></i> Stabilisateur RS 4
+                            <i class="fas fa-search"></i> {{ app()->getLocale() === 'ar' ? 'مانع اهتزاز RS 4' : 'Stabilisateur RS 4' }}
                         </button>
                         <button type="button" class="pro-tag-chip" data-query="Mavic 3 Cine">
                             <i class="fas fa-search"></i> Mavic 3 Cine
@@ -486,7 +486,7 @@
 
                 <div class="pro-search-section mt-4">
                     <div class="pro-section-title">
-                        <i class="fas fa-th-large text-danger me-1"></i> EXPLORER PAR RAYON
+                        <i class="fas fa-th-large text-danger me-1"></i> {{ strtoupper(__('Sections & Equipment')) }}
                     </div>
                     <div class="pro-cats-grid">
                         @foreach($navCategories as $cat)
@@ -502,7 +502,7 @@
                                 </span>
                                 <div class="pro-cat-card-info">
                                     <span class="pro-cat-card-name">{{ $cat->name }}</span>
-                                    <span class="pro-cat-card-count">{{ $cat->products_count }} réf.</span>
+                                    <span class="pro-cat-card-count">{{ $cat->products_count }} {{ __('refs.') }}</span>
                                 </div>
                             </a>
                         @endforeach
@@ -518,17 +518,17 @@
                 <div class="pro-empty-icon">
                     <i class="fas fa-search-minus"></i>
                 </div>
-                <h6 class="pro-empty-title">Aucun produit trouvé</h6>
+                <h6 class="pro-empty-title">{{ __('No product found') }}</h6>
                 <p class="pro-empty-subtitle">
-                    Aucun résultat ne correspond à « <span class="pro-empty-query text-danger fw-bold"></span> »
+                    {{ __('No results match') }} « <span class="pro-empty-query text-danger fw-bold"></span> »
                 </p>
                 <div class="pro-empty-tags-hint">
-                    <span class="text-muted small d-block mb-2">Suggestions populaires :</span>
+                    <span class="text-muted small d-block mb-2">{{ __('Popular suggestions:') }}</span>
                     <div class="pro-tags-grid justify-content-center">
                         <button type="button" class="pro-tag-chip" data-query="Sony">Sony</button>
-                        <button type="button" class="pro-tag-chip" data-query="Mic">Microphones</button>
-                        <button type="button" class="pro-tag-chip" data-query="Objectif">Objectifs</button>
-                        <button type="button" class="pro-tag-chip" data-query="Drone">Drones</button>
+                        <button type="button" class="pro-tag-chip" data-query="Mic">{{ app()->getLocale() === 'ar' ? 'ميكروفونات' : 'Micros' }}</button>
+                        <button type="button" class="pro-tag-chip" data-query="Objectif">{{ app()->getLocale() === 'ar' ? 'عدسات' : 'Objectifs' }}</button>
+                        <button type="button" class="pro-tag-chip" data-query="Drone">{{ app()->getLocale() === 'ar' ? 'طائرات' : 'Drones' }}</button>
                     </div>
                 </div>
             </div>
@@ -537,9 +537,9 @@
         <!-- Sticky Bottom View All Bar -->
         <div class="pro-mobile-search-footer d-none" id="proMobileSearchFooter">
             <a href="#" class="pro-search-view-all-btn" id="proMobileSearchViewAll">
-                <span>Voir tous les résultats</span>
+                <span>{{ __('View all results') }}</span>
                 <span class="badge bg-white text-danger rounded-pill ms-2 fw-bold" id="proMobileSearchCount">0</span>
-                <i class="fas fa-arrow-right ms-2"></i>
+                <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left ms-2' : 'fa-arrow-right ms-2' }}"></i>
             </a>
         </div>
     </div>
@@ -548,7 +548,7 @@
     <div class="offcanvas offcanvas-end border-0 shadow-lg" tabindex="-1" id="miniCart" aria-labelledby="miniCartLabel" style="width: 450px; background: #f8fafc;">
         <div class="offcanvas-header bg-white border-bottom py-3">
             <h5 class="offcanvas-title fw-bold font-heading" id="miniCartLabel">
-                <i class="fas fa-shopping-bag me-2 text-primary"></i>Mon Panier
+                <i class="fas fa-shopping-bag me-2 text-primary"></i>{{ __('My Cart') }}
             </h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
@@ -559,18 +559,18 @@
                     @php $total += $details['price'] * $details['quantity']; @endphp
                     <div class="cart-item bg-white p-3 rounded-4 shadow-sm mb-3 position-relative border border-light" id="cart-item-{{ $id }}">
                         <div class="d-flex align-items-center">
-                            <div class="flex-shrink-0 me-3 position-relative">
+                            <div class="flex-shrink-0 {{ app()->getLocale() === 'ar' ? 'ms-3' : 'me-3' }} position-relative">
                                 @php
                                     $miniImg = (isset($details['image']) && (str_starts_with($details['image'], 'http') || str_starts_with($details['image'], '/') || str_starts_with($details['image'], 'images/'))) 
                                         ? asset(ltrim($details['image'], '/')) 
                                         : (isset($details['image']) ? Storage::url($details['image']) : asset('images/camera/cat_cameras.jpg'));
                                 @endphp
                                 <img src="{{ $miniImg }}" alt="{{ $details['name'] }}" class="rounded-3 object-fit-cover" style="width: 80px; height: 80px;">
-                                <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-light text-dark border shadow-sm" style="font-size: 0.7rem;">x{{ $details['quantity'] }}</span>
+                                <span class="position-absolute top-0 {{ app()->getLocale() === 'ar' ? 'end-0' : 'start-0' }} translate-middle badge rounded-pill bg-light text-dark border shadow-sm" style="font-size: 0.7rem;">x{{ $details['quantity'] }}</span>
                             </div>
                             <div class="flex-grow-1 min-w-0">
-                                <h6 class="fw-bold mb-1 text-truncate pe-4" title="{{ $details['name'] }}">{{ $details['name'] }}</h6>
-                                <p class="mb-2 text-muted small">{{ $details['category_name'] ?? 'Produit' }}</p>
+                                <h6 class="fw-bold mb-1 text-truncate {{ app()->getLocale() === 'ar' ? 'ps-4' : 'pe-4' }}" title="{{ $details['name'] }}">{{ $details['name'] }}</h6>
+                                <p class="mb-2 text-muted small">{{ $details['category_name'] ?? __('Product') }}</p>
                                 
                                 <div class="d-flex align-items-center justify-content-between mt-2">
                                     <span class="text-primary fw-bold" style="font-size: 1.1rem;">{{ currency($details['price']) }}</span>
@@ -587,8 +587,8 @@
                                 </div>
                             </div>
                         </div>
-                        <button class="btn btn-sm text-danger position-absolute top-0 end-0 mt-2 me-2 opacity-50 hover-opacity-100 transition-all" onclick="removeItem({{ $id }})" title="Remove">
-                            <i class="fas fa-times"></i>
+                        <button type="button" class="mini-cart-item-remove position-absolute {{ app()->getLocale() === 'ar' ? 'start-0' : 'end-0' }}" onclick="removeItem({{ $id }})" title="{{ __('Delete') }}" aria-label="{{ __('Delete') }}">
+                            <i class="fas fa-trash-alt"></i>
                         </button>
                     </div>
                 @empty
@@ -596,9 +596,9 @@
                         <div class="mb-4 bg-white rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 100px; height: 100px;">
                             <i class="fas fa-shopping-basket fa-3x text-muted opacity-25"></i>
                         </div>
-                        <h5 class="fw-bold text-dark">Votre panier est vide</h5>
-                        <p class="text-muted small mb-4">Vous n'avez encore rien ajouté à votre panier.</p>
-                        <a href="{{ route('shop.index') }}" class="btn btn-primary rounded-pill px-5 shadow-sm">Commencer les achats</a>
+                        <h5 class="fw-bold text-dark">{{ __('Your cart is empty') }}</h5>
+                        <p class="text-muted small mb-4">{{ __("You haven't added anything yet.") }}</p>
+                        <a href="{{ route('shop.index') }}" class="btn btn-primary rounded-pill px-5 shadow-sm">{{ __('Start Shopping') }}</a>
                     </div>
                 @endforelse
             </div>
@@ -606,22 +606,115 @@
             @if(count(session('cart', [])) > 0)
             <div class="border-top p-4 bg-white mt-auto shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
                 <div class="d-flex justify-content-between align-items-end mb-4">
-                    <span class="text-muted small text-uppercase fw-bold ls-1">Sous-total</span>
+                    <span class="text-muted small text-uppercase fw-bold ls-1">{{ __('Subtotal') }}</span>
                     <span class="h4 fw-bold text-dark mb-0 ls-tight" id="mini-cart-total">{{ currency($total) }}</span>
                 </div>
                 <div class="d-grid gap-2">
                     <a href="{{ route('checkout.index') }}" class="btn btn-primary py-3 rounded-pill fw-bold shadow-sm d-flex justify-content-between align-items-center px-4">
-                        <span>Commander</span>
-                        <i class="fas fa-arrow-right"></i>
+                        <span>{{ __('Checkout') }}</span>
+                        <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }}"></i>
                     </a>
                     <a href="{{ route('cart.index') }}" class="btn btn-light py-2 rounded-pill fw-bold text-muted small">
-                        Voir le panier complet
+                        {{ __('View cart') }}
                     </a>
                 </div>
             </div>
             @endif
         </div>
     </div>
+
+    {{-- Floating Checkout Button (appears on cart addition and stays on screen) --}}
+    @if(!request()->routeIs('checkout.*'))
+    @php
+        $cartSession = session('cart', []);
+        $cartInitialCount = array_sum(array_column($cartSession, 'quantity'));
+    @endphp
+    <style>
+        .floating-checkout-wrap {
+            position: fixed !important;
+            bottom: 24px;
+            right: 24px;
+            z-index: 99999 !important;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px) scale(0.92);
+            transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                        visibility 0.35s;
+            pointer-events: none;
+        }
+        .floating-checkout-wrap.is-visible {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0) scale(1) !important;
+            pointer-events: auto !important;
+            display: block !important;
+        }
+        body.has-whatsapp-float .floating-checkout-wrap,
+        body:has(.whatsapp-float) .floating-checkout-wrap {
+            bottom: 96px !important;
+        }
+        html[dir="rtl"] .floating-checkout-wrap {
+            right: auto !important;
+            left: 24px !important;
+        }
+        html[dir="rtl"] body.has-whatsapp-float .floating-checkout-wrap,
+        html[dir="rtl"] body:has(.whatsapp-float) .floating-checkout-wrap {
+            bottom: 24px !important;
+            left: 24px !important;
+        }
+        @media (max-width: 768px) {
+            .floating-checkout-wrap {
+                bottom: calc(22px + env(safe-area-inset-bottom, 0px)) !important;
+                right: 14px !important;
+                left: auto !important;
+                z-index: 99999 !important;
+            }
+            .floating-checkout-wrap,
+            .floating-checkout-wrap.is-visible {
+                display: block !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                pointer-events: auto !important;
+                transform: translateY(0) scale(1) !important;
+            }
+            body.has-whatsapp-float .floating-checkout-wrap,
+            body:has(.whatsapp-float) .floating-checkout-wrap {
+                bottom: calc(84px + env(safe-area-inset-bottom, 0px)) !important;
+            }
+            html[dir="rtl"] .floating-checkout-wrap {
+                left: 14px !important;
+                right: auto !important;
+            }
+            html[dir="rtl"] body.has-whatsapp-float .floating-checkout-wrap,
+            html[dir="rtl"] body:has(.whatsapp-float) .floating-checkout-wrap {
+                bottom: calc(22px + env(safe-area-inset-bottom, 0px)) !important;
+                left: 14px !important;
+            }
+            .floating-checkout-btn {
+                padding: 10px 16px 10px 12px !important;
+                gap: 10px !important;
+                box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55), 0 0 18px rgba(220, 38, 38, 0.45) !important;
+            }
+            .floating-checkout-label {
+                font-size: 0.88rem !important;
+                font-weight: 700 !important;
+            }
+        }
+    </style>
+    <div id="floatingCheckoutWrap" class="floating-checkout-wrap {{ $cartInitialCount > 0 ? 'is-visible' : '' }}" aria-live="polite">
+        <a href="{{ route('checkout.index') }}" class="floating-checkout-btn" id="floatingCheckoutBtn" title="{{ __('Checkout') }}">
+            <div class="floating-checkout-icon-box">
+                <i class="fas fa-shopping-bag"></i>
+                <span class="floating-checkout-badge" id="floatingCheckoutCount">{{ $cartInitialCount }}</span>
+            </div>
+            <span class="floating-checkout-label">{{ __('Checkout') }}</span>
+            <span class="floating-checkout-arrow-box">
+                <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }}"></i>
+            </span>
+        </a>
+    </div>
+    @endif
 
     <footer class="footer-modern">
         <div class="container">
@@ -687,7 +780,7 @@
                     <ul class="list-unstyled">
                         <li><a href="{{ route('shop.index') }}" class="footer-link small">{{ __('Featured Products') }}</a></li>
                         <li><a href="{{ route('about') }}" class="footer-link small">{{ __('About') }} {{ setting('app_name', 'LUMINA') }}</a></li>
-                        <li><a href="{{ route('contact') }}" class="footer-link small">Showroom & {{ __('Contact') }}</a></li>
+                        <li><a href="{{ route('contact') }}" class="footer-link small">{{ __('Contact & Showroom') }}</a></li>
                     </ul>
                 </div>
 
@@ -729,6 +822,144 @@
         @endif
 
         // Mini Cart & Cart Page Functions
+        window.updateFloatingCheckout = function(count, total) {
+            const wrap = document.getElementById('floatingCheckoutWrap');
+            const badge = document.getElementById('floatingCheckoutCount');
+            const numCount = parseInt(count) || 0;
+
+            if (badge) {
+                badge.textContent = numCount;
+            }
+
+            if (wrap) {
+                if (numCount > 0) {
+                    wrap.classList.add('is-visible');
+                    wrap.classList.add('pulse-anim');
+                    setTimeout(() => wrap.classList.remove('pulse-anim'), 600);
+                } else {
+                    wrap.classList.remove('is-visible');
+                }
+            }
+        };
+
+        // Detect floating WhatsApp to prevent overlap on mobile
+        function checkFloatingOffsets() {
+            if (document.querySelector('.whatsapp-float')) {
+                document.body.classList.add('has-whatsapp-float');
+            }
+        }
+
+        function initFloatingCheckoutClick() {
+            const checkoutBtn = document.getElementById('floatingCheckoutBtn');
+            if (checkoutBtn) {
+                checkoutBtn.addEventListener('click', function(e) {
+                    const countEl = document.getElementById('floatingCheckoutCount');
+                    const count = countEl ? (parseInt(countEl.textContent) || 0) : 0;
+                    if (count === 0) {
+                        e.preventDefault();
+                        const miniCartEl = document.getElementById('miniCart');
+                        if (miniCartEl && typeof bootstrap !== 'undefined' && bootstrap.Offcanvas) {
+                            const bsOffcanvas = bootstrap.Offcanvas.getOrCreateInstance(miniCartEl);
+                            bsOffcanvas.show();
+                        } else {
+                            window.location.href = "{{ route('cart.index') }}";
+                        }
+                    }
+                });
+            }
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                checkFloatingOffsets();
+                initFloatingCheckoutClick();
+            });
+        } else {
+            checkFloatingOffsets();
+            initFloatingCheckoutClick();
+        }
+
+        window.addToCart = function(productId, quantity = 1, triggerEl = null) {
+            let originalHtml = '';
+            let btn = triggerEl;
+            if (!btn && typeof event !== 'undefined' && event && event.currentTarget) {
+                btn = event.currentTarget;
+            }
+            if (!btn) {
+                btn = document.querySelector(`button[onclick*="addToCart(${productId})"]`);
+            }
+            if (btn) {
+                originalHtml = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            }
+
+            return fetch(`{{ url('/cart/add') }}/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ quantity: parseInt(quantity) || 1 })
+            })
+            .then(async response => {
+                const data = await response.json();
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-check text-white"></i>';
+                    setTimeout(() => { btn.innerHTML = originalHtml; }, 1500);
+                }
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || '{{ __('Error adding to cart') }}');
+                }
+
+                // Update both desktop and mobile cart count badges
+                ['header-cart-count', 'header-cart-count-mobile'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el && data.cartCount !== undefined) el.textContent = data.cartCount;
+                });
+
+                // Update floating checkout button
+                if (typeof window.updateFloatingCheckout === 'function') {
+                    window.updateFloatingCheckout(data.cartCount, data.cartTotal);
+                }
+
+                // Refresh mini-cart content
+                if (typeof refreshMiniCart === 'function') {
+                    refreshMiniCart();
+                }
+
+                // Feedback toast
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: data.message || '{{ __('Equipment added to cart!') }}',
+                    showConfirmButton: false,
+                    timer: 2200,
+                    background: '#1a1a2e',
+                    color: '#ffffff'
+                });
+
+                return data;
+            })
+            .catch(err => {
+                console.error(err);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
+                }
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'error',
+                    title: err.message || '{{ __('Cannot add to cart.') }}',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            });
+        };
+
         function changeCartQty(id, delta) {
             const input = document.getElementById('cart-item-qty-' + id);
             let currentQty = 1;
@@ -770,6 +1001,11 @@
                 };
                 updateCartBadges(data.cartCount);
 
+                // Update floating checkout button
+                if (typeof window.updateFloatingCheckout === 'function') {
+                    window.updateFloatingCheckout(data.cartCount, data.cartTotal);
+                }
+
                 // Update /cart page elements if present
                 const qtyInput = document.getElementById('cart-item-qty-' + id);
                 if (qtyInput) {
@@ -797,7 +1033,7 @@
                     toast: true,
                     position: 'top-end',
                     icon: 'error',
-                    title: error.message || 'Erreur lors de la mise à jour du panier',
+                    title: error.message || '{{ __('Error updating cart') }}',
                     showConfirmButton: false,
                     timer: 2500
                 });
@@ -806,14 +1042,14 @@
 
         function removeItem(id) {
             Swal.fire({
-                title: 'Retirer du panier ?',
-                text: "Voulez-vous supprimer cet article ?",
+                title: '{{ __('Remove from cart?') }}',
+                text: "{{ __('Do you want to remove this item?') }}",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: '#6b7280',
-                confirmButtonText: 'Oui, supprimer !',
-                cancelButtonText: 'Annuler'
+                confirmButtonText: '{{ __('Yes, remove!') }}',
+                cancelButtonText: '{{ __('Cancel') }}'
             }).then((result) => {
                 if (result.isConfirmed) {
                     fetch('{{ route('cart.remove', [], false) }}', {
@@ -832,6 +1068,11 @@
                             const el = document.getElementById(bId);
                             if (el && data.cartCount !== undefined) el.textContent = data.cartCount;
                         });
+
+                        // Update floating checkout button
+                        if (typeof window.updateFloatingCheckout === 'function') {
+                            window.updateFloatingCheckout(data.cartCount, data.cartTotal);
+                        }
 
                         // If on /cart page, remove the row or reload if empty
                         const row = document.getElementById('cart-row-' + id);
@@ -862,7 +1103,7 @@
                             toast: true,
                             position: 'top-end',
                             icon: 'success',
-                            title: 'Article supprimé !',
+                            title: '{{ __('Item removed!') }}',
                             showConfirmButton: false,
                             timer: 2000,
                             background: '#1a1a2e',
@@ -875,7 +1116,7 @@
                             toast: true,
                             position: 'top-end',
                             icon: 'error',
-                            title: 'Erreur lors de la suppression',
+                            title: '{{ __('Error removing item') }}',
                             showConfirmButton: false,
                             timer: 2500
                         });
@@ -900,7 +1141,6 @@
                 // Also update the footer section if cart has items
                 const cartOffcanvas = document.getElementById('miniCart');
                 if(cartOffcanvas) {
-                    const footerSection = cartOffcanvas.querySelector('.border-top.p-4');
                     // Fetch full mini-cart to get updated footer
                     fetch('{{ route('cart.miniFooter', [], false) }}', {
                         headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -913,6 +1153,8 @@
                         } else if(!existingFooter && footerHtml.trim()) {
                             // Append footer if it didn't exist before
                             cartOffcanvas.querySelector('.offcanvas-body').insertAdjacentHTML('beforeend', footerHtml);
+                        } else if(existingFooter && !footerHtml.trim()) {
+                            existingFooter.remove();
                         }
                     })
                     .catch(console.error);
@@ -1036,7 +1278,7 @@
                 if (hasCategories) {
                     html += `
                         <div class="search-section-label px-3 pt-3 pb-1">
-                            <i class="fas fa-th-large me-1 text-danger"></i> RAYONS CORRESPONDANTS
+                            <i class="fas fa-th-large me-1 text-danger"></i> {{ strtoupper(__('Matching Categories')) }}
                         </div>
                         <div class="search-category-suggestions px-2 pb-2">
                     `;
@@ -1045,9 +1287,9 @@
                             <a href="${cat.url}" class="search-cat-item">
                                 <div class="d-flex align-items-center gap-2">
                                     <span class="search-cat-icon"><i class="fas fa-arrow-right text-danger"></i></span>
-                                    <span class="search-cat-text">Dans <strong>${highlightText(cat.name, query)}</strong></span>
+                                    <span class="search-cat-text">{{ __('In') }} <strong>${highlightText(cat.name, query)}</strong></span>
                                 </div>
-                                <span class="badge bg-light text-muted border">${cat.count} réf.</span>
+                                <span class="badge bg-light text-muted border">${cat.count} {{ __('refs.') }}</span>
                             </a>
                         `;
                     });
@@ -1058,7 +1300,7 @@
                 if (hasProducts) {
                     html += `
                         <div class="search-section-label px-3 pt-2 pb-1 ${hasCategories ? 'border-top' : ''}">
-                            <i class="fas fa-camera me-1 text-danger"></i> ÉQUIPEMENTS & MODÈLES (${data.count || data.products.length})
+                            <i class="fas fa-camera me-1 text-danger"></i> {{ strtoupper(__('Equipment & Models')) }} (${data.count || data.products.length})
                         </div>
                     `;
                     data.products.forEach((p, idx) => {
@@ -1067,8 +1309,8 @@
                             : `<span class="search-result-price">${escapeHtml(p.price)}</span>`;
 
                         const stockHtml = p.in_stock 
-                            ? `<span class="search-result-stock">En stock</span>`
-                            : `<span class="search-result-stock out">Sur commande</span>`;
+                            ? `<span class="search-result-stock">{{ __('In stock') }}</span>`
+                            : `<span class="search-result-stock out">{{ __('Out of stock') }}</span>`;
 
                         html += `
                             <a href="${p.url}" class="search-result-item" data-index="${idx}">
@@ -1371,7 +1613,7 @@
                 if (hasCats) {
                     html += `
                         <div class="pro-section-title mb-2">
-                            <i class="fas fa-th-large text-danger me-1"></i> RAYONS CORRESPONDANTS
+                            <i class="fas fa-th-large text-danger me-1"></i> {{ strtoupper(__('Matching Categories')) }}
                         </div>
                     `;
                     data.categories.forEach(cat => {
@@ -1379,9 +1621,9 @@
                             <a href="${cat.url}" class="pro-cat-match-card">
                                 <div class="pro-cat-match-left">
                                     <span class="pro-cat-match-icon"><i class="fas fa-arrow-right"></i></span>
-                                    <span class="pro-cat-match-title">Dans <strong>${highlightText(cat.name, query)}</strong></span>
+                                    <span class="pro-cat-match-title">{{ __('In') }} <strong>${highlightText(cat.name, query)}</strong></span>
                                 </div>
-                                <span class="badge bg-light text-muted border">${cat.count} réf.</span>
+                                <span class="badge bg-light text-muted border">${cat.count} {{ __('refs.') }}</span>
                             </a>
                         `;
                     });
@@ -1391,7 +1633,7 @@
                 if (hasProds) {
                     html += `
                         <div class="pro-section-title mt-3 mb-2">
-                            <i class="fas fa-camera text-danger me-1"></i> ÉQUIPEMENTS & MODÈLES (${data.count || data.products.length})
+                            <i class="fas fa-camera text-danger me-1"></i> {{ strtoupper(__('Equipment & Models')) }} (${data.count || data.products.length})
                         </div>
                     `;
                     data.products.forEach(p => {
@@ -1400,8 +1642,8 @@
                             : `<span class="pro-result-price">${escapeHtml(p.price)}</span>`;
 
                         const stockHtml = p.in_stock 
-                            ? `<span class="pro-result-stock">En stock</span>`
-                            : `<span class="pro-result-stock out">Sur commande</span>`;
+                            ? `<span class="pro-result-stock">{{ __('In stock') }}</span>`
+                            : `<span class="pro-result-stock out">{{ __('Out of stock') }}</span>`;
 
                         html += `
                             <a href="${p.url}" class="pro-result-card">

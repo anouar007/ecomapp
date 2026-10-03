@@ -1,18 +1,18 @@
 @extends('layouts.customer')
 
 @section('dashboard_content')
-<h3 class="fw-bold mb-4">Mes commandes</h3>
+<h3 class="fw-bold mb-4">{{ __('My Orders') }}</h3>
 
 <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
     <div class="table-responsive">
         <table class="table align-middle mb-0">
             <thead class="bg-light">
                 <tr>
-                    <th class="ps-4 py-3">N° Commande</th>
-                    <th>Date</th>
-                    <th>État</th>
-                    <th>Total</th>
-                    <th class="pe-4 text-end">Action</th>
+                    <th class="ps-4 py-3">{{ __('Order Number') }}</th>
+                    <th>{{ __('Date') }}</th>
+                    <th>{{ __('Status') }}</th>
+                    <th>{{ __('Total') }}</th>
+                    <th class="pe-4 text-end">{{ __('Action') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,7 +24,7 @@
                     <td class="fw-bold">{{ $order->formatted_total }}</td>
                     <td class="pe-4 text-end">
                         <a href="{{ route('customer.orders.show', $order) }}" class="btn btn-light btn-sm rounded-pill px-3 fw-bold small">
-                            Voir les détails
+                            {{ __('View details') }}
                         </a>
                     </td>
                 </tr>
@@ -32,8 +32,8 @@
                 <tr>
                     <td colspan="5" class="text-center py-5">
                         <i class="fas fa-shopping-bag fa-3x text-muted opacity-25 mb-3"></i>
-                        <h6 class="fw-bold text-muted">Aucune commande trouvée</h6>
-                        <a href="{{ route('shop.index') }}" class="btn btn-primary btn-sm rounded-pill mt-2">Commencer les achats</a>
+                        <h6 class="fw-bold text-muted">{{ __('No orders found') }}</h6>
+                        <a href="{{ route('shop.index') }}" class="btn btn-primary btn-sm rounded-pill mt-2">{{ __('Start Shopping') }}</a>
                     </td>
                 </tr>
                 @endforelse

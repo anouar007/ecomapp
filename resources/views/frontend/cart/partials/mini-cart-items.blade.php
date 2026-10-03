@@ -3,18 +3,18 @@
     @php $total += $details['price'] * $details['quantity']; @endphp
     <div class="cart-item bg-white p-3 rounded-4 shadow-sm mb-3 position-relative border border-light" id="cart-item-{{ $id }}">
         <div class="d-flex align-items-center">
-            <div class="flex-shrink-0 me-3 position-relative">
+            <div class="flex-shrink-0 {{ app()->getLocale() === 'ar' ? 'ms-3' : 'me-3' }} position-relative">
                 @php
                     $imgSrc = (isset($details['image']) && (str_starts_with($details['image'], 'http') || str_starts_with($details['image'], '/') || str_starts_with($details['image'], 'images/'))) 
                         ? asset(ltrim($details['image'], '/')) 
                         : (isset($details['image']) ? Storage::url($details['image']) : asset('images/camera/cat_cameras.jpg'));
                 @endphp
                 <img src="{{ $imgSrc }}" alt="{{ $details['name'] }}" class="rounded-3 object-fit-cover" style="width: 80px; height: 80px;">
-                <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-light text-dark border shadow-sm" style="font-size: 0.7rem;">x{{ $details['quantity'] }}</span>
+                <span class="position-absolute top-0 {{ app()->getLocale() === 'ar' ? 'end-0' : 'start-0' }} translate-middle badge rounded-pill bg-light text-dark border shadow-sm" style="font-size: 0.7rem;">x{{ $details['quantity'] }}</span>
             </div>
             <div class="flex-grow-1 min-w-0">
-                <h6 class="fw-bold mb-1 text-truncate pe-4" title="{{ $details['name'] }}">{{ $details['name'] }}</h6>
-                <p class="mb-2 text-muted small">{{ $details['category_name'] ?? 'Produit' }}</p>
+                <h6 class="fw-bold mb-1 text-truncate {{ app()->getLocale() === 'ar' ? 'ps-4' : 'pe-4' }}" title="{{ $details['name'] }}">{{ $details['name'] }}</h6>
+                <p class="mb-2 text-muted small">{{ $details['category_name'] ?? __('Product') }}</p>
                 
                 <div class="d-flex align-items-center justify-content-between mt-2">
                     <span class="text-primary fw-bold" style="font-size: 1.1rem;">{{ currency($details['price']) }}</span>
@@ -31,8 +31,8 @@
                 </div>
             </div>
         </div>
-        <button class="btn btn-sm text-danger position-absolute top-0 end-0 mt-2 me-2 opacity-50 hover-opacity-100 transition-all" onclick="removeItem({{ $id }})" title="Supprimer">
-            <i class="fas fa-times"></i>
+        <button type="button" class="mini-cart-item-remove position-absolute {{ app()->getLocale() === 'ar' ? 'start-0' : 'end-0' }}" onclick="removeItem({{ $id }})" title="{{ __('Delete') }}" aria-label="{{ __('Delete') }}">
+            <i class="fas fa-trash-alt"></i>
         </button>
     </div>
 @empty
@@ -40,8 +40,8 @@
         <div class="mb-4 bg-white rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 100px; height: 100px;">
             <i class="fas fa-shopping-basket fa-3x text-muted opacity-25"></i>
         </div>
-        <h5 class="fw-bold text-dark">Votre panier est vide</h5>
-        <p class="text-muted small mb-4">Vous n'avez encore rien ajouté à votre panier.</p>
-        <a href="{{ route('shop.index') }}" class="btn btn-primary rounded-pill px-5 shadow-sm">Commencer les achats</a>
+        <h5 class="fw-bold text-dark">{{ __('Your cart is empty') }}</h5>
+        <p class="text-muted small mb-4">{{ __("You haven't added anything yet.") }}</p>
+        <a href="{{ route('shop.index') }}" class="btn btn-primary rounded-pill px-5 shadow-sm">{{ __('Start Shopping') }}</a>
     </div>
 @endforelse

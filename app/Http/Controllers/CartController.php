@@ -72,10 +72,16 @@ class CartController extends Controller
 
             if ($request->wantsJson()) {
                 $cartCount = array_sum(array_column($cart, 'quantity'));
+                $total = 0;
+                foreach ($cart as $item) {
+                    $total += $item['price'] * $item['quantity'];
+                }
                 return response()->json([
                     'success' => true, 
-                    'message' => 'Product added to cart!',
-                    'cartCount' => $cartCount
+                    'message' => __('Equipment added to cart!'),
+                    'cartCount' => $cartCount,
+                    'cartTotal' => currency($total),
+                    'rawTotal' => $total
                 ]);
             }
 

@@ -1,6 +1,6 @@
 @extends('layouts.frontend')
 
-@section('meta_title', 'Finaliser la Commande — ' . setting('app_name', 'LUMINA Cine & Optics'))
+@section('meta_title', __('Checkout') . ' — ' . setting('app_name', 'LUMINA Cine & Optics'))
 
 @section('content')
 <div class="bg-light py-5">
@@ -9,40 +9,40 @@
             <div class="col-lg-7">
                 <div class="card border-0 shadow-sm rounded-4 mb-4">
                     <div class="card-body p-4">
-                        <h4 class="fw-bold mb-4">Informations de livraison</h4>
+                        <h4 class="fw-bold mb-4">{{ __('Shipping Information') }}</h4>
                         <form action="{{ route('checkout.store') }}" method="POST" id="checkout-form">
                             @csrf
                             <div class="row g-3">
                                 <div class="col-12">
-                                    <label class="form-label small fw-bold text-muted">NOM COMPLET</label>
+                                    <label class="form-label small fw-bold text-muted">{{ __('FULL NAME') }}</label>
                                     <input type="text" name="customer_name" class="form-control bg-light border-0 py-2" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">ADRESSE E-MAIL <span class="text-muted fw-normal">(optionnel)</span></label>
-                                    <input type="email" name="customer_email" class="form-control bg-light border-0 py-2" placeholder="Pour la confirmation de commande">
+                                    <label class="form-label small fw-bold text-muted">{{ __('EMAIL ADDRESS') }} <span class="text-muted fw-normal">({{ __('optional') }})</span></label>
+                                    <input type="email" name="customer_email" class="form-control bg-light border-0 py-2" placeholder="{{ __('For order confirmation') }}">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">NUMÉRO DE TÉLÉPHONE</label>
+                                    <label class="form-label small fw-bold text-muted">{{ __('PHONE NUMBER') }}</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light border-0">+212</span>
                                         <input type="tel" name="customer_phone" class="form-control bg-light border-0 py-2" 
                                                placeholder="6 XX XX XX XX" 
                                                pattern="[0-9]{9}" 
-                                               title="Enter 9 digits (e.g. 612345678)"
+                                               title="Enter 9 digits (e.g. 612345678)" 
                                                required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">ICE <span class="text-muted fw-normal">(optionnel)</span></label>
-                                    <input type="text" name="ice" class="form-control bg-light border-0 py-2" placeholder="Identifiant Commun de l'Entreprise">
+                                    <label class="form-label small fw-bold text-muted">ICE <span class="text-muted fw-normal">({{ __('optional') }})</span></label>
+                                    <input type="text" name="ice" class="form-control bg-light border-0 py-2" placeholder="{{ __('Common Company Identifier') }}">
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label small fw-bold text-muted">ADRESSE</label>
+                                    <label class="form-label small fw-bold text-muted">{{ __('ADDRESS') }}</label>
                                     <input type="text" name="shipping_address" class="form-control bg-light border-0 py-2" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label small fw-bold text-muted">
-                                        VILLE DE LIVRAISON <span class="text-danger">*</span>
+                                        {{ __('SHIPPING CITY') }} <span class="text-danger">*</span>
                                     </label>
                                     <div class="city-autocomplete-wrapper">
                                         <div class="input-group">
@@ -51,11 +51,11 @@
                                                    name="shipping_city" 
                                                    id="shipping_city_input" 
                                                    class="form-control bg-light border-0 py-2 fw-semibold" 
-                                                   placeholder="Tapez votre ville (ex. Casablanca, Agadir, فاس...)" 
+                                                   placeholder="{{ __('Type your city (e.g. Casablanca, Agadir, فاس...)') }}" 
                                                    autocomplete="off" 
                                                    required
                                                    value="{{ old('shipping_city') }}">
-                                            <button class="btn btn-light border-0 text-muted px-3" type="button" id="city-clear-btn" style="display: none;" title="Effacer la ville">
+                                            <button class="btn btn-light border-0 text-muted px-3" type="button" id="city-clear-btn" style="display: none;" title="{{ __('Clear city') }}">
                                                 <i class="fas fa-times-circle"></i>
                                             </button>
                                         </div>
@@ -70,7 +70,7 @@
 
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">RÉGION <span class="text-muted fw-normal">(optionnel)</span></label>
+                                    <label class="form-label small fw-bold text-muted">{{ __('REGION') }} <span class="text-muted fw-normal">({{ __('optional') }})</span></label>
                                     <input type="text" name="shipping_state" class="form-control bg-light border-0 py-2" placeholder="ex. Casablanca-Settat">
                                 </div>
                             </div>
@@ -80,14 +80,14 @@
 
                 <div class="card border-0 shadow-sm rounded-4">
                     <div class="card-body p-4">
-                        <h4 class="fw-bold mb-4">Paiement</h4>
+                        <h4 class="fw-bold mb-4">{{ __('Payment') }}</h4>
                         <div class="alert alert-info border-0 rounded-3">
-                            <i class="fas fa-info-circle me-2"></i> Pour cette boutique, vous pouvez régler par <strong>paiement à la livraison</strong> (espèces à la réception du colis) ou par virement bancaire.
+                            <i class="fas fa-info-circle me-2"></i> {{ __('For this shop, you can pay with cash on delivery (cash upon receipt of parcel) or bank transfer.') }}
                         </div>
                         <div class="form-check p-3 border rounded-3 bg-white mb-2">
                             <input class="form-check-input ms-0 me-3" type="radio" name="payment_method" id="cod" checked>
                             <label class="form-check-label fw-bold" for="cod">
-                                Paiement à la livraison (Cash on Delivery)
+                                {{ __('Cash on delivery (Cash on Delivery)') }}
                             </label>
                         </div>
                     </div>
@@ -97,7 +97,7 @@
             <div class="col-lg-5">
                 <div class="card border-0 shadow-sm rounded-4">
                     <div class="card-header bg-white p-4 border-bottom-0">
-                        <h5 class="fw-bold m-0">Récapitulatif de la commande</h5>
+                        <h5 class="fw-bold m-0">{{ __('Order Summary') }}</h5>
                     </div>
                     <div class="card-body p-4 pt-0">
                         @foreach($cart as $id => $details)
@@ -121,7 +121,7 @@
                         <hr class="my-4 opacity-10">
                         
                         <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted">Sous-total</span>
+                            <span class="text-muted">{{ __('Subtotal') }}</span>
                             <span class="fw-bold" id="checkout-subtotal" 
                                   data-subtotal="{{ $total }}"
                                   data-currency-symbol="{{ setting('currency_symbol', 'DH') }}"
@@ -133,25 +133,25 @@
                             </span>
                         </div>
                         <div class="d-flex justify-content-between mb-4 align-items-center">
-                            <span class="text-muted">Frais de livraison</span>
+                            <span class="text-muted">{{ __('Shipping Fee') }}</span>
                             <span class="fw-bold" id="checkout-shipping-cost">
-                                <span class="text-muted small">Sélectionnez une ville</span>
+                                <span class="text-muted small">{{ __('Select a city') }}</span>
                             </span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center py-3 border-top">
-                            <span class="h5 fw-bold mb-0">Total TTC</span>
+                            <span class="h5 fw-bold mb-0">{{ __('Total') }}</span>
                             <span class="h4 fw-bold text-danger mb-0" id="checkout-total">{{ currency($total) }}</span>
                         </div>
 
                         <button type="submit" form="checkout-form" id="checkout-submit-btn" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow">
-                            Commander (<span id="btn-total-label">{{ currency($total) }}</span>)
+                            {{ __('Place Order') }} (<span id="btn-total-label">{{ currency($total) }}</span>)
                         </button>
                     </div>
                 </div>
                 
                 <div class="text-center mt-4">
                     <a href="{{ route('cart.index') }}" class="text-muted text-decoration-none small">
-                        <i class="fas fa-arrow-left me-1"></i> Retour au panier
+                        <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-right me-1' : 'fa-arrow-left me-1' }}"></i> {{ __('Return to cart') }}
                     </a>
                 </div>
             </div>
@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
             totalEl.textContent = formatCurrency(grandTotal);
             if (btnTotalEl) btnTotalEl.textContent = formatCurrency(grandTotal);
         } else {
-            shippingEl.innerHTML = '<span class="text-muted small">Tapez votre ville</span>';
+            shippingEl.innerHTML = '<span class="text-muted small">{{ __('Type your city') }}</span>';
             totalEl.textContent = formatCurrency(subtotal);
             if (btnTotalEl) btnTotalEl.textContent = formatCurrency(subtotal);
         }
@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function() {
         clearBtn.style.display = 'block';
         dropdown.style.display = 'none';
         updateSummary(parseFloat(city.price));
-        showStatus('matched', `<i class="fas fa-check-circle text-success me-1"></i> Ville sélectionnée : <strong>${escapeHtml(city.name_en)}</strong> (${escapeHtml(city.name_ar)}) — Livraison : ${formatCurrency(city.price)}`);
+        showStatus('matched', `<i class="fas fa-check-circle text-success me-1"></i> {{ __('Selected city:') }} <strong>${escapeHtml(city.name_en)}</strong> (${escapeHtml(city.name_ar)}) — {{ __('Shipping:') }} ${formatCurrency(city.price)}`);
     }
 
     function selectManual(cityName) {
@@ -266,11 +266,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const matched = findMatch(trimmed);
         if (matched) {
             updateSummary(parseFloat(matched.price));
-            showStatus('matched', `<i class="fas fa-check-circle text-success me-1"></i> Ville reconnue : <strong>${escapeHtml(matched.name_en)}</strong> (${escapeHtml(matched.name_ar)}) — Livraison : ${formatCurrency(matched.price)}`);
+            showStatus('matched', `<i class="fas fa-check-circle text-success me-1"></i> {{ __('Recognized city:') }} <strong>${escapeHtml(matched.name_en)}</strong> (${escapeHtml(matched.name_ar)}) — {{ __('Shipping:') }} ${formatCurrency(matched.price)}`);
         } else {
             // Unlisted city: apply standard 40 DH fee
             updateSummary(40);
-            showStatus('manual', `<i class="fas fa-check-circle text-primary me-1"></i> Ville validée : <strong>${escapeHtml(trimmed)}</strong> — Tarif standard : ${formatCurrency(40)}`);
+            showStatus('manual', `<i class="fas fa-check-circle text-primary me-1"></i> {{ __('Validated city:') }} <strong>${escapeHtml(trimmed)}</strong> — {{ __('Standard rate:') }} ${formatCurrency(40)}`);
         }
     }
 
@@ -283,8 +283,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const header = document.createElement('div');
             header.className = 'city-dropdown-header d-flex justify-content-between align-items-center';
             header.innerHTML = `
-                <span><i class="fas fa-list-ul me-1"></i> Villes proposées (${matches.length})</span>
-                <span class="small fw-normal text-muted">Cliquez pour choisir</span>
+                <span><i class="fas fa-list-ul me-1"></i> {{ __('Suggested cities') }} (${matches.length})</span>
+                <span class="small fw-normal text-muted">{{ __('Click to select') }}</span>
             `;
             dropdown.appendChild(header);
 
@@ -316,7 +316,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <i class="fas fa-pen text-warning me-1"></i>
-                        <span>Continuer avec "<strong>${escapeHtml(query)}</strong>" (Ville personnalisée)</span>
+                        <span>{{ __('Continue with') }} "<strong>${escapeHtml(query)}</strong>" ({{ __('Custom city') }})</span>
                     </div>
                     <span class="badge bg-secondary-subtle text-dark fw-bold">${formatCurrency(40)}</span>
                 </div>
@@ -333,13 +333,13 @@ document.addEventListener('DOMContentLoaded', function() {
             noMatch.className = 'city-no-match-box';
             noMatch.innerHTML = `
                 <div class="fw-bold text-dark mb-1">
-                    <i class="fas fa-info-circle text-primary me-1"></i> Aucune ville suggérée pour "${escapeHtml(query)}"
+                    <i class="fas fa-info-circle text-primary me-1"></i> {{ __('No city suggested for') }} "${escapeHtml(query)}"
                 </div>
                 <div class="small text-muted mb-2">
-                    Continuez simplement la saisie : elle est <strong>automatiquement validée</strong> comme ville personnalisée (livraison : ${formatCurrency(40)}).
+                    {{ __('Continue typing: it is automatically validated as a custom city') }} ({{ __('Shipping:') }} ${formatCurrency(40)}).
                 </div>
                 <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1">
-                    <i class="fas fa-check me-1"></i> Valider "${escapeHtml(query)}"
+                    <i class="fas fa-check me-1"></i> {{ __('Validate') }} "${escapeHtml(query)}"
                 </button>
             `;
             noMatch.addEventListener('mousedown', function(e) {
@@ -371,11 +371,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const exact = findMatch(raw);
         if (exact) {
             updateSummary(parseFloat(exact.price));
-            showStatus('matched', `<i class="fas fa-check-circle text-success me-1"></i> Ville reconnue : <strong>${escapeHtml(exact.name_en)}</strong> (${escapeHtml(exact.name_ar)}) — Livraison : ${formatCurrency(exact.price)}`);
+            showStatus('matched', `<i class="fas fa-check-circle text-success me-1"></i> {{ __('Recognized city:') }} <strong>${escapeHtml(exact.name_en)}</strong> (${escapeHtml(exact.name_ar)}) — {{ __('Shipping:') }} ${formatCurrency(exact.price)}`);
         } else {
             // Live validation as manual custom city while typing
             updateSummary(40);
-            showStatus('manual', `<i class="fas fa-pen text-primary me-1"></i> Saisie libre : <strong>${escapeHtml(raw.trim())}</strong> — Validée manuellement (Tarif standard : ${formatCurrency(40)})`);
+            showStatus('manual', `<i class="fas fa-pen text-primary me-1"></i> {{ __('Custom entry:') }} <strong>${escapeHtml(raw.trim())}</strong> ({{ __('Standard rate:') }} ${formatCurrency(40)})`);
         }
 
         // Search in allCities

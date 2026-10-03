@@ -106,7 +106,13 @@
     <div class="container">
         <div class="text-center mb-5" data-aos="fade-up">
             <span class="section-eyebrow-cine"><i class="fas fa-gem"></i> {{ __('Our Core Values') }}</span>
-            <h2 class="section-title">{{ __('Why Choose') }} {{ setting('app_name', 'Notre Showroom') }}</h2>
+            <h2 class="section-title">
+                @if(setting('app_name') && setting('app_name') !== 'Notre Showroom' && setting('app_name') !== 'Notre Boutique' && setting('app_name') !== 'Speed Platform')
+                    {{ __('Why Choose') }} {{ setting('app_name') }}
+                @else
+                    {{ __('Why Choose Our Showroom') }}
+                @endif
+            </h2>
             <p class="section-desc">{{ __('A level of demanding standards for audiovisual professionals') }}</p>
         </div>
 

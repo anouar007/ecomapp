@@ -1,11 +1,11 @@
 @extends('layouts.frontend')
 
-@section('meta_title', 'My Wishlist - Speed Platform')
+@section('meta_title', __('My Wishlist') . ' - ' . setting('app_name', 'Speed Platform'))
 
 @section('content')
 <div class="bg-light py-5">
     <div class="container">
-        <h2 class="fw-bold mb-4">My Wishlist</h2>
+        <h2 class="fw-bold mb-4">{{ __('My Wishlist') }}</h2>
 
         @if($wishlistItems->count() > 0)
         <div class="row g-4">
@@ -39,8 +39,8 @@
         @else
         <div class="text-center py-5">
             <i class="far fa-heart fa-3x text-muted opacity-25 mb-3"></i>
-            <h4 class="fw-bold text-muted">Your wishlist is empty</h4>
-            <a href="{{ route('shop.index') }}" class="btn btn-primary rounded-pill mt-3">Start Shopping</a>
+            <h4 class="fw-bold text-muted">{{ __('Your wishlist is empty') }}</h4>
+            <a href="{{ route('shop.index') }}" class="btn btn-primary rounded-pill mt-3">{{ __('Start Shopping') }}</a>
         </div>
         @endif
     </div>
@@ -48,7 +48,7 @@
 
 <script>
 function removeFromWishlist(e, productId, btn) {
-    if(!confirm('Remove from wishlist?')) return;
+    if(!confirm('{{ __('Remove from wishlist?') }}')) return;
     
     fetch("{{ route('wishlist.toggle') }}", {
         method: 'POST',

@@ -1,7 +1,7 @@
 @extends('layouts.frontend')
 
-@section('meta_title', setting('app_name', 'Full Frame House') . ' — ' . __('Matériel Cinéma, Caméras 8K & Optiques Pro au Maroc'))
-@section('meta_description', __('Découvrez notre catalogue de caméras cinéma, boîtiers hybrides plein format, objectifs professionnels, stabilisateurs et éclairage studio au Maroc.'))
+@section('meta_title', setting('app_name', 'Full Frame House') . ' — ' . __('Cinema Equipment, 8K Cameras & Pro Optics in Morocco'))
+@section('meta_description', __('Discover our catalogue of cinema cameras, full-frame hybrid bodies, professional lenses, stabilizers and studio lighting in Morocco.'))
 
 @section('json_ld')
 <script type="application/ld+json">
@@ -323,7 +323,13 @@
     <div class="container">
         <div class="text-center mb-5">
             <span class="section-eyebrow-cine"><i class="fas fa-award"></i> {{ __('Our Commitments') }}</span>
-            <h2 class="section-title">{{ __('Why Choose') }} {{ setting('app_name', 'Notre Boutique') }}</h2>
+            <h2 class="section-title">
+                @if(setting('app_name') && setting('app_name') !== 'Notre Boutique' && setting('app_name') !== 'Notre Showroom' && setting('app_name') !== 'Speed Platform')
+                    {{ __('Why Choose') }} {{ setting('app_name') }}
+                @else
+                    {{ __('Why Choose Our Store') }}
+                @endif
+            </h2>
             <p class="section-desc">{{ __('A service designed by image professionals') }}</p>
         </div>
         <div class="row g-4">
@@ -401,6 +407,10 @@ function addToCart(productId) {
             const countEl = document.getElementById(id);
             if(countEl && data.cartCount !== undefined) countEl.textContent = data.cartCount;
         });
+
+        if (typeof window.updateFloatingCheckout === 'function') {
+            window.updateFloatingCheckout(data.cartCount, data.cartTotal);
+        }
 
         if (typeof refreshMiniCart === 'function') refreshMiniCart();
 

@@ -78,29 +78,29 @@
         <div class="shop-hero-content" data-aos="fade-up">
             <div class="hero-eyebrow mb-3">
                 <span class="hero-eyebrow-dot"></span>
-                {{ request('q') ? 'Résultats de recherche' : (request('category') ? 'Catalogue Spécialisé' : 'Matériel Audiovisuel Pro') }}
+                {{ request('q') ? __('Search results for') : (request('category') ? __('Specialized catalogue') : __('Pro audiovisual equipment')) }}
             </div>
             <h1 class="shop-hero-title">
                 @if(request('q'))
-                    Résultats pour <span class="text-brand-red">« {{ request('q') }} »</span>
+                    {{ __('Results for') }} <span class="text-brand-red">&laquo; {{ request('q') }} &raquo;</span>
                 @elseif(request('category'))
-                    <span class="text-brand-red">{{ $categories->where('slug', request('category'))->first()->name ?? 'Produits' }}</span>
+                    <span class="text-brand-red">{{ $categories->where('slug', request('category'))->first()->name ?? __('Products') }}</span>
                 @else
-                    Caméras & <span class="text-brand-red">Optiques de Cinéma</span>
+                    {{ __('Cameras & Cinema Optics') }}
                 @endif
             </h1>
             <p class="shop-hero-sub">
-                Explorez notre sélection de boîtiers plein format 4K/8K, objectifs prime ultra-lumineux, gimbals et matériel studio livrés partout au Maroc.
+                {{ __('Explore full-frame 4K/8K cameras...') }}
             </p>
 
             {{-- Breadcrumb --}}
             <nav class="shop-breadcrumb mt-4" aria-label="breadcrumb">
-                <a href="{{ url('/') }}"><i class="fas fa-home me-1"></i> Accueil</a>
+                <a href="{{ url('/') }}"><i class="fas fa-home me-1"></i> {{ __('Home') }}</a>
                 <span class="shop-bc-sep mx-2 opacity-50">/</span>
-                <a href="{{ route('shop.index') }}">Boutique</a>
+                <a href="{{ route('shop.index') }}">{{ __('Shop') }}</a>
                 @if(request('category'))
                     <span class="shop-bc-sep mx-2 opacity-50">/</span>
-                    <span class="text-brand-black fw-bold">{{ $categories->where('slug', request('category'))->first()->name ?? 'Catégorie' }}</span>
+                    <span class="text-brand-black fw-bold">{{ $categories->where('slug', request('category'))->first()->name ?? __('Category') }}</span>
                 @endif
             </nav>
         </div>
@@ -127,7 +127,7 @@
             <div class="shop-mobile-cat-scroll">
                 <button type="button" class="mobile-cat-pill {{ !request('category') ? 'active' : '' }}" data-slug="">
                     <i class="fas fa-th-large"></i>
-                    <span>Tous</span>
+                    <span>{{ __('All') }}</span>
                 </button>
                 @foreach($categories as $cat)
                     @php $icon = $catIcons[$cat->slug] ?? 'fa-tag'; @endphp
@@ -148,7 +148,7 @@
                 {{-- Filter trigger button --}}
                 <button type="button" class="btn-mobile-tool" data-bs-toggle="offcanvas" data-bs-target="#shopFilterSheet" id="mobileFilterTrigger">
                     <i class="fas fa-sliders-h text-danger"></i>
-                    <span>Filtres</span>
+                    <span>{{ __('Filter') }}</span>
                     <span class="badge rounded-pill bg-danger d-none" id="mobileFilterBadge">0</span>
                 </button>
 
@@ -157,14 +157,14 @@
                     <button class="btn-mobile-tool w-100 justify-content-between" type="button" id="mobileSortDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
                         <span class="d-flex align-items-center gap-1 text-truncate">
                             <i class="fas fa-sort-amount-down text-muted"></i>
-                            <span id="mobileSortLabel">Plus récents</span>
+                            <span id="mobileSortLabel">{{ __('Newest') }}</span>
                         </span>
                         <i class="fas fa-chevron-down opacity-50 ms-1" style="font-size: 0.65rem;"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2" aria-labelledby="mobileSortDropdownBtn" style="z-index: 1095;">
-                        <li><button class="dropdown-item rounded-3 py-2 mobile-sort-item {{ request('sort') == 'newest' || !request('sort') ? 'active' : '' }}" type="button" data-sort="newest"><i class="fas fa-clock me-2"></i>Plus récents</button></li>
-                        <li><button class="dropdown-item rounded-3 py-2 mobile-sort-item {{ request('sort') == 'price_asc' ? 'active' : '' }}" type="button" data-sort="price_asc"><i class="fas fa-arrow-up-1-9 me-2"></i>Prix croissant</button></li>
-                        <li><button class="dropdown-item rounded-3 py-2 mobile-sort-item {{ request('sort') == 'price_desc' ? 'active' : '' }}" type="button" data-sort="price_desc"><i class="fas fa-arrow-down-9-1 me-2"></i>Prix décroissant</button></li>
+                        <li><button class="dropdown-item rounded-3 py-2 mobile-sort-item {{ request('sort') == 'newest' || !request('sort') ? 'active' : '' }}" type="button" data-sort="newest"><i class="fas fa-clock me-2"></i>{{ __('Newest') }}</button></li>
+                        <li><button class="dropdown-item rounded-3 py-2 mobile-sort-item {{ request('sort') == 'price_asc' ? 'active' : '' }}" type="button" data-sort="price_asc"><i class="fas fa-arrow-up-1-9 me-2"></i>{{ __('Price: Low to High') }}</button></li>
+                        <li><button class="dropdown-item rounded-3 py-2 mobile-sort-item {{ request('sort') == 'price_desc' ? 'active' : '' }}" type="button" data-sort="price_desc"><i class="fas fa-arrow-down-9-1 me-2"></i>{{ __('Price: High to Low') }}</button></li>
                     </ul>
                 </div>
 
@@ -177,7 +177,7 @@
             {{-- Result Count & Removable Filter Chips --}}
             <div class="mobile-active-strip d-flex align-items-center justify-content-between pt-2">
                 <div class="mobile-results-count text-muted">
-                    <span id="mobileProductTotal" class="fw-bold text-dark">{{ $products->total() }}</span> articles trouvés
+                    <span id="mobileProductTotal" class="fw-bold text-dark">{{ $products->total() }}</span> {{ __('items found') }}
                 </div>
                 <div class="mobile-chips-scroll" id="mobileActiveChipsContainer"></div>
             </div>
@@ -198,39 +198,39 @@
                     <div class="shop-toolbar-left">
                         <span class="shop-toolbar-title" id="categoryTitle">
                             @if(request('category'))
-                                {{ $categories->where('slug', request('category'))->first()->name ?? 'Produits' }}
+                                {{ $categories->where('slug', request('category'))->first()->name ?? __('Products') }}
                             @else
-                                Tous les équipements
+                                {{ __('All equipment') }}
                             @endif
                         </span>
-                        <span class="shop-toolbar-count" id="desktopProductTotalBadge">{{ $products->total() }} produit{{ $products->total() != 1 ? 's' : '' }}</span>
+                        <span class="shop-toolbar-count" id="desktopProductTotalBadge">{{ $products->total() }} {{ __('products') }}</span>
                     </div>
                     <div class="d-flex align-items-center gap-2">
-                        <label class="shop-sort-label">Trier :</label>
+                        <label class="shop-sort-label">{{ __('Sort by:') }}</label>
                         <select class="shop-sort-select" id="sortSelect">
-                            <option value="newest"  {{ request('sort') == 'newest'     ? 'selected' : '' }}>Plus récents</option>
-                            <option value="price_asc"  {{ request('sort') == 'price_asc'  ? 'selected' : '' }}>Prix croissant</option>
-                            <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Prix décroissant</option>
+                            <option value="newest"  {{ request('sort') == 'newest'     ? 'selected' : '' }}>{{ __('Newest') }}</option>
+                            <option value="price_asc"  {{ request('sort') == 'price_asc'  ? 'selected' : '' }}>{{ __('Price: Low to High') }}</option>
+                            <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>{{ __('Price: High to Low') }}</option>
                         </select>
                     </div>
                 </div>
 
                 {{-- Active Filters (Desktop) --}}
                 <div class="shop-active-filters mb-4 {{ (request('q') || request('category') || request('min_price') || request('max_price')) ? '' : 'd-none' }}" id="desktopActiveFilters">
-                    <span class="shop-active-label">Filtres actifs :</span>
+                    <span class="shop-active-label">{{ __('Active filters:') }}</span>
                     <span id="desktopActiveFilterChips">
                         @if(request('q'))
-                            <span class="shop-filter-tag">Recherche : {{ request('q') }}</span>
+                            <span class="shop-filter-tag">{{ __('Search:') }} {{ request('q') }}</span>
                         @endif
                         @if(request('category'))
-                            <span class="shop-filter-tag">Catégorie : {{ $categories->where('slug', request('category'))->first()->name ?? request('category') }}</span>
+                            <span class="shop-filter-tag">{{ __('Category:') }} {{ $categories->where('slug', request('category'))->first()->name ?? request('category') }}</span>
                         @endif
                         @if(request('min_price') || request('max_price'))
-                            <span class="shop-filter-tag">Prix : {{ request('min_price', '0') }} — {{ request('max_price', '∞') }} DH</span>
+                            <span class="shop-filter-tag">{{ __('Price:') }} {{ request('min_price', '0') }} — {{ request('max_price', '∞') }} DH</span>
                         @endif
                     </span>
                     <a href="#" class="shop-clear-link" id="desktopResetFiltersBtn">
-                        <i class="fas fa-times me-1"></i>Effacer tout
+                        <i class="fas fa-times me-1"></i>{{ __('Clear all') }}
                     </a>
                 </div>
 
@@ -254,29 +254,28 @@
     <div class="offcanvas-header border-bottom py-3 px-4">
         <div class="d-flex align-items-center gap-2">
             <i class="fas fa-sliders-h text-danger fs-5"></i>
-            <h5 class="offcanvas-title fw-bold mb-0" id="shopFilterSheetLabel">Filtres & Options</h5>
+            <h5 class="offcanvas-title fw-bold mb-0" id="shopFilterSheetLabel">{{ __('Filters & Options') }}</h5>
         </div>
         <button type="button" class="btn-reset-filters text-danger border-0 bg-transparent fw-bold small" id="sheetResetBtn">
-            Réinitialiser
+            {{ __('Reset') }}
         </button>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fermer"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="{{ __('Close') }}"></button>
     </div>
     <div class="offcanvas-body p-4">
         {{-- Section 1: Search inside shop --}}
         <div class="filter-section mb-4">
-            <label class="filter-section-title"><i class="fas fa-search me-2 text-danger"></i>Rechercher dans la boutique</label>
+            <label class="filter-section-title"><i class="fas fa-search me-2 text-danger"></i>{{ __('Search in shop') }}</label>
             <div class="input-group">
                 <span class="input-group-text bg-light border-end-0 text-muted ps-3"><i class="fas fa-search"></i></span>
-                <input type="text" class="form-control bg-light border-start-0 ps-1" id="sheetSearchInput" placeholder="Modèle, boîtier, marque..." value="{{ request('q') }}">
+                <input type="text" class="form-control bg-light border-start-0 ps-1" id="sheetSearchInput" placeholder="{{ __('Model, body, brand...') }}" value="{{ request('q') }}">
             </div>
         </div>
 
-        {{-- Section 2: Categories --}}
         <div class="filter-section mb-4">
-            <label class="filter-section-title"><i class="fas fa-th-large me-2 text-danger"></i>Catégories</label>
+            <label class="filter-section-title"><i class="fas fa-th-large me-2 text-danger"></i>{{ __('Categories') }}</label>
             <div class="d-flex flex-wrap gap-2" id="sheetCategoryChips">
                 <button type="button" class="sheet-cat-chip {{ !request('category') ? 'active' : '' }}" data-slug="">
-                    Tous ({{ \App\Models\Product::where('status','active')->count() }})
+                    {{ __('All') }} ({{ \App\Models\Product::where('status','active')->count() }})
                 </button>
                 @foreach($categories as $cat)
                 <button type="button" class="sheet-cat-chip {{ request('category') == $cat->slug ? 'active' : '' }}" data-slug="{{ $cat->slug }}">
@@ -286,9 +285,8 @@
             </div>
         </div>
 
-        {{-- Section 3: Price Range --}}
         <div class="filter-section mb-4">
-            <label class="filter-section-title"><i class="fas fa-tag me-2 text-danger"></i>Budget (MAD)</label>
+            <label class="filter-section-title"><i class="fas fa-tag me-2 text-danger"></i>{{ __('Budget (MAD)') }}</label>
             <div class="row g-2 mb-2">
                 <div class="col-6">
                     <input type="number" class="form-control rounded-3" id="sheetMinPrice" placeholder="Min MAD" value="{{ request('min_price') }}" min="0">
@@ -297,7 +295,6 @@
                     <input type="number" class="form-control rounded-3" id="sheetMaxPrice" placeholder="Max MAD" value="{{ request('max_price') }}" min="0">
                 </div>
             </div>
-            {{-- Quick budget chips --}}
             <div class="d-flex flex-wrap gap-1 mt-2">
                 <button type="button" class="sheet-budget-chip" data-min="0" data-max="5000">&lt; 5,000 DH</button>
                 <button type="button" class="sheet-budget-chip" data-min="5000" data-max="20000">5,000 – 20,000 DH</button>
@@ -305,23 +302,22 @@
             </div>
         </div>
 
-        {{-- Section 4: Sorting --}}
         <div class="filter-section mb-4">
-            <label class="filter-section-title"><i class="fas fa-sort-amount-down me-2 text-danger"></i>Trier par</label>
+            <label class="filter-section-title"><i class="fas fa-sort-amount-down me-2 text-danger"></i>{{ __('Sort by') }}</label>
             <div class="d-flex flex-column gap-2" id="sheetSortGroup">
                 <label class="sheet-radio-tile {{ request('sort') == 'newest' || !request('sort') ? 'selected' : '' }}">
                     <input type="radio" name="sheet_sort_radio" value="newest" {{ request('sort') == 'newest' || !request('sort') ? 'checked' : '' }}>
-                    <span>Plus récents (Nouveautés)</span>
+                    <span>{{ __('Newest (New arrivals)') }}</span>
                     <i class="fas fa-check check-icon"></i>
                 </label>
                 <label class="sheet-radio-tile {{ request('sort') == 'price_asc' ? 'selected' : '' }}">
                     <input type="radio" name="sheet_sort_radio" value="price_asc" {{ request('sort') == 'price_asc' ? 'checked' : '' }}>
-                    <span>Prix : croissant (Moins cher)</span>
+                    <span>{{ __('Price: Low to High (Cheapest)') }}</span>
                     <i class="fas fa-check check-icon"></i>
                 </label>
                 <label class="sheet-radio-tile {{ request('sort') == 'price_desc' ? 'selected' : '' }}">
                     <input type="radio" name="sheet_sort_radio" value="price_desc" {{ request('sort') == 'price_desc' ? 'checked' : '' }}>
-                    <span>Prix : décroissant (Haut de gamme)</span>
+                    <span>{{ __('Price: High to Low (Premium)') }}</span>
                     <i class="fas fa-check check-icon"></i>
                 </label>
             </div>
@@ -329,7 +325,7 @@
     </div>
     <div class="offcanvas-footer p-3 bg-white border-top">
         <button class="btn btn-danger w-100 py-3 rounded-pill fw-bold shadow-lg" id="sheetApplyBtn">
-            Appliquer les filtres
+            {{ __('Apply filters') }}
         </button>
     </div>
 </div>
@@ -350,7 +346,7 @@ const shopState = {
 
 // Category Titles Map
 const categoryNamesMap = {
-    '': 'Tous les équipements',
+    '': '{{ addslashes(__('All equipment')) }}',
     @foreach($categories as $cat)
         '{{ $cat->slug }}': '{{ addslashes($cat->name) }}',
     @endforeach
@@ -358,9 +354,9 @@ const categoryNamesMap = {
 
 // Sort Labels Map
 const sortLabelsMap = {
-    'newest': 'Plus récents',
-    'price_asc': 'Prix croissant',
-    'price_desc': 'Prix décroissant'
+    'newest': '{{ __('Newest') }}',
+    'price_asc': '{{ __('Price: Low to High') }}',
+    'price_desc': '{{ __('Price: High to Low') }}'
 };
 
 function getParams() {
@@ -387,7 +383,7 @@ function updateUIState() {
     // 2. Desktop title & Sort Selects
     const titleEl = document.getElementById('categoryTitle');
     if (titleEl) {
-        titleEl.textContent = categoryNamesMap[shopState.category] || 'Produits';
+        titleEl.textContent = categoryNamesMap[shopState.category] || '{{ __('Products') }}';
     }
 
     const sortSelect = document.getElementById('sortSelect');
@@ -396,7 +392,7 @@ function updateUIState() {
     // Mobile sort label
     const mobileSortLabel = document.getElementById('mobileSortLabel');
     if (mobileSortLabel) {
-        mobileSortLabel.textContent = sortLabelsMap[shopState.sort] || 'Trier';
+        mobileSortLabel.textContent = sortLabelsMap[shopState.sort] || '{{ __('Sort by') }}';
     }
 
     // Mobile sort dropdown items active class
@@ -477,7 +473,7 @@ function renderActiveFilterChips() {
         chipsHtml += `<span class="mobile-chip" onclick="removeFilter('price')">${min}-${max} DH <i class="fas fa-times ms-1"></i></span>`;
     }
     if (chipsHtml) {
-        chipsHtml += `<span class="mobile-chip-clear" onclick="resetAllFilters()">Tout effacer</span>`;
+        chipsHtml += `<span class="mobile-chip-clear" onclick="resetAllFilters()">{{ __('Clear all') }}</span>`;
     }
 
     if (mobileContainer) {
@@ -735,15 +731,15 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function addToCart(id) {
-    const btn = document.querySelector(`button[onclick="addToCart(${id})"]`);
-    let originalHtml = '';
-    if (btn) {
-        originalHtml = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-    }
+    const btns = document.querySelectorAll(`button[onclick*="addToCart(${id})"]`);
+    const origHtmls = [];
+    btns.forEach((b, i) => {
+        origHtmls[i] = b.innerHTML;
+        b.disabled = true;
+        b.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    });
 
-    fetch(`/cart/add/${id}`, {
+    fetch(`{{ url('/cart/add') }}/${id}`, {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -754,35 +750,32 @@ function addToCart(id) {
     })
     .then(r => r.json())
     .then(data => {
-        if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-check text-white"></i>';
-            setTimeout(() => { btn.innerHTML = originalHtml; }, 1600);
-        }
+        btns.forEach((b, i) => {
+            b.disabled = false;
+            b.innerHTML = '<i class="fas fa-check text-white"></i>';
+            setTimeout(() => { b.innerHTML = origHtmls[i]; }, 1600);
+        });
         if (data.success) {
-            Swal.fire({ 
-                toast: true, 
-                position: 'top-end', 
-                icon: 'success', 
-                title: 'Ajouté au panier !',
-                showConfirmButton: false, 
-                timer: 2000, 
-                background: '#0f172a', 
-                color: '#fff' 
-            });
+            Swal.fire({ toast:true, position:'top-end', icon:'success',
+                title:'{{ __('Added to cart!') }}',
+                showConfirmButton:false, timer:2000,
+                background:'#0f172a', color:'#fff' });
             const badgeDesktop = document.getElementById('header-cart-count');
             const badgeMobile = document.getElementById('header-cart-count-mobile');
             if (badgeDesktop && data.cartCount !== undefined) badgeDesktop.innerText = data.cartCount;
             if (badgeMobile && data.cartCount !== undefined) badgeMobile.innerText = data.cartCount;
+            if (typeof window.updateFloatingCheckout === 'function') {
+                window.updateFloatingCheckout(data.cartCount, data.cartTotal);
+            }
             if (typeof refreshMiniCart === 'function') refreshMiniCart();
         }
     })
     .catch(err => {
         console.error(err);
-        if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = originalHtml;
-        }
+        btns.forEach((b, i) => {
+            b.disabled = false;
+            b.innerHTML = origHtmls[i];
+        });
     });
 }
 </script>
