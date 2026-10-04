@@ -86,7 +86,10 @@ class FetchOfficialProductImages extends Command
         $total = $products->count();
 
         // Filter products that need images unless force is specified
-        if (!$force && !$force4k) {
+        if ($force4k && !$force) {
+            $productsToProcess = $products->filter(fn($p) => $p->image_quality !== '4k' || ($p->image_width ?? 0) < 2000);
+            $alreadyCount = $total - $productsToProcess->count();
+        } elseif (!$force) {
             $productsToProcess = $products->filter(fn($p) => !$service->hasRealImage($p, $minWidth));
             $alreadyCount = $total - $productsToProcess->count();
         } else {

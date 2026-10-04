@@ -32,11 +32,37 @@ class ProductController extends Controller
             $query->where('category_id', $request->category);
         }
 
+        // Image Quality Filter
+        if ($request->filled('quality')) {
+            $q = $request->quality;
+            if ($q === 'needs_upgrade') {
+                $query->where(function($sub) {
+                    $sub->whereIn('image_quality', ['sd', 'low', 'placeholder', 'missing', 'unknown'])
+                        ->orWhereNull('image_quality');
+                });
+            } elseif ($q === '4k') {
+                $query->where('image_quality', '4k');
+            } elseif ($q === 'fhd') {
+                $query->where('image_quality', 'fhd');
+            } elseif ($q === 'sd') {
+                $query->where('image_quality', 'sd');
+            } elseif ($q === 'missing') {
+                $query->whereIn('image_quality', ['placeholder', 'missing'])->orWhereNull('image');
+            }
+        }
+
         $products = $query->paginate(20)->withQueryString();
         
         $categories = \App\Models\Category::where('status', 'active')->orderBy('name')->get();
 
-        return view('products.index', compact('products', 'categories'));
+        $qualityStats = [
+            'total' => Product::count(),
+            'four_k' => Product::where('image_quality', '4k')->count(),
+            'fhd' => Product::where('image_quality', 'fhd')->count(),
+            'needs_upgrade' => Product::whereIn('image_quality', ['sd', 'low', 'placeholder', 'missing', 'unknown'])->orWhereNull('image_quality')->count(),
+        ];
+
+        return view('products.index', compact('products', 'categories', 'qualityStats'));
     }
 
     /**
@@ -388,13 +414,93 @@ class ProductController extends Controller
             ], 422);
         }
 
+        $product->refresh();
         $fullUrl = asset('storage/' . $path);
 
         return response()->json([
             'success' => true,
-            'message' => '4K Ultra-HD image applied successfully!',
+            'message' => 'Image 4K Ultra-HD appliquée avec succès !',
             'image_path' => $path,
             'image_url' => $fullUrl,
+            'width' => $product->image_width,
+            'height' => $product->image_height,
+            'quality' => $product->image_quality,
+            'badge_html' => $product->image_quality_badge,
+        ]);
+    }
+
+    /**
+     * Studio Quality Hub view for managing and upgrading product images to 4K.
+     */
+    public function imageQualityHub(Request $request)
+    {
+        $query = Product::with(['productCategory'])->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('sku', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('quality')) {
+            $q = $request->quality;
+            if ($q === 'needs_upgrade') {
+                $query->where(function($sub) {
+                    $sub->whereIn('image_quality', ['sd', 'low', 'placeholder', 'missing', 'unknown'])
+                        ->orWhereNull('image_quality');
+                });
+            } elseif ($q === '4k') {
+                $query->where('image_quality', '4k');
+            } elseif ($q === 'fhd') {
+                $query->where('image_quality', 'fhd');
+            } elseif ($q === 'sd') {
+                $query->where('image_quality', 'sd');
+            } elseif ($q === 'missing') {
+                $query->whereIn('image_quality', ['placeholder', 'missing'])->orWhereNull('image');
+            }
+        }
+
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        $products = $query->paginate(24)->withQueryString();
+        $categories = \App\Models\Category::where('status', 'active')->orderBy('name')->get();
+
+        $qualityStats = [
+            'total' => Product::count(),
+            'four_k' => Product::where('image_quality', '4k')->count(),
+            'fhd' => Product::where('image_quality', 'fhd')->count(),
+            'needs_upgrade' => Product::whereIn('image_quality', ['sd', 'low', 'placeholder', 'missing', 'unknown'])->orWhereNull('image_quality')->count(),
+            'missing' => Product::whereIn('image_quality', ['placeholder', 'missing'])->orWhereNull('image')->count(),
+        ];
+
+        return view('products.quality_hub', compact('products', 'categories', 'qualityStats'));
+    }
+
+    /**
+     * Batch upgrade products to 4K studio quality.
+     */
+    public function bulkUpgrade4k(Request $request)
+    {
+        $productIds = $request->input('product_ids', []);
+        if (empty($productIds)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No products selected for 4K upgrade.',
+            ], 422);
+        }
+
+        $service = app(\App\Services\OfficialProductImageService::class);
+        $result = $service->bulkUpgrade4k($productIds, 1200);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Mise à niveau terminée : {$result['upgraded']} produit(s) mis à niveau en qualité Studio 4K !",
+            'data' => $result,
         ]);
     }
 }
+
