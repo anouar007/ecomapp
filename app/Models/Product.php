@@ -49,6 +49,16 @@ class Product extends Model
             \Illuminate\Support\Facades\Cache::forget('frontend_nav_categories');
             \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
         });
+        static::created(function (Product $product) {
+            // If created without an image and no file upload in request, dynamically fetch official image
+            if (empty($product->image) && (!function_exists('request') || !request()?->hasFile('images'))) {
+                try {
+                    app(\App\Services\OfficialProductImageService::class)->fetchForProduct($product);
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning("Could not auto-fetch image for product #{$product->id}: " . $e->getMessage());
+                }
+            }
+        });
     }
 
     /**

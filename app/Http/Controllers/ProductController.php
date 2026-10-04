@@ -84,6 +84,13 @@ class ProductController extends Controller
                         'is_primary' => $index === 0, // First image is primary
                     ]);
                 }
+            } else {
+                // Automatically search & download official product image from brand website
+                try {
+                    app(\App\Services\OfficialProductImageService::class)->fetchForProduct($product);
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning("Could not auto-fetch official image for product #{$product->id}: " . $e->getMessage());
+                }
             }
 
             DB::commit();
