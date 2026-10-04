@@ -51,7 +51,21 @@ class OfficialProductImageService
 
     public function __construct()
     {
-        $this->catalogDbPath = storage_path('app/catalogs/official_catalog.sqlite');
+        $dbCandidates = [
+            database_path('catalogs/official_catalog.db'),
+            database_path('catalogs/official_catalog.sqlite'),
+            storage_path('app/catalogs/official_catalog.sqlite'),
+            storage_path('app/catalogs/official_catalog.db'),
+        ];
+
+        $this->catalogDbPath = $dbCandidates[0];
+        foreach ($dbCandidates as $candidate) {
+            if (file_exists($candidate)) {
+                $this->catalogDbPath = $candidate;
+                break;
+            }
+        }
+
         $this->initSqlite();
     }
 
