@@ -20,10 +20,11 @@ $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
 // Parse CLI options
-$options = getopt('', ['id::', 'limit::', 'force', 'upgrade-quality', 'min-width::', 'brand::']);
+$options = getopt('', ['id::', 'limit::', 'force', '4k', 'upgrade-quality', 'min-width::', 'brand::']);
 $productId = $options['id'] ?? null;
 $limit = isset($options['limit']) ? (int) $options['limit'] : 0;
 $force = isset($options['force']);
+$force4k = isset($options['4k']);
 $upgradeQuality = isset($options['upgrade-quality']);
 $minWidth = isset($options['min-width']) ? (int) $options['min-width'] : 0;
 $brandFilter = $options['brand'] ?? null;
@@ -38,6 +39,9 @@ if ($limit > 0) {
 }
 if ($force) {
     $params['--force'] = true;
+}
+if ($force4k) {
+    $params['--4k'] = true;
 }
 if ($upgradeQuality) {
     $params['--upgrade-quality'] = true;

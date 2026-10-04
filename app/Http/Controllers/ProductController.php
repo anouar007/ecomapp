@@ -351,4 +351,50 @@ class ProductController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Search 4K high-resolution candidates for a product.
+     */
+    public function search4kImages(Request $request, Product $product)
+    {
+        $query = $request->input('q', $product->name);
+        $service = app(\App\Services\OfficialProductImageService::class);
+        $candidates = $service->find4kCandidates($query, $product->category_name);
+
+        return response()->json([
+            'success' => true,
+            'query' => $query,
+            'count' => count($candidates),
+            'candidates' => $candidates,
+        ]);
+    }
+
+    /**
+     * Apply a selected 4K image directly to a product.
+     */
+    public function apply4kImage(Request $request, Product $product)
+    {
+        $request->validate([
+            'image_url' => ['required', 'url'],
+        ]);
+
+        $service = app(\App\Services\OfficialProductImageService::class);
+        $path = $service->apply4kImage($product, $request->input('image_url'));
+
+        if (!$path) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to download or apply 4K image. Please select another image.',
+            ], 422);
+        }
+
+        $fullUrl = asset('storage/' . $path);
+
+        return response()->json([
+            'success' => true,
+            'message' => '4K Ultra-HD image applied successfully!',
+            'image_path' => $path,
+            'image_url' => $fullUrl,
+        ]);
+    }
 }

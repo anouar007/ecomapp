@@ -128,13 +128,22 @@ class OfficialProductImageService
     /**
      * Search and download the official image for a product.
      */
-    public function fetchForProduct(Product $product, bool $force = false, int $minWidth = 0): ?string
+    public function fetchForProduct(Product $product, bool $force = false, int $minWidth = 0, bool $force4k = false): ?string
     {
         if (!$force && $this->hasRealImage($product, $minWidth)) {
             return $product->image ?: $product->main_image;
         }
 
         $detectedBrand = $this->detectBrand($product->name);
+
+        // If 4K mode requested, search 4K Ultra-HD master studio assets first
+        if ($force4k) {
+            $cands = $this->find4kCandidates($product->name, $detectedBrand, 1400, 1);
+            if (!empty($cands)) {
+                return $this->downloadAndAttachImage($product, $cands[0]['url'], $detectedBrand);
+            }
+        }
+
         $imageUrl = $this->findOfficialImageUrl($product->name, $detectedBrand);
 
         if (!$imageUrl) {
@@ -727,5 +736,119 @@ class OfficialProductImageService
         } catch (Throwable $e) {
             // Silently ignore insert conflicts
         }
+    }
+
+    /**
+     * Search 4K / Ultra-HD studio master images for a product.
+     * Returns a list of candidates with direct image URL, dimensions, and quality label.
+     */
+    public function find4kCandidates(string $productName, ?string $brand = null, int $minWidth = 1000, int $limit = 8): array
+    {
+        $cleanQuery = trim(preg_replace('/\([^)]*\)/', '', $productName));
+        $brand = $brand ?: $this->detectBrand($productName);
+
+        $searchUrl = "https://www.bing.com/images/search?q=" . urlencode($cleanQuery . " official product photo white background") . "&qft=+filterui:imagesize-wallpaper";
+
+        $candidates = [];
+
+        try {
+            $res = Http::withHeaders([
+                'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept-Language' => 'en-US,en;q=0.9',
+            ])->timeout(8)->get($searchUrl);
+
+            if ($res->successful()) {
+                preg_match_all('/murl&quot;:&quot;(http[^&]+)&quot;/i', $res->body(), $matches);
+                $urls = $matches[1] ?? [];
+
+                $badDomains = [
+                    'freepik', 'alamy', 'shutterstock', 'getty', 'dreamstime',
+                    '123rf', 'depositphotos', 'istock', 'vector', 'clipart', 'watermark'
+                ];
+
+                foreach ($urls as $rawUrl) {
+                    $u = html_entity_decode($rawUrl);
+                    $isBad = false;
+                    foreach ($badDomains as $bd) {
+                        if (stripos($u, $bd) !== false) {
+                            $isBad = true;
+                            break;
+                        }
+                    }
+                    if ($isBad) continue;
+
+                    // Clean Amazon URLs to master resolution (strip ._AC_..._ etc.)
+                    if (str_contains($u, 'm.media-amazon.com')) {
+                        $u = preg_replace('/\._[A-Z0-9_,]+_\./i', '.', $u);
+                    }
+                    // Clean Shopify URLs to master original
+                    if (str_contains($u, 'cdn.shopify.com')) {
+                        $u = preg_replace('/_(?:small|compact|medium|large|grande|pico|icon|\d+x\d*)\./i', '.', $u);
+                        $u = preg_replace('/(\?|&)width=\d+/i', '', $u);
+                    }
+
+                    if (!preg_match('/\.(?:jpg|jpeg|png|webp)/i', $u)) {
+                        continue;
+                    }
+
+                    $info = @getimagesize($u);
+                    if ($info && $info[0] >= $minWidth && $info[1] >= 600) {
+                        $width = $info[0];
+                        $height = $info[1];
+                        $source = 'Official Web Master';
+                        if (str_contains($u, 'amazon')) $source = 'Amazon Master (4K)';
+                        elseif (str_contains($u, 'shopify')) $source = 'Shopify Master (4K)';
+                        elseif (str_contains($u, 'dji')) $source = 'DJI Official CDN';
+                        elseif (str_contains($u, 'smallrig')) $source = 'SmallRig Official CDN';
+                        elseif (str_contains($u, 'bhphoto')) $source = 'B&H Photo Master';
+
+                        $label = ($width >= 2000) ? "4K Ultra-HD ({$width}×{$height})" : "2K High-Definition ({$width}×{$height})";
+
+                        $candidates[] = [
+                            'url' => $u,
+                            'width' => $width,
+                            'height' => $height,
+                            'quality' => $label,
+                            'source' => $source,
+                            'mime' => $info['mime'] ?? 'image/jpeg',
+                        ];
+                    }
+
+                    if (count($candidates) >= $limit) {
+                        break;
+                    }
+                }
+            }
+        } catch (Throwable $e) {
+            Log::info("4K Image Search error: " . $e->getMessage());
+        }
+
+        // Add verified high-res brand catalog assets as fallbacks if fewer than 3 candidates
+        if (count($candidates) < 3) {
+            $catUrl = $this->searchSqliteCatalog($productName, $brand);
+            if ($catUrl && !in_array($catUrl, array_column($candidates, 'url'))) {
+                $info = @getimagesize($catUrl);
+                if ($info) {
+                    $candidates[] = [
+                        'url' => $catUrl,
+                        'width' => $info[0],
+                        'height' => $info[1],
+                        'quality' => "Catalog High-Res ({$info[0]}×{$info[1]})",
+                        'source' => 'Official Brand Catalog',
+                        'mime' => $info['mime'] ?? 'image/jpeg',
+                    ];
+                }
+            }
+        }
+
+        return $candidates;
+    }
+
+    /**
+     * Apply a specific 4K image directly to a product.
+     */
+    public function apply4kImage(Product $product, string $imageUrl): ?string
+    {
+        return $this->downloadAndAttachImage($product, $imageUrl, $this->detectBrand($product->name));
     }
 }

@@ -54,6 +54,8 @@ Route::middleware('auth')->group(function () {
         Route::post('products/import', [\App\Http\Controllers\ProductController::class, 'import'])->name('products.import');
         Route::get('products/template', [\App\Http\Controllers\ProductController::class, 'downloadTemplate'])->name('products.template');
         Route::post('products/bulk-action', [\App\Http\Controllers\ProductController::class, 'bulkAction'])->name('products.bulk-action');
+        Route::get('products/{product}/search-4k-images', [\App\Http\Controllers\ProductController::class, 'search4kImages'])->name('products.search-4k-images');
+        Route::post('products/{product}/apply-4k-image', [\App\Http\Controllers\ProductController::class, 'apply4kImage'])->name('products.apply-4k-image');
         Route::resource('products', \App\Http\Controllers\ProductController::class);
     });
     
