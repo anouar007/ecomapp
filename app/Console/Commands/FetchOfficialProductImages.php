@@ -17,6 +17,8 @@ class FetchOfficialProductImages extends Command
                             {--id= : Process a specific product ID}
                             {--limit= : Limit the number of products to process}
                             {--force : Re-download images even if already present}
+                            {--upgrade-quality : Upgrade any existing low-resolution images to high-resolution}
+                            {--min-width= : Minimum required width (default 400 when upgrading)}
                             {--brand= : Filter products by brand/name keyword}';
 
     /**
@@ -24,7 +26,7 @@ class FetchOfficialProductImages extends Command
      *
      * @var string
      */
-    protected $description = 'Automatically search and download official product images with zero credit consumption';
+    protected $description = 'Automatically search and download high-quality official product images with zero credit consumption';
 
     /**
      * Execute the console command.
@@ -38,6 +40,8 @@ class FetchOfficialProductImages extends Command
         $productId = $this->option('id');
         $limit = (int) $this->option('limit');
         $force = (bool) $this->option('force');
+        $upgradeQuality = (bool) $this->option('upgrade-quality');
+        $minWidth = (int) ($this->option('min-width') ?: ($upgradeQuality ? 400 : 0));
         $brandFilter = $this->option('brand');
 
         if ($productId) {
@@ -48,20 +52,20 @@ class FetchOfficialProductImages extends Command
             }
 
             $this->info("Checking Product #{$product->id}: {$product->name}");
-            $hasImage = $service->hasRealImage($product);
+            $hasImage = $service->hasRealImage($product, $minWidth);
             $this->line("  Current image: " . ($product->image ?: 'None'));
-            $this->line("  Has verified image: " . ($hasImage ? 'Yes' : 'No'));
+            $this->line("  Has verified image (min {$minWidth}px): " . ($hasImage ? 'Yes' : 'No'));
 
             if ($hasImage && !$force) {
-                $this->warn("  Product already has a verified official image. Use --force to re-fetch.");
+                $this->warn("  Product already has a verified high-resolution image. Use --force to re-fetch.");
                 return 0;
             }
 
             $this->line("  Searching official sources for: {$product->name}...");
-            $path = $service->fetchForProduct($product, $force);
+            $path = $service->fetchForProduct($product, $force, $minWidth);
 
             if ($path) {
-                $this->info("  [SUCCESS] Downloaded & attached official image: {$path}");
+                $this->info("  [SUCCESS] Downloaded & attached high-quality official image: {$path}");
             } else {
                 $this->error("  [NOT FOUND] No official image found for this product.");
             }
@@ -80,7 +84,7 @@ class FetchOfficialProductImages extends Command
 
         // Filter products that need images unless force is specified
         if (!$force) {
-            $productsToProcess = $products->filter(fn($p) => !$service->hasRealImage($p));
+            $productsToProcess = $products->filter(fn($p) => !$service->hasRealImage($p, $minWidth));
             $alreadyCount = $total - $productsToProcess->count();
         } else {
             $productsToProcess = $products;
@@ -109,7 +113,7 @@ class FetchOfficialProductImages extends Command
 
         foreach ($productsToProcess as $product) {
             try {
-                $res = $service->fetchForProduct($product, $force);
+                $res = $service->fetchForProduct($product, $force, $minWidth);
                 if ($res) {
                     $downloaded++;
                 } else {

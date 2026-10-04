@@ -83,9 +83,9 @@ class OfficialProductImageService
     }
 
     /**
-     * Check if a product already has a verified, non-placeholder image.
+     * Check if a product already has a verified, non-placeholder image meeting quality threshold.
      */
-    public function hasRealImage(Product $product): bool
+    public function hasRealImage(Product $product, int $minWidth = 0): bool
     {
         $mainImg = $product->image ?: $product->main_image;
         if (empty($mainImg)) {
@@ -100,12 +100,25 @@ class OfficialProductImageService
 
         // If it's a storage path, verify the file exists on disk
         $cleanPath = ltrim(str_replace(['storage/', '/storage/'], '', $mainImg), '/');
-        if (Storage::disk('public')->exists($cleanPath)) {
+        $fullPath = Storage::disk('public')->path($cleanPath);
+        if (file_exists($fullPath)) {
+            if ($minWidth > 0) {
+                $imgInfo = @getimagesize($fullPath);
+                if ($imgInfo && $imgInfo[0] < $minWidth) {
+                    return false; // Below quality threshold
+                }
+            }
             return true;
         }
 
         // Check public folder
         if (file_exists(public_path($mainImg))) {
+            if ($minWidth > 0) {
+                $imgInfo = @getimagesize(public_path($mainImg));
+                if ($imgInfo && $imgInfo[0] < $minWidth) {
+                    return false;
+                }
+            }
             return true;
         }
 
@@ -115,9 +128,9 @@ class OfficialProductImageService
     /**
      * Search and download the official image for a product.
      */
-    public function fetchForProduct(Product $product, bool $force = false): ?string
+    public function fetchForProduct(Product $product, bool $force = false, int $minWidth = 0): ?string
     {
-        if (!$force && $this->hasRealImage($product)) {
+        if (!$force && $this->hasRealImage($product, $minWidth)) {
             return $product->image ?: $product->main_image;
         }
 
@@ -426,10 +439,35 @@ class OfficialProductImageService
             $imageUrl = html_entity_decode($imageUrl, ENT_QUOTES | ENT_HTML5, 'UTF-8');
             $imageUrl = str_replace(' ', '%20', $imageUrl);
 
+            // Automatically upgrade Miss Numérique images from /large/ (320x240) to /big/ (640x480 high-res)
+            if (str_contains($imageUrl, '/images/produits/large/')) {
+                $imageUrl = str_replace('/images/produits/large/', '/images/produits/big/', $imageUrl);
+            }
+
+            // Upgrade Shopify images to original master resolution (1600x1600 / 2048x2048)
+            if (str_contains($imageUrl, 'cdn.shopify.com')) {
+                $imageUrl = preg_replace('/_(?:small|compact|medium|large|grande|pico|icon|\d+x\d*)\./i', '.', $imageUrl);
+                // Strip width limiting query params like ?width=500
+                $imageUrl = preg_replace('/(\?|&)width=\d+/i', '', $imageUrl);
+            }
+
+            // Upgrade SmallRig images to high-res if available
+            if (str_contains($imageUrl, 'static.smallrig.com') && str_contains($imageUrl, '/small/')) {
+                $imageUrl = str_replace('/small/', '/public/', $imageUrl);
+            }
+
             $res = Http::withHeaders([
                 'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 'Accept' => 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
             ])->timeout(15)->get($imageUrl);
+
+            // If upgraded URL failed, fallback to original
+            if (!$res->successful() && str_contains($imageUrl, '/images/produits/big/')) {
+                $fallbackUrl = str_replace('/images/produits/big/', '/images/produits/large/', $imageUrl);
+                $res = Http::withHeaders([
+                    'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'
+                ])->timeout(15)->get($fallbackUrl);
+            }
 
             if (!$res->successful()) {
                 Log::warning("Failed to download image from {$imageUrl} for product #{$product->id} (HTTP {$res->status()})");
