@@ -43,7 +43,7 @@ class FetchOfficialProductImages extends Command
         $force = (bool) $this->option('force');
         $force4k = (bool) $this->option('4k');
         $upgradeQuality = (bool) $this->option('upgrade-quality');
-        $minWidth = (int) ($this->option('min-width') ?: ($force4k ? 1500 : ($upgradeQuality ? 400 : 0)));
+        $minWidth = (int) ($this->option('min-width') ?: 0);
         $brandFilter = $this->option('brand');
 
         if ($productId) {
@@ -56,21 +56,21 @@ class FetchOfficialProductImages extends Command
             $this->info("Checking Product #{$product->id}: {$product->name}");
             $hasImage = $service->hasRealImage($product, $minWidth);
             $this->line("  Current image: " . ($product->image ?: 'None'));
-            $this->line("  Has verified image (min {$minWidth}px): " . ($hasImage ? 'Yes' : 'No'));
+            $this->line("  Has verified image: " . ($hasImage ? 'Yes' : 'No'));
 
-            if ($hasImage && !$force && !$force4k) {
-                $this->warn("  Product already has a verified high-resolution image. Use --force or --4k to re-fetch.");
+            if ($hasImage && !$force) {
+                $this->warn("  Product already has a verified official image. Use --force to re-fetch.");
                 return 0;
             }
 
-            $modeLabel = $force4k ? '4K Ultra-HD' : 'official high-res';
-            $this->line("  Searching {$modeLabel} sources for: {$product->name}...");
-            $path = $service->fetchForProduct($product, $force || $force4k, $minWidth, $force4k);
+            $modeLabel = $force4k ? '4K/Master Studio' : 'official';
+            $this->line("  Searching {$modeLabel} packshots for: {$product->name}...");
+            $path = $service->fetchForProduct($product, $force, $minWidth, $force4k);
 
             if ($path) {
                 $this->info("  [SUCCESS] Downloaded & attached {$modeLabel} image: {$path}");
             } else {
-                $this->error("  [NOT FOUND] No 4K studio image found for this product.");
+                $this->error("  [NOT FOUND] No official studio image found for this product.");
             }
 
             return 0;
@@ -86,10 +86,7 @@ class FetchOfficialProductImages extends Command
         $total = $products->count();
 
         // Filter products that need images unless force is specified
-        if ($force4k && !$force) {
-            $productsToProcess = $products->filter(fn($p) => $p->image_quality !== '4k' || ($p->image_width ?? 0) < 2000);
-            $alreadyCount = $total - $productsToProcess->count();
-        } elseif (!$force) {
+        if (!$force) {
             $productsToProcess = $products->filter(fn($p) => !$service->hasRealImage($p, $minWidth));
             $alreadyCount = $total - $productsToProcess->count();
         } else {
@@ -107,7 +104,7 @@ class FetchOfficialProductImages extends Command
         $this->newLine();
 
         if ($productsToProcess->isEmpty()) {
-            $this->info("All products already have verified 4K/high-res images! Nothing to do.");
+            $this->info("All products already have verified official images! Nothing to do.");
             return 0;
         }
 
@@ -119,7 +116,7 @@ class FetchOfficialProductImages extends Command
 
         foreach ($productsToProcess as $product) {
             try {
-                $res = $service->fetchForProduct($product, $force || $force4k, $minWidth, $force4k);
+                $res = $service->fetchForProduct($product, $force, $minWidth, $force4k);
                 if ($res) {
                     $downloaded++;
                 } else {
