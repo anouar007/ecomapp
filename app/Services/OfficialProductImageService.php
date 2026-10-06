@@ -53,6 +53,10 @@ class OfficialProductImageService
         'prod_blackmagic_cine',
         'placeholder',
         'default',
+        'AcePro&Ace',
+        '-91.jpg',
+        'category-banner',
+        'no-image',
     ];
 
     public function __construct()
@@ -226,7 +230,17 @@ class OfficialProductImageService
 
         // Fast-path: Exact match on title or clean title in official_catalog
         try {
-            $stmtExact = $this->sqlite->prepare("SELECT image_url FROM official_catalog WHERE LOWER(title) = ? OR LOWER(title_clean) = ? LIMIT 1");
+            $stmtExact = $this->sqlite->prepare("
+                SELECT image_url FROM official_catalog 
+                WHERE (LOWER(title) = ? OR LOWER(title_clean) = ?)
+                  AND image_url NOT LIKE '%default.jpg'
+                  AND image_url NOT LIKE '%-91.jpg'
+                  AND image_url NOT LIKE '%AcePro&Ace.jpg'
+                  AND image_url NOT LIKE '%category-banner%'
+                  AND image_url NOT LIKE '%placeholder%'
+                ORDER BY CASE WHEN source != 'MissNumerique' THEN 0 ELSE 1 END, id ASC
+                LIMIT 1
+            ");
             $stmtExact->execute([strtolower($productName), strtolower($cleanName)]);
             $exactUrl = $stmtExact->fetchColumn();
             if ($exactUrl && preg_match('/\.(?:jpg|jpeg|png|webp)/i', $exactUrl)) {
@@ -300,7 +314,7 @@ class OfficialProductImageService
             }
         }
 
-        $query .= " LIMIT 50";
+        $query .= " ORDER BY CASE WHEN source != 'MissNumerique' THEN 0 ELSE 1 END, id ASC LIMIT 100";
 
         try {
             $stmt = $this->sqlite->prepare($query);
@@ -968,6 +982,42 @@ class OfficialProductImageService
         return false;
     }
 
+    public function getAccessorySubtypes(string $text): array
+    {
+        $clean = ' ' . $this->cleanText($text) . ' ';
+        $subtypes = [
+            'hood' => ['pare soleil', 'parasoleil', 'sunhood', 'sunshade'],
+            'cage' => ['cage'],
+            'handle' => ['poignee', 'handle', 'grip'],
+            'battery' => ['batterie', 'battery', 'accumulateur', 'pile'],
+            'charger' => ['chargeur', 'charger', 'hub de charge', 'charging case', 'socle de charge', 'station de charge'],
+            'diving_case' => ['plongee', 'caisson de plongee', 'boitier de plongee', 'dive case'],
+            'lens_guard' => ['lens guard', 'lens cap', 'protection d objectif', 'protege objectif', 'cache objectif'],
+            'screen_protector' => ['protection d ecran', 'protecteur d ecran', 'screen protector', 'verre trempe'],
+            'remote' => ['telecommande', 'remote', 'declencheur'],
+            'clamp' => ['pince', 'clamp', 'super clamp', 'crabe'],
+            'mic' => ['micro', 'microphone'],
+            'mic_adapter' => ['mic adaptateur', 'adaptateur micro', 'audio adapter'],
+            'cable' => ['cable', 'cordon'],
+            'filter' => ['filtre', 'filter', 'polariseur', 'cpl', 'nd', 'uv'],
+            'strap' => ['sangle', 'strap', 'dragonne', 'harnais'],
+            'bag' => ['etui', 'housse', 'sac', 'case', 'valise', 'backpack'],
+            'memory_card' => ['carte memoire', 'sd card', 'micro sd', 'memory card', 'cfexpress'],
+            'plate' => ['plaque', 'plate', 'l plate', 'plateau'],
+        ];
+
+        $found = [];
+        foreach ($subtypes as $key => $words) {
+            foreach ($words as $w) {
+                if (str_contains($clean, ' ' . $w . ' ')) {
+                    $found[] = $key;
+                    break;
+                }
+            }
+        }
+        return $found;
+    }
+
     protected function pickBestCandidate(array $candidates, string $targetClean, array $tokens, array $modelTokens): ?string
     {
         $targetIsAccessory = $this->isAccessory($targetClean);
@@ -979,10 +1029,16 @@ class OfficialProductImageService
         $targetHasCombo = str_contains($targetClean, 'combo');
         $targetHasAdventure = str_contains($targetClean, 'adventure');
         $targetHasStandard = str_contains($targetClean, 'standard');
+        $targetSubtypes = $this->getAccessorySubtypes($targetClean);
 
         foreach ($candidates as $cand) {
             $imgUrl = $cand['image_url'] ?? '';
             if (empty($imgUrl) || !preg_match('/\.(?:jpg|jpeg|png|webp)/i', $imgUrl)) {
+                continue;
+            }
+
+            // STRICT RULE 9: Reject generic category banners & placeholder URLs
+            if (preg_match('/(default\.jpg|AcePro&Ace\.jpg|category-banner|placeholder|-91\.jpg)/i', $imgUrl)) {
                 continue;
             }
 
@@ -997,6 +1053,37 @@ class OfficialProductImageService
             // STRICT RULE 2: If target IS an accessory, candidate must NOT be a camera body!
             if ($targetIsAccessory && ($this->isCameraBody($titleClean) || $this->isCameraBody($cand['title'] ?? ''))) {
                 continue;
+            }
+
+            // STRICT RULE 8: Accessory Functional Subtype Consistency
+            if (!empty($targetSubtypes)) {
+                $candSubtypes = $this->getAccessorySubtypes($titleClean . ' ' . ($cand['title'] ?? ''));
+                $mutuallyExclusive = [
+                    'hood' => ['cage', 'handle', 'battery', 'charger', 'bag'],
+                    'cage' => ['hood', 'handle', 'battery', 'charger', 'diving_case', 'bag'],
+                    'battery' => ['charger', 'hood', 'cage', 'diving_case', 'mic', 'cable'],
+                    'charger' => ['battery', 'hood', 'cage', 'diving_case', 'mic'],
+                    'diving_case' => ['battery', 'charger', 'hood', 'cage', 'lens_guard'],
+                    'lens_guard' => ['diving_case', 'battery', 'charger', 'hood'],
+                    'clamp' => ['bag', 'strap', 'hood', 'battery'],
+                    'remote' => ['battery', 'charger', 'bag', 'hood'],
+                    'cable' => ['battery', 'charger', 'hood', 'cage', 'mic'],
+                ];
+
+                $hasConflict = false;
+                foreach ($targetSubtypes as $tSub) {
+                    if (isset($mutuallyExclusive[$tSub])) {
+                        foreach ($mutuallyExclusive[$tSub] as $conflictSub) {
+                            if (in_array($conflictSub, $candSubtypes) && !in_array($tSub, $candSubtypes)) {
+                                $hasConflict = true;
+                                break 2;
+                            }
+                        }
+                    }
+                }
+                if ($hasConflict) {
+                    continue;
+                }
             }
 
             // STRICT RULE 3: Reject conflicting product lines (Action vs Pocket)
@@ -1055,6 +1142,11 @@ class OfficialProductImageService
             // Brand match bonus
             if ($isBrandMatch) {
                 $score += 30;
+            }
+
+            // Official manufacturer source bonus (Insta360, DJI, SmallRig, KFConcept, etc.)
+            if (($cand['source'] ?? '') !== 'MissNumerique') {
+                $score += 35;
             }
 
             // If target is camera, strongly favor body packshots

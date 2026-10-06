@@ -14,13 +14,18 @@ class FetchOfficialProductImages extends Command
      * @var string
      */
     protected $signature = 'products:fetch-images 
+                            {--all : Process all products in catalog}
                             {--id= : Process a specific product ID}
                             {--limit= : Limit the number of products to process}
                             {--force : Re-download images even if already present}
                             {--4k : Search and download true 4K Ultra-HD studio master assets (2000px+)}
                             {--upgrade-quality : Upgrade any existing low-resolution images to high-resolution}
                             {--min-width= : Minimum required width (default 400 when upgrading, 1500 for 4K)}
-                            {--brand= : Filter products by brand/name keyword}';
+                            {--brand= : Filter products by brand/name keyword}
+                            {--fix-duplicates : Detect and fix products sharing the same image for different items}
+                            {--clean-placeholders : Purge any broken placeholders, banners, or dummy images}
+                            {--dry-run : Simulate search without downloading or writing changes}
+                            {--report : Display catalog image health & accuracy report}';
 
     /**
      * The console command description.
@@ -45,6 +50,133 @@ class FetchOfficialProductImages extends Command
         $upgradeQuality = (bool) $this->option('upgrade-quality');
         $minWidth = (int) ($this->option('min-width') ?: 0);
         $brandFilter = $this->option('brand');
+        $isDryRun = (bool) $this->option('dry-run');
+
+        // Handler 1: Catalog Report
+        if ($this->option('report')) {
+            $this->info("Analyzing Catalog Image Health & Authenticity...");
+            $all = Product::all();
+            $total = $all->count();
+            $verified = 0;
+            $missing = 0;
+            $resolutions = ['4k' => 0, 'fhd' => 0, 'sd' => 0, 'low' => 0, 'unknown' => 0];
+            $byHash = [];
+
+            foreach ($all as $p) {
+                if (!$service->hasRealImage($p)) {
+                    $missing++;
+                    continue;
+                }
+                $verified++;
+                $resolutions[$p->image_quality ?: 'unknown'] = ($resolutions[$p->image_quality ?: 'unknown'] ?? 0) + 1;
+                $cleanPath = ltrim(str_replace(['storage/', '/storage/'], '', $p->image), '/');
+                $fullPath = storage_path('app/public/' . $cleanPath);
+                if (file_exists($fullPath)) {
+                    $byHash[md5_file($fullPath)][] = $p;
+                }
+            }
+
+            $duplicateClusters = 0;
+            $distinctDuplicateProducts = 0;
+            foreach ($byHash as $hash => $prods) {
+                if (count($prods) <= 1) continue;
+                $names = array_unique(array_map(fn($x) => strtolower(trim($x->name)), $prods));
+                if (count($names) > 1) {
+                    $duplicateClusters++;
+                    $distinctDuplicateProducts += count($prods);
+                }
+            }
+
+            $this->table(
+                ['Catalog Health Metric', 'Value'],
+                [
+                    ['Total Catalog Products', $total],
+                    ['Verified Authentic Studio Images', $verified . ' (' . round(($verified / max(1, $total)) * 100, 1) . '%)'],
+                    ['Missing / Broken / Placeholder Images', $missing],
+                    ['Studio Master 4K / Ultra-HD (>=2000px)', $resolutions['4k']],
+                    ['Full HD High-Res (1200px - 2000px)', $resolutions['fhd']],
+                    ['Standard Res (600px - 1200px)', $resolutions['sd']],
+                    ['Low Res (<600px)', $resolutions['low']],
+                    ['Distinct Products Sharing Same Image', $distinctDuplicateProducts . ' across ' . $duplicateClusters . ' clusters'],
+                ]
+            );
+            return 0;
+        }
+
+        // Handler 2: Clean Placeholders & Broken Images
+        if ($this->option('clean-placeholders')) {
+            $this->warn("Scanning for known broken placeholder or junk images...");
+            $products = Product::all();
+            $cleaned = 0;
+            foreach ($products as $p) {
+                $img = $p->image ?: $p->main_image;
+                if (!$img) continue;
+                $isJunk = false;
+                foreach (['default.jpg', 'AcePro&Ace', '-91.jpg', 'category-banner', 'placeholder', 'images/camera/'] as $junk) {
+                    if (stripos($img, $junk) !== false) {
+                        $isJunk = true;
+                        break;
+                    }
+                }
+                $cleanPath = ltrim(str_replace(['storage/', '/storage/'], '', $img), '/');
+                $fullPath = storage_path('app/public/' . $cleanPath);
+                if (file_exists($fullPath) && filesize($fullPath) < 5000) {
+                    $isJunk = true;
+                }
+                if ($isJunk) {
+                    $p->update(['image' => null, 'image_quality' => null, 'image_width' => null, 'image_height' => null]);
+                    $cleaned++;
+                    $this->line("  [CLEANED] Product #{$p->id}: {$p->name}");
+                }
+            }
+            $this->info("Cleaned {$cleaned} broken placeholder images.");
+            return 0;
+        }
+
+        // Handler 3: Fix Duplicates
+        if ($this->option('fix-duplicates')) {
+            $this->info("Scanning catalog for distinct products sharing the exact same image...");
+            $all = Product::all();
+            $byHash = [];
+            foreach ($all as $p) {
+                if (!$p->image) continue;
+                $cleanPath = ltrim(str_replace(['storage/', '/storage/'], '', $p->image), '/');
+                $fullPath = storage_path('app/public/' . $cleanPath);
+                if (file_exists($fullPath)) {
+                    $byHash[md5_file($fullPath)][] = $p;
+                }
+            }
+
+            $toFix = [];
+            foreach ($byHash as $hash => $prods) {
+                if (count($prods) <= 1) continue;
+                $names = array_unique(array_map(fn($x) => strtolower(trim($x->name)), $prods));
+                if (count($names) <= 1) continue; // identical product duplicated in DB
+                foreach ($prods as $p) {
+                    $toFix[] = $p;
+                }
+            }
+
+            $this->line("Found " . count($toFix) . " products in duplicate image clusters.");
+            $fixed = 0;
+            foreach ($toFix as $p) {
+                $this->line("  Resolving Product #{$p->id}: {$p->name}...");
+                if ($isDryRun) {
+                    $cand = $service->findOfficialImageUrl($p->name);
+                    $this->line("    [DRY-RUN] Candidate: " . ($cand ?: 'None'));
+                    continue;
+                }
+                $res = $service->fetchForProduct($p, true, $minWidth, $force4k);
+                if ($res) {
+                    $fixed++;
+                    $this->info("    [RESOLVED] {$res}");
+                } else {
+                    $this->warn("    [NO UNIQUE MATCH] Kept or skipped");
+                }
+            }
+            $this->info("Successfully resolved {$fixed} / " . count($toFix) . " duplicate images!");
+            return 0;
+        }
 
         if ($productId) {
             $product = Product::find($productId);
