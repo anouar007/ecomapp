@@ -14,13 +14,14 @@ class CameraStoreSeeder extends Seeder
     {
         // 1. Update Core Store Settings
         $settings = [
-            'app_name' => 'LUMINA Cine & Optics',
-            'app_description' => 'Votre référence au Maroc pour les caméras de cinéma, hybrides photo/vidéo, objectifs prime, stabilisateurs et éclairage studio professionnel.',
+            'app_name' => 'WINA SHOP',
+            'app_tagline' => 'PHOTO, VIDÉO & CINÉMA MAROC',
+            'app_description' => 'Votre référence au Maroc pour le matériel photo & vidéo professionnel — Caméras Sony, Canon & Fujifilm, stabilisateurs et drones DJI, micros HF et éclairage studio. Showroom à Casablanca et livraison express sécurisée partout au Maroc.',
             'app_logo' => 'images/camera/logo.png',
-            'company_name' => 'LUMINA Cine & Optics SARL',
-            'company_email' => 'contact@lumina-optics.ma',
-            'company_phone' => '+212 6 61 98 76 54',
-            'company_address' => '142 Boulevard d\'Anfa, 2ème étage, Casablanca, Maroc',
+            'company_name' => 'WINA SHOP',
+            'company_email' => 'contact@winashop.com',
+            'company_phone' => '+212 6 29 03 57 77',
+            'company_address' => '01 Rue 102, Al Oulfa – Hay Wiam, Casablanca, Maroc',
             'company_city' => 'Casablanca',
             'company_ice' => '002938475000089',
             'company_rc' => '542891',
@@ -29,12 +30,15 @@ class CameraStoreSeeder extends Seeder
             'currency' => 'DH',
             'currency_symbol' => 'DH',
             'currency_code' => 'MAD',
-            'social_whatsapp' => '+212661987654',
-            'social_instagram' => 'https://instagram.com/lumina_optics_maroc',
-            'social_facebook' => 'https://facebook.com/luminaoptics',
+            'currency_position' => 'after',
+            'social_whatsapp' => '+212629035777',
+            'social_instagram' => 'https://www.instagram.com/winashop.ma/',
+            'social_facebook' => 'https://www.facebook.com/WinaShop.0629035777',
             'tax_rate' => '20',
             'free_shipping_threshold' => '1000',
             'shipping_flat_rate' => '49',
+            'primary_color' => '#dc2626',
+            'secondary_color' => '#0f172a',
         ];
 
         foreach ($settings as $key => $value) {

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="48" height="48" fill="#111111">
+  <!-- Circular 3-arrow refresh recycle cycle -->
+  <path d="M32 10c8 0 15 4.5 18.5 11.2l-3.5 2C44 17.5 38.3 14 32 14v4l-8-6 8-6v4z"/>
+  <path d="M54 32c0 8-4.5 15-11.2 18.5l-2-3.5C46.5 44 50 38.3 50 32h-4l6-8 6 8h-4z"/>
+  <path d="M32 54c-8 0-15-4.5-18.5-11.2l3.5-2C20 46.5 25.7 50 32 50v-4l8 6-8 6v-4z"/>
+</svg>

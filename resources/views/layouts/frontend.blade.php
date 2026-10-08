@@ -32,10 +32,10 @@
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="@yield('meta_type', 'website')">
-    <meta property="og:site_name" content="{{ setting('app_name', 'Full Frame House') }}">
+    <meta property="og:site_name" content="{{ setting('app_name', 'WINA SHOP') }}">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('meta_title', setting('app_name', 'Full Frame House') . ' — Matériel Cinéma, Caméras & Optiques au Maroc')">
-    <meta property="og:description" content="@yield('meta_description', setting('app_description', 'Votre référence au Maroc pour les caméras cinéma, boîtiers hybrides, optiques pro, stabilisateurs et éclairage studio.'))">
+    <meta property="og:title" content="@yield('meta_title', setting('app_name', 'WINA SHOP') . ' — Matériel Photo, Vidéo & Caméras au Maroc')">
+    <meta property="og:description" content="@yield('meta_description', setting('app_description', 'Votre référence au Maroc pour le matériel photo & vidéo professionnel — Caméras Sony, Canon, drones & stabilisateurs DJI, optiques et éclairage studio.'))">
     <meta property="og:image" content="@yield('meta_image', setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/camera/hero_cinema_rig.jpg'))">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -45,10 +45,10 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ url()->current() }}">
-    <meta name="twitter:title" content="@yield('meta_title', setting('app_name', 'Full Frame House') . ' — Matériel Cinéma, Caméras & Optiques au Maroc')">
-    <meta name="twitter:description" content="@yield('meta_description', setting('app_description', 'Votre référence au Maroc pour les caméras cinéma, boîtiers hybrides, optiques pro, stabilisateurs et éclairage studio.'))">
+    <meta name="twitter:title" content="@yield('meta_title', setting('app_name', 'WINA SHOP') . ' — Matériel Photo, Vidéo & Caméras au Maroc')">
+    <meta name="twitter:description" content="@yield('meta_description', setting('app_description', 'Votre référence au Maroc pour le matériel photo & vidéo professionnel — Caméras Sony, Canon, drones & stabilisateurs DJI, optiques et éclairage studio.'))">
     <meta name="twitter:image" content="@yield('meta_image', setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/camera/hero_cinema_rig.jpg'))">    
-    <meta name="twitter:site" content="@yield('twitter_site', '@' . str_replace(' ', '', setting('app_name', 'FullFrameHouse')))">
+    <meta name="twitter:site" content="@yield('twitter_site', '@winashop.ma')">
 
     <!-- Additional Page-Specific SEO Meta (e.g. product:price) -->
     @yield('extra_meta')
@@ -62,10 +62,10 @@
     {
       "@context": "https://schema.org",
       "@type": "Organization",
-      "name": "{{ setting('company_name', setting('app_name', 'Full Frame House')) }}",
+      "name": "{{ setting('company_name', setting('app_name', 'WINA SHOP')) }}",
       "url": "{{ url('/') }}",
       "logo": "{{ setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/camera/logo.png') }}",
-      "description": "{{ addslashes(setting('app_description', 'Votre référence au Maroc pour les caméras cinéma, boîtiers hybrides, optiques et éclairage studio.')) }}",
+      "description": "{{ addslashes(setting('app_description', 'Votre référence au Maroc pour le matériel photo & vidéo professionnel — Caméras Sony, Canon, drones DJI, stabilisateurs et éclairage studio.')) }}",
       @if(setting('company_phone'))
       "telephone": "{{ setting('company_phone') }}",
       @endif
@@ -83,11 +83,11 @@
       "sameAs": [
         @php
           $socials = array_values(array_filter([
-            setting('social_facebook'),
-            setting('social_instagram'),
+            setting('social_facebook', 'https://www.facebook.com/WinaShop.0629035777'),
+            setting('social_instagram', 'https://www.instagram.com/winashop.ma/'),
             setting('social_twitter'),
             setting('social_linkedin'),
-            setting('social_whatsapp') ? 'https://wa.me/' . preg_replace('/[^0-9]/', '', setting('social_whatsapp')) : null,
+            setting('social_whatsapp') ? 'https://wa.me/' . preg_replace('/[^0-9]/', '', setting('social_whatsapp')) : 'https://wa.me/212629035777',
           ]));
         @endphp
         @foreach($socials as $idx => $soc)
@@ -100,7 +100,7 @@
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      "name": "{{ setting('app_name', 'Full Frame House') }}",
+      "name": "{{ setting('app_name', 'WINA SHOP') }}",
       "url": "{{ url('/') }}",
       "potentialAction": {
         "@type": "SearchAction",
@@ -153,11 +153,35 @@
         {!! $code->content !!}
     @endforeach
 
-    <!-- Main Header -->
-    <div class="header-main shadow-sm w-100" style="z-index: 1040;">
-        <div class="container">
-            <nav class="navbar navbar-expand-lg navbar-light py-2">
-                <div class="container-fluid px-0">
+    <!-- Top Announcement Bar -->
+    <div class="header-top-bar py-1 d-none d-md-block" style="background: #ffffff; color: #1e293b; font-size: 0.75rem; border-bottom: 1px solid #eef2f6;">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div>
+                <a href="{{ route('shop.index') }}" class="text-secondary text-decoration-none fw-semibold" style="letter-spacing: 0.5px; font-size: 0.72rem;">ADD A MENU</a>
+            </div>
+            <div class="fw-bold text-dark mx-auto" style="letter-spacing: 0.8px; font-size: 0.75rem;">
+                LIVRAISON RAPIDE PARTOUT AU MAROC
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ route('lang.switch', 'fr') }}" class="text-secondary text-decoration-none fw-semibold {{ app()->getLocale() === 'fr' ? 'text-danger' : '' }}" style="font-size: 0.72rem;">FR</a>
+                <span class="text-secondary opacity-50">|</span>
+                <a href="{{ route('lang.switch', 'ar') }}" class="text-secondary text-decoration-none fw-semibold {{ app()->getLocale() === 'ar' ? 'text-danger' : '' }}" style="font-size: 0.72rem;">AR</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Header / Navbar (Single Clean Row) -->
+    <div class="header-main bg-white shadow-sm w-100" style="z-index: 1040; border-bottom: 1px solid #f1f3f5;">
+        <div class="container py-2 py-lg-3">
+            <div class="d-flex align-items-center justify-content-between gap-3 gap-xl-4">
+                
+                <!-- Left: Logo + Categories Button + Navigation Links on its right -->
+                <div class="d-flex align-items-center gap-2 gap-lg-3 gap-xl-4 flex-nowrap">
+                    <!-- Brand Logo (Enlarged) -->
+                    <a class="navbar-brand m-0 p-0 d-flex align-items-center me-1 me-lg-2" href="{{ url('/') }}" style="flex-shrink: 0;" title="{{ setting('app_name', 'WINA SHOP') }}">
+                        <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" class="brand-logo-img" style="height: 78px; max-height: 85px; width: auto; max-width: 220px; object-fit: contain;">
+                    </a>
+
                     @php
                         $navCategories = \Illuminate\Support\Facades\Cache::remember('frontend_nav_categories', 3600, function() {
                             return \App\Models\Category::where('status', 'active')
@@ -170,253 +194,275 @@
                         });
 
                         $catIcons = [
-                            'cameras-hybrides'       => 'fa-camera',
-                            'objectifs-optiques'     => 'fa-circle-notch',
-                            'stabilisateurs-gimbals' => 'fa-video',
-                            'eclairage-studio'       => 'fa-lightbulb',
-                            'audio-micros-sans-fil'  => 'fa-microphone',
-                            'drones-cine'            => 'fa-helicopter',
+                            'camera'                      => 'fas fa-camera',
+                            'cameras-hybrides'            => 'fas fa-video',
+                            'objectifs'                   => 'fas fa-circle-notch',
+                            'objectifs-optiques'          => 'fas fa-circle-notch',
+                            'lumieres-materiel-de-studio' => 'fas fa-lightbulb',
+                            'eclairage-studio'            => 'fas fa-lightbulb',
+                            'son'                         => 'fas fa-microphone-lines',
+                            'audio-micros-sans-fil'       => 'fas fa-microphone',
+                            'stabilisateurs'              => 'fas fa-arrows-to-dot',
+                            'stabilisateurs-gimbals'      => 'fas fa-arrows-to-dot',
+                            'drones-cine'                 => 'fas fa-helicopter',
+                            'sacs-de-camera'              => 'fas fa-bag-shopping',
+                            'trepieds'                    => 'fas fa-braille',
+                            'batterie-chargeur'           => 'fas fa-bolt',
+                            'carte-memoire-lecteur'       => 'fas fa-sd-card',
+                            'accessoires'                 => 'fas fa-sliders',
+                            'materiel-de-podcast'         => 'fas fa-podcast',
+                            'filtres-nd-cpl-polarise'     => 'fas fa-circle-half-stroke',
+                            'matte-box'                   => 'fas fa-cube',
+                            'accessoires-insta360'        => 'fas fa-camera-rotate',
+                            'kit-de-nettoyage'            => 'fas fa-spray-can-sparkles',
+                            'occasion'                    => 'fas fa-tag',
                         ];
                     @endphp
 
-                    <!-- Logo -->
-                    <a class="navbar-brand me-3 me-lg-5" href="{{ url('/') }}">
-                        @php
-                            $appName = setting('app_name', 'LUMINA Optics');
-                            $logoSetting = setting('app_logo');
-                            $logoSrc = ($logoSetting && (str_starts_with($logoSetting, 'http') || str_starts_with($logoSetting, 'images/'))) 
-                                ? asset($logoSetting) 
-                                : ($logoSetting ? asset('storage/' . $logoSetting) : asset('images/camera/logo.png'));
+                    <!-- Red Categories Button (Immediately after logo) -->
+                    <div class="dropdown header-categories-dropdown d-none d-lg-inline-block">
+                        <button class="btn btn-categories-red text-white fw-bold d-flex align-items-center gap-2" 
+                                type="button" 
+                                id="headerCategoriesBtn" 
+                                data-bs-toggle="dropdown" 
+                                aria-expanded="false">
+                            <i class="fas fa-bars"></i>
+                            <span>CATÉGORIES</span>
+                            <i class="fas fa-chevron-down ms-1" style="font-size: 10px;"></i>
+                        </button>
 
-                            $words = explode(' ', trim($appName));
-                            if (count($words) > 1) {
-                                $lastWord = array_pop($words);
-                                $firstPart = implode(' ', $words);
-                            } else {
-                                $firstPart = $appName;
-                                $lastWord = '';
+                        <!-- Pro Categories Mega Dropdown -->
+                        <div class="dropdown-menu categories-mega-menu shadow-lg border-0 p-0" aria-labelledby="headerCategoriesBtn">
+                            <!-- Mega Menu Header -->
+                            <div class="categories-menu-header d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
+                                <span class="d-flex align-items-center gap-2 text-dark fw-bold text-uppercase" style="font-size: 11.5px; letter-spacing: 0.8px;">
+                                    <i class="fas fa-layer-group text-danger"></i>
+                                    <span>{{ __('Rayons & Matériel Pro') }}</span>
+                                </span>
+                                <a href="{{ route('shop.index') }}" class="text-danger fw-bold text-decoration-none d-flex align-items-center gap-1 hover-underline" style="font-size: 12px;">
+                                    <span>{{ __('Tout le catalogue') }}</span>
+                                    <i class="fas fa-arrow-right" style="font-size: 10px;"></i>
+                                </a>
+                            </div>
+
+                            <!-- Mega Menu Body: 3 Clean Balanced Columns Grid (No scroll) -->
+                            <div class="categories-menu-grid p-3">
+                                <div class="row g-2">
+                                    @php
+                                        $perColumn = ceil($navCategories->count() / 3);
+                                        $chunks = $navCategories->chunk($perColumn);
+                                    @endphp
+                                    @foreach($chunks as $columnCategories)
+                                        <div class="col-4">
+                                            <div class="d-flex flex-column gap-1">
+                                                @foreach($columnCategories as $cat)
+                                                    @php
+                                                        $catImg = null;
+                                                        $catIconClass = null;
+
+                                                        // Check if user uploaded a custom image from dashboard
+                                                        if (!empty($cat->image) && (str_starts_with($cat->image, 'categories/') || str_starts_with($cat->image, 'storage/') || str_starts_with($cat->image, 'http'))) {
+                                                            $catImg = $cat->image_url;
+                                                        }
+                                                        // Check if icon field points to an image/svg file
+                                                        elseif (!empty($cat->icon) && (str_ends_with($cat->icon, '.svg') || str_ends_with($cat->icon, '.png') || str_ends_with($cat->icon, '.webp') || str_contains($cat->icon, '/'))) {
+                                                            $catImg = asset($cat->icon);
+                                                        }
+                                                        // Check if icon field is a FontAwesome class from dashboard
+                                                        elseif (!empty($cat->icon)) {
+                                                            $rawIcon = trim($cat->icon);
+                                                            $catIconClass = str_starts_with($rawIcon, 'fa') ? $rawIcon : 'fas fa-' . $rawIcon;
+                                                        }
+                                                        // Fallback to image if set
+                                                        elseif (!empty($cat->image_url)) {
+                                                            $catImg = $cat->image_url;
+                                                        }
+                                                        // Fallback to preset or default icon
+                                                        else {
+                                                            $catIconClass = $catIcons[$cat->slug] ?? 'fas fa-folder';
+                                                        }
+                                                    @endphp
+                                                    <a href="{{ route('shop.index', ['category' => $cat->slug]) }}" 
+                                                       class="cat-mega-item d-flex align-items-center justify-content-between text-decoration-none">
+                                                        <div class="d-flex align-items-center gap-2 text-truncate me-2">
+                                                            <span class="cat-slot-box">
+                                                                @if($catImg)
+                                                                    <img src="{{ $catImg }}" alt="{{ $cat->name }}" class="cat-slot-media" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                                                    <i class="fas fa-folder cat-slot-icon" style="display: none;"></i>
+                                                                @else
+                                                                    <i class="{{ $catIconClass }} cat-slot-icon"></i>
+                                                                @endif
+                                                            </span>
+                                                            <span class="cat-mega-name text-truncate">{{ $cat->name }}</span>
+                                                        </div>
+                                                        <span class="badge cat-mega-count rounded-pill">{{ $cat->products_count }}</span>
+                                                    </a>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Links directly on the right of the red categories button -->
+                    <nav class="d-none d-lg-flex align-items-center gap-3 gap-xl-4 ms-1 flex-nowrap">
+                        <a href="{{ route('home') }}" class="nav-link-item text-decoration-none fw-bold {{ request()->routeIs('home') ? 'text-dark active' : 'text-secondary' }}" style="font-size: 13.5px; letter-spacing: 0.5px; white-space: nowrap;">ACCUEIL</a>
+                        <a href="{{ route('shop.index') }}" class="nav-link-item text-decoration-none fw-bold {{ request()->routeIs('shop.*') && !request('category') ? 'text-dark active' : 'text-secondary' }}" style="font-size: 13.5px; letter-spacing: 0.5px; white-space: nowrap;">BOUTIQUE</a>
+                        <a href="{{ route('about') }}" class="nav-link-item text-decoration-none fw-bold {{ request()->routeIs('about') ? 'text-dark active' : 'text-secondary' }}" style="font-size: 13.5px; letter-spacing: 0.5px; white-space: nowrap;">À PROPOS</a>
+                        <a href="{{ route('contact') }}" class="nav-link-item text-decoration-none fw-bold {{ request()->routeIs('contact') ? 'text-dark active' : 'text-secondary' }}" style="font-size: 13.5px; letter-spacing: 0.5px; white-space: nowrap;">CONTACT</a>
+                    </nav>
+                </div>
+
+                <!-- Right: Search Bar + Cart Icon -->
+                <div class="d-flex align-items-center gap-3 gap-xl-4 flex-grow-1 justify-content-end" style="max-width: 480px;">
+                    <!-- Search Input (Pill shape #f1f3f5) -->
+                    <form action="{{ route('shop.index') }}" method="GET" class="header-search-wrap w-100 d-none d-md-block position-relative" style="max-width: 380px;" id="headerSearchForm" autocomplete="off">
+                        <div class="position-relative d-flex align-items-center" style="background: #f1f3f5; border-radius: 9999px; padding: 0 16px; height: 44px;">
+                            <i class="fas fa-search text-muted me-2" style="font-size: 13px;"></i>
+                            <input class="form-control border-0 bg-transparent shadow-none p-0 header-search-input" 
+                                   type="search" 
+                                   name="q" 
+                                   id="headerSearchInput" 
+                                   placeholder="Rechercher des produits..." 
+                                   aria-label="{{ __('Search') }}" 
+                                   value="{{ request('q') }}" 
+                                   autocomplete="off" 
+                                   spellcheck="false"
+                                   style="font-size: 13px; color: #334155;">
+                            <button class="btn btn-search-clear d-none p-0 border-0 bg-transparent text-muted" type="button" id="headerSearchClear">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+
+                        <!-- Live Search Floating Dropdown -->
+                        <div class="header-search-dropdown shadow-lg d-none" id="headerSearchDropdown" role="region" aria-label="{{ __('Search Results') }}">
+                            <div class="search-quick-tags p-3 border-bottom" id="headerSearchTags">
+                                <div class="search-section-label">
+                                    <i class="fas fa-fire me-1 text-danger"></i> {{ strtoupper(__('Frequent Searches')) }}
+                                </div>
+                                <div class="d-flex flex-wrap gap-2 mt-2">
+                                    <button type="button" class="search-tag-chip" data-search="Sony Alpha">Sony Alpha</button>
+                                    <button type="button" class="search-tag-chip" data-search="DJI Osmo">DJI Osmo</button>
+                                    <button type="button" class="search-tag-chip" data-search="Godox">Godox</button>
+                                    <button type="button" class="search-tag-chip" data-search="Rode">Røde</button>
+                                    <button type="button" class="search-tag-chip" data-search="Insta360">Insta360</button>
+                                </div>
+                            </div>
+                            <div class="search-results-list" id="headerSearchResultsList"></div>
+                            <div class="search-empty-state text-center py-4 px-3 d-none" id="headerSearchEmpty">
+                                <div class="search-empty-icon mb-2">
+                                    <i class="fas fa-search-minus fa-2x text-muted opacity-50"></i>
+                                </div>
+                                <div class="fw-bold text-dark mb-1">{{ __('No product found') }}</div>
+                            </div>
+                            <div class="search-dropdown-footer p-2 text-center border-top d-none" id="headerSearchFooter">
+                                <a href="#" class="search-view-all-link" id="headerSearchViewAll">
+                                    <span>{{ __('View all results') }}</span>
+                                    <span class="search-count-pill badge bg-danger ms-1" id="headerSearchCountBadge">0</span>
+                                    <i class="fas fa-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Mobile search icon button -->
+                    <button class="bg-transparent border-0 p-1 text-dark d-md-none" type="button" id="mobileSearchTriggerBtn" title="{{ __('Search') }}" aria-label="{{ __('Search') }}">
+                        <i class="fas fa-search" style="font-size: 19px;"></i>
+                    </button>
+
+                    <!-- Cart Icon with Red Badge -->
+                    <div class="position-relative ms-1">
+                        <button class="bg-transparent border-0 p-1 text-dark d-flex align-items-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart" title="{{ __('My Cart') }}" style="cursor: pointer;">
+                            <i class="fas fa-shopping-bag" style="font-size: 22px;"></i>
+                        </button>
+                        @php
+                            $headerInitialCartCount = array_sum(array_column(session('cart', []), 'quantity'));
+                        @endphp
+                        <span id="header-cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white {{ $headerInitialCartCount > 0 ? '' : 'd-none' }}" style="font-size: 0.65rem; padding: 2px 6px;">
+                            {{ $headerInitialCartCount }}
+                        </span>
+                    </div>
+
+                    <!-- Mobile Menu Toggler -->
+                    <button class="navbar-toggler border-0 p-1 d-lg-none text-dark ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNavDrawer" aria-controls="mobileNavDrawer" aria-label="Menu">
+                        <i class="fas fa-bars" style="font-size: 20px;"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Navigation Offcanvas Drawer -->
+    <div class="offcanvas offcanvas-start border-0 shadow-lg d-lg-none" tabindex="-1" id="mobileNavDrawer" aria-labelledby="mobileNavDrawerLabel" style="width: 310px;">
+        <div class="offcanvas-header border-bottom py-3">
+            <a href="{{ url('/') }}" class="navbar-brand m-0">
+                <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" style="height: 48px; width: auto;">
+            </a>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-3">
+            <!-- Mobile Categories Red Button -->
+            <div class="mb-3">
+                <a href="{{ route('shop.index') }}" class="btn btn-categories-red text-white w-100 fw-bold d-flex align-items-center justify-content-between py-2 px-3">
+                    <span class="d-flex align-items-center gap-2">
+                        <i class="fas fa-bars"></i>
+                        <span>CATÉGORIES</span>
+                    </span>
+                    <i class="fas fa-chevron-right" style="font-size: 11px;"></i>
+                </a>
+            </div>
+
+            <nav class="d-flex flex-column gap-2">
+                <a href="{{ route('home') }}" class="nav-link py-2 px-3 rounded fw-bold text-dark text-decoration-none {{ request()->routeIs('home') ? 'bg-light text-danger' : '' }}">ACCUEIL</a>
+                <a href="{{ route('shop.index') }}" class="nav-link py-2 px-3 rounded fw-bold text-dark text-decoration-none {{ request()->routeIs('shop.*') && !request('category') ? 'bg-light text-danger' : '' }}">BOUTIQUE</a>
+                <a href="{{ route('about') }}" class="nav-link py-2 px-3 rounded fw-bold text-dark text-decoration-none {{ request()->routeIs('about') ? 'bg-light text-danger' : '' }}">À PROPOS</a>
+                <a href="{{ route('contact') }}" class="nav-link py-2 px-3 rounded fw-bold text-dark text-decoration-none {{ request()->routeIs('contact') ? 'bg-light text-danger' : '' }}">CONTACT</a>
+            </nav>
+
+            <div class="mt-4 pt-3 border-top">
+                <div class="small fw-bold text-muted text-uppercase mb-2" style="font-size: 11px; letter-spacing: 0.5px;">Rayons & Catégories</div>
+                <div class="d-flex flex-column gap-1">
+                    @foreach($navCategories as $cat)
+                        @php
+                            $catImg = null;
+                            $catIconClass = null;
+
+                            if (!empty($cat->image) && (str_starts_with($cat->image, 'categories/') || str_starts_with($cat->image, 'storage/') || str_starts_with($cat->image, 'http'))) {
+                                $catImg = $cat->image_url;
+                            }
+                            elseif (!empty($cat->icon) && (str_ends_with($cat->icon, '.svg') || str_ends_with($cat->icon, '.png') || str_ends_with($cat->icon, '.webp') || str_contains($cat->icon, '/'))) {
+                                $catImg = asset($cat->icon);
+                            }
+                            elseif (!empty($cat->icon)) {
+                                $rawIcon = trim($cat->icon);
+                                $catIconClass = str_starts_with($rawIcon, 'fa') ? $rawIcon : 'fas fa-' . $rawIcon;
+                            }
+                            elseif (!empty($cat->image_url)) {
+                                $catImg = $cat->image_url;
+                            }
+                            else {
+                                $catIconClass = $catIcons[$cat->slug] ?? 'fas fa-folder';
                             }
                         @endphp
-                        <div class="brand-logo-wrap">
-                            <img src="{{ $logoSrc }}" alt="{{ $appName }}" class="brand-logo-img">
-                        </div>
-                        <div class="brand-text-wrap d-none d-sm-flex">
-                            <span class="brand-title">
-                                {{ $firstPart }} @if($lastWord)<span class="glow-red">{{ $lastWord }}</span>@endif
-                            </span>
-                            <span class="brand-subtitle"><span class="tally-dot"></span> {{ setting('app_tagline', 'CINE & CAMÉRAS MAROC') }}</span>
-                        </div>
-                    </a>
-
-                    <!-- Mobile: always-visible actions (search + cart + user) + toggler -->
-                    <div class="d-flex align-items-center gap-2 ms-auto d-lg-none">
-                        <button class="action-btn-circle bg-transparent" type="button" id="mobileSearchTriggerBtn" title="{{ __('Search') }}" aria-label="{{ __('Search') }}">
-                            <i class="fas fa-search"></i>
-                        </button>
-                        @auth
-                            <a href="{{ route('dashboard') }}" class="action-btn-circle text-decoration-none" title="{{ __('My Account') }}">
-                                <i class="far fa-user"></i>
-                            </a>
-                        @endauth
-                        <div class="position-relative">
-                            <button class="action-btn-circle bg-transparent" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart">
-                                <i class="fas fa-shopping-bag"></i>
-                            </button>
-                            <span id="header-cart-count-mobile" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style="font-size: 0.6rem;">
-                                {{ array_sum(array_column(session('cart', []), 'quantity')) }}
-                            </span>
-                        </div>
-                        <button class="navbar-toggler border-0 p-1" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-expanded="false" aria-label="Menu" id="navbarMainToggler">
-                            <span class="navbar-toggler-icon"></span>
-                        </button>
-                    </div>
-
-                    <!-- Collapsible section -->
-                    <div class="collapse navbar-collapse" id="navbarMain">
-                        <!-- Navigation links -->
-                        <ul class="navbar-nav me-auto mb-0 gap-1 mb-3 mb-lg-0 align-items-lg-center">
-                            <li class="nav-item">
-                                <a class="nav-link-custom {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">{{ __('Home') }}</a>
-                            </li>
-                            {{-- Boutique with Categories Hover Dropdown --}}
-                            <li class="nav-item nav-item-dropdown position-relative">
-                                <a class="nav-link-custom {{ request()->routeIs('shop.*') ? 'active' : '' }}" href="{{ route('shop.index') }}" id="boutiqueNavLink">
-                                    <span>{{ __('Shop') }}</span>
-                                    <i class="fas fa-chevron-down nav-chevron-icon"></i>
-                                </a>
-
-                                {{-- Category Hover Dropdown --}}
-                                <div class="nav-categories-dropdown">
-                                    <div class="nav-dropdown-header">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span class="tally-dot"></span>
-                                            <span class="nav-dropdown-title">{{ strtoupper(__('Sections & Equipment')) }}</span>
-                                        </div>
-                                        <a href="{{ route('shop.index') }}" class="nav-dropdown-viewall">{{ __('View All') }}</a>
-                                    </div>
-
-                                    <div class="nav-dropdown-grid">
-                                        @foreach($navCategories as $navCat)
-                                            @php
-                                                $icon = $catIcons[$navCat->slug] ?? 'fa-camera';
-                                                $isCurrentCat = request('category') === $navCat->slug;
-                                            @endphp
-                                            <a href="{{ route('shop.index', ['category' => $navCat->slug]) }}" class="nav-cat-item {{ $isCurrentCat ? 'active' : '' }}">
-                                                <div class="nav-cat-icon-box" style="overflow: hidden; display: flex; align-items: center; justify-content: center;">
-                                                    @if($navCat->image)
-                                                        <img src="{{ $navCat->thumbnail }}" alt="{{ $navCat->name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
-                                                        <i class="fas {{ $icon }}" style="display: none;"></i>
-                                                    @else
-                                                        <i class="fas {{ $icon }}"></i>
-                                                    @endif
-                                                </div>
-                                                <div class="nav-cat-text">
-                                                    <span class="nav-cat-name">{{ $navCat->name }}</span>
-                                                    <span class="nav-cat-count">{{ $navCat->products_count }} {{ __('refs.') }}</span>
-                                                </div>
-                                            </a>
-                                        @endforeach
-                                    </div>
-
-                                    <div class="nav-dropdown-footer">
-                                        <a href="{{ route('shop.index') }}" class="nav-dropdown-footer-link">
-                                            <span>{{ __('Browse all categories') }}</span>
-                                            <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }}"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link-custom {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">{{ __('About') }}</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link-custom {{ request()->routeIs('contact') ? 'active' : '' }}" href="{{ route('contact') }}">{{ __('Contact') }}</a>
-                            </li>
-                        </ul>
-
-                        <!-- Mobile in-menu search button + language switcher -->
-                        <div class="d-lg-none mt-2 mb-3">
-                            <button type="button" class="btn-search-mobile-bar w-100" id="inMenuSearchTrigger">
-                                <i class="fas fa-search text-danger"></i>
-                                <span>{{ __('Search equipment...') }}</span>
-                            </button>
-                            {{-- Mobile Language Switcher --}}
-                            <div class="d-flex justify-content-center gap-2 mt-3">
-                                <a href="{{ route('lang.switch', 'fr') }}"
-                                   class="lang-btn {{ app()->getLocale() === 'fr' ? 'lang-btn-active' : '' }}"
-                                   style="padding: 6px 16px; font-size: 0.82rem;">
-                                    🇫🇷 Français
-                                </a>
-                                <a href="{{ route('lang.switch', 'ar') }}"
-                                   class="lang-btn {{ app()->getLocale() === 'ar' ? 'lang-btn-active' : '' }}"
-                                   style="padding: 6px 16px; font-size: 0.82rem;">
-                                    🇲🇦 العربية
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Search Form with Dynamic Live Search (Desktop) -->
-                        <form action="{{ route('shop.index') }}" method="GET" class="header-search-wrap mx-lg-4 flex-grow-1 flex-lg-grow-0 mb-3 mb-lg-0 d-none d-lg-block" style="max-width: 420px;" id="headerSearchForm" autocomplete="off">
-                            <div class="input-group search-input-group">
-                                <span class="input-group-text {{ app()->getLocale() === 'ar' ? 'pe-3' : 'ps-3' }} search-icon-slot">
-                                    <i class="fas fa-search search-icon-default"></i>
-                                    <span class="spinner-border spinner-border-sm text-danger search-spinner d-none" role="status" aria-hidden="true"></span>
+                        <a href="{{ route('shop.index', ['category' => $cat->slug]) }}" class="cat-mega-item d-flex align-items-center justify-content-between py-1 px-2 text-decoration-none rounded">
+                            <div class="d-flex align-items-center gap-2 text-truncate me-2">
+                                <span class="cat-slot-box">
+                                    @if($catImg)
+                                        <img src="{{ $catImg }}" alt="{{ $cat->name }}" class="cat-slot-media" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                        <i class="fas fa-folder cat-slot-icon" style="display: none;"></i>
+                                    @else
+                                        <i class="{{ $catIconClass }} cat-slot-icon"></i>
+                                    @endif
                                 </span>
-                                <input class="form-control {{ app()->getLocale() === 'ar' ? 'pe-2' : 'ps-2' }} header-search-input" 
-                                       type="search" 
-                                       name="q" 
-                                       id="headerSearchInput" 
-                                       placeholder="{{ __('Search cameras, lenses, mics...') }}" 
-                                       aria-label="{{ __('Search') }}" 
-                                       value="{{ request('q') }}" 
-                                       autocomplete="off" 
-                                       spellcheck="false">
-                                <button class="btn btn-search-clear d-none" type="button" id="headerSearchClear" aria-label="{{ __('Clear') }}">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                                <button class="btn btn-search-submit d-none d-sm-inline-flex" type="submit" aria-label="{{ __('Search') }}" title="{{ __('Search') }}">
-                                    <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }}"></i>
-                                </button>
+                                <span class="cat-mega-name text-truncate">{{ $cat->name }}</span>
                             </div>
-
-                            <!-- Live Search Floating Dropdown -->
-                            <div class="header-search-dropdown shadow-lg d-none" id="headerSearchDropdown" role="region" aria-label="{{ __('Search Results') }}">
-                                <!-- Frequent Searches Chips (Shown on focus when input is empty) -->
-                                <div class="search-quick-tags p-3 border-bottom" id="headerSearchTags">
-                                    <div class="search-section-label">
-                                        <i class="fas fa-fire me-1 text-danger"></i> {{ strtoupper(__('Frequent Searches')) }}
-                                    </div>
-                                    <div class="d-flex flex-wrap gap-2 mt-2">
-                                        <button type="button" class="search-tag-chip" data-search="Sony Alpha">Sony Alpha</button>
-                                        <button type="button" class="search-tag-chip" data-search="Blackmagic">Blackmagic</button>
-                                        <button type="button" class="search-tag-chip" data-search="{{ app()->getLocale() === 'ar' ? 'عدسات' : 'Objectif' }}">{{ app()->getLocale() === 'ar' ? 'عدسات' : 'Objectifs' }}</button>
-                                        <button type="button" class="search-tag-chip" data-search="{{ app()->getLocale() === 'ar' ? 'أجهزة الاستقرار' : 'Stabilisateur' }}">{{ app()->getLocale() === 'ar' ? 'أجهزة الاستقرار' : 'Stabilisateurs' }}</button>
-                                        <button type="button" class="search-tag-chip" data-search="{{ app()->getLocale() === 'ar' ? 'ميكروفون' : 'Micro sans fil' }}">{{ app()->getLocale() === 'ar' ? 'ميكروفونات' : 'Micros sans fil' }}</button>
-                                        <button type="button" class="search-tag-chip" data-search="Drone">{{ app()->getLocale() === 'ar' ? 'طائرات' : 'Drones' }}</button>
-                                    </div>
-                                </div>
-
-                                <!-- Dynamic Results List -->
-                                <div class="search-results-list" id="headerSearchResultsList"></div>
-
-                                <!-- Empty State -->
-                                <div class="search-empty-state text-center py-4 px-3 d-none" id="headerSearchEmpty">
-                                    <div class="search-empty-icon mb-2">
-                                        <i class="fas fa-search-minus fa-2x text-muted opacity-50"></i>
-                                    </div>
-                                    <div class="fw-bold text-dark mb-1">{{ __('No product found') }}</div>
-                                    <div class="small text-muted mb-2">{{ __('No results match') }} « <span class="empty-query-text text-danger fw-semibold"></span> »</div>
-                                    <div class="small text-muted">{{ __('Try model name, brand or category') }}</div>
-                                </div>
-
-                                <!-- View All Footer -->
-                                <div class="search-dropdown-footer p-2 text-center border-top d-none" id="headerSearchFooter">
-                                    <a href="#" class="search-view-all-link" id="headerSearchViewAll">
-                                        <span>{{ __('View all results') }}</span>
-                                        <span class="search-count-pill badge bg-danger ms-1" id="headerSearchCountBadge">0</span>
-                                        <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }} ms-1"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </form>
-
-                        <!-- Desktop-only actions -->
-                        <div class="d-none d-lg-flex align-items-center gap-3 ms-3">
-                            @auth
-                                <a href="{{ route('dashboard') }}" class="action-btn-circle text-decoration-none" title="{{ __('My Account') }}">
-                                    <i class="far fa-user"></i>
-                                </a>
-                            @endauth
-
-                            <div class="position-relative">
-                                <button class="action-btn-circle bg-transparent" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart">
-                                    <i class="fas fa-shopping-bag"></i>
-                                </button>
-                                <span id="header-cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style="font-size: 0.6rem;">
-                                    {{ array_sum(array_column(session('cart', []), 'quantity')) }}
-                                </span>
-                            </div>
-
-                            {{-- Language Switcher --}}
-                            <div class="lang-switcher d-flex align-items-center gap-1">
-                                <a href="{{ route('lang.switch', 'fr') }}"
-                                   class="lang-btn {{ app()->getLocale() === 'fr' ? 'lang-btn-active' : '' }}"
-                                   title="Français">
-                                    <span class="fi fi-fr"></span>
-                                    <span class="lang-label">FR</span>
-                                </a>
-                                <span class="lang-divider">|</span>
-                                <a href="{{ route('lang.switch', 'ar') }}"
-                                   class="lang-btn {{ app()->getLocale() === 'ar' ? 'lang-btn-active' : '' }}"
-                                   title="العربية">
-                                    <span class="fi fi-ma"></span>
-                                    <span class="lang-label">AR</span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+                            <span class="badge cat-mega-count rounded-pill">{{ $cat->products_count }}</span>
+                        </a>
+                    @endforeach
                 </div>
-            </nav>
+            </div>
         </div>
     </div>
 
@@ -635,31 +681,58 @@
             bottom: 24px;
             right: 24px;
             z-index: 99999 !important;
-            opacity: 0;
-            visibility: hidden;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            display: none !important;
             transform: translateY(20px) scale(0.92);
             transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
                         transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
                         visibility 0.35s;
-            pointer-events: none;
+            pointer-events: none !important;
         }
         .floating-checkout-wrap.is-visible {
             opacity: 1 !important;
             visibility: visible !important;
             transform: translateY(0) scale(1) !important;
             pointer-events: auto !important;
-            display: block !important;
+            display: inline-flex !important;
         }
-        body.has-whatsapp-float .floating-checkout-wrap,
-        body:has(.whatsapp-float) .floating-checkout-wrap {
+
+        /* Elevate #miniCart above all floating buttons */
+        #miniCart.offcanvas,
+        .offcanvas.show {
+            z-index: 1000000 !important;
+        }
+        .offcanvas-backdrop,
+        .offcanvas-backdrop.show {
+            z-index: 999995 !important;
+        }
+
+        /* Completely hide floating checkout and WhatsApp when miniCart or offcanvas is open */
+        body.mini-cart-open .floating-checkout-wrap,
+        body.mini-cart-open .whatsapp-float,
+        body:has(#miniCart.show) .floating-checkout-wrap,
+        body:has(#miniCart.show) .whatsapp-float,
+        body:has(#miniCart.showing) .floating-checkout-wrap,
+        body:has(#miniCart.showing) .whatsapp-float,
+        body:has(.offcanvas.show) .floating-checkout-wrap,
+        body:has(.offcanvas.show) .whatsapp-float {
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            display: none !important;
+            transform: translateY(20px) scale(0.85) !important;
+        }
+        body.has-whatsapp-float .floating-checkout-wrap.is-visible,
+        body:has(.whatsapp-float) .floating-checkout-wrap.is-visible {
             bottom: 96px !important;
         }
         html[dir="rtl"] .floating-checkout-wrap {
             right: auto !important;
             left: 24px !important;
         }
-        html[dir="rtl"] body.has-whatsapp-float .floating-checkout-wrap,
-        html[dir="rtl"] body:has(.whatsapp-float) .floating-checkout-wrap {
+        html[dir="rtl"] body.has-whatsapp-float .floating-checkout-wrap.is-visible,
+        html[dir="rtl"] body:has(.whatsapp-float) .floating-checkout-wrap.is-visible {
             bottom: 24px !important;
             left: 24px !important;
         }
@@ -669,25 +742,28 @@
                 right: 14px !important;
                 left: auto !important;
                 z-index: 99999 !important;
+                display: none !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
             }
-            .floating-checkout-wrap,
             .floating-checkout-wrap.is-visible {
-                display: block !important;
+                display: inline-flex !important;
                 opacity: 1 !important;
                 visibility: visible !important;
                 pointer-events: auto !important;
                 transform: translateY(0) scale(1) !important;
             }
-            body.has-whatsapp-float .floating-checkout-wrap,
-            body:has(.whatsapp-float) .floating-checkout-wrap {
+            body.has-whatsapp-float .floating-checkout-wrap.is-visible,
+            body:has(.whatsapp-float) .floating-checkout-wrap.is-visible {
                 bottom: calc(84px + env(safe-area-inset-bottom, 0px)) !important;
             }
             html[dir="rtl"] .floating-checkout-wrap {
                 left: 14px !important;
                 right: auto !important;
             }
-            html[dir="rtl"] body.has-whatsapp-float .floating-checkout-wrap,
-            html[dir="rtl"] body:has(.whatsapp-float) .floating-checkout-wrap {
+            html[dir="rtl"] body.has-whatsapp-float .floating-checkout-wrap.is-visible,
+            html[dir="rtl"] body:has(.whatsapp-float) .floating-checkout-wrap.is-visible {
                 bottom: calc(22px + env(safe-area-inset-bottom, 0px)) !important;
                 left: 14px !important;
             }
@@ -716,26 +792,53 @@
     </div>
     @endif
 
+    {{-- Always-On Floating WhatsApp Button (All Devices & Pages) --}}
+    @php
+        $waRawPhone = setting('social_whatsapp', '0629035777');
+        $waCleanPhone = preg_replace('/[^0-9]/', '', $waRawPhone);
+        if (str_starts_with($waCleanPhone, '0')) {
+            $waCleanPhone = '212' . substr($waCleanPhone, 1);
+        } elseif (!str_starts_with($waCleanPhone, '212')) {
+            $waCleanPhone = '212' . $waCleanPhone;
+        }
+    @endphp
+    <a href="https://wa.me/{{ $waCleanPhone }}?text={{ urlencode('Bonjour Wina Shop, je souhaite me renseigner sur vos produits.') }}" 
+       class="whatsapp-float" 
+       target="_blank" 
+       rel="noopener noreferrer" 
+       aria-label="Contacter sur WhatsApp" 
+       title="Contacter sur WhatsApp">
+        <span class="whatsapp-float-pulse"></span>
+        <span class="whatsapp-online-dot"></span>
+        <svg viewBox="0 0 32 32" class="whatsapp-float-svg" width="30" height="30" fill="currentColor" aria-hidden="true">
+            <path d="M16.002 0.007C7.168 0.007 0 7.175 0 16.008c0 2.825 0.738 5.578 2.141 7.999L0.086 31.914l8.13-2.052c2.342 1.282 4.978 1.956 7.786 1.956 8.834 0 16.002-7.168 16.002-16.01S24.836 0.007 16.002 0.007zm0 29.317c-2.484 0-4.912-0.669-7.037-1.936l-0.505-0.3-5.234 1.321 1.398-5.093-0.33-0.526C3.003 20.672 2.302 18.384 2.302 16.008c0-7.555 6.145-13.7 13.7-13.7 7.555 0 13.7 6.145 13.7 13.7 0 7.555-6.145 13.7-13.7 13.7zm7.51-10.252c-0.412-0.206-2.438-1.203-2.816-1.34-0.378-0.137-0.653-0.206-0.927 0.206s-1.065 1.34-1.305 1.615c-0.24 0.275-0.481 0.309-0.893 0.103-0.412-0.206-1.741-0.642-3.316-2.046-1.226-1.093-2.054-2.443-2.294-2.855-0.24-0.412-0.026-0.635 0.18-0.84 0.186-0.185 0.412-0.481 0.618-0.721 0.206-0.24 0.275-0.412 0.412-0.687 0.137-0.275 0.069-0.515-0.034-0.721s-0.927-2.233-1.27-3.057c-0.335-0.803-0.675-0.694-0.927-0.707l-0.79-0.014c-0.275 0-0.721 0.103-1.099 0.515s-1.443 1.409-1.443 3.435 1.477 3.985 1.683 4.26c0.206 0.275 2.907 4.439 7.042 6.225 0.984 0.425 1.753 0.679 2.352 0.869 0.988 0.314 1.888 0.27 2.6 0.164 0.794-0.119 2.438-0.996 2.781-1.958 0.344-0.962 0.344-1.786 0.24-1.958-0.103-0.172-0.378-0.275-0.79-0.481z"/>
+        </svg>
+        <span class="whatsapp-float-tooltip">
+            <span>WhatsApp</span>
+            <small>En ligne</small>
+        </span>
+    </a>
+
     <footer class="footer-modern">
         <div class="container">
             <div class="row g-5">
                 <div class="col-lg-6">
                     <h5 class="fw-bold text-white mb-3 text-uppercase ls-1 d-flex align-items-center gap-2">
-                        <span class="tally-dot"></span> {{ setting('app_name', 'LUMINA Cine & Optics') }}
+                        <span class="tally-dot"></span> {{ setting('app_name', 'WINA SHOP') }}
                     </h5>
                     <p class="small lh-lg mb-4 text-slate-400">
                         @if(app()->getLocale() === 'ar')
-                            شريكك المرجعي في المعدات الصوتية البصرية، كاميرات السينما، عدسات البث، أجهزة الاستقرار وإضاءة الاستوديو في المغرب. معرض، عروض توضيحية وتوصيل آمن في جميع أنحاء المملكة.
+                            متجرك المرجعي في المغرب لمعدات التصوير الفوتوغرافي والفيديو الاحترافية: كاميرات، عدسات، طائرات درون ومثبتات DJI، إضاءة وصوتيات الاستوديو. مقرنا بالدار البيضاء وتوصيل سريع وموثوق في جميع أنحاء المغرب.
                         @else
-                            Votre partenaire de référence en équipement audiovisuel, caméras de cinéma, objectifs broadcast, stabilisateurs et éclairage studio au Maroc. Showroom, démonstrations et livraison sécurisée dans tout le Royaume.
+                            Votre référence au Maroc pour le matériel photo & vidéo professionnel : appareils photo, caméras, objectifs, drones et stabilisateurs DJI, micros HF et éclairage studio. Showroom à Casablanca et livraison express partout au Maroc.
                         @endif
                     </p>
                     @php
-                        $sfb  = setting('social_facebook',  '');
+                        $sfb  = setting('social_facebook',  'https://www.facebook.com/WinaShop.0629035777');
                         $stw  = setting('social_twitter',   '');
-                        $sig  = setting('social_instagram', '');
+                        $sig  = setting('social_instagram', 'https://www.instagram.com/winashop.ma/');
                         $sli  = setting('social_linkedin',  '');
-                        $swa  = setting('social_whatsapp',  '');
+                        $swa  = setting('social_whatsapp',  '+212629035777');
                         // Only treat as valid if it's a real URL (not empty or bare '#')
                         $validUrl = fn($v) => $v && $v !== '#' && $v !== '/#';
                     @endphp
@@ -779,7 +882,7 @@
                     <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">{{ __('Shop') }}</h6>
                     <ul class="list-unstyled">
                         <li><a href="{{ route('shop.index') }}" class="footer-link small">{{ __('Featured Products') }}</a></li>
-                        <li><a href="{{ route('about') }}" class="footer-link small">{{ __('About') }} {{ setting('app_name', 'LUMINA') }}</a></li>
+                        <li><a href="{{ route('about') }}" class="footer-link small">{{ __('About') }} {{ setting('app_name', 'WINA SHOP') }}</a></li>
                         <li><a href="{{ route('contact') }}" class="footer-link small">{{ __('Contact & Showroom') }}</a></li>
                     </ul>
                 </div>
@@ -788,7 +891,6 @@
                     <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">{{ __('Customer Service') }}</h6>
                     <ul class="list-unstyled">
                         <li><a href="{{ route('contact') }}" class="footer-link small">{{ __('Request a Quote') }}</a></li>
-                        <li><a href="{{ route('customer.orders') }}" class="footer-link small">{{ __('Track Order') }}</a></li>
                         <li><a href="{{ route('about') }}#garantie" class="footer-link small">{{ __('Warranty') }}</a></li>
                         <li><a href="{{ route('contact') }}#faq" class="footer-link small">{{ __('FAQ') }}</a></li>
                     </ul>
@@ -800,7 +902,7 @@
             
             <div class="row align-items-center">
                 <div class="col-md-12 text-center text-md-start mb-3 mb-md-0">
-                    <p class="small text-center mb-0">&copy; {{ date('Y') }} {{ setting('app_name', 'LUMINA Cine & Optics') }}. {{ __('All rights reserved') }}. {{ app()->getLocale() === 'ar' ? 'تطوير' : 'Développé par' }} <a href="https://elegantboost.com/" target="_blank" class="text-white text-decoration-none fw-bold hover-primary transition-all">Elegant Boost</a>.</p>
+                    <p class="small text-center mb-0">&copy; {{ date('Y') }} {{ setting('app_name', 'WINA SHOP') }}. {{ __('All rights reserved') }}. {{ app()->getLocale() === 'ar' ? 'تطوير' : 'Développé par' }} <a href="https://elegantboost.com/" target="_blank" class="text-white text-decoration-none fw-bold hover-primary transition-all">Elegant Boost</a>.</p>
                 </div>
             </div>
         </div>
@@ -834,13 +936,53 @@
             if (wrap) {
                 if (numCount > 0) {
                     wrap.classList.add('is-visible');
+                    wrap.style.display = 'inline-flex';
                     wrap.classList.add('pulse-anim');
                     setTimeout(() => wrap.classList.remove('pulse-anim'), 600);
                 } else {
                     wrap.classList.remove('is-visible');
+                    wrap.style.display = 'none';
                 }
             }
+
+            // Also keep top navigation cart badge updated
+            if (typeof window.updateCartBadgeCount === 'function') {
+                window.updateCartBadgeCount(numCount);
+            }
         };
+
+        window.updateCartBadgeCount = function(count) {
+            const num = parseInt(count) || 0;
+            ['header-cart-count', 'header-cart-count-mobile'].forEach(bId => {
+                const el = document.getElementById(bId);
+                if (el) {
+                    el.textContent = num;
+                    if (num > 0) {
+                        el.classList.remove('d-none');
+                    } else {
+                        el.classList.add('d-none');
+                    }
+                }
+            });
+        };
+
+        function initFloatingCheckoutState() {
+            const wrap = document.getElementById('floatingCheckoutWrap');
+            const badge = document.getElementById('floatingCheckoutCount');
+            const count = badge ? (parseInt(badge.textContent) || 0) : 0;
+            if (wrap) {
+                if (count > 0) {
+                    wrap.classList.add('is-visible');
+                    wrap.style.display = 'inline-flex';
+                } else {
+                    wrap.classList.remove('is-visible');
+                    wrap.style.display = 'none';
+                }
+            }
+            if (typeof window.updateCartBadgeCount === 'function') {
+                window.updateCartBadgeCount(count);
+            }
+        }
 
         // Detect floating WhatsApp to prevent overlap on mobile
         function checkFloatingOffsets() {
@@ -868,29 +1010,208 @@
                 });
             }
         }
+        function initOffcanvasFloatingButtonsHandler() {
+            const miniCartEl = document.getElementById('miniCart');
+            const floatingCheckout = document.getElementById('floatingCheckoutWrap');
+            const whatsappBtn = document.querySelector('.whatsapp-float');
+
+            function hideButtons() {
+                document.body.classList.add('mini-cart-open');
+                if (floatingCheckout) {
+                    floatingCheckout.style.setProperty('display', 'none', 'important');
+                    floatingCheckout.style.setProperty('opacity', '0', 'important');
+                    floatingCheckout.style.setProperty('pointer-events', 'none', 'important');
+                }
+                if (whatsappBtn) {
+                    whatsappBtn.style.setProperty('display', 'none', 'important');
+                    whatsappBtn.style.setProperty('opacity', '0', 'important');
+                    whatsappBtn.style.setProperty('pointer-events', 'none', 'important');
+                }
+            }
+
+            function restoreButtons() {
+                document.body.classList.remove('mini-cart-open');
+                if (whatsappBtn) {
+                    whatsappBtn.style.removeProperty('display');
+                    whatsappBtn.style.removeProperty('opacity');
+                    whatsappBtn.style.removeProperty('pointer-events');
+                }
+                if (floatingCheckout) {
+                    const countEl = document.getElementById('floatingCheckoutCount');
+                    const count = countEl ? (parseInt(countEl.textContent) || 0) : 0;
+                    if (count > 0) {
+                        floatingCheckout.style.removeProperty('display');
+                        floatingCheckout.style.removeProperty('opacity');
+                        floatingCheckout.style.removeProperty('pointer-events');
+                        floatingCheckout.classList.add('is-visible');
+                    } else {
+                        floatingCheckout.classList.remove('is-visible');
+                        floatingCheckout.style.setProperty('display', 'none', 'important');
+                    }
+                }
+            }
+
+            if (miniCartEl) {
+                miniCartEl.addEventListener('show.bs.offcanvas', hideButtons);
+                miniCartEl.addEventListener('shown.bs.offcanvas', hideButtons);
+                miniCartEl.addEventListener('hide.bs.offcanvas', restoreButtons);
+                miniCartEl.addEventListener('hidden.bs.offcanvas', restoreButtons);
+            }
+
+            const mobileNav = document.getElementById('mobileNavDrawer');
+            if (mobileNav) {
+                mobileNav.addEventListener('show.bs.offcanvas', hideButtons);
+                mobileNav.addEventListener('shown.bs.offcanvas', hideButtons);
+                mobileNav.addEventListener('hide.bs.offcanvas', restoreButtons);
+                mobileNav.addEventListener('hidden.bs.offcanvas', restoreButtons);
+            }
+        }
+
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', function() {
                 checkFloatingOffsets();
+                initFloatingCheckoutState();
                 initFloatingCheckoutClick();
+                initOffcanvasFloatingButtonsHandler();
             });
         } else {
             checkFloatingOffsets();
+            initFloatingCheckoutState();
             initFloatingCheckoutClick();
+            initOffcanvasFloatingButtonsHandler();
         }
 
-        window.addToCart = function(productId, quantity = 1, triggerEl = null) {
+        window.updateProductCartState = function(productId, inCart) {
+            const numId = parseInt(productId);
+            if (!numId) return;
+
+            const isAr = document.documentElement.lang === 'ar' || document.documentElement.dir === 'rtl';
+            const inCartLabel = isAr ? 'في السلة' : 'Dans le panier';
+            const notInCartLabel = isAr ? 'أضف إلى السلة' : 'Ajouter au panier';
+            const inCartOverlayLabel = isAr ? 'في السلة' : 'Dans le panier';
+            const notInCartOverlayLabel = isAr ? 'أضف' : 'Ajouter';
+
+            // 1. Featured cards on Homepage and elsewhere with data-product-id
+            const buttons = document.querySelectorAll(`button[data-product-id="${numId}"]:not(.pcard-quick-cart-btn):not(.pcard-overlay-btn)`);
+            buttons.forEach(b => {
+                b.disabled = false;
+                if (inCart) {
+                    b.classList.add('is-in-cart');
+                    b.innerHTML = `<i class="fas fa-check" style="font-size: 11px;"></i> <span>${inCartLabel}</span>`;
+                    b.setAttribute('title', inCartLabel);
+                } else {
+                    b.classList.remove('is-in-cart');
+                    b.innerHTML = `<i class="fas fa-cart-plus" style="font-size: 11px;"></i> <span>${notInCartLabel}</span>`;
+                    b.setAttribute('title', notInCartLabel);
+                }
+            });
+
+            // 2. Shop catalog quick-cart buttons (round icon only)
+            const quickButtons = document.querySelectorAll(`.pcard-quick-cart-btn[data-product-id="${numId}"], .pcard-quick-cart-btn[onclick*="addToCart(${numId},"], .pcard-quick-cart-btn[onclick*="addToCart(${numId})"]`);
+            quickButtons.forEach(b => {
+                b.disabled = false;
+                if (inCart) {
+                    b.classList.add('is-in-cart');
+                    b.innerHTML = '<i class="fas fa-check"></i>';
+                    b.setAttribute('title', inCartLabel);
+                    b.setAttribute('aria-label', inCartLabel);
+                } else {
+                    b.classList.remove('is-in-cart');
+                    b.innerHTML = '<i class="fas fa-shopping-bag"></i>';
+                    b.setAttribute('title', notInCartLabel);
+                    b.setAttribute('aria-label', notInCartLabel);
+                }
+            });
+
+            // 3. Shop catalog hover overlay buttons
+            const overlayButtons = document.querySelectorAll(`.pcard-overlay-btn[data-product-id="${numId}"], .pcard-overlay-btn[onclick*="addToCart(${numId},"], .pcard-overlay-btn[onclick*="addToCart(${numId})"]`);
+            overlayButtons.forEach(b => {
+                b.disabled = false;
+                if (inCart) {
+                    b.classList.add('is-in-cart');
+                    b.innerHTML = `<i class="fas fa-check"></i> ${inCartOverlayLabel}`;
+                    b.setAttribute('title', inCartLabel);
+                } else {
+                    b.classList.remove('is-in-cart');
+                    b.innerHTML = `<i class="fas fa-cart-plus"></i> ${notInCartOverlayLabel}`;
+                    b.setAttribute('title', notInCartLabel);
+                }
+            });
+        };
+
+        window.syncAllProductCartButtons = function(cartProductIds) {
+            const ids = Array.isArray(cartProductIds) ? cartProductIds.map(Number) : [];
+            const allProductBtns = document.querySelectorAll('button[data-product-id]');
+            allProductBtns.forEach(btn => {
+                const pId = parseInt(btn.dataset.productId);
+                if (pId) {
+                    const inCart = ids.includes(pId);
+                    window.updateProductCartState(pId, inCart);
+                }
+            });
+        };
+
+        window.addToCart = addToCart = function(productId, quantity = 1, triggerEl = null, force = false) {
             let originalHtml = '';
             let btn = triggerEl;
             if (!btn && typeof event !== 'undefined' && event && event.currentTarget) {
                 btn = event.currentTarget;
             }
             if (!btn) {
-                btn = document.querySelector(`button[onclick*="addToCart(${productId})"]`);
+                btn = document.querySelector(`button[data-product-id="${productId}"]`) || 
+                      document.querySelector(`button[onclick*="addToCart(${productId},"]`) ||
+                      document.querySelector(`button[onclick*="addToCart(${productId})"]`);
+            }
+
+            // Check if product is already in cart and button is in green state
+            const isAlreadyInCart = (btn && btn.classList.contains('is-in-cart')) || 
+                                    (document.querySelector(`button[data-product-id="${productId}"].is-in-cart`) !== null);
+
+            if (isAlreadyInCart && !force) {
+                const isAr = document.documentElement.lang === 'ar' || document.documentElement.dir === 'rtl';
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: isAr ? 'المنتج موجود في السلة' : 'Article déjà dans le panier',
+                        text: isAr ? 'هذا المنتج موجود بالفعل في سلتك. هل ترغب في إضافة كمية إضافية ؟' : 'Ce produit est déjà dans votre panier. Souhaitez-vous ajouter un exemplaire supplémentaire ?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        showDenyButton: true,
+                        confirmButtonColor: '#16a34a',
+                        denyButtonColor: '#0f172a',
+                        cancelButtonColor: '#64748b',
+                        confirmButtonText: isAr ? '<i class="fas fa-plus ms-1"></i> إضافة كمية (+1)' : '<i class="fas fa-plus me-1"></i> Ajouter une quantité (+1)',
+                        denyButtonText: isAr ? '<i class="fas fa-shopping-bag ms-1"></i> عرض السلة' : '<i class="fas fa-shopping-bag me-1"></i> Voir mon panier',
+                        cancelButtonText: isAr ? 'إلغاء' : 'Annuler',
+                        reverseButtons: !isAr
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.addToCart(productId, quantity, btn, true);
+                        } else if (result.isDenied) {
+                            const miniCartEl = document.getElementById('miniCart');
+                            if (miniCartEl && typeof bootstrap !== 'undefined' && bootstrap.Offcanvas) {
+                                bootstrap.Offcanvas.getOrCreateInstance(miniCartEl).show();
+                            } else {
+                                window.location.href = "{{ route('cart.index') }}";
+                            }
+                        }
+                    });
+                    return;
+                } else if (confirm('Ce produit est déjà dans votre panier. Souhaitez-vous en ajouter un exemplaire supplémentaire ?')) {
+                    window.addToCart(productId, quantity, btn, true);
+                    return;
+                } else {
+                    return;
+                }
             }
             if (btn) {
                 originalHtml = btn.innerHTML;
                 btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                const hasSpan = btn.querySelector('span');
+                if (hasSpan) {
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>{{ __('Adding...') }}</span>';
+                } else {
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                }
             }
 
             return fetch(`{{ url('/cart/add') }}/${productId}`, {
@@ -898,7 +1219,8 @@
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
                 body: JSON.stringify({ quantity: parseInt(quantity) || 1 })
             })
@@ -906,18 +1228,24 @@
                 const data = await response.json();
                 if (btn) {
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-check text-white"></i>';
-                    setTimeout(() => { btn.innerHTML = originalHtml; }, 1500);
                 }
                 if (!response.ok || !data.success) {
+                    if (btn) btn.innerHTML = originalHtml;
                     throw new Error(data.message || '{{ __('Error adding to cart') }}');
                 }
 
+                // Keep button green with "Dans le panier"
+                if (typeof window.updateProductCartState === 'function') {
+                    window.updateProductCartState(productId, true);
+                }
+                if (data.cartProductIds && typeof window.syncAllProductCartButtons === 'function') {
+                    window.syncAllProductCartButtons(data.cartProductIds);
+                }
+
                 // Update both desktop and mobile cart count badges
-                ['header-cart-count', 'header-cart-count-mobile'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el && data.cartCount !== undefined) el.textContent = data.cartCount;
-                });
+                if (typeof window.updateCartBadgeCount === 'function') {
+                    window.updateCartBadgeCount(data.cartCount);
+                }
 
                 // Update floating checkout button
                 if (typeof window.updateFloatingCheckout === 'function') {
@@ -930,16 +1258,18 @@
                 }
 
                 // Feedback toast
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'success',
-                    title: data.message || '{{ __('Equipment added to cart!') }}',
-                    showConfirmButton: false,
-                    timer: 2200,
-                    background: '#1a1a2e',
-                    color: '#ffffff'
-                });
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: data.message || '{{ __('Equipment added to cart!') }}',
+                        showConfirmButton: false,
+                        timer: 2200,
+                        background: '#1a1a2e',
+                        color: '#ffffff'
+                    });
+                }
 
                 return data;
             })
@@ -949,16 +1279,37 @@
                     btn.disabled = false;
                     btn.innerHTML = originalHtml;
                 }
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'error',
-                    title: err.message || '{{ __('Cannot add to cart.') }}',
-                    showConfirmButton: false,
-                    timer: 3000
-                });
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'error',
+                        title: err.message || '{{ __('Cannot add to cart.') }}',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                }
             });
         };
+
+        // Global safeguard: Intercept any form submitting to /cart/add to prevent page refreshes
+        document.addEventListener('submit', function(e) {
+            const form = e.target.closest('form');
+            if (!form) return;
+            const action = form.getAttribute('action') || '';
+            if (action.includes('/cart/add') || form.classList.contains('add-to-cart-form')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const match = action.match(/\/cart\/add\/(\d+)/);
+                const productId = form.dataset.productId || (match ? match[1] : null);
+                const qtyInput = form.querySelector('input[name="quantity"]');
+                const quantity = qtyInput ? (parseInt(qtyInput.value) || 1) : 1;
+                const btn = form.querySelector('button[type="submit"]') || form.querySelector('button');
+                if (productId && typeof window.addToCart === 'function') {
+                    window.addToCart(productId, quantity, btn);
+                }
+            }
+        }, true);
 
         function changeCartQty(id, delta) {
             const input = document.getElementById('cart-item-qty-' + id);
@@ -993,13 +1344,9 @@
             })
             .then(data => {
                 // Update both desktop and mobile cart count badges
-                const updateCartBadges = (count) => {
-                    ['header-cart-count', 'header-cart-count-mobile'].forEach(bId => {
-                        const el = document.getElementById(bId);
-                        if (el && count !== undefined) el.textContent = count;
-                    });
-                };
-                updateCartBadges(data.cartCount);
+                if (typeof window.updateCartBadgeCount === 'function') {
+                    window.updateCartBadgeCount(data.cartCount);
+                }
 
                 // Update floating checkout button
                 if (typeof window.updateFloatingCheckout === 'function') {
@@ -1064,17 +1411,24 @@
                     .then(response => response.json())
                     .then(data => {
                         // Update both desktop and mobile cart count badges
-                        ['header-cart-count', 'header-cart-count-mobile'].forEach(bId => {
-                            const el = document.getElementById(bId);
-                            if (el && data.cartCount !== undefined) el.textContent = data.cartCount;
-                        });
+                        if (typeof window.updateCartBadgeCount === 'function') {
+                            window.updateCartBadgeCount(data.cartCount);
+                        }
 
                         // Update floating checkout button
                         if (typeof window.updateFloatingCheckout === 'function') {
                             window.updateFloatingCheckout(data.cartCount, data.cartTotal);
                         }
 
-                        // If on /cart page, remove the row or reload if empty
+                        // Revert product button to default "Ajouter au panier"
+                        if (typeof window.updateProductCartState === 'function') {
+                            window.updateProductCartState(id, false);
+                        }
+                        if (data.cartProductIds && typeof window.syncAllProductCartButtons === 'function') {
+                            window.syncAllProductCartButtons(data.cartProductIds);
+                        }
+
+                        // If on /cart page, remove the row or show empty cart notice without reloading
                         const row = document.getElementById('cart-row-' + id);
                         if (row) {
                             row.style.transition = 'opacity 0.25s, transform 0.25s';
@@ -1083,7 +1437,21 @@
                             setTimeout(() => {
                                 row.remove();
                                 if (data.isEmpty || document.querySelectorAll('[id^="cart-row-"]').length === 0) {
-                                    window.location.reload();
+                                    const cartTableCol = document.querySelector('.col-lg-8');
+                                    const cartSummaryCol = document.querySelector('.col-lg-4');
+                                    const rowWrapper = cartTableCol ? cartTableCol.closest('.row') : null;
+                                    if (rowWrapper) {
+                                        rowWrapper.innerHTML = `
+                                            <div class="col-12 text-center py-5 mt-4" id="cartEmptyNotice">
+                                                <div class="mb-4 bg-white rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 120px; height: 120px;">
+                                                    <i class="fas fa-shopping-basket fa-4x text-muted opacity-25"></i>
+                                                </div>
+                                                <h3 class="fw-bold text-dark mb-3">{{ __('Your cart is empty') }}</h3>
+                                                <p class="text-muted mb-4">{{ __("You haven't added anything yet.") }}</p>
+                                                <a href="{{ route('shop.index') }}" class="btn btn-primary rounded-pill px-5 py-3 fw-bold shadow-sm hover-scale-sm transition-transform">{{ __('Start Shopping') }}</a>
+                                            </div>
+                                        `;
+                                    }
                                 }
                             }, 250);
                         }

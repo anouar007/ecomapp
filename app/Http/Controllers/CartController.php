@@ -29,10 +29,11 @@ class CartController extends Controller
     {
         try {
             $product = Product::with(['images', 'primaryImage', 'productCategory'])->findOrFail($id);
+            $isAjax = $request->wantsJson() || $request->ajax();
             
             // Check if product is in stock
             if (!$product->isInStock()) {
-                if ($request->wantsJson()) {
+                if ($isAjax) {
                     return response()->json([
                         'success' => false,
                         'message' => 'This product is out of stock'
@@ -47,7 +48,7 @@ class CartController extends Controller
             // Check if requested quantity exceeds available stock
             $currentQty = isset($cart[$id]) ? $cart[$id]['quantity'] : 0;
             if (($currentQty + $quantity) > $product->stock) {
-                if ($request->wantsJson()) {
+                if ($isAjax) {
                     return response()->json([
                         'success' => false,
                         'message' => "Only {$product->stock} items available in stock"
@@ -70,7 +71,7 @@ class CartController extends Controller
 
             session()->put('cart', $cart);
 
-            if ($request->wantsJson()) {
+            if ($isAjax) {
                 $cartCount = array_sum(array_column($cart, 'quantity'));
                 $total = 0;
                 foreach ($cart as $item) {
@@ -81,13 +82,15 @@ class CartController extends Controller
                     'message' => __('Equipment added to cart!'),
                     'cartCount' => $cartCount,
                     'cartTotal' => currency($total),
-                    'rawTotal' => $total
+                    'rawTotal' => $total,
+                    'productId' => (int) $id,
+                    'cartProductIds' => array_values(array_map('intval', array_keys($cart)))
                 ]);
             }
 
             return redirect()->back()->with('success', 'Product added to cart!');
         } catch (\Exception $e) {
-            if ($request->wantsJson()) {
+            if ($request->wantsJson() || $request->ajax()) {
                 return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
             }
             return redirect()->back()->with('error', 'Error adding to cart: ' . $e->getMessage());
@@ -124,12 +127,14 @@ class CartController extends Controller
                 $cartCount = array_sum(array_column($cart, 'quantity'));
 
                 return response()->json([
-                    'success' => true,
-                    'cartCount' => $cartCount,
-                    'quantity' => $quantity,
-                    'itemTotal' => currency($itemTotal),
-                    'cartTotal' => currency($total),
-                    'rawTotal' => $total,
+                    'success'        => true,
+                    'cartCount'      => $cartCount,
+                    'quantity'       => $quantity,
+                    'itemTotal'      => currency($itemTotal),
+                    'cartTotal'      => currency($total),
+                    'rawTotal'       => $total,
+                    'isEmpty'        => count($cart) === 0,
+                    'cartProductIds' => array_values(array_map('intval', array_keys($cart))),
                 ]);
             }
         }
@@ -160,7 +165,9 @@ class CartController extends Controller
                 'success' => true,
                 'cartCount' => $cartCount,
                 'cartTotal' => currency($total),
-                'isEmpty' => count($cart) === 0
+                'isEmpty' => count($cart) === 0,
+                'removedId' => (int) $id,
+                'cartProductIds' => array_values(array_map('intval', array_keys($cart)))
             ]);
         }
 

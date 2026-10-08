@@ -187,6 +187,39 @@ class Product extends Model
     }
 
     /**
+     * Get the category relationship or legacy fallback.
+     * Prevents the legacy 'category' database column from shadowing the Category relationship.
+     */
+    public function getCategoryAttribute($value)
+    {
+        if ($this->relationLoaded('category') && $this->getRelation('category')) {
+            return $this->getRelation('category');
+        }
+
+        if ($this->category_id && $this->productCategory) {
+            return $this->productCategory;
+        }
+
+        return $value;
+    }
+
+    /**
+     * Get the category slug safely.
+     */
+    public function getCategorySlugAttribute()
+    {
+        if ($this->relationLoaded('category') && $this->getRelation('category')) {
+            return $this->getRelation('category')->slug;
+        }
+
+        if ($this->category_id && $this->productCategory) {
+            return $this->productCategory->slug;
+        }
+
+        return null;
+    }
+
+    /**
      * Get inventory movements for this product.
      */
     public function inventoryMovements()
@@ -396,29 +429,29 @@ class Product extends Model
 
         if ($quality === '4k') {
             $wText = $width ? " ({$width}px)" : '';
-            return '<span class="badge" style="background: linear-gradient(135deg, #059669, #10b981); color: #fff; font-size: 0.68rem; font-weight: 600; padding: 2px 7px; border-radius: 6px; box-shadow: 0 1px 3px rgba(16,185,129,0.25);"><i class="fas fa-sparkles me-1"></i>4K UHD' . $wText . '</span>';
+            return '<span class="badge" style="background: linear-gradient(135deg, #059669, #10b981); color: #fff; font-size: 0.68rem; font-weight: 600; padding: 2px 8px; border-radius: 6px; box-shadow: 0 1px 3px rgba(16,185,129,0.25);"><i class="fas fa-wand-magic-sparkles me-1"></i>4K UHD' . $wText . '</span>';
         }
 
         if ($quality === 'fhd') {
             $wText = $width ? " ({$width}px)" : '';
-            return '<span class="badge" style="background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; font-size: 0.68rem; font-weight: 600; padding: 2px 7px; border-radius: 6px;"><i class="fas fa-hd me-1"></i>FHD' . $wText . '</span>';
+            return '<span class="badge" style="background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; font-size: 0.68rem; font-weight: 600; padding: 2px 8px; border-radius: 6px;"><i class="fas fa-tv me-1"></i>FHD' . $wText . '</span>';
         }
 
         if ($quality === 'sd') {
             $wText = $width ? " ({$width}px)" : '';
-            return '<span class="badge" style="background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; font-size: 0.68rem; font-weight: 500; padding: 2px 7px; border-radius: 6px;">SD' . $wText . '</span>';
+            return '<span class="badge" style="background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; font-size: 0.68rem; font-weight: 500; padding: 2px 8px; border-radius: 6px;">SD' . $wText . '</span>';
         }
 
         if ($quality === 'low') {
             $wText = $width ? " ({$width}px)" : '';
-            return '<span class="badge" style="background: #fef3c7; color: #d97706; border: 1px solid #fde68a; font-size: 0.68rem; font-weight: 600; padding: 2px 7px; border-radius: 6px;"><i class="fas fa-exclamation-triangle me-1"></i>Faible' . $wText . '</span>';
+            return '<span class="badge" style="background: #fef3c7; color: #d97706; border: 1px solid #fde68a; font-size: 0.68rem; font-weight: 600; padding: 2px 8px; border-radius: 6px;"><i class="fas fa-exclamation-triangle me-1"></i>Faible' . $wText . '</span>';
         }
 
         if ($quality === 'placeholder') {
-            return '<span class="badge" style="background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; font-size: 0.68rem; font-weight: 600; padding: 2px 7px; border-radius: 6px;"><i class="fas fa-image me-1"></i>Placeholder</span>';
+            return '<span class="badge" style="background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; font-size: 0.68rem; font-weight: 600; padding: 2px 8px; border-radius: 6px;"><i class="fas fa-image me-1"></i>Sans image</span>';
         }
 
-        return '<span class="badge" style="background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; font-size: 0.68rem; font-weight: 600; padding: 2px 7px; border-radius: 6px;">Manquante</span>';
+        return '<span class="badge" style="background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; font-size: 0.68rem; font-weight: 600; padding: 2px 8px; border-radius: 6px;"><i class="fas fa-camera me-1 opacity-75"></i>Photo manquante</span>';
     }
 }
 

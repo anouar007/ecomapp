@@ -8,29 +8,91 @@
         <div>
             <h1 class="brand-title">
                 <div class="brand-header-icon">
-                    <i class="fas fa-box"></i>
+                    <i class="fas fa-boxes-stacked"></i>
                 </div>
                 Gestion des produits
             </h1>
-            <p class="brand-subtitle">Gérez votre catalogue de produits, les tarifs et la disponibilité en stock</p>
+            <p class="brand-subtitle">Gérez votre catalogue de produits, les tarifs, la qualité 4K et la disponibilité en stock</p>
         </div>
-        <div class="d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
             <a href="{{ route('products.image-quality') }}" class="btn btn-outline-primary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2" style="border-color: #8b5cf6; color: #6d28d9; background: #faf5ff; font-weight: 600; text-decoration: none;">
-                <i class="fas fa-sparkles text-warning"></i> Studio 4K Hub
+                <i class="fas fa-wand-magic-sparkles text-warning"></i> Studio 4K Hub
                 @if(!empty($qualityStats['needs_upgrade']) && $qualityStats['needs_upgrade'] > 0)
                     <span class="badge rounded-pill bg-warning text-dark px-2" style="font-size: 0.72rem;">{{ $qualityStats['needs_upgrade'] }} à améliorer</span>
                 @endif
             </a>
             <a href="{{ route('products.create') }}" class="btn-brand-primary">
-                <i class="fas fa-plus me-2"></i> Ajouter un nouveau produit
+                <i class="fas fa-plus me-2"></i> Ajouter un produit
+            </a>
+        </div>
+    </div>
+
+    <!-- KPI Metric Stat Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('products.index') }}" class="stat-kpi-card text-decoration-none {{ !request('stock_status') && !request('quality') && !request('category') && !request('search') ? 'active-filter' : '' }}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Total Produits</div>
+                        <div class="stat-kpi-value text-dark">{{ number_format($stats['total'] ?? $products->total(), 0, ',', ' ') }}</div>
+                        <div class="stat-kpi-sub text-muted"><span class="badge bg-light text-secondary border">{{ $stats['active'] ?? 0 }} actifs</span></div>
+                    </div>
+                    <div class="stat-kpi-icon bg-primary-subtle text-primary">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('products.index', ['stock_status' => 'in_stock']) }}" class="stat-kpi-card text-decoration-none {{ request('stock_status') === 'in_stock' ? 'active-filter' : '' }}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">En Stock</div>
+                        <div class="stat-kpi-value text-success">{{ number_format($stats['in_stock'] ?? 0, 0, ',', ' ') }}</div>
+                        <div class="stat-kpi-sub text-muted"><i class="fas fa-check-circle text-success me-1"></i>Disponibles</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-success-subtle text-success">
+                        <i class="fas fa-warehouse"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('products.index', ['stock_status' => 'low_stock']) }}" class="stat-kpi-card text-decoration-none {{ request('stock_status') === 'low_stock' ? 'active-filter' : '' }}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Stock Faible / Alerte</div>
+                        <div class="stat-kpi-value {{ (($stats['low_stock'] ?? 0) + ($stats['out_of_stock'] ?? 0)) > 0 ? 'text-warning' : 'text-muted' }}">
+                            {{ number_format(($stats['low_stock'] ?? 0) + ($stats['out_of_stock'] ?? 0), 0, ',', ' ') }}
+                        </div>
+                        <div class="stat-kpi-sub text-muted"><i class="fas fa-exclamation-triangle text-warning me-1"></i>{{ $stats['out_of_stock'] ?? 0 }} en rupture</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-warning-subtle text-warning">
+                        <i class="fas fa-boxes-packing"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('products.index', ['quality' => '4k']) }}" class="stat-kpi-card text-decoration-none {{ request('quality') === '4k' ? 'active-filter' : '' }}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Images Studio 4K</div>
+                        <div class="stat-kpi-value" style="color: #7c3aed;">{{ number_format($stats['four_k'] ?? 0, 0, ',', ' ') }}</div>
+                        <div class="stat-kpi-sub text-muted"><i class="fas fa-wand-magic-sparkles text-warning me-1"></i>{{ $stats['needs_upgrade'] ?? 0 }} à optimiser</div>
+                    </div>
+                    <div class="stat-kpi-icon" style="background: #f5f3ff; color: #7c3aed;">
+                        <i class="fas fa-wand-magic-sparkles"></i>
+                    </div>
+                </div>
             </a>
         </div>
     </div>
 
     <!-- Barre de filtres -->
-    <div class="brand-filter-bar">
-        <form method="GET" action="{{ route('products.index') }}" class="d-flex align-items-center gap-3 flex-wrap">
-            <div class="brand-search-wrapper">
+    <div class="brand-filter-bar mb-4">
+        <form method="GET" action="{{ route('products.index') }}" class="d-flex align-items-center gap-2 flex-wrap">
+            <div class="brand-search-wrapper flex-grow-1" style="min-width: 200px;">
                 <i class="fas fa-search"></i>
                 <input type="text" name="search" class="form-control" 
                        placeholder="Rechercher par nom, SKU..."
@@ -46,10 +108,17 @@
                 @endforeach
             </select>
 
+            <select name="stock_status" class="form-select w-auto">
+                <option value="">Tous les stocks</option>
+                <option value="in_stock" {{ request('stock_status') == 'in_stock' ? 'selected' : '' }}>📦 En stock (&gt; 5)</option>
+                <option value="low_stock" {{ request('stock_status') == 'low_stock' ? 'selected' : '' }}>⚠️ Stock faible (≤ 5)</option>
+                <option value="out_of_stock" {{ request('stock_status') == 'out_of_stock' ? 'selected' : '' }}>🚫 Rupture (0)</option>
+            </select>
+
             <select name="quality" class="form-select w-auto">
                 <option value="">Toutes les résolutions</option>
                 <option value="needs_upgrade" {{ request('quality') == 'needs_upgrade' ? 'selected' : '' }}>
-                    ⚠️ À améliorer (< 1200px) ({{ $qualityStats['needs_upgrade'] ?? 0 }})
+                    ⚠️ À améliorer (&lt; 1200px) ({{ $qualityStats['needs_upgrade'] ?? 0 }})
                 </option>
                 <option value="4k" {{ request('quality') == '4k' ? 'selected' : '' }}>
                     ✨ 4K Ultra-HD ({{ $qualityStats['four_k'] ?? 0 }})
@@ -62,27 +131,31 @@
                 </option>
             </select>
 
-            <button type="submit" class="btn-brand-primary">
+            <select name="status" class="form-select w-auto">
+                <option value="">Tous les statuts</option>
+                <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Actifs</option>
+                <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactifs</option>
+            </select>
+
+            <button type="submit" class="btn-brand-primary" title="Appliquer les filtres">
                 <i class="fas fa-filter me-1"></i> Filtrer
             </button>
-            <a href="{{ route('products.index') }}" class="btn-brand-light" title="Réinitialiser">
+            <a href="{{ route('products.index') }}" class="btn-brand-light" title="Réinitialiser les filtres">
                 <i class="fas fa-redo"></i>
             </a>
             
-            @if(request('search') || request('category'))
-            <div class="ms-2">
-                <span class="badge bg-light text-secondary px-3 py-2" style="border-radius: 8px;">
-                    {{ $products->total() }} résultat(s) trouvé(s)
-                </span>
-            </div>
+            @if(request('search') || request('category') || request('quality') || request('stock_status') || request('status'))
+            <span class="badge bg-light text-secondary border px-2.5 py-2">
+                {{ $products->total() }} résultat(s)
+            </span>
             @endif
 
             <div class="ms-auto d-flex gap-2">
                 <button type="button" class="btn-brand-outline" data-bs-toggle="modal" data-bs-target="#importModal">
-                    <i class="fas fa-file-upload me-2" style="color: var(--primary-color)"></i>Importer Excel
+                    <i class="fas fa-file-upload me-1.5" style="color: var(--primary-color)"></i>Importer Excel
                 </button>
                 <a href="{{ route('export.products') }}" class="btn-brand-outline">
-                    <i class="fas fa-file-csv me-2" style="color: var(--success-color)"></i>Exporter CSV
+                    <i class="fas fa-file-csv me-1.5" style="color: var(--success-color)"></i>Exporter CSV
                 </a>
             </div>
         </form>
@@ -131,7 +204,7 @@
 
     <!-- Barre d'actions groupées -->
     <div id="bulkActionsBar" class="bulk-actions-bar" style="display: none;">
-        <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
             <div class="d-flex align-items-center gap-3">
                 <span class="selected-count fw-bold">
                     <i class="fas fa-check-circle me-2"></i>
@@ -141,8 +214,8 @@
                     <i class="fas fa-times me-1"></i>Annuler
                 </button>
             </div>
-            <div class="d-flex align-items-center gap-2">
-                <div class="input-group input-group-sm" style="width: 140px;" id="stockAmountGroup" style="display: none;">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <div class="input-group input-group-sm" style="width: 140px;" id="stockAmountGroup">
                     <span class="input-group-text">Qté</span>
                     <input type="number" id="stockAmount" class="form-control" value="10" min="1" max="9999">
                 </div>
@@ -159,7 +232,7 @@
                     <i class="fas fa-copy me-1"></i>Dupliquer
                 </button>
                 <button type="button" class="btn btn-sm text-white" onclick="bulkUpgradeTo4k()" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none;" title="Mettre à niveau la sélection vers la qualité Studio 4K">
-                    <i class="fas fa-sparkles me-1 text-warning"></i>Mettre à niveau 4K
+                    <i class="fas fa-wand-magic-sparkles me-1 text-warning"></i>Mettre à niveau 4K
                 </button>
                 <div class="btn-group">
                     <button type="button" class="btn btn-secondary btn-sm" onclick="executeBulkAction('activate')" title="Activer">
@@ -178,130 +251,145 @@
 
     <!-- Products Table -->
     <div class="brand-table-card">
-        <div class="table-responsive">
-            <table class="brand-table">
+        <div class="products-table-wrapper">
+            <table class="brand-table brand-table-products">
                 <thead>
                     <tr>
-                        <th style="width: 50px; padding-left: 1.5rem;">
-                            <input type="checkbox" class="form-check-input" id="selectAll" onchange="toggleSelectAll(this)">
+                        <th class="col-check">
+                            <input type="checkbox" class="form-check-input" id="selectAll" onchange="toggleSelectAll(this)" title="Tout sélectionner">
                         </th>
-                        <th>Détails du produit</th>
-                        <th>SKU</th>
-                        <th>Catégorie</th>
-                        <th>Prix</th>
-                        <th>Stock & Inventaire</th>
-                        <th>Statut</th>
-                        <th class="text-end" style="padding-right: 1.5rem;">Actions</th>
+                        <th class="col-product">Produit</th>
+                        <th class="col-sku">SKU</th>
+                        <th class="col-category">Catégorie</th>
+                        <th class="col-price">Prix</th>
+                        <th class="col-stock">Stock</th>
+                        <th class="col-status">Statut</th>
+                        <th class="col-actions text-end">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($products as $product)
                     <tr data-product-id="{{ $product->id }}" id="product-row-{{ $product->id }}">
-                        <td style="padding-left: 1.5rem;">
+                        <td class="col-check">
                             <input type="checkbox" class="form-check-input product-checkbox" 
                                    value="{{ $product->id }}" 
                                    onchange="updateSelection()">
                         </td>
-                        <td>
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="position-relative" style="flex-shrink: 0;">
-                                    <div class="brand-avatar" id="prod-avatar-wrap-{{ $product->id }}">
+                        <td class="col-product">
+                            <div class="d-flex align-items-center gap-2.5">
+                                <div class="position-relative flex-shrink-0">
+                                    <div class="brand-avatar prod-avatar" id="prod-avatar-wrap-{{ $product->id }}">
                                         <img id="prod-img-{{ $product->id }}" src="{{ $product->thumbnail }}" alt="{{ $product->name }}" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                                     </div>
                                     <button type="button" 
-                                            class="btn btn-sm btn-light border shadow-sm position-absolute bottom-0 end-0 p-0 rounded-circle" 
-                                            style="width: 20px; height: 20px; transform: translate(20%, 20%); display: flex; align-items: center; justify-content: center; background: #ffffff; z-index: 2;" 
+                                            class="prod-avatar-badge" 
                                             onclick="open4kFinderModal({{ $product->id }}, '{{ addslashes($product->name) }}', '{{ $product->thumbnail }}', '{{ $product->image_width ? $product->image_width . '×' . $product->image_height : 'SD' }}')"
-                                            title="Trouver la meilleure image 4K">
-                                        <i class="fas fa-sparkles text-warning" style="font-size: 0.6rem;"></i>
+                                            title="Trouver la meilleure image 4K"
+                                            data-bs-toggle="tooltip">
+                                        <i class="fas fa-wand-magic-sparkles"></i>
                                     </button>
                                 </div>
-                                <div>
-                                    <div class="fw-bold text-dark d-flex align-items-center gap-2 flex-wrap">
-                                        <span>{{ $product->name }}</span>
-                                        <span id="prod-badge-{{ $product->id }}">{!! $product->image_quality_badge !!}</span>
+                                <div class="prod-info-wrap">
+                                    <div class="prod-name" title="{{ $product->name }}">
+                                        {{ $product->name }}
                                     </div>
-                                    @if($product->description)
-                                        <div class="text-muted small" style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                            {{ $product->description }}
-                                        </div>
-                                    @endif
+                                    <div class="d-flex align-items-center gap-1.5 flex-wrap mt-0.5">
+                                        <span id="prod-badge-{{ $product->id }}">{!! $product->image_quality_badge !!}</span>
+                                        @if($product->description)
+                                            <span class="prod-desc-text" title="{{ strip_tags($product->description) }}">
+                                                {{ Str::limit(strip_tags($product->description), 35) }}
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </td>
-                        <td>
-                            <span class="badge bg-light text-secondary font-monospace" style="font-size: 0.7rem; border: 1px solid #e2e8f0;">
+                        <td class="col-sku">
+                            <span class="badge bg-light text-secondary font-monospace prod-sku-badge" title="SKU: {{ $product->sku }}">
                                 {{ $product->sku }}
                             </span>
                         </td>
-                        <td>
+                        <td class="col-category">
                             @if($product->category_name)
-                                <span class="brand-badge primary">{{ $product->category_name }}</span>
+                                <span class="badge-category" title="{{ $product->category_name }}">
+                                    <i class="fas fa-folder me-1 opacity-60"></i>{{ Str::limit($product->category_name, 20) }}
+                                </span>
                             @else
                                 <span class="text-muted small">—</span>
                             @endif
                         </td>
-                        <td>
+                        <td class="col-price">
                             <div class="fw-bold text-dark">{{ currency($product->price) }}</div>
                             @if($product->cost_price)
-                                <div class="text-muted" style="font-size: 0.7rem;">Coût : {{ currency($product->cost_price) }}</div>
+                                <div class="text-muted small prod-cost-text" title="Prix de revient">Coût: {{ currency($product->cost_price) }}</div>
                             @endif
                         </td>
-                        <td>
+                        <td class="col-stock">
                             @php
                                 $stock = $product->stock;
                                 $min = $product->min_stock ?? 5;
-                                $badgeClass = 'success';
-                                $badgeText = 'En stock : ' . $stock;
                                 if ($stock <= 0) {
-                                    $badgeClass = 'danger';
-                                    $badgeText = 'Rupture de stock';
+                                    $badgeType = 'out';
+                                    $dotColor = 'red';
+                                    $badgeText = 'Rupture (0)';
                                 } elseif ($stock <= $min) {
-                                    $badgeClass = 'warning';
-                                    $badgeText = 'Stock faible : ' . $stock;
+                                    $badgeType = 'low';
+                                    $dotColor = 'amber';
+                                    $badgeText = 'Faible: ' . $stock;
+                                } else {
+                                    $badgeType = 'in';
+                                    $dotColor = 'green';
+                                    $badgeText = 'En stock: ' . $stock;
                                 }
                             @endphp
-                            <span class="brand-badge {{ $badgeClass }}">{{ $badgeText }}</span>
-                        </td>
-                        <td>
-                            @php
-                                $st = strtolower($product->status);
-                                $statusClass = match($st) {
-                                    'active', 'actif' => 'success',
-                                    'inactive', 'inactif' => 'danger',
-                                    default => 'info'
-                                };
-                                $statusText = match($st) {
-                                    'active' => 'Actif',
-                                    'inactive' => 'Inactif',
-                                    default => ucfirst($product->status)
-                                };
-                            @endphp
-                            <span class="brand-badge {{ $statusClass }}">
-                                {{ $statusText }}
+                            <span class="badge-stock badge-stock-{{ $badgeType }}">
+                                <span class="status-dot dot-{{ $dotColor }}"></span>{{ $badgeText }}
                             </span>
                         </td>
-                        <td style="padding-right: 1.5rem;">
-                            <div class="d-flex justify-content-end gap-2">
+                        <td class="col-status">
+                            @php
+                                $st = strtolower($product->status);
+                                $isActive = in_array($st, ['active', 'actif']);
+                            @endphp
+                            <span class="badge-status {{ $isActive ? 'badge-status-active' : 'badge-status-inactive' }}">
+                                <span class="status-dot {{ $isActive ? 'dot-green' : 'dot-gray' }}"></span>
+                                {{ $isActive ? 'Actif' : 'Inactif' }}
+                            </span>
+                        </td>
+                        <td class="col-actions text-end">
+                            <div class="action-buttons-group">
+                                <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" 
+                                   target="_blank" 
+                                   class="action-btn action-btn-view" 
+                                   title="Voir sur la boutique" 
+                                   data-bs-toggle="tooltip">
+                                    <i class="fas fa-eye"></i>
+                                </a>
                                 <button type="button" 
-                                        class="btn-action-icon" 
-                                        style="color: #8b5cf6;" 
-                                        title="Trouver la meilleure image 4K"
+                                        class="action-btn action-btn-4k" 
+                                        title="Trouver image 4K Studio" 
+                                        data-bs-toggle="tooltip"
                                         onclick="open4kFinderModal({{ $product->id }}, '{{ addslashes($product->name) }}', '{{ $product->thumbnail }}', '{{ $product->image_width ? $product->image_width . '×' . $product->image_height : 'SD' }}')">
-                                    <i class="fas fa-sparkles"></i>
+                                    <i class="fas fa-wand-magic-sparkles"></i>
                                 </button>
-                                <a href="{{ route('products.edit', $product) }}" class="btn-action-icon" title="Modifier le produit">
-                                    <i class="fas fa-edit"></i>
+                                <a href="{{ route('products.edit', $product) }}" 
+                                   class="action-btn action-btn-edit" 
+                                   title="Modifier le produit" 
+                                   data-bs-toggle="tooltip">
+                                    <i class="fas fa-pencil-alt"></i>
                                 </a>
                                 <form method="POST" 
                                       action="{{ route('products.destroy', $product->id) }}" 
-                                      style="display: inline;"
+                                      class="d-inline m-0 p-0"
                                       data-confirm-delete="true"
                                       data-item-type="product"
                                       data-item-name="{{ $product->name }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn-action-icon danger" title="Supprimer le produit">
+                                    <button type="submit" 
+                                            class="action-btn action-btn-delete" 
+                                            title="Supprimer le produit" 
+                                            data-bs-toggle="tooltip">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </form>
@@ -317,9 +405,9 @@
                                 </div>
                                 <h5 class="fw-bold text-dark">Aucun produit trouvé</h5>
                                 <p class="text-muted">Essayez d'ajuster vos critères de recherche ou vos filtres.</p>
-                                @if(request('search') || request('category'))
+                                @if(request('search') || request('category') || request('quality') || request('stock_status') || request('status'))
                                     <a href="{{ route('products.index') }}" class="btn-brand-primary mt-3">
-                                        Effacer tous les filtres
+                                        <i class="fas fa-redo me-1"></i> Réinitialiser tous les filtres
                                     </a>
                                 @endif
                             </div>
@@ -329,149 +417,407 @@
                 </tbody>
             </table>
         </div>
-        @if($products->hasPages())
-        <div class="px-4 py-3 border-top">
-            {{ $products->links() }}
+        
+        <div class="products-table-footer px-4 py-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div class="text-muted small">
+                <i class="fas fa-list-ul me-1 opacity-50"></i>
+                Affichage de <span class="fw-semibold text-dark">{{ $products->firstItem() ?? 0 }}</span> à <span class="fw-semibold text-dark">{{ $products->lastItem() ?? 0 }}</span> sur <span class="fw-semibold text-dark">{{ $products->total() }}</span> produits
+            </div>
+            @if($products->hasPages())
+            <div>
+                {{ $products->links() }}
+            </div>
+            @endif
         </div>
-        @endif
     </div>
 
 @push('styles')
 <style>
-    .bulk-actions-bar {
-        background: linear-gradient(135deg, var(--primary-color, #00BFA6) 0%, var(--secondary-color, #00A896) 100%);
-        color: white;
-        padding: 14px 24px;
-        border-radius: var(--border-radius, 12px);
-        margin-bottom: 20px;
-        box-shadow: 0 4px 15px rgba(0, 191, 166, 0.25);
-        animation: slideDown 0.3s ease-out;
+    /* Prevent horizontal scrolling & optimize products table */
+    .products-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
     }
     
-    @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
+    @media (min-width: 992px) {
+        .products-table-wrapper {
+            overflow-x: hidden; /* Strict removal of horizontal scroll on desktop */
         }
     }
-    
-    .bulk-actions-bar .selected-count {
-        color: white;
-        font-size: 0.95rem;
+
+    .brand-table-products {
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 0;
     }
-    
-    .bulk-actions-bar .btn-light {
-        background: rgba(255,255,255,0.2);
-        border: none;
-        color: white;
-        border-radius: 8px;
-        font-weight: 500;
+
+    .brand-table-products thead th {
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        padding: 0.85rem 0.5rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #64748b;
+        border-bottom: 1px solid #e2e8f0;
+        white-space: nowrap;
+        vertical-align: middle;
     }
-    
-    .bulk-actions-bar .btn-light:hover {
-        background: rgba(255,255,255,0.35);
-        color: white;
-    }
-    
-    .bulk-actions-bar .input-group-text {
-        background: rgba(255,255,255,0.25);
-        border: none;
-        color: white;
-        font-weight: 500;
-        border-radius: 8px 0 0 8px;
-    }
-    
-    .bulk-actions-bar .form-control {
-        background: rgba(255,255,255,0.95);
-        border: none;
-        border-radius: 0 8px 8px 0;
-        font-weight: 500;
-    }
-    
-    .bulk-actions-bar .btn {
-        border-radius: 8px;
-        font-weight: 500;
+
+    .brand-table-products tbody td {
+        padding: 0.75rem 0.5rem;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+        color: #1e293b;
         font-size: 0.85rem;
-        padding: 6px 12px;
-        border: none;
     }
-    
-    .bulk-actions-bar .btn-group .btn {
-        border-radius: 0;
+
+    .brand-table-products thead th.col-check,
+    .brand-table-products tbody td.col-check {
+        width: 44px;
+        min-width: 44px;
+        padding-left: 1.25rem;
+        padding-right: 0.25rem;
+        text-align: center;
     }
-    
-    .bulk-actions-bar .btn-group .btn:first-child {
-        border-radius: 8px 0 0 8px;
+
+    .brand-table-products thead th.col-actions,
+    .brand-table-products tbody td.col-actions {
+        width: 155px;
+        min-width: 155px;
+        padding-right: 1.25rem;
+        padding-left: 0.25rem;
+        text-align: right;
     }
-    
-    .bulk-actions-bar .btn-group .btn:last-child {
-        border-radius: 0 8px 8px 0;
+
+    .brand-table-products .col-product {
+        width: auto;
+        min-width: 190px;
     }
-    
-    .bulk-actions-bar .btn-success {
-        background: #10b981;
+
+    .brand-table-products .col-sku {
+        width: 95px;
+        white-space: nowrap;
     }
-    
-    .bulk-actions-bar .btn-warning {
-        background: #f59e0b;
-        color: white;
+
+    .brand-table-products .col-category {
+        width: 120px;
+        white-space: nowrap;
     }
-    
-    .bulk-actions-bar .btn-info {
-        background: #3b82f6;
+
+    .brand-table-products .col-price {
+        width: 95px;
+        white-space: nowrap;
     }
-    
-    .bulk-actions-bar .btn-secondary {
-        background: rgba(255,255,255,0.2);
-        color: white;
+
+    .brand-table-products .col-stock {
+        width: 120px;
+        white-space: nowrap;
     }
-    
-    .bulk-actions-bar .btn-secondary:hover {
-        background: rgba(255,255,255,0.35);
-        color: white;
+
+    .brand-table-products .col-status {
+        width: 85px;
+        white-space: nowrap;
     }
-    
-    .bulk-actions-bar .btn-danger {
-        background: #ef4444;
+
+    /* Product Details Styling */
+    .prod-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+        flex-shrink: 0;
     }
-    
-    .product-checkbox {
+
+    .prod-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .prod-avatar-badge {
+        position: absolute;
+        bottom: -3px;
+        right: -3px;
         width: 18px;
         height: 18px;
+        border-radius: 50%;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
         cursor: pointer;
-        border-radius: 4px;
+        z-index: 2;
+        font-size: 0.58rem;
     }
-    
-    .product-checkbox:checked {
-        background-color: var(--primary-color, #00BFA6);
-        border-color: var(--primary-color, #00BFA6);
+
+    .prod-info-wrap {
+        min-width: 0;
+        flex-grow: 1;
     }
-    
-    tr.selected {
-        background-color: rgba(0, 191, 166, 0.08) !important;
+
+    .prod-name {
+        font-weight: 600;
+        font-size: 0.84rem;
+        color: #0f172a;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.3;
     }
-    
-    #selectAll {
-        width: 18px;
-        height: 18px;
+
+    .prod-desc-text {
+        font-size: 0.72rem;
+        color: #94a3b8;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 130px;
+        display: inline-block;
+    }
+
+    .prod-sku-badge {
+        font-size: 0.7rem;
+        border: 1px solid #e2e8f0;
+        padding: 3px 6px;
+        border-radius: 6px;
+    }
+
+    .prod-cost-text {
+        font-size: 0.72rem;
+        color: #94a3b8;
+    }
+
+    /* Action Buttons Row */
+    .action-buttons-group {
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 5px;
+        white-space: nowrap;
+    }
+
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.82rem;
+        text-decoration: none !important;
+        border: 1px solid transparent;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         cursor: pointer;
-        border-radius: 4px;
+        background: #f8fafc;
     }
-    
-    #selectAll:checked {
-        background-color: var(--primary-color, #00BFA6);
-        border-color: var(--primary-color, #00BFA6);
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
     }
+
+    /* View button - Teal */
+    .action-btn-view {
+        background: #f0fdfa;
+        color: #0d9488;
+        border-color: #ccfbf1;
+    }
+    .action-btn-view:hover {
+        background: #0d9488;
+        color: #ffffff;
+        border-color: #0d9488;
+    }
+
+    /* 4K Studio button - Purple */
+    .action-btn-4k {
+        background: #faf5ff;
+        color: #7c3aed;
+        border-color: #ede9fe;
+    }
+    .action-btn-4k:hover {
+        background: linear-gradient(135deg, #7c3aed, #9333ea);
+        color: #ffffff;
+        border-color: #7c3aed;
+    }
+
+    /* Edit button - Blue */
+    .action-btn-edit {
+        background: #eff6ff;
+        color: #2563eb;
+        border-color: #dbeafe;
+    }
+    .action-btn-edit:hover {
+        background: #2563eb;
+        color: #ffffff;
+        border-color: #2563eb;
+    }
+
+    /* Delete button - Red */
+    .action-btn-delete {
+        background: #fef2f2;
+        color: #dc2626;
+        border-color: #fee2e2;
+    }
+    .action-btn-delete:hover {
+        background: #dc2626;
+        color: #ffffff;
+        border-color: #dc2626;
+    }
+
+    /* KPI Cards Styling */
+    .stat-kpi-card {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 16px 20px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        display: block;
+        transition: all 0.2s ease;
+    }
+    .stat-kpi-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.07);
+        border-color: #cbd5e1;
+    }
+    .stat-kpi-card.active-filter {
+        border-color: #6366f1;
+        background: #fafafe;
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    }
+    .stat-kpi-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #64748b;
+        margin-bottom: 4px;
+    }
+    .stat-kpi-value {
+        font-size: 1.45rem;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+    .stat-kpi-sub {
+        font-size: 0.72rem;
+        margin-top: 4px;
+    }
+    .stat-kpi-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    /* Row hover & selection highlight */
+    .brand-table-products tbody tr {
+        transition: background-color 0.15s ease;
+    }
+    .brand-table-products tbody tr:hover {
+        background-color: #f8fafc;
+    }
+    .brand-table-products tbody tr.selected {
+        background-color: #eef2ff !important;
+        box-shadow: inset 3px 0 0 #6366f1;
+    }
+    .brand-table-products tbody tr:last-child td { border-bottom: none; }
+
+    /* Pro badges */
+    .badge-category,
+    .badge-stock,
+    .badge-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 999px;
+        white-space: nowrap;
+        line-height: 1.2;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .badge-category {
+        background: #f1f5f9;
+        color: #334155;
+        border: 1px solid #e2e8f0;
+    }
+    .badge-category i { color: #6366f1; font-size: 0.68rem; }
+
+    .badge-stock-in  { background: #ecfdf5; color: #047857; border: 1px solid #d1fae5; }
+    .badge-stock-low { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+    .badge-stock-out { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+
+    .badge-status-active   { background: #ffffff; color: #047857; border: 1px solid #d1fae5; }
+    .badge-status-inactive { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
+
+    .status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        display: inline-block;
+    }
+    .dot-green { background: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.18); }
+    .dot-amber { background: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,0.18); }
+    .dot-red   { background: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.18); animation: pulseDot 1.8s infinite; }
+    .dot-gray  { background: #94a3b8; }
+    @keyframes pulseDot {
+        0%,100% { box-shadow: 0 0 0 3px rgba(239,68,68,0.18); }
+        50%     { box-shadow: 0 0 0 5px rgba(239,68,68,0.05); }
+    }
+
+    .prod-avatar-badge i { color: #7c3aed; }
+    .prod-avatar-badge:hover { background: #7c3aed; border-color: #7c3aed; }
+    .prod-avatar-badge:hover i { color: #fff; }
+
+    .prod-sku-badge {
+        background: #f8fafc !important;
+        color: #475569 !important;
+        letter-spacing: 0.02em;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+    }
+
+    /* Table footer */
+    .products-table-footer {
+        background: #fafbfc;
+        border-top: 1px solid #eef2f6;
+    }
+    .products-table-footer .custom-pagination-nav { justify-content: flex-end; }
 </style>
 @endpush
 
 @push('scripts')
 <script>
     let selectedProducts = [];
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        initTooltips();
+    });
+
+    function initTooltips() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
     
     function toggleSelectAll(checkbox) {
         const checkboxes = document.querySelectorAll('.product-checkbox');
@@ -827,7 +1173,7 @@
         <div style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%); color: white; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between;">
             <div style="display: flex; align-items: center; gap: 14px;">
                 <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(255, 255, 255, 0.15); display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fbbf24; border: 1px solid rgba(255, 255, 255, 0.2);">
-                    <i class="fas fa-sparkles"></i>
+                    <i class="fas fa-wand-magic-sparkles"></i>
                 </div>
                 <div>
                     <h4 style="margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.01em;">Studio Recherche 4K Ultra-HD</h4>

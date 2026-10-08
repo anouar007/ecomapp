@@ -1,14 +1,14 @@
 @extends('layouts.frontend')
 
-@section('meta_title', __('About') . ' — ' . setting('app_name', 'Full Frame House'))
-@section('meta_description', setting('app_description', 'Distributeur agréé de caméras cinéma, objectifs professionnels et matériel de tournage à Casablanca, Maroc.'))
+@section('meta_title', __('About') . ' — ' . setting('app_name', 'WINA SHOP'))
+@section('meta_description', setting('app_description', 'Distributeur agréé de matériel photo & vidéo professionnel, caméras, drones DJI, éclairage et accessoires à Casablanca, Maroc.'))
 
 @section('json_ld')
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "AboutPage",
-  "name": "{{ addslashes(setting('app_name', 'Full Frame House')) }}",
+  "name": "{{ addslashes(setting('app_name', 'WINA SHOP')) }}",
   "url": "{{ route('about') }}"
 }
 </script>
@@ -23,7 +23,7 @@
             <div class="col-lg-8 mx-auto text-center" data-aos="fade-up">
                 <div class="section-eyebrow-cine justify-content-center mb-3">
                     <span class="tally-dot"></span>
-                    <span>{{ strtoupper(setting('app_name', 'Full Frame House')) }} · {{ __('Since :year', ['year' => '2018']) }}</span>
+                    <span>{{ strtoupper(setting('app_name', 'WINA SHOP')) }} · {{ __('Since :year', ['year' => '2019']) }}</span>
                 </div>
                 <h1 class="about-hero-title mb-4">{{ __('Cinematic Excellence for Creators & Directors') }}</h1>
                 <p class="about-hero-sub mx-auto">{{ __('Founded by photography directors...') }}</p>
@@ -46,7 +46,7 @@
         <div class="row align-items-center g-5">
             <div class="col-lg-6" data-aos="fade-right">
                 <div class="about-image-wrapper">
-                    <img src="{{ asset('images/camera/about_showroom.jpg') }}" alt="Showroom {{ setting('app_name', 'Full Frame House') }} Casablanca" class="about-main-img img-fluid shadow-lg">
+                    <img src="{{ asset('images/camera/about_showroom.jpg') }}" alt="Showroom {{ setting('app_name', 'WINA SHOP') }} Casablanca" class="about-main-img img-fluid shadow-lg">
                     <div class="about-badge-card">
                         <div class="about-badge-icon"><i class="fas fa-award"></i></div>
                         <div>
@@ -62,11 +62,11 @@
                 <h2 class="section-title mb-4">{{ __('Pushing the Limits of Visual Storytelling') }}</h2>
                 <div class="about-text-content">
                     @if(app()->getLocale() === 'ar')
-                    <p class="lead text-secondary mb-4">في <strong>{{ setting('app_name', 'Full Frame House') }}</strong>، نؤمن بأن العمل السينمائي العظيم يبدأ بأدوات موثوقة ودقيقة وممتازة بصرياً.</p>
-                    <p class="text-muted mb-4">في مواجهة تحديات توفير معدات البث والسينما في المغرب، أنشأنا نظاماً بيئياً متكاملاً: معرض فعلي في الدار البيضاء، ومناضد لاختبار العدسات وورش لموازنة أجهزة الاستقرار وشحن فائق الأمان في جميع أنحاء المملكة خلال 24 إلى 48 ساعة.</p>
+                    <p class="lead text-secondary mb-4">في <strong>{{ setting('app_name', 'WINA SHOP') }}</strong>، نؤمن بأن العمل السينمائي والفوتوغرافي الرائع يبدأ بأدوات موثوقة ودقيقة وممتازة بصرياً.</p>
+                    <p class="text-muted mb-4">انطلاقاً من مقرنا في حي الوفاق / الألفة بالدار البيضاء، نوفر للمصورين وصناع المحتوى والإنتاج السينمائي أحدث المعدات العالمية مع الضمان والدعم الفني وشحن سريع في كافة أنحاء المغرب.</p>
                     @else
-                    <p class="lead text-secondary mb-4">Chez <strong>{{ setting('app_name', 'Full Frame House') }}</strong>, nous croyons qu'une grande œuvre cinématographique commence par des outils fiables, précis et optiquement impeccables.</p>
-                    <p class="text-muted mb-4">Face aux défis d'approvisionnement en matériel broadcast et cinéma au Maroc, nous avons créé un écosystème complet : showroom physique à Casablanca, bancs de test optique, ateliers d'équilibrage de gimbals et expédition ultra-sécurisée partout dans le Royaume en 24 à 48 heures.</p>
+                    <p class="lead text-secondary mb-4">Chez <strong>{{ setting('app_name', 'WINA SHOP') }}</strong>, nous croyons qu'une grande œuvre cinématographique et photographique commence par des outils fiables, précis et optiquement impeccables.</p>
+                    <p class="text-muted mb-4">Depuis notre showroom à Casablanca (Al Oulfa – Hay Wiam), nous mettons à disposition des créateurs, vidéastes et boîtes de production le meilleur du matériel audiovisuel avec garantie constructeur, conseils d'experts et expédition sécurisée partout au Maroc.</p>
                     @endif
 
                     <div class="row g-3 pt-2">

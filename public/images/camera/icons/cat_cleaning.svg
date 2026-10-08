@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="48" height="48" fill="#111111">
+  <!-- Blower bulb -->
+  <path d="M12 40c-3 0-5-2-5-5s2-5 5-5c1 0 2 .3 2.8.8l4-4.8 3.5 3-4 4.8c.4.7.7 1.5.7 2.2 0 3-3 5-7 5z" fill="#111111"/>
+  <!-- Long nozzle -->
+  <line x1="16" y1="33" x2="26" y2="21" stroke="#111111" stroke-width="3" stroke-linecap="round"/>
+  <!-- Camera body being cleaned -->
+  <rect x="28" y="24" width="28" height="22" rx="3" fill="#111111"/>
+  <circle cx="42" cy="35" r="7" fill="#ffffff"/>
+  <circle cx="42" cy="35" r="4" fill="#111111"/>
+  <!-- Sparkle rays -->
+  <line x1="58" y1="28" x2="62" y2="28" stroke="#111111" stroke-width="2" stroke-linecap="round"/>
+  <line x1="58" y1="42" x2="62" y2="42" stroke="#111111" stroke-width="2" stroke-linecap="round"/>
+</svg>

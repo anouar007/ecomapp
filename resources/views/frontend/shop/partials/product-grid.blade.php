@@ -20,10 +20,11 @@
                 </div>
 
                 {{-- Desktop Hover overlay actions --}}
+                @php $inCart = isset(session('cart', [])[$product->id]); @endphp
                 <div class="pcard-overlay d-none d-md-flex">
                     @if($product->isInStock())
-                    <button class="pcard-overlay-btn" onclick="addToCart({{ $product->id }})" title="{{ __('Add to cart') }}">
-                        <i class="fas fa-cart-plus"></i> {{ __('Add') }}
+                    <button class="pcard-overlay-btn {{ $inCart ? 'is-in-cart' : '' }}" data-product-id="{{ $product->id }}" onclick="addToCart({{ $product->id }}, 1, this)" title="{{ $inCart ? __('In Cart') : __('Add to cart') }}">
+                        <i class="fas {{ $inCart ? 'fa-check' : 'fa-cart-plus' }}"></i> {{ $inCart ? __('In Cart') : __('Add') }}
                     </button>
                     @endif
                     <a href="{{ route('shop.show', $product->id) }}" class="pcard-overlay-btn pcard-overlay-btn--ghost" title="{{ __('View Product') }}">
@@ -35,7 +36,7 @@
             {{-- Info --}}
             <div class="pcard-body d-flex flex-column flex-grow-1">
                 @if($product->category_name)
-                <div class="pcard-cat text-truncate">{{ $product->category_name }}</div>
+                <a href="{{ route('shop.index', ['category' => $product->category_slug ?? optional($product->category)->slug ?? optional($product->productCategory)->slug]) }}" class="pcard-cat text-truncate text-decoration-none d-block">{{ $product->category_name }}</a>
                 @endif
                 <h4 class="pcard-name">
                     <a href="{{ route('shop.show', $product->id) }}" title="{{ $product->name }}">{{ $product->name }}</a>
@@ -61,9 +62,9 @@
                     </div>
 
                     @if($product->isInStock())
-                    <button class="pcard-quick-cart-btn" onclick="addToCart({{ $product->id }})" title="{{ __('Add to cart') }}" aria-label="{{ __('Add to cart') }}">
-                        <i class="fas fa-shopping-bag"></i>
-                        <span class="pcard-quick-cart-label d-none">{{ __('Add to cart') }}</span>
+                    <button class="pcard-quick-cart-btn {{ $inCart ? 'is-in-cart' : '' }}" data-product-id="{{ $product->id }}" onclick="addToCart({{ $product->id }}, 1, this)" title="{{ $inCart ? __('In Cart') : __('Add to cart') }}" aria-label="{{ $inCart ? __('In Cart') : __('Add to cart') }}">
+                        <i class="fas {{ $inCart ? 'fa-check' : 'fa-shopping-bag' }}"></i>
+                        <span class="pcard-quick-cart-label d-none">{{ $inCart ? __('In Cart') : __('Add to cart') }}</span>
                     </button>
                     @else
                     <span class="pcard-quick-out" title="{{ __('Out of stock') }}">

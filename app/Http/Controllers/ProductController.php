@@ -51,18 +51,40 @@ class ProductController extends Controller
             }
         }
 
+        // Stock Filter
+        if ($request->filled('stock_status')) {
+            if ($request->stock_status === 'in_stock') {
+                $query->where('stock', '>', 5);
+            } elseif ($request->stock_status === 'low_stock') {
+                $query->where('stock', '>', 0)->where('stock', '<=', 5);
+            } elseif ($request->stock_status === 'out_of_stock') {
+                $query->where('stock', '<=', 0);
+            }
+        }
+
+        // Product Status Filter
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
         $products = $query->paginate(20)->withQueryString();
         
         $categories = \App\Models\Category::where('status', 'active')->orderBy('name')->get();
 
-        $qualityStats = [
+        $stats = [
             'total' => Product::count(),
+            'in_stock' => Product::where('stock', '>', 5)->count(),
+            'low_stock' => Product::where('stock', '>', 0)->where('stock', '<=', 5)->count(),
+            'out_of_stock' => Product::where('stock', '<=', 0)->count(),
+            'active' => Product::where('status', 'active')->count(),
+            'inactive' => Product::where('status', 'inactive')->count(),
             'four_k' => Product::where('image_quality', '4k')->count(),
             'fhd' => Product::where('image_quality', 'fhd')->count(),
             'needs_upgrade' => Product::whereIn('image_quality', ['sd', 'low', 'placeholder', 'missing', 'unknown'])->orWhereNull('image_quality')->count(),
         ];
+        $qualityStats = $stats;
 
-        return view('products.index', compact('products', 'categories', 'qualityStats'));
+        return view('products.index', compact('products', 'categories', 'qualityStats', 'stats'));
     }
 
     /**
@@ -501,6 +523,31 @@ class ProductController extends Controller
             'message' => "Mise à niveau terminée : {$result['upgraded']} produit(s) mis à niveau en qualité Studio 4K !",
             'data' => $result,
         ]);
+    }
+
+    /**
+     * Upload an image inserted inside the rich smart editor.
+     */
+    public function uploadEditorImage(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp,svg|max:12288',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('products/descriptions', 'public');
+            $url = asset('storage/' . $path);
+
+            return response()->json([
+                'success' => true,
+                'url' => $url,
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'No image provided',
+        ], 422);
     }
 }
 

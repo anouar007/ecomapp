@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="48" height="48" fill="#111111">
+  <!-- Camera cage / accessories rig -->
+  <rect x="18" y="22" width="34" height="26" rx="3" fill="#111111"/>
+  <circle cx="35" cy="35" r="9" fill="#ffffff"/>
+  <circle cx="35" cy="35" r="6" fill="#111111"/>
+  <!-- Top handle -->
+  <rect x="22" y="10" width="26" height="4" rx="2" fill="#111111"/>
+  <rect x="24" y="14" width="4" height="8" fill="#111111"/>
+  <rect x="42" y="14" width="4" height="8" fill="#111111"/>
+  <!-- Top cold shoe mic -->
+  <rect x="12" y="16" width="7" height="18" rx="2" fill="#111111"/>
+  <!-- Side monitor/battery -->
+  <rect x="10" y="30" width="6" height="14" rx="1.5" fill="#111111"/>
+  <path d="M52 28h5v14h-5z"/>
+</svg>

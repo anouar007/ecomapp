@@ -1,6 +1,6 @@
 @extends('layouts.frontend')
 
-@section('meta_title', __('Contact') . ' & Showroom — ' . setting('app_name', 'Full Frame House') . ' | Casablanca')
+@section('meta_title', __('Contact') . ' & Showroom — ' . setting('app_name', 'WINA SHOP') . ' | Casablanca')
 @section('meta_description', __('Talk to Our Audiovisual Experts'))
 
 @section('json_ld')
@@ -8,7 +8,7 @@
 {
   "@context": "https://schema.org",
   "@type": "ContactPage",
-  "name": "Contact {{ addslashes(setting('app_name', 'Full Frame House')) }}",
+  "name": "Contact {{ addslashes(setting('app_name', 'WINA SHOP')) }}",
   "url": "{{ route('contact') }}"
 }
 </script>
@@ -46,7 +46,7 @@
                         <div>
                             <h5 class="contact-card-title">{{ __('Showroom & Technical Workshop') }}</h5>
                             <p class="contact-card-desc mb-2">
-                                {{ setting('company_address', '45 Boulevard d\'Anfa, Quartier Racine') }}<br>
+                                {{ setting('company_address', '01 Rue 102, Al Oulfa – Hay Wiam') }}<br>
                                 {{ setting('company_city', 'Casablanca') }}, Maroc
                             </p>
                             <span class="contact-badge-sub">{{ __('Hands-on & On-site Tests') }}</span>
@@ -58,8 +58,8 @@
                         <div>
                             <h5 class="contact-card-title">{{ __('Phone Support & Quotes') }}</h5>
                             <p class="contact-card-desc mb-2">{{ __('Monday to Saturday: 09:00 – 19:00') }}</p>
-                            <a href="tel:{{ setting('company_phone', '+212661987654') }}" class="contact-link-bold">
-                                {{ setting('company_phone', '+212 661 98 76 54') }}
+                            <a href="tel:{{ setting('company_phone', '+212629035777') }}" class="contact-link-bold">
+                                {{ setting('company_phone', '06 29 03 57 77') }}
                             </a>
                         </div>
                     </div>
@@ -69,18 +69,18 @@
                         <div>
                             <h5 class="contact-card-title">{{ __('Email') }}</h5>
                             <p class="contact-card-desc mb-2">{{ __('Corporate quotes, billing & partnerships') }}</p>
-                            <a href="mailto:{{ setting('company_email', 'contact@lumina-optics.ma') }}" class="contact-link-bold">
-                                {{ setting('company_email', 'contact@lumina-optics.ma') }}
+                            <a href="mailto:{{ setting('company_email', 'contact@winashop.com') }}" class="contact-link-bold">
+                                {{ setting('company_email', 'contact@winashop.com') }}
                             </a>
                         </div>
                     </div>
 
                     @php
-                        $waNum = setting('social_whatsapp', '+212661987654');
-                        $waLink = $waNum ? 'https://wa.me/' . preg_replace('/[^0-9]/', '', $waNum) : '#';
+                        $waNum = setting('social_whatsapp', '+212629035777');
+                        $waLink = $waNum ? 'https://wa.me/' . preg_replace('/[^0-9]/', '', $waNum) : 'https://wa.me/212629035777';
                         $waText = app()->getLocale() === 'ar'
-                            ? urlencode('مرحباً، أريد الاستفسار عن معداتكم.')
-                            : urlencode('Bonjour, je souhaite des informations sur vos caméras.');
+                            ? urlencode('مرحباً Wina Shop، أريد الاستفسار عن معداتكم.')
+                            : urlencode('Bonjour Wina Shop, je souhaite des informations sur vos équipements.');
                     @endphp
                     <div class="contact-wa-card">
                         <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">

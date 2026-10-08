@@ -152,14 +152,7 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="description" class="form-label">Description</label>
-                <textarea id="description" 
-                          name="description" 
-                          class="form-control" 
-                          rows="4" 
-                          placeholder="Product description...">{{ old('description') }}</textarea>
-            </div>
+            @include('products.partials.smart-editor', ['value' => old('description')])
 
             <div class="form-row">
                 <div class="form-group">

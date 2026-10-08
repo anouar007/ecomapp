@@ -79,10 +79,16 @@ class RolePermissionSeeder extends Seeder
             'manage_products', // Maybe read-only? But standard permission is manage
         ]);
 
-        // Ensure Admin User has Admin Role (if exists)
-        $adminUser = \App\Models\User::where('email', 'admin@speed.com')->first();
-        if ($adminUser) {
-            $adminUser->assignRole('Admin');
-        }
+        // Ensure default Super Admin account exists with full permissions
+        $adminUser = \App\Models\User::firstOrCreate(
+            ['email' => 'admin@speed.com'],
+            [
+                'name'              => 'Super Administrateur',
+                'password'          => \Illuminate\Support\Facades\Hash::make('password'),
+                'email_verified_at' => now(),
+            ]
+        );
+        $adminUser->assignRole('Admin');
+        $adminUser->syncPermissions(Permission::all());
     }
 }

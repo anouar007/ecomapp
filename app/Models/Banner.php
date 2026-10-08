@@ -9,18 +9,56 @@ class Banner extends Model
 {
     protected $fillable = [
         'title',
+        'badge',
+        'subtitle',
+        'description',
         'image',
         'link',
+        'button_text',
+        'features',
         'position',
         'status',
         'sort_order'
     ];
 
-    public function getImageUrlAttribute()
+    /**
+     * Get image URL with support for storage, public path, or absolute URL.
+     */
+    public function getImageUrlAttribute(): string
     {
-        if ($this->image && Storage::exists($this->image)) {
-            return Storage::url($this->image);
+        if (empty($this->image)) {
+            return asset('images/camera/hero_winashop.jpg');
         }
-        return $this->image; // Return as is if it's a URL or Seeded path
+
+        if (filter_var($this->image, FILTER_VALIDATE_URL)) {
+            return $this->image;
+        }
+
+        if (Storage::disk('public')->exists($this->image)) {
+            return asset('storage/' . $this->image);
+        }
+
+        if (file_exists(public_path($this->image))) {
+            return asset($this->image);
+        }
+
+        return asset($this->image);
+    }
+
+    /**
+     * Features parsed as array
+     */
+    public function getFeaturesListAttribute(): array
+    {
+        if (empty($this->features)) {
+            return [];
+        }
+
+        $decoded = json_decode($this->features, true);
+        if (is_array($decoded)) {
+            return $decoded;
+        }
+
+        return array_filter(array_map('trim', explode("\n", $this->features)));
     }
 }

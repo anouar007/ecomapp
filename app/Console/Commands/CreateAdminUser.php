@@ -5,44 +5,67 @@ namespace App\Console\Commands;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class CreateAdminUser extends Command
 {
     protected $signature = 'make:admin 
-                            {email : The admin email address} 
-                            {password : The admin password}
-                            {--name=Admin : The admin name}';
+                            {email=admin@speed.com : The admin email address} 
+                            {password=password : The admin password}
+                            {--name=Super Administrateur : The admin name}';
 
-    protected $description = 'Create a new admin user with all permissions';
+    protected $description = 'Create or update an admin user with full permissions and dashboard access';
 
     public function handle()
     {
         $email = $this->argument('email');
         $password = $this->argument('password');
-        $name = $this->option('name');
+        $name = $this->option('name') ?: 'Super Administrateur';
 
-        // Check if user already exists
-        if (User::where('email', $email)->exists()) {
-            $this->error("User with email {$email} already exists!");
-            return 1;
+        // Ensure roles & permissions exist
+        $adminRole = Role::firstOrCreate(['name' => 'Admin']);
+        $allPermissions = Permission::all();
+        if ($allPermissions->isNotEmpty()) {
+            $adminRole->syncPermissions($allPermissions);
         }
 
-        // Create admin user
-        $admin = User::create([
-            'name' => $name,
-            'email' => $email,
-            'password' => Hash::make($password),
-            'email_verified_at' => now(),
-        ]);
+        $admin = User::where('email', $email)->first();
 
-        // Assign Admin role (make sure roles are seeded first)
-        $adminRole = Role::firstOrCreate(['name' => 'Admin']);
-        $admin->assignRole($adminRole);
+        if ($admin) {
+            $admin->update([
+                'name' => $name,
+                'password' => Hash::make($password),
+                'email_verified_at' => $admin->email_verified_at ?: now(),
+            ]);
+            $this->info("✓ Compte administrateur existant mis à jour avec succès !");
+        } else {
+            $admin = User::create([
+                'name' => $name,
+                'email' => $email,
+                'password' => Hash::make($password),
+                'email_verified_at' => now(),
+            ]);
+            $this->info("✓ Nouvel administrateur créé avec succès !");
+        }
 
-        $this->info("✓ Admin user created successfully!");
-        $this->info("Email: {$email}");
-        $this->info("You can now login with this account.");
+        $admin->syncRoles([$adminRole]);
+        if ($allPermissions->isNotEmpty()) {
+            $admin->syncPermissions($allPermissions);
+        }
+
+        $this->table(
+            ['Paramètre', 'Valeur'],
+            [
+                ['Nom', $admin->name],
+                ['Email', $admin->email],
+                ['Mot de passe', $password],
+                ['Rôle', 'Admin (Accès total au Dashboard)'],
+                ['Permissions', $allPermissions->count() . ' permissions accordées'],
+                ['Connexion', url('/login')],
+                ['Tableau de bord', url('/dashboard')],
+            ]
+        );
 
         return 0;
     }

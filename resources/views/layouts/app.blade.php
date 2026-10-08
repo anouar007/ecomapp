@@ -153,6 +153,13 @@
             </li>
             @endcan
 
+            <li class="sidebar-menu-item">
+                <a href="{{ route('banners.index') }}" class="sidebar-menu-link {{ request()->routeIs('banners.*') ? 'active' : '' }}">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Slider & Bannières</span>
+                </a>
+            </li>
+
             @can('manage_settings')
             <li class="sidebar-menu-item">
                 <a href="{{ route('settings.index') }}" class="sidebar-menu-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">

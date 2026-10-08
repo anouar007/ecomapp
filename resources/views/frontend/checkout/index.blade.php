@@ -1,6 +1,6 @@
 @extends('layouts.frontend')
 
-@section('meta_title', __('Checkout') . ' — ' . setting('app_name', 'LUMINA Cine & Optics'))
+@section('meta_title', __('Checkout') . ' — ' . setting('app_name', 'WINA SHOP'))
 
 @section('content')
 <div class="bg-light py-5">

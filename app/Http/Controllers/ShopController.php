@@ -18,10 +18,19 @@ class ShopController extends Controller
         $query = Product::where('status', 'active');
 
         // Filter by category
-        if ($request->has('category')) {
-            $query->whereHas('productCategory', function ($q) use ($request) {
-                $q->where('slug', $request->category);
-            });
+        if ($request->has('category') && $request->category != '') {
+            if ($request->category === 'occasion') {
+                $query->where(function ($q) {
+                    $q->whereHas('productCategory', function ($c) {
+                        $c->where('slug', 'occasion');
+                    })->orWhere('name', 'like', '%(occasion)%')
+                      ->orWhere('name', 'like', '%occasion%');
+                });
+            } else {
+                $query->whereHas('productCategory', function ($q) use ($request) {
+                    $q->where('slug', $request->category);
+                });
+            }
         }
 
         // Search across name, sku, description, and category
@@ -82,8 +91,9 @@ class ShopController extends Controller
      */
     public function show($id)
     {
-        // For now using ID, later can switch to slug if added
-        $product = Product::with(['images', 'productCategory', 'inventoryMovements'])->findOrFail($id);
+        $product = is_numeric($id)
+            ? Product::with(['images', 'productCategory', 'inventoryMovements'])->findOrFail($id)
+            : Product::with(['images', 'productCategory', 'inventoryMovements'])->where('slug', $id)->firstOrFail();
         
         // Paginate approved reviews separately - 5 per page
         $reviews = ProductReview::where('product_id', $product->id)

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="48" height="48" fill="#111111">
+  <!-- Matte box sunshade top flag -->
+  <polygon points="12,18 52,18 48,24 16,24"/>
+  <!-- Central matte box body & lens opening -->
+  <rect x="18" y="24" width="28" height="20" rx="2"/>
+  <circle cx="32" cy="34" r="6" fill="#ffffff"/>
+  <!-- Left flag -->
+  <polygon points="8,20 18,24 18,44 8,46"/>
+  <!-- Right flag -->
+  <polygon points="56,20 46,24 46,44 56,46"/>
+  <!-- 15mm rod support below -->
+  <rect x="22" y="47" width="20" height="3" rx="1.5"/>
+</svg>

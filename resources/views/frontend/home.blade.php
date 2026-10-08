@@ -1,434 +1,1228 @@
 @extends('layouts.frontend')
 
-@section('meta_title', setting('app_name', 'Full Frame House') . ' — ' . __('Cinema Equipment, 8K Cameras & Pro Optics in Morocco'))
-@section('meta_description', __('Discover our catalogue of cinema cameras, full-frame hybrid bodies, professional lenses, stabilizers and studio lighting in Morocco.'))
-
-@section('json_ld')
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "{{ setting('app_name', 'Full Frame House') }}",
-  "url": "{{ url('/') }}"
-}
-</script>
-@endsection
+@section('meta_title', setting('app_name', 'WINA SHOP') . ' — ' . __('Matériel Photo, Vidéo & Caméras au Maroc'))
+@section('meta_description', __('Votre référence au Maroc pour le matériel photo & vidéo professionnel — Caméras Sony, Canon, drones & stabilisateurs DJI, optiques et éclairage studio.'))
 
 @section('content')
 
-{{-- HERO SLIDER --}}
-<section class="hero-slider-section">
-    <div class="swiper hero-swiper">
-        <div class="swiper-wrapper">
-            @php
-            $cameraSlides = [
-                [
-                    'badge' => app()->getLocale() === 'ar' ? 'سينما واحترافية' : 'CINÉMA & BROADCAST PRO',
-                    'title' => __('Cinematic Excellence for Creators & Directors'),
-                    'desc'  => app()->getLocale() === 'ar'
-                        ? 'كاميرات سينما 6K/8K، مستشعرات كاملة المنظر ومنصات احترافية مصممة للمخرجين ومنشئي المحتوى الأكثر صرامة.'
-                        : 'Caméras cinéma 6K/8K, capteurs plein format et rigs professionnels conçus pour les réalisateurs et créateurs de contenu les plus exigeants.',
-                    'img'   => asset('images/camera/hero_cinema_rig.jpg'),
-                    'tag1'  => 'RAW 8K',
-                    'tag2'  => '120 FPS',
-                    'tag3'  => 'DUAL ISO',
-                ],
-                [
-                    'badge' => app()->getLocale() === 'ar' ? 'عدسات استثنائية' : 'OPTIQUES D\'EXCEPTION',
-                    'title' => app()->getLocale() === 'ar' ? 'عدسات ثابتة وزوم مضيئة' : 'Objectifs Prime & Zooms Lumineux',
-                    'desc'  => app()->getLocale() === 'ar'
-                        ? 'عدسات أنامورفيك، بُعد ثابت f/1.2 وزوم G-Master لنحت الضوء بحدة استثنائية وبوكيه سينمائي.'
-                        : 'Optiques anamorphiques, focales fixes f/1.2 et zooms G-Master pour sculpter la lumière avec un piqué chirurgical et un bokeh cinématographique.',
-                    'img'   => asset('images/camera/hero_lens_optics.jpg'),
-                    'tag1'  => 'f/1.2 APERTURE',
-                    'tag2'  => 'NANO AR',
-                    'tag3'  => 'E-MOUNT / RF',
-                ],
-                [
-                    'badge' => app()->getLocale() === 'ar' ? 'نظام التصوير' : 'ÉCOSYSTÈME TOURNAGE',
-                    'title' => app()->getLocale() === 'ar' ? 'أجهزة الاستقرار، الإضاءة والصوت' : 'Stabilisateurs, Éclairage & Audio Studio',
-                    'desc'  => app()->getLocale() === 'ar'
-                        ? 'جيمبال 3 محاور DJI RS 4 Pro، مصابيح LED COB Aputure وميكروفونات HF 32-bit float لتحويل كل لقطة إلى تحفة.'
-                        : 'Gimbals 3 axes DJI RS 4 Pro, projecteurs LED COB Aputure et microphones HF 32-bit float pour transformer chaque prise de vue en chef-d\'œuvre.',
-                    'img'   => asset('images/camera/hero_studio_crew.jpg'),
-                    'tag1'  => '32-BIT FLOAT',
-                    'tag2'  => 'CARBON RIG',
-                    'tag3'  => 'WIRELESS VIDEO',
-                ],
-            ];
-            @endphp
+{{-- =========================================================================
+     1. HERO SECTION (DJI Osmo 360 + Osmo Pocket 4 + Godox AD800Pro)
+     ========================================================================= --}}
+<section class="hero-winashop-section py-3">
+    <div class="container">
+        <div class="row g-3">
+            {{-- Big Hero Banner Slider on Left --}}
+            <div class="col-lg-8">
+                <div class="hero-main-card position-relative overflow-hidden">
+                    <div class="swiper hero-main-swiper">
+                        <div class="swiper-wrapper">
+                            @forelse($heroSlides as $slide)
+                            <div class="swiper-slide hero-slide-item">
+                                <div class="hero-main-bg" style="background-image: url('{{ $slide->image_url }}');"></div>
+                                <div class="hero-main-overlay"></div>
+                                <a href="{{ $slide->link ?: route('shop.index') }}" class="stretched-link" aria-label="{{ $slide->title }}"></a>
+                                
+                                @if($slide->badge)
+                                <div class="hero-glass-badge">
+                                    <span class="hero-live-dot"></span>
+                                    <span>{{ $slide->badge }}</span>
+                                </div>
+                                @endif
 
-            @foreach($cameraSlides as $slide)
-            <div class="swiper-slide">
-                <div class="hero-slide" style="background-image: url('{{ $slide['img'] }}');">
-                    <div class="hero-slide-overlay"></div>
-                    <div class="hud-reticle-top-left"></div>
-                    <div class="hud-reticle-top-right"></div>
-                    <div class="hud-reticle-bottom-left"></div>
-                    <div class="hud-reticle-bottom-right"></div>
+                                <div class="hero-slide-content">
+                                    <h2 class="hero-slide-title">{{ $slide->title }}</h2>
+                                    @if($slide->description)
+                                    <p class="hero-slide-desc d-none d-md-block">{{ $slide->description }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                            @empty
+                            <div class="swiper-slide hero-slide-item">
+                                <div class="hero-main-bg" style="background-image: url('{{ asset('images/camera/hero_winashop.jpg') }}');"></div>
+                                <div class="hero-main-overlay"></div>
+                                <a href="{{ route('shop.index', ['q' => 'DJI Osmo 360']) }}" class="stretched-link" aria-label="DJI Osmo 360 All in One"></a>
+                                
+                                <div class="hero-glass-badge">
+                                    <span class="hero-live-dot"></span>
+                                    <span>NOUVEAUTÉ EXCLUSIVE • DJI OSMO 360</span>
+                                </div>
 
-                    <div class="hud-status-strip">
-                        <span class="hud-badge rec"><span class="tally-dot"></span> REC ●</span>
-                        <span class="hud-badge">{{ $slide['tag1'] }}</span>
-                        <span class="hud-badge">{{ $slide['tag2'] }}</span>
-                        <span class="hud-badge">{{ $slide['tag3'] }}</span>
+                                <div class="hero-slide-content">
+                                    <h2 class="hero-slide-title">DJI Osmo 360 All-In-One</h2>
+                                    <p class="hero-slide-desc d-none d-md-block">Capteur 1 pouce, double optique 8K et stabilisation RockSteady 3.0.</p>
+                                </div>
+                            </div>
+                            @endforelse
+                        </div>
+
+                        {{-- Subtle Frosted Glass Navigation Arrows --}}
+                        <button type="button" class="hero-swiper-nav hero-swiper-prev" aria-label="Diapositive précédente">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button type="button" class="hero-swiper-nav hero-swiper-next" aria-label="Diapositive suivante">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+
+                        {{-- Dash Pagination (Custom Swiper Bullets) --}}
+                        <div class="hero-dash-pagination"></div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- 2 Stacked Cards on Right (Side-by-side on tablet, stacked on desktop) --}}
+            <div class="col-lg-4">
+                <div class="d-flex flex-column flex-sm-row flex-lg-column gap-3 h-100">
+                    {{-- Top Card: e.g. DJI Osmo Pocket 4 --}}
+                    @php 
+                        $topImg = $heroSideTop?->image_url ?? asset('images/camera/banner_osmo_pocket.jpg');
+                        $topTag = $heroSideTop?->badge ?? 'GIMBAL 4K COMPACT';
+                        $topLink = $heroSideTop?->link ?? route('shop.index', ['q' => 'Osmo Pocket']);
+                        $topBtn = $heroSideTop?->button_text ?? 'Acheter';
+                    @endphp
+                    <div class="hero-side-card position-relative overflow-hidden flex-fill" title="{{ $heroSideTop?->title ?? '' }}">
+                        <div class="hero-side-bg" style="background-image: url('{{ $topImg }}');"></div>
+                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(15,23,42,0.15) 0%, rgba(15,23,42,0.6) 100%); pointer-events: none;"></div>
+                        <span class="hero-side-tag">{{ $topTag }}</span>
+                        @if(!empty($heroSideTop?->title))
+                            <span class="visually-hidden">{{ $heroSideTop->title }}</span>
+                        @endif
+                        <div class="position-absolute bottom-0 start-0 m-3 z-2">
+                            <a href="{{ $topLink }}" class="btn hero-action-btn" aria-label="{{ $heroSideTop?->title ?? $topBtn }}">
+                                <span>{{ $topBtn }}</span>
+                                <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
+                            </a>
+                        </div>
                     </div>
 
-                    <div class="container position-relative" style="z-index: 4;">
-                        <div class="row align-items-center">
-                            <div class="col-lg-8 col-xl-7">
-                                <div class="hero-slide-content">
-                                    <span class="hero-badge-tag">
-                                        <i class="fas fa-video"></i>
-                                        {{ $slide['badge'] }}
-                                    </span>
-                                    @if($loop->first)
-                                    <h1 class="hero-slide-title">{{ $slide['title'] }}</h1>
-                                    @else
-                                    <h2 class="hero-slide-title">{{ $slide['title'] }}</h2>
-                                    @endif
-                                    <p class="hero-slide-desc">{{ $slide['desc'] }}</p>
+                    {{-- Bottom Card: e.g. Godox AD800Pro --}}
+                    @php 
+                        $botImg = $heroSideBottom?->image_url ?? asset('images/camera/banner_godox_ad800.jpg');
+                        $botTag = $heroSideBottom?->badge ?? 'OUTDOOR FLASH 800W';
+                        $botLink = $heroSideBottom?->link ?? route('shop.index', ['q' => 'Godox AD800']);
+                        $botBtn = $heroSideBottom?->button_text ?? 'Découvrez la GODOX AD800 PRO';
+                    @endphp
+                    <div class="hero-side-card position-relative overflow-hidden flex-fill" title="{{ $heroSideBottom?->title ?? '' }}">
+                        <div class="hero-side-bg" style="background-image: url('{{ $botImg }}');"></div>
+                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(15,23,42,0.15) 0%, rgba(15,23,42,0.6) 100%); pointer-events: none;"></div>
+                        <span class="hero-side-tag">{{ $botTag }}</span>
+                        @if(!empty($heroSideBottom?->title))
+                            <span class="visually-hidden">{{ $heroSideBottom->title }}</span>
+                        @endif
+                        <div class="position-absolute bottom-0 start-0 m-3 z-2">
+                            <a href="{{ $botLink }}" class="btn hero-action-btn" aria-label="{{ $heroSideBottom?->title ?? $botBtn }}">
+                                <span>{{ $botBtn }}</span>
+                                <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-                                    <div class="hero-actions-wrap d-flex align-items-center flex-wrap gap-2">
-                                        <a href="{{ route('shop.index') }}" class="hero-btn-primary">
-                                            <i class="fas fa-camera"></i>
-                                            <span>{{ __('Explore the Catalogue') }}</span>
+
+{{-- =========================================================================
+     2. CATÉGORIES POPULAIRES (Modern Smooth Swiper Slider)
+     ========================================================================= --}}
+<section class="popular-categories-section py-3 py-md-4">
+    <div class="container position-relative">
+        <div class="d-flex align-items-center justify-content-between mb-3 mb-md-4">
+            <div>
+                <span class="badge text-white fw-bold px-2 px-md-3 py-1 mb-1 mb-md-2 d-inline-block" style="background: #0f172a; border-radius: 999px; font-size: 0.70rem; letter-spacing: 0.5px;">
+                    <i class="fas fa-layer-group me-1 text-danger"></i> RAYONS PHARES
+                </span>
+                <h2 class="fw-bold text-dark mb-0 mb-md-1" style="font-size: clamp(1.25rem, 3.5vw, 1.65rem); letter-spacing: -0.4px;">Catégories Populaires</h2>
+                <p class="text-secondary small mb-0 d-none d-md-block" style="font-size: 0.88rem;">Explorez nos rayons phares et équipements audiovisuels certifiés au Maroc</p>
+            </div>
+
+            {{-- Slider Controls --}}
+            <div class="cat-slider-nav-wrap d-flex align-items-center gap-1 gap-md-2">
+                <button type="button" 
+                        class="btn btn-cat-swiper-arrow d-flex align-items-center justify-content-center" 
+                        id="catSwiperPrev" 
+                        aria-label="Précédent" 
+                        title="Catégories précédentes">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button type="button" 
+                        class="btn btn-cat-swiper-arrow d-flex align-items-center justify-content-center" 
+                        id="catSwiperNext" 
+                        aria-label="Suivant" 
+                        title="Catégories suivantes">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        {{-- Swiper Container --}}
+        <div class="swiper popular-cats-swiper pb-2">
+            <div class="swiper-wrapper align-items-stretch">
+                @foreach($popularCategories as $cat)
+                    <div class="swiper-slide h-auto">
+                        <a href="{{ $cat['url'] }}" 
+                           class="cat-item-card h-100 p-2 p-md-3 bg-white text-decoration-none d-flex flex-column align-items-center justify-content-center position-relative {{ !empty($cat['highlight']) ? 'cat-item-highlight' : '' }}">
+                            
+                            {{-- Item Count Badge at Top Right --}}
+                            <span class="cat-badge-counter badge text-white fw-bold">
+                                {{ $cat['count'] }}
+                            </span>
+
+                            {{-- SVG Icon --}}
+                            <div class="cat-icon-slot mb-2 mb-md-3 d-flex align-items-center justify-content-center">
+                                <img src="{{ $cat['icon'] }}" alt="{{ $cat['title'] }}" class="cat-icon-svg" loading="lazy">
+                            </div>
+
+                            {{-- Title --}}
+                            <span class="cat-label text-uppercase fw-bold text-center">
+                                {{ $cat['title'] }}
+                            </span>
+                        </a>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Dots pagination below categories --}}
+        <div class="popular-cats-pagination text-center mt-2 mt-md-3 d-flex justify-content-center align-items-center gap-2"></div>
+    </div>
+</section>
+
+{{-- =========================================================================
+     3. NOTRE SÉLECTION DE PRODUITS (Signature Red Box Showcase - Screenshot 3)
+     ========================================================================= --}}
+<section class="featured-products-section py-3 py-md-4">
+    <div class="container">
+        <div class="selection-showcase-box">
+            {{-- Header Bar --}}
+            <div class="selection-showcase-header d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3 mb-md-4 pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="selection-accent-badge"></span>
+                    <h2 class="fw-bold text-dark mb-0 selection-title" style="font-size: clamp(1.25rem, 3vw, 1.55rem); letter-spacing: -0.4px;">
+                        Notre sélection de produits
+                    </h2>
+                </div>
+                <div>
+                    <a href="{{ route('shop.index') }}" 
+                       class="btn btn-outline-danger fw-bold px-3 py-1 text-nowrap d-inline-flex align-items-center gap-2" 
+                       style="border-radius: 8px; font-size: 0.82rem; border-color: #c8102e;">
+                        <span>Voir tout le catalogue</span>
+                        <i class="fas fa-arrow-right" style="font-size: 10px;"></i>
+                    </a>
+                </div>
+            </div>
+
+            {{-- Products Grid (5-column on desktop matching Screenshot 3, 2-column on mobile) --}}
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-2 g-md-3">
+                @foreach($featuredProducts->take(10) as $product)
+                    @php
+                        $brand = 'PRO';
+                        if (stripos($product->name, 'Sony') !== false) $brand = 'SONY';
+                        elseif (stripos($product->name, 'Canon') !== false) $brand = 'CANON';
+                        elseif (stripos($product->name, 'DJI') !== false) $brand = 'DJI';
+                        elseif (stripos($product->name, 'Godox') !== false) $brand = 'GODOX';
+                        elseif (stripos($product->name, 'Blackmagic') !== false) $brand = 'BLACKMAGIC';
+                        elseif (stripos($product->name, 'Rode') !== false || stripos($product->name, 'RØDE') !== false) $brand = 'RØDE';
+                        elseif (stripos($product->name, 'Insta360') !== false) $brand = 'INSTA360';
+                        elseif (stripos($product->name, 'Lexar') !== false) $brand = 'LEXAR';
+                        elseif (stripos($product->name, 'SmallRig') !== false) $brand = 'SMALLRIG';
+                        
+                        $sessionCart = session('cart', []);
+                        $isInCart = isset($sessionCart[$product->id]);
+                        $isAr = app()->getLocale() === 'ar';
+                    @endphp
+                    <div class="col">
+                        <div class="featured-pro-card selection-card h-100 d-flex flex-column justify-content-between">
+                            {{-- Product Image with clean white background --}}
+                            <div class="featured-pro-img-box mb-2">
+                                @if(!$product->isInStock())
+                                    <span class="featured-card-oos-badge">{{ $isAr ? 'نفذت الكمية' : 'Épuisé' }}</span>
+                                @endif
+                                <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" class="w-100 h-100 d-flex align-items-center justify-content-center">
+                                    <img src="{{ $product->thumbnail }}" alt="{{ $product->name }}" loading="lazy">
+                                </a>
+                            </div>
+
+                            {{-- Product Info --}}
+                            <div class="mb-2 flex-grow-1 d-flex flex-column justify-content-between">
+                                <div>
+                                    <span class="featured-brand-chip d-none">{{ $brand }}</span>
+                                    <h3 class="featured-pro-title">
+                                        <a href="{{ route('shop.show', $product->slug ?: $product->id) }}">
+                                            {{ $product->name }}
                                         </a>
-                                        <a href="{{ route('shop.index', ['category' => 'cameras-hybrides']) }}" class="hero-btn-secondary">
-                                            <i class="fas fa-play-circle"></i>
-                                            <span>{{ __('Pro Cameras') }}</span>
-                                        </a>
+                                    </h3>
+                                </div>
+
+                                <div>
+                                    {{-- Price in vivid green --}}
+                                    <div class="d-flex align-items-baseline gap-2 mb-1">
+                                        @if($product->sale_price && $product->sale_price < $product->price)
+                                            <span class="fw-bold price-tag-green" style="font-size: 1.05rem;">
+                                                MAD {{ number_format($product->sale_price, 2, ',', '.') }}
+                                            </span>
+                                            <span class="text-danger text-decoration-line-through small" style="font-size: 0.78rem;">
+                                                MAD {{ number_format($product->price, 2, ',', '.') }}
+                                            </span>
+                                        @elseif($product->price && $product->price > 0)
+                                            <span class="fw-bold price-tag-green" style="font-size: 1.05rem;">
+                                                MAD {{ number_format($product->price, 2, ',', '.') }}
+                                            </span>
+                                        @else
+                                            <span class="fw-bold text-dark" style="font-size: 0.95rem;">
+                                                Sur devis
+                                            </span>
+                                        @endif
                                     </div>
 
-                                    <div class="hero-trust-bar">
-                                        <div class="hero-trust-pill">
-                                            <i class="fas fa-shield-halved"></i> {{ __('2-Year Warranty') }}
-                                        </div>
-                                        <div class="hero-trust-pill">
-                                            <i class="fas fa-truck-fast"></i> {{ __('Secure Morocco Delivery') }}
-                                        </div>
-                                        <div class="hero-trust-pill">
-                                            <i class="fas fa-file-invoice"></i> {{ __('Official ICE Invoicing') }}
-                                        </div>
+                                    {{-- Stock badge --}}
+                                    <div class="d-flex align-items-center gap-1 mb-2">
+                                        @if($product->isInStock())
+                                            <span class="featured-stock-pill">
+                                                <span class="stock-pulse-dot"></span>
+                                                <span>{{ $isAr ? 'متوفر' : 'EN STOCK' }}</span>
+                                            </span>
+                                        @else
+                                            <span class="featured-stock-pill featured-stock-pill--out">
+                                                <i class="fas fa-times-circle text-danger" style="font-size: 10px;"></i>
+                                                <span>{{ $isAr ? 'نفذت الكمية' : 'RUPTURE DE STOCK' }}</span>
+                                            </span>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @endforeach
-        </div>
 
-        <div class="hero-pagination-wrap mt-3">
-            <div class="container text-center">
-                <div class="swiper-pagination hero-dots d-inline-block"></div>
-            </div>
-        </div>
-    </div>
-</section>
-
-{{-- TRUST BAR --}}
-<section class="trust-bar-section">
-    <div class="container">
-        <div class="trust-card-grid">
-            <div class="row g-3">
-                <div class="col-6 col-lg-3">
-                    <div class="trust-item-camera">
-                        <div class="trust-icon-box"><i class="fas fa-shield-alt"></i></div>
-                        <div>
-                            <div class="trust-title">{{ __('2-Year Warranty') }}</div>
-                            <div class="trust-desc">{{ __('Official products 100% certified') }}</div>
+                            {{-- Full-width Action Button --}}
+                            <div class="mt-auto pt-1">
+                                @if($product->isInStock())
+                                    <button type="button" 
+                                            class="btn w-100 featured-pro-btn {{ $isInCart ? 'is-in-cart' : '' }}" 
+                                            onclick="addToCart({{ $product->id }}, 1, this)"
+                                            data-product-id="{{ $product->id }}"
+                                            title="{{ $isInCart ? ($isAr ? 'في السلة' : 'Dans le panier') : ($isAr ? 'أضف إلى السلة' : 'Ajouter au panier') }}">
+                                        @if($isInCart)
+                                            <i class="fas fa-check" style="font-size: 11px;"></i>
+                                            <span>{{ $isAr ? 'في السلة' : 'Dans le panier' }}</span>
+                                        @else
+                                            <span>{{ $isAr ? 'أضف إلى السلة' : 'Ajouter au panier' }}</span>
+                                        @endif
+                                    </button>
+                                @else
+                                    <button type="button" 
+                                            class="btn w-100 featured-pro-btn featured-pro-btn--out" 
+                                            disabled 
+                                            title="{{ $isAr ? 'نفذت الكمية' : 'Rupture de stock' }}">
+                                        <i class="fas fa-ban" style="font-size: 11px;"></i>
+                                        <span>{{ $isAr ? 'نفذت الكمية' : 'Rupture de stock' }}</span>
+                                    </button>
+                                @endif
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-6 col-lg-3">
-                    <div class="trust-item-camera">
-                        <div class="trust-icon-box"><i class="fas fa-truck-fast"></i></div>
-                        <div>
-                            <div class="trust-title">{{ __('Secure Delivery') }}</div>
-                            <div class="trust-desc">{{ __('Express shipping 24/48h insured') }}</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-lg-3">
-                    <div class="trust-item-camera">
-                        <div class="trust-icon-box"><i class="fas fa-video"></i></div>
-                        <div>
-                            <div class="trust-title">{{ __('Showroom & Demo') }}</div>
-                            <div class="trust-desc">{{ __('Live test in Casablanca') }}</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-lg-3">
-                    <div class="trust-item-camera">
-                        <div class="trust-icon-box"><i class="fas fa-file-invoice-dollar"></i></div>
-                        <div>
-                            <div class="trust-title">{{ __('Billing & Quotes') }}</div>
-                            <div class="trust-desc">{{ __('ICE compliant for productions') }}</div>
-                        </div>
-                    </div>
-                </div>
+                @endforeach
             </div>
         </div>
     </div>
 </section>
 
-{{-- CATEGORIES --}}
-<section id="categories" class="section-py">
+
+{{-- =========================================================================
+     4. NOUVELLE ARRIVAGE & COIN OCCASION (Matching Screenshot 4)
+     ========================================================================= --}}
+<section class="new-arrivals-and-occasion-section py-3 py-md-4">
     <div class="container">
-        <div class="d-flex justify-content-between align-items-end mb-4">
-            <div>
-                <span class="section-eyebrow-cine"><i class="fas fa-sliders"></i> {{ __('Professional Range') }}</span>
-                <h2 class="section-title mb-1">{{ __('Browse by Category') }}</h2>
-                <p class="section-desc">{{ __('The entire ecosystem from optics to stabilizers') }}</p>
+        {{-- High-Tech Promotional Banner (Insta360 Exclusive Promo) --}}
+        @php
+            $promoImg = $promoMiddleBanner?->image_url ?? asset('images/camera/banner_insta360_promo.jpg');
+            $promoTag1 = $promoMiddleBanner?->badge ?? 'PRODUIT TENDANCE';
+            $promoTag2 = $promoMiddleBanner?->subtitle ?? 'PROMOTION EXCLUSIVE';
+            $promoTitle = $promoMiddleBanner?->title ?? 'Promotion Exclusive sur Insta360';
+            $promoDesc = $promoMiddleBanner?->description ?? "Capturez l'impossible avec les caméras d'action et 360° les plus innovantes du marché. Remises jusqu'à 25% disponibles sur le showroom.";
+            $promoBtn = $promoMiddleBanner?->button_text ?? 'Voir la Promotion';
+            $promoLink = $promoMiddleBanner?->link ?? route('shop.index', ['category' => 'accessoires-insta360']);
+            $promoFeatures = !empty($promoMiddleBanner?->features_list) ? $promoMiddleBanner->features_list : ['VIDÉO 360° IMMERSIVE', 'STABILISATION AVANCÉE', 'RÉSOLUTION 5.7K ULTRA HD'];
+        @endphp
+        <div class="insta360-promo-banner position-relative mb-4 mb-md-5" style="background-image: url('{{ $promoImg }}');">
+            <div class="insta360-promo-overlay"></div>
+            <div class="position-relative z-2 d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-4">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        @if($promoTag1)<span class="promo-tag-red">{{ $promoTag1 }}</span>@endif
+                        @if($promoTag2)<span class="promo-tag-dark">{{ $promoTag2 }}</span>@endif
+                    </div>
+                    <h3 class="fw-bold text-white mb-2" style="font-size: 1.85rem; letter-spacing: -0.4px;">
+                        {{ $promoTitle }}
+                    </h3>
+                    @if($promoDesc)
+                    <p class="text-white-50 mb-0 d-none d-md-block" style="max-width: 600px; font-size: 0.95rem;">
+                        {{ $promoDesc }}
+                    </p>
+                    @endif
+                    @if(!empty($promoFeatures))
+                    <div class="d-flex flex-wrap align-items-center gap-3 gap-md-4 mt-2">
+                        @foreach($promoFeatures as $feature)
+                        <span class="promo-bullet"><i class="fas fa-check text-danger"></i> {{ $feature }}</span>
+                        @endforeach
+                    </div>
+                    @endif
+                </div>
+                <div class="flex-shrink-0">
+                    <a href="{{ $promoLink }}" class="promo-cta-btn">
+                        <span>{{ $promoBtn }}</span>
+                        <i class="fas fa-arrow-up-right-from-square" style="font-size: 12px;"></i>
+                    </a>
+                </div>
             </div>
-            <a href="{{ route('shop.index') }}" class="btn-link-arrow d-none d-md-inline-flex">
-                <span>{{ __('View All Equipment') }}</span> <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }}"></i>
-            </a>
         </div>
 
-        @if($allCategories->count() > 0)
-        <div class="row g-3">
-            @foreach($allCategories->where('slug', '!=', 'general')->take(6) as $category)
-            <div class="col-6 col-md-4 col-lg-2">
-                <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="cat-card-v2">
-                    <div class="cat-card-img">
-                        <img src="{{ $category->thumbnail }}" alt="{{ $category->name }}" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
-                    </div>
-                    <div class="cat-card-body">
-                        <h3 class="cat-card-name">{{ $category->name }}</h3>
-                        <span class="cat-card-count">{{ $category->products_count ?? $category->products()->count() }} {{ __('refs.') }}</span>
-                    </div>
+        {{-- Row 1: Nouvelle Arrivage (Full Row) --}}
+        <div class="mb-4 mb-md-5">
+            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="selection-accent-badge"></span>
+                    <h2 class="fw-bold text-dark mb-0" style="font-size: clamp(1.2rem, 2.5vw, 1.45rem); letter-spacing: -0.3px;">
+                        Nouvelle Arrivage
+                    </h2>
+                </div>
+                <a href="{{ route('shop.index') }}" class="text-secondary text-decoration-none small fw-semibold hover-red">
+                    <span>Voir tout</span>
+                    <i class="fas fa-chevron-right ms-1" style="font-size: 10px;"></i>
                 </a>
             </div>
-            @endforeach
-        </div>
-        @endif
-    </div>
-</section>
 
-{{-- FEATURED PRODUCTS --}}
-<section id="featured" class="section-py bg-surface">
-    <div class="container">
-        <div class="d-flex justify-content-between align-items-end mb-4">
-            <div>
-                <span class="section-eyebrow-cine"><i class="fas fa-star"></i> {{ __('Studio Selection') }}</span>
-                <h2 class="section-title mb-1">{{ __('Flagship Equipment') }}</h2>
-                <p class="section-desc">{{ __('Cameras, optics and accessories from cinematographers') }}</p>
-            </div>
-            <a href="{{ route('shop.index') }}" class="btn-link-arrow d-none d-md-inline-flex">
-                <span>{{ __('View Full Catalogue') }}</span> <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }}"></i>
-            </a>
-        </div>
-
-        <div class="row g-2 g-sm-3 g-lg-4">
-            @foreach($featuredProducts as $index => $product)
-            <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="{{ ($index % 4) * 80 }}">
-                <div class="product-card-v2">
-                    <div class="product-v2-image">
-                        <a href="{{ route('shop.show', $product->id) }}" class="product-v2-img-link d-block w-100 h-100">
-                            <img src="{{ $product->thumbnail }}" alt="{{ $product->name }}" loading="lazy">
-                        </a>
-                        <div class="product-v2-badges">
-                            @if($product->created_at && $product->created_at->diffInDays(now()) < 14)
-                                <span class="badge-v2 badge-new">{{ __('New') }}</span>
-                            @endif
-                            @if($product->isOnSale())
-                                <span class="badge-v2 badge-sale">-{{ $product->discount_percentage }}%</span>
-                            @endif
-                        </div>
-                        <div class="product-v2-overlay">
-                            @if($product->isInStock())
-                            <button class="btn-overlay" onclick="addToCart({{ $product->id }})" title="{{ __('Add to Cart') }}">
-                                <i class="fas fa-cart-plus"></i> <span>{{ __('Add to Cart') }}</span>
-                            </button>
-                            @else
-                            <span class="btn-overlay" style="background: rgba(255,255,255,0.2) !important; color:#fff !important; cursor:not-allowed;">
-                                <i class="fas fa-clock"></i> {{ __('On Order') }}
-                            </span>
-                            @endif
-                            <a href="{{ route('shop.show', $product->id) }}" class="btn-overlay-icon" title="{{ __('View') }}">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="product-v2-body">
-                        @if($product->productCategory)
-                            <span class="product-v2-cat text-truncate">{{ $product->productCategory->name }}</span>
-                        @endif
-                        <h4 class="product-v2-name">
-                            <a href="{{ route('shop.show', $product->id) }}" class="product-v2-name-link" title="{{ $product->name }}">
-                                {{ Str::limit($product->name, 45) }}
-                            </a>
-                        </h4>
-                        <div class="product-v2-rating">
-                            @php $rating = round($product->reviews()->avg('rating') ?? 5); @endphp
-                            <div class="stars-row">
-                                @for($i = 0; $i < 5; $i++)
-                                    <i class="fas fa-star{{ $i < $rating ? '' : ' opacity-25' }}"></i>
-                                @endfor
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-2 g-md-3">
+                @foreach($newArrivalProducts->take(6) as $product)
+                    @php
+                        $brand = 'PRO';
+                        if (stripos($product->name, 'Sony') !== false) $brand = 'SONY';
+                        elseif (stripos($product->name, 'Canon') !== false) $brand = 'CANON';
+                        elseif (stripos($product->name, 'Godox') !== false) $brand = 'GODOX';
+                        
+                        $sessionCart = session('cart', []);
+                        $isInCart = isset($sessionCart[$product->id]);
+                        $isAr = app()->getLocale() === 'ar';
+                    @endphp
+                    <div class="col">
+                        <div class="featured-pro-card selection-card workflow-card h-100 d-flex flex-column justify-content-between">
+                            {{-- Product Image with clean white background --}}
+                            <div class="featured-pro-img-box mb-2">
+                                @if(!$product->isInStock())
+                                    <span class="featured-card-oos-badge">{{ $isAr ? 'نفذت الكمية' : 'Épuisé' }}</span>
+                                @endif
+                                <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" class="w-100 h-100 d-flex align-items-center justify-content-center">
+                                    <img src="{{ $product->thumbnail }}" alt="{{ $product->name }}" loading="lazy">
+                                </a>
                             </div>
-                            <span class="reviews-count">({{ $product->reviews()->count() > 0 ? $product->reviews()->count() : 5 }})</span>
-                        </div>
-                        <div class="product-v2-price">
-                            @if($product->isOnSale())
-                                <span class="price-sale text-nowrap">{{ $product->formatted_sale_price }}</span>
-                                <span class="price-old text-nowrap">{{ $product->formatted_price }}</span>
-                            @else
-                                <span class="price-sale text-nowrap">{{ $product->formatted_price }}</span>
-                            @endif
+
+                            {{-- Product Info --}}
+                            <div class="mb-2 flex-grow-1 d-flex flex-column justify-content-between">
+                                <div>
+                                    <span class="featured-brand-chip d-none">{{ $brand }}</span>
+                                    <h3 class="featured-pro-title">
+                                        <a href="{{ route('shop.show', $product->slug ?: $product->id) }}">
+                                            {{ $product->name }}
+                                        </a>
+                                    </h3>
+                                </div>
+
+                                <div>
+                                    {{-- Price in vivid green --}}
+                                    <div class="d-flex align-items-baseline gap-2 mb-1">
+                                        @if($product->sale_price && $product->sale_price < $product->price)
+                                            <span class="fw-bold price-tag-green" style="font-size: 1.05rem;">
+                                                MAD {{ number_format($product->sale_price, 2, ',', '.') }}
+                                            </span>
+                                            <span class="text-danger text-decoration-line-through small" style="font-size: 0.78rem;">
+                                                MAD {{ number_format($product->price, 2, ',', '.') }}
+                                            </span>
+                                        @elseif($product->price && $product->price > 0)
+                                            <span class="fw-bold price-tag-green" style="font-size: 1.05rem;">
+                                                MAD {{ number_format($product->price, 2, ',', '.') }}
+                                            </span>
+                                        @else
+                                            <span class="fw-bold text-dark" style="font-size: 0.95rem;">
+                                                Sur devis
+                                            </span>
+                                        @endif
+                                    </div>
+
+                                    {{-- Stock badge --}}
+                                    <div class="d-flex align-items-center gap-1 mb-2">
+                                        @if($product->isInStock())
+                                            <span class="featured-stock-pill workflow-meta-pill">
+                                                <span class="stock-pulse-dot"></span>
+                                                <span>{{ $isAr ? 'متوفر' : 'EN STOCK' }}</span>
+                                            </span>
+                                        @else
+                                            <span class="featured-stock-pill workflow-meta-pill featured-stock-pill--out">
+                                                <i class="fas fa-times-circle text-danger" style="font-size: 10px;"></i>
+                                                <span>{{ $isAr ? 'نفذت الكمية' : 'RUPTURE DE STOCK' }}</span>
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Full-width Action Button --}}
+                            <div class="mt-auto pt-1">
+                                @if($product->isInStock())
+                                    <button type="button" 
+                                            class="btn w-100 featured-pro-btn {{ $isInCart ? 'is-in-cart' : '' }}" 
+                                            onclick="addToCart({{ $product->id }}, 1, this)"
+                                            data-product-id="{{ $product->id }}"
+                                            title="{{ $isInCart ? ($isAr ? 'في السلة' : 'Dans le panier') : ($isAr ? 'أضف إلى السلة' : 'Ajouter au panier') }}">
+                                        @if($isInCart)
+                                            <i class="fas fa-check" style="font-size: 11px;"></i>
+                                            <span>{{ $isAr ? 'في السلة' : 'Dans le panier' }}</span>
+                                        @else
+                                            <span>{{ $isAr ? 'أضف إلى السلة' : 'Ajouter au panier' }}</span>
+                                        @endif
+                                    </button>
+                                @else
+                                    <button type="button" 
+                                            class="btn w-100 featured-pro-btn featured-pro-btn--out" 
+                                            disabled 
+                                            title="{{ $isAr ? 'نفذت الكمية' : 'Rupture de stock' }}">
+                                        <i class="fas fa-ban" style="font-size: 11px;"></i>
+                                        <span>{{ $isAr ? 'نفذت الكمية' : 'Rupture de stock' }}</span>
+                                    </button>
+                                @endif
+                            </div>
                         </div>
                     </div>
-                </div>
+                @endforeach
             </div>
-            @endforeach
         </div>
 
-        <div class="text-center mt-4 mt-md-5">
-            <a href="{{ route('shop.index') }}" class="hero-btn-primary w-sm-auto">
-                <i class="fas fa-th-large me-2"></i> {{ __('View Full Catalogue') }}
-            </a>
+        {{-- Row 2: Coin Occasion (Moved under Nouvelle Arrivage - Full Row) --}}
+        <div>
+            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-primary text-white fw-bold px-2 py-1" style="font-size: 0.7rem; border-radius: 4px;">PRO</span>
+                    <h2 class="fw-bold text-dark mb-0" style="font-size: clamp(1.2rem, 2.5vw, 1.45rem); letter-spacing: -0.3px;">
+                        Coin Occasion (Reconditionné & Certifié)
+                    </h2>
+                </div>
+                <a href="{{ route('shop.index', ['category' => 'occasion']) }}" class="text-secondary text-decoration-none small fw-semibold hover-red">
+                    <span>Voir tout</span>
+                    <i class="fas fa-chevron-right ms-1" style="font-size: 10px;"></i>
+                </a>
+            </div>
+
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-2 g-md-3">
+                @foreach($occasionProducts as $product)
+                    @php
+                        $brand = 'PRO';
+                        if (stripos($product->name, 'Sony') !== false) $brand = 'SONY';
+                        elseif (stripos($product->name, 'Fujifilm') !== false) $brand = 'FUJIFILM';
+                        elseif (stripos($product->name, 'Canon') !== false) $brand = 'CANON';
+                        elseif (stripos($product->name, 'Olympus') !== false) $brand = 'OLYMPUS';
+                        
+                        $sessionCart = session('cart', []);
+                        $isInCart = isset($sessionCart[$product->id]);
+                        $isAr = app()->getLocale() === 'ar';
+                    @endphp
+                    <div class="col">
+                        <div class="featured-pro-card selection-card workflow-card h-100 d-flex flex-column justify-content-between position-relative">
+                            {{-- Blue OCCASION badge at top left --}}
+                            <div class="position-absolute top-0 start-0 m-2 z-2">
+                                <span class="badge bg-primary text-white fw-bold px-2 py-1" style="font-size: 0.65rem; letter-spacing: 0.5px; border-radius: 4px;">
+                                    OCCASION
+                                </span>
+                            </div>
+
+                            {{-- Product Image with clean white background --}}
+                            <div class="featured-pro-img-box mb-2">
+                                @if(!$product->isInStock())
+                                    <span class="featured-card-oos-badge">{{ $isAr ? 'نفذت الكمية' : 'Épuisé' }}</span>
+                                @endif
+                                <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" class="w-100 h-100 d-flex align-items-center justify-content-center">
+                                    <img src="{{ $product->thumbnail }}" alt="{{ $product->name }}" loading="lazy">
+                                </a>
+                            </div>
+
+                            {{-- Product Info --}}
+                            <div class="mb-2 flex-grow-1 d-flex flex-column justify-content-between">
+                                <div>
+                                    <span class="featured-brand-chip d-none">{{ $brand }}</span>
+                                    <h3 class="featured-pro-title">
+                                        <a href="{{ route('shop.show', $product->slug ?: $product->id) }}">
+                                            {{ $product->name }}
+                                        </a>
+                                    </h3>
+                                </div>
+
+                                <div>
+                                    {{-- Price in vivid green --}}
+                                    <div class="d-flex align-items-baseline gap-2 mb-1">
+                                        @if($product->sale_price && $product->sale_price < $product->price)
+                                            <span class="fw-bold price-tag-green" style="font-size: 1.05rem;">
+                                                MAD {{ number_format($product->sale_price, 2, ',', '.') }}
+                                            </span>
+                                            <span class="text-danger text-decoration-line-through small" style="font-size: 0.78rem;">
+                                                MAD {{ number_format($product->price, 2, ',', '.') }}
+                                            </span>
+                                        @elseif($product->price && $product->price > 0)
+                                            <span class="fw-bold price-tag-green" style="font-size: 1.05rem;">
+                                                MAD {{ number_format($product->price, 2, ',', '.') }}
+                                            </span>
+                                        @else
+                                            <span class="fw-bold text-dark" style="font-size: 0.95rem;">
+                                                Sur devis
+                                            </span>
+                                        @endif
+                                    </div>
+
+                                    {{-- Guarantee / Occasion badge --}}
+                                    <div class="d-flex align-items-center gap-1 mb-2">
+                                        @if($product->isInStock())
+                                            <span class="featured-stock-pill workflow-meta-pill" style="background: #f0fdf4; border: 1px solid #dcfce7; color: #16a34a;">
+                                                <i class="fas fa-shield-check text-success" style="font-size: 10px;"></i>
+                                                <span>GARANTI 6 MOIS</span>
+                                            </span>
+                                        @else
+                                            <span class="featured-stock-pill workflow-meta-pill featured-stock-pill--out">
+                                                <i class="fas fa-times-circle text-danger" style="font-size: 10px;"></i>
+                                                <span>{{ $isAr ? 'نفذت الكمية' : 'RUPTURE DE STOCK' }}</span>
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Full-width Action Button --}}
+                            <div class="mt-auto pt-1">
+                                @if($product->isInStock())
+                                    <button type="button" 
+                                            class="btn w-100 featured-pro-btn {{ $isInCart ? 'is-in-cart' : '' }}" 
+                                            onclick="addToCart({{ $product->id }}, 1, this)"
+                                            data-product-id="{{ $product->id }}"
+                                            title="{{ $isInCart ? ($isAr ? 'في السلة' : 'Dans le panier') : ($isAr ? 'أضف إلى السلة' : 'Ajouter au panier') }}">
+                                        @if($isInCart)
+                                            <i class="fas fa-check" style="font-size: 11px;"></i>
+                                            <span>{{ $isAr ? 'في السلة' : 'Dans le panier' }}</span>
+                                        @else
+                                            <span>{{ $isAr ? 'أضف إلى السلة' : 'Ajouter au panier' }}</span>
+                                        @endif
+                                    </button>
+                                @else
+                                    <button type="button" 
+                                            class="btn w-100 featured-pro-btn featured-pro-btn--out" 
+                                            disabled 
+                                            title="{{ $isAr ? 'نفذت الكمية' : 'Rupture de stock' }}">
+                                        <i class="fas fa-ban" style="font-size: 11px;"></i>
+                                        <span>{{ $isAr ? 'نفذت الكمية' : 'Rupture de stock' }}</span>
+                                    </button>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
         </div>
     </div>
 </section>
 
-{{-- PROMO CTA --}}
-<section class="promo-cta-section">
-    <div class="container">
-        <div class="promo-cta-card">
-            <div class="row align-items-center">
-                <div class="col-lg-7">
-                    <span class="section-eyebrow-cine"><i class="fas fa-headset"></i> {{ __('Support & Studio Config') }}</span>
-                    <h2 class="promo-cta-title">{{ __('Planning a shoot or video project?') }}</h2>
-                    <p class="promo-cta-desc">{{ __('Our technicians advise you...') }}</p>
-                </div>
-                <div class="col-lg-5 text-lg-end mt-4 mt-lg-0">
-                    <div class="d-flex flex-column flex-sm-row justify-content-lg-end gap-2">
-                        <a href="tel:{{ setting('company_phone', '+212661987654') }}" class="btn-hero-shop">
-                            <i class="fas fa-phone-alt"></i> {{ __('Call an Expert') }}
-                        </a>
-                        <a href="mailto:{{ setting('company_email', 'contact@lumina-optics.ma') }}" class="btn-hero-outline">
-                            <i class="fas fa-envelope"></i> {{ __('Request a Quote') }}
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
-{{-- SERVICES --}}
-<section class="section-py">
+{{-- =========================================================================
+     5. DOUBLE BANNERS (Microphones Sound + Studio Lighting)
+     ========================================================================= --}}
+<section class="double-banners-section py-4">
     <div class="container">
-        <div class="text-center mb-5">
-            <span class="section-eyebrow-cine"><i class="fas fa-award"></i> {{ __('Our Commitments') }}</span>
-            <h2 class="section-title">
-                @if(setting('app_name') && setting('app_name') !== 'Notre Boutique' && setting('app_name') !== 'Notre Showroom' && setting('app_name') !== 'Speed Platform')
-                    {{ __('Why Choose') }} {{ setting('app_name') }}
-                @else
-                    {{ __('Why Choose Our Store') }}
-                @endif
-            </h2>
-            <p class="section-desc">{{ __('A service designed by image professionals') }}</p>
-        </div>
         <div class="row g-4">
-            @php
-            $cameraServices = [
-                ['icon' => 'fa-certificate',  'title' => __('100% Official Equipment'),   'desc' => __('New sealed manufacturer-certified products with 2-year legal warranty.')],
-                ['icon' => 'fa-truck-fast',   'title' => __('Express Morocco Delivery'),   'desc' => __('Secure insured shipping 24h Casa/Rabat, 48h all Morocco.')],
-                ['icon' => 'fa-screwdriver-wrench', 'title' => __('Workshop & Rig Setup'),   'desc' => __('Gimbal balancing, firmware updates and lens calibration included.')],
-                ['icon' => 'fa-file-invoice-dollar', 'title' => __('Billing & Pro Quotes'), 'desc' => __('ICE quotes and invoices for companies and production houses.')],
-            ];
-            @endphp
-            @foreach($cameraServices as $svc)
-            <div class="col-6 col-md-3">
-                <div class="service-card text-center">
-                    <div class="service-icon"><i class="fas {{ $svc['icon'] }}"></i></div>
-                    <h5 class="service-title">{{ $svc['title'] }}</h5>
-                    <p class="service-desc">{{ $svc['desc'] }}</p>
+            {{-- Left Banner: Microphones --}}
+            <div class="col-md-6">
+                <div class="banner-box position-relative p-4 p-md-5 d-flex flex-column justify-content-center align-items-start" 
+                     style="background: #0b0f19 url('{{ asset('images/camera/banner_mic_sound.jpg') }}') center/cover no-repeat;">
+                    <div class="banner-box-overlay banner-mic-overlay"></div>
+                    <div class="position-relative z-2">
+                        <span class="badge text-white px-2 py-1 mb-2 d-inline-block" style="background: rgba(255,255,255,0.14); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2); font-size: 0.68rem; letter-spacing: 0.8px;">
+                            PRO AUDIO & PODCAST
+                        </span>
+                        <h3 class="fw-bold text-white mb-2" style="font-size: 1.45rem; line-height: 1.35; max-width: 360px;">
+                            Élevez Votre Son : Microphones de Qualité pour Tous Vos Besoins
+                        </h3>
+                        <p class="text-white-50 small mb-3 d-none d-sm-block" style="max-width: 340px; font-size: 0.82rem;">
+                            Micros canon, HF cravate & enregistreurs 32-bit float pour tournages exigeants.
+                        </p>
+                        <span class="banner-pill-btn">
+                            <span>Explorer la Gamme Audio</span>
+                            <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
+                        </span>
+                    </div>
+                    <a href="{{ route('shop.index', ['category' => 'materiel-de-podcast']) }}" class="stretched-link" aria-label="Microphones"></a>
                 </div>
             </div>
-            @endforeach
+
+            {{-- Right Banner: Lighting --}}
+            <div class="col-md-6">
+                <div class="banner-box position-relative p-4 p-md-5 d-flex flex-column justify-content-center align-items-start" 
+                     style="background: #0b0f19 url('{{ asset('images/camera/banner_studio_lighting.jpg') }}') center/cover no-repeat;">
+                    <div class="banner-box-overlay banner-light-overlay"></div>
+                    <div class="position-relative z-2">
+                        <span class="badge text-white px-2 py-1 mb-2 d-inline-block" style="background: rgba(255,255,255,0.14); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2); font-size: 0.68rem; letter-spacing: 0.8px;">
+                            BEST PRODUCTS • STUDIO LIGHTING
+                        </span>
+                        <h3 class="fw-bold text-white mb-2" style="font-size: 1.45rem; line-height: 1.35; max-width: 360px;">
+                            Tout le matériel nécessaire pour votre éclairage.
+                        </h3>
+                        <p class="text-white-50 small mb-3 d-none d-sm-block" style="max-width: 340px; font-size: 0.82rem;">
+                            Flashes haute puissance Godox AD, projecteurs continus LED et softboxes paraboliques.
+                        </p>
+                        <span class="banner-pill-btn">
+                            <span>Explorer l'Éclairage Studio</span>
+                            <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
+                        </span>
+                    </div>
+                    <a href="{{ route('shop.index', ['category' => 'eclairage-studio']) }}" class="stretched-link" aria-label="Éclairage Studio"></a>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-{{-- WHATSAPP --}}
-@php
-    $waNumber = setting('social_whatsapp', '+212661987654');
-    $waLink = $waNumber ? 'https://wa.me/' . preg_replace('/[^0-9]/', '', $waNumber) : '';
-    $waText = app()->getLocale() === 'ar'
-        ? urlencode('مرحباً، أنا مهتم بمعداتكم الصوتية البصرية.')
-        : urlencode('Bonjour, je suis intéressé par vos caméras et matériel audiovisuel.');
-@endphp
 
-@if($waLink)
-<a href="{{ $waLink }}?text={{ $waText }}"
-   class="whatsapp-float"
-   target="_blank"
-   rel="noopener noreferrer"
-   title="{{ __('Contact Us') }}">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-    </svg>
-</a>
-@endif
+{{-- =========================================================================
+     6. FINANCEMENTS PUBLICS & PROGRAMMES DE L'ÉTAT (INDH, FORSA, COOPÉRATIVES)
+     ========================================================================= --}}
+<section class="state-funding-section py-4">
+    <div class="container">
+        <div class="state-funding-wrapper">
+            {{-- Header --}}
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4 pb-3 border-bottom">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="selection-accent-badge"></span>
+                        <span class="badge text-white fw-bold px-2 py-1" style="background: #0f172a; font-size: 0.70rem; border-radius: 4px; letter-spacing: 0.4px;">
+                            <i class="fas fa-landmark text-danger me-1"></i>PROGRAMMES ÉTAT & SUBVENTIONS
+                        </span>
+                        <span class="badge text-white fw-bold px-2 py-1" style="background: #16a34a; font-size: 0.70rem; border-radius: 4px;">
+                            <i class="fas fa-check-circle me-1"></i>FOURNISSEUR AGRÉÉ MAROC
+                        </span>
+                    </div>
+
+                    <h2 class="fw-bold text-dark mb-1" style="font-size: clamp(1.25rem, 2.8vw, 1.55rem); letter-spacing: -0.4px;">
+                        Bénéficiaires de Financements Publics (INDH & Projets Soutenus)
+                    </h2>
+                    <p class="text-secondary mb-0" style="font-size: 0.90rem;">
+                        Obtenez votre <strong>devis proforma officiel conforme</strong> (avec cachet, ICE et TVA 20%) en <strong>3 étapes simples, sans aucun paiement en ligne</strong> :
+                    </p>
+                </div>
+
+                {{-- Direct WhatsApp Button in Header --}}
+                <div class="flex-shrink-0">
+                    <a href="https://wa.me/212629035777?text=Bonjour%2C%20je%20suis%20b%C3%A9n%C3%A9ficiaire%20d%27un%20financement%20%28INDH%20%2F%20Programme%20%C3%89tat%29%20et%20je%20souhaite%20obtenir%20un%20devis%20proforma%20pour%20mon%20projet." 
+                       target="_blank" 
+                       class="btn text-white fw-bold px-3 py-2 d-inline-flex align-items-center gap-2 shadow-sm" 
+                       style="background: #25d366; border-radius: 8px; font-size: 0.84rem;">
+                        <i class="fab fa-whatsapp" style="font-size: 16px;"></i>
+                        <span>Conseiller INDH WhatsApp</span>
+                    </a>
+                </div>
+            </div>
+
+            {{-- 3-Step Connected Visual Cards --}}
+            <div class="row row-cols-1 row-cols-md-3 g-3 mb-4">
+                {{-- Step 1 : Sélection du matériel --}}
+                <div class="col">
+                    <div class="indh-step-card-pro">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="indh-step-badge-num">01</div>
+                            <span class="badge fw-bold" style="background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; font-size: 0.70rem; letter-spacing: 0.3px; border-radius: 4px; padding: 4px 8px;">
+                                ÉTAPE 1 • SÉLECTION
+                            </span>
+                        </div>
+                        
+                        <div class="indh-step-icon-slot">
+                            <i class="fas fa-cart-shopping"></i>
+                        </div>
+                        
+                        <h3 class="fw-bold text-dark mb-1" style="font-size: 1.12rem; letter-spacing: -0.2px;">
+                            1. Composez Votre Panier
+                        </h3>
+                        
+                        <p class="text-secondary small mb-3" style="font-size: 0.84rem; line-height: 1.5;">
+                            Ajoutez librement au panier les caméras, micros, drones ou éclairages selon le budget alloué à votre subvention.
+                        </p>
+
+                        <div class="indh-feature-pill">
+                            <i class="fas fa-check text-danger me-1"></i>Matériel 100% Neuf & Garanti constructeur
+                        </div>
+
+                        <div class="pt-2 border-top mt-auto">
+                            <span class="text-muted small" style="font-size: 0.75rem;">
+                                <i class="fas fa-tag text-danger me-1"></i>Prix affichés en TTC (TVA 20% incluse)
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Step 2 : Commande sans paiement --}}
+                <div class="col">
+                    <div class="indh-step-card-pro">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="indh-step-badge-num">02</div>
+                            <span class="badge fw-bold" style="background: #fef9c3; color: #854d0e; border: 1px solid #fde047; font-size: 0.70rem; letter-spacing: 0.3px; border-radius: 4px; padding: 4px 8px;">
+                                ÉTAPE 2 • AUCUN PAIEMENT (0 DH)
+                            </span>
+                        </div>
+                        
+                        <div class="indh-step-icon-slot">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                        
+                        <h3 class="fw-bold text-dark mb-1" style="font-size: 1.12rem; letter-spacing: -0.2px;">
+                            2. Validez sans Payer (0 DH)
+                        </h3>
+                        
+                        <p class="text-secondary small mb-3" style="font-size: 0.84rem; line-height: 1.5;">
+                            Validez votre commande sur le site. <strong>Aucun paiement bancaire n'est requis</strong> pour enregistrer votre liste et obtenir un N° de dossier.
+                        </p>
+
+                        <div class="indh-feature-pill highlight-zero">
+                            <i class="fas fa-shield-halved text-success me-1"></i>0,00 DH en ligne • N° de dossier immédiat
+                        </div>
+
+                        <div class="pt-2 border-top mt-auto">
+                            <span class="text-muted small" style="font-size: 0.75rem;">
+                                <i class="fas fa-bolt text-warning me-1"></i>Réservation immédiate du matériel
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Step 3 : Support & Devis proforma (Destination Step) --}}
+                <div class="col">
+                    <div class="indh-step-card-pro step-destination">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="indh-step-badge-num">03</div>
+                            <span class="badge fw-bold" style="background: #fef2f2; color: #c8102e; border: 1px solid #fee2e2; font-size: 0.70rem; letter-spacing: 0.3px; border-radius: 4px; padding: 4px 8px;">
+                                ÉTAPE 3 • DEVIS SOUS 2H CHRONO
+                            </span>
+                        </div>
+                        
+                        <div class="indh-step-icon-slot">
+                            <i class="fas fa-stamp"></i>
+                        </div>
+                        
+                        <h3 class="fw-bold text-dark mb-1" style="font-size: 1.12rem; letter-spacing: -0.2px;">
+                            3. Recevez le Devis Cacheté
+                        </h3>
+                        
+                        <p class="text-secondary small mb-3" style="font-size: 0.84rem; line-height: 1.5;">
+                            Envoyez votre N° de dossier par WhatsApp. Nous vous délivrons votre <strong>devis proforma officiel avec cachet et TVA 20%</strong> sous 2h.
+                        </p>
+
+                        <div class="indh-feature-pill highlight-proforma">
+                            <i class="fas fa-certificate text-danger me-1"></i>Cachet Officiel Wina Shop • ICE • RC
+                        </div>
+
+                        <div class="pt-2 border-top mt-auto">
+                            <a href="https://wa.me/212629035777?text=Bonjour%2C%20j%27ai%20enregistr%C3%A9%20mon%20panier%20sur%20le%20site%20pour%20mon%20projet%20INDH%20%2F%20Financement%20Public.%20Voici%20mon%20num%C3%A9ro%20de%20dossier%20pour%20recevoir%20le%20devis%20proforma%20officiel%20cachet%C3%A9." 
+                               target="_blank" 
+                               class="btn text-white fw-bold w-100 py-2 d-inline-flex align-items-center justify-content-center gap-2 shadow-sm" 
+                               style="background: #25d366; border-radius: 8px; font-size: 0.80rem; box-shadow: 0 4px 12px rgba(37,211,102,0.3);">
+                                <i class="fab fa-whatsapp" style="font-size: 16px;"></i>
+                                <span>Envoyer mon N° par WhatsApp</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- 4 Legal & Institutional Compliance Guarantees (2x2 on mobile, 4 in row on desktop) --}}
+            <div class="row row-cols-2 row-cols-lg-4 g-2 mb-4">
+                <div class="col">
+                    <div class="indh-guarantee-pill">
+                        <div class="indh-guarantee-icon">
+                            <i class="fas fa-file-invoice text-danger"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold text-dark mb-0" style="font-size: 0.84rem;">Mentions Légales 100%</h4>
+                            <span class="text-muted small" style="font-size: 0.72rem;">ICE, RC, IF, Patente & TVA 20%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="indh-guarantee-pill">
+                        <div class="indh-guarantee-icon">
+                            <i class="fas fa-clock text-primary"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold text-dark mb-0" style="font-size: 0.84rem;">Édition sous 2 Heures</h4>
+                            <span class="text-muted small" style="font-size: 0.72rem;">Respect des délais de commission</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="indh-guarantee-pill">
+                        <div class="indh-guarantee-icon">
+                            <i class="fas fa-shield-halved text-success"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold text-dark mb-0" style="font-size: 0.84rem;">Matériel 100% Neuf</h4>
+                            <span class="text-muted small" style="font-size: 0.72rem;">Garantie constructeur & SAV Maroc</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="indh-guarantee-pill">
+                        <div class="indh-guarantee-icon">
+                            <i class="fas fa-user-tie text-warning"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold text-dark mb-0" style="font-size: 0.84rem;">Conseiller Pro Dédié</h4>
+                            <span class="text-muted small" style="font-size: 0.72rem;">Aide au calibrage de votre budget</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Pro Action & Support Bar --}}
+            <div class="indh-banner-cta d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                <div class="position-relative z-2">
+                    <h3 class="fw-bold text-white mb-1" style="font-size: 1.25rem;">
+                        Besoin d'un devis urgent pour votre dossier de subvention ?
+                    </h3>
+                    <p class="text-white-50 mb-0 small" style="font-size: 0.84rem;">
+                        Cellule INDH & Projets publics : assistance directe par téléphone au <strong class="text-white">06 29 03 57 77</strong> ou par WhatsApp.
+                    </p>
+                </div>
+                <div class="d-flex flex-wrap align-items-center gap-2 position-relative z-2 flex-shrink-0">
+                    <a href="{{ route('shop.index') }}" 
+                       class="btn btn-light fw-bold px-3 py-2 text-nowrap d-inline-flex align-items-center gap-2 shadow-sm" 
+                       style="border-radius: 10px; font-size: 0.84rem; min-height: 40px;">
+                        <i class="fas fa-cart-plus text-danger" style="font-size: 12px;"></i>
+                        <span>Sélectionner mon matériel</span>
+                    </a>
+                    <a href="https://wa.me/212629035777?text=Bonjour%2C%20je%20suis%20b%C3%A9n%C3%A9ficiaire%20d%27un%20financement%20%28INDH%20%2F%20Programme%20%C3%89tat%29%20et%20je%20souhaite%20obtenir%20un%20devis%20proforma%20pour%20mon%20projet." 
+                       target="_blank" 
+                       class="btn text-white fw-bold px-3 py-2 text-nowrap d-inline-flex align-items-center gap-2 shadow-sm" 
+                       style="background: #25d366; border-radius: 10px; font-size: 0.84rem; min-height: 40px; box-shadow: 0 4px 14px rgba(37,211,102,0.4);">
+                        <i class="fab fa-whatsapp" style="font-size: 16px;"></i>
+                        <span>Demander mon Devis Proforma</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{-- =========================================================================
+     7. RÉASSURANCE & AVIS CLIENTS VÉRIFIÉS
+     ========================================================================= --}}
+<section class="trust-and-reviews-section py-4">
+    <div class="container">
+        {{-- 4 Pillars of Reassurance (2x2 on mobile, 4 in row on desktop) --}}
+        <div class="row row-cols-2 row-cols-lg-4 g-2 g-md-3 mb-4">
+            <div class="col">
+                <div class="reassurance-box">
+                    <div class="reassurance-icon icon-red">
+                        <i class="fas fa-truck-fast"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">Livraison Express 24-48h</h4>
+                        <p class="text-secondary mb-0" style="font-size: 0.8rem; line-height: 1.45;">
+                            Expédition rapide et sécurisée avec emballage renforcé anti-chocs dans tout le Maroc.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="reassurance-box">
+                    <div class="reassurance-icon icon-blue">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">100% Neuf & Scellé</h4>
+                        <p class="text-secondary mb-0" style="font-size: 0.8rem; line-height: 1.45;">
+                            Matériel d'origine constructeur sous garantie officielle avec SAV réactif à Casablanca.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="reassurance-box">
+                    <div class="reassurance-icon icon-amber">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">Conseil Technique Pro</h4>
+                        <p class="text-secondary mb-0" style="font-size: 0.8rem; line-height: 1.45;">
+                            Une équipe de vidéastes et photographes vous aide à choisir la configuration idéale.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="reassurance-box">
+                    <div class="reassurance-icon icon-green">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">Paiement à la Livraison</h4>
+                        <p class="text-secondary mb-0" style="font-size: 0.8rem; line-height: 1.45;">
+                            Payez en toute sérénité à la réception de votre commande ou en ligne par carte bancaire.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Verified Customer Reviews --}}
+        <div class="bg-white p-3 p-md-5 rounded-4 border shadow-sm">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                <div>
+                    <h3 class="fw-bold text-dark mb-1" style="font-size: clamp(1.2rem, 2.8vw, 1.45rem); letter-spacing: -0.3px;">
+                        La Confiance des Professionnels de l'Image
+                    </h3>
+                    <p class="text-secondary mb-0" style="font-size: 0.88rem;">
+                        Découvrez les retours d'expérience de nos clients photographes, vidéastes et créateurs au Maroc.
+                    </p>
+                </div>
+                <div class="d-flex align-items-center gap-2 px-3 py-2 bg-light rounded-pill border">
+                    <div class="text-warning">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <span class="fw-bold text-dark" style="font-size: 0.95rem;">4.9 / 5</span>
+                    <span class="text-muted small">(Plus de 200 avis vérifiés)</span>
+                </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-3 g-3">
+                <div class="col">
+                    <div class="client-review-box">
+                        <div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <div class="text-warning small">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                </div>
+                                <span class="badge text-success px-2 py-1" style="background: #dcfce7; border-radius: 999px; font-size: 0.68rem; font-weight: 700;">
+                                    <i class="fas fa-check-circle me-1"></i> Achat Vérifié
+                                </span>
+                            </div>
+                            <p class="client-review-text mb-0" style="font-size: 0.85rem; line-height: 1.55; color: #334155;">
+                                "Livraison en 24h chrono à Marrakech pour ma Sony FX3A. Matériel impeccable, scellé d'origine. Les conseillers Wina Shop m'ont même guidé pour le choix de la poignée XLR."
+                            </p>
+                        </div>
+                        <div class="d-flex align-items-center gap-3 mt-3 pt-3 border-top">
+                            <div class="client-avatar-initials">YB</div>
+                            <div>
+                                <h5 class="fw-bold text-dark mb-0" style="font-size: 0.85rem;">Youssef B.</h5>
+                                <span class="text-muted small" style="font-size: 0.74rem;">Réalisateur & Cadreur • Marrakech</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="client-review-box">
+                        <div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <div class="text-warning small">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                </div>
+                                <span class="badge text-success px-2 py-1" style="background: #dcfce7; border-radius: 999px; font-size: 0.68rem; font-weight: 700;">
+                                    <i class="fas fa-check-circle me-1"></i> Achat Vérifié
+                                </span>
+                            </div>
+                            <p class="client-review-text mb-0" style="font-size: 0.85rem; line-height: 1.55; color: #334155;">
+                                "Pack DJI Mic 2 reçu à Casablanca le jour même. Une réactivité exemplaire au Maroc pour du matériel de son professionnel. Très satisfaite du service !"
+                            </p>
+                        </div>
+                        <div class="d-flex align-items-center gap-3 mt-3 pt-3 border-top">
+                            <div class="client-avatar-initials" style="background: #c8102e;">SM</div>
+                            <div>
+                                <h5 class="fw-bold text-dark mb-0" style="font-size: 0.85rem;">Sara M.</h5>
+                                <span class="text-muted small" style="font-size: 0.74rem;">Créatrice de Contenu • Casablanca</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="client-review-box">
+                        <div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <div class="text-warning small">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                </div>
+                                <span class="badge text-success px-2 py-1" style="background: #dcfce7; border-radius: 999px; font-size: 0.68rem; font-weight: 700;">
+                                    <i class="fas fa-check-circle me-1"></i> Achat Vérifié
+                                </span>
+                            </div>
+                            <p class="client-review-text mb-0" style="font-size: 0.85rem; line-height: 1.55; color: #334155;">
+                                "Le plus grand choix de flashs Godox et d'accessoires SmallRig avec des tarifs justes et la disponibilité immédiate. Le support technique est toujours au rendez-vous."
+                            </p>
+                        </div>
+                        <div class="d-flex align-items-center gap-3 mt-3 pt-3 border-top">
+                            <div class="client-avatar-initials" style="background: #0284c7;">KT</div>
+                            <div>
+                                <h5 class="fw-bold text-dark mb-0" style="font-size: 0.85rem;">Karim T.</h5>
+                                <span class="text-muted small" style="font-size: 0.74rem;">Photographe Studio • Rabat</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+{{-- =========================================================================
+     8. NEWSLETTER PRIVILÈGE & CONSEILS D'EXPERTS
+     ========================================================================= --}}
+<section class="newsletter-pro-section py-4 mb-5">
+    <div class="container">
+        <div class="newsletter-banner position-relative">
+            <div class="newsletter-glow"></div>
+            <div class="newsletter-glow-secondary"></div>
+            <div class="row align-items-center position-relative z-2 g-4">
+                <div class="col-lg-7">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge text-white fw-bold px-3 py-1" 
+                              style="background: #c8102e; border-radius: 999px; font-size: 0.72rem; letter-spacing: 0.6px;">
+                            COMMUNAUTÉ PRO
+                        </span>
+                        <span class="text-white-50 small">Restez à la pointe de l'audiovisuel</span>
+                    </div>
+                    <h3 class="fw-bold text-white mb-2" style="font-size: clamp(1.3rem, 3vw, 1.75rem); letter-spacing: -0.4px;">
+                        Rejoignez le Cercle Privilège Wina Shop
+                    </h3>
+                    <p class="text-white-50 mb-0" style="font-size: 0.9rem; max-width: 540px; line-height: 1.55;">
+                        Recevez nos alertes arrivages, bancs d'essai exclusifs, tutoriels d'étalonnage et offres privées réservées aux professionnels au Maroc.
+                    </p>
+                </div>
+                <div class="col-lg-5">
+                    <form action="{{ route('contact') }}" method="GET" class="d-flex flex-column flex-sm-row gap-2">
+                        <div class="position-relative flex-grow-1">
+                            <input type="email" 
+                                   name="newsletter_email" 
+                                   placeholder="Votre adresse email professionnelle..." 
+                                   class="form-control px-3 py-2 border-0 bg-white" 
+                                   style="border-radius: 10px; font-size: 0.88rem; min-height: 48px;" 
+                                   required>
+                        </div>
+                        <button type="submit" 
+                                class="btn text-white fw-bold px-4 py-2 text-nowrap d-inline-flex align-items-center justify-content-center gap-2 shadow" 
+                                style="background: linear-gradient(135deg, #c8102e, #a80c26); border-radius: 10px; font-size: 0.88rem; min-height: 48px;">
+                            <span>S'inscrire</span>
+                            <i class="fas fa-paper-plane" style="font-size: 11px;"></i>
+                        </button>
+                    </form>
+                    <div class="text-white-50 small mt-2 d-flex align-items-center gap-2" style="font-size: 0.75rem;">
+                        <i class="fas fa-lock text-white-50"></i>
+                        <span>Pas de spam. Désinscription possible à tout moment en 1 clic.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 @endsection
 
 @push('scripts')
 <script>
-const heroSwiper = new Swiper('.hero-swiper', {
-    loop: true,
-    autoplay: { delay: 5500, disableOnInteraction: false },
-    effect: 'fade',
-    fadeEffect: { crossFade: true },
-    speed: 1000,
-    pagination: { el: '.hero-dots', clickable: true }
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof Swiper !== 'undefined') {
+        // 1. Hero Main Banner Swiper Slider (Left Box)
+        const heroSwiper = new Swiper('.hero-main-swiper', {
+            slidesPerView: 1,
+            loop: true,
+            speed: 750,
+            effect: 'fade',
+            fadeEffect: {
+                crossFade: true
+            },
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+            },
+            grabCursor: true,
+            pagination: {
+                el: '.hero-dash-pagination',
+                clickable: true,
+                bulletClass: 'hero-dash-item',
+                bulletActiveClass: 'active',
+                renderBullet: function(index, className) {
+                    return '<button type="button" class="' + className + '" aria-label="Diapositive ' + (index + 1) + '"></button>';
+                }
+            },
+            navigation: {
+                prevEl: '.hero-swiper-prev',
+                nextEl: '.hero-swiper-next',
+            },
+            keyboard: {
+                enabled: true,
+                onlyInViewport: true,
+            },
+        });
+
+        // 2. Popular Categories Swiper Slider
+        const catSwiper = new Swiper('.popular-cats-swiper', {
+            slidesPerView: 3,
+            slidesPerGroup: 3,
+            spaceBetween: 8,
+            watchSlidesProgress: true,
+            grabCursor: true,
+            rewind: true,
+            speed: 500,
+            navigation: {
+                prevEl: '#catSwiperPrev',
+                nextEl: '#catSwiperNext',
+            },
+            pagination: {
+                el: '.popular-cats-pagination',
+                clickable: true,
+                bulletClass: 'cat-swiper-dot',
+                bulletActiveClass: 'cat-swiper-dot-active',
+            },
+            breakpoints: {
+                480: {
+                    slidesPerView: 3,
+                    slidesPerGroup: 3,
+                    spaceBetween: 10,
+                },
+                576: {
+                    slidesPerView: 4,
+                    slidesPerGroup: 4,
+                    spaceBetween: 10,
+                },
+                768: {
+                    slidesPerView: 5,
+                    slidesPerGroup: 5,
+                    spaceBetween: 12,
+                },
+                992: {
+                    slidesPerView: 6,
+                    slidesPerGroup: 6,
+                    spaceBetween: 14,
+                },
+                1200: {
+                    slidesPerView: 8,
+                    slidesPerGroup: 8,
+                    spaceBetween: 16,
+                },
+            },
+            keyboard: {
+                enabled: true,
+                onlyInViewport: true,
+            },
+        });
+    }
 });
-
-function addToCart(productId) {
-    fetch(`{{ url('/cart/add') }}/${productId}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({ quantity: 1 })
-    })
-    .then(async response => {
-        const isJson = response.headers.get('content-type')?.includes('application/json');
-        const data = isJson ? await response.json() : null;
-        if (!response.ok) throw new Error((data && data.message) || `Error: ${response.status}`);
-
-        ['header-cart-count', 'header-cart-count-mobile'].forEach(id => {
-            const countEl = document.getElementById(id);
-            if(countEl && data.cartCount !== undefined) countEl.textContent = data.cartCount;
-        });
-
-        if (typeof window.updateFloatingCheckout === 'function') {
-            window.updateFloatingCheckout(data.cartCount, data.cartTotal);
-        }
-
-        if (typeof refreshMiniCart === 'function') refreshMiniCart();
-
-        Swal.fire({
-            toast: true, position: 'top-end', icon: 'success',
-            title: '{{ __("Equipment added to cart!") }}',
-            showConfirmButton: false, timer: 2500,
-            background: '#ffffff', color: '#0f172a', iconColor: '#dc2626'
-        });
-    })
-    .catch(error => {
-        Swal.fire({
-            toast: true, position: 'top-end', icon: 'error',
-            title: error.message || '{{ __("Error") }}',
-            showConfirmButton: false, timer: 3000,
-            background: '#ffffff', color: '#0f172a', iconColor: '#dc2626'
-        });
-    });
-}
 </script>
 @endpush

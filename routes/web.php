@@ -58,6 +58,7 @@ Route::middleware('auth')->group(function () {
         Route::post('products/bulk-upgrade-4k', [\App\Http\Controllers\ProductController::class, 'bulkUpgrade4k'])->name('products.bulk-upgrade-4k');
         Route::get('products/{product}/search-4k-images', [\App\Http\Controllers\ProductController::class, 'search4kImages'])->name('products.search-4k-images');
         Route::post('products/{product}/apply-4k-image', [\App\Http\Controllers\ProductController::class, 'apply4kImage'])->name('products.apply-4k-image');
+        Route::post('products/upload-editor-image', [\App\Http\Controllers\ProductController::class, 'uploadEditorImage'])->name('products.upload-editor-image');
         Route::resource('products', \App\Http\Controllers\ProductController::class);
     });
     
@@ -177,6 +178,10 @@ Route::middleware('auth')->group(function () {
         // Custom Code Manager
         Route::resource('custom-codes', \App\Http\Controllers\CustomCodeController::class);
     });
+
+    // Hero Slider & Banners Management
+    Route::post('banners/position/{position}', [\App\Http\Controllers\BannerController::class, 'savePosition'])->name('banners.save-position');
+    Route::resource('banners', \App\Http\Controllers\BannerController::class);
 
     // Page & Navigation Management
     Route::middleware('permission:manage_content')->group(function () {

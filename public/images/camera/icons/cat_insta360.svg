@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="48" height="48" fill="#111111">
+  <!-- Insta360 camera eye icon -->
+  <circle cx="32" cy="24" r="14" fill="none" stroke="#111111" stroke-width="3.5"/>
+  <circle cx="32" cy="24" r="7" fill="#111111"/>
+  <circle cx="34" cy="22" r="2" fill="#ffffff"/>
+  <!-- Text: Insta360 -->
+  <text x="32" y="52" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="9" text-anchor="middle" fill="#111111" letter-spacing="-0.3">Insta360</text>
+</svg>

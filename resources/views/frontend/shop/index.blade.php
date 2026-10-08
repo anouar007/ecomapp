@@ -3,14 +3,14 @@
 @php
     $activeCategory = $categories->where('slug', request('category'))->first();
     $pageTitle = $activeCategory
-        ? ($activeCategory->name . ' — ' . setting('app_name', 'Full Frame House'))
-        : (request('q') ? 'Résultats pour "' . request('q') . '" — ' . setting('app_name', 'Full Frame House') : 'Catalogue Matériel Cinéma & Caméras — ' . setting('app_name', 'Full Frame House'));
+        ? ($activeCategory->name . ' — ' . setting('app_name', 'WINA SHOP'))
+        : (request('q') ? 'Résultats pour "' . request('q') . '" — ' . setting('app_name', 'WINA SHOP') : 'Catalogue Matériel Photo & Vidéo — ' . setting('app_name', 'WINA SHOP'));
     $pageDescription = $activeCategory
-        ? ('Découvrez notre gamme de ' . $activeCategory->name . '. Garantie constructeur 2 ans, showroom à Casablanca et livraison express partout au Maroc.')
-        : 'Parcourez notre catalogue complet de caméras cinéma, boîtiers hybrides, objectifs prime, stabilisateurs et éclairage studio au Maroc.';
+        ? ('Découvrez notre gamme de ' . $activeCategory->name . '. Garantie constructeur, showroom à Casablanca et livraison express partout au Maroc.')
+        : 'Parcourez notre catalogue complet de matériel photo et vidéo, caméras, drones DJI, objectifs, stabilisateurs et éclairage studio au Maroc.';
     $pageKeywords = $activeCategory
-        ? ($activeCategory->name . ', ' . setting('app_name', 'Full Frame House') . ', acheter ' . $activeCategory->name . ' Maroc, prix ' . $activeCategory->name)
-        : setting('app_name', 'Full Frame House') . ', caméras cinéma, objectifs photo, stabilisateurs, éclairage vidéo, Casablanca, Maroc';
+        ? ($activeCategory->name . ', ' . setting('app_name', 'WINA SHOP') . ', acheter ' . $activeCategory->name . ' Maroc, prix ' . $activeCategory->name)
+        : setting('app_name', 'WINA SHOP') . ', caméras cinéma, objectifs photo, stabilisateurs DJI, éclairage vidéo, Casablanca, Maroc';
 @endphp
 
 @section('meta_title', $pageTitle)
@@ -729,54 +729,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
-function addToCart(id) {
-    const btns = document.querySelectorAll(`button[onclick*="addToCart(${id})"]`);
-    const origHtmls = [];
-    btns.forEach((b, i) => {
-        origHtmls[i] = b.innerHTML;
-        b.disabled = true;
-        b.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-    });
-
-    fetch(`{{ url('/cart/add') }}/${id}`, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({ quantity: 1 })
-    })
-    .then(r => r.json())
-    .then(data => {
-        btns.forEach((b, i) => {
-            b.disabled = false;
-            b.innerHTML = '<i class="fas fa-check text-white"></i>';
-            setTimeout(() => { b.innerHTML = origHtmls[i]; }, 1600);
-        });
-        if (data.success) {
-            Swal.fire({ toast:true, position:'top-end', icon:'success',
-                title:'{{ __('Added to cart!') }}',
-                showConfirmButton:false, timer:2000,
-                background:'#0f172a', color:'#fff' });
-            const badgeDesktop = document.getElementById('header-cart-count');
-            const badgeMobile = document.getElementById('header-cart-count-mobile');
-            if (badgeDesktop && data.cartCount !== undefined) badgeDesktop.innerText = data.cartCount;
-            if (badgeMobile && data.cartCount !== undefined) badgeMobile.innerText = data.cartCount;
-            if (typeof window.updateFloatingCheckout === 'function') {
-                window.updateFloatingCheckout(data.cartCount, data.cartTotal);
-            }
-            if (typeof refreshMiniCart === 'function') refreshMiniCart();
-        }
-    })
-    .catch(err => {
-        console.error(err);
-        btns.forEach((b, i) => {
-            b.disabled = false;
-            b.innerHTML = origHtmls[i];
-        });
-    });
-}
 </script>
 @endpush

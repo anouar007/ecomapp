@@ -1,7 +1,7 @@
 @extends('layouts.frontend')
 
-@section('meta_title', $product->name . ' — ' . setting('app_name', 'Full Frame House') . ' Maroc')
-@section('meta_description', Str::limit(strip_tags($product->description), 155) ?: $product->name . ' — ' . setting('app_name', 'Full Frame House'))
+@section('meta_title', $product->name . ' — ' . setting('app_name', 'WINA SHOP') . ' Maroc')
+@section('meta_description', Str::limit(strip_tags($product->description), 155) ?: $product->name . ' — ' . setting('app_name', 'WINA SHOP'))
 @section('meta_type', 'product')
 @section('meta_image', $product->thumbnail)
 
@@ -61,7 +61,7 @@
             <a href="{{ route('shop.index') }}">{{ __('Catalogue') }}</a>
             @if($product->category_name)
                 <span class="pdp-bc-sep">/</span>
-                <a href="{{ route('shop.index', ['category' => optional($product->category)->slug]) }}">{{ $product->category_name }}</a>
+                <a href="{{ route('shop.index', ['category' => $product->category_slug ?? optional($product->category)->slug ?? optional($product->productCategory)->slug]) }}">{{ $product->category_name }}</a>
             @endif
             <span class="pdp-bc-sep">/</span>
             <span class="pdp-bc-current">{{ Str::limit($product->name, 40) }}</span>
@@ -117,7 +117,7 @@
                 {{-- INFO PANEL --}}
                 <div class="col-lg-6 pdp-info-panel">
                     @if($product->category_name)
-                    <div class="pdp-cat-label">{{ $product->category_name }}</div>
+                    <a href="{{ route('shop.index', ['category' => $product->category_slug ?? optional($product->category)->slug ?? optional($product->productCategory)->slug]) }}" class="pdp-cat-label d-inline-block text-decoration-none">{{ $product->category_name }}</a>
                     @endif
 
                     <h1 class="pdp-title">{{ $product->name }}</h1>
@@ -154,13 +154,18 @@
                     </div>
 
                     @if($product->description)
-                    <div class="pdp-description">
-                        {!! nl2br(e($product->description)) !!}
+                    <div class="pdp-description entry-content">
+                        @if(strip_tags($product->description) !== $product->description)
+                            {!! $product->description !!}
+                        @else
+                            {!! nl2br(e($product->description)) !!}
+                        @endif
                     </div>
                     @endif
 
                     <div class="pdp-divider"></div>
 
+                    @if($product->isInStock())
                     <form id="addToCartForm" onsubmit="pdpAddToCart(event)">
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -175,13 +180,20 @@
                                     <i class="fas fa-plus"></i>
                                 </button>
                             </div>
-                            <button type="submit" id="addToCartBtn" class="pdp-add-btn"
-                                    {{ !$product->isInStock() ? 'disabled' : '' }}>
+                            <button type="submit" id="addToCartBtn" class="pdp-add-btn">
                                 <i class="fas fa-cart-plus me-2"></i>
                                 <span id="addToCartText">{{ __('Add to Cart') }}</span>
                             </button>
                         </div>
                     </form>
+                    @else
+                    <div class="pdp-cart-row">
+                        <button type="button" id="addToCartBtn" class="pdp-add-btn pdp-add-btn--out" disabled>
+                            <i class="fas fa-ban me-2"></i>
+                            <span id="addToCartText">{{ __('Out of stock') }}</span>
+                        </button>
+                    </div>
+                    @endif
 
                     <div class="pdp-trust-row">
                         <div class="pdp-trust-pill"><i class="fas fa-shield-halved"></i> {{ __('2-Year Warranty') }}</div>
@@ -322,7 +334,7 @@
                         </div>
                         <div class="pcard-body">
                             @if($related->category_name)
-                                <div class="pcard-cat">{{ $related->category_name }}</div>
+                                <a href="{{ route('shop.index', ['category' => $related->category_slug ?? optional($related->category)->slug ?? optional($related->productCategory)->slug]) }}" class="pcard-cat text-decoration-none d-block">{{ $related->category_name }}</a>
                             @endif
                             <h4 class="pcard-name">
                                 <a href="{{ route('shop.show', $related->id) }}">{{ Str::limit($related->name, 42) }}</a>

@@ -61,7 +61,7 @@
     <image:image>
       <image:loc>{{ str_starts_with($product->thumbnail, 'http') ? $product->thumbnail : url($product->thumbnail) }}</image:loc>
       <image:title>{{ htmlspecialchars($product->name, ENT_XML1, 'UTF-8') }}</image:title>
-      <image:caption>{{ htmlspecialchars($product->name . ' au Maroc — ' . setting('app_name', 'Full Frame House'), ENT_XML1, 'UTF-8') }}</image:caption>
+      <image:caption>{{ htmlspecialchars($product->name . ' au Maroc — ' . setting('app_name', 'WINA SHOP'), ENT_XML1, 'UTF-8') }}</image:caption>
     </image:image>
     @endif
   </url>
