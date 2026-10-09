@@ -29,8 +29,8 @@
 
         /* ── Top accent stripe ── */
         .top-stripe {
-            height: 6px;
-            background: #dc2626;
+            height: 3px;
+            background: #334155;
             width: 100%;
         }
 
@@ -43,7 +43,7 @@
         .header-table {
             width: 100%;
             margin-bottom: 16px;
-            border-bottom: 2px solid #0f172a;
+            border-bottom: 1px solid #e2e8f0;
             padding-bottom: 14px;
         }
 
@@ -57,10 +57,10 @@
 
         .company-tagline {
             font-size: 8.5px;
-            color: #dc2626;
-            font-weight: bold;
+            color: #64748b;
+            font-weight: 500;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
             margin-top: 3px;
         }
 
@@ -70,16 +70,17 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             line-height: 1;
+            color: #0f172a;
         }
 
         .doc-type-badge.facture { color: #0f172a; }
-        .doc-type-badge.devis   { color: #dc2626; }
+        .doc-type-badge.devis   { color: #0f172a; }
 
         .doc-number-tag {
             display: inline-block;
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            color: #dc2626;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            color: #334155;
             font-size: 10px;
             font-weight: bold;
             padding: 2px 7px;
@@ -107,26 +108,26 @@
         .party-box {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-top: 3px solid #0f172a;
+            border-top: 2px solid #334155;
             padding: 10px 12px;
             border-radius: 0 0 4px 4px;
         }
 
         .party-box.client {
-            border-top-color: #dc2626;
+            border-top-color: #475569;
         }
 
         .party-label {
             font-size: 7.5px;
             font-weight: bold;
-            color: #0f172a;
+            color: #475569;
             text-transform: uppercase;
             letter-spacing: 1.2px;
             margin-bottom: 4px;
         }
 
         .party-box.client .party-label {
-            color: #dc2626;
+            color: #475569;
         }
 
         .party-name {
@@ -157,8 +158,9 @@
 
         .client-ice-badge {
             display: inline-block;
-            background: #fee2e2;
-            color: #991b1b;
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #e2e8f0;
             padding: 2px 6px;
             border-radius: 3px;
             font-size: 8.5px;
@@ -171,11 +173,11 @@
             border-collapse: collapse;
             margin-bottom: 16px;
             border: 1px solid #e2e8f0;
-            border-bottom: 2px solid #0f172a;
+            border-bottom: 1px solid #e2e8f0;
         }
 
         .items-table thead tr {
-            background: #0f172a;
+            background: #f8fafc;
         }
 
         .items-table thead th {
@@ -184,8 +186,10 @@
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 0.8px;
-            color: #ffffff;
+            color: #475569;
             border: none;
+            border-top: 1px solid #e2e8f0;
+            border-bottom: 2px solid #cbd5e1;
         }
 
         .items-table tbody tr {
@@ -222,7 +226,7 @@
         .words-card {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-left: 3px solid #0f172a;
+            border-left: 3px solid #cbd5e1;
             padding: 10px 12px;
             border-radius: 0 4px 4px 0;
             margin-bottom: 10px;
@@ -233,7 +237,7 @@
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: #dc2626;
+            color: #475569;
             margin-bottom: 3px;
         }
 
@@ -244,12 +248,12 @@
         }
 
         .validity-banner {
-            background: #fefce8;
-            border: 1px solid #fef08a;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
             border-radius: 4px;
             padding: 6px 10px;
             font-size: 8px;
-            color: #854d0e;
+            color: #475569;
             line-height: 1.35;
             margin-bottom: 8px;
         }
@@ -266,9 +270,9 @@
         }
 
         .notes-box {
-            background: #fff1f2;
-            border: 1px solid #fecaca;
-            border-left: 3px solid #dc2626;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-left: 3px solid #cbd5e1;
             padding: 6px 10px;
             border-radius: 0 4px 4px 0;
             font-size: 8px;
@@ -278,10 +282,11 @@
 
         /* Totals Card */
         .totals-card {
-            background: #0f172a;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
             border-radius: 4px;
             padding: 12px 14px;
-            color: #ffffff;
+            color: #0f172a;
             margin-bottom: 10px;
         }
 
@@ -294,7 +299,7 @@
         .total-label {
             display: table-cell;
             font-size: 8.5px;
-            color: rgba(255,255,255,0.7);
+            color: #64748b;
             font-weight: bold;
         }
 
@@ -303,12 +308,12 @@
             text-align: right;
             font-size: 9.5px;
             font-weight: bold;
-            color: #ffffff;
+            color: #0f172a;
         }
 
         .total-divider {
             border: none;
-            border-top: 1px solid rgba(255,255,255,0.15);
+            border-top: 1px solid #e2e8f0;
             margin: 6px 0;
         }
 
@@ -317,14 +322,14 @@
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: rgba(255,255,255,0.5);
+            color: #64748b;
             margin-bottom: 2px;
         }
 
         .grand-value {
             font-size: 20px;
             font-weight: bold;
-            color: #dc2626;
+            color: #0f172a;
             letter-spacing: -0.5px;
             text-align: right;
         }
@@ -341,37 +346,15 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 34px;
-            background: #0f172a;
-            color: rgba(255,255,255,0.55);
-            font-size: 8px;
-            line-height: 34px;
+            height: 28px;
+            background: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            color: #64748b;
+            font-size: 8.5px;
+            font-weight: 500;
+            line-height: 28px;
+            text-align: center;
             padding: 0 34px;
-        }
-
-        .footer-inner {
-            display: table;
-            width: 100%;
-        }
-
-        .footer-left {
-            display: table-cell;
-            text-align: left;
-            vertical-align: middle;
-            line-height: 1.2;
-        }
-
-        .footer-left strong {
-            color: rgba(255,255,255,0.9);
-        }
-
-        .footer-right {
-            display: table-cell;
-            text-align: right;
-            vertical-align: middle;
-            font-weight: bold;
-            color: #dc2626;
-            white-space: nowrap;
         }
     </style>
 </head>
@@ -418,7 +401,7 @@
                         @if($invoice->isQuote())
                             &nbsp;|&nbsp; Validité : <strong>{{ $invoice->issued_at->addDays(30)->format('d/m/Y') }} (30j)</strong>
                         @elseif($invoice->due_date)
-                            &nbsp;|&nbsp; Échéance : <strong style="color:#dc2626;">{{ $invoice->due_date->format('d/m/Y') }}</strong>
+                            &nbsp;|&nbsp; Échéance : <strong>{{ $invoice->due_date->format('d/m/Y') }}</strong>
                         @endif
                         @if($invoice->order && $invoice->order->order_number)
                             <br>Réf. Commande : <strong>{{ $invoice->order->order_number }}</strong>
@@ -557,8 +540,8 @@
                         </div>
                         @if($invoice->discount_amount > 0)
                         <div class="total-row">
-                            <span class="total-label" style="color:#fca5a5;">Remise</span>
-                            <span class="total-val" style="color:#fca5a5;">- {{ $invoice->formatted_discount_amount }}</span>
+                            <span class="total-label">Remise</span>
+                            <span class="total-val">- {{ $invoice->formatted_discount_amount }}</span>
                         </div>
                         @endif
                         <hr class="total-divider">
@@ -586,19 +569,7 @@
 
     {{-- ══════════ FOOTER ══════════ --}}
     <div class="footer">
-        <div class="footer-inner">
-            <div class="footer-left">
-                <strong>{{ setting('company_name') }}</strong>
-                @if(setting('company_tax_id')) &nbsp;|&nbsp; ICE : {{ setting('company_tax_id') }} @endif
-                @if(setting('company_registry_id')) &nbsp;|&nbsp; RC : {{ setting('company_registry_id') }} @endif
-                @if(setting('company_fiscal_id')) &nbsp;|&nbsp; IF : {{ setting('company_fiscal_id') }} @endif
-                @if(setting('company_patente')) &nbsp;|&nbsp; Patente : {{ setting('company_patente') }} @endif
-                @if(setting('company_address')) <br>{{ setting('company_address') }} @endif
-            </div>
-            <div class="footer-right">
-                {{ $invoice->isQuote() ? 'Merci de votre confiance !' : 'Merci pour votre achat !' }}
-            </div>
-        </div>
+        {{ $invoice->isQuote() ? 'Merci de votre confiance !' : 'Merci pour votre achat !' }}
     </div>
 </body>
 </html>

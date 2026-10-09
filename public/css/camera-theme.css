@@ -971,11 +971,138 @@ mark.search-highlight {
     background-color: var(--brand-red) !important;
 }
 
-@media (max-width: 991px) {
+/* ================================================================
+   MOBILE NAVBAR COLLAPSE & BUTTERY SMOOTH ANIMATION
+   ================================================================ */
+@media (max-width: 991.98px) {
+    /* Custom animated toggler button */
+    .navbar-toggler-custom {
+        width: 42px;
+        height: 42px;
+        border-radius: 50% !important;
+        background: #ffffff !important;
+        border: 1.5px solid #e2e8f0 !important;
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        padding: 0 !important;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04) !important;
+        outline: none !important;
+    }
+    .navbar-toggler-custom:hover {
+        background: #0f172a !important;
+        border-color: #0f172a !important;
+        transform: scale(1.05);
+    }
+    .navbar-toggler-custom:active {
+        transform: scale(0.95);
+    }
+    .toggler-icon-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4.5px;
+        width: 20px;
+        height: 20px;
+    }
+    .toggler-bar {
+        display: block;
+        width: 18px;
+        height: 2px;
+        background-color: #0f172a;
+        border-radius: 9999px;
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, background-color 0.2s ease;
+        transform-origin: center;
+    }
+    .navbar-toggler-custom:hover .toggler-bar {
+        background-color: #ffffff;
+    }
+    /* When expanded (open): morph to clean close "X" */
+    .navbar-toggler-custom[aria-expanded="true"] .bar-1 {
+        transform: translateY(6.5px) rotate(45deg);
+    }
+    .navbar-toggler-custom[aria-expanded="true"] .bar-2 {
+        opacity: 0;
+        transform: scaleX(0);
+    }
+    .navbar-toggler-custom[aria-expanded="true"] .bar-3 {
+        transform: translateY(-6.5px) rotate(-45deg);
+    }
 
-    .navbar-collapse.show,
-    .navbar-collapse {
-        overflow: visible !important;
+    /* Outer collapse element */
+    #navbarMain {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        border: none !important;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+    }
+
+    /* During collapsing animation: MUST strictly clip overflow and ease smoothly */
+    #navbarMain.collapsing {
+        overflow: hidden !important;
+        height: 0;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none !important;
+        transition: height 0.32s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        will-change: height;
+    }
+
+    /* When expanded: clean border, shadow, smooth scrolling if tall */
+    #navbarMain.collapse.show {
+        overflow-y: auto !important;
+        max-height: calc(100vh - 75px) !important;
+        -webkit-overflow-scrolling: touch;
+        border-top: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08) !important;
+    }
+
+    /* Inner wrapper handles padding and subtle fade/slide */
+    .navbar-collapse-inner {
+        padding: 14px 6px 20px;
+        transition: opacity 0.25s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        will-change: opacity, transform;
+    }
+    #navbarMain.collapsing .navbar-collapse-inner {
+        opacity: 0.6;
+        transform: translateY(-4px);
+    }
+    #navbarMain.collapse.show .navbar-collapse-inner {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Nav links become clean full-width rounded rows */
+    .nav-link-custom {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 12px 18px !important;
+        border-radius: 12px !important;
+        font-size: 0.95rem !important;
+        font-weight: 600 !important;
+        color: #1e293b !important;
+        background: transparent;
+        transition: background-color 0.18s ease, color 0.18s ease !important;
+    }
+    .nav-link-custom:hover {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+    }
+    .nav-link-custom.active {
+        background: #0f172a !important;
+        color: #ffffff !important;
+    }
+    .nav-link-custom::after {
+        display: none !important;
     }
 
     .header-search-wrap {
@@ -994,6 +1121,12 @@ mark.search-highlight {
         left: 0 !important;
         right: 0 !important;
         z-index: 1099 !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .navbar-collapse-inner {
+        display: contents;
     }
 }
 
@@ -5036,9 +5169,10 @@ html:not([dir="rtl"]) .mini-cart-item-remove {
     position: fixed !important;
     bottom: 24px;
     right: 24px;
-    z-index: 99999 !important;
+    z-index: 1040 !important;
     opacity: 0;
     visibility: hidden;
+    display: none;
     transform: translateY(20px) scale(0.92);
     transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
                 transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
@@ -5052,6 +5186,18 @@ html:not([dir="rtl"]) .mini-cart-item-remove {
     transform: translateY(0) scale(1) !important;
     pointer-events: auto !important;
     display: block !important;
+}
+
+/* Hide floating checkout button when miniCart or cart drawer is open */
+body.cart-open .floating-checkout-wrap,
+body:has(#miniCart.show) .floating-checkout-wrap,
+body:has(#miniCart.showing) .floating-checkout-wrap,
+.floating-checkout-wrap.cart-drawer-open {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transform: translateY(20px) scale(0.92) !important;
 }
 
 /* If WhatsApp float is on page, stack checkout above WhatsApp in LTR */
@@ -5198,15 +5344,27 @@ html[dir="rtl"] .floating-checkout-badge {
         bottom: calc(22px + env(safe-area-inset-bottom, 0px)) !important;
         right: 14px !important;
         left: auto !important;
-        z-index: 99999 !important;
+        z-index: 1040 !important;
+        display: none;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
     }
-    .floating-checkout-wrap,
     .floating-checkout-wrap.is-visible {
         display: block !important;
         opacity: 1 !important;
         visibility: visible !important;
         pointer-events: auto !important;
         transform: translateY(0) scale(1) !important;
+    }
+    body.cart-open .floating-checkout-wrap,
+    body:has(#miniCart.show) .floating-checkout-wrap,
+    body:has(#miniCart.showing) .floating-checkout-wrap,
+    .floating-checkout-wrap.cart-drawer-open {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
     }
     body.has-whatsapp-float .floating-checkout-wrap,
     body:has(.whatsapp-float) .floating-checkout-wrap {

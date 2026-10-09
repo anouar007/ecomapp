@@ -226,15 +226,20 @@
                                 {{ array_sum(array_column(session('cart', []), 'quantity')) }}
                             </span>
                         </div>
-                        <button class="navbar-toggler border-0 p-1" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-expanded="false" aria-label="Menu" id="navbarMainToggler">
-                            <span class="navbar-toggler-icon"></span>
+                        <button class="navbar-toggler border-0 p-0 navbar-toggler-custom" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-expanded="false" aria-label="Menu" id="navbarMainToggler">
+                            <span class="toggler-icon-wrap">
+                                <span class="toggler-bar bar-1"></span>
+                                <span class="toggler-bar bar-2"></span>
+                                <span class="toggler-bar bar-3"></span>
+                            </span>
                         </button>
                     </div>
 
                     <!-- Collapsible section -->
                     <div class="collapse navbar-collapse" id="navbarMain">
-                        <!-- Navigation links -->
-                        <ul class="navbar-nav me-auto mb-0 gap-1 mb-3 mb-lg-0 align-items-lg-center">
+                        <div class="navbar-collapse-inner">
+                            <!-- Navigation links -->
+                            <ul class="navbar-nav me-auto mb-0 gap-1 mb-3 mb-lg-0 align-items-lg-center">
                             <li class="nav-item">
                                 <a class="nav-link-custom {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">{{ __('Home') }}</a>
                             </li>
@@ -414,7 +419,8 @@
                                 </a>
                             </div>
                         </div>
-                    </div>
+                        </div>{{-- /.navbar-collapse-inner --}}
+                    </div>{{-- /#navbarMain --}}
                 </div>
             </nav>
         </div>
@@ -624,19 +630,20 @@
     </div>
 
     {{-- Floating Checkout Button (appears on cart addition and stays on screen) --}}
-    @if(!request()->routeIs('checkout.*'))
+    @if(!request()->routeIs('checkout.*') && !request()->routeIs('cart.*'))
     @php
         $cartSession = session('cart', []);
-        $cartInitialCount = array_sum(array_column($cartSession, 'quantity'));
+        $cartInitialCount = is_array($cartSession) ? array_sum(array_column($cartSession, 'quantity')) : 0;
     @endphp
     <style>
         .floating-checkout-wrap {
             position: fixed !important;
             bottom: 24px;
             right: 24px;
-            z-index: 99999 !important;
+            z-index: 1040 !important;
             opacity: 0;
             visibility: hidden;
+            display: none;
             transform: translateY(20px) scale(0.92);
             transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
                         transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
@@ -649,6 +656,17 @@
             transform: translateY(0) scale(1) !important;
             pointer-events: auto !important;
             display: block !important;
+        }
+        /* Hide completely when miniCart / cart drawer is open */
+        body.cart-open .floating-checkout-wrap,
+        body:has(#miniCart.show) .floating-checkout-wrap,
+        body:has(#miniCart.showing) .floating-checkout-wrap,
+        .floating-checkout-wrap.cart-drawer-open {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            transform: translateY(20px) scale(0.92) !important;
         }
         body.has-whatsapp-float .floating-checkout-wrap,
         body:has(.whatsapp-float) .floating-checkout-wrap {
@@ -668,15 +686,27 @@
                 bottom: calc(22px + env(safe-area-inset-bottom, 0px)) !important;
                 right: 14px !important;
                 left: auto !important;
-                z-index: 99999 !important;
+                z-index: 1040 !important;
+                display: none;
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
             }
-            .floating-checkout-wrap,
             .floating-checkout-wrap.is-visible {
                 display: block !important;
                 opacity: 1 !important;
                 visibility: visible !important;
                 pointer-events: auto !important;
                 transform: translateY(0) scale(1) !important;
+            }
+            body.cart-open .floating-checkout-wrap,
+            body:has(#miniCart.show) .floating-checkout-wrap,
+            body:has(#miniCart.showing) .floating-checkout-wrap,
+            .floating-checkout-wrap.cart-drawer-open {
+                display: none !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
             }
             body.has-whatsapp-float .floating-checkout-wrap,
             body:has(.whatsapp-float) .floating-checkout-wrap {
@@ -702,7 +732,7 @@
             }
         }
     </style>
-    <div id="floatingCheckoutWrap" class="floating-checkout-wrap {{ $cartInitialCount > 0 ? 'is-visible' : '' }}" aria-live="polite">
+    <div id="floatingCheckoutWrap" class="floating-checkout-wrap {{ $cartInitialCount > 0 ? 'is-visible' : '' }}" style="{{ $cartInitialCount > 0 ? '' : 'display: none !important;' }}" aria-live="polite">
         <a href="{{ route('checkout.index') }}" class="floating-checkout-btn" id="floatingCheckoutBtn" title="{{ __('Checkout') }}">
             <div class="floating-checkout-icon-box">
                 <i class="fas fa-shopping-bag"></i>
@@ -833,11 +863,13 @@
 
             if (wrap) {
                 if (numCount > 0) {
+                    wrap.style.display = '';
                     wrap.classList.add('is-visible');
                     wrap.classList.add('pulse-anim');
                     setTimeout(() => wrap.classList.remove('pulse-anim'), 600);
                 } else {
                     wrap.classList.remove('is-visible');
+                    wrap.style.display = 'none';
                 }
             }
         };
@@ -846,6 +878,41 @@
         function checkFloatingOffsets() {
             if (document.querySelector('.whatsapp-float')) {
                 document.body.classList.add('has-whatsapp-float');
+            }
+        }
+
+        function initFloatingCheckoutSync() {
+            const wrap = document.getElementById('floatingCheckoutWrap');
+            const countEl = document.getElementById('floatingCheckoutCount');
+            const count = countEl ? (parseInt(countEl.textContent) || 0) : 0;
+            
+            // Initial sync: hide if cart has 0 items
+            if (wrap) {
+                if (count <= 0) {
+                    wrap.classList.remove('is-visible');
+                    wrap.style.display = 'none';
+                } else {
+                    wrap.style.display = '';
+                    wrap.classList.add('is-visible');
+                }
+            }
+
+            // Hide floating button whenever miniCart drawer is open or opening
+            const miniCartEl = document.getElementById('miniCart');
+            if (miniCartEl) {
+                const hideFloating = function() {
+                    document.body.classList.add('cart-open');
+                    if (wrap) wrap.classList.add('cart-drawer-open');
+                };
+                const restoreFloating = function() {
+                    document.body.classList.remove('cart-open');
+                    if (wrap) wrap.classList.remove('cart-drawer-open');
+                };
+
+                miniCartEl.addEventListener('show.bs.offcanvas', hideFloating);
+                miniCartEl.addEventListener('shown.bs.offcanvas', hideFloating);
+                miniCartEl.addEventListener('hide.bs.offcanvas', restoreFloating);
+                miniCartEl.addEventListener('hidden.bs.offcanvas', restoreFloating);
             }
         }
 
@@ -871,10 +938,12 @@
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', function() {
                 checkFloatingOffsets();
+                initFloatingCheckoutSync();
                 initFloatingCheckoutClick();
             });
         } else {
             checkFloatingOffsets();
+            initFloatingCheckoutSync();
             initFloatingCheckoutClick();
         }
 
@@ -961,10 +1030,13 @@
         };
 
         function changeCartQty(id, delta) {
-            const input = document.getElementById('cart-item-qty-' + id);
+            const inputs = document.querySelectorAll(`[id="cart-item-qty-${id}"], [data-cart-qty="${id}"]`);
             let currentQty = 1;
-            if (input) {
-                currentQty = parseInt(input.value) || 1;
+            if (inputs.length > 0) {
+                currentQty = parseInt(inputs[0].value) || 1;
+            } else {
+                const input = document.getElementById('cart-item-qty-' + id);
+                if (input) currentQty = parseInt(input.value) || 1;
             }
             const newQty = currentQty + delta;
             updateQty(id, newQty);
@@ -1006,23 +1078,19 @@
                     window.updateFloatingCheckout(data.cartCount, data.cartTotal);
                 }
 
-                // Update /cart page elements if present
-                const qtyInput = document.getElementById('cart-item-qty-' + id);
-                if (qtyInput) {
-                    qtyInput.value = data.quantity;
-                }
-                const rowTotal = document.getElementById('cart-item-total-' + id);
-                if (rowTotal && data.itemTotal) {
-                    rowTotal.textContent = data.itemTotal;
-                }
-                const subtotal = document.getElementById('cart-summary-subtotal');
-                if (subtotal && data.cartTotal) {
-                    subtotal.textContent = data.cartTotal;
-                }
-                const total = document.getElementById('cart-summary-total');
-                if (total && data.cartTotal) {
-                    total.textContent = data.cartTotal;
-                }
+                // Update /cart page elements (both desktop table and mobile cards)
+                document.querySelectorAll(`[id="cart-item-qty-${id}"], [data-cart-qty="${id}"]`).forEach(el => {
+                    el.value = data.quantity;
+                });
+                document.querySelectorAll(`[id="cart-item-total-${id}"], [data-cart-total="${id}"]`).forEach(el => {
+                    if (data.itemTotal) el.textContent = data.itemTotal;
+                });
+                document.querySelectorAll('#cart-summary-subtotal, .cart-summary-subtotal').forEach(el => {
+                    if (data.cartTotal) el.textContent = data.cartTotal;
+                });
+                document.querySelectorAll('#cart-summary-total, .cart-summary-total, .cart-bottom-bar-total').forEach(el => {
+                    if (data.cartTotal) el.textContent = data.cartTotal;
+                });
 
                 // Refresh mini-cart content
                 refreshMiniCart();
@@ -1074,27 +1142,28 @@
                             window.updateFloatingCheckout(data.cartCount, data.cartTotal);
                         }
 
-                        // If on /cart page, remove the row or reload if empty
-                        const row = document.getElementById('cart-row-' + id);
-                        if (row) {
-                            row.style.transition = 'opacity 0.25s, transform 0.25s';
-                            row.style.opacity = '0';
-                            row.style.transform = 'scale(0.95)';
+                        // If on /cart page, remove the row or reload if empty (desktop and mobile)
+                        const rows = document.querySelectorAll(`[id="cart-row-${id}"], [data-cart-row="${id}"]`);
+                        if (rows.length > 0) {
+                            rows.forEach(row => {
+                                row.style.transition = 'opacity 0.25s, transform 0.25s';
+                                row.style.opacity = '0';
+                                row.style.transform = 'scale(0.95)';
+                            });
                             setTimeout(() => {
-                                row.remove();
-                                if (data.isEmpty || document.querySelectorAll('[id^="cart-row-"]').length === 0) {
+                                rows.forEach(row => row.remove());
+                                const remaining = document.querySelectorAll('[id^="cart-row-"], [data-cart-row]');
+                                if (data.isEmpty || remaining.length === 0) {
                                     window.location.reload();
                                 }
                             }, 250);
                         }
-                        const subtotal = document.getElementById('cart-summary-subtotal');
-                        if (subtotal && data.cartTotal) {
-                            subtotal.textContent = data.cartTotal;
-                        }
-                        const total = document.getElementById('cart-summary-total');
-                        if (total && data.cartTotal) {
-                            total.textContent = data.cartTotal;
-                        }
+                        document.querySelectorAll('#cart-summary-subtotal, .cart-summary-subtotal').forEach(el => {
+                            if (data.cartTotal) el.textContent = data.cartTotal;
+                        });
+                        document.querySelectorAll('#cart-summary-total, .cart-summary-total, .cart-bottom-bar-total').forEach(el => {
+                            if (data.cartTotal) el.textContent = data.cartTotal;
+                        });
 
                         // Refresh mini-cart content
                         refreshMiniCart();
@@ -1163,10 +1232,13 @@
             .catch(console.error);
         }
 
-        // Mobile category dropdown toggle
-        function initMobileCategoryToggle() {
+        // Mobile Navbar & Category Dropdown Handling
+        function initMobileNavbar() {
+            const navbarMain = document.getElementById('navbarMain');
+            const toggler = document.getElementById('navbarMainToggler');
             const dropdownItem = document.querySelector('.nav-item-dropdown');
             const chevron = document.querySelector('.nav-chevron-icon');
+
             if (dropdownItem && chevron) {
                 chevron.addEventListener('click', function(e) {
                     if (window.innerWidth < 992) {
@@ -1176,11 +1248,39 @@
                     }
                 });
             }
+
+            if (navbarMain && toggler) {
+                navbarMain.addEventListener('show.bs.collapse', function() {
+                    toggler.setAttribute('aria-expanded', 'true');
+                    const miniCartEl = document.getElementById('miniCart');
+                    if (miniCartEl && typeof bootstrap !== 'undefined') {
+                        const bsOffcanvas = bootstrap.Offcanvas.getInstance(miniCartEl);
+                        if (bsOffcanvas) bsOffcanvas.hide();
+                    }
+                });
+
+                navbarMain.addEventListener('hide.bs.collapse', function() {
+                    toggler.setAttribute('aria-expanded', 'false');
+                    if (dropdownItem) {
+                        dropdownItem.classList.remove('mobile-open');
+                    }
+                });
+
+                document.addEventListener('click', function(e) {
+                    if (window.innerWidth < 992 && navbarMain.classList.contains('show')) {
+                        const isInside = navbarMain.contains(e.target) || toggler.contains(e.target);
+                        if (!isInside && typeof bootstrap !== 'undefined') {
+                            const bsCollapse = bootstrap.Collapse.getInstance(navbarMain);
+                            if (bsCollapse) bsCollapse.hide();
+                        }
+                    }
+                });
+            }
         }
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initMobileCategoryToggle);
+            document.addEventListener('DOMContentLoaded', initMobileNavbar);
         } else {
-            initMobileCategoryToggle();
+            initMobileNavbar();
         }
 
         // Dynamic Navbar Live Search

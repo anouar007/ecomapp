@@ -1532,9 +1532,8 @@ a { text-decoration: none; }
     /* Collapsed menu panel */
     #navbarMain {
         background: rgba(255,255,255,.98);
-        border-top: 1px solid var(--border);
-        padding: 16px 4px 20px;
-        margin: 0 -12px;
+        padding: 0;
+        margin: 0;
     }
 
     /* Nav links become full-width tappable rows */

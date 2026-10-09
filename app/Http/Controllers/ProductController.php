@@ -15,7 +15,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::with(['images', 'productCategory'])->latest();
+        $query = Product::with(['images', 'productCategory']);
 
         // Search
         if ($request->filled('search')) {
@@ -30,6 +30,25 @@ class ProductController extends Controller
         // Category Filter
         if ($request->filled('category')) {
             $query->where('category_id', $request->category);
+        }
+
+        // Status Filter
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Stock Status Filter
+        if ($request->filled('stock_status')) {
+            $ss = $request->stock_status;
+            if ($ss === 'in_stock') {
+                $query->where('stock', '>', 5);
+            } elseif ($ss === 'low_stock') {
+                $query->where('stock', '>', 0)->where('stock', '<=', 5);
+            } elseif ($ss === 'out_of_stock') {
+                $query->where('stock', '<=', 0);
+            } elseif ($ss === 'alerts') {
+                $query->where('stock', '<=', 5);
+            }
         }
 
         // Image Quality Filter
@@ -47,22 +66,54 @@ class ProductController extends Controller
             } elseif ($q === 'sd') {
                 $query->where('image_quality', 'sd');
             } elseif ($q === 'missing') {
-                $query->whereIn('image_quality', ['placeholder', 'missing'])->orWhereNull('image');
+                $query->where(function($sub) {
+                    $sub->whereIn('image_quality', ['placeholder', 'missing'])
+                        ->orWhereNull('image');
+                });
             }
         }
+
+        // Sorting
+        $sort = $request->input('sort', 'latest');
+        match ($sort) {
+            'oldest' => $query->oldest('id'),
+            'price_asc' => $query->orderBy('price', 'asc'),
+            'price_desc' => $query->orderBy('price', 'desc'),
+            'stock_asc' => $query->orderBy('stock', 'asc'),
+            'stock_desc' => $query->orderBy('stock', 'desc'),
+            'name_asc' => $query->orderBy('name', 'asc'),
+            'name_desc' => $query->orderBy('name', 'desc'),
+            default => $query->latest('id'),
+        };
 
         $products = $query->paginate(20)->withQueryString();
         
         $categories = \App\Models\Category::where('status', 'active')->orderBy('name')->get();
 
+        $totalCount = Product::count();
+        $fourKCount = Product::where('image_quality', '4k')->count();
         $qualityStats = [
-            'total' => Product::count(),
-            'four_k' => Product::where('image_quality', '4k')->count(),
+            'total' => $totalCount,
+            'four_k' => $fourKCount,
             'fhd' => Product::where('image_quality', 'fhd')->count(),
             'needs_upgrade' => Product::whereIn('image_quality', ['sd', 'low', 'placeholder', 'missing', 'unknown'])->orWhereNull('image_quality')->count(),
         ];
 
-        return view('products.index', compact('products', 'categories', 'qualityStats'));
+        $stats = [
+            'total' => $totalCount,
+            'active' => Product::where('status', 'active')->count(),
+            'inactive' => Product::where('status', 'inactive')->count(),
+            'low_stock' => Product::where('stock', '>', 0)->where('stock', '<=', 5)->count(),
+            'out_of_stock' => Product::where('stock', '<=', 0)->count(),
+            'total_stock' => (int) Product::sum('stock'),
+            'inventory_value' => (float) (Product::sum(DB::raw('price * stock')) ?? 0),
+            'four_k' => $fourKCount,
+            'fhd' => $qualityStats['fhd'],
+            'needs_upgrade' => $qualityStats['needs_upgrade'],
+            'four_k_percentage' => $totalCount > 0 ? (int) round(($fourKCount / $totalCount) * 100) : 0,
+        ];
+
+        return view('products.index', compact('products', 'categories', 'qualityStats', 'stats'));
     }
 
     /**
@@ -500,6 +551,22 @@ class ProductController extends Controller
             'success' => true,
             'message' => "Mise à niveau terminée : {$result['upgraded']} produit(s) mis à niveau en qualité Studio 4K !",
             'data' => $result,
+        ]);
+    }
+
+    /**
+     * Toggle product status (active/inactive) via AJAX.
+     */
+    public function toggleStatus(Product $product)
+    {
+        $newStatus = $product->status === 'active' ? 'inactive' : 'active';
+        $product->update(['status' => $newStatus]);
+
+        return response()->json([
+            'success' => true,
+            'status' => $newStatus,
+            'status_label' => $newStatus === 'active' ? 'Actif' : 'Inactif',
+            'message' => "Le statut du produit '{$product->name}' a été mis à jour en " . ($newStatus === 'active' ? 'Actif' : 'Inactif'),
         ]);
     }
 }

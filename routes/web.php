@@ -58,6 +58,7 @@ Route::middleware('auth')->group(function () {
         Route::post('products/bulk-upgrade-4k', [\App\Http\Controllers\ProductController::class, 'bulkUpgrade4k'])->name('products.bulk-upgrade-4k');
         Route::get('products/{product}/search-4k-images', [\App\Http\Controllers\ProductController::class, 'search4kImages'])->name('products.search-4k-images');
         Route::post('products/{product}/apply-4k-image', [\App\Http\Controllers\ProductController::class, 'apply4kImage'])->name('products.apply-4k-image');
+        Route::patch('products/{product}/toggle-status', [\App\Http\Controllers\ProductController::class, 'toggleStatus'])->name('products.toggle-status');
         Route::resource('products', \App\Http\Controllers\ProductController::class);
     });
     

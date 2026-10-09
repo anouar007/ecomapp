@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+@php $withStamp = $withStamp ?? ($invoice->with_stamp ?? true); @endphp
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
@@ -37,16 +38,16 @@
     .invoice-card {
         background: #ffffff;
         border-radius: 4px;
-        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
         border: 1px solid #e2e8f0;
         overflow: hidden;
         margin: 0 auto;
-        color: #0f172a;
+        color: #1e293b;
     }
 
     .accent-bar {
-        height: 6px;
-        background: #dc2626;
+        height: 3px;
+        background: #334155;
     }
 
     .doc-body {
@@ -58,7 +59,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-bottom: 2px solid #0f172a;
+        border-bottom: 1.5px solid #e2e8f0;
         padding-bottom: 18px;
         margin-bottom: 18px;
     }
@@ -70,7 +71,7 @@
     }
 
     .header-logo {
-        max-height: 56px;
+        max-height: 54px;
         max-width: 140px;
         object-fit: contain;
     }
@@ -81,20 +82,20 @@
     }
 
     .company-name {
-        font-size: 24px;
-        font-weight: 900;
+        font-size: 22px;
+        font-weight: 800;
         color: #0f172a;
         line-height: 1.1;
-        letter-spacing: -0.5px;
+        letter-spacing: -0.3px;
         margin: 0;
     }
 
     .company-tagline {
         font-size: 11px;
-        font-weight: 700;
-        color: #dc2626;
+        font-weight: 500;
+        color: #64748b;
         margin-top: 4px;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.2px;
     }
 
     /* ── Document Type & Meta Block ── */
@@ -113,25 +114,26 @@
     }
 
     .doc-type-label {
-        font-size: 28px;
-        font-weight: 900;
+        font-size: 24px;
+        font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 0.8px;
         line-height: 1;
+        color: #0f172a;
     }
 
     .doc-type-label.facture { color: #0f172a; }
-    .doc-type-label.devis   { color: #dc2626; }
+    .doc-type-label.devis   { color: #0f172a; }
 
     .doc-number-badge {
-        font-size: 13px;
-        font-weight: 800;
-        color: #dc2626;
-        background: #fef2f2;
-        border: 1px solid #fecaca;
+        font-size: 12px;
+        font-weight: 700;
+        color: #1e293b;
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
         padding: 3px 10px;
         border-radius: 4px;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.3px;
     }
 
     .doc-meta-grid {
@@ -168,24 +170,24 @@
         flex: 1;
         background: #f8fafc;
         border: 1px solid #e2e8f0;
-        border-top: 3px solid #0f172a;
+        border-top: 2px solid #475569;
         padding: 14px 16px;
-        border-radius: 0 0 6px 6px;
+        border-radius: 4px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
     }
 
     .party-box.client {
-        border-top-color: #dc2626;
+        border-top-color: #475569;
     }
 
     .party-role {
         font-size: 9px;
-        font-weight: 800;
+        font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 1.5px;
-        color: #0f172a;
+        letter-spacing: 1.2px;
+        color: #64748b;
         margin-bottom: 6px;
         display: flex;
         align-items: center;
@@ -193,11 +195,11 @@
     }
 
     .party-box.client .party-role {
-        color: #dc2626;
+        color: #64748b;
     }
 
     .party-name {
-        font-size: 15px;
+        font-size: 14.5px;
         font-weight: 800;
         color: #0f172a;
         margin-bottom: 4px;
@@ -221,7 +223,7 @@
     }
 
     .fiscal-grid .f-item {
-        background: #f1f5f9;
+        background: #ffffff;
         border: 1px solid #e2e8f0;
         border-radius: 3px;
         padding: 2px 7px;
@@ -236,8 +238,9 @@
 
     .client-ice-badge {
         display: inline-block;
-        background: #fee2e2;
-        color: #991b1b;
+        background: #f1f5f9;
+        color: #334155;
+        border: 1px solid #e2e8f0;
         padding: 2px 8px;
         border-radius: 4px;
         font-size: 11px;
@@ -251,21 +254,22 @@
         border-collapse: collapse;
         margin-bottom: 18px;
         border: 1px solid #e2e8f0;
-        border-bottom: 2px solid #0f172a;
+        border-bottom: 1.5px solid #cbd5e1;
     }
 
     .items-table thead tr {
-        background: #0f172a;
+        background: #f8fafc;
     }
 
     .items-table thead th {
-        padding: 9px 12px;
+        padding: 10px 12px;
         font-size: 9.5px;
-        font-weight: 800;
+        font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.8px;
-        color: #ffffff;
-        border: none;
+        letter-spacing: 0.6px;
+        color: #475569;
+        border-top: 1px solid #e2e8f0;
+        border-bottom: 1.5px solid #e2e8f0;
         text-align: left;
     }
 
@@ -274,17 +278,18 @@
     }
 
     .items-table tbody tr:nth-child(even) {
-        background: #f8fafc;
+        background: #fafafa;
     }
 
     .items-table tbody td {
         padding: 9px 12px;
         vertical-align: middle;
         font-size: 12px;
+        color: #1e293b;
     }
 
     .item-name {
-        font-size: 13px;
+        font-size: 12.5px;
         font-weight: 700;
         color: #0f172a;
     }
@@ -320,17 +325,17 @@
     .words-card {
         background: #f8fafc;
         border: 1px solid #e2e8f0;
-        border-left: 3px solid #0f172a;
+        border-left: 3px solid #64748b;
         padding: 10px 14px;
-        border-radius: 0 6px 6px 0;
+        border-radius: 0 4px 4px 0;
     }
 
     .words-label {
         font-size: 8.5px;
-        font-weight: 800;
+        font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 1.2px;
-        color: #dc2626;
+        letter-spacing: 1px;
+        color: #64748b;
         margin-bottom: 3px;
     }
 
@@ -341,47 +346,47 @@
     }
 
     .words-highlight {
-        font-size: 12.5px;
-        font-weight: 800;
+        font-size: 12px;
+        font-weight: 700;
         color: #0f172a;
         margin-top: 2px;
         display: block;
     }
 
     .validity-banner {
-        background: #fefce8;
-        border: 1px solid #fef08a;
-        border-radius: 6px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
         padding: 8px 12px;
         font-size: 11px;
-        color: #854d0e;
+        color: #64748b;
         line-height: 1.4;
     }
 
     .legal-banner {
         background: #f8fafc;
         border: 1px solid #e2e8f0;
-        border-radius: 6px;
+        border-radius: 4px;
         padding: 8px 12px;
         font-size: 11px;
-        color: #475569;
+        color: #64748b;
         line-height: 1.4;
     }
 
     .notes-card {
-        background: #fff1f2;
-        border: 1px solid #fecaca;
-        border-left: 3px solid #dc2626;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-left: 3px solid #94a3b8;
         padding: 8px 12px;
-        border-radius: 0 6px 6px 0;
+        border-radius: 0 4px 4px 0;
     }
 
     .notes-label {
         font-size: 8.5px;
-        font-weight: 800;
+        font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 1.2px;
-        color: #dc2626;
+        letter-spacing: 1px;
+        color: #64748b;
         margin-bottom: 2px;
     }
 
@@ -393,10 +398,11 @@
     }
 
     .totals-card {
-        background: #0f172a;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
         border-radius: 6px;
-        padding: 14px 16px;
-        color: white;
+        padding: 14px 18px;
+        color: #0f172a;
     }
 
     .total-row {
@@ -404,23 +410,23 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 6px;
-        font-size: 11.5px;
+        font-size: 12px;
     }
 
     .total-row-label {
-        color: rgba(255,255,255,0.65);
-        font-weight: 600;
+        color: #64748b;
+        font-weight: 500;
     }
 
     .total-row-val {
-        color: #ffffff;
+        color: #0f172a;
         font-weight: 700;
         font-size: 12.5px;
     }
 
     .totals-divider {
         border: none;
-        border-top: 1px solid rgba(255,255,255,0.15);
+        border-top: 1.5px solid #e2e8f0;
         margin: 8px 0;
     }
 
@@ -431,18 +437,18 @@
     }
 
     .grand-label {
-        font-size: 9.5px;
+        font-size: 10px;
         font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 1.2px;
-        color: rgba(255,255,255,0.5);
+        letter-spacing: 0.8px;
+        color: #0f172a;
     }
 
     .grand-value {
-        font-size: 24px;
-        font-weight: 900;
-        color: #dc2626;
-        letter-spacing: -0.5px;
+        font-size: 20px;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.3px;
     }
 
     .stamp-box {
@@ -463,28 +469,14 @@
 
     /* ── Footer ── */
     .doc-footer {
-        background: #0f172a;
-        padding: 12px 36px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        color: rgba(255,255,255,0.55);
-        font-size: 10px;
-    }
-
-    .doc-footer-left {
-        line-height: 1.5;
-    }
-
-    .doc-footer-left strong {
-        color: rgba(255,255,255,0.9);
-    }
-
-    .doc-footer-right {
+        background: #ffffff;
+        border-top: 1px solid #e2e8f0;
+        padding: 14px 36px;
+        text-align: center;
+        color: #64748b;
         font-size: 11px;
-        font-weight: 700;
-        color: #dc2626;
-        white-space: nowrap;
+        font-weight: 500;
+        letter-spacing: 0.3px;
     }
 </style>
 
@@ -498,27 +490,27 @@
                     {{ __('Retour aux Factures / Devis') }}
                 </a>
                 <div style="display: flex; align-items: center; gap: 12px;">
-                    <h1 style="font-size: 24px; font-weight: 900; color: #0f172a; margin: 0; letter-spacing: -0.5px;">
+                    <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.5px;">
                         {{ $invoice->isQuote() ? 'DEVIS' : 'FACTURE' }}
-                        <span style="color: #dc2626; font-weight: 700; font-size: 20px;">#{{ $invoice->display_number ?? $invoice->invoice_number }}</span>
+                        <span style="color: #64748b; font-weight: 600; font-size: 19px;">#{{ $invoice->display_number ?? $invoice->invoice_number }}</span>
                     </h1>
                 </div>
 
                 {{-- Interactive Mode Controls (Facture / Devis & Stamp) --}}
                 <div style="display: flex; gap: 8px; align-items: center; margin-top: 10px; flex-wrap: wrap;">
-                    <span style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">{{ __('Mode Aperçu') }}:</span>
+                    <span style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">{{ __('Mode Aperçu') }}:</span>
                     
                     {{-- Toggle Facture --}}
                     <a href="{{ route('invoices.show', [$invoice, 'as' => 'facture', 'with_stamp' => $withStamp ? 1 : 0]) }}" 
                        class="btn btn-sm {{ !$invoice->isQuote() ? 'btn-dark' : 'btn-outline-secondary' }}"
-                       style="font-size: 11px; font-weight: 700; padding: 3px 12px; border-radius: 20px;">
+                       style="font-size: 11px; font-weight: 600; padding: 3px 12px; border-radius: 20px;">
                         <i class="fas fa-file-invoice me-1"></i> Facture
                     </a>
 
                     {{-- Toggle Devis --}}
                     <a href="{{ route('invoices.show', [$invoice, 'as' => 'devis', 'with_stamp' => $withStamp ? 1 : 0]) }}" 
-                       class="btn btn-sm {{ $invoice->isQuote() ? 'btn-danger' : 'btn-outline-secondary' }}"
-                       style="font-size: 11px; font-weight: 700; padding: 3px 12px; border-radius: 20px;">
+                       class="btn btn-sm {{ $invoice->isQuote() ? 'btn-dark' : 'btn-outline-secondary' }}"
+                       style="font-size: 11px; font-weight: 600; padding: 3px 12px; border-radius: 20px;">
                         <i class="fas fa-file-signature me-1"></i> Devis
                     </a>
 
@@ -689,7 +681,7 @@
                         @if($invoice->isQuote())
                             <div class="meta-item"><span class="meta-k">Validité :</span> <span class="meta-v">{{ $invoice->issued_at->addDays(30)->format('d/m/Y') }} (30j)</span></div>
                         @elseif($invoice->due_date)
-                            <div class="meta-item"><span class="meta-k">Échéance :</span> <span class="meta-v" style="color:#dc2626;">{{ $invoice->due_date->format('d/m/Y') }}</span></div>
+                            <div class="meta-item"><span class="meta-k">Échéance :</span> <span class="meta-v">{{ $invoice->due_date->format('d/m/Y') }}</span></div>
                         @endif
                         @if($invoice->order && $invoice->order->order_number)
                             <div class="meta-item"><span class="meta-k">Réf. Commande :</span> <span class="meta-v">{{ $invoice->order->order_number }}</span></div>
@@ -823,8 +815,8 @@
                         </div>
                         @if($invoice->discount_amount > 0)
                         <div class="total-row">
-                            <span class="total-row-label" style="color:#fca5a5;">Remise</span>
-                            <span class="total-row-val" style="color:#fca5a5;">- {{ $invoice->formatted_discount_amount }}</span>
+                            <span class="total-row-label">Remise</span>
+                            <span class="total-row-val" style="color:#059669;">- {{ $invoice->formatted_discount_amount }}</span>
                         </div>
                         @endif
                         <hr class="totals-divider">
@@ -851,18 +843,8 @@
 
         {{-- ══════════ FOOTER ══════════ --}}
         <div class="doc-footer">
-            <div class="doc-footer-left">
-                <strong>{{ setting('company_name') }}</strong>
-                @if(setting('company_tax_id')) &nbsp;|&nbsp; ICE : {{ setting('company_tax_id') }} @endif
-                @if(setting('company_registry_id')) &nbsp;|&nbsp; RC : {{ setting('company_registry_id') }} @endif
-                @if(setting('company_fiscal_id')) &nbsp;|&nbsp; IF : {{ setting('company_fiscal_id') }} @endif
-                @if(setting('company_patente')) &nbsp;|&nbsp; Patente : {{ setting('company_patente') }} @endif
-                @if(setting('company_address')) <br>{{ setting('company_address') }} @endif
-            </div>
-            <div class="doc-footer-right">
-                <i class="fas fa-heart" style="margin-right:5px; font-size:9px;"></i>
-                {{ $invoice->isQuote() ? 'Merci de votre confiance !' : 'Merci pour votre achat !' }}
-            </div>
+            <i class="far fa-handshake" style="margin-right:6px; font-size:11px;"></i>
+            {{ $invoice->isQuote() ? 'Merci de votre confiance !' : 'Merci pour votre achat !' }}
         </div>
     </div>
 
@@ -870,7 +852,7 @@
     @if($invoice->payments->count() > 0)
     <div style="margin-top: 36px; background: white; border-radius: 8px; border: 1px solid #e2e8f0; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
         <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 16px;">
-            <i class="fas fa-receipt me-2" style="color: #dc2626;"></i>{{ __('Historique des Règlements') }}
+            <i class="fas fa-receipt me-2" style="color: #64748b;"></i>{{ __('Historique des Règlements') }}
         </h3>
         
         <table class="table table-sm table-hover align-middle mb-0">

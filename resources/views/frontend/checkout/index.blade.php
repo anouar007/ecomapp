@@ -1,61 +1,214 @@
 @extends('layouts.frontend')
 
-@section('meta_title', __('Checkout') . ' — ' . setting('app_name', 'LUMINA Cine & Optics'))
+@section('meta_title', __('Checkout') . ' — ' . setting('app_name', 'Full Frame House'))
 
 @section('content')
-<div class="bg-light py-5">
+<style>
+    /* ====================================================
+       CHECKOUT PAGE STYLES — FULL FRAME HOUSE
+       ==================================================== */
+    .checkout-wrapper {
+        min-height: 65vh;
+        background-color: #f8fafc;
+    }
+
+    .checkout-input {
+        background: #ffffff !important;
+        border: 1.5px solid #cbd5e1 !important;
+        border-radius: 12px !important;
+        padding: 12px 14px !important;
+        font-size: 14.5px !important;
+        color: #0f172a !important;
+        font-weight: 500 !important;
+        transition: all 0.2s ease !important;
+    }
+    .checkout-input:focus {
+        border-color: #0f172a !important;
+        box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08) !important;
+        outline: none !important;
+    }
+    .checkout-input-group .input-group-text {
+        background: #f8fafc !important;
+        border: 1.5px solid #cbd5e1 !important;
+        color: #475569 !important;
+        font-weight: 700 !important;
+        font-size: 13.5px !important;
+        border-radius: 12px 0 0 12px !important;
+        border-right: 0 !important;
+    }
+    .checkout-input-group .checkout-input {
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+    }
+    html[dir="rtl"] .checkout-input-group .input-group-text {
+        border-right: 1.5px solid #cbd5e1 !important;
+        border-left: 0 !important;
+        border-radius: 0 12px 12px 0 !important;
+    }
+    html[dir="rtl"] .checkout-input-group .checkout-input {
+        border-radius: 12px 0 0 12px !important;
+    }
+
+    .payment-method-card {
+        border: 2px solid #0f172a !important;
+        border-radius: 14px !important;
+        background: #fafbfc !important;
+        transition: all 0.2s ease;
+    }
+
+    .text-truncate-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* City suggestions dropdown */
+    .city-autocomplete-wrapper {
+        position: relative;
+    }
+    .city-suggestions-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 1050;
+        background: #ffffff;
+        border: 1.5px solid #cbd5e1;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        margin-top: 4px;
+        max-height: 260px;
+        overflow-y: auto;
+    }
+    .city-dropdown-header {
+        padding: 8px 14px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 12px;
+        font-weight: 700;
+        color: #64748b;
+    }
+    .city-suggestion-item {
+        padding: 10px 14px;
+        font-size: 13.5px;
+        cursor: pointer;
+        border-bottom: 1px solid #f1f5f9;
+        transition: background 0.15s ease;
+    }
+    .city-suggestion-item:last-child {
+        border-bottom: none;
+    }
+    .city-suggestion-item:hover,
+    .city-suggestion-item.active {
+        background: #f1f5f9;
+    }
+    .city-manual-choice {
+        background: #fefce8;
+    }
+    .city-manual-choice:hover {
+        background: #fef9c3;
+    }
+    .city-no-match-box {
+        padding: 14px;
+        font-size: 13px;
+        cursor: pointer;
+    }
+
+    .city-status-pill {
+        border-radius: 9999px;
+        padding: 6px 14px;
+        font-size: 12.5px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .city-status-pill.matched {
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        color: #065f46;
+    }
+    .city-status-pill.manual {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        color: #166534;
+    }
+</style>
+
+<div class="checkout-wrapper py-3 py-md-5">
     <div class="container">
-        <div class="row">
+        
+        <!-- Breadcrumb Navigation -->
+        <div class="mb-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 small">
+                    <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-decoration-none text-muted">{{ __('Home') }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('cart.index') }}" class="text-decoration-none text-muted">{{ __('My Cart') }}</a></li>
+                    <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">{{ __('Checkout') }}</li>
+                </ol>
+            </nav>
+        </div>
+
+        <!-- Page Header -->
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+            <h1 class="fw-bold mb-0 font-heading fs-3 text-dark">
+                {{ __('Finaliser la commande') }}
+            </h1>
+            <div class="d-inline-flex align-items-center gap-2 bg-white px-3 py-1.5 rounded-pill border shadow-2xs text-muted small">
+                <i class="fas fa-lock text-success"></i>
+                <span class="fw-semibold text-dark">{{ __('Paiement sécurisé') }}</span>
+            </div>
+        </div>
+
+        <div class="row g-4">
             <div class="col-lg-7">
-                <div class="card border-0 shadow-sm rounded-4 mb-4">
-                    <div class="card-body p-4">
-                        <h4 class="fw-bold mb-4">{{ __('Shipping Information') }}</h4>
+                
+                {{-- Delivery Information Card --}}
+                <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white" style="border: 1px solid #e2e8f0 !important;">
+                    <div class="card-body p-3 p-md-4">
+                        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2 font-heading text-dark">
+                            <i class="fas fa-truck text-primary"></i>
+                            <span>{{ __('Informations de livraison') }}</span>
+                        </h5>
                         <form action="{{ route('checkout.store') }}" method="POST" id="checkout-form">
                             @csrf
                             <div class="row g-3">
                                 <div class="col-12">
-                                    <label class="form-label small fw-bold text-muted">{{ __('FULL NAME') }}</label>
-                                    <input type="text" name="customer_name" class="form-control bg-light border-0 py-2" required>
+                                    <label class="form-label small fw-semibold text-dark mb-1">{{ __('Nom complet') }} <span class="text-danger">*</span></label>
+                                    <input type="text" name="customer_name" class="form-control checkout-input" placeholder="ex. Karim Benali" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">{{ __('EMAIL ADDRESS') }} <span class="text-muted fw-normal">({{ __('optional') }})</span></label>
-                                    <input type="email" name="customer_email" class="form-control bg-light border-0 py-2" placeholder="{{ __('For order confirmation') }}">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">{{ __('PHONE NUMBER') }}</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light border-0">+212</span>
-                                        <input type="tel" name="customer_phone" class="form-control bg-light border-0 py-2" 
+                                    <label class="form-label small fw-semibold text-dark mb-1">{{ __('Numéro de téléphone') }} <span class="text-danger">*</span></label>
+                                    <div class="input-group checkout-input-group">
+                                        <span class="input-group-text">+212</span>
+                                        <input type="tel" name="customer_phone" class="form-control checkout-input" 
                                                placeholder="6 XX XX XX XX" 
                                                pattern="[0-9]{9}" 
-                                               title="Enter 9 digits (e.g. 612345678)" 
+                                               title="Entrez 9 chiffres (ex. 612345678)" 
                                                required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">ICE <span class="text-muted fw-normal">({{ __('optional') }})</span></label>
-                                    <input type="text" name="ice" class="form-control bg-light border-0 py-2" placeholder="{{ __('Common Company Identifier') }}">
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label small fw-bold text-muted">{{ __('ADDRESS') }}</label>
-                                    <input type="text" name="shipping_address" class="form-control bg-light border-0 py-2" required>
+                                    <label class="form-label small fw-semibold text-dark mb-1">{{ __('Adresse e-mail') }} <span class="text-muted fw-normal">({{ __('optionnel') }})</span></label>
+                                    <input type="email" name="customer_email" class="form-control checkout-input" placeholder="{{ __('Pour la confirmation de commande') }}">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">
-                                        {{ __('SHIPPING CITY') }} <span class="text-danger">*</span>
+                                    <label class="form-label small fw-semibold text-dark mb-1">
+                                        {{ __('Ville de livraison') }} <span class="text-danger">*</span>
                                     </label>
                                     <div class="city-autocomplete-wrapper">
-                                        <div class="input-group">
-                                            <span class="input-group-text bg-light border-0"><i class="fas fa-map-marker-alt text-danger"></i></span>
+                                        <div class="input-group checkout-input-group">
+                                            <span class="input-group-text"><i class="fas fa-map-marker-alt text-danger"></i></span>
                                             <input type="text" 
                                                    name="shipping_city" 
                                                    id="shipping_city_input" 
-                                                   class="form-control bg-light border-0 py-2 fw-semibold" 
-                                                   placeholder="{{ __('Type your city (e.g. Casablanca, Agadir, فاس...)') }}" 
+                                                   class="form-control checkout-input fw-semibold" 
+                                                   placeholder="{{ __('Tapez votre ville (ex. Casablanca, Agadir...)') }}" 
                                                    autocomplete="off" 
                                                    required
                                                    value="{{ old('shipping_city') }}">
-                                            <button class="btn btn-light border-0 text-muted px-3" type="button" id="city-clear-btn" style="display: none;" title="{{ __('Clear city') }}">
+                                            <button class="btn btn-light border-0 text-muted px-3" type="button" id="city-clear-btn" style="display: none;" title="{{ __('Effacer la ville') }}">
                                                 <i class="fas fa-times-circle"></i>
                                             </button>
                                         </div>
@@ -66,63 +219,94 @@
 
                                     {{-- Live status indicator --}}
                                     <div id="city-status-container" class="mt-2" style="display: none;"></div>
-
-
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">{{ __('REGION') }} <span class="text-muted fw-normal">({{ __('optional') }})</span></label>
-                                    <input type="text" name="shipping_state" class="form-control bg-light border-0 py-2" placeholder="ex. Casablanca-Settat">
+                                    <label class="form-label small fw-semibold text-dark mb-1">{{ __('Région') }} <span class="text-muted fw-normal">({{ __('optionnel') }})</span></label>
+                                    <input type="text" name="shipping_state" class="form-control checkout-input" placeholder="ex. Casablanca-Settat">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-semibold text-dark mb-1">{{ __('Adresse complète') }} <span class="text-danger">*</span></label>
+                                    <input type="text" name="shipping_address" class="form-control checkout-input" placeholder="{{ __('Quartier, rue, numéro, immeuble...') }}" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-semibold text-dark mb-1">ICE <span class="text-muted fw-normal">({{ __('optionnel pour entreprises') }})</span></label>
+                                    <input type="text" name="ice" class="form-control checkout-input" placeholder="{{ __('Identifiant Commun de l\'Entreprise') }}">
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
 
-                <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-body p-4">
-                        <h4 class="fw-bold mb-4">{{ __('Payment') }}</h4>
-                        <div class="alert alert-info border-0 rounded-3">
-                            <i class="fas fa-info-circle me-2"></i> {{ __('For this shop, you can pay with cash on delivery (cash upon receipt of parcel) or bank transfer.') }}
-                        </div>
-                        <div class="form-check p-3 border rounded-3 bg-white mb-2">
-                            <input class="form-check-input ms-0 me-3" type="radio" name="payment_method" id="cod" checked>
-                            <label class="form-check-label fw-bold" for="cod">
-                                {{ __('Cash on delivery (Cash on Delivery)') }}
-                            </label>
+                {{-- Payment Method Card --}}
+                <div class="card border-0 shadow-sm rounded-4 bg-white mb-4" style="border: 1px solid #e2e8f0 !important;">
+                    <div class="card-body p-3 p-md-4">
+                        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2 font-heading text-dark">
+                            <i class="fas fa-credit-card text-primary"></i>
+                            <span>{{ __('Mode de Paiement') }}</span>
+                        </h5>
+                        
+                        <div class="payment-method-card p-3 p-md-4 d-flex align-items-start gap-3">
+                            <div class="form-check m-0 p-0 d-flex align-items-center pt-1">
+                                <input class="form-check-input m-0" type="radio" name="payment_method" id="cod" value="cod" checked style="width: 20px; height: 20px; cursor: pointer;">
+                            </div>
+                            <div class="flex-grow-1">
+                                <label class="form-check-label fw-bold d-flex align-items-center justify-content-between text-dark mb-1 flex-wrap gap-2" for="cod" style="cursor: pointer;">
+                                    <span class="d-flex align-items-center gap-2">
+                                        <i class="fas fa-hand-holding-dollar text-success"></i> 
+                                        <span>{{ __('Paiement à la livraison') }} (Cash on Delivery)</span>
+                                    </span>
+                                    <span class="badge bg-success-subtle text-success small fw-bold px-2.5 py-1">{{ __('Espèces') }}</span>
+                                </label>
+                                <p class="text-muted small mb-2 lh-sm">
+                                    {{ __('Réglez en espèces directement auprès du livreur à la réception de votre colis. (Virement bancaire également disponible sur demande).') }}
+                                </p>
+                                <div class="d-flex align-items-center gap-2 text-muted" style="font-size: 11.5px;">
+                                    <i class="fas fa-shield-alt text-success"></i>
+                                    <span>{{ __('Vérification du matériel autorisée à la livraison') }}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+
             </div>
 
             <div class="col-lg-5">
-                <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-header bg-white p-4 border-bottom-0">
-                        <h5 class="fw-bold m-0">{{ __('Order Summary') }}</h5>
+                <div class="card border-0 shadow-sm rounded-4 bg-white sticky-top" style="top: 100px; z-index: 10; border: 1px solid #e2e8f0 !important;">
+                    <div class="card-header bg-white p-4 border-bottom-0 pb-0">
+                        <h5 class="fw-bold m-0 font-heading d-flex align-items-center gap-2 text-dark">
+                            <i class="fas fa-receipt text-primary"></i>
+                            <span>{{ __('Order Summary') }}</span>
+                        </h5>
                     </div>
-                    <div class="card-body p-4 pt-0">
-                        @foreach($cart as $id => $details)
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="me-3 position-relative">
-                                @php
-                                    $chkImg = (isset($details['image']) && (str_starts_with($details['image'], 'http') || str_starts_with($details['image'], '/') || str_starts_with($details['image'], 'images/'))) 
-                                        ? asset(ltrim($details['image'], '/')) 
-                                        : (isset($details['image']) ? Storage::url($details['image']) : asset('images/camera/cat_cameras.jpg'));
-                                @endphp
-                                <img src="{{ $chkImg }}" alt="{{ $details['name'] }}" class="rounded-3" style="width: 60px; height: 60px; object-fit: cover;">
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary tiny-badge">{{ $details['quantity'] }}</span>
+                    <div class="card-body p-4">
+                        <div class="d-flex flex-column gap-3 mb-3">
+                            @foreach($cart as $id => $details)
+                            @php
+                                $chkImg = (isset($details['image']) && (str_starts_with($details['image'], 'http') || str_starts_with($details['image'], '/') || str_starts_with($details['image'], 'images/'))) 
+                                    ? asset(ltrim($details['image'], '/')) 
+                                    : (isset($details['image']) ? Storage::url($details['image']) : asset('images/camera/cat_cameras.jpg'));
+                            @endphp
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="position-relative flex-shrink-0">
+                                    <img src="{{ $chkImg }}" alt="{{ $details['name'] }}" class="rounded-3 border object-fit-cover shadow-2xs" style="width: 62px; height: 62px; border-color: #f1f5f9 !important;">
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark text-white border border-white" style="font-size: 11px;">
+                                        {{ $details['quantity'] }}
+                                    </span>
+                                </div>
+                                <div class="flex-grow-1 min-w-0">
+                                    <h6 class="fw-bold mb-0 text-dark small text-truncate-2 lh-sm">{{ $details['name'] }}</h6>
+                                </div>
+                                <div class="fw-bold text-dark text-nowrap small">{{ currency($details['price'] * $details['quantity']) }}</div>
                             </div>
-                            <div class="flex-grow-1">
-                                <h6 class="fw-bold mb-0 text-truncate" style="max-width: 150px;">{{ $details['name'] }}</h6>
-                            </div>
-                            <div class="fw-bold">{{ currency($details['price'] * $details['quantity']) }}</div>
+                            @endforeach
                         </div>
-                        @endforeach
                         
-                        <hr class="my-4 opacity-10">
+                        <hr class="my-3 opacity-10">
                         
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted">{{ __('Subtotal') }}</span>
-                            <span class="fw-bold" id="checkout-subtotal" 
+                        <div class="d-flex justify-content-between mb-2 text-muted small">
+                            <span>{{ __('Subtotal') }}</span>
+                            <span class="fw-bold text-dark" id="checkout-subtotal" 
                                   data-subtotal="{{ $total }}"
                                   data-currency-symbol="{{ setting('currency_symbol', 'DH') }}"
                                   data-currency-decimals="{{ setting('currency_decimals', 2) }}"
@@ -132,27 +316,29 @@
                                 {{ currency($total) }}
                             </span>
                         </div>
-                        <div class="d-flex justify-content-between mb-4 align-items-center">
-                            <span class="text-muted">{{ __('Shipping Fee') }}</span>
-                            <span class="fw-bold" id="checkout-shipping-cost">
-                                <span class="text-muted small">{{ __('Select a city') }}</span>
+                        <div class="d-flex justify-content-between mb-3 text-muted small align-items-center">
+                            <span>{{ __('Frais de livraison') }}</span>
+                            <span class="fw-bold text-dark" id="checkout-shipping-cost">
+                                <span class="text-muted small">{{ __('Tapez votre ville') }}</span>
                             </span>
                         </div>
-                        <div class="d-flex justify-content-between align-items-center py-3 border-top">
-                            <span class="h5 fw-bold mb-0">{{ __('Total') }}</span>
-                            <span class="h4 fw-bold text-danger mb-0" id="checkout-total">{{ currency($total) }}</span>
+                        <div class="d-flex justify-content-between align-items-center py-3 border-top mb-3">
+                            <span class="h6 fw-bold mb-0 text-dark">{{ __('Total TTC') }}</span>
+                            <span class="h4 fw-bold text-dark mb-0" id="checkout-total">{{ currency($total) }}</span>
                         </div>
 
-                        <button type="submit" form="checkout-form" id="checkout-submit-btn" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow">
-                            {{ __('Place Order') }} (<span id="btn-total-label">{{ currency($total) }}</span>)
+                        <button type="submit" form="checkout-form" id="checkout-submit-btn" class="btn w-100 rounded-pill fw-bold py-3 shadow-md d-flex align-items-center justify-content-center gap-2" style="background-color: #0f172a !important; border-color: #0f172a !important; color: #ffffff !important;">
+                            <span>{{ __('Confirmer la commande') }}</span> (<span id="btn-total-label">{{ currency($total) }}</span>)
+                            <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }}"></i>
                         </button>
+
+                        <div class="text-center mt-3">
+                            <a href="{{ route('cart.index') }}" class="text-muted text-decoration-none small d-inline-flex align-items-center gap-1 hover-text-dark">
+                                <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-right' : 'fa-arrow-left' }}"></i>
+                                <span>{{ __('Return to cart') }}</span>
+                            </a>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="text-center mt-4">
-                    <a href="{{ route('cart.index') }}" class="text-muted text-decoration-none small">
-                        <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-right me-1' : 'fa-arrow-left me-1' }}"></i> {{ __('Return to cart') }}
-                    </a>
                 </div>
             </div>
         </div>
