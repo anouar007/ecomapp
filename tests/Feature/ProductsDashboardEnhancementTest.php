@@ -97,4 +97,57 @@ class ProductsDashboardEnhancementTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('brand-table-products');
     }
+
+    public function test_product_create_and_edit_pages_render_without_error(): void
+    {
+        $product = Product::first();
+
+        // 1. Create page renders with 200 and no blade error
+        $response = $this->actingAs($this->admin)->get(route('products.create'));
+        $response->assertStatus(200);
+        $response->assertSee('Add New Product');
+
+        // 2. Edit page renders with 200 and product data
+        $response = $this->actingAs($this->admin)->get(route('products.edit', $product));
+        $response->assertStatus(200);
+        $response->assertSee($product->name);
+
+        // 3. Show page redirects cleanly to edit
+        $response = $this->actingAs($this->admin)->get(route('products.show', $product));
+        $response->assertRedirect(route('products.edit', $product));
+    }
+
+    public function test_product_store_creates_slug_and_syncs_stock(): void
+    {
+        $sku = 'TEST-CR-' . time();
+        $response = $this->actingAs($this->admin)->post(route('products.store'), [
+            'name' => 'Brand New Test Product',
+            'sku' => $sku,
+            'price' => 150.00,
+            'cost_price' => 100.00,
+            'stock' => 15,
+            'min_stock' => 3,
+            'status' => 'active',
+            'category_id' => '',
+        ]);
+
+        $response->assertRedirect(route('products.index'));
+
+        $product = Product::where('sku', $sku)->first();
+        $this->assertNotNull($product);
+        $this->assertNotEmpty($product->slug);
+        $this->assertEquals(15, $product->stock_quantity);
+        $this->assertEquals(3, $product->low_stock_threshold);
+
+        // Cleanup
+        $product->delete();
+    }
+
+    public function test_image_quality_hub_page_renders(): void
+    {
+        $response = $this->actingAs($this->admin)->get(route('products.image-quality'));
+        $response->assertStatus(200);
+        $response->assertSee('Studio Qualité Images 4K');
+    }
 }
+

@@ -61,12 +61,12 @@
             </button>
 
             <div class="user-avatar" id="user-menu-trigger">
-                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                {{ strtoupper(substr(auth()->user()?->name ?? 'A', 0, 1)) }}
             </div>
             <div class="user-dropdown">
                 <div class="user-dropdown-header">
-                    <div class="user-dropdown-name">{{ auth()->user()->name }}</div>
-                    <div class="user-dropdown-email">{{ auth()->user()->email }}</div>
+                    <div class="user-dropdown-name">{{ auth()->user()?->name ?? 'Admin' }}</div>
+                    <div class="user-dropdown-email">{{ auth()->user()?->email ?? '' }}</div>
                 </div>
                 <a href="{{ route('profile.show') }}" class="user-dropdown-item">
                     <i class="fas fa-user"></i>

@@ -222,7 +222,11 @@
 
                     <!-- Action Button -->
                     <button type="button" 
-                            onclick="open4kFinderModal({{ $product->id }}, '{{ addslashes($product->name) }}', '{{ $product->thumbnail }}', '{{ $product->image_width ? $product->image_width . '×' . $product->image_height : 'SD' }}')"
+                            data-product-id="{{ $product->id }}"
+                            data-product-name="{{ $product->name }}"
+                            data-product-thumbnail="{{ $product->thumbnail }}"
+                            data-product-resolution="{{ $product->image_width ? $product->image_width . '×' . $product->image_height : 'SD' }}"
+                            onclick="open4kFinderFromElement(this)"
                             class="btn btn-sm w-100 rounded-pill fw-semibold d-flex align-items-center justify-content-center gap-2 shadow-xs"
                             style="background: #f8fafc; border: 1.5px solid #e2e8f0; color: #4338ca; transition: all 0.2s;"
                             onmouseenter="this.style.background='#4f46e5'; this.style.color='#ffffff'; this.style.borderColor='#4f46e5';"
@@ -328,6 +332,15 @@
         const checkboxes = document.querySelectorAll('.hub-checkbox');
         checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
         updateHubSelection();
+    }
+
+    function open4kFinderFromElement(el) {
+        if (!el) return;
+        const productId = el.getAttribute('data-product-id');
+        const productName = el.getAttribute('data-product-name');
+        const currentImg = el.getAttribute('data-product-thumbnail');
+        const currentRes = el.getAttribute('data-product-resolution');
+        open4kFinderModal(productId, productName, currentImg, currentRes);
     }
 
     function open4kFinderModal(productId, productName, currentImg, currentRes) {

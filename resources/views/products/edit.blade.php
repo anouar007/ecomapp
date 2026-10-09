@@ -82,7 +82,7 @@
     <p class="page-subtitle">Update product information</p>
 </div>
 
-@if($errors->any())
+@if(isset($errors) && $errors->any())
 <div class="alert alert-danger">
     <i class="fas fa-exclamation-circle"></i>
     <div>
@@ -179,7 +179,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="cost_price" class="form-label">
-                        <i class="fas fa-dollar-sign"></i> Cost Price ($)
+                        <i class="fas fa-coins"></i> Cost Price ({{ setting('currency_symbol', '$') }})
                     </label>
                     <input type="number" 
                            id="cost_price" 
@@ -194,7 +194,7 @@
 
                 <div class="form-group">
                     <label for="price" class="form-label">
-                        <i class="fas fa-tag"></i> Selling Price ($) <span class="required">*</span>
+                        <i class="fas fa-tag"></i> Selling Price ({{ setting('currency_symbol', '$') }}) <span class="required">*</span>
                     </label>
                     <input type="number" 
                            id="price" 
@@ -213,7 +213,7 @@
             <div class="alert alert-info" style="margin-bottom: 24px;">
                 <i class="fas fa-chart-line"></i>
                 <strong>Profit Margin:</strong> {{ number_format($product->profit_margin, 2) }}% 
-                (Profit: ${{ number_format($product->price - $product->cost_price, 2) }} per unit)
+                (Profit: {{ currency($product->price - $product->cost_price) }} per unit)
             </div>
             @endif
 

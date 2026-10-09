@@ -88,6 +88,14 @@ class ProductController extends Controller
     }
 
     /**
+     * Display the specified product.
+     */
+    public function show(Product $product)
+    {
+        return redirect()->route('products.edit', $product);
+    }
+
+    /**
      * Show the form for creating a new product.
      */
     public function create()
@@ -104,6 +112,10 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        if ($request->has('category_id') && empty($request->category_id)) {
+            $request->merge(['category_id' => null]);
+        }
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'sku' => ['required', 'string', 'max:255', 'unique:products,sku'],
@@ -116,6 +128,17 @@ class ProductController extends Controller
             'images.*' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
         ]);
+
+        if (empty($validated['slug'])) {
+            $baseSlug = \Illuminate\Support\Str::slug($validated['name']);
+            $slug = $baseSlug ?: 'product';
+            $counter = 1;
+            while (Product::where('slug', $slug)->exists()) {
+                $slug = "{$baseSlug}-{$counter}";
+                $counter++;
+            }
+            $validated['slug'] = $slug;
+        }
 
         DB::beginTransaction();
         try {
@@ -169,6 +192,10 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
+        if ($request->has('category_id') && empty($request->category_id)) {
+            $request->merge(['category_id' => null]);
+        }
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'sku' => ['required', 'string', 'max:255', 'unique:products,sku,' . $product->id],
@@ -184,6 +211,17 @@ class ProductController extends Controller
             'remove_images.*' => ['exists:product_images,id'],
         ]);
 
+        if (empty($product->slug)) {
+            $baseSlug = \Illuminate\Support\Str::slug($validated['name']);
+            $slug = $baseSlug ?: 'product';
+            $counter = 1;
+            while (Product::where('slug', $slug)->where('id', '!=', $product->id)->exists()) {
+                $slug = "{$baseSlug}-{$counter}";
+                $counter++;
+            }
+            $validated['slug'] = $slug;
+        }
+
         DB::beginTransaction();
         try {
             $product->update($validated);
@@ -194,6 +232,11 @@ class ProductController extends Controller
                 foreach ($imagesToRemove as $img) {
                     Storage::disk('public')->delete($img->image_path);
                     $img->delete();
+                }
+
+                // If primary was removed, promote the first remaining image
+                if ($product->images()->count() > 0 && !$product->images()->where('is_primary', true)->exists()) {
+                    $product->images()->first()->update(['is_primary' => true]);
                 }
             }
 

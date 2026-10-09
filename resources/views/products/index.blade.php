@@ -283,7 +283,11 @@
                                     </div>
                                     <button type="button" 
                                             class="prod-avatar-badge" 
-                                            onclick="open4kFinderModal({{ $product->id }}, '{{ addslashes($product->name) }}', '{{ $product->thumbnail }}', '{{ $product->image_width ? $product->image_width . '×' . $product->image_height : 'SD' }}')"
+                                            data-product-id="{{ $product->id }}"
+                                            data-product-name="{{ $product->name }}"
+                                            data-product-thumbnail="{{ $product->thumbnail }}"
+                                            data-product-resolution="{{ $product->image_width ? $product->image_width . '×' . $product->image_height : 'SD' }}"
+                                            onclick="open4kFinderFromElement(this)"
                                             title="Trouver la meilleure image 4K"
                                             data-bs-toggle="tooltip">
                                         <i class="fas fa-wand-magic-sparkles"></i>
@@ -369,7 +373,11 @@
                                         class="action-btn action-btn-4k" 
                                         title="Trouver image 4K Studio" 
                                         data-bs-toggle="tooltip"
-                                        onclick="open4kFinderModal({{ $product->id }}, '{{ addslashes($product->name) }}', '{{ $product->thumbnail }}', '{{ $product->image_width ? $product->image_width . '×' . $product->image_height : 'SD' }}')">
+                                        data-product-id="{{ $product->id }}"
+                                        data-product-name="{{ $product->name }}"
+                                        data-product-thumbnail="{{ $product->thumbnail }}"
+                                        data-product-resolution="{{ $product->image_width ? $product->image_width . '×' . $product->image_height : 'SD' }}"
+                                        onclick="open4kFinderFromElement(this)">
                                     <i class="fas fa-wand-magic-sparkles"></i>
                                 </button>
                                 <a href="{{ route('products.edit', $product) }}" 
@@ -957,6 +965,15 @@
 
     // 4K Finder Modal State
     let current4kProductId = null;
+
+    function open4kFinderFromElement(el) {
+        if (!el) return;
+        const productId = el.getAttribute('data-product-id');
+        const productName = el.getAttribute('data-product-name');
+        const currentImg = el.getAttribute('data-product-thumbnail');
+        const currentRes = el.getAttribute('data-product-resolution');
+        open4kFinderModal(productId, productName, currentImg, currentRes);
+    }
 
     function open4kFinderModal(productId, productName, currentImg, currentRes) {
         current4kProductId = productId;
