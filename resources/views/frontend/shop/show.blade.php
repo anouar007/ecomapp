@@ -296,16 +296,6 @@
                         @endif
                     </div>
 
-                    @if($product->description)
-                    <div class="pdp-description entry-content">
-                        @if(strip_tags($product->description) !== $product->description)
-                            {!! $product->description !!}
-                        @else
-                            {!! nl2br(e($product->description)) !!}
-                        @endif
-                    </div>
-                    @endif
-
                     <div class="pdp-divider"></div>
 
                     @if($product->isInStock())
@@ -365,6 +355,30 @@
 
             </div>
         </div>
+
+        {{-- DEDICATED PRODUCT DESCRIPTION CONTAINER --}}
+        @if($product->description)
+        <div class="pdp-description-wrapper mt-4">
+            <div class="pdp-section-card pdp-description-card">
+                <div class="pdp-description-header d-flex align-items-center justify-content-between pb-3 mb-4 border-bottom flex-wrap gap-2">
+                    <h2 class="pdp-section-title mb-0 d-flex align-items-center">
+                        <i class="fas fa-file-lines me-2 text-danger"></i>
+                        <span>{{ __('Description détaillée') }}</span>
+                    </h2>
+                    <span class="badge bg-light text-muted border px-3 py-2 rounded-pill small">
+                        <i class="fas fa-check-double text-success me-1"></i>{{ __('Fiche technique officielle') }}
+                    </span>
+                </div>
+                <div class="pdp-description entry-content">
+                    @if(strip_tags($product->description) !== $product->description)
+                        {!! $product->description !!}
+                    @else
+                        {!! nl2br(e($product->description)) !!}
+                    @endif
+                </div>
+            </div>
+        </div>
+        @endif
 
         {{-- REVIEWS --}}
         <div class="row g-4 mt-4">

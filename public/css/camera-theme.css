@@ -10770,3 +10770,69 @@ body:has(.cart-page) .floating-checkout-wrap {
         width: auto !important;
     }
 }
+
+/* ================================================================
+   PDP PRODUCT DESCRIPTION CONTAINER UNDER PDP-CARD
+   ================================================================ */
+.pdp-description-wrapper {
+    margin-top: 2rem !important;
+    margin-bottom: 2rem !important;
+}
+
+.pdp-description-card {
+    background: #ffffff !important;
+    border: 1px solid var(--light-border, #e2e8f0) !important;
+    border-radius: clamp(16px, 2.5vw, 24px) !important;
+    padding: clamp(20px, 4vw, 36px) !important;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04) !important;
+}
+
+.pdp-description-header {
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.pdp-description-wrapper .pdp-description {
+    font-size: clamp(0.92rem, 1.4vw, 1rem);
+    line-height: 1.8;
+    color: #334155;
+    margin-bottom: 0;
+}
+
+.pdp-description-wrapper .pdp-description img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+    margin: 16px auto;
+    display: block;
+}
+
+.pdp-description-wrapper .pdp-description table {
+    width: 100% !important;
+    max-width: 100%;
+    overflow-x: auto;
+    display: block;
+    margin: 18px 0;
+    border-collapse: collapse;
+}
+
+.pdp-description-wrapper .pdp-description h1,
+.pdp-description-wrapper .pdp-description h2,
+.pdp-description-wrapper .pdp-description h3,
+.pdp-description-wrapper .pdp-description h4 {
+    color: var(--brand-black, #0f172a);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.pdp-description-wrapper .pdp-description ul,
+.pdp-description-wrapper .pdp-description ol {
+    padding-inline-start: 1.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.pdp-description-wrapper .pdp-description li {
+    margin-bottom: 0.4rem;
+}
