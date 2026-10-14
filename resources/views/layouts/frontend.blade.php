@@ -178,7 +178,7 @@
         }
         h1, h2, h3, h4, h5, h6, .font-heading, .brand-title, .page-title, .hero-title, .section-title, .product-title, .product-card-title {
             font-family: "Roboto", sans-serif !important;
-            font-weight: 400 !important;
+            font-weight: 500 !important;
         }
         b, strong, .fw-bold, .fw-semibold, .fw-bolder, .fw-extrabold, th, dt, .product-price, .nav-link-item, .price-display, .badge, .btn {
             font-weight: 400 !important;
