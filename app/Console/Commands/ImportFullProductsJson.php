@@ -17,16 +17,14 @@ class ImportFullProductsJson extends Command
      *
      * @var string
      */
-    protected $signature = 'products:import-full 
-                            {file=/Users/user/Downloads/products_full.json : Path to the products_full.json file}
-                            {--images-dir=public/images/products : Local folder containing product images}';
+    protected $signature = 'products:import-full {file=/Users/user/Downloads/products_full.json}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Wipe existing products and import all products from products_full.json connecting images from public/images/products and assigning to the correct category';
+    protected $description = 'Wipe existing products and import all products from products_full.json with correct category assignments';
 
     /**
      * Execute the console command.
@@ -53,27 +51,7 @@ class ImportFullProductsJson extends Command
         $totalItems = count($items);
         $this->info("Found {$totalItems} products in JSON.");
 
-        // 1. Index local image directory for instant filename lookup
-        $imagesDirArg = $this->option('images-dir') ?: 'public/images/products';
-        $imagesDir = str_starts_with($imagesDirArg, '/') ? $imagesDirArg : base_path($imagesDirArg);
-
-        $localImageMap = [];
-        if (is_dir($imagesDir)) {
-            $files = scandir($imagesDir);
-            foreach ($files as $file) {
-                if ($file === '.' || $file === '..') continue;
-                $localImageMap[$file] = $file;
-                $localImageMap[strtolower($file)] = $file;
-                $decoded = urldecode($file);
-                $localImageMap[$decoded] = $file;
-                $localImageMap[strtolower($decoded)] = $file;
-            }
-            $this->info("Indexed " . count($localImageMap) . " lookup keys from " . count($files) . " local images in: {$imagesDir}");
-        } else {
-            $this->warn("Local images directory not found: {$imagesDir}");
-        }
-
-        // 2. Category mapping lookup
+        // Category mapping lookup
         $categories = Category::all();
         $catMapByName = $categories->pluck('id', 'name')->toArray();
         $catMapBySlug = $categories->pluck('id', 'slug')->toArray();
@@ -133,7 +111,7 @@ class ImportFullProductsJson extends Command
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        $this->info("Database products truncated. Starting import of {$totalItems} products with local image links...");
+        $this->info("Database products truncated. Starting import of {$totalItems} products...");
 
         $progressBar = $this->output->createProgressBar($totalItems);
         $progressBar->start();
@@ -141,8 +119,6 @@ class ImportFullProductsJson extends Command
         $usedSlugs = [];
         $categoryCounts = [];
         $importedCount = 0;
-        $localImagesMatchedCount = 0;
-        $remoteFallbackCount = 0;
 
         foreach ($items as $item) {
             $name = trim($item['Nom'] ?? '');
@@ -151,7 +127,7 @@ class ImportFullProductsJson extends Command
                 continue;
             }
 
-            // A. Resolve Category
+            // 1. Resolve Category
             $rawCats = $item['Catégories'] ?? '';
             $catList = array_values(array_filter(array_map('trim', explode(',', $rawCats)), function ($c) {
                 return $c !== '' && $c !== 'Tous les produits' && $c !== 'Promotion';
@@ -198,7 +174,7 @@ class ImportFullProductsJson extends Command
             $categoryId = $catMapByName[$targetCategoryName] ?? ($catMapBySlug[Str::slug($targetCategoryName)] ?? 10);
             $categoryCounts[$targetCategoryName] = ($categoryCounts[$targetCategoryName] ?? 0) + 1;
 
-            // B. Parse Prices
+            // 2. Parse Prices
             $regularPrice = $this->parsePrice($item['Tarif régulier'] ?? null);
             $promoPrice = $this->parsePrice($item['Tarif promo'] ?? null);
 
@@ -214,7 +190,7 @@ class ImportFullProductsJson extends Command
                 $salePrice = $promoPrice;
             }
 
-            // C. Unique Slug
+            // 3. Unique Slug
             $baseSlug = Str::slug($name) ?: 'produit';
             $slug = $baseSlug;
             $counter = 1;
@@ -224,14 +200,14 @@ class ImportFullProductsJson extends Command
             }
             $usedSlugs[$slug] = true;
 
-            // D. Parse SKU
+            // 4. Parse SKU
             $sku = trim((string)($item['UGS'] ?? ''));
             if ($sku === '') {
                 $wcId = $item['ID'] ?? ($importedCount + 1);
                 $sku = 'WINA-' . $wcId;
             }
 
-            // E. Stock & Inventory
+            // 5. Stock & Inventory
             $inStock = ($item['En stock ?'] ?? '1') == '1';
             $stockRaw = $item['Stock'] ?? null;
             $stock = 10;
@@ -241,61 +217,18 @@ class ImportFullProductsJson extends Command
                 $stock = 0;
             }
 
-            // F. Description
+            // 6. Description
             $desc = trim($item['Description'] ?? '');
             if ($desc === '') {
                 $desc = trim($item['Description courte'] ?? '');
             }
 
-            // G. Parse & Link Images to public/images/products
+            // 7. Parse Images
             $imagesStr = $item['Images'] ?? '';
             $imageUrls = array_values(array_filter(array_map('trim', explode(',', $imagesStr))));
+            $primaryImage = $imageUrls[0] ?? 'images/camera/cat_cameras.jpg';
 
-            $resolvedImages = [];
-            $primaryWidth = null;
-            $primaryHeight = null;
-            $primaryQuality = 'fhd';
-
-            foreach ($imageUrls as $idx => $url) {
-                $rawFileName = basename(parse_url($url, PHP_URL_PATH));
-                $decodedFileName = urldecode($rawFileName);
-
-                $matchedFile = $localImageMap[$rawFileName] 
-                    ?? ($localImageMap[strtolower($rawFileName)] 
-                    ?? ($localImageMap[$decodedFileName] 
-                    ?? ($localImageMap[strtolower($decodedFileName)] ?? null)));
-
-                if ($matchedFile && file_exists($imagesDir . '/' . $matchedFile)) {
-                    $localRelPath = 'images/products/' . $matchedFile;
-                    $resolvedImages[] = $localRelPath;
-                    $localImagesMatchedCount++;
-
-                    if ($idx === 0) {
-                        $info = @getimagesize($imagesDir . '/' . $matchedFile);
-                        if ($info) {
-                            $primaryWidth = $info[0] ?? null;
-                            $primaryHeight = $info[1] ?? null;
-                            if ($primaryWidth >= 2160) {
-                                $primaryQuality = '4k';
-                            } elseif ($primaryWidth >= 1080) {
-                                $primaryQuality = 'fhd';
-                            } elseif ($primaryWidth >= 720) {
-                                $primaryQuality = 'sd';
-                            } else {
-                                $primaryQuality = 'low';
-                            }
-                        }
-                    }
-                } else {
-                    // Fallback to original remote URL
-                    $resolvedImages[] = $url;
-                    $remoteFallbackCount++;
-                }
-            }
-
-            $primaryImage = $resolvedImages[0] ?? 'images/camera/cat_cameras.jpg';
-
-            // H. Create Product Record
+            // 8. Create Product Record
             $product = Product::create([
                 'name' => $name,
                 'sku' => $sku,
@@ -314,19 +247,17 @@ class ImportFullProductsJson extends Command
                 'category' => $targetCategoryName,
                 'status' => ($item['Publié'] ?? 1) == 1 ? 'active' : 'inactive',
                 'image' => $primaryImage,
-                'image_width' => $primaryWidth,
-                'image_height' => $primaryHeight,
-                'image_quality' => $primaryQuality,
+                'image_quality' => 'fhd',
             ]);
 
-            // I. Insert Images into product_images table
-            if (!empty($resolvedImages)) {
+            // 9. Insert Images into product_images
+            if (!empty($imageUrls)) {
                 $imgRecords = [];
                 $now = now();
-                foreach ($resolvedImages as $idx => $path) {
+                foreach ($imageUrls as $idx => $url) {
                     $imgRecords[] = [
                         'product_id' => $product->id,
-                        'image_path' => $path,
+                        'image_path' => $url,
                         'sort_order' => $idx,
                         'is_primary' => ($idx === 0) ? 1 : 0,
                         'created_at' => $now,
@@ -343,7 +274,6 @@ class ImportFullProductsJson extends Command
         $progressBar->finish();
         $this->newLine(2);
         $this->info("Import complete! Successfully imported {$importedCount} products.");
-        $this->info("Local images matched: {$localImagesMatchedCount} | Fallbacks: {$remoteFallbackCount}");
 
         // Category summary table
         $tableData = [];
