@@ -18,20 +18,385 @@
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
-    .btn-action {
-        border-radius: 8px;
-        padding: 8px 16px;
-        font-weight: 600;
-        font-size: 13px;
-        transition: all 0.2s;
+    /* ── Pro Header & Action Buttons System ── */
+    .invoice-top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .invoice-top-actions {
         display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    /* Pro Button Base */
+    .btn-pro,
+    .btn-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        height: 38px;
+        padding: 0 16px;
+        font-size: 13px;
+        font-weight: 600;
+        font-family: inherit;
+        border-radius: 9px;
+        text-decoration: none;
+        white-space: nowrap;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+        user-select: none;
+        line-height: 1;
+    }
+
+    .btn-pro:hover,
+    .btn-action:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+    }
+
+    .btn-pro:active,
+    .btn-action:active {
+        transform: translateY(0);
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+    }
+
+    .btn-pro:focus-visible,
+    .btn-action:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.15);
+    }
+
+    /* Remove bootstrap arrow and use custom pro chevron */
+    .btn-pro.dropdown-toggle::after,
+    .btn-action.dropdown-toggle::after {
+        display: none !important;
+    }
+
+    .btn-chevron {
+        font-size: 9.5px;
+        transition: transform 0.2s ease;
+        opacity: 0.6;
+        margin-left: 3px;
+    }
+
+    .dropdown.show .btn-chevron,
+    .dropdown.show button .btn-chevron {
+        transform: rotate(180deg);
+    }
+
+    /* Dark Slate Primary (Télécharger PDF) */
+    .btn-pro-primary {
+        background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
+        color: #ffffff !important;
+        border-color: #0f172a !important;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12), 0 3px 8px -1px rgba(15, 23, 42, 0.24) !important;
+    }
+
+    .btn-pro-primary:hover {
+        background: linear-gradient(180deg, #334155 0%, #1e293b 100%) !important;
+        border-color: #1e293b !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 14px -1px rgba(15, 23, 42, 0.34) !important;
+    }
+
+    .btn-pro-primary i:not(.btn-chevron) {
+        color: #ffffff;
+    }
+
+    /* Secondary White Card (Imprimer, Modifier) */
+    .btn-pro-secondary {
+        background: #ffffff !important;
+        color: #1e293b !important;
+        border-color: #e2e8f0 !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+    }
+
+    .btn-pro-secondary:hover {
+        background: #f8fafc !important;
+        color: #0f172a !important;
+        border-color: #cbd5e1 !important;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06) !important;
+    }
+
+    .btn-pro-secondary i:not(.btn-chevron) {
+        color: #64748b;
+        transition: color 0.15s;
+    }
+
+    .btn-pro-secondary:hover i:not(.btn-chevron) {
+        color: #0f172a;
+    }
+
+    /* Emerald Soft Tint (Garantie) */
+    .btn-pro-emerald {
+        background: linear-gradient(180deg, #f0fdf4 0%, #ecfdf5 100%) !important;
+        color: #047857 !important;
+        border-color: #a7f3d0 !important;
+        box-shadow: 0 1px 2px rgba(16, 185, 129, 0.06) !important;
+    }
+
+    .btn-pro-emerald:hover {
+        background: linear-gradient(180deg, #dcfce7 0%, #d1fae5 100%) !important;
+        color: #065f46 !important;
+        border-color: #6ee7b7 !important;
+        box-shadow: 0 3px 10px rgba(16, 185, 129, 0.14) !important;
+    }
+
+    .btn-pro-emerald i:not(.btn-chevron) {
+        color: #059669;
+    }
+
+    /* Success Gradient (Paiement) */
+    .btn-pro-success {
+        background: linear-gradient(180deg, #10b981 0%, #059669 100%) !important;
+        color: #ffffff !important;
+        border-color: #059669 !important;
+        box-shadow: 0 1px 2px rgba(16, 185, 129, 0.15), 0 3px 8px rgba(16, 185, 129, 0.2) !important;
+    }
+
+    .btn-pro-success:hover {
+        background: linear-gradient(180deg, #059669 0%, #047857 100%) !important;
+        color: #ffffff !important;
+        border-color: #047857 !important;
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.28) !important;
+    }
+
+    /* Dropdown Floating Glass Card */
+    .pro-dropdown-menu {
+        border-radius: 12px !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: 0 12px 30px -4px rgba(15, 23, 42, 0.14), 0 4px 10px -2px rgba(15, 23, 42, 0.05) !important;
+        padding: 6px !important;
+        min-width: 240px !important;
+        background: #ffffff !important;
+        margin-top: 6px !important;
+    }
+
+    .pro-dropdown-header {
+        font-size: 10px !important;
+        font-weight: 700 !important;
+        color: #94a3b8 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.6px !important;
+        padding: 6px 10px 4px !important;
+        display: flex;
         align-items: center;
         gap: 6px;
     }
 
-    .btn-action:hover {
+    .pro-dropdown-item {
+        padding: 7px 10px !important;
+        border-radius: 8px !important;
+        font-size: 12.5px !important;
+        font-weight: 500 !important;
+        color: #334155 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        text-decoration: none !important;
+        transition: all 0.15s ease !important;
+    }
+
+    .pro-dropdown-item:hover {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+    }
+
+    .pro-icon-box {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11.5px;
+        flex-shrink: 0;
+    }
+
+    .pro-icon-box.emerald {
+        background: #ecfdf5;
+        color: #059669;
+    }
+
+    .pro-icon-box.slate {
+        background: #f1f5f9;
+        color: #64748b;
+    }
+
+    .pro-icon-box.amber {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .pro-dropdown-divider {
+        border-top: 1px solid #f1f5f9 !important;
+        margin: 5px 0 !important;
+        list-style: none;
+    }
+
+    /* ── Pro Mode Aperçu Bar & Segmented Control ── */
+    .invoice-preview-controls-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+    }
+
+    .preview-mode-tag {
+        font-size: 11px;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .segmented-control {
+        display: inline-flex;
+        align-items: center;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 9px;
+        padding: 3px;
+        gap: 2px;
+    }
+
+    .segmented-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 13px;
+        border-radius: 7px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #64748b;
+        text-decoration: none;
+        transition: all 0.16s ease;
+        white-space: nowrap;
+        line-height: 1.2;
+    }
+
+    .segmented-btn:hover {
+        color: #0f172a;
+    }
+
+    .segmented-btn.active {
+        background: #ffffff;
+        color: #0f172a;
+        font-weight: 700;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+
+    .segmented-btn.active i {
+        color: #0f172a;
+    }
+
+    .segmented-btn:not(.active) i {
+        color: #94a3b8;
+    }
+
+    .stamp-pill-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 5.5px 13px;
+        border-radius: 9px;
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+        cursor: pointer;
+        white-space: nowrap;
+        line-height: 1.2;
+    }
+
+    .stamp-pill-toggle.stamp-on {
+        background: #ecfdf5;
+        color: #047857;
+        border: 1px solid #a7f3d0;
+        box-shadow: 0 1px 2px rgba(16, 185, 129, 0.06);
+    }
+
+    .stamp-pill-toggle.stamp-on:hover {
+        background: #d1fae5;
+        color: #065f46;
+        border-color: #6ee7b7;
         transform: translateY(-1px);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 2px 6px rgba(16, 185, 129, 0.12);
+    }
+
+    .stamp-pill-toggle.stamp-off {
+        background: #ffffff;
+        color: #64748b;
+        border: 1px dashed #cbd5e1;
+    }
+
+    .stamp-pill-toggle.stamp-off:hover {
+        background: #f8fafc;
+        color: #0f172a;
+        border-color: #94a3b8;
+        transform: translateY(-1px);
+    }
+
+    .stamp-indicator-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        display: inline-block;
+        flex-shrink: 0;
+    }
+
+    .stamp-pill-toggle.stamp-on .stamp-indicator-dot {
+        background: #10b981;
+        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+    }
+
+    .stamp-pill-toggle.stamp-off .stamp-indicator-dot {
+        background: #cbd5e1;
+    }
+
+    /* Back Link Pro */
+    .invoice-back-link {
+        color: #64748b;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 600;
+        font-size: 12.5px;
+        padding: 4px 10px;
+        margin-left: -10px;
+        border-radius: 6px;
+        transition: all 0.15s ease;
+        margin-bottom: 6px;
+    }
+
+    .invoice-back-link:hover {
+        background: #e2e8f0;
+        color: #0f172a;
+    }
+
+    .invoice-back-link i {
+        font-size: 11px;
+        transition: transform 0.15s ease;
+    }
+
+    .invoice-back-link:hover i {
+        transform: translateX(-2px);
     }
 
     /* ── The Document Card (Identical to Print) ── */
@@ -495,13 +860,14 @@
             gap: 8px !important;
             width: 100% !important;
         }
+        .invoice-top-actions .btn-pro,
         .invoice-top-actions .btn-action,
         .invoice-top-actions .dropdown,
         .invoice-top-actions .dropdown > button {
             width: 100% !important;
             justify-content: center !important;
             font-size: 12px !important;
-            padding: 7px 10px !important;
+            padding: 0 10px !important;
         }
         .doc-body {
             padding: 16px 14px !important;
@@ -566,43 +932,49 @@
 <div class="invoice-view-wrapper" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
     <!-- Page Header with Actions -->
     <div style="margin-bottom: 24px;">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 invoice-top-bar">
+        <div class="invoice-top-bar">
             <div>
-                <a href="{{ route('invoices.index') }}" style="color: #64748b; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 8px; font-weight: 600; font-size: 13px;">
+                <a href="{{ route('invoices.index') }}" class="invoice-back-link">
                     <i class="fas fa-arrow-{{ app()->getLocale() === 'ar' ? 'right' : 'left' }}"></i>
-                    {{ __('Retour aux Factures / Devis') }}
+                    <span>{{ __('Retour aux Factures / Devis') }}</span>
                 </a>
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.5px;">
-                        {{ $invoice->isQuote() ? 'DEVIS' : 'FACTURE' }}
+                <div style="display: flex; align-items: center; gap: 12px; margin-top: 2px;">
+                    <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.5px; display: inline-flex; align-items: baseline; gap: 8px;">
+                        <span>{{ $invoice->isQuote() ? 'DEVIS' : 'FACTURE' }}</span>
                         <span style="color: #64748b; font-weight: 600; font-size: 19px;">#{{ $invoice->display_number ?? $invoice->invoice_number }}</span>
                     </h1>
                 </div>
 
                 {{-- Interactive Mode Controls (Facture / Devis & Stamp) --}}
-                <div class="invoice-top-mode-pills" style="display: flex; gap: 8px; align-items: center; margin-top: 10px; flex-wrap: wrap;">
-                    <span style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">{{ __('Mode Aperçu') }}:</span>
-                    
-                    {{-- Toggle Facture --}}
-                    <a href="{{ route('invoices.show', [$invoice, 'as' => 'facture', 'with_stamp' => $withStamp ? 1 : 0]) }}" 
-                       class="btn btn-sm {{ !$invoice->isQuote() ? 'btn-dark' : 'btn-outline-secondary' }}"
-                       style="font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 20px;">
-                        <i class="fas fa-file-invoice me-1"></i> Facture
-                    </a>
+                <div class="invoice-preview-controls-bar">
+                    <span class="preview-mode-tag">
+                        <i class="fas fa-sliders" style="font-size: 10px;"></i>
+                        <span>{{ __('Mode Aperçu') }}:</span>
+                    </span>
 
-                    {{-- Toggle Devis --}}
-                    <a href="{{ route('invoices.show', [$invoice, 'as' => 'devis', 'with_stamp' => $withStamp ? 1 : 0]) }}" 
-                       class="btn btn-sm {{ $invoice->isQuote() ? 'btn-dark' : 'btn-outline-secondary' }}"
-                       style="font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 20px;">
-                        <i class="fas fa-file-signature me-1"></i> Devis
-                    </a>
+                    {{-- Segmented Facture / Devis switcher --}}
+                    <div class="segmented-control" role="group" aria-label="Type de document">
+                        <a href="{{ route('invoices.show', [$invoice, 'as' => 'facture', 'with_stamp' => $withStamp ? 1 : 0]) }}" 
+                           class="segmented-btn {{ !$invoice->isQuote() ? 'active' : '' }}"
+                           title="Afficher comme Facture">
+                            <i class="fas fa-file-invoice"></i>
+                            <span>Facture</span>
+                        </a>
+                        <a href="{{ route('invoices.show', [$invoice, 'as' => 'devis', 'with_stamp' => $withStamp ? 1 : 0]) }}" 
+                           class="segmented-btn {{ $invoice->isQuote() ? 'active' : '' }}"
+                           title="Afficher comme Devis">
+                            <i class="fas fa-file-signature"></i>
+                            <span>Devis</span>
+                        </a>
+                    </div>
 
-                    {{-- Toggle Stamp --}}
+                    {{-- Toggle Stamp Pill --}}
                     <a href="{{ route('invoices.show', [$invoice, 'as' => $invoice->isQuote() ? 'devis' : 'facture', 'with_stamp' => $withStamp ? 0 : 1]) }}"
-                       class="btn btn-sm {{ $withStamp ? 'btn-success' : 'btn-outline-secondary' }}"
-                       style="font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px;"
-                       title="{{ $withStamp ? 'Désactiver le cachet' : 'Activer le cachet' }}">
-                        <i class="fas fa-stamp me-1"></i> {{ $withStamp ? 'Avec Cachet' : 'Sans Cachet' }}
+                       class="stamp-pill-toggle {{ $withStamp ? 'stamp-on' : 'stamp-off' }}"
+                       title="{{ $withStamp ? 'Désactiver le cachet officiel' : 'Activer le cachet officiel' }}">
+                        <span class="stamp-indicator-dot"></span>
+                        <i class="fas fa-stamp" style="font-size: 11px;"></i>
+                        <span>{{ $withStamp ? 'Avec Cachet' : 'Sans Cachet' }}</span>
                     </a>
                 </div>
             </div>
@@ -610,35 +982,53 @@
             <div class="invoice-top-actions">
                 <!-- Download PDF Dropdown -->
                 <div class="dropdown">
-                    <button class="btn btn-action btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" aria-expanded="false" style="background: #0f172a; border-color: #0f172a;">
-                        <i class="fas fa-download"></i> {{ __('Télécharger PDF') }}
+                    <button class="btn-pro btn-pro-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" aria-expanded="false">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>{{ __('Télécharger PDF') }}</span>
+                        <i class="fas fa-chevron-down btn-chevron"></i>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border" style="font-size: 12px; border-radius: 10px; min-width: 220px; padding: 6px; background: #ffffff !important;">
-                        <li class="dropdown-header text-uppercase text-muted fw-bold" style="font-size: 9.5px; letter-spacing: 0.5px;">
-                            <i class="fas fa-file-invoice text-dark me-1"></i> Facture
+                    <ul class="dropdown-menu dropdown-menu-end pro-dropdown-menu">
+                        <li class="pro-dropdown-header">
+                            <i class="fas fa-file-invoice text-dark"></i> Facture
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" href="{{ route('invoices.download', [$invoice, 'as' => 'facture', 'with_stamp' => 1]) }}">
-                                <i class="fas fa-stamp text-success" style="width: 14px;"></i> Facture avec Cachet
+                            <a class="pro-dropdown-item" href="{{ route('invoices.download', [$invoice, 'as' => 'facture', 'with_stamp' => 1]) }}">
+                                <span class="pro-icon-box emerald"><i class="fas fa-stamp"></i></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">Facture avec Cachet</span>
+                                    <span class="text-muted" style="font-size: 11px;">Document officiel tamponné</span>
+                                </div>
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" href="{{ route('invoices.download', [$invoice, 'as' => 'facture', 'with_stamp' => 0]) }}">
-                                <i class="far fa-file-pdf text-muted" style="width: 14px;"></i> Facture sans Cachet
+                            <a class="pro-dropdown-item" href="{{ route('invoices.download', [$invoice, 'as' => 'facture', 'with_stamp' => 0]) }}">
+                                <span class="pro-icon-box slate"><i class="far fa-file-pdf"></i></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">Facture sans Cachet</span>
+                                    <span class="text-muted" style="font-size: 11px;">Version standard épurée</span>
+                                </div>
                             </a>
                         </li>
-                        <li><hr class="dropdown-divider my-1"></li>
-                        <li class="dropdown-header text-uppercase text-muted fw-bold" style="font-size: 9.5px; letter-spacing: 0.5px;">
-                            <i class="fas fa-file-signature text-danger me-1"></i> Devis
+                        <li class="pro-dropdown-divider"></li>
+                        <li class="pro-dropdown-header">
+                            <i class="fas fa-file-signature text-danger"></i> Devis
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" href="{{ route('invoices.download', [$invoice, 'as' => 'devis', 'with_stamp' => 1]) }}">
-                                <i class="fas fa-stamp text-success" style="width: 14px;"></i> Devis avec Cachet
+                            <a class="pro-dropdown-item" href="{{ route('invoices.download', [$invoice, 'as' => 'devis', 'with_stamp' => 1]) }}">
+                                <span class="pro-icon-box emerald"><i class="fas fa-stamp"></i></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">Devis avec Cachet</span>
+                                    <span class="text-muted" style="font-size: 11px;">Proposition avec cachet</span>
+                                </div>
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" href="{{ route('invoices.download', [$invoice, 'as' => 'devis', 'with_stamp' => 0]) }}">
-                                <i class="far fa-file-pdf text-muted" style="width: 14px;"></i> Devis sans Cachet
+                            <a class="pro-dropdown-item" href="{{ route('invoices.download', [$invoice, 'as' => 'devis', 'with_stamp' => 0]) }}">
+                                <span class="pro-icon-box slate"><i class="far fa-file-pdf"></i></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">Devis sans Cachet</span>
+                                    <span class="text-muted" style="font-size: 11px;">Proposition commerciale</span>
+                                </div>
                             </a>
                         </li>
                     </ul>
@@ -646,35 +1036,53 @@
 
                 <!-- Print Dropdown -->
                 <div class="dropdown">
-                    <button class="btn btn-action btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" aria-expanded="false" style="background: white;">
-                        <i class="fas fa-print"></i> {{ __('Imprimer') }}
+                    <button class="btn-pro btn-pro-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" aria-expanded="false">
+                        <i class="fas fa-print"></i>
+                        <span>{{ __('Imprimer') }}</span>
+                        <i class="fas fa-chevron-down btn-chevron"></i>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border" style="font-size: 12px; border-radius: 10px; min-width: 220px; padding: 6px; background: #ffffff !important;">
-                        <li class="dropdown-header text-uppercase text-muted fw-bold" style="font-size: 9.5px; letter-spacing: 0.5px;">
-                            <i class="fas fa-file-invoice text-dark me-1"></i> Facture
+                    <ul class="dropdown-menu dropdown-menu-end pro-dropdown-menu">
+                        <li class="pro-dropdown-header">
+                            <i class="fas fa-file-invoice text-dark"></i> Facture
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'facture', 'with_stamp' => 1]) }}">
-                                <i class="fas fa-stamp text-success" style="width: 14px;"></i> Imprimer Facture (Cachet)
+                            <a class="pro-dropdown-item" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'facture', 'with_stamp' => 1]) }}">
+                                <span class="pro-icon-box emerald"><i class="fas fa-stamp"></i></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">Imprimer Facture (Cachet)</span>
+                                    <span class="text-muted" style="font-size: 11px;">Prêt pour signature</span>
+                                </div>
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'facture', 'with_stamp' => 0]) }}">
-                                <i class="fas fa-print text-muted" style="width: 14px;"></i> Imprimer Facture (Standard)
+                            <a class="pro-dropdown-item" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'facture', 'with_stamp' => 0]) }}">
+                                <span class="pro-icon-box slate"><i class="fas fa-print"></i></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">Imprimer Facture (Standard)</span>
+                                    <span class="text-muted" style="font-size: 11px;">Sans cachet</span>
+                                </div>
                             </a>
                         </li>
-                        <li><hr class="dropdown-divider my-1"></li>
-                        <li class="dropdown-header text-uppercase text-muted fw-bold" style="font-size: 9.5px; letter-spacing: 0.5px;">
-                            <i class="fas fa-file-signature text-danger me-1"></i> Devis
+                        <li class="pro-dropdown-divider"></li>
+                        <li class="pro-dropdown-header">
+                            <i class="fas fa-file-signature text-danger"></i> Devis
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'devis', 'with_stamp' => 1]) }}">
-                                <i class="fas fa-stamp text-success" style="width: 14px;"></i> Imprimer Devis (Cachet)
+                            <a class="pro-dropdown-item" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'devis', 'with_stamp' => 1]) }}">
+                                <span class="pro-icon-box emerald"><i class="fas fa-stamp"></i></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">Imprimer Devis (Cachet)</span>
+                                    <span class="text-muted" style="font-size: 11px;">Avec cachet officiel</span>
+                                </div>
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'devis', 'with_stamp' => 0]) }}">
-                                <i class="fas fa-print text-muted" style="width: 14px;"></i> Imprimer Devis (Standard)
+                            <a class="pro-dropdown-item" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'devis', 'with_stamp' => 0]) }}">
+                                <span class="pro-icon-box slate"><i class="fas fa-print"></i></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">Imprimer Devis (Standard)</span>
+                                    <span class="text-muted" style="font-size: 11px;">Sans cachet</span>
+                                </div>
                             </a>
                         </li>
                     </ul>
@@ -682,49 +1090,82 @@
 
                 <!-- Guarantee Certificate Dropdown -->
                 <div class="dropdown">
-                    <button class="btn btn-action btn-outline-success dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" aria-expanded="false" style="background: #ecfdf5; color: #059669; border-color: #a7f3d0;">
-                        <i class="fas fa-shield-alt"></i> {{ __('Garantie') }}
+                    <button class="btn-pro btn-pro-emerald dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" aria-expanded="false">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>{{ __('Garantie') }}</span>
+                        <i class="fas fa-chevron-down btn-chevron"></i>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border" style="font-size: 12px; border-radius: 10px; min-width: 200px; background: #ffffff !important;">
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5" href="{{ route('invoices.guarantee', $invoice) }}">
-                                <i class="fas fa-eye text-success" style="width: 14px;"></i> Voir Certificat
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider my-1"></li>
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5" href="{{ route('invoices.guarantee.download', [$invoice, 'with_stamp' => 1]) }}">
-                                <i class="fas fa-stamp text-success" style="width: 14px;"></i> PDF avec Cachet
-                            </a>
+                    <ul class="dropdown-menu dropdown-menu-end pro-dropdown-menu">
+                        <li class="pro-dropdown-header">
+                            <i class="fas fa-shield-alt text-success"></i> Certificat de Garantie
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5" href="{{ route('invoices.guarantee.download', [$invoice, 'with_stamp' => 0]) }}">
-                                <i class="far fa-file-pdf text-muted" style="width: 14px;"></i> PDF sans Cachet
+                            <a class="pro-dropdown-item" href="{{ route('invoices.guarantee', $invoice) }}">
+                                <span class="pro-icon-box emerald"><i class="fas fa-eye"></i></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">Consulter le Certificat</span>
+                                    <span class="text-muted" style="font-size: 11px;">Page dédiée & mentions</span>
+                                </div>
                             </a>
                         </li>
-                        <li><hr class="dropdown-divider my-1"></li>
+                        <li class="pro-dropdown-divider"></li>
+                        <li class="pro-dropdown-header">
+                            <i class="fas fa-download text-muted"></i> Téléchargement PDF
+                        </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5" target="_blank" href="{{ route('invoices.guarantee.print', [$invoice, 'with_stamp' => 1]) }}">
-                                <i class="fas fa-print text-success" style="width: 14px;"></i> Imprimer (Cachet)
+                            <a class="pro-dropdown-item" href="{{ route('invoices.guarantee.download', [$invoice, 'with_stamp' => 1]) }}">
+                                <span class="pro-icon-box emerald"><i class="fas fa-stamp"></i></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">PDF avec Cachet</span>
+                                    <span class="text-muted" style="font-size: 11px;">Certificat certifié</span>
+                                </div>
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5" target="_blank" href="{{ route('invoices.guarantee.print', [$invoice, 'with_stamp' => 0]) }}">
-                                <i class="fas fa-print text-muted" style="width: 14px;"></i> Imprimer (Standard)
+                            <a class="pro-dropdown-item" href="{{ route('invoices.guarantee.download', [$invoice, 'with_stamp' => 0]) }}">
+                                <span class="pro-icon-box slate"><i class="far fa-file-pdf"></i></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">PDF sans Cachet</span>
+                                    <span class="text-muted" style="font-size: 11px;">Version vierge</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="pro-dropdown-divider"></li>
+                        <li class="pro-dropdown-header">
+                            <i class="fas fa-print text-muted"></i> Impression Directe
+                        </li>
+                        <li>
+                            <a class="pro-dropdown-item" target="_blank" href="{{ route('invoices.guarantee.print', [$invoice, 'with_stamp' => 1]) }}">
+                                <span class="pro-icon-box emerald"><i class="fas fa-stamp"></i></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">Imprimer (avec Cachet)</span>
+                                    <span class="text-muted" style="font-size: 11px;">Format A4 certifié</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="pro-dropdown-item" target="_blank" href="{{ route('invoices.guarantee.print', [$invoice, 'with_stamp' => 0]) }}">
+                                <span class="pro-icon-box slate"><i class="fas fa-print"></i></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">Imprimer (sans Cachet)</span>
+                                    <span class="text-muted" style="font-size: 11px;">Format A4 standard</span>
+                                </div>
                             </a>
                         </li>
                     </ul>
                 </div>
 
                 @if($invoice->canEdit())
-                <a href="{{ route('invoices.edit', $invoice) }}" class="btn btn-action btn-outline-secondary" style="background: white; color: #475569; border-color: #e2e8f0;">
-                    <i class="fas fa-edit"></i> {{ __('Modifier') }}
+                <a href="{{ route('invoices.edit', $invoice) }}" class="btn-pro btn-pro-secondary">
+                    <i class="fas fa-pen-to-square"></i>
+                    <span>{{ __('Modifier') }}</span>
                 </a>
                 @endif
 
                 @if($invoice->isInvoice() && $invoice->remaining_balance > 0)
-                <button type="button" class="btn btn-action btn-success" data-bs-toggle="modal" data-bs-target="#recordPaymentModal">
-                    <i class="fas fa-money-bill-wave"></i> {{ __('Paiement') }}
+                <button type="button" class="btn-pro btn-pro-success" data-bs-toggle="modal" data-bs-target="#recordPaymentModal">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>{{ __('Paiement') }}</span>
                 </button>
                 @endif
             </div>

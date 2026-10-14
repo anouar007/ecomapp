@@ -67,14 +67,15 @@
         
         <div class="navbar-user">
             <!-- Link to Frontend -->
-            <a href="{{ route('home') }}" target="_blank" class="btn btn-sm btn-outline-dark d-none d-sm-inline-flex align-items-center gap-1.5 px-3 py-1.5 rounded-pill me-2 font-monospace" style="font-size: 12px; font-weight: 600; border-color: #e2e8f0;">
-                <i class="fas fa-external-link-alt text-danger" style="font-size: 11px;"></i>
+            <a href="{{ route('home') }}" target="_blank" class="nav-btn-pro nav-btn-shop d-none d-sm-inline-flex" title="Voir la boutique en direct">
+                <span class="nav-live-pulse"></span>
                 <span>Boutique en direct</span>
+                <i class="fas fa-arrow-up-right-from-square"></i>
             </a>
 
             <!-- Help/Tour Button -->
-            <button onclick="startTour()" class="btn btn-sm btn-light border me-2 d-none d-md-inline-flex align-items-center gap-1.5 px-3 py-1.5 rounded-pill" style="font-size: 12px; font-weight: 600; color: #475569;">
-                <i class="fas fa-question-circle text-danger"></i>
+            <button onclick="startTour()" class="nav-btn-pro nav-btn-guide d-none d-md-inline-flex" title="Guide interactif">
+                <i class="fas fa-circle-question"></i>
                 <span>Guide</span>
             </button>
 

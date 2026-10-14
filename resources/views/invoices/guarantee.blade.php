@@ -18,17 +18,127 @@
         background: linear-gradient(90deg, #10b981 0%, #059669 50%, #0284c7 100%);
     }
     
-    .btn-action {
-        border-radius: 12px;
-        padding: 10px 20px;
+    /* Pro Button Base */
+    .btn-pro {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        height: 38px;
+        padding: 0 16px;
+        font-size: 13px;
         font-weight: 600;
-        transition: all 0.2s;
+        font-family: inherit;
+        border-radius: 9px;
+        text-decoration: none;
+        white-space: nowrap;
+        cursor: pointer;
         border: 1px solid transparent;
+        transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+        user-select: none;
+        line-height: 1;
     }
-    
-    .btn-action:hover {
+
+    .btn-pro:hover {
         transform: translateY(-1px);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+    }
+
+    .btn-pro.dropdown-toggle::after {
+        display: none !important;
+    }
+
+    .btn-chevron {
+        font-size: 9.5px;
+        transition: transform 0.2s ease;
+        opacity: 0.6;
+        margin-left: 3px;
+    }
+
+    .dropdown.show .btn-chevron {
+        transform: rotate(180deg);
+    }
+
+    .btn-pro-emerald {
+        background: linear-gradient(180deg, #10b981 0%, #059669 100%) !important;
+        color: #ffffff !important;
+        border-color: #059669 !important;
+        box-shadow: 0 1px 2px rgba(16, 185, 129, 0.15), 0 3px 8px rgba(16, 185, 129, 0.2) !important;
+    }
+
+    .btn-pro-emerald:hover {
+        background: linear-gradient(180deg, #059669 0%, #047857 100%) !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.28) !important;
+    }
+
+    .btn-pro-secondary {
+        background: #ffffff !important;
+        color: #1e293b !important;
+        border-color: #e2e8f0 !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+    }
+
+    .btn-pro-secondary:hover {
+        background: #f8fafc !important;
+        color: #0f172a !important;
+        border-color: #cbd5e1 !important;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06) !important;
+    }
+
+    .btn-pro-secondary i:not(.btn-chevron) {
+        color: #64748b;
+    }
+
+    .pro-dropdown-menu {
+        border-radius: 12px !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: 0 12px 30px -4px rgba(15, 23, 42, 0.14), 0 4px 10px -2px rgba(15, 23, 42, 0.05) !important;
+        padding: 6px !important;
+        min-width: 230px !important;
+        background: #ffffff !important;
+        margin-top: 6px !important;
+    }
+
+    .pro-dropdown-item {
+        padding: 7px 10px !important;
+        border-radius: 8px !important;
+        font-size: 12.5px !important;
+        font-weight: 500 !important;
+        color: #334155 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        text-decoration: none !important;
+        transition: all 0.15s ease !important;
+    }
+
+    .pro-dropdown-item:hover {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+    }
+
+    .pro-icon-box {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11.5px;
+        flex-shrink: 0;
+    }
+
+    .pro-icon-box.emerald {
+        background: #ecfdf5;
+        color: #059669;
+    }
+
+    .pro-icon-box.slate {
+        background: #f1f5f9;
+        color: #64748b;
     }
     
     .items-table th {
@@ -89,18 +199,28 @@
             <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                 <!-- Download PDF Dropdown -->
                 <div class="dropdown">
-                    <button class="btn btn-action btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="background: #10b981; border-color: #10b981; display: inline-flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-download"></i> Télécharger le PDF
+                    <button class="btn-pro btn-pro-emerald dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>Télécharger le PDF</span>
+                        <i class="fas fa-chevron-down btn-chevron"></i>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 13px; border-radius: 10px;">
+                    <ul class="dropdown-menu dropdown-menu-end pro-dropdown-menu">
                         <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('invoices.guarantee.download', [$invoice, 'with_stamp' => 1]) }}">
-                                <i class="fas fa-stamp" style="color: #10b981; width: 16px;"></i> Télécharger avec Cachet
+                            <a class="pro-dropdown-item" href="{{ route('invoices.guarantee.download', [$invoice, 'with_stamp' => 1]) }}">
+                                <span class="pro-icon-box emerald"><i class="fas fa-stamp"></i></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">Télécharger avec Cachet</span>
+                                    <span class="text-muted" style="font-size: 11px;">Document certifié officiel</span>
+                                </div>
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('invoices.guarantee.download', [$invoice, 'with_stamp' => 0]) }}">
-                                <i class="far fa-file-pdf text-muted" style="width: 16px;"></i> Télécharger sans Cachet
+                            <a class="pro-dropdown-item" href="{{ route('invoices.guarantee.download', [$invoice, 'with_stamp' => 0]) }}">
+                                <span class="pro-icon-box slate"><i class="far fa-file-pdf"></i></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">Télécharger sans Cachet</span>
+                                    <span class="text-muted" style="font-size: 11px;">Version vierge standard</span>
+                                </div>
                             </a>
                         </li>
                     </ul>
@@ -108,25 +228,36 @@
 
                 <!-- Print Dropdown -->
                 <div class="dropdown">
-                    <button class="btn btn-action btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="background: white; color: #475569; border-color: #e2e8f0; display: inline-flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-print"></i> Imprimer
+                    <button class="btn-pro btn-pro-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-print"></i>
+                        <span>Imprimer</span>
+                        <i class="fas fa-chevron-down btn-chevron"></i>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 13px; border-radius: 10px;">
+                    <ul class="dropdown-menu dropdown-menu-end pro-dropdown-menu">
                         <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" target="_blank" href="{{ route('invoices.guarantee.print', [$invoice, 'with_stamp' => 1]) }}">
-                                <i class="fas fa-stamp" style="color: #10b981; width: 16px;"></i> Imprimer avec Cachet
+                            <a class="pro-dropdown-item" target="_blank" href="{{ route('invoices.guarantee.print', [$invoice, 'with_stamp' => 1]) }}">
+                                <span class="pro-icon-box emerald"><i class="fas fa-stamp"></i></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">Imprimer avec Cachet</span>
+                                    <span class="text-muted" style="font-size: 11px;">Prêt à remettre au client</span>
+                                </div>
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" target="_blank" href="{{ route('invoices.guarantee.print', [$invoice, 'with_stamp' => 0]) }}">
-                                <i class="fas fa-print text-muted" style="width: 16px;"></i> Imprimer sans Cachet
+                            <a class="pro-dropdown-item" target="_blank" href="{{ route('invoices.guarantee.print', [$invoice, 'with_stamp' => 0]) }}">
+                                <span class="pro-icon-box slate"><i class="fas fa-print"></i></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">Imprimer sans Cachet</span>
+                                    <span class="text-muted" style="font-size: 11px;">Impression sans tampon</span>
+                                </div>
                             </a>
                         </li>
                     </ul>
                 </div>
 
-                <a href="{{ route('invoices.show', $invoice) }}" class="btn btn-action btn-outline-secondary" style="background: white; color: #475569; border-color: #e2e8f0; display: inline-flex; align-items: center; gap: 8px;">
-                    <i class="fas fa-file-invoice"></i> Voir la Facture
+                <a href="{{ route('invoices.show', $invoice) }}" class="btn-pro btn-pro-secondary">
+                    <i class="fas fa-file-invoice"></i>
+                    <span>Voir la Facture</span>
                 </a>
             </div>
         </div>
