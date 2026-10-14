@@ -29,3 +29,5 @@ debug_*.php
 database_backup.sql
 storage_uploads.tar.gz
 /.htaccess
+/public/images/products/*
+!/public/images/products/.gitkeep
