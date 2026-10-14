@@ -140,4 +140,78 @@ class OrderEmailNotificationTest extends TestCase
         $response->assertRedirect();
         $response->assertSessionHas('success');
     }
+
+    public function test_logged_in_admin_can_access_order_from_external_referrer()
+    {
+        $admin = User::factory()->create();
+        $admin->assignRole('Admin');
+
+        $order = Order::firstOrCreate(
+            ['order_number' => 'ORD-TEST-999'],
+            [
+                'customer_name' => 'Test Client',
+                'customer_email' => 'client@test.ma',
+                'customer_phone' => '0600000000',
+                'shipping_city' => 'Casablanca',
+                'shipping_address' => 'Test Address',
+                'shipping_zip' => '20000',
+                'subtotal' => 1000,
+                'tax' => 200,
+                'shipping_cost' => 0,
+                'total' => 1200,
+                'status' => 'pending',
+                'payment_status' => 'pending',
+                'payment_method' => 'cod',
+            ]
+        );
+
+        // Simulate incoming click from external email client
+        $response = $this->actingAs($admin)->withHeaders([
+            'Referer' => 'https://mail.google.com/',
+        ])->get(route('orders.show', $order));
+
+        $response->assertStatus(200);
+        $response->assertSee($order->order_number);
+    }
+
+    public function test_unauthenticated_user_accessing_order_is_redirected_to_order_after_login()
+    {
+        $password = 'Secret123!';
+        $admin = User::factory()->create([
+            'password' => bcrypt($password),
+        ]);
+        $admin->assignRole('Admin');
+
+        $order = Order::firstOrCreate(
+            ['order_number' => 'ORD-TEST-888'],
+            [
+                'customer_name' => 'Another Client',
+                'customer_email' => 'another@client.ma',
+                'customer_phone' => '0611111111',
+                'shipping_city' => 'Rabat',
+                'shipping_address' => 'Agdal',
+                'shipping_zip' => '10000',
+                'subtotal' => 500,
+                'tax' => 100,
+                'shipping_cost' => 0,
+                'total' => 600,
+                'status' => 'pending',
+                'payment_status' => 'pending',
+                'payment_method' => 'cod',
+            ]
+        );
+
+        // 1. Guest clicks the email link -> redirected to login with intended URL saved
+        $initialResponse = $this->get(route('orders.show', $order));
+        $initialResponse->assertRedirect(route('login'));
+
+        // 2. Guest logs in -> redirected to intended order URL
+        $loginResponse = $this->post(route('login'), [
+            'email' => $admin->email,
+            'password' => $password,
+        ]);
+
+        $loginResponse->assertRedirect(route('orders.show', $order));
+    }
 }
+

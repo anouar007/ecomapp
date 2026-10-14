@@ -25,6 +25,10 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrapFive();
         \App\Models\Order::observe(\App\Observers\OrderObserver::class);
 
+        if ($this->app->environment('production') || str_starts_with(config('app.url'), 'https://')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         // Implicitly grant "Admin" role all permissions
         Gate::before(function ($user, $ability) {
             return $user->hasRole('Admin') ? true : null;
