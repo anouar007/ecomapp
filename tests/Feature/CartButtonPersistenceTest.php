@@ -59,4 +59,51 @@ class CartButtonPersistenceTest extends TestCase
         // Clean up session
         session()->forget('cart');
     }
+
+    public function test_cart_button_persistence_flow_on_product_page(): void
+    {
+        $product = Product::where('stock', '>', 0)->firstOrFail();
+
+        // Ensure session cart is empty at start
+        session()->forget('cart');
+
+        // 1. Initial State: not in cart
+        $response = $this->get(route('shop.show', $product->id));
+        $response->assertStatus(200);
+        $response->assertSee('data-product-id="' . $product->id . '"', false);
+        $response->assertSee('Ajouter au panier');
+        $response->assertDontSee('pdp-add-btn is-in-cart');
+
+        // 2. Add to cart via AJAX
+        $addResponse = $this->postJson(route('cart.add', $product->id), [
+            'quantity' => 1
+        ]);
+        $addResponse->assertStatus(200);
+        $addResponse->assertJson([
+            'success' => true,
+            'productId' => $product->id
+        ]);
+
+        // 3. Open product page: button MUST be green with "is-in-cart" and "Dans le panier"
+        $refreshResponse = $this->get(route('shop.show', $product->id));
+        $refreshResponse->assertStatus(200);
+        $refreshResponse->assertSee('pdp-add-btn is-in-cart');
+        $refreshResponse->assertSee('<span id="addToCartText">Dans le panier</span>', false);
+
+        // 4. Remove from cart via AJAX
+        $removeResponse = $this->deleteJson(route('cart.remove'), [
+            'id' => $product->id
+        ]);
+        $removeResponse->assertStatus(200);
+
+        // 5. Open product page: button MUST revert back
+        $afterRemoveResponse = $this->get(route('shop.show', $product->id));
+        $afterRemoveResponse->assertStatus(200);
+        $afterRemoveResponse->assertSee('<span id="addToCartText">Ajouter au panier</span>', false);
+        $afterRemoveResponse->assertDontSee('pdp-add-btn is-in-cart');
+        $afterRemoveResponse->assertDontSee('<span id="addToCartText">Dans le panier</span>', false);
+
+        // Clean up session
+        session()->forget('cart');
+    }
 }

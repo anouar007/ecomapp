@@ -120,6 +120,7 @@ class Setting extends Model
      */
     public static function clearCache()
     {
+        static::$runtimeCache = null;
         Cache::flush();
     }
 }

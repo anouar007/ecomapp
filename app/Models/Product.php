@@ -283,7 +283,13 @@ class Product extends Model
     public function adjustStock(int $quantity, string $type, $userId, array $options = []): bool
     {
         $stockBefore = $this->stock ?? 0;
-        $newStock = $stockBefore + ($type === 'in' ? $quantity : -$quantity);
+        if ($type === 'adjustment') {
+            $newStock = $quantity;
+            $movementQty = abs($newStock - $stockBefore);
+        } else {
+            $newStock = $stockBefore + ($type === 'in' ? $quantity : -$quantity);
+            $movementQty = abs($quantity);
+        }
 
         if ($newStock < 0) {
             return false; // Cannot have negative stock
@@ -294,7 +300,7 @@ class Product extends Model
         // Record the movement
         $this->inventoryMovements()->create([
             'type' => $type,
-            'quantity' => abs($quantity),
+            'quantity' => $movementQty,
             'stock_before' => $stockBefore,
             'stock_after' => $newStock,
             'reference_type' => $options['reference_type'] ?? null,

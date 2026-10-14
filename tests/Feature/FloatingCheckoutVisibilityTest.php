@@ -120,6 +120,8 @@ class FloatingCheckoutVisibilityTest extends TestCase
         // Check offcanvas z-index elevation and hide rules in response
         $response->assertSee('#miniCart.offcanvas', false);
         $response->assertSee('z-index: 1000000 !important;', false);
+        $response->assertSee('.swal2-container', false);
+        $response->assertSee('z-index: 2000000 !important;', false);
         $response->assertSee('body:has(#miniCart.show) .floating-checkout-wrap', false);
         $response->assertSee('body:has(#miniCart.show) .whatsapp-float', false);
         $response->assertSee('initOffcanvasFloatingButtonsHandler', false);

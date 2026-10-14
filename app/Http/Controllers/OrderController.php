@@ -16,7 +16,7 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Order::with(['user', 'items']);
+        $query = Order::with(['user', 'items.product', 'invoice', 'quote']);
 
         // Filter by status
         if ($request->filled('status')) {
@@ -38,9 +38,16 @@ class OrderController extends Controller
             });
         }
 
-        $orders = $query->latest()->paginate(15);
+        $stats = [
+            'total' => Order::count(),
+            'pending' => Order::whereIn('status', ['pending', 'processing'])->count(),
+            'delivered' => Order::where('status', 'delivered')->count(),
+            'revenue' => Order::where('payment_status', 'paid')->sum('total'),
+        ];
 
-        return view('orders.index', compact('orders'));
+        $orders = $query->latest()->paginate(15)->withQueryString();
+
+        return view('orders.index', compact('orders', 'stats'));
     }
 
     /**
@@ -51,6 +58,7 @@ class OrderController extends Controller
         $products = Product::where('status', 'active')
             ->where('stock', '>', 0)
             ->with('images')
+            ->orderBy('name')
             ->get();
 
         return view('orders.create', compact('products'));
@@ -61,6 +69,14 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
+        // Provide sensible defaults for Moroccan e-commerce shipping fields
+        if (!$request->filled('shipping_country')) {
+            $request->merge(['shipping_country' => 'Maroc']);
+        }
+        if (!$request->filled('shipping_zip')) {
+            $request->merge(['shipping_zip' => '20000']);
+        }
+
         $validated = $request->validate([
             'customer_name' => ['required', 'string', 'max:255'],
             'customer_email' => ['required', 'email', 'max:255'],
@@ -198,6 +214,95 @@ class OrderController extends Controller
         }
 
         return redirect()->route('orders.show', $order)->with('success', 'Order updated successfully.');
+    }
+
+    /**
+     * Quick update order delivery or payment status via AJAX.
+     */
+    public function quickUpdateStatus(Request $request, Order $order)
+    {
+        $validated = $request->validate([
+            'status' => ['nullable', 'in:pending,processing,shipped,delivered,cancelled'],
+            'payment_status' => ['nullable', 'in:pending,paid,failed,refunded'],
+        ]);
+
+        if (empty($validated['status']) && empty($validated['payment_status'])) {
+            return response()->json(['success' => false, 'message' => 'Aucun statut spécifié.'], 422);
+        }
+
+        $order->load('items.product');
+
+        // Handle delivery status update
+        if (isset($validated['status']) && $validated['status'] !== $order->status) {
+            $originalStatus = $order->status;
+            $newStatus = $validated['status'];
+            $order->status = $newStatus;
+
+            // Stock deduction if newly delivered
+            if ($newStatus === 'delivered' && !$order->stock_deducted) {
+                foreach ($order->items as $item) {
+                    if ($item->product) {
+                        $item->product->decrement('stock', $item->quantity);
+                    }
+                }
+                $order->stock_deducted = true;
+            }
+
+            // Stock restoration if reverted from delivered
+            if ($originalStatus === 'delivered' && $newStatus !== 'delivered' && $order->stock_deducted) {
+                foreach ($order->items as $item) {
+                    if ($item->product) {
+                        $item->product->increment('stock', $item->quantity);
+                    }
+                }
+                $order->stock_deducted = false;
+            }
+        }
+
+        // Handle payment status update
+        if (isset($validated['payment_status'])) {
+            $order->payment_status = $validated['payment_status'];
+        }
+
+        $order->save();
+
+        // Recalculate KPIs
+        $stats = [
+            'total' => Order::count(),
+            'pending' => Order::whereIn('status', ['pending', 'processing'])->count(),
+            'delivered' => Order::where('status', 'delivered')->count(),
+            'revenue' => Order::where('payment_status', 'paid')->sum('total'),
+        ];
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Commande #' . $order->order_number . ' mise à jour avec succès.',
+            'order' => [
+                'id' => $order->id,
+                'status' => $order->status,
+                'status_label' => match($order->status) {
+                    'delivered' => 'Livrée',
+                    'shipped' => 'Expédiée',
+                    'processing' => 'En cours',
+                    'pending' => 'En attente',
+                    'cancelled' => 'Annulée',
+                    default => ucfirst($order->status)
+                },
+                'payment_status' => $order->payment_status,
+                'payment_status_label' => match($order->payment_status) {
+                    'paid' => 'Payé',
+                    'failed' => 'Échoué',
+                    'refunded' => 'Remboursé',
+                    default => 'En attente'
+                },
+            ],
+            'stats' => [
+                'total' => $stats['total'],
+                'pending' => $stats['pending'],
+                'delivered' => $stats['delivered'],
+                'revenue_formatted' => currency($stats['revenue']),
+            ]
+        ]);
     }
 
     /**

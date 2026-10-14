@@ -75,15 +75,30 @@ class ShopController extends Controller
             ->withAvg('reviews', 'rating')
             ->paginate(12)->withQueryString();
 
-        if ($request->ajax()) {
-            return view('frontend.shop.partials.product-grid', compact('products'))->render();
-        }
-
         $categories = Cache::remember('shop_catalog_categories', 3600, function () {
             return Category::withCount('products')->get();
         });
 
-        return view('frontend.shop.index', compact('products', 'categories'));
+        $activeCategory = $categories->where('slug', $request->category)->first();
+        $activeCategoryTitle = $activeCategory 
+            ? $activeCategory->name 
+            : ($request->filled('q') ? __('Résultats pour ":q"', ['q' => $request->q]) : __('Tout le matériel'));
+
+        if ($request->ajax() || $request->wantsJson()) {
+            if ($request->header('Accept') === 'application/json' || $request->get('format') === 'json') {
+                return response()->json([
+                    'html' => view('frontend.shop.partials.product-grid', compact('products', 'categories', 'activeCategory', 'activeCategoryTitle'))->render(),
+                    'total' => $products->total(),
+                    'category_title' => $activeCategoryTitle,
+                    'current_page' => $products->currentPage(),
+                    'last_page' => $products->lastPage(),
+                ]);
+            }
+
+            return view('frontend.shop.partials.product-grid', compact('products', 'categories', 'activeCategory', 'activeCategoryTitle'))->render();
+        }
+
+        return view('frontend.shop.index', compact('products', 'categories', 'activeCategory', 'activeCategoryTitle'));
     }
 
     /**

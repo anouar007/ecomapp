@@ -639,4 +639,61 @@ class InvoiceController extends Controller
             }
         }
     }
+
+    /**
+     * Quick update payment status via AJAX.
+     */
+    public function quickUpdateStatus(Request $request, Invoice $invoice)
+    {
+        $request->validate([
+            'payment_status' => 'required|in:paid,unpaid,partial,cancelled',
+        ]);
+
+        $newStatus = $request->payment_status;
+        $invoice->payment_status = $newStatus;
+        $invoice->save();
+
+        // If invoice is linked to an order, sync the order's payment_status
+        if ($invoice->order) {
+            $orderPayStatus = match($newStatus) {
+                'paid' => 'paid',
+                'cancelled' => 'failed',
+                'partial' => 'pending',
+                default => 'pending'
+            };
+            $invoice->order->update(['payment_status' => $orderPayStatus]);
+        }
+
+        $stats = [
+            'total_invoices' => Invoice::where('type', 'invoice')->count(),
+            'total_quotes' => Invoice::where('type', 'quote')->count(),
+            'paid_amount' => Invoice::where('type', 'invoice')->byStatus('paid')->sum('total_amount'),
+            'unpaid_amount' => Invoice::where('type', 'invoice')->byStatus('unpaid')->sum('total_amount'),
+            'total_revenue' => Invoice::where('type', 'invoice')->where('payment_status', '!=', 'cancelled')->sum('total_amount'),
+        ];
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Document #' . ($invoice->display_number ?? $invoice->invoice_number) . ' mis à jour avec succès.',
+            'invoice' => [
+                'id' => $invoice->id,
+                'payment_status' => $invoice->payment_status,
+                'status_label' => match($invoice->payment_status) {
+                    'paid' => 'Payé',
+                    'unpaid' => 'Impayé',
+                    'partial' => 'Partiel',
+                    'cancelled' => 'Annulé',
+                    default => ucfirst($invoice->payment_status)
+                },
+                'status_color' => $invoice->status_color,
+            ],
+            'stats' => [
+                'total_invoices' => $stats['total_invoices'],
+                'total_quotes' => $stats['total_quotes'],
+                'paid_amount_formatted' => currency($stats['paid_amount']),
+                'unpaid_amount_formatted' => currency($stats['unpaid_amount']),
+                'total_revenue_formatted' => currency($stats['total_revenue']),
+            ]
+        ]);
+    }
 }

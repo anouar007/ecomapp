@@ -69,6 +69,7 @@ Route::middleware('auth')->group(function () {
     
     // Orders Management  
     Route::middleware('permission:manage_orders')->group(function () {
+        Route::post('orders/{order}/quick-status', [\App\Http\Controllers\OrderController::class, 'quickUpdateStatus'])->name('orders.quick-status');
         Route::resource('orders', \App\Http\Controllers\OrderController::class);
     });
     
@@ -81,6 +82,7 @@ Route::middleware('auth')->group(function () {
         Route::get('invoices/{invoice}/guarantee/download', [\App\Http\Controllers\InvoiceController::class, 'downloadGuarantee'])->name('invoices.guarantee.download');
         Route::get('invoices/{invoice}/guarantee/print', [\App\Http\Controllers\InvoiceController::class, 'printGuarantee'])->name('invoices.guarantee.print');
         Route::post('invoices/{invoice}/email', [\App\Http\Controllers\InvoiceController::class, 'email'])->name('invoices.email');
+        Route::post('invoices/{invoice}/quick-status', [\App\Http\Controllers\InvoiceController::class, 'quickUpdateStatus'])->name('invoices.quick-status');
         Route::post('orders/{order}/generate-invoice', [\App\Http\Controllers\InvoiceController::class, 'generateFromOrder'])->name('orders.generate-invoice');
         Route::post('orders/{order}/generate-quote', [\App\Http\Controllers\InvoiceController::class, 'generateFromOrder'])->name('orders.generate-quote');
         Route::post('invoices/{invoice}/payments', [\App\Http\Controllers\PaymentController::class, 'store'])->name('payments.store');

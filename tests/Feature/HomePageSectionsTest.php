@@ -52,6 +52,8 @@ class HomePageSectionsTest extends TestCase
         $response->assertSee('indh-step-card-pro');
         $response->assertSee('indh-step-badge-num');
         $response->assertSee('indh-guarantee-pill');
+        $response->assertSee('indh-banner-cta');
+        $response->assertSee('w-100 w-sm-auto');
 
         // 7. Reassurance & Client Reviews
         $response->assertSee('reassurance-box');

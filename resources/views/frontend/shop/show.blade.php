@@ -166,6 +166,20 @@
                     <div class="pdp-divider"></div>
 
                     @if($product->isInStock())
+                    @php
+                        $isInCart = isset(session('cart', [])[$product->id]);
+                        $locale = app()->getLocale();
+                        if ($locale === 'ar') {
+                            $inCartLabel = 'في السلة';
+                            $notInCartLabel = 'أضف إلى السلة';
+                        } elseif ($locale === 'en') {
+                            $inCartLabel = 'In Cart';
+                            $notInCartLabel = 'Add to Cart';
+                        } else {
+                            $inCartLabel = 'Dans le panier';
+                            $notInCartLabel = 'Ajouter au panier';
+                        }
+                    @endphp
                     <form id="addToCartForm" onsubmit="pdpAddToCart(event)">
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -180,9 +194,12 @@
                                     <i class="fas fa-plus"></i>
                                 </button>
                             </div>
-                            <button type="submit" id="addToCartBtn" class="pdp-add-btn">
-                                <i class="fas fa-cart-plus me-2"></i>
-                                <span id="addToCartText">{{ __('Add to Cart') }}</span>
+                            <button type="submit" id="addToCartBtn" 
+                                    class="pdp-add-btn {{ $isInCart ? 'is-in-cart' : '' }}" 
+                                    data-product-id="{{ $product->id }}" 
+                                    title="{{ $isInCart ? $inCartLabel : $notInCartLabel }}">
+                                <i class="fas {{ $isInCart ? 'fa-check' : 'fa-cart-plus' }} me-2"></i>
+                                <span id="addToCartText">{{ $isInCart ? $inCartLabel : $notInCartLabel }}</span>
                             </button>
                         </div>
                     </form>
@@ -393,50 +410,13 @@ function pdpChangeQty(delta) {
 function pdpAddToCart(event) {
     event.preventDefault();
     const btn      = document.getElementById('addToCartBtn');
-    const btnText  = document.getElementById('addToCartText');
-    const quantity = document.getElementById('pdpQty').value;
+    const qtyInput = document.getElementById('pdpQty');
+    const quantity = qtyInput ? (parseInt(qtyInput.value) || 1) : 1;
     const productId = {{ $product->id }};
 
-    btn.disabled = true;
-    const orig = btnText.innerHTML;
-    btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {{ __('Adding...') }}';
-
-    fetch(`{{ url('/cart/add') }}/${productId}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({ quantity: parseInt(quantity) })
-    })
-    .then(r => r.json())
-    .then(data => {
-        btn.disabled = false;
-        btnText.innerHTML = orig;
-        if (data.success) {
-            ['header-cart-count', 'header-cart-count-mobile'].forEach(id => {
-                const badge = document.getElementById(id);
-                if (badge && data.cartCount !== undefined) badge.textContent = data.cartCount;
-            });
-            if (typeof window.updateFloatingCheckout === 'function') {
-                window.updateFloatingCheckout(data.cartCount, data.cartTotal);
-            }
-            if (typeof refreshMiniCart === 'function') refreshMiniCart();
-            Swal.fire({ toast:true, position:'top-end', icon:'success',
-                title:'{{ __('Added to cart!') }}',
-                text:'{{ addslashes($product->name) }}',
-                showConfirmButton:false, timer:2500,
-                background:'#1a1a2e', color:'#fff' });
-        } else {
-            throw new Error(data.message || '{{ __('Error') }}');
-        }
-    })
-    .catch(err => {
-        btn.disabled = false;
-        btnText.innerHTML = orig;
-        Swal.fire({ icon:'error', title:'{{ __('Error') }}', text: err.message || '{{ __('Cannot add to cart.') }}' });
-    });
+    if (typeof window.addToCart === 'function') {
+        window.addToCart(productId, quantity, btn);
+    }
 }
 </script>
 @endpush

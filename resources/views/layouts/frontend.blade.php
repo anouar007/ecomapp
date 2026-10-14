@@ -141,7 +141,7 @@
         @endif
     @endforeach
 </head>
-<body>
+<body class="{{ request()->routeIs('cart.*') ? 'cart-page' : '' }} {{ request()->routeIs('checkout.*') ? 'checkout-page' : '' }}">
     <!-- Custom Body Start Codes -->
     @php
         $bodyStartCodes = \App\Models\CustomCode::where('is_active', true)
@@ -153,22 +153,7 @@
         {!! $code->content !!}
     @endforeach
 
-    <!-- Top Announcement Bar -->
-    <div class="header-top-bar py-1 d-none d-md-block" style="background: #ffffff; color: #1e293b; font-size: 0.75rem; border-bottom: 1px solid #eef2f6;">
-        <div class="container d-flex justify-content-between align-items-center">
-            <div>
-                <a href="{{ route('shop.index') }}" class="text-secondary text-decoration-none fw-semibold" style="letter-spacing: 0.5px; font-size: 0.72rem;">ADD A MENU</a>
-            </div>
-            <div class="fw-bold text-dark mx-auto" style="letter-spacing: 0.8px; font-size: 0.75rem;">
-                LIVRAISON RAPIDE PARTOUT AU MAROC
-            </div>
-            <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('lang.switch', 'fr') }}" class="text-secondary text-decoration-none fw-semibold {{ app()->getLocale() === 'fr' ? 'text-danger' : '' }}" style="font-size: 0.72rem;">FR</a>
-                <span class="text-secondary opacity-50">|</span>
-                <a href="{{ route('lang.switch', 'ar') }}" class="text-secondary text-decoration-none fw-semibold {{ app()->getLocale() === 'ar' ? 'text-danger' : '' }}" style="font-size: 0.72rem;">AR</a>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Main Header / Navbar (Single Clean Row) -->
     <div class="header-main bg-white shadow-sm w-100" style="z-index: 1040; border-bottom: 1px solid #f1f3f5;">
@@ -293,7 +278,7 @@
                                                                     <i class="{{ $catIconClass }} cat-slot-icon"></i>
                                                                 @endif
                                                             </span>
-                                                            <span class="cat-mega-name text-truncate">{{ $cat->name }}</span>
+                                                            <span class="cat-mega-name">{{ $cat->name }}</span>
                                                         </div>
                                                         <span class="badge cat-mega-count rounded-pill">{{ $cat->products_count }}</span>
                                                     </a>
@@ -456,7 +441,7 @@
                                         <i class="{{ $catIconClass }} cat-slot-icon"></i>
                                     @endif
                                 </span>
-                                <span class="cat-mega-name text-truncate">{{ $cat->name }}</span>
+                                <span class="cat-mega-name">{{ $cat->name }}</span>
                             </div>
                             <span class="badge cat-mega-count rounded-pill">{{ $cat->products_count }}</span>
                         </a>
@@ -670,7 +655,7 @@
     </div>
 
     {{-- Floating Checkout Button (appears on cart addition and stays on screen) --}}
-    @if(!request()->routeIs('checkout.*'))
+    @if(!request()->routeIs('checkout.*') && !request()->routeIs('cart.*'))
     @php
         $cartSession = session('cart', []);
         $cartInitialCount = array_sum(array_column($cartSession, 'quantity'));
@@ -708,6 +693,11 @@
             z-index: 999995 !important;
         }
 
+        /* Ensure SweetAlert2 confirmation modals and popups render above #miniCart & offcanvas */
+        .swal2-container {
+            z-index: 2000000 !important;
+        }
+
         /* Completely hide floating checkout and WhatsApp when miniCart or offcanvas is open */
         body.mini-cart-open .floating-checkout-wrap,
         body.mini-cart-open .whatsapp-float,
@@ -716,7 +706,10 @@
         body:has(#miniCart.showing) .floating-checkout-wrap,
         body:has(#miniCart.showing) .whatsapp-float,
         body:has(.offcanvas.show) .floating-checkout-wrap,
-        body:has(.offcanvas.show) .whatsapp-float {
+        body:has(.offcanvas.show) .whatsapp-float,
+        body.cart-page .floating-checkout-wrap,
+        body.checkout-page .floating-checkout-wrap,
+        body:has(.cart-page) .floating-checkout-wrap {
             opacity: 0 !important;
             visibility: hidden !important;
             pointer-events: none !important;
@@ -725,7 +718,8 @@
         }
         body.has-whatsapp-float .floating-checkout-wrap.is-visible,
         body:has(.whatsapp-float) .floating-checkout-wrap.is-visible {
-            bottom: 96px !important;
+            bottom: 24px !important;
+            right: 90px !important;
         }
         html[dir="rtl"] .floating-checkout-wrap {
             right: auto !important;
@@ -734,7 +728,8 @@
         html[dir="rtl"] body.has-whatsapp-float .floating-checkout-wrap.is-visible,
         html[dir="rtl"] body:has(.whatsapp-float) .floating-checkout-wrap.is-visible {
             bottom: 24px !important;
-            left: 24px !important;
+            left: 90px !important;
+            right: auto !important;
         }
         @media (max-width: 768px) {
             .floating-checkout-wrap {
@@ -934,6 +929,13 @@
             }
 
             if (wrap) {
+                // Never show floating checkout button if user is already on cart or checkout page
+                if (window.location.pathname.includes('/cart') || window.location.pathname.includes('/checkout')) {
+                    wrap.classList.remove('is-visible');
+                    wrap.style.display = 'none';
+                    return;
+                }
+
                 if (numCount > 0) {
                     wrap.classList.add('is-visible');
                     wrap.style.display = 'inline-flex';
@@ -1092,7 +1094,7 @@
             const notInCartOverlayLabel = isAr ? 'أضف' : 'Ajouter';
 
             // 1. Featured cards on Homepage and elsewhere with data-product-id
-            const buttons = document.querySelectorAll(`button[data-product-id="${numId}"]:not(.pcard-quick-cart-btn):not(.pcard-overlay-btn)`);
+            const buttons = document.querySelectorAll(`button[data-product-id="${numId}"]:not(.pcard-quick-cart-btn):not(.pcard-overlay-btn):not(.pdp-add-btn)`);
             buttons.forEach(b => {
                 b.disabled = false;
                 if (inCart) {
@@ -1134,6 +1136,21 @@
                 } else {
                     b.classList.remove('is-in-cart');
                     b.innerHTML = `<i class="fas fa-cart-plus"></i> ${notInCartOverlayLabel}`;
+                    b.setAttribute('title', notInCartLabel);
+                }
+            });
+
+            // 4. Product Details Page (PDP) Add to Cart Button
+            const pdpButtons = document.querySelectorAll(`.pdp-add-btn[data-product-id="${numId}"], #addToCartBtn[data-product-id="${numId}"]`);
+            pdpButtons.forEach(b => {
+                b.disabled = false;
+                if (inCart) {
+                    b.classList.add('is-in-cart');
+                    b.innerHTML = `<i class="fas fa-check me-2"></i> <span id="addToCartText">${inCartLabel}</span>`;
+                    b.setAttribute('title', inCartLabel);
+                } else {
+                    b.classList.remove('is-in-cart');
+                    b.innerHTML = `<i class="fas fa-cart-plus me-2"></i> <span id="addToCartText">${notInCartLabel}</span>`;
                     b.setAttribute('title', notInCartLabel);
                 }
             });
@@ -1312,10 +1329,13 @@
         }, true);
 
         function changeCartQty(id, delta) {
-            const input = document.getElementById('cart-item-qty-' + id);
+            const inputs = document.querySelectorAll(`input[id="cart-item-qty-${id}"], input[id="cart-item-qty-mobile-${id}"], .cart-item-qty-${id}`);
             let currentQty = 1;
-            if (input) {
-                currentQty = parseInt(input.value) || 1;
+            if (inputs.length > 0) {
+                currentQty = parseInt(inputs[0].value) || 1;
+            } else {
+                const fallback = document.getElementById('cart-item-qty-' + id);
+                if (fallback) currentQty = parseInt(fallback.value) || 1;
             }
             const newQty = currentQty + delta;
             updateQty(id, newQty);
@@ -1353,14 +1373,20 @@
                     window.updateFloatingCheckout(data.cartCount, data.cartTotal);
                 }
 
-                // Update /cart page elements if present
-                const qtyInput = document.getElementById('cart-item-qty-' + id);
-                if (qtyInput) {
-                    qtyInput.value = data.quantity;
-                }
-                const rowTotal = document.getElementById('cart-item-total-' + id);
-                if (rowTotal && data.itemTotal) {
-                    rowTotal.textContent = data.itemTotal;
+                // Update /cart page elements if present (both desktop and mobile)
+                document.querySelectorAll(`input[id="cart-item-qty-${id}"], input[id="cart-item-qty-mobile-${id}"], .cart-item-qty-${id}`).forEach(inp => {
+                    inp.value = data.quantity;
+                });
+                document.querySelectorAll(`[id="cart-item-total-${id}"], [id="cart-item-total-mobile-${id}"], .cart-item-total-${id}`).forEach(el => {
+                    if (data.itemTotal) el.textContent = data.itemTotal;
+                });
+                const unitHint = document.getElementById(`cart-item-unit-hint-mobile-${id}`);
+                if (unitHint) {
+                    if (data.quantity > 1) {
+                        unitHint.classList.remove('d-none');
+                    } else {
+                        unitHint.classList.add('d-none');
+                    }
                 }
                 const subtotal = document.getElementById('cart-summary-subtotal');
                 if (subtotal && data.cartTotal) {
@@ -1415,6 +1441,12 @@
                             window.updateCartBadgeCount(data.cartCount);
                         }
 
+                        // Update /cart header badge if present
+                        const headerBadge = document.getElementById('cart-header-badge');
+                        if (headerBadge && data.cartCount !== undefined) {
+                            headerBadge.textContent = `${data.cartCount} ${data.cartCount > 1 ? '{{ __('articles') }}' : '{{ __('article') }}'}`;
+                        }
+
                         // Update floating checkout button
                         if (typeof window.updateFloatingCheckout === 'function') {
                             window.updateFloatingCheckout(data.cartCount, data.cartTotal);
@@ -1428,32 +1460,22 @@
                             window.syncAllProductCartButtons(data.cartProductIds);
                         }
 
-                        // If on /cart page, remove the row or show empty cart notice without reloading
-                        const row = document.getElementById('cart-row-' + id);
-                        if (row) {
-                            row.style.transition = 'opacity 0.25s, transform 0.25s';
-                            row.style.opacity = '0';
-                            row.style.transform = 'scale(0.95)';
+                        // If on /cart page, remove the rows (both desktop & mobile)
+                        const rows = document.querySelectorAll(`[id="cart-row-${id}"], [id="cart-row-mobile-${id}"], .cart-row-${id}`);
+                        if (rows.length > 0) {
+                            rows.forEach(r => {
+                                r.style.transition = 'opacity 0.25s, transform 0.25s';
+                                r.style.opacity = '0';
+                                r.style.transform = 'scale(0.95)';
+                                setTimeout(() => r.remove(), 250);
+                            });
                             setTimeout(() => {
-                                row.remove();
-                                if (data.isEmpty || document.querySelectorAll('[id^="cart-row-"]').length === 0) {
-                                    const cartTableCol = document.querySelector('.col-lg-8');
-                                    const cartSummaryCol = document.querySelector('.col-lg-4');
-                                    const rowWrapper = cartTableCol ? cartTableCol.closest('.row') : null;
-                                    if (rowWrapper) {
-                                        rowWrapper.innerHTML = `
-                                            <div class="col-12 text-center py-5 mt-4" id="cartEmptyNotice">
-                                                <div class="mb-4 bg-white rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 120px; height: 120px;">
-                                                    <i class="fas fa-shopping-basket fa-4x text-muted opacity-25"></i>
-                                                </div>
-                                                <h3 class="fw-bold text-dark mb-3">{{ __('Your cart is empty') }}</h3>
-                                                <p class="text-muted mb-4">{{ __("You haven't added anything yet.") }}</p>
-                                                <a href="{{ route('shop.index') }}" class="btn btn-primary rounded-pill px-5 py-3 fw-bold shadow-sm hover-scale-sm transition-transform">{{ __('Start Shopping') }}</a>
-                                            </div>
-                                        `;
-                                    }
+                                const remainingDesktop = document.querySelectorAll('tr[id^="cart-row-"]').length;
+                                const remainingMobile = document.querySelectorAll('div[id^="cart-row-mobile-"]').length;
+                                if (data.isEmpty || (remainingDesktop === 0 && remainingMobile === 0)) {
+                                    window.location.reload();
                                 }
-                            }, 250);
+                            }, 280);
                         }
                         const subtotal = document.getElementById('cart-summary-subtotal');
                         if (subtotal && data.cartTotal) {

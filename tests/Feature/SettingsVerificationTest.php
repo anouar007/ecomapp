@@ -30,6 +30,13 @@ class SettingsVerificationTest extends TestCase
         // 2. Test Settings Index
         $response = $this->actingAs($admin)->get(route('settings.index'));
         $response->assertStatus(200);
+        $response->assertSee('Paramètres de la Boutique');
+        $response->assertSee('Devise & Fiscalité', false);
+
+        // Test Custom Codes Create Page
+        $createResponse = $this->actingAs($admin)->get(route('custom-codes.create'));
+        $createResponse->assertStatus(200);
+        $createResponse->assertSee('Nouveau Snippet de Code');
 
         // 3. Test Update Setting
         // Create a dummy setting first to ensure it exists for update
@@ -89,6 +96,13 @@ class SettingsVerificationTest extends TestCase
         $response = $this->actingAs($admin)->get(route('custom-codes.index'));
         $response->assertStatus(200);
         $response->assertSee('Test Snippet');
+        $response->assertSee('Codes & Scripts Personnalisés', false);
+
+        // Edit View
+        $editResponse = $this->actingAs($admin)->get(route('custom-codes.edit', $snippet));
+        $editResponse->assertStatus(200);
+        $editResponse->assertSee('Modifier le Snippet');
+        $editResponse->assertSee('Test Snippet');
 
         // Update
         $response = $this->actingAs($admin)->put(route('custom-codes.update', $snippet), [

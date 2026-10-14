@@ -1,384 +1,386 @@
 @extends('layouts.app')
 
-@section('title', 'Order Details - ' . $order->order_number)
-
-@push('styles')
-<link rel="stylesheet" href="{{ asset('css/management.css') }}">
-<style>
-    /* Custom styles for the order timeline */
-    .timeline-container {
-        padding: 20px 0;
-        margin-bottom: 30px;
-        position: relative;
-    }
-    .timeline-steps {
-        display: flex;
-        justify-content: space-between;
-        position: relative;
-    }
-    .timeline-steps::before {
-        content: '';
-        position: absolute;
-        top: 15px;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: #e2e8f0;
-        z-index: 1;
-        border-radius: 4px;
-    }
-    .timeline-step {
-        position: relative;
-        z-index: 2;
-        text-align: center;
-        width: 25%;
-    }
-    .step-icon {
-        width: 34px;
-        height: 34px;
-        background: #fff;
-        border: 2px solid #e2e8f0;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 10px;
-        font-size: 14px;
-        color: #94a3b8;
-        transition: all 0.3s ease;
-    }
-    .step-label {
-        font-size: 12px;
-        font-weight: 600;
-        color: #94a3b8;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    /* Active State */
-    .timeline-step.active .step-icon {
-        background: var(--primary-gradient);
-        border-color: transparent;
-        color: white;
-        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
-    }
-    .timeline-step.active .step-label {
-        color: #1e293b;
-    }
-    /* Completed State */
-    .timeline-step.completed .step-icon {
-        background: var(--success-gradient);
-        border-color: transparent;
-        color: white;
-    }
-    .timeline-step.completed .step-label {
-        color: #059669;
-    }
-    
-    /* Order Layout */
-    .order-grid {
-        display: grid;
-        grid-template-columns: 1fr 380px;
-        gap: 24px;
-    }
-    @media (max-width: 1024px) {
-        .order-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    .info-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 12px 0;
-        border-bottom: 1px solid #f1f5f9;
-        font-size: 14px;
-    }
-    .info-row:last-child {
-        border-bottom: none;
-    }
-    .info-label {
-        color: #64748b;
-        font-weight: 500;
-    }
-    .info-value {
-        color: #1e293b;
-        font-weight: 600;
-        text-align: right;
-    }
-</style>
-@endpush
+@section('title', 'Commande #' . $order->order_number)
 
 @section('content')
-<div class="page-header">
-    <div style="display: flex; justify-content: space-between; align-items: start;">
-        <div>
-            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-                <a href="{{ route('orders.index') }}" class="btn-action btn-action-view" style="width: 32px; height: 32px; border-radius: 8px;">
-                    <i class="fas fa-arrow-left"></i>
-                </a>
-                <h1 class="page-title" style="margin: 0; font-size: 28px;">Order #{{ $order->order_number }}</h1>
-                <span class="badge {{ $order->status_badge_class }}" style="margin: 0;">{{ ucfirst($order->status) }}</span>
+    <!-- En-tête de la page (Clean & Pro) -->
+    <div class="brand-header">
+        <div class="d-flex align-items-center gap-2.5">
+            <div class="brand-header-icon flex-shrink-0">
+                <i class="fas fa-receipt"></i>
             </div>
-            <p class="page-subtitle">
-                Placed on {{ $order->created_at->format('F d, Y') }} at {{ $order->created_at->format('h:i A') }}
-            </p>
+            <div>
+                <div class="d-flex align-items-center gap-2 text-muted small mb-1">
+                    <a href="{{ route('orders.index') }}" class="text-decoration-none text-muted">Commandes</a>
+                    <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
+                    <span class="text-dark fw-semibold font-monospace">#{{ $order->order_number }}</span>
+                    <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
+                    <span class="text-muted">Détails</span>
+                </div>
+                <h1 class="brand-title">Commande <span class="font-monospace">#{{ $order->order_number }}</span></h1>
+                <p class="brand-subtitle">
+                    Passée le <strong>{{ $order->created_at->format('d/m/Y') }}</strong> à {{ $order->created_at->format('H:i') }} &bull; 
+                    Client : <strong>{{ $order->customer_name ?: 'Client invité' }}</strong>
+                </p>
+            </div>
         </div>
-        <div style="display: flex; gap: 10px;">
-            <!-- Invoice Button -->
+
+        <!-- Boutons d'action responsive -->
+        <div class="brand-header-actions flex-wrap">
+            <!-- Retour -->
+            <a href="{{ route('orders.index') }}" class="btn btn-sm btn-light border rounded-pill px-3 py-1.5 text-muted fw-semibold d-inline-flex align-items-center gap-1.5 shadow-2xs" title="Retour aux commandes">
+                <i class="fas fa-arrow-left"></i> <span>Retour</span>
+            </a>
+
+            <!-- Facture -->
             @if(!$order->invoice)
-            <form action="{{ route('orders.generate-invoice', $order) }}" method="POST">
-                @csrf
-                <button type="submit" class="btn btn-success">
-                    <i class="fas fa-file-invoice"></i> Generate Invoice
-                </button>
-            </form>
+                <form action="{{ route('orders.generate-invoice', $order) }}" method="POST" class="d-inline m-0 p-0 flex-grow-1 flex-md-grow-0">
+                    @csrf
+                    <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center justify-content-center gap-1.5 w-100 shadow-2xs">
+                        <i class="fas fa-file-invoice"></i> <span>Créer Facture</span>
+                    </button>
+                </form>
             @else
-            <a href="{{ route('invoices.show', $order->invoice) }}" class="btn btn-secondary">
-                <i class="fas fa-file-invoice"></i> Invoice
-            </a>
+                <a href="{{ route('invoices.show', $order->invoice) }}" class="btn btn-sm btn-success rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 shadow-sm text-white">
+                    <i class="fas fa-file-invoice"></i> <span>Facture #{{ $order->invoice->invoice_number }}</span>
+                </a>
             @endif
 
-            <!-- Quote Button -->
+            <!-- Devis -->
             @if(!$order->quote)
-            <form action="{{ route('orders.generate-quote', $order) }}" method="POST">
-                @csrf
-                <button type="submit" class="btn btn-warning" style="color: #92400e; background-color: #fef3c7; border-color: #fde68a;">
-                    <i class="fas fa-file-alt"></i> Generate Quote
-                </button>
-            </form>
+                <form action="{{ route('orders.generate-quote', $order) }}" method="POST" class="d-inline m-0 p-0 flex-grow-1 flex-md-grow-0">
+                    @csrf
+                    <button type="submit" class="btn btn-sm btn-outline-warning rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center justify-content-center gap-1.5 w-100 shadow-2xs" style="color: #b45309; border-color: #fde68a; background: #fffdf5;">
+                        <i class="fas fa-file-alt"></i> <span>Créer Devis</span>
+                    </button>
+                </form>
             @else
-            <a href="{{ route('invoices.show', $order->quote) }}" class="btn btn-outline-warning" style="color: #92400e; border-color: #fde68a;">
-                <i class="fas fa-file-alt"></i> Quote
-            </a>
+                <a href="{{ route('invoices.show', $order->quote) }}" class="btn btn-sm btn-warning rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 shadow-sm" style="color: #78350f;">
+                    <i class="fas fa-file-alt"></i> <span>Devis #{{ $order->quote->invoice_number }}</span>
+                </a>
             @endif
 
-            <a href="{{ route('orders.edit', $order) }}" class="btn btn-primary">
-                <i class="fas fa-edit"></i> Edit Order
+            <!-- Modifier -->
+            <a href="{{ route('orders.edit', $order) }}" class="btn-brand-primary btn-sm rounded-pill flex-grow-1 flex-md-grow-0 justify-content-center text-nowrap px-3 py-1.5 shadow-sm d-inline-flex align-items-center gap-1.5">
+                <i class="fas fa-pencil-alt"></i> <span>Modifier</span>
             </a>
         </div>
     </div>
-</div>
 
-<div class="order-grid">
-    <!-- Main Content Column -->
-    <div class="main-column">
-        
-        <!-- Progress Tracker -->
-        <div class="card" style="margin-bottom: 24px;">
-            <div class="card-body">
-                @php
-                    $steps = ['pending', 'processing', 'shipped', 'delivered'];
-                    $currentStatusIndex = array_search($order->status, $steps);
-                    if ($order->status == 'cancelled') $currentStatusIndex = -1;
-                @endphp
-                
-                @if($order->status == 'cancelled')
-                   <div class="alert alert-danger" style="margin: 0;">
-                        <i class="fas fa-times-circle"></i>
-                        <div>
-                            <strong>Order Cancelled</strong>
-                            <p style="margin: 4px 0 0 0; font-size: 13px;">This order was cancelled on {{ $order->updated_at->format('M d, Y') }}</p>
-                        </div>
-                   </div> 
-                @else
-                <div class="timeline-container">
-                    <div class="timeline-steps">
-                        @foreach($steps as $index => $step)
-                            @php
-                                $isCompleted = $index < $currentStatusIndex;
-                                $isActive = $index === $currentStatusIndex;
-                                $statusClass = $isCompleted ? 'completed' : ($isActive ? 'active' : '');
-                                
-                                $icons = [
-                                    'pending' => 'fa-clock',
-                                    'processing' => 'fa-cog',
-                                    'shipped' => 'fa-truck',
-                                    'delivered' => 'fa-check-circle'
-                                ];
-                            @endphp
-                            <div class="timeline-step {{ $statusClass }}">
-                                <div class="step-icon">
-                                    <i class="fas {{ $icons[$step] }}"></i>
-                                </div>
-                                <div class="step-label">{{ ucfirst($step) }}</div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-                @endif
+    <!-- Stepper de progression de la commande -->
+    @php
+        $steps = ['pending', 'processing', 'shipped', 'delivered'];
+        $currentStatusIndex = array_search(strtolower($order->status), $steps);
+        if (strtolower($order->status) === 'cancelled') $currentStatusIndex = -1;
+    @endphp
+
+    @if(strtolower($order->status) === 'cancelled')
+        <div class="alert alert-danger border-0 rounded-4 shadow-sm mb-4 d-flex align-items-center gap-3 p-3">
+            <i class="fas fa-times-circle fs-3 text-danger"></i>
+            <div>
+                <h6 class="fw-bold mb-0">Commande Annulée</h6>
+                <div class="small opacity-75">Cette commande a été annulée le {{ $order->updated_at->format('d/m/Y à H:i') }}. Aucun envoi n'est prévu.</div>
             </div>
         </div>
-
-        <!-- Order Items -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">
-                    <i class="fas fa-box-open"></i> Order Items ({{ $order->items->count() }})
+    @else
+        <div class="order-stepper-wrap mb-4">
+            <div class="order-stepper">
+                @php
+                    $stepPercent = match($currentStatusIndex) {
+                        0 => 0,
+                        1 => 33,
+                        2 => 66,
+                        3 => 100,
+                        default => 0
+                    };
+                @endphp
+                <div class="order-stepper-track">
+                    <div class="order-stepper-progress" style="width: {{ $stepPercent }}%;"></div>
                 </div>
+
+                @php
+                    $stepLabels = [
+                        'pending' => ['name' => 'En attente', 'icon' => 'fa-clock'],
+                        'processing' => ['name' => 'En préparation', 'icon' => 'fa-cog'],
+                        'shipped' => ['name' => 'Expédiée', 'icon' => 'fa-truck-fast'],
+                        'delivered' => ['name' => 'Livrée', 'icon' => 'fa-circle-check'],
+                    ];
+                @endphp
+
+                @foreach($steps as $idx => $stKey)
+                    @php
+                        $isDone = $idx < $currentStatusIndex;
+                        $isCur = $idx === $currentStatusIndex;
+                        $stClass = $isDone ? 'completed' : ($isCur ? 'active' : '');
+                    @endphp
+                    <div class="order-step-item {{ $stClass }}">
+                        <div class="order-step-circle">
+                            @if($isDone)
+                                <i class="fas fa-check"></i>
+                            @else
+                                <i class="fas {{ $stepLabels[$stKey]['icon'] }}"></i>
+                            @endif
+                        </div>
+                        <div class="order-step-text">
+                            {{ $stepLabels[$stKey]['name'] }}
+                        </div>
+                    </div>
+                @endforeach
             </div>
-            <div class="card-body" style="padding: 0;">
-                <div class="table-container">
-                    <table class="table">
-                        <thead>
+        </div>
+    @endif
+
+    <div class="row g-4">
+        <!-- Colonne Principale (Gauche) : Articles et Notes -->
+        <div class="col-12 col-lg-8">
+            <!-- Articles commandés -->
+            <div class="product-form-card mb-4">
+                <div class="product-form-card-header">
+                    <h2 class="product-form-card-title">
+                        <i class="fas fa-box-open text-danger"></i> Articles commandés
+                        <span class="badge rounded-pill bg-light text-secondary border px-2.5 ms-1" style="font-size: 0.72rem;">
+                            {{ $order->items->count() }} article{{ $order->items->count() > 1 ? 's' : '' }}
+                        </span>
+                    </h2>
+                </div>
+
+                <!-- Desktop Table View -->
+                <div class="table-responsive d-none d-md-block">
+                    <table class="table align-middle mb-0">
+                        <thead class="bg-light text-muted small text-uppercase">
                             <tr>
-                                <th style="padding-left: 24px;">Product Items</th>
-                                <th class="text-right">Price</th>
-                                <th class="text-center">Qty</th>
-                                <th class="text-right" style="padding-right: 24px;">Total</th>
+                                <th class="border-0 ps-3">Produit</th>
+                                <th class="border-0 text-center">Prix Unitaire</th>
+                                <th class="border-0 text-center">Quantité</th>
+                                <th class="border-0 text-end pe-3">Total</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($order->items as $item)
-                            <tr>
-                                <td style="padding-left: 24px;">
-                                    <div style="display: flex; align-items: center; gap: 16px;">
-                                        <div style="width: 48px; height: 48px; background: #f1f5f9; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                            @if($item->product)
-                                                <img src="{{ $item->product->thumbnail }}" alt="{{ $item->product_name }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
-                                            @else
-                                                <img src="{{ asset('images/camera/cat_cameras.jpg') }}" alt="{{ $item->product_name }}" style="width: 100%; height: 100%; object-fit: cover;">
-                                            @endif
+                                <tr>
+                                    <td class="ps-3 py-3">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div style="width: 48px; height: 48px; border-radius: 10px; overflow: hidden; background: #f8fafc; border: 1px solid #e2e8f0; flex-shrink: 0;">
+                                                <img src="{{ $item->product ? $item->product->thumbnail : asset('images/camera/cat_cameras.jpg') }}" 
+                                                     alt="{{ $item->product_name }}" 
+                                                     style="width: 100%; height: 100%; object-fit: cover;"
+                                                     onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                                            </div>
+                                            <div>
+                                                @if($item->product)
+                                                    <a href="{{ route('products.edit', $item->product) }}" class="fw-bold text-dark text-decoration-none d-block hover-danger">
+                                                        {{ $item->product_name }}
+                                                    </a>
+                                                @else
+                                                    <span class="fw-bold text-dark d-block">{{ $item->product_name }}</span>
+                                                @endif
+                                                <span class="text-muted small font-monospace">SKU: {{ $item->product_sku ?: ($item->product->sku ?? 'N/A') }}</span>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <div style="font-weight: 600; color: #1e293b; font-size: 15px;">{{ $item->product_name }}</div>
-                                            <div style="font-size: 12px; color: #64748b; margin-top: 2px;">SKU: {{ $item->product->sku ?? 'N/A' }}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="text-right" style="font-weight: 500;">{{ currency($item->price) }}</td>
-                                <td class="text-center">
-                                    <span style="background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 13px;">{{ $item->quantity }}</span>
-                                </td>
-                                <td class="text-right" style="padding-right: 24px; font-weight: 700; color: #1e293b;">
-                                    {{ currency($item->price * $item->quantity) }}
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td class="text-center py-3 fw-semibold text-secondary">
+                                        {{ currency($item->price) }}
+                                    </td>
+                                    <td class="text-center py-3">
+                                        <span class="badge bg-light text-dark border px-2.5 py-1.5 fw-bold" style="border-radius: 8px;">
+                                            x{{ $item->quantity }}
+                                        </span>
+                                    </td>
+                                    <td class="text-end pe-3 py-3 fw-bold text-dark font-heading">
+                                        {{ currency($item->price * $item->quantity) }}
+                                    </td>
+                                </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
-            </div>
-        </div>
-        
-        <!-- Notes Section -->
-        @if($order->notes)
-        <div class="card" style="margin-top: 24px;">
-            <div class="card-header">
-                <div class="card-title"><i class="fas fa-sticky-note"></i> Order Notes</div>
-            </div>
-            <div class="card-body">
-                <p style="color: #475569; line-height: 1.6; margin: 0; font-style: italic;">"{{ $order->notes }}"</p>
-            </div>
-        </div>
-        @endif
-        
-    </div>
 
-    <!-- Sidebar Column -->
-    <div class="sidebar-column">
-        
-        <!-- Order Summary -->
-        <div class="card" style="margin-bottom: 24px;">
-            <div class="card-header">
-                <div class="card-title"><i class="fas fa-calculator"></i> Summary</div>
-            </div>
-            <div class="card-body">
-                <div class="info-row">
-                    <span class="info-label">Subtotal</span>
-                    <span class="info-value">{{ currency($order->subtotal) }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">{{ setting('tax_label', 'TVA') }} ({{ floatval(setting('tax_rate', 20)) }}%)</span>
-                    <span class="info-value">{{ currency($order->tax) }}</span>
-                </div>
-                <!-- Shipping -->
-                <div class="info-row">
-                    <span class="info-label">Shipping</span>
-                    <span class="info-value">{{ $order->shipping_cost > 0 ? currency($order->shipping_cost) : 'Free' }}</span>
-                </div>
-                <!-- Discount -->
-                @if($order->discount > 0)
-                <div class="info-row">
-                    <span class="info-label">Discount</span>
-                    <span class="info-value" style="color: #10b981;">-{{ currency($order->discount) }}</span>
-                </div>
-                @endif
-                
-                <div style="margin-top: 16px; padding-top: 16px; border-top: 2px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-weight: 700; color: #1e293b; font-size: 16px;">Total</span>
-                    <span style="font-weight: 800; color: #6366f1; font-size: 24px;">{{ currency($order->total) }}</span>
-                </div>
-                
-                <div style="margin-top: 20px; text-align: center;">
-                    <span class="badge {{ $order->payment_status_badge_class }}" style="width: 100%; justify-content: center; padding: 10px; font-size: 14px;">
-                        Payment: {{ ucfirst($order->payment_status) }}
-                    </span>
+                <!-- Mobile Items Cards (Touch-friendly) -->
+                <div class="d-block d-md-none">
+                    @foreach($order->items as $item)
+                        <div class="p-3 border rounded-3 mb-2 bg-light bg-opacity-25">
+                            <div class="d-flex align-items-start gap-2.5">
+                                <div style="width: 50px; height: 50px; border-radius: 10px; overflow: hidden; background: #f8fafc; border: 1px solid #e2e8f0; flex-shrink: 0;">
+                                    <img src="{{ $item->product ? $item->product->thumbnail : asset('images/camera/cat_cameras.jpg') }}" 
+                                         alt="{{ $item->product_name }}" 
+                                         style="width: 100%; height: 100%; object-fit: cover;"
+                                         onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                                </div>
+                                <div class="flex-grow-1 min-w-0">
+                                    @if($item->product)
+                                        <a href="{{ route('products.edit', $item->product) }}" class="fw-bold text-dark text-decoration-none text-truncate d-block" style="font-size: 0.9rem;">
+                                            {{ $item->product_name }}
+                                        </a>
+                                    @else
+                                        <div class="fw-bold text-dark text-truncate" style="font-size: 0.9rem;">
+                                            {{ $item->product_name }}
+                                        </div>
+                                    @endif
+                                    <div class="text-muted small font-monospace">SKU: {{ $item->product_sku ?: ($item->product->sku ?? 'N/A') }}</div>
+                                    <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
+                                        <span class="badge bg-white text-dark border px-2 py-1">
+                                            {{ currency($item->price) }} &times; {{ $item->quantity }}
+                                        </span>
+                                        <span class="fw-bold text-dark font-heading">
+                                            {{ currency($item->price * $item->quantity) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
             </div>
+
+            <!-- Notes de la commande -->
+            @if($order->notes)
+                <div class="product-form-card">
+                    <div class="product-form-card-header">
+                        <h2 class="product-form-card-title">
+                            <i class="fas fa-comment-dots text-warning"></i> Notes & Remarques
+                        </h2>
+                    </div>
+                    <div class="p-3 rounded-3 bg-light border text-secondary" style="font-style: italic; line-height: 1.6; border-left: 3px solid #dc2626 !important;">
+                        &ldquo;{{ $order->notes }}&rdquo;
+                    </div>
+                </div>
+            @endif
         </div>
 
-        <!-- Customer Card -->
-        <div class="card" style="margin-bottom: 24px;">
-            <div class="card-header">
-                <div class="card-title"><i class="fas fa-user"></i> Customer</div>
-            </div>
-            <div class="card-body">
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
-                    <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #3730a3; font-weight: 700; font-size: 18px;">
-                        {{ substr($order->customer_name, 0, 1) }}
+        <!-- Colonne Latérale (Droite) : Récapitulatif, Client & Paiement -->
+        <div class="col-12 col-lg-4">
+            <!-- Récapitulatif Financier -->
+            <div class="product-form-card mb-4">
+                <div class="product-form-card-header">
+                    <h2 class="product-form-card-title">
+                        <i class="fas fa-calculator text-success"></i> Récapitulatif Financier
+                    </h2>
+                </div>
+
+                <div class="d-flex flex-column gap-2.5">
+                    <div class="d-flex justify-content-between align-items-center text-secondary small">
+                        <span>Sous-total HT</span>
+                        <span class="fw-semibold text-dark">{{ currency($order->subtotal) }}</span>
                     </div>
-                    <div>
-                        <div style="font-weight: 700; color: #1e293b;">{{ $order->customer_name }}</div>
-                        <div style="font-size: 12px; color: #64748b;">Customer</div>
+
+                    <div class="d-flex justify-content-between align-items-center text-secondary small">
+                        <span>{{ setting('tax_label', 'TVA') }} ({{ floatval(setting('tax_rate', 20)) }}%)</span>
+                        <span class="fw-semibold text-dark">{{ currency($order->tax) }}</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center text-secondary small">
+                        <span>Frais de livraison</span>
+                        <span class="fw-semibold text-dark">{{ $order->shipping_cost > 0 ? currency($order->shipping_cost) : 'Gratuit' }}</span>
+                    </div>
+
+                    @if($order->discount > 0)
+                        <div class="d-flex justify-content-between align-items-center text-success small">
+                            <span>Remise</span>
+                            <span class="fw-semibold">-{{ currency($order->discount) }}</span>
+                        </div>
+                    @endif
+
+                    <div class="pt-2.5 mt-1 border-top d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-dark fs-6">Total TTC</span>
+                        <span class="fw-extrabold font-heading text-danger fs-4">{{ currency($order->total) }}</span>
+                    </div>
+
+                    <!-- Statut du Paiement -->
+                    @php
+                        $payLower = strtolower($order->payment_status);
+                        $payBadgeClass = match($payLower) {
+                            'paid', 'payé' => 'bg-success-subtle text-success border-success-subtle',
+                            'failed', 'échoué' => 'bg-danger-subtle text-danger border-danger-subtle',
+                            'refunded', 'remboursé' => 'bg-secondary-subtle text-secondary',
+                            default => 'bg-warning-subtle text-warning border-warning-subtle'
+                        };
+                        $payText = match($payLower) {
+                            'paid' => 'Règlement Confirmé (Payé)',
+                            'failed' => 'Paiement Échoué',
+                            'refunded' => 'Commande Remboursée',
+                            default => 'En attente de paiement'
+                        };
+                    @endphp
+                    <div class="mt-2 text-center p-2.5 rounded-pill border {{ $payBadgeClass }} fw-semibold small">
+                        <i class="fas fa-credit-card me-1.5"></i> {{ $payText }}
                     </div>
                 </div>
-                
-                <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <div style="display: flex; gap: 10px;">
-                        <i class="fas fa-envelope" style="color: #94a3b8; margin-top: 3px;"></i>
-                        <span style="font-size: 14px; color: #334155;">{{ $order->customer_email ?? 'No email' }}</span>
+            </div>
+
+            <!-- Fiche Client & Livraison -->
+            <div class="product-form-card mb-4">
+                <div class="product-form-card-header">
+                    <h2 class="product-form-card-title">
+                        <i class="fas fa-user-circle text-primary"></i> Client & Livraison
+                    </h2>
+                </div>
+
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); color: #dc2626; font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1.5px solid #fca5a5; box-shadow: 0 2px 6px rgba(220, 38, 38, 0.12);">
+                        {{ strtoupper(substr($order->customer_name ?: 'C', 0, 1)) }}
                     </div>
-                    <div style="display: flex; gap: 10px;">
-                        <i class="fas fa-phone" style="color: #94a3b8; margin-top: 3px;"></i>
-                        <span style="font-size: 14px; color: #334155;">{{ $order->customer_phone ?? 'No phone' }}</span>
+                    <div class="min-w-0 flex-grow-1">
+                        <div class="fw-bold text-dark text-truncate">{{ $order->customer_name ?: 'Client invité' }}</div>
+                        <div class="text-muted small">Client de la boutique</div>
                     </div>
+                </div>
+
+                <div class="d-flex flex-column gap-2 text-secondary small">
+                    @if($order->customer_email)
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="far fa-envelope text-muted" style="width: 16px;"></i>
+                            <a href="mailto:{{ $order->customer_email }}" class="text-decoration-none text-dark hover-danger text-truncate">{{ $order->customer_email }}</a>
+                        </div>
+                    @endif
+
+                    @if($order->customer_phone)
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-phone-alt text-muted" style="width: 16px;"></i>
+                            <a href="tel:{{ $order->customer_phone }}" class="text-decoration-none text-dark hover-danger">{{ $order->customer_phone }}</a>
+                        </div>
+                    @endif
+
                     @if($order->shipping_address)
-                    <div style="display: flex; gap: 10px;">
-                        <i class="fas fa-map-marker-alt" style="color: #94a3b8; margin-top: 3px;"></i>
-                        <span style="font-size: 14px; color: #334155; line-height: 1.5;">
-                            {{ $order->shipping_address }}<br>
-                            {{ $order->shipping_city }} {{ $order->shipping_zip }}<br>
-                            {{ $order->shipping_country }}
-                        </span>
-                    </div>
+                        <div class="d-flex align-items-start gap-2 pt-2 border-top mt-1">
+                            <i class="fas fa-map-marker-alt text-danger mt-1" style="width: 16px;"></i>
+                            <div>
+                                <span class="fw-semibold text-dark">Adresse de livraison :</span><br>
+                                {{ $order->shipping_address }}<br>
+                                {{ $order->shipping_city }} {{ $order->shipping_zip ? '(' . $order->shipping_zip . ')' : '' }}<br>
+                                <span class="text-muted">{{ $order->shipping_country ?: 'Maroc' }}</span>
+                            </div>
+                        </div>
                     @endif
                 </div>
             </div>
-        </div>
-        
-        <!-- Payment Info -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title"><i class="fas fa-credit-card"></i> Payment</div>
-            </div>
-            <div class="card-body">
-                <div class="info-row">
-                    <span class="info-label">Method</span>
-                    <span class="info-value" style="text-transform: capitalize;">{{ str_replace('_', ' ', $order->payment_method) }}</span>
-                </div>
-                @if($order->transaction_id)
-                <div class="info-row">
-                    <span class="info-label">Trans. ID</span>
-                    <span class="info-value" style="font-family: monospace; font-size: 13px;">{{ $order->transaction_id }}</span>
-                </div>
-                @endif
-                <div class="info-row">
-                    <span class="info-label">Date</span>
-                    <span class="info-value">{{ $order->created_at->format('M d, Y') }}</span>
-                </div>
-            </div>
-        </div>
 
+            <!-- Détails du Règlement -->
+            <div class="product-form-card">
+                <div class="product-form-card-header">
+                    <h2 class="product-form-card-title">
+                        <i class="fas fa-money-check-dollar text-secondary"></i> Modalités de Paiement
+                    </h2>
+                </div>
+
+                <div class="d-flex flex-column gap-2.5 small">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted">Mode :</span>
+                        <span class="fw-bold text-dark text-capitalize">{{ str_replace('_', ' ', $order->payment_method ?: 'Non spécifié') }}</span>
+                    </div>
+
+                    @if($order->transaction_id)
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Réf. Transaction :</span>
+                            <span class="font-monospace fw-semibold text-dark">{{ $order->transaction_id }}</span>
+                        </div>
+                    @endif
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted">Date d'enregistrement :</span>
+                        <span class="text-dark">{{ $order->created_at->format('d/m/Y à H:i') }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 @endsection

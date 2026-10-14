@@ -26,20 +26,20 @@ if (!function_exists('currency')) {
      */
     function currency($amount, bool $showSymbol = true)
     {
-        $symbol = setting('currency_symbol', '$');
-        $decimals = setting('currency_decimals', 2);
-        $decimalSeparator = setting('decimal_separator', '.');
-        $thousandsSeparator = setting('thousands_separator', ',');
-        $position = setting('currency_position', 'before'); // before or after
+        $symbol = setting('currency_symbol', 'DH');
+        $decimals = (int) (setting('currency_decimals', 2) ?? 2);
+        $decimalSeparator = setting('decimal_separator', '.') ?? '.';
+        $thousandsSeparator = setting('thousands_separator', ',') ?? ' ';
+        $position = setting('currency_position', 'after'); // before or after
         
-        $formatted = number_format($amount, $decimals, $decimalSeparator, $thousandsSeparator);
+        $formatted = number_format((float) $amount, $decimals, $decimalSeparator, $thousandsSeparator);
         
         if (!$showSymbol) {
             return $formatted;
         }
         
         return $position === 'before' 
-            ? $symbol . $formatted 
+            ? $symbol . ' ' . $formatted 
             : $formatted . ' ' . $symbol;
     }
 }

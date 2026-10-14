@@ -243,16 +243,82 @@
     background: #4f46e5;
     color: #ffffff;
 }
+@media (max-width: 767.98px) {
+    .smart-editor-helper-bar {
+        display: flex !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        flex-wrap: nowrap !important;
+        -webkit-overflow-scrolling: touch;
+        padding: 6px 8px !important;
+        gap: 6px !important;
+        scrollbar-width: none;
+    }
+    .smart-editor-helper-bar::-webkit-scrollbar {
+        display: none;
+    }
+    .smart-editor-helper-bar > div {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        flex-shrink: 0 !important;
+        gap: 6px !important;
+    }
+    .smart-editor-tag {
+        display: none !important;
+    }
+    .smart-tool-btn {
+        font-size: 11px !important;
+        padding: 5px 9px !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+        border-radius: 7px !important;
+    }
+    .ql-toolbar.ql-snow {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        -webkit-overflow-scrolling: touch;
+        padding: 6px 8px !important;
+        gap: 2px !important;
+        scrollbar-width: none;
+    }
+    .ql-toolbar.ql-snow::-webkit-scrollbar {
+        display: none;
+    }
+    .ql-toolbar.ql-snow .ql-formats {
+        display: inline-flex !important;
+        flex-shrink: 0 !important;
+        align-items: center !important;
+        margin-right: 4px !important;
+        gap: 2px !important;
+    }
+    .ql-snow .ql-picker {
+        font-size: 11px !important;
+        height: 28px !important;
+    }
+    .ql-snow button {
+        width: 28px !important;
+        height: 28px !important;
+        padding: 3px !important;
+        flex-shrink: 0 !important;
+    }
+    .ql-editor {
+        min-height: 200px !important;
+        padding: 12px 14px !important;
+        font-size: 14px !important;
+    }
+}
 </style>
 @endpush
 
-<div class="form-group mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <label for="description" class="form-label mb-0 fw-bold">
-            <i class="fas fa-file-signature text-primary me-1"></i> Description du Produit (Smart Rich Editor)
+<div class="form-group mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+        <label for="description" class="form-label mb-0 fw-semibold text-dark">
+            <i class="fas fa-file-signature text-danger me-1.5"></i> Description détaillée
         </label>
-        <span class="badge bg-light text-muted border" style="font-weight: 500;">
-            <i class="fas fa-expand-arrows-alt text-primary me-1"></i> Cliquez sur l'image pour redimensionner & déplacer
+        <span class="badge bg-light text-muted border d-none d-md-inline-block small" style="font-weight: 500;">
+            <i class="fas fa-expand-arrows-alt text-primary me-1"></i> Cliquez sur une image pour la redimensionner
         </span>
     </div>
 
@@ -361,10 +427,12 @@
 
     {{-- Bottom helper info --}}
     <div class="d-flex justify-content-between align-items-center mt-2 px-1">
-        <span class="text-muted small" style="font-size: 12px;">
-            <i class="fas fa-lightbulb text-warning me-1"></i> Cliquez sur n'importe quelle image pour la <strong>redimensionner aux coins</strong> ou la <strong>déplacer / aligner</strong>.
+        <span class="text-muted small text-truncate pe-2" style="font-size: 11.5px;">
+            <i class="fas fa-lightbulb text-warning me-1"></i>
+            <span class="d-none d-sm-inline">Cliquez sur une image pour la <strong>redimensionner</strong> ou <strong>déplacer</strong>.</span>
+            <span class="d-sm-none">Touchez une image pour l'ajuster.</span>
         </span>
-        <span id="editorWordCount" class="badge bg-light text-secondary border" style="font-size: 11px;">0 mot</span>
+        <span id="editorWordCount" class="badge bg-light text-secondary border flex-shrink-0" style="font-size: 11px;">0 mot</span>
     </div>
 </div>
 

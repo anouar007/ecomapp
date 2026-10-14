@@ -48,6 +48,11 @@ class BannerManagementTest extends TestCase
         $response->assertSee('Slider Principal');
         $response->assertSee('Encadrés Latéraux Hero');
         $response->assertSee('Bannière Promo (Large)');
+        $response->assertSee('brand-header');
+        $response->assertSee('stat-kpi-card');
+        $response->assertSee('brand-tab-scroll-wrapper');
+        $response->assertSee('sideTopLivePreview');
+        $response->assertSee('promoLivePreview');
     }
 
     /**

@@ -179,7 +179,7 @@ class InventoryController extends Controller
     {
         $query = InventoryMovement::with(['product', 'creator']);
 
-        // Filter by product
+        // Filter by product ID
         if ($request->filled('product_id')) {
             $query->where('product_id', $request->product_id);
         }
@@ -189,12 +189,25 @@ class InventoryController extends Controller
             $query->where('type', $request->type);
         }
 
-        // Filter by date range
-        if ($request->filled('start_date')) {
-            $query->whereDate('created_at', '>=', $request->start_date);
+        // Filter by date range (supports start_date/end_date and date_from/date_to)
+        $startDate = $request->start_date ?? $request->date_from;
+        $endDate = $request->end_date ?? $request->date_to;
+        if ($startDate) {
+            $query->whereDate('created_at', '>=', $startDate);
         }
-        if ($request->filled('end_date')) {
-            $query->whereDate('created_at', '<=', $request->end_date);
+        if ($endDate) {
+            $query->whereDate('created_at', '<=', $endDate);
+        }
+
+        // Search by product name, SKU or reason
+        $search = $request->search ?? $request->product;
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->whereHas('product', function($sub) use ($search) {
+                    $sub->where('name', 'LIKE', "%{$search}%")
+                        ->orWhere('sku', 'LIKE', "%{$search}%");
+                })->orWhere('reason', 'LIKE', "%{$search}%");
+            });
         }
 
         $movements = $query->orderBy('created_at', 'desc')->paginate(30);
@@ -214,18 +227,27 @@ class InventoryController extends Controller
         if ($request->filled('status')) {
             if ($request->status === 'unacknowledged') {
                 $query->unacknowledged();
-            } else {
+            } elseif ($request->status === 'acknowledged') {
                 $query->acknowledged();
             }
         }
 
-        // Filter by alert type
-        if ($request->filled('alert_type')) {
-            $query->where('alert_type', $request->alert_type);
+        // Filter by alert type (supports alert_type or type)
+        $alertType = $request->alert_type ?? $request->type;
+        if ($alertType) {
+            $query->where('alert_type', $alertType);
+        }
+
+        // Search product
+        $search = $request->search ?? $request->product;
+        if ($search) {
+            $query->whereHas('product', function($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('sku', 'LIKE', "%{$search}%");
+            });
         }
 
         $alerts = $query->orderBy('triggered_at', 'desc')->paginate(20);
-
 
         $stats = [
             'total_alerts' => StockAlert::count(),
@@ -237,7 +259,6 @@ class InventoryController extends Controller
 
         return view('inventory.alerts', compact('alerts', 'stats'));
     }
-
 
     /**
      * Show stock adjustment form.
@@ -252,25 +273,55 @@ class InventoryController extends Controller
      */
     public function processAdjustment(Request $request, Product $product)
     {
+        // Support both adjustment_type and type
+        if (!$request->has('adjustment_type') && $request->has('type')) {
+            $request->merge(['adjustment_type' => $request->input('type')]);
+        }
+
+        $adjType = $request->input('adjustment_type');
+        $minQty = ($adjType === 'adjustment') ? 0 : 1;
+
         $validated = $request->validate([
-            'adjustment_type' => 'required|in:in,out,adjustment',
-            'quantity' => 'required|integer|min:1',
-            'reason' => 'required|string',
+            'adjustment_type' => 'required|in:in,out,adjustment,transfer,return',
+            'quantity' => "required|integer|min:{$minQty}",
+            'reason' => 'required|string|max:500',
         ]);
 
+        $options = [
+            'reason' => $validated['reason'],
+        ];
+
+        if ($request->filled('reference')) {
+            $options['reference_id'] = $request->input('reference');
+        }
+
         $success = $product->adjustStock(
-            $validated['quantity'],
+            (int) $validated['quantity'],
             $validated['adjustment_type'],
             Auth::id(),
-            ['reason' => $validated['reason']]
+            $options
         );
+
+        if ($request->ajax() || $request->wantsJson()) {
+            if ($success) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Stock ajusté avec succès.',
+                    'new_stock' => $product->fresh()->stock,
+                ]);
+            }
+            return response()->json([
+                'success' => false,
+                'message' => 'Impossible d\'ajuster le stock en dessous de zéro.',
+            ], 422);
+        }
 
         if ($success) {
             return redirect()->route('inventory.index')
-                ->with('success', 'Stock adjusted successfully!');
+                ->with('success', 'Stock ajusté avec succès !');
         }
 
-        return back()->with('error', 'Cannot adjust stock to negative value.');
+        return back()->with('error', 'Impossible d\'ajuster le stock en dessous de zéro.');
     }
 
     /**

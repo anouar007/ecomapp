@@ -3,29 +3,28 @@
 @section('title', 'Studio Qualité 4K - Gestion des Images')
 
 @section('content')
-<div class="container-fluid px-4 py-3">
-    <!-- Header -->
-    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+    <!-- En-tête de la page -->
+    <div class="brand-header">
         <div>
             <div class="d-flex align-items-center gap-2 text-muted small mb-1">
                 <a href="{{ route('products.index') }}" class="text-decoration-none text-muted">Produits</a>
                 <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
                 <span class="text-dark fw-semibold">Studio Qualité 4K</span>
             </div>
-            <h1 class="h3 fw-bold text-dark d-flex align-items-center gap-2 mb-1">
-                <span style="background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; width: 38px; height: 38px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: 18px;">
-                    <i class="fas fa-sparkles"></i>
-                </span>
+            <h1 class="brand-title">
+                <div class="brand-header-icon" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: #fbbf24;">
+                    <i class="fas fa-wand-magic-sparkles"></i>
+                </div>
                 Studio Qualité Images 4K
             </h1>
-            <p class="text-muted mb-0 small">Auditez la résolution de vos produits et appliquez les meilleurs masters studio 4K Ultra-HD (2000px - 4000px) sans compression.</p>
+            <p class="brand-subtitle">Auditez la résolution de votre catalogue et appliquez les masters studio 4K Ultra-HD sans compression</p>
         </div>
-        <div class="d-flex align-items-center gap-2">
-            <a href="{{ route('products.index') }}" class="btn btn-outline-secondary rounded-pill px-3 py-2 btn-sm fw-semibold">
-                <i class="fas fa-arrow-left me-1"></i> Retour aux produits
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <a href="{{ route('products.index') }}" class="btn-brand-outline">
+                <i class="fas fa-arrow-left me-1.5"></i> Retour aux produits
             </a>
-            <button type="button" onclick="bulkUpgradeAllNeedsUpgrade()" class="btn btn-primary rounded-pill px-4 py-2 btn-sm fw-semibold shadow-sm" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); border: none;">
-                <i class="fas fa-bolt me-1 text-warning"></i> Optimiser la sélection vers 4K
+            <button type="button" onclick="bulkUpgradeAllNeedsUpgrade()" class="btn btn-sm text-white rounded-pill px-3.5 py-2 fw-semibold shadow-sm d-inline-flex align-items-center gap-2" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); border: none;">
+                <i class="fas fa-bolt text-warning"></i> Optimiser vers 4K
             </button>
         </div>
     </div>
@@ -253,7 +252,6 @@
     <div class="d-flex justify-content-center mt-4">
         {{ $products->links() }}
     </div>
-</div>
 
 <!-- Modal 4K Image Finder -->
 <div id="modal4k" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); z-index: 9999; overflow-y: auto; padding: 20px; align-items: center; justify-content: center;">

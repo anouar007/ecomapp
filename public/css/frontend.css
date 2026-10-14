@@ -2160,6 +2160,18 @@ a { text-decoration: none; }
     min-width: 200px;
 }
 .pdp-add-btn:hover:not(:disabled) { background: var(--accent-hover); transform: translateY(-1px); }
+.pdp-add-btn.is-in-cart {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: 0 4px 14px rgba(22, 163, 74, 0.35) !important;
+}
+.pdp-add-btn.is-in-cart:hover:not(:disabled) {
+    background: linear-gradient(135deg, #15803d 0%, #166534 100%) !important;
+    color: #ffffff !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 18px rgba(22, 163, 74, 0.45) !important;
+}
 .pdp-add-btn:disabled { background: var(--text-muted); cursor: not-allowed; }
 
 /* Trust Pills */

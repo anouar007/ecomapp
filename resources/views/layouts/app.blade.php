@@ -9,29 +9,38 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.7.32/sweetalert2.min.css">
     
-    <!-- Dynamic Theme CSS Variables -->
+    <!-- Winashop Theme Variables -->
     <style>
         :root {
-            --primary-color: {{ setting('primary_color', '#3b82f6') }};
-            --secondary-color: {{ setting('secondary_color', '#10b981') }};
-            --accent-color: {{ setting('accent_color', '#8b5cf6') }};
-            --success-color: {{ setting('success_color', '#10b981') }};
-            --warning-color: {{ setting('warning_color', '#f59e0b') }};
-            --danger-color: {{ setting('danger_color', '#ef4444') }};
-            --font-family: {{ setting('font_family', 'Inter, system-ui, sans-serif') }};
-            --font-size-base: {{ setting('font_size_base', '14') }}px;
-            --border-radius: {{ setting('border_radius', '12') }}px;
+            --primary-color: #dc2626;
+            --primary-dark: #b91c1c;
+            --secondary-color: #0f172a;
+            --accent-color: #dc2626;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #dc2626;
+            --font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            --font-heading: 'Outfit', sans-serif;
+            --font-size-base: 14px;
+            --border-radius: 12px;
         }
         
         body {
             font-family: var(--font-family);
             font-size: var(--font-size-base);
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+
+        h1, h2, h3, h4, h5, h6, .brand-title, .page-title, .navbar-brand {
+            font-family: var(--font-heading);
+            letter-spacing: -0.02em;
         }
     </style>
     
@@ -41,23 +50,32 @@
 <body>
     <!-- Navbar -->
     <nav class="navbar">
-        <button class="navbar-toggler">
+        <button class="navbar-toggler" aria-label="Toggle menu">
             <i class="fas fa-bars"></i>
         </button>
         <a href="{{ route('dashboard') }}" class="navbar-brand">
-            @if(setting('app_logo'))
-                <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="{{ setting('app_name') }}" style="height: 32px; margin-right: 8px;">
+            @php
+                $winaLogo = file_exists(public_path('images/camera/logo.png')) ? asset('images/camera/logo.png') : (setting('app_logo') ? asset('storage/' . setting('app_logo')) : null);
+            @endphp
+            @if($winaLogo)
+                <img src="{{ $winaLogo }}" alt="WINA SHOP" style="height: 38px; max-width: 150px; object-fit: contain; margin-right: 10px;">
             @else
-                <i class="fas fa-shopping-cart" style="margin-right: 8px;"></i>
+                <i class="fas fa-camera text-danger me-2"></i>
+                <span style="font-weight: 800; color: #0f172a;">WINA<span style="color: #dc2626;">SHOP</span></span>
             @endif
-            {{ setting('app_name', 'E-commerce') }}
         </a>
         
         <div class="navbar-user">
+            <!-- Link to Frontend -->
+            <a href="{{ route('home') }}" target="_blank" class="btn btn-sm btn-outline-dark d-none d-sm-inline-flex align-items-center gap-1.5 px-3 py-1.5 rounded-pill me-2 font-monospace" style="font-size: 12px; font-weight: 600; border-color: #e2e8f0;">
+                <i class="fas fa-external-link-alt text-danger" style="font-size: 11px;"></i>
+                <span>Boutique en direct</span>
+            </a>
+
             <!-- Help/Tour Button -->
-            <button onclick="startTour()" class="btn btn-sm btn-outline-primary" style="margin-right: 12px; border-radius: 20px; display: flex; align-items: center; gap: 6px;">
-                <i class="fas fa-question-circle"></i>
-                <span class="d-none d-md-inline">Aide & Guide</span>
+            <button onclick="startTour()" class="btn btn-sm btn-light border me-2 d-none d-md-inline-flex align-items-center gap-1.5 px-3 py-1.5 rounded-pill" style="font-size: 12px; font-weight: 600; color: #475569;">
+                <i class="fas fa-question-circle text-danger"></i>
+                <span>Guide</span>
             </button>
 
             <div class="user-avatar" id="user-menu-trigger">
@@ -179,6 +197,9 @@
             </li>
         </ul>
     </aside>
+
+    <!-- Mobile Sidebar Backdrop Overlay -->
+    <div class="sidebar-backdrop"></div>
 
     <!-- Main Content -->
     <main class="main-content">

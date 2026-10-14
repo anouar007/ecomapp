@@ -1,316 +1,605 @@
 @extends('layouts.app')
 
-@section('title', 'Invoices Management')
+@section('title', 'Facturation & Devis')
 
 @section('content')
-    <!-- Page Header -->
+    <!-- En-tête de page (Clean & Pro Executive Brand Header) -->
     <div class="brand-header">
-        <div>
-            <h1 class="brand-title">
-                <div class="brand-header-icon">
-                    <i class="fas fa-file-invoice-dollar"></i>
+        <div class="d-flex align-items-center gap-2.5">
+            <div class="brand-header-icon flex-shrink-0">
+                <i class="fas fa-file-invoice-dollar"></i>
+            </div>
+            <div>
+                <h1 class="brand-title">Facturation & Devis</h1>
+                <p class="brand-subtitle">Suivez vos règlements, générez vos factures & devis et gérez la conformité fiscale</p>
+            </div>
+        </div>
+        <div class="brand-header-actions">
+            <a href="{{ route('export.invoices') }}" class="btn btn-outline-secondary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
+                <i class="fas fa-file-csv text-success"></i> <span>Exporter CSV</span>
+            </a>
+            <a href="{{ route('invoices.create') }}" class="btn-brand-primary flex-grow-1 flex-md-grow-0 justify-content-center text-nowrap px-3 py-2" style="font-size: 0.84rem;">
+                <i class="fas fa-plus me-1"></i> <span class="d-none d-sm-inline">Nouveau document</span><span class="d-sm-none">Créer</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- KPI Metric Stat Cards (Row of 4) -->
+    <div class="row g-3 mb-4">
+        <!-- Total Factures / Devis -->
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('invoices.index') }}" class="stat-kpi-card text-decoration-none {{ !request('status') && !request('type') && !request('search') ? 'active-filter' : '' }}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Total Documents</div>
+                        <div class="stat-kpi-value text-dark" id="kpi-total-invoices">{{ number_format(($stats['total_invoices'] ?? 0) + ($stats['total_quotes'] ?? 0), 0, ',', ' ') }}</div>
+                        <div class="stat-kpi-sub text-muted">
+                            <span class="badge bg-light text-secondary border">Factures & Devis</span>
+                        </div>
+                    </div>
+                    <div class="stat-kpi-icon bg-primary-subtle text-primary">
+                        <i class="fas fa-file-invoice"></i>
+                    </div>
                 </div>
-                Invoices Management
-            </h1>
-            <p class="brand-subtitle">Track billings, manage customer payments, and monitor revenue</p>
+            </a>
         </div>
-        <a href="{{ route('invoices.create') }}" class="btn-brand-primary">
-            <i class="fas fa-plus me-2"></i> Create Invoice
-        </a>
-    </div>
 
-    <!-- Statistics Cards -->
-    <div class="brand-stats-grid">
-        <div class="brand-stat-card">
-            <div class="brand-stat-icon primary">
-                <i class="fas fa-file-alt"></i>
-            </div>
-            <div class="brand-stat-label">Total Invoices</div>
-            <div class="brand-stat-value">{{ $stats['total_invoices'] }}</div>
-            <div class="brand-stat-desc">
-                <i class="fas fa-history"></i> Lifetime generated
-            </div>
+        <!-- Règlements Encaissés (Payé) -->
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('invoices.index', ['status' => 'paid']) }}" class="stat-kpi-card text-decoration-none {{ request('status') === 'paid' ? 'active-filter' : '' }}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Encaissé (Payé)</div>
+                        <div class="stat-kpi-value text-success" id="kpi-paid-amount">{{ currency($stats['paid_amount'] ?? 0) }}</div>
+                        <div class="stat-kpi-sub text-muted"><i class="fas fa-check-circle text-success me-1"></i>Règlements reçus</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-success-subtle text-success">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                </div>
+            </a>
         </div>
-        
-        <div class="brand-stat-card">
-            <div class="brand-stat-icon success">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <div class="brand-stat-label">Paid Amount</div>
-            <div class="brand-stat-value">{{ currency($stats['paid_amount']) }}</div>
-            <div class="brand-stat-desc">
-                <i class="fas fa-arrow-up text-success"></i> Successfully collected
-            </div>
+
+        <!-- En Attente / Impayé -->
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('invoices.index', ['status' => 'unpaid']) }}" class="stat-kpi-card text-decoration-none {{ request('status') === 'unpaid' ? 'active-filter' : '' }}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">En Attente (Impayé)</div>
+                        <div class="stat-kpi-value text-warning" id="kpi-unpaid-amount">{{ currency($stats['unpaid_amount'] ?? 0) }}</div>
+                        <div class="stat-kpi-sub text-muted"><i class="fas fa-clock text-warning me-1"></i>En attente de paiement</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-warning-subtle text-warning">
+                        <i class="fas fa-hourglass-half"></i>
+                    </div>
+                </div>
+            </a>
         </div>
-        
-        <div class="brand-stat-card">
-            <div class="brand-stat-icon warning">
-                <i class="fas fa-hourglass-start"></i>
-            </div>
-            <div class="brand-stat-label">Unpaid Amount</div>
-            <div class="brand-stat-value">{{ currency($stats['unpaid_amount']) }}</div>
-            <div class="brand-stat-desc">
-                <i class="fas fa-exclamation-circle text-warning"></i> Pending collections
-            </div>
-        </div>
-        
-        <div class="brand-stat-card">
-            <div class="brand-stat-icon info">
-                <i class="fas fa-chart-pie"></i>
-            </div>
-            <div class="brand-stat-label">Total Revenue</div>
-            <div class="brand-stat-value">{{ currency($stats['total_revenue']) }}</div>
-            <div class="brand-stat-desc">
-                <i class="fas fa-chart-line"></i> Combined gross value
-            </div>
+
+        <!-- Chiffre d'Affaires Global -->
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('invoices.index', ['type' => 'invoice']) }}" class="stat-kpi-card text-decoration-none {{ request('type') === 'invoice' ? 'active-filter' : '' }}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Volume Facturé</div>
+                        <div class="stat-kpi-value" id="kpi-total-revenue" style="color: #059669;">{{ currency($stats['total_revenue'] ?? 0) }}</div>
+                        <div class="stat-kpi-sub text-muted"><i class="fas fa-chart-line text-success me-1"></i>Factures hors annulation</div>
+                    </div>
+                    <div class="stat-kpi-icon" style="background: #ecfdf5; color: #059669;">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                </div>
+            </a>
         </div>
     </div>
 
-    <!-- Search and Filters -->
-    <div class="brand-filter-bar">
-        <form method="GET" action="{{ route('invoices.index') }}" class="d-flex align-items-end gap-3 flex-wrap">
-            <div class="brand-search-wrapper flex-grow-1">
-                <i class="fas fa-search"></i>
-                <input type="text" name="search" class="form-control" 
-                       value="{{ request('search') }}" 
-                       placeholder="Invoice #, customer name...">
-            </div>
-            
-            <div style="min-width: 140px;">
-                <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;">Type</label>
-                <select name="type" class="form-select">
-                    <option value="">All Types</option>
-                    <option value="invoice" {{ request('type') === 'invoice' ? 'selected' : '' }}>Invoice</option>
-                    <option value="quote" {{ request('type') === 'quote' ? 'selected' : '' }}>Quote</option>
-                </select>
-            </div>
-            
-            <div style="min-width: 140px;">
-                <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;">Status</label>
-                <select name="status" class="form-select">
-                    <option value="">All Statuses</option>
-                    <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Paid</option>
-                    <option value="unpaid" {{ request('status') === 'unpaid' ? 'selected' : '' }}>Unpaid</option>
-                    <option value="partial" {{ request('status') === 'partial' ? 'selected' : '' }}>Partial</option>
-                    <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                </select>
-            </div>
+    <!-- Barre de filtres unifiée (Desktop & Mobile) -->
+    <div class="brand-filter-bar mb-3">
+        <form method="GET" action="{{ route('invoices.index') }}" id="invoiceFilterForm">
+            <!-- Row 1 : Champ Recherche + Actions Principales (Filtrer + Reset + Compteur) -->
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <div class="brand-search-wrapper flex-grow-1" style="min-width: 240px;">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="search" class="form-control" 
+                           placeholder="N° facture, devis, nom ou contact du client..."
+                           value="{{ request('search') }}">
+                </div>
 
-            <div style="min-width: 140px;">
-                <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;">Stamp</label>
-                <select name="with_stamp" class="form-select">
-                    <option value="">All Stamps</option>
-                    <option value="1" {{ request('with_stamp') === '1' ? 'selected' : '' }}>With Stamp</option>
-                    <option value="0" {{ request('with_stamp') === '0' ? 'selected' : '' }}>Without Stamp</option>
-                </select>
-            </div>
+                @php
+                    $activeFilterKeys = ['type', 'status', 'with_stamp', 'payment_method', 'start_date', 'end_date'];
+                    $hasActiveFilters = collect($activeFilterKeys)->some(fn($k) => request()->filled($k));
+                    $activeFilterCount = collect($activeFilterKeys)->filter(fn($k) => request()->filled($k))->count();
+                @endphp
 
-            <div style="min-width: 140px;">
-                <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;">From Date</label>
-                <input type="date" name="start_date" value="{{ request('start_date') }}" class="form-control">
-            </div>
-
-            <div style="min-width: 140px;">
-                <label class="form-label fw-bold small text-muted text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05em;">To Date</label>
-                <input type="date" name="end_date" value="{{ request('end_date') }}" class="form-control">
-            </div>
-
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn-brand-primary">
-                    <i class="fas fa-filter me-1"></i> Filter
+                <!-- Bouton Drawer Filtres Mobile (d-md-none) -->
+                <button type="button" 
+                        class="btn d-md-none {{ $hasActiveFilters ? 'btn-brand-primary' : 'btn-brand-light' }} d-inline-flex align-items-center gap-1.5"
+                        data-bs-toggle="collapse" 
+                        data-bs-target="#invoiceFiltersCollapse" 
+                        aria-expanded="{{ $hasActiveFilters ? 'true' : 'false' }}">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Filtres</span>
+                    @if($activeFilterCount > 0)
+                        <span class="badge bg-white text-dark rounded-pill px-1.5" style="font-size: 0.7rem;">{{ $activeFilterCount }}</span>
+                    @endif
                 </button>
-                <a href="{{ route('invoices.index') }}" class="btn-brand-light" title="Reset">
-                    <i class="fas fa-redo"></i>
-                </a>
+
+                <!-- Actions Desktop Principales (Filtrer + Reset + Compteur) (d-none d-md-flex) -->
+                <div class="d-none d-md-flex align-items-center gap-2">
+                    <button type="submit" class="btn-brand-primary btn-sm px-3 py-2 d-inline-flex align-items-center gap-1.5" title="Appliquer la recherche et les filtres">
+                        <i class="fas fa-filter"></i> <span>Filtrer</span>
+                    </button>
+                    @if(request('search') || $hasActiveFilters)
+                        <a href="{{ route('invoices.index') }}" class="btn-brand-light btn-sm px-2.5 py-2 text-decoration-none" title="Réinitialiser tous les filtres">
+                            <i class="fas fa-redo"></i>
+                        </a>
+                    @endif
+                    <span class="badge bg-light text-secondary border px-3 py-2 fw-semibold" style="font-size: 0.8rem;">
+                        <i class="fas fa-file-invoice text-primary me-1.5"></i>{{ $invoices->total() }} document(s)
+                    </span>
+                </div>
+            </div>
+
+            <!-- Row 2 : Grille Parfaite de 6 Filtres Déroulants (Exactement 6 colonnes uniformes) -->
+            <div class="collapse d-md-block {{ $hasActiveFilters ? 'show' : '' }} mt-2.5 pt-2.5 border-top" id="invoiceFiltersCollapse">
+                <div class="row g-2 align-items-center">
+                    <!-- Type de document -->
+                    <div class="col-6 col-md-4 col-xl-2">
+                        <select name="type" class="form-select form-select-sm w-100" onchange="this.form.submit()">
+                            <option value="">Tous les types</option>
+                            <option value="invoice" {{ request('type') === 'invoice' ? 'selected' : '' }}>📄 Factures</option>
+                            <option value="quote" {{ request('type') === 'quote' ? 'selected' : '' }}>📑 Devis</option>
+                        </select>
+                    </div>
+
+                    <!-- Statut de paiement -->
+                    <div class="col-6 col-md-4 col-xl-2">
+                        <select name="status" class="form-select form-select-sm w-100" onchange="this.form.submit()">
+                            <option value="">Tous les statuts</option>
+                            <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>✅ Payé</option>
+                            <option value="unpaid" {{ request('status') === 'unpaid' ? 'selected' : '' }}>⏳ Impayé</option>
+                            <option value="partial" {{ request('status') === 'partial' ? 'selected' : '' }}>🔄 Partiel</option>
+                            <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>❌ Annulé</option>
+                        </select>
+                    </div>
+
+                    <!-- Cachet -->
+                    <div class="col-6 col-md-4 col-xl-2">
+                        <select name="with_stamp" class="form-select form-select-sm w-100" onchange="this.form.submit()">
+                            <option value="">Tous les cachets</option>
+                            <option value="1" {{ request('with_stamp') === '1' ? 'selected' : '' }}>💮 Avec Cachet</option>
+                            <option value="0" {{ request('with_stamp') === '0' ? 'selected' : '' }}>Sans Cachet</option>
+                        </select>
+                    </div>
+
+                    <!-- Mode de paiement -->
+                    <div class="col-6 col-md-4 col-xl-2">
+                        <select name="payment_method" class="form-select form-select-sm w-100" onchange="this.form.submit()">
+                            <option value="">Tous les modes</option>
+                            <option value="cash" {{ request('payment_method') === 'cash' ? 'selected' : '' }}>💵 Espèces</option>
+                            <option value="card" {{ request('payment_method') === 'card' ? 'selected' : '' }}>💳 Carte bancaire</option>
+                            <option value="bank_transfer" {{ request('payment_method') === 'bank_transfer' ? 'selected' : '' }}>🏦 Virement</option>
+                            <option value="other" {{ request('payment_method') === 'other' ? 'selected' : '' }}>Autre</option>
+                        </select>
+                    </div>
+
+                    <!-- Date début avec Badge Label -->
+                    <div class="col-6 col-md-4 col-xl-2">
+                        <div class="input-group input-group-sm w-100">
+                            <span class="input-group-text bg-light text-muted border-end-0 fw-semibold px-2" style="font-size: 0.75rem;">Du</span>
+                            <input type="date" name="start_date" value="{{ request('start_date') }}" class="form-control form-control-sm border-start-0" title="Date de début" onchange="this.form.submit()">
+                        </div>
+                    </div>
+
+                    <!-- Date fin avec Badge Label -->
+                    <div class="col-6 col-md-4 col-xl-2">
+                        <div class="input-group input-group-sm w-100">
+                            <span class="input-group-text bg-light text-muted border-end-0 fw-semibold px-2" style="font-size: 0.75rem;">Au</span>
+                            <input type="date" name="end_date" value="{{ request('end_date') }}" class="form-control form-control-sm border-start-0" title="Date de fin" onchange="this.form.submit()">
+                        </div>
+                    </div>
+
+                    <!-- Bouton Appliquer & Reset sur Mobile (d-md-none) -->
+                    <div class="col-12 d-md-none mt-2 pt-2 border-top d-flex gap-2">
+                        <button type="submit" class="btn btn-sm btn-brand-primary flex-grow-1 justify-content-center">
+                            <i class="fas fa-filter me-1"></i> Appliquer les filtres
+                        </button>
+                        <a href="{{ route('invoices.index') }}" class="btn btn-sm btn-brand-light flex-shrink-0" title="Réinitialiser">
+                            <i class="fas fa-redo"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
 
-    <!-- Invoices Table -->
-    <div class="brand-table-card" style="overflow: visible;">
-        <div class="table-responsive" style="overflow: visible; min-height: 260px;">
-            <table class="brand-table">
+    <!-- Active Filter Badges with Quick Removal Pills -->
+    @if(request('search') || $hasActiveFilters)
+        <div class="d-flex align-items-center gap-2 flex-wrap mb-3 px-1">
+            <span class="text-muted small fw-semibold">
+                <i class="fas fa-filter text-primary me-1"></i> Filtres appliqués :
+            </span>
+
+            @if(request('search'))
+                <a href="{{ request()->fullUrlWithQuery(['search' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
+                    Recherche : "{{ request('search') }}" <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
+            @if(request('type'))
+                <a href="{{ request()->fullUrlWithQuery(['type' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
+                    Type : {{ request('type') === 'quote' ? 'Devis' : 'Facture' }} <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
+            @if(request('status'))
+                @php
+                    $statusNames = ['paid' => 'Payé', 'unpaid' => 'Impayé', 'partial' => 'Partiel', 'cancelled' => 'Annulé'];
+                @endphp
+                <a href="{{ request()->fullUrlWithQuery(['status' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
+                    Statut : {{ $statusNames[request('status')] ?? request('status') }} <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
+            @if(request('with_stamp') !== null && request('with_stamp') !== '')
+                <a href="{{ request()->fullUrlWithQuery(['with_stamp' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
+                    Cachet : {{ request('with_stamp') == '1' ? 'Avec Cachet' : 'Sans Cachet' }} <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
+            @if(request('start_date') || request('end_date'))
+                <a href="{{ request()->fullUrlWithQuery(['start_date' => null, 'end_date' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
+                    Période : {{ request('start_date') }} au {{ request('end_date') }} <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
+            <a href="{{ route('invoices.index') }}" class="small text-danger fw-semibold text-decoration-none ms-1">
+                Effacer tout
+            </a>
+        </div>
+    @endif
+
+    <!-- Mobile Invoices Container (Touch First, d-block d-md-none) -->
+    <div class="mobile-orders-container d-block d-md-none">
+        <div class="d-flex align-items-center justify-content-between px-1 mb-2">
+            <div class="d-flex align-items-center gap-2">
+                <span class="fw-bold text-dark" style="font-size: 0.92rem; letter-spacing: -0.01em;">
+                    <i class="fas fa-file-invoice text-primary me-1.5 opacity-75"></i>Documents récents
+                </span>
+                <span class="badge rounded-pill bg-primary-subtle text-primary fw-bold px-2 py-0.5" style="font-size: 0.72rem;">
+                    {{ $invoices->total() }}
+                </span>
+            </div>
+            @if(request('search') || $hasActiveFilters)
+                <a href="{{ route('invoices.index') }}" class="small text-danger fw-semibold text-decoration-none" style="font-size: 0.75rem;">
+                    <i class="fas fa-times me-0.5"></i>Effacer filtres
+                </a>
+            @endif
+        </div>
+
+        @forelse($invoices as $invoice)
+            @include('invoices.partials.mobile-invoice-card', ['invoice' => $invoice])
+        @empty
+            <div class="text-center py-5 bg-white rounded-4 border p-4 shadow-sm mb-4">
+                <div class="brand-avatar mx-auto mb-3" style="width: 56px; height: 56px; font-size: 20px;">
+                    <i class="fas fa-file-invoice-dollar text-muted"></i>
+                </div>
+                <h6 class="fw-bold text-dark">Aucun document trouvé</h6>
+                <p class="text-muted small mb-0">Aucune facture ou devis ne correspond à vos critères de recherche.</p>
+                @if(request('search') || $hasActiveFilters)
+                    <a href="{{ route('invoices.index') }}" class="btn-brand-primary btn-sm mt-3">
+                        <i class="fas fa-redo me-1"></i> Réinitialiser les filtres
+                    </a>
+                @endif
+            </div>
+        @endforelse
+
+        <!-- Mobile Pagination Footer -->
+        @if($invoices->hasPages())
+            <div class="bg-white p-3 rounded-4 border shadow-sm mt-3 mb-4">
+                <div class="text-muted small text-center mb-2">
+                    Affichage de <span class="fw-semibold text-dark">{{ $invoices->firstItem() ?? 0 }}</span> à <span class="fw-semibold text-dark">{{ $invoices->lastItem() ?? 0 }}</span> sur <span class="fw-semibold text-dark">{{ $invoices->total() }}</span>
+                </div>
+                <div class="d-flex justify-content-center">
+                    {{ $invoices->links() }}
+                </div>
+            </div>
+        @endif
+    </div>
+
+    <!-- Desktop Table (d-none d-md-block) -->
+    <div class="brand-table-card invoices-table-card d-none d-md-block">
+        <div class="table-responsive">
+            <table class="brand-table align-middle">
                 <thead>
                     <tr>
-                        <th style="padding-left: 1.5rem;">Invoice #</th>
-                        <th>Customer</th>
-                        <th>Date</th>
-                        <th class="text-end">Total Amount</th>
-                        <th class="text-center">Status</th>
-                        <th class="text-center">Stamp</th>
-                        <th>Method</th>
-                        <th class="text-end" style="padding-right: 1.5rem;">Actions</th>
+                        <th style="width: 16%;">N° Document</th>
+                        <th style="width: 20%;">Client</th>
+                        <th style="width: 13%;">Date & Échéance</th>
+                        <th class="text-end" style="width: 12%;">Montant Total</th>
+                        <th class="text-center" style="width: 13%;">Statut Paiement</th>
+                        <th class="text-center" style="width: 6%;">Cachet</th>
+                        <th class="text-center" style="width: 7%;">Mode</th>
+                        <th class="text-end" style="width: 13%;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($invoices as $invoice)
                     <tr>
-                        <td style="padding-left: 1.5rem;">
-                            <a href="{{ route('invoices.show', $invoice) }}" class="fw-bold text-primary text-decoration-none d-flex align-items-center gap-2">
-                                {{ $invoice->invoice_number }}
-                                @if($invoice->isQuote())
-                                    <span style="background: #fef3c7; color: #d97706; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; text-transform: uppercase;">{{ __('Quote') }}</span>
-                                @endif
-                            </a>
-                        </td>
+                        <!-- N° Document (No-wrap guaranteed) -->
                         <td>
-                            <div class="fw-bold text-dark">{{ $invoice->customer_name }}</div>
-                            @if($invoice->customer_email)
-                                <div class="text-muted small">{{ $invoice->customer_email }}</div>
+                            <div class="d-flex align-items-center gap-1.5 text-nowrap">
+                                <a href="{{ route('invoices.show', $invoice) }}" class="fw-bold text-primary text-decoration-none font-monospace text-nowrap" style="font-size: 0.88rem; letter-spacing: -0.01em;">
+                                    #{{ $invoice->display_number ?? $invoice->invoice_number }}
+                                </a>
+                                <button type="button" 
+                                        class="btn btn-sm btn-light border-0 p-1 text-muted" 
+                                        style="font-size: 0.7rem; line-height: 1;"
+                                        onclick="copyInvoiceNumber('{{ $invoice->display_number ?? $invoice->invoice_number }}', this)"
+                                        title="Copier le N°">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
+                            <div class="mt-1">
+                                @if($invoice->isQuote())
+                                    <span class="badge bg-warning-subtle text-warning fw-bold border border-warning-subtle px-1.5 py-0.5" style="font-size: 0.65rem; letter-spacing: 0.03em;">
+                                        DEVIS
+                                    </span>
+                                @else
+                                    <span class="badge bg-primary-subtle text-primary fw-bold border border-primary-subtle px-1.5 py-0.5" style="font-size: 0.65rem; letter-spacing: 0.03em;">
+                                        FACTURE
+                                    </span>
+                                @endif
+                            </div>
+                        </td>
+
+                        <!-- Client -->
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="brand-avatar-sm" style="width: 34px; height: 34px; min-width: 34px; border-radius: 9px; background: #f8fafc; color: #475569; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.82rem; border: 1px solid #e2e8f0; flex-shrink: 0;">
+                                    {{ strtoupper(substr($invoice->customer_name ?: 'C', 0, 1)) }}
+                                </div>
+                                <div class="min-w-0" style="max-width: 190px;">
+                                    <div class="fw-bold text-dark text-truncate" style="font-size: 0.88rem;" title="{{ $invoice->customer_name ?: 'Client sans nom' }}">
+                                        {{ $invoice->customer_name ?: 'Client sans nom' }}
+                                    </div>
+                                    <div class="text-muted small text-truncate" style="font-size: 0.74rem;" title="{{ $invoice->customer_email ?: ($invoice->customer_phone ?: 'Aucun contact') }}">
+                                        {{ $invoice->customer_email ?: ($invoice->customer_phone ?: 'Aucun contact') }}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+
+                        <!-- Date & Échéance -->
+                        <td>
+                            <div class="text-dark fw-semibold" style="font-size: 0.85rem;">
+                                <i class="far fa-calendar-alt text-muted me-1"></i>{{ $invoice->issued_at->format('d/m/Y') }}
+                            </div>
+                            <div class="text-muted" style="font-size: 0.72rem;">
+                                @if($invoice->due_date)
+                                    <i class="far fa-clock text-muted me-1"></i>Échéance : {{ $invoice->due_date->format('d/m/Y') }}
+                                @else
+                                    Créé à {{ $invoice->issued_at->format('H:i') }}
+                                @endif
+                            </div>
+                        </td>
+
+                        <!-- Montant Total -->
+                        <td class="text-end">
+                            <div class="fw-bold text-dark fs-6 font-heading">
+                                {{ $invoice->formatted_total_amount }}
+                            </div>
+                            @if($invoice->items && $invoice->items->count())
+                                <div class="text-muted" style="font-size: 0.7rem;">
+                                    {{ $invoice->items->count() }} article{{ $invoice->items->count() > 1 ? 's' : '' }}
+                                </div>
                             @endif
                         </td>
-                        <td>
-                            <div class="text-dark">{{ $invoice->issued_at->format('M d, Y') }}</div>
-                            <div class="text-muted small">{{ $invoice->issued_at->format('h:i A') }}</div>
-                        </td>
-                        <td class="text-end fw-bold text-dark fs-6">
-                            {{ $invoice->formatted_total_amount }}
-                        </td>
+
+                        <!-- Statut de paiement (In-Place Interactive Dropdown) -->
                         <td class="text-center">
                             @php
-                                $statusClasses = [
+                                $pStatus = strtolower($invoice->payment_status);
+                                $pClass = match($pStatus) {
                                     'paid' => 'success',
                                     'unpaid' => 'warning',
                                     'partial' => 'info',
                                     'cancelled' => 'danger',
-                                ];
-                                $badgeType = $statusClasses[$invoice->payment_status] ?? 'primary';
+                                    default => 'warning'
+                                };
+                                $pText = match($pStatus) {
+                                    'paid' => 'Payé',
+                                    'unpaid' => 'Impayé',
+                                    'partial' => 'Partiel',
+                                    'cancelled' => 'Annulé',
+                                    default => ucfirst($invoice->payment_status)
+                                };
+                                $pDot = match($pStatus) {
+                                    'paid' => 'green',
+                                    'unpaid' => 'amber',
+                                    'partial' => 'blue',
+                                    'cancelled' => 'red',
+                                    default => 'amber'
+                                };
                             @endphp
-                            <span class="brand-badge {{ $badgeType }}">
-                                {{ $invoice->status_label }}
-                            </span>
+                            <div class="dropdown d-inline-block">
+                                <button type="button" 
+                                        class="brand-badge brand-badge-btn {{ $pClass }} dropdown-toggle" 
+                                        data-bs-toggle="dropdown" 
+                                        aria-expanded="false"
+                                        id="dt-pay-pill-{{ $invoice->id }}"
+                                        title="Changer le statut de paiement">
+                                    <span class="status-dot dot-{{ $pDot }}" id="dt-pay-dot-{{ $invoice->id }}"></span>
+                                    <span id="dt-pay-label-{{ $invoice->id }}">{{ $pText }}</span>
+                                    <i class="fas fa-chevron-down opacity-50 ms-0.5" style="font-size: 0.6rem;"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-lg border rounded-3 p-1.5 status-dropdown-menu" aria-labelledby="dt-pay-pill-{{ $invoice->id }}">
+                                    <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem; letter-spacing: 0.05em;">Statut de paiement</li>
+                                    <li>
+                                        <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $pStatus === 'paid' ? 'active' : '' }}" onclick="quickUpdateInvoice({{ $invoice->id }}, 'paid')">
+                                            <span><span class="status-dot dot-green me-1.5"></span> Payé</span>
+                                            @if($pStatus === 'paid') <i class="fas fa-check text-success small"></i> @endif
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $pStatus === 'unpaid' ? 'active' : '' }}" onclick="quickUpdateInvoice({{ $invoice->id }}, 'unpaid')">
+                                            <span><span class="status-dot dot-amber me-1.5"></span> Impayé</span>
+                                            @if($pStatus === 'unpaid') <i class="fas fa-check text-warning small"></i> @endif
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $pStatus === 'partial' ? 'active' : '' }}" onclick="quickUpdateInvoice({{ $invoice->id }}, 'partial')">
+                                            <span><span class="status-dot dot-blue me-1.5"></span> Partiel</span>
+                                            @if($pStatus === 'partial') <i class="fas fa-check text-primary small"></i> @endif
+                                        </button>
+                                    </li>
+                                    <li><hr class="dropdown-divider my-1"></li>
+                                    <li>
+                                        <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between text-danger {{ $pStatus === 'cancelled' ? 'active' : '' }}" onclick="quickUpdateInvoice({{ $invoice->id }}, 'cancelled')">
+                                            <span><span class="status-dot dot-red me-1.5"></span> Annulé</span>
+                                            @if($pStatus === 'cancelled') <i class="fas fa-check text-danger small"></i> @endif
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
                         </td>
+
+                        <!-- Cachet -->
                         <td class="text-center">
                             @if($invoice->with_stamp)
-                                <span style="background: #e0e7ff; color: #4338ca; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
-                                    <i class="fas fa-stamp" style="font-size: 9px;"></i> Yes
+                                <span class="badge rounded-pill bg-indigo-subtle border border-indigo-subtle px-2.5 py-1 d-inline-flex align-items-center gap-1" style="background: #eef2ff; color: #4338ca; border-color: #c7d2fe !important; font-size: 0.72rem; font-weight: 600;">
+                                    <i class="fas fa-stamp" style="font-size: 0.65rem;"></i> Oui
                                 </span>
                             @else
-                                <span style="background: #f1f5f9; color: #64748b; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600;">
-                                    No
+                                <span class="badge rounded-pill bg-light text-secondary border px-2 py-1" style="font-size: 0.72rem; font-weight: 500;">
+                                    Non
                                 </span>
                             @endif
                         </td>
-                        <td class="text-muted small">
-                            <span class="text-uppercase" style="letter-spacing: 0.02em;">{{ str_replace('_', ' ', $invoice->payment_method) }}</span>
+
+                        <!-- Mode -->
+                        <td class="text-center">
+                            @php
+                                $pm = strtolower($invoice->payment_method ?? '');
+                            @endphp
+                            @if($pm === 'cash')
+                                <span class="badge bg-light text-dark border px-2 py-1 fw-semibold" style="font-size: 0.72rem;" title="Espèces">
+                                    <i class="fas fa-money-bill-wave text-success me-1"></i>Espèces
+                                </span>
+                            @elseif($pm === 'card')
+                                <span class="badge bg-light text-dark border px-2 py-1 fw-semibold" style="font-size: 0.72rem;" title="Carte Bancaire">
+                                    <i class="fas fa-credit-card text-primary me-1"></i>Carte
+                                </span>
+                            @elseif($pm === 'bank_transfer')
+                                <span class="badge bg-light text-dark border px-2 py-1 fw-semibold" style="font-size: 0.72rem;" title="Virement bancaire">
+                                    <i class="fas fa-university text-info me-1"></i>Virement
+                                </span>
+                            @else
+                                <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.72rem;" title="{{ $invoice->payment_method }}">
+                                    {{ ucfirst(str_replace('_', ' ', $invoice->payment_method ?: 'N/A')) }}
+                                </span>
+                            @endif
                         </td>
-                        <td style="padding-right: 1.5rem;">
-                            <div class="d-flex justify-content-end gap-1">
-                                <button type="button" class="btn-action-icon text-primary" title="Aperçu Rapide" 
+
+                        <!-- Actions (Compact 5-Button Action Group, Fully Contained) -->
+                        <td class="text-end">
+                            <div class="action-buttons-group">
+                                <!-- Aperçu Rapide -->
+                                <button type="button" class="action-btn action-btn-view" title="Aperçu rapide" 
                                         onclick="openInvoicePreview('{{ $invoice->id }}', '{{ $invoice->display_number ?? $invoice->invoice_number }}', '{{ $invoice->isQuote() ? 'devis' : 'facture' }}', {{ $invoice->with_stamp ? 'true' : 'false' }})">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <a href="{{ route('invoices.show', $invoice) }}" class="btn-action-icon" title="Détails de la facture">
-                                    <i class="fas fa-external-link-alt"></i>
-                                </a>
 
                                 <!-- PDF Dropdown -->
                                 <div class="dropdown d-inline-block">
-                                    <button class="btn-action-icon" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" data-bs-popper-config='{"strategy":"fixed"}' aria-expanded="false" title="Télécharger PDF (Facture / Devis)">
+                                    <button class="action-btn action-btn-pdf" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Télécharger PDF">
                                         <i class="fas fa-file-pdf"></i>
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="font-size: 12px; border-radius: 12px; min-width: 210px; padding: 6px; z-index: 99999;">
-                                        <li class="dropdown-header text-uppercase text-muted fw-bold" style="font-size: 9px; letter-spacing: 0.5px;">
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border rounded-3 p-1.5 status-dropdown-menu" style="min-width: 215px;">
+                                        <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem;">
                                             <i class="fas fa-file-invoice text-primary me-1"></i> Facture
                                         </li>
                                         <li>
-                                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" href="{{ route('invoices.download', [$invoice, 'as' => 'facture', 'with_stamp' => 1]) }}">
-                                                <i class="fas fa-stamp" style="color: #6366f1; width: 14px;"></i> Facture avec Cachet
+                                            <a class="dropdown-item rounded-2 py-1.5 px-2" href="{{ route('invoices.download', [$invoice, 'as' => 'facture', 'with_stamp' => 1]) }}">
+                                                <i class="fas fa-stamp text-indigo me-1.5" style="color: #6366f1;"></i> Facture avec Cachet
                                             </a>
                                         </li>
                                         <li>
-                                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" href="{{ route('invoices.download', [$invoice, 'as' => 'facture', 'with_stamp' => 0]) }}">
-                                                <i class="far fa-file-pdf text-muted" style="width: 14px;"></i> Facture sans Cachet
+                                            <a class="dropdown-item rounded-2 py-1.5 px-2" href="{{ route('invoices.download', [$invoice, 'as' => 'facture', 'with_stamp' => 0]) }}">
+                                                <i class="far fa-file-pdf text-muted me-1.5"></i> Facture sans Cachet
                                             </a>
                                         </li>
                                         <li><hr class="dropdown-divider my-1"></li>
-                                        <li class="dropdown-header text-uppercase text-muted fw-bold" style="font-size: 9px; letter-spacing: 0.5px;">
+                                        <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem;">
                                             <i class="fas fa-file-signature text-warning me-1"></i> Devis
                                         </li>
                                         <li>
-                                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" href="{{ route('invoices.download', [$invoice, 'as' => 'devis', 'with_stamp' => 1]) }}">
-                                                <i class="fas fa-stamp" style="color: #f59e0b; width: 14px;"></i> Devis avec Cachet
+                                            <a class="dropdown-item rounded-2 py-1.5 px-2" href="{{ route('invoices.download', [$invoice, 'as' => 'devis', 'with_stamp' => 1]) }}">
+                                                <i class="fas fa-stamp text-warning me-1.5"></i> Devis avec Cachet
                                             </a>
                                         </li>
                                         <li>
-                                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" href="{{ route('invoices.download', [$invoice, 'as' => 'devis', 'with_stamp' => 0]) }}">
-                                                <i class="far fa-file-pdf text-muted" style="width: 14px;"></i> Devis sans Cachet
+                                            <a class="dropdown-item rounded-2 py-1.5 px-2" href="{{ route('invoices.download', [$invoice, 'as' => 'devis', 'with_stamp' => 0]) }}">
+                                                <i class="far fa-file-pdf text-muted me-1.5"></i> Devis sans Cachet
                                             </a>
                                         </li>
                                     </ul>
                                 </div>
 
-                                <!-- Print Dropdown -->
+                                <!-- Imprimer Dropdown -->
                                 <div class="dropdown d-inline-block">
-                                    <button class="btn-action-icon" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" data-bs-popper-config='{"strategy":"fixed"}' aria-expanded="false" title="Imprimer (Facture / Devis)">
+                                    <button class="action-btn action-btn-print" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Imprimer">
                                         <i class="fas fa-print"></i>
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="font-size: 12px; border-radius: 12px; min-width: 210px; padding: 6px; z-index: 99999;">
-                                        <li class="dropdown-header text-uppercase text-muted fw-bold" style="font-size: 9px; letter-spacing: 0.5px;">
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border rounded-3 p-1.5 status-dropdown-menu" style="min-width: 215px;">
+                                        <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem;">
                                             <i class="fas fa-file-invoice text-primary me-1"></i> Facture
                                         </li>
                                         <li>
-                                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'facture', 'with_stamp' => 1]) }}">
-                                                <i class="fas fa-stamp" style="color: #6366f1; width: 14px;"></i> Imprimer Facture (Cachet)
+                                            <a class="dropdown-item rounded-2 py-1.5 px-2" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'facture', 'with_stamp' => 1]) }}">
+                                                <i class="fas fa-stamp text-indigo me-1.5" style="color: #6366f1;"></i> Imprimer avec Cachet
                                             </a>
                                         </li>
                                         <li>
-                                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'facture', 'with_stamp' => 0]) }}">
-                                                <i class="fas fa-print text-muted" style="width: 14px;"></i> Imprimer Facture (Standard)
+                                            <a class="dropdown-item rounded-2 py-1.5 px-2" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'facture', 'with_stamp' => 0]) }}">
+                                                <i class="fas fa-print text-muted me-1.5"></i> Imprimer sans Cachet
                                             </a>
                                         </li>
                                         <li><hr class="dropdown-divider my-1"></li>
-                                        <li class="dropdown-header text-uppercase text-muted fw-bold" style="font-size: 9px; letter-spacing: 0.5px;">
+                                        <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem;">
                                             <i class="fas fa-file-signature text-warning me-1"></i> Devis
                                         </li>
                                         <li>
-                                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'devis', 'with_stamp' => 1]) }}">
-                                                <i class="fas fa-stamp" style="color: #f59e0b; width: 14px;"></i> Imprimer Devis (Cachet)
+                                            <a class="dropdown-item rounded-2 py-1.5 px-2" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'devis', 'with_stamp' => 1]) }}">
+                                                <i class="fas fa-stamp text-warning me-1.5"></i> Devis avec Cachet
                                             </a>
                                         </li>
                                         <li>
-                                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'devis', 'with_stamp' => 0]) }}">
-                                                <i class="fas fa-print text-muted" style="width: 14px;"></i> Imprimer Devis (Standard)
+                                            <a class="dropdown-item rounded-2 py-1.5 px-2" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'devis', 'with_stamp' => 0]) }}">
+                                                <i class="fas fa-print text-muted me-1.5"></i> Devis sans Cachet
                                             </a>
                                         </li>
                                     </ul>
                                 </div>
 
-                                <!-- Guarantee Dropdown -->
-                                <div class="dropdown d-inline-block">
-                                    <button class="btn-action-icon" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" data-bs-popper-config='{"strategy":"fixed"}' aria-expanded="false" title="{{ __('Guarantee Options') }}" style="color: #059669;">
-                                        <i class="fas fa-shield-alt"></i>
+                                <!-- Modifier -->
+                                <a href="{{ route('invoices.edit', $invoice) }}" class="action-btn action-btn-edit" title="Modifier">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </a>
+
+                                <!-- Supprimer -->
+                                <form method="POST" 
+                                      action="{{ route('invoices.destroy', $invoice) }}" 
+                                      class="m-0 p-0 d-inline"
+                                      data-confirm-delete="true"
+                                      data-item-type="document"
+                                      data-item-name="{{ ($invoice->isQuote() ? 'Devis #' : 'Facture #') . ($invoice->display_number ?? $invoice->invoice_number) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="action-btn action-btn-delete" title="Supprimer">
+                                        <i class="fas fa-trash-alt"></i>
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="font-size: 13px; border-radius: 10px; z-index: 99999;">
-                                        <li>
-                                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('invoices.guarantee', $invoice) }}">
-                                                <i class="fas fa-eye" style="color: #10b981; width: 14px;"></i> {{ __('View Guarantee') }}
-                                            </a>
-                                        </li>
-                                        <li><hr class="dropdown-divider my-1"></li>
-                                        <li>
-                                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('invoices.guarantee.download', [$invoice, 'with_stamp' => 1]) }}">
-                                                <i class="fas fa-stamp" style="color: #10b981; width: 14px;"></i> {{ __('PDF With Stamp') }}
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('invoices.guarantee.download', [$invoice, 'with_stamp' => 0]) }}">
-                                                <i class="far fa-file-pdf text-muted" style="width: 14px;"></i> {{ __('PDF No Stamp') }}
-                                            </a>
-                                        </li>
-                                        <li><hr class="dropdown-divider my-1"></li>
-                                        <li>
-                                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" target="_blank" href="{{ route('invoices.guarantee.print', [$invoice, 'with_stamp' => 1]) }}">
-                                                <i class="fas fa-print" style="color: #10b981; width: 14px;"></i> {{ __('Print With Stamp') }}
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" target="_blank" href="{{ route('invoices.guarantee.print', [$invoice, 'with_stamp' => 0]) }}">
-                                                <i class="fas fa-print text-muted" style="width: 14px;"></i> {{ __('Print No Stamp') }}
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -319,10 +608,10 @@
                         <td colspan="8">
                             <div class="text-center py-5">
                                 <div class="brand-avatar mx-auto mb-3" style="width: 64px; height: 64px; font-size: 24px;">
-                                    <i class="fas fa-receipt"></i>
+                                    <i class="fas fa-file-invoice-dollar text-muted"></i>
                                 </div>
-                                <h5 class="fw-bold text-dark">No invoices found</h5>
-                                <p class="text-muted">You haven't generated any invoices matching your search.</p>
+                                <h5 class="fw-bold text-dark">Aucun document trouvé</h5>
+                                <p class="text-muted">Aucune facture ou devis ne correspond à vos critères de recherche.</p>
                             </div>
                         </td>
                     </tr>
@@ -331,101 +620,379 @@
             </table>
         </div>
         @if($invoices->hasPages())
-        <div class="px-4 py-3 border-top">
-            {{ $invoices->links() }}
+        <div class="px-4 py-3 border-top d-flex justify-content-between align-items-center">
+            <span class="text-muted small">
+                Affichage de {{ $invoices->firstItem() ?? 0 }} à {{ $invoices->lastItem() ?? 0 }} sur {{ $invoices->total() }} documents
+            </span>
+            <div>
+                {{ $invoices->links() }}
+            </div>
         </div>
         @endif
     </div>
 
     <!-- Quick Preview Modal -->
     <div class="modal fade" id="invoicePreviewModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered" style="max-width: 960px;">
-            <div class="modal-content" style="border-radius: 12px; overflow: hidden; border: none; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);">
-                <div class="modal-header py-2 px-3 bg-dark text-white d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="fw-bold" id="previewModalTitle" style="font-size: 14px;">Aperçu du document</span>
-                        <div class="btn-group btn-group-sm">
-                            <button type="button" class="btn btn-sm btn-outline-light" id="previewBtnFacture" onclick="setPreviewDocType('facture')">Facture</button>
-                            <button type="button" class="btn btn-sm btn-outline-light" id="previewBtnDevis" onclick="setPreviewDocType('devis')">Devis</button>
+        <div class="modal-dialog modal-xl modal-fullscreen-sm-down modal-dialog-centered" style="max-width: 960px;">
+            <div class="modal-content" style="border-radius: 16px; overflow: hidden; border: none; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);">
+                <div class="modal-header py-2.5 px-3 bg-dark text-white border-0">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center w-100 gap-2">
+                        <!-- Top row on mobile: Title & Close -->
+                        <div class="d-flex align-items-center justify-content-between">
+                            <span class="fw-bold text-truncate me-2" id="previewModalTitle" style="font-size: 14px; max-width: 260px;">Aperçu du document</span>
+                            <button type="button" class="btn-close btn-close-white d-md-none" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <button type="button" class="btn btn-sm btn-outline-light" id="previewBtnStamp" onclick="togglePreviewStamp()">
-                            <i class="fas fa-stamp me-1"></i> <span id="previewStampLabel">Avec Cachet</span>
-                        </button>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <button type="button" class="btn btn-sm btn-light" onclick="printFromPreview()"><i class="fas fa-print me-1"></i> Imprimer</button>
-                        <a href="#" id="previewDownloadLink" class="btn btn-sm btn-danger"><i class="fas fa-download me-1"></i> PDF</a>
-                        <button type="button" class="btn-close btn-close-white ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                        <!-- Action controls: Type toggle, Stamp, Print & Download -->
+                        <div class="d-flex align-items-center justify-content-between justify-content-md-end gap-2 flex-wrap">
+                            <div class="d-flex align-items-center gap-1.5">
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-sm btn-outline-light px-2.5" id="previewBtnFacture" onclick="setPreviewDocType('facture')">Facture</button>
+                                    <button type="button" class="btn btn-sm btn-outline-light px-2.5" id="previewBtnDevis" onclick="setPreviewDocType('devis')">Devis</button>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-light px-2.5" id="previewBtnStamp" onclick="togglePreviewStamp()">
+                                    <i class="fas fa-stamp me-1"></i> <span id="previewStampLabel">Cachet</span>
+                                </button>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-1.5">
+                                <button type="button" class="btn btn-sm btn-light px-2.5" onclick="printFromPreview()"><i class="fas fa-print me-1"></i> Imprimer</button>
+                                <a href="#" id="previewDownloadLink" class="btn btn-sm btn-danger px-2.5"><i class="fas fa-download me-1"></i> PDF</a>
+                                <button type="button" class="btn-close btn-close-white ms-2 d-none d-md-inline-block" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="modal-body p-0" style="background: #cbd5e1; height: 75vh;">
+                <div class="modal-body p-0" style="background: #cbd5e1; height: 75vh; max-height: calc(100vh - 105px);">
                     <iframe id="previewIframe" src="about:blank" style="width: 100%; height: 100%; border: none;"></iframe>
                 </div>
             </div>
         </div>
     </div>
-
-    <script>
-        let currentPreviewId = null;
-        let currentPreviewType = 'facture';
-        let currentPreviewStamp = true;
-
-        function openInvoicePreview(id, number, type, withStamp) {
-            currentPreviewId = id;
-            currentPreviewType = type || 'facture';
-            currentPreviewStamp = withStamp !== false;
-            document.getElementById('previewModalTitle').innerText = (currentPreviewType === 'devis' ? 'Devis #' : 'Facture #') + number;
-            updatePreviewUI();
-            const modalEl = document.getElementById('invoicePreviewModal');
-            const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-            modal.show();
-        }
-
-        function setPreviewDocType(type) {
-            currentPreviewType = type;
-            updatePreviewUI();
-        }
-
-        function togglePreviewStamp() {
-            currentPreviewStamp = !currentPreviewStamp;
-            updatePreviewUI();
-        }
-
-        function updatePreviewUI() {
-            if (!currentPreviewId) return;
-            const btnF = document.getElementById('previewBtnFacture');
-            const btnD = document.getElementById('previewBtnDevis');
-            const btnS = document.getElementById('previewBtnStamp');
-            const stampLabel = document.getElementById('previewStampLabel');
-
-            if (currentPreviewType === 'facture') {
-                btnF.className = 'btn btn-sm btn-light text-dark fw-bold';
-                btnD.className = 'btn btn-sm btn-outline-light';
-            } else {
-                btnF.className = 'btn btn-sm btn-outline-light';
-                btnD.className = 'btn btn-sm btn-danger fw-bold';
-            }
-
-            if (currentPreviewStamp) {
-                btnS.className = 'btn btn-sm btn-success fw-bold';
-                stampLabel.innerText = 'Avec Cachet';
-            } else {
-                btnS.className = 'btn btn-sm btn-outline-light';
-                stampLabel.innerText = 'Sans Cachet';
-            }
-
-            const url = `/invoices/${currentPreviewId}/print?preview=1&as=${currentPreviewType}&with_stamp=${currentPreviewStamp ? 1 : 0}`;
-            document.getElementById('previewIframe').src = url;
-
-            const downloadUrl = `/invoices/${currentPreviewId}/download?as=${currentPreviewType}&with_stamp=${currentPreviewStamp ? 1 : 0}`;
-            document.getElementById('previewDownloadLink').href = downloadUrl;
-        }
-
-        function printFromPreview() {
-            const iframe = document.getElementById('previewIframe');
-            if (iframe && iframe.contentWindow) {
-                iframe.contentWindow.print();
-            }
-        }
-    </script>
 @endsection
+
+@push('scripts')
+<script>
+    /**
+     * Copy invoice number helper
+     */
+    function copyInvoiceNumber(num, btn) {
+        if (!num) return;
+        const textToCopy = num.toString().trim();
+        const originalHtml = btn.innerHTML;
+
+        const showSuccess = function() {
+            btn.innerHTML = '<i class="fas fa-check text-success"></i>';
+            setTimeout(function() {
+                btn.innerHTML = originalHtml;
+            }, 1500);
+        };
+
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(textToCopy).then(showSuccess).catch(function() {
+                fallbackCopy(textToCopy, showSuccess);
+            });
+        } else {
+            fallbackCopy(textToCopy, showSuccess);
+        }
+    }
+
+    function fallbackCopy(text, callback) {
+        const temp = document.createElement('textarea');
+        temp.value = text;
+        temp.style.position = 'fixed';
+        temp.style.left = '-9999px';
+        document.body.appendChild(temp);
+        temp.focus();
+        temp.select();
+        try {
+            document.execCommand('copy');
+            if (callback) callback();
+        } catch (e) {
+            console.error('Copy failed:', e);
+        }
+        document.body.removeChild(temp);
+    }
+
+    /**
+     * Quick In-Place Payment Status Updater for Invoices
+     */
+    function quickUpdateInvoice(invoiceId, statusValue) {
+        if (!invoiceId || !statusValue) return;
+
+        const dtPill = document.getElementById(`dt-pay-pill-${invoiceId}`);
+        const mobPill = document.getElementById(`mob-pay-pill-${invoiceId}`);
+
+        if (dtPill) {
+            dtPill.style.opacity = '0.6';
+            dtPill.disabled = true;
+        }
+        if (mobPill) {
+            mobPill.style.opacity = '0.6';
+            mobPill.disabled = true;
+        }
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+
+        fetch(`/invoices/${invoiceId}/quick-status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                payment_status: statusValue
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw err; });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success && data.invoice) {
+                updateInvoiceUI(invoiceId, data.invoice);
+
+                if (data.stats) {
+                    updateInvoiceKPIStats(data.stats);
+                }
+
+                if (typeof Swal !== 'undefined') {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2500,
+                        timerProgressBar: true
+                    });
+                    Toast.fire({
+                        icon: 'success',
+                        title: data.message || 'Mise à jour effectuée avec succès'
+                    });
+                }
+            } else {
+                throw new Error(data.message || 'Erreur lors de la mise à jour');
+            }
+        })
+        .catch(error => {
+            console.error('Quick update error:', error);
+            const msg = error.message || 'Impossible de modifier le statut de paiement';
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    html: msg,
+                    confirmButtonColor: '#dc2626'
+                });
+            } else {
+                alert(msg);
+            }
+        })
+        .finally(() => {
+            if (dtPill) {
+                dtPill.style.opacity = '1';
+                dtPill.disabled = false;
+            }
+            if (mobPill) {
+                mobPill.style.opacity = '1';
+                mobPill.disabled = false;
+            }
+        });
+    }
+
+    /**
+     * Dynamically update UI badges for desktop table and mobile cards
+     */
+    function updateInvoiceUI(invoiceId, invoice) {
+        const st = (invoice.payment_status || '').toLowerCase();
+        const stMap = {
+            'paid': { label: 'Payé', dot: 'green', badgeClass: 'success', textClass: 'text-success', mobClass: 'paid', icon: 'fa-check-circle' },
+            'unpaid': { label: 'Impayé', dot: 'amber', badgeClass: 'warning', textClass: 'text-warning', mobClass: 'pending', icon: 'fa-clock' },
+            'partial': { label: 'Partiel', dot: 'blue', badgeClass: 'info', textClass: 'text-info', mobClass: 'pending', icon: 'fa-adjust' },
+            'cancelled': { label: 'Annulé', dot: 'red', badgeClass: 'danger', textClass: 'text-danger', mobClass: 'failed', icon: 'fa-times-circle' }
+        };
+        const sInfo = stMap[st] || { label: invoice.status_label || st, dot: 'amber', badgeClass: 'warning', textClass: 'text-warning', mobClass: 'pending', icon: 'fa-clock' };
+
+        // Desktop Pill
+        const dtPill = document.getElementById(`dt-pay-pill-${invoiceId}`);
+        if (dtPill) {
+            dtPill.className = `brand-badge brand-badge-btn ${sInfo.badgeClass} dropdown-toggle`;
+            const dtLabel = document.getElementById(`dt-pay-label-${invoiceId}`);
+            if (dtLabel) dtLabel.textContent = sInfo.label;
+            const dtDot = document.getElementById(`dt-pay-dot-${invoiceId}`);
+            if (dtDot) dtDot.className = `status-dot dot-${sInfo.dot}`;
+
+            const dtMenu = dtPill.closest('.dropdown')?.querySelector('.dropdown-menu');
+            if (dtMenu) {
+                dtMenu.querySelectorAll('.dropdown-item').forEach(item => {
+                    const fn = item.getAttribute('onclick') || '';
+                    const isSelected = fn.includes(`'${st}'`);
+                    item.classList.toggle('active', isSelected);
+                    const check = item.querySelector('.fa-check');
+                    if (check) check.remove();
+                    if (isSelected) {
+                        item.insertAdjacentHTML('beforeend', ` <i class="fas fa-check ${sInfo.textClass} small"></i>`);
+                    }
+                });
+            }
+        }
+
+        // Mobile Pill
+        const mobPill = document.getElementById(`mob-pay-pill-${invoiceId}`);
+        if (mobPill) {
+            mobPill.className = `mobile-order-pay-pill ${sInfo.mobClass} border-0 dropdown-toggle`;
+            const mobLabel = document.getElementById(`mob-pay-label-${invoiceId}`);
+            if (mobLabel) mobLabel.textContent = sInfo.label;
+            const mobIcon = document.getElementById(`mob-pay-icon-${invoiceId}`);
+            if (mobIcon) mobIcon.className = `fas ${sInfo.icon}`;
+
+            const mobMenu = mobPill.closest('.dropdown')?.querySelector('.dropdown-menu');
+            if (mobMenu) {
+                mobMenu.querySelectorAll('.dropdown-item').forEach(item => {
+                    const fn = item.getAttribute('onclick') || '';
+                    const isSelected = fn.includes(`'${st}'`);
+                    item.classList.toggle('active', isSelected);
+                    const check = item.querySelector('.fa-check');
+                    if (check) check.remove();
+                    if (isSelected) {
+                        item.insertAdjacentHTML('beforeend', ` <i class="fas fa-check ${sInfo.textClass} small"></i>`);
+                    }
+                });
+            }
+        }
+
+        initStatusDropdowns();
+    }
+
+    /**
+     * Update real-time KPI metrics
+     */
+    function updateInvoiceKPIStats(stats) {
+        if (!stats) return;
+        if (stats.paid_amount_formatted !== undefined) {
+            const el = document.getElementById('kpi-paid-amount');
+            if (el) el.textContent = stats.paid_amount_formatted;
+        }
+        if (stats.unpaid_amount_formatted !== undefined) {
+            const el = document.getElementById('kpi-unpaid-amount');
+            if (el) el.textContent = stats.unpaid_amount_formatted;
+        }
+        if (stats.total_revenue_formatted !== undefined) {
+            const el = document.getElementById('kpi-total-revenue');
+            if (el) el.textContent = stats.total_revenue_formatted;
+        }
+        if (stats.total_invoices !== undefined) {
+            const el = document.getElementById('kpi-total-invoices');
+            const totalDocs = (stats.total_invoices || 0) + (stats.total_quotes || 0);
+            if (el) el.textContent = new Intl.NumberFormat('fr-FR').format(totalDocs);
+        }
+    }
+
+    /**
+     * Initialize dropdowns with reliable Popper positioning
+     */
+    function initStatusDropdowns() {
+        if (typeof bootstrap === 'undefined' || !bootstrap.Dropdown) return;
+        const triggers = document.querySelectorAll('.brand-badge-btn[data-bs-toggle="dropdown"], .mobile-order-pay-pill[data-bs-toggle="dropdown"], .mobile-act-btn.dropdown-toggle');
+        triggers.forEach(el => {
+            const current = bootstrap.Dropdown.getInstance(el);
+            if (current) current.dispose();
+
+            const isMobileCard = !!el.closest('.mobile-order-card');
+            new bootstrap.Dropdown(el, {
+                popperConfig: function(defaultBsPopperConfig) {
+                    return {
+                        ...defaultBsPopperConfig,
+                        strategy: isMobileCard ? 'fixed' : 'absolute',
+                        modifiers: [
+                            ...(defaultBsPopperConfig?.modifiers || []),
+                            {
+                                name: 'preventOverflow',
+                                options: {
+                                    boundary: 'viewport',
+                                    padding: 8
+                                }
+                            },
+                            {
+                                name: 'flip',
+                                options: {
+                                    fallbackPlacements: ['top', 'bottom']
+                                }
+                            }
+                        ]
+                    };
+                }
+            });
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initStatusDropdowns();
+    });
+
+    // Preview Modal Logic
+    let currentPreviewId = null;
+    let currentPreviewType = 'facture';
+    let currentPreviewStamp = true;
+
+    function openInvoicePreview(id, number, type, withStamp) {
+        currentPreviewId = id;
+        currentPreviewType = type || 'facture';
+        currentPreviewStamp = withStamp !== false;
+        document.getElementById('previewModalTitle').innerText = (currentPreviewType === 'devis' ? 'Devis #' : 'Facture #') + number;
+        updatePreviewUI();
+        const modalEl = document.getElementById('invoicePreviewModal');
+        const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        modal.show();
+    }
+
+    function setPreviewDocType(type) {
+        currentPreviewType = type;
+        updatePreviewUI();
+    }
+
+    function togglePreviewStamp() {
+        currentPreviewStamp = !currentPreviewStamp;
+        updatePreviewUI();
+    }
+
+    function updatePreviewUI() {
+        if (!currentPreviewId) return;
+        const btnF = document.getElementById('previewBtnFacture');
+        const btnD = document.getElementById('previewBtnDevis');
+        const btnS = document.getElementById('previewBtnStamp');
+        const stampLabel = document.getElementById('previewStampLabel');
+
+        if (currentPreviewType === 'facture') {
+            btnF.className = 'btn btn-sm btn-light text-dark fw-bold';
+            btnD.className = 'btn btn-sm btn-outline-light';
+        } else {
+            btnF.className = 'btn btn-sm btn-outline-light';
+            btnD.className = 'btn btn-sm btn-danger fw-bold';
+        }
+
+        if (currentPreviewStamp) {
+            btnS.className = 'btn btn-sm btn-success fw-bold';
+            stampLabel.innerText = 'Avec Cachet';
+        } else {
+            btnS.className = 'btn btn-sm btn-outline-light';
+            stampLabel.innerText = 'Sans Cachet';
+        }
+
+        const url = `/invoices/${currentPreviewId}/print?preview=1&as=${currentPreviewType}&with_stamp=${currentPreviewStamp ? 1 : 0}`;
+        document.getElementById('previewIframe').src = url;
+
+        const downloadUrl = `/invoices/${currentPreviewId}/download?as=${currentPreviewType}&with_stamp=${currentPreviewStamp ? 1 : 0}`;
+        document.getElementById('previewDownloadLink').href = downloadUrl;
+    }
+
+    function printFromPreview() {
+        const iframe = document.getElementById('previewIframe');
+        if (iframe && iframe.contentWindow) {
+            iframe.contentWindow.print();
+        }
+    }
+</script>
+@endpush

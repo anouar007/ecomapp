@@ -14,7 +14,7 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Category::with(['parent', 'children'])
+        $query = Category::with('children')
             ->withCount('products')
             ->orderBy('sort_order')
             ->orderBy('name');
@@ -23,13 +23,27 @@ class CategoryController extends Controller
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('slug', 'like', "%{$search}%");
             });
         }
 
+        if ($request->filled('status') && in_array($request->status, ['active', 'inactive'])) {
+            $query->where('status', $request->status);
+        }
+
         $categories = $query->get();
+
+        // High-level KPI Stats for executive overview
+        $kpiStats = [
+            'total' => Category::count(),
+            'active' => Category::where('status', 'active')->count(),
+            'inactive' => Category::where('status', 'inactive')->count(),
+            'subcategories' => Category::whereNotNull('parent_id')->count(),
+            'total_products' => \App\Models\Product::count(),
+        ];
         
-        return view('categories.index', compact('categories'));
+        return view('categories.index', compact('categories', 'kpiStats'));
     }
 
     /**
@@ -74,7 +88,15 @@ class CategoryController extends Controller
         Category::create($validated);
 
         return redirect()->route('categories.index')
-            ->with('success', 'Category created successfully.');
+            ->with('success', 'Catégorie créée avec succès.');
+    }
+
+    /**
+     * Display the specified category.
+     */
+    public function show(Category $category)
+    {
+        return redirect()->route('categories.edit', $category);
     }
 
     /**
@@ -82,6 +104,8 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
+        $category->loadCount('products')->load('children');
+
         $parentCategories = Category::whereNull('parent_id')
             ->where('id', '!=', $category->id)
             ->where('status', 'active')
@@ -109,7 +133,7 @@ class CategoryController extends Controller
 
         // Prevent category from being its own parent
         if (isset($validated['parent_id']) && $validated['parent_id'] == $category->id) {
-            return back()->with('error', 'A category cannot be its own parent.')->withInput();
+            return back()->with('error', 'Une catégorie ne peut pas être son propre parent.')->withInput();
         }
 
         // Handle image removal
@@ -128,7 +152,7 @@ class CategoryController extends Controller
         $category->update($validated);
 
         return redirect()->route('categories.index')
-            ->with('success', 'Category updated successfully.');
+            ->with('success', 'Catégorie mise à jour avec succès.');
     }
 
     /**
@@ -138,12 +162,12 @@ class CategoryController extends Controller
     {
         // Check if category has products
         if ($category->products()->count() > 0) {
-            return back()->with('error', 'Cannot delete category with products. Please move or delete products first.');
+            return back()->with('error', 'Impossible de supprimer une catégorie contenant des produits. Veuillez d\'abord déplacer ou supprimer les produits.');
         }
 
         // Check if category has children
         if ($category->hasChildren()) {
-            return back()->with('error', 'Cannot delete category with subcategories. Please delete subcategories first.');
+            return back()->with('error', 'Impossible de supprimer une catégorie contenant des sous-catégories. Veuillez d\'abord supprimer les sous-catégories.');
         }
 
         // Delete image if exists
@@ -154,6 +178,6 @@ class CategoryController extends Controller
         $category->delete();
 
         return redirect()->route('categories.index')
-            ->with('success', 'Category deleted successfully.');
+            ->with('success', 'Catégorie supprimée avec succès.');
     }
 }

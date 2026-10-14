@@ -4,25 +4,29 @@
 
 @section('content')
     <!-- En-tête de page -->
+    <!-- En-tête de page (Clean & Pro) -->
     <div class="brand-header">
-        <div>
-            <h1 class="brand-title">
-                <div class="brand-header-icon">
-                    <i class="fas fa-boxes-stacked"></i>
-                </div>
-                Gestion des produits
-            </h1>
-            <p class="brand-subtitle">Gérez votre catalogue de produits, les tarifs, la qualité 4K et la disponibilité en stock</p>
+        <div class="d-flex align-items-center gap-2.5">
+            <div class="brand-header-icon flex-shrink-0">
+                <i class="fas fa-boxes-stacked"></i>
+            </div>
+            <div>
+                <h1 class="brand-title">Gestion des produits</h1>
+                <p class="brand-subtitle">Gérez votre catalogue de produits, les tarifs, la qualité 4K et la disponibilité en stock</p>
+            </div>
         </div>
-        <div class="d-flex align-items-center gap-2 flex-wrap">
-            <a href="{{ route('products.image-quality') }}" class="btn btn-outline-primary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2" style="border-color: #8b5cf6; color: #6d28d9; background: #faf5ff; font-weight: 600; text-decoration: none;">
-                <i class="fas fa-wand-magic-sparkles text-warning"></i> Studio 4K Hub
+        <div class="brand-header-actions">
+            <a href="{{ route('products.image-quality') }}" class="btn btn-outline-primary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0" style="border-color: #8b5cf6; color: #6d28d9; background: #faf5ff; font-weight: 600; text-decoration: none; font-size: 0.84rem;">
+                <i class="fas fa-wand-magic-sparkles text-warning"></i> <span>Studio 4K</span>
                 @if(!empty($qualityStats['needs_upgrade']) && $qualityStats['needs_upgrade'] > 0)
-                    <span class="badge rounded-pill bg-warning text-dark px-2" style="font-size: 0.72rem;">{{ $qualityStats['needs_upgrade'] }} à améliorer</span>
+                    <span class="badge rounded-pill bg-warning text-dark px-1.5 py-0.5" style="font-size: 0.7rem;">
+                        <span class="d-none d-sm-inline">{{ $qualityStats['needs_upgrade'] }} à optimiser</span>
+                        <span class="d-sm-none">{{ $qualityStats['needs_upgrade'] }}</span>
+                    </span>
                 @endif
             </a>
-            <a href="{{ route('products.create') }}" class="btn-brand-primary">
-                <i class="fas fa-plus me-2"></i> Ajouter un produit
+            <a href="{{ route('products.create') }}" class="btn-brand-primary flex-grow-1 flex-md-grow-0 justify-content-center text-nowrap px-3 py-2" style="font-size: 0.84rem;">
+                <i class="fas fa-plus me-1"></i> <span class="d-none d-sm-inline">Ajouter un produit</span><span class="d-sm-none">Nouveau</span>
             </a>
         </div>
     </div>
@@ -58,7 +62,7 @@
             </a>
         </div>
         <div class="col-6 col-lg-3">
-            <a href="{{ route('products.index', ['stock_status' => 'low_stock']) }}" class="stat-kpi-card text-decoration-none {{ request('stock_status') === 'low_stock' ? 'active-filter' : '' }}">
+            <a href="{{ route('products.index', ['stock_status' => 'alert']) }}" class="stat-kpi-card text-decoration-none {{ in_array(request('stock_status'), ['alert', 'low_stock', 'out_of_stock']) ? 'active-filter' : '' }}">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <div class="stat-kpi-label">Stock Faible / Alerte</div>
@@ -89,77 +93,189 @@
         </div>
     </div>
 
-    <!-- Barre de filtres -->
-    <div class="brand-filter-bar mb-4">
-        <form method="GET" action="{{ route('products.index') }}" class="d-flex align-items-center gap-2 flex-wrap">
-            <div class="brand-search-wrapper flex-grow-1" style="min-width: 200px;">
-                <i class="fas fa-search"></i>
-                <input type="text" name="search" class="form-control" 
-                       placeholder="Rechercher par nom, SKU..."
-                       value="{{ request('search') }}">
-            </div>
-            
-            <select name="category" class="form-select w-auto">
-                <option value="">Toutes les catégories</option>
-                @foreach($categories as $category)
-                    <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
-                        {{ $category->name }}
-                    </option>
-                @endforeach
-            </select>
+    <!-- Barre de filtres unifiée (Desktop & Mobile) -->
+    <div class="brand-filter-bar mb-3">
+        <form method="GET" action="{{ route('products.index') }}" id="filterForm">
+            <!-- Row 1 : Champ Recherche + Bouton Toggle Mobile + Actions Desktop -->
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <div class="brand-search-wrapper flex-grow-1" style="min-width: 220px;">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="search" class="form-control" 
+                           placeholder="Rechercher par nom, SKU..."
+                           value="{{ request('search') }}">
+                </div>
 
-            <select name="stock_status" class="form-select w-auto">
-                <option value="">Tous les stocks</option>
-                <option value="in_stock" {{ request('stock_status') == 'in_stock' ? 'selected' : '' }}>📦 En stock (&gt; 5)</option>
-                <option value="low_stock" {{ request('stock_status') == 'low_stock' ? 'selected' : '' }}>⚠️ Stock faible (≤ 5)</option>
-                <option value="out_of_stock" {{ request('stock_status') == 'out_of_stock' ? 'selected' : '' }}>🚫 Rupture (0)</option>
-            </select>
+                @php
+                    $hasActiveFilters = request('category') || request('stock_status') || request('quality') || request('status');
+                    $activeFilterCount = collect(['category', 'stock_status', 'quality', 'status'])->filter(fn($k) => request()->filled($k))->count();
+                @endphp
 
-            <select name="quality" class="form-select w-auto">
-                <option value="">Toutes les résolutions</option>
-                <option value="needs_upgrade" {{ request('quality') == 'needs_upgrade' ? 'selected' : '' }}>
-                    ⚠️ À améliorer (&lt; 1200px) ({{ $qualityStats['needs_upgrade'] ?? 0 }})
-                </option>
-                <option value="4k" {{ request('quality') == '4k' ? 'selected' : '' }}>
-                    ✨ 4K Ultra-HD ({{ $qualityStats['four_k'] ?? 0 }})
-                </option>
-                <option value="fhd" {{ request('quality') == 'fhd' ? 'selected' : '' }}>
-                    📷 Full HD ({{ $qualityStats['fhd'] ?? 0 }})
-                </option>
-                <option value="missing" {{ request('quality') == 'missing' ? 'selected' : '' }}>
-                    ❌ Sans image / Placeholder
-                </option>
-            </select>
-
-            <select name="status" class="form-select w-auto">
-                <option value="">Tous les statuts</option>
-                <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Actifs</option>
-                <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactifs</option>
-            </select>
-
-            <button type="submit" class="btn-brand-primary" title="Appliquer les filtres">
-                <i class="fas fa-filter me-1"></i> Filtrer
-            </button>
-            <a href="{{ route('products.index') }}" class="btn-brand-light" title="Réinitialiser les filtres">
-                <i class="fas fa-redo"></i>
-            </a>
-            
-            @if(request('search') || request('category') || request('quality') || request('stock_status') || request('status'))
-            <span class="badge bg-light text-secondary border px-2.5 py-2">
-                {{ $products->total() }} résultat(s)
-            </span>
-            @endif
-
-            <div class="ms-auto d-flex gap-2">
-                <button type="button" class="btn-brand-outline" data-bs-toggle="modal" data-bs-target="#importModal">
-                    <i class="fas fa-file-upload me-1.5" style="color: var(--primary-color)"></i>Importer Excel
+                <!-- Bouton Drawer Filtres Mobile (d-md-none) -->
+                <button type="button" 
+                        class="btn d-md-none {{ $hasActiveFilters ? 'btn-brand-primary' : 'btn-brand-light' }} d-inline-flex align-items-center gap-1.5"
+                        data-bs-toggle="collapse" 
+                        data-bs-target="#productFiltersCollapse" 
+                        aria-expanded="{{ $hasActiveFilters ? 'true' : 'false' }}">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Filtres</span>
+                    @if($activeFilterCount > 0)
+                        <span class="badge bg-white text-dark rounded-pill px-1.5" style="font-size: 0.7rem;">{{ $activeFilterCount }}</span>
+                    @endif
                 </button>
-                <a href="{{ route('export.products') }}" class="btn-brand-outline">
-                    <i class="fas fa-file-csv me-1.5" style="color: var(--success-color)"></i>Exporter CSV
-                </a>
+
+                <!-- Actions Desktop (Compteur + Import/Export) (d-none d-md-flex) -->
+                <div class="ms-md-auto d-none d-md-flex align-items-center gap-2">
+                    @if(request('search') || $hasActiveFilters)
+                        <span class="badge bg-light text-secondary border px-2.5 py-2">
+                            {{ $products->total() }} résultat(s)
+                        </span>
+                    @endif
+                    <button type="button" class="btn-brand-outline" data-bs-toggle="modal" data-bs-target="#importModal">
+                        <i class="fas fa-file-upload me-1.5" style="color: var(--primary-color)"></i>Importer Excel
+                    </button>
+                    <a href="{{ route('export.products') }}" class="btn-brand-outline">
+                        <i class="fas fa-file-csv me-1.5" style="color: var(--success-color)"></i>Exporter CSV
+                    </a>
+                </div>
+            </div>
+
+            <!-- Row 2 : Filtres Déroulants Uniques (Toujours visibles sur Desktop, repliables sur Mobile) -->
+            <div class="collapse d-md-block {{ $hasActiveFilters ? 'show' : '' }} mt-3 pt-3 pt-md-2 border-top border-top-md-0" id="productFiltersCollapse">
+                <div class="row g-2 align-items-center">
+                    <!-- Catégorie -->
+                    <div class="col-6 col-md-auto">
+                        <select name="category" class="form-select form-select-sm" style="min-width: 155px;">
+                            <option value="">Toutes les catégories</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Stock -->
+                    <div class="col-6 col-md-auto">
+                        <select name="stock_status" class="form-select form-select-sm" style="min-width: 145px;">
+                            <option value="">Tous les stocks</option>
+                            <option value="in_stock" {{ request('stock_status') == 'in_stock' ? 'selected' : '' }}>📦 En stock (&gt; 5)</option>
+                            <option value="low_stock" {{ request('stock_status') == 'low_stock' ? 'selected' : '' }}>⚠️ Stock faible (1-5)</option>
+                            <option value="out_of_stock" {{ request('stock_status') == 'out_of_stock' ? 'selected' : '' }}>🚫 Rupture (0)</option>
+                            <option value="alert" {{ request('stock_status') == 'alert' ? 'selected' : '' }}>🚨 En alerte (≤ 5)</option>
+                        </select>
+                    </div>
+
+                    <!-- Résolution Studio 4K -->
+                    <div class="col-6 col-md-auto">
+                        <select name="quality" class="form-select form-select-sm" style="min-width: 165px;">
+                            <option value="">Toutes les résolutions</option>
+                            <option value="needs_upgrade" {{ request('quality') == 'needs_upgrade' ? 'selected' : '' }}>
+                                ⚠️ À améliorer ({{ $qualityStats['needs_upgrade'] ?? 0 }})
+                            </option>
+                            <option value="4k" {{ request('quality') == '4k' ? 'selected' : '' }}>
+                                ✨ 4K Ultra-HD ({{ $qualityStats['four_k'] ?? 0 }})
+                            </option>
+                            <option value="fhd" {{ request('quality') == 'fhd' ? 'selected' : '' }}>
+                                📷 Full HD ({{ $qualityStats['fhd'] ?? 0 }})
+                            </option>
+                            <option value="missing" {{ request('quality') == 'missing' ? 'selected' : '' }}>
+                                ❌ Sans image
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Statut -->
+                    <div class="col-6 col-md-auto">
+                        <select name="status" class="form-select form-select-sm" style="min-width: 125px;">
+                            <option value="">Tous les statuts</option>
+                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>🟢 Actifs</option>
+                            <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>⚪ Inactifs</option>
+                        </select>
+                    </div>
+
+                    <!-- Boutons Filtrer / Réinitialiser -->
+                    <div class="col-12 col-md-auto d-flex gap-2">
+                        <button type="submit" class="btn-brand-primary btn-sm flex-grow-1 flex-md-grow-0 justify-content-center" title="Appliquer les filtres">
+                            <i class="fas fa-filter me-1"></i> <span class="d-none d-md-inline">Filtrer</span><span class="d-md-none">Appliquer les filtres</span>
+                        </button>
+                        <a href="{{ route('products.index') }}" class="btn-brand-light btn-sm flex-shrink-0" title="Réinitialiser les filtres">
+                            <i class="fas fa-redo"></i>
+                        </a>
+                    </div>
+
+                    <!-- Boutons Import / Export sur Mobile (d-md-none) -->
+                    <div class="col-12 d-md-none mt-2 pt-2 border-top d-flex gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary flex-grow-1" data-bs-toggle="modal" data-bs-target="#importModal">
+                            <i class="fas fa-file-upload me-1 text-danger"></i> Importer Excel
+                        </button>
+                        <a href="{{ route('export.products') }}" class="btn btn-sm btn-outline-secondary flex-grow-1 text-center">
+                            <i class="fas fa-file-csv me-1 text-success"></i> Exporter CSV
+                        </a>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
+
+    <!-- Active Filter Badges with Quick Removal Pills -->
+    @if(request('search') || $hasActiveFilters)
+        <div class="d-flex align-items-center gap-2 flex-wrap mb-3 px-1">
+            <span class="text-muted small fw-semibold">
+                <i class="fas fa-filter text-primary me-1"></i> Filtres appliqués :
+            </span>
+
+            @if(request('search'))
+                <a href="{{ request()->fullUrlWithQuery(['search' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
+                    Recherche : "{{ request('search') }}" <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
+            @if(request('category'))
+                @php $catObj = $categories->firstWhere('id', request('category')); @endphp
+                <a href="{{ request()->fullUrlWithQuery(['category' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
+                    Catégorie : {{ $catObj ? $catObj->name : request('category') }} <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
+            @if(request('stock_status'))
+                @php
+                    $stockLabels = [
+                        'in_stock' => 'En stock (> 5)',
+                        'low_stock' => 'Stock faible (1-5)',
+                        'out_of_stock' => 'Rupture (0)',
+                        'alert' => 'En alerte (≤ 5)',
+                    ];
+                @endphp
+                <a href="{{ request()->fullUrlWithQuery(['stock_status' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
+                    Stock : {{ $stockLabels[request('stock_status')] ?? request('stock_status') }} <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
+            @if(request('quality'))
+                @php
+                    $qualityLabels = [
+                        'needs_upgrade' => 'À optimiser',
+                        '4k' => '4K Ultra-HD',
+                        'fhd' => 'Full HD',
+                        'missing' => 'Sans image',
+                    ];
+                @endphp
+                <a href="{{ request()->fullUrlWithQuery(['quality' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
+                    Qualité : {{ $qualityLabels[request('quality')] ?? request('quality') }} <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
+            @if(request('status'))
+                <a href="{{ request()->fullUrlWithQuery(['status' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
+                    Statut : {{ request('status') === 'active' ? 'Actifs' : 'Inactifs' }} <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
+            <a href="{{ route('products.index') }}" class="small text-danger fw-semibold text-decoration-none ms-1">
+                Effacer tout
+            </a>
+        </div>
+    @endif
 
     <!-- Modal Import -->
     <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
@@ -249,8 +365,8 @@
         </div>
     </div>
 
-    <!-- Products Table -->
-    <div class="brand-table-card">
+    <!-- Products Table (Desktop View) -->
+    <div class="brand-table-card d-none d-md-block">
         <div class="products-table-wrapper">
             <table class="brand-table brand-table-products">
                 <thead>
@@ -433,6 +549,48 @@
             </div>
             @if($products->hasPages())
             <div>
+                {{ $products->links() }}
+            </div>
+            @endif
+        </div>
+    </div>
+
+    <!-- Mobile Products Container (Touch First) -->
+    <div class="mobile-products-container d-block d-md-none">
+        <div class="d-flex align-items-center justify-content-between p-2.5 mb-2 bg-white rounded-3 border shadow-sm">
+            <div class="form-check m-0 d-flex align-items-center gap-2">
+                <input type="checkbox" class="form-check-input" id="selectAllMobile" onchange="toggleSelectAll(this)" style="width: 19px; height: 19px;">
+                <label class="form-check-label small fw-semibold text-muted" for="selectAllMobile">Tout sélectionner</label>
+            </div>
+            <span class="badge bg-light text-secondary border small">
+                {{ $products->total() }} produit{{ $products->total() > 1 ? 's' : '' }}
+            </span>
+        </div>
+
+        @forelse($products as $product)
+            @include('products.partials.mobile-product-card', ['product' => $product])
+        @empty
+            <div class="text-center py-5 bg-white rounded-4 border p-4 shadow-sm">
+                <div class="brand-avatar mx-auto mb-3" style="width: 56px; height: 56px; font-size: 20px;">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h6 class="fw-bold text-dark">Aucun produit trouvé</h6>
+                <p class="text-muted small mb-0">Essayez d'ajuster vos critères de recherche ou vos filtres.</p>
+                @if(request('search') || request('category') || request('quality') || request('stock_status') || request('status'))
+                    <a href="{{ route('products.index') }}" class="btn-brand-primary btn-sm mt-3">
+                        <i class="fas fa-redo me-1"></i> Réinitialiser les filtres
+                    </a>
+                @endif
+            </div>
+        @endforelse
+
+        <!-- Mobile Pagination Footer -->
+        <div class="bg-white p-3 rounded-4 border shadow-sm mt-3 mb-4">
+            <div class="text-muted small text-center mb-2">
+                Affichage de <span class="fw-semibold text-dark">{{ $products->firstItem() ?? 0 }}</span> à <span class="fw-semibold text-dark">{{ $products->lastItem() ?? 0 }}</span> sur <span class="fw-semibold text-dark">{{ $products->total() }}</span>
+            </div>
+            @if($products->hasPages())
+            <div class="d-flex justify-content-center">
                 {{ $products->links() }}
             </div>
             @endif
@@ -828,49 +986,69 @@
     }
     
     function toggleSelectAll(checkbox) {
+        const isChecked = checkbox.checked;
         const checkboxes = document.querySelectorAll('.product-checkbox');
         checkboxes.forEach(cb => {
-            cb.checked = checkbox.checked;
+            cb.checked = isChecked;
         });
+        const selectAllDesktop = document.getElementById('selectAll');
+        const selectAllMobile = document.getElementById('selectAllMobile');
+        if (selectAllDesktop) selectAllDesktop.checked = isChecked;
+        if (selectAllMobile) selectAllMobile.checked = isChecked;
         updateSelection();
     }
     
     function updateSelection() {
         selectedProducts = [];
-        const checkboxes = document.querySelectorAll('.product-checkbox:checked');
-        checkboxes.forEach(cb => {
-            selectedProducts.push(parseInt(cb.value));
-            cb.closest('tr').classList.add('selected');
+        const checkedBoxes = document.querySelectorAll('.product-checkbox:checked');
+        checkedBoxes.forEach(cb => {
+            const val = parseInt(cb.value);
+            if (!selectedProducts.includes(val)) {
+                selectedProducts.push(val);
+            }
         });
         
-        // Remove selected class from unchecked rows
-        document.querySelectorAll('.product-checkbox:not(:checked)').forEach(cb => {
-            cb.closest('tr').classList.remove('selected');
+        // Sync counterparts & visual highlight
+        document.querySelectorAll('.product-checkbox').forEach(cb => {
+            const val = parseInt(cb.value);
+            const isChecked = selectedProducts.includes(val);
+            cb.checked = isChecked;
+            
+            const tr = cb.closest('tr');
+            if (tr) tr.classList.toggle('selected', isChecked);
+            
+            const card = cb.closest('.mobile-product-card');
+            if (card) card.classList.toggle('selected', isChecked);
         });
         
         // Update count display
-        document.getElementById('selectedCount').textContent = selectedProducts.length;
+        const countEl = document.getElementById('selectedCount');
+        if (countEl) countEl.textContent = selectedProducts.length;
         
         // Show/hide bulk actions bar
         const bulkActionsBar = document.getElementById('bulkActionsBar');
-        if (selectedProducts.length > 0) {
-            bulkActionsBar.style.display = 'block';
-        } else {
-            bulkActionsBar.style.display = 'none';
+        if (bulkActionsBar) {
+            bulkActionsBar.style.display = selectedProducts.length > 0 ? 'block' : 'none';
         }
         
-        // Update select all checkbox state
-        const allCheckboxes = document.querySelectorAll('.product-checkbox');
-        const selectAllCheckbox = document.getElementById('selectAll');
-        if (allCheckboxes.length > 0 && selectedProducts.length === allCheckboxes.length) {
-            selectAllCheckbox.checked = true;
-            selectAllCheckbox.indeterminate = false;
-        } else if (selectedProducts.length > 0) {
-            selectAllCheckbox.checked = false;
-            selectAllCheckbox.indeterminate = true;
-        } else {
-            selectAllCheckbox.checked = false;
-            selectAllCheckbox.indeterminate = false;
+        // Update select all checkbox states
+        const uniqueIds = new Set();
+        document.querySelectorAll('.product-checkbox').forEach(cb => uniqueIds.add(parseInt(cb.value)));
+        const totalUnique = uniqueIds.size;
+        
+        const isAll = totalUnique > 0 && selectedProducts.length === totalUnique;
+        const isIndeterminate = selectedProducts.length > 0 && selectedProducts.length < totalUnique;
+        
+        const selectAllDesktop = document.getElementById('selectAll');
+        const selectAllMobile = document.getElementById('selectAllMobile');
+        
+        if (selectAllDesktop) {
+            selectAllDesktop.checked = isAll;
+            selectAllDesktop.indeterminate = isIndeterminate;
+        }
+        if (selectAllMobile) {
+            selectAllMobile.checked = isAll;
+            selectAllMobile.indeterminate = isIndeterminate;
         }
     }
     
@@ -878,7 +1056,10 @@
         document.querySelectorAll('.product-checkbox').forEach(cb => {
             cb.checked = false;
         });
-        document.getElementById('selectAll').checked = false;
+        const selectAllDesktop = document.getElementById('selectAll');
+        const selectAllMobile = document.getElementById('selectAllMobile');
+        if (selectAllDesktop) selectAllDesktop.checked = false;
+        if (selectAllMobile) selectAllMobile.checked = false;
         updateSelection();
     }
     
@@ -1089,15 +1270,27 @@
             button.innerHTML = origHtml;
 
             if (data.success) {
-                // Update product row live
+                const timestamp = new Date().getTime();
+                // Update desktop product row live
                 const prodImg = document.getElementById(`prod-img-${current4kProductId}`);
                 if (prodImg) {
-                    prodImg.src = data.image_url + '?t=' + new Date().getTime();
+                    prodImg.src = data.image_url + '?t=' + timestamp;
                 }
 
                 const prodBadge = document.getElementById(`prod-badge-${current4kProductId}`);
                 if (prodBadge && data.badge_html) {
                     prodBadge.innerHTML = data.badge_html;
+                }
+
+                // Update mobile product card live
+                const mobProdImg = document.getElementById(`mob-prod-img-${current4kProductId}`);
+                if (mobProdImg) {
+                    mobProdImg.src = data.image_url + '?t=' + timestamp;
+                }
+
+                const mobProdBadge = document.getElementById(`mob-prod-badge-${current4kProductId}`);
+                if (mobProdBadge && data.badge_html) {
+                    mobProdBadge.innerHTML = data.badge_html;
                 }
 
                 close4kImageModal();

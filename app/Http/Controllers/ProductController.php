@@ -27,9 +27,16 @@ class ProductController extends Controller
             });
         }
 
-        // Category Filter
+        // Category Filter (supports parent category with subcategories)
         if ($request->filled('category')) {
-            $query->where('category_id', $request->category);
+            $catId = $request->category;
+            $cat = \App\Models\Category::with('children')->find($catId);
+            if ($cat && $cat->children->isNotEmpty()) {
+                $categoryIds = $cat->children->pluck('id')->push($cat->id);
+                $query->whereIn('category_id', $categoryIds);
+            } else {
+                $query->where('category_id', $catId);
+            }
         }
 
         // Image Quality Filter
@@ -47,7 +54,10 @@ class ProductController extends Controller
             } elseif ($q === 'sd') {
                 $query->where('image_quality', 'sd');
             } elseif ($q === 'missing') {
-                $query->whereIn('image_quality', ['placeholder', 'missing'])->orWhereNull('image');
+                $query->where(function($sub) {
+                    $sub->whereIn('image_quality', ['placeholder', 'missing'])
+                        ->orWhereNull('image');
+                });
             }
         }
 
@@ -59,6 +69,8 @@ class ProductController extends Controller
                 $query->where('stock', '>', 0)->where('stock', '<=', 5);
             } elseif ($request->stock_status === 'out_of_stock') {
                 $query->where('stock', '<=', 0);
+            } elseif ($request->stock_status === 'alert') {
+                $query->where('stock', '<=', 5);
             }
         }
 

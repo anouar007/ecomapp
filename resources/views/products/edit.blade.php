@@ -1,290 +1,528 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Product')
+@section('title', 'Modifier le produit : ' . $product->name)
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/management.css') }}">
 <style>
-.multi-image-upload {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 12px;
-    margin-top: 12px;
-}
+    /* Product Form Styles */
+    .product-form-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+    }
 
-.image-upload-box {
-    width: 120px;
-    height: 120px;
-    border: 2px dashed #e2e8f0;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: #f8fafc;
-    position: relative;
-}
+    .product-form-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 16px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #f1f5f9;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
 
-.image-upload-box:hover {
-    border-color: #667eea;
-    background: #f0f4ff;
-}
+    .product-form-card-title {
+        font-family: var(--font-heading, 'Outfit', sans-serif);
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
 
-.image-upload-box img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 10px;
-}
+    .product-form-card-subtitle {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-top: 4px;
+    }
 
-.image-remove-btn {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    background: #ef4444;
-    color: white;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 2px solid white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 12px;
-    z-index: 10;
-}
+    /* Multi Image Upload Grid */
+    .multi-image-upload {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        gap: 12px;
+        margin-top: 10px;
+    }
 
-.primary-badge {
-    position: absolute;
-    top: 4px;
-    left: 4px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 9px;
-    font-weight: 600;
-}
+    .image-upload-box {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: #f8fafc;
+        position: relative;
+        overflow: hidden;
+    }
 
-.form-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-}
+    .image-upload-box:hover {
+        border-color: #dc2626;
+        background: #fef2f2;
+    }
+
+    .image-upload-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .image-remove-btn {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        background: rgba(220, 38, 38, 0.9);
+        color: #ffffff;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 13px;
+        border: 2px solid #ffffff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        z-index: 10;
+        transition: transform 0.15s ease;
+    }
+
+    .image-remove-btn:hover {
+        transform: scale(1.15);
+        background: #dc2626;
+    }
+
+    .primary-badge-indicator {
+        position: absolute;
+        top: 6px;
+        left: 6px;
+        background: #10b981;
+        color: #ffffff;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        z-index: 5;
+    }
+
+    /* Live Profit Box */
+    .profit-calc-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin-top: 14px;
+        transition: all 0.2s ease;
+    }
+
+    @media (max-width: 767.98px) {
+        .product-form-card {
+            padding: 16px 14px;
+            margin-bottom: 16px;
+            border-radius: 14px;
+        }
+        .product-form-card-header {
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+        }
+        .multi-image-upload {
+            grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+            gap: 8px;
+        }
+        .product-form-card-title {
+            font-size: 1rem;
+        }
+    }
 </style>
 @endpush
 
 @section('content')
-<div class="page-header">
-    <h1 class="page-title"><i class="fas fa-edit"></i> Edit Product: {{ $product->name }}</h1>
-    <p class="page-subtitle">Update product information</p>
-</div>
-
-@if(isset($errors) && $errors->any())
-<div class="alert alert-danger">
-    <i class="fas fa-exclamation-circle"></i>
-    <div>
-        <strong>Oops! Something went wrong:</strong>
-        <ul style="margin: 8px 0 0 20px; padding: 0;">
-            @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-</div>
-@endif
-
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-file-alt"></i> Product Information</h3>
-    </div>
-    <div class="card-body">
-        <form action="{{ route('products.update', $product) }}" method="POST" enctype="multipart/form-data" id="productForm">
-            @csrf
-            @method('PUT')
-            
-            <div class="form-group">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
-                    <label class="form-label" style="margin-bottom: 0;"><i class="fas fa-images"></i> Product Images</label>
-                    <button type="button" class="btn btn-sm" onclick="open4kImageModal()" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; border: none; border-radius: 8px; padding: 7px 16px; font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 4px 14px rgba(124, 58, 237, 0.3); transition: all 0.2s;">
-                        <i class="fas fa-magic"></i> Find 4K Studio Images
-                    </button>
+    <!-- En-tête de la page -->
+    <div class="brand-header">
+        <div class="d-flex align-items-center gap-2.5">
+            <div class="brand-header-icon flex-shrink-0">
+                <i class="fas fa-pencil-alt"></i>
+            </div>
+            <div>
+                <div class="d-flex align-items-center gap-2 text-muted small mb-1">
+                    <a href="{{ route('products.index') }}" class="text-decoration-none text-muted">Produits</a>
+                    <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
+                    <span class="text-dark fw-semibold text-truncate" style="max-width: 250px;">{{ $product->name }}</span>
+                    <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
+                    <span class="text-muted">Modifier</span>
                 </div>
-                <div class="multi-image-upload" id="imagePreviewContainer">
-                    @foreach($product->images as $image)
-                    <div class="image-upload-box" id="box-img-{{ $image->id }}">
-                        <img src="{{ $image->url }}" alt="Product image" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
-                        @if($image->is_primary)
-                            <span class="primary-badge">PRIMARY</span>
-                        @endif
-                        <span class="image-remove-btn" onclick="markImageForRemoval({{ $image->id }}, this)">×</span>
-                    </div>
-                    @endforeach
-                    @if($product->images->isEmpty() && ($product->image || $product->thumbnail))
-                    <div class="image-upload-box" id="box-img-current">
-                        <img src="{{ $product->thumbnail }}" alt="Product image" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
-                        <span class="primary-badge">CURRENT</span>
-                    </div>
-                    @endif
-                    <div class="image-upload-box" onclick="document.getElementById('images').click()">
+                <h1 class="brand-title">Modifier : <span class="text-truncate d-inline-block align-bottom" style="max-width: 450px;">{{ $product->name }}</span></h1>
+                <p class="brand-subtitle">
+                    SKU: <span class="badge bg-light text-secondary border font-monospace">{{ $product->sku }}</span> &bull; 
+                    Statut: <span class="badge {{ strtolower($product->status) === 'active' ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary' }}">{{ ucfirst($product->status) }}</span>
+                </p>
+            </div>
+        </div>
+        <div class="brand-header-actions flex-wrap">
+            <a href="{{ route('products.index') }}" class="btn btn-sm btn-light border rounded-pill px-2.5 py-1.5 text-muted fw-semibold d-inline-flex align-items-center" title="Retour à la liste">
+                <i class="fas fa-arrow-left me-1"></i> <span>Retour</span>
+            </a>
+            <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" 
+               target="_blank" 
+               class="btn btn-sm btn-outline-secondary rounded-pill px-2.5 py-1.5 fw-semibold d-inline-flex align-items-center justify-content-center gap-1 flex-grow-1 flex-md-grow-0 shadow-sm"
+               title="Voir sur la boutique">
+                <i class="fas fa-eye text-teal"></i> <span class="d-none d-sm-inline">Voir boutique</span><span class="d-sm-none">Boutique</span>
+            </a>
+            <button type="button" 
+                    class="btn btn-sm text-white rounded-pill px-2.5 py-1.5 fw-semibold d-inline-flex align-items-center justify-content-center gap-1 flex-grow-1 flex-md-grow-0 shadow-sm"
+                    style="background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none;"
+                    onclick="open4kImageModal()"
+                    title="Studio 4K Ultra-HD">
+                <i class="fas fa-wand-magic-sparkles text-warning"></i> <span>Studio 4K</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Alertes Erreurs -->
+    @if(isset($errors) && $errors->any())
+        <div class="alert alert-danger border-0 rounded-4 shadow-sm mb-4">
+            <div class="d-flex align-items-start gap-3">
+                <i class="fas fa-exclamation-circle fs-5 mt-1"></i>
+                <div>
+                    <h6 class="fw-bold mb-1">Veuillez corriger les erreurs suivantes :</h6>
+                    <ul class="mb-0 ps-3 small">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <form action="{{ route('products.update', $product) }}" method="POST" enctype="multipart/form-data" id="productForm">
+        @csrf
+        @method('PUT')
+
+        <div class="row g-4">
+            <!-- Colonne Principale (Gauche) -->
+            <div class="col-12 col-lg-8">
+                <!-- Informations Générales -->
+                <div class="product-form-card">
+                    <div class="product-form-card-header">
                         <div>
-                            <i class="fas fa-plus" style="font-size: 24px; color: #94a3b8;"></i>
-                            <p style="margin-top: 6px; color: #64748b; font-size: 11px; text-align: center;">Add more</p>
+                            <h2 class="product-form-card-title">
+                                <i class="fas fa-box text-danger"></i> Informations Générales
+                            </h2>
+                            <p class="product-form-card-subtitle">Nom, référence SKU et description de votre produit</p>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <!-- Nom du produit -->
+                        <div class="col-12">
+                            <label for="name" class="form-label fw-semibold text-dark">
+                                Nom du produit <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" 
+                                   id="name" 
+                                   name="name" 
+                                   class="form-control form-control-lg @error('name') is-invalid @enderror" 
+                                   value="{{ old('name', $product->name) }}" 
+                                   placeholder="Nom du produit" 
+                                   required>
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <!-- SKU -->
+                        <div class="col-12">
+                            <label for="sku" class="form-label fw-semibold text-dark">
+                                Référence SKU <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted border-end-0">
+                                    <i class="fas fa-barcode"></i>
+                                </span>
+                                <input type="text" 
+                                       id="sku" 
+                                       name="sku" 
+                                       class="form-control font-monospace @error('sku') is-invalid @enderror" 
+                                       value="{{ old('sku', $product->sku) }}" 
+                                       placeholder="ex: PROD-001" 
+                                       required>
+                            </div>
+                            <div class="form-text small text-muted">
+                                Identifiant unique utilisé pour le code-barres et la gestion des stocks.
+                            </div>
+                            @error('sku')
+                                <div class="text-danger small mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Description Détaillée avec Smart Editor -->
+                    <div class="mt-4">
+                        @include('products.partials.smart-editor', ['value' => old('description', $product->description)])
+                    </div>
+                </div>
+
+                <!-- Photographies & Galerie -->
+                <div class="product-form-card">
+                    <div class="product-form-card-header">
+                        <div>
+                            <h2 class="product-form-card-title">
+                                <i class="fas fa-images text-primary"></i> Galerie & Photographies Studio 4K
+                            </h2>
+                            <p class="product-form-card-subtitle">Gérez les images de la vitrine ou recherchez des masters 4K Ultra-HD</p>
+                        </div>
+                        <button type="button" 
+                                class="btn btn-sm text-white rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm"
+                                style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); border: none; font-size: 0.8rem;"
+                                onclick="open4kImageModal()">
+                            <i class="fas fa-wand-magic-sparkles text-warning"></i> Trouver images 4K Studio
+                        </button>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="multi-image-upload" id="imagePreviewContainer">
+                            <!-- Images existantes -->
+                            @foreach($product->images as $image)
+                                <div class="image-upload-box" id="box-img-{{ $image->id }}">
+                                    <img src="{{ $image->url }}" alt="Image produit" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                                    @if($image->is_primary)
+                                        <span class="primary-badge-indicator">Principale</span>
+                                    @endif
+                                    <span class="image-remove-btn" onclick="markImageForRemoval({{ $image->id }}, this)" title="Supprimer cette image">&times;</span>
+                                </div>
+                            @endforeach
+
+                            <!-- Image principale de repli si la relation est vide -->
+                            @if($product->images->isEmpty() && ($product->image || $product->thumbnail))
+                                <div class="image-upload-box" id="box-img-current">
+                                    <img src="{{ $product->thumbnail }}" alt="Image produit" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                                    <span class="primary-badge-indicator">Actuelle</span>
+                                </div>
+                            @endif
+
+                            <!-- Bouton pour ajouter plus -->
+                            <div class="image-upload-box" onclick="document.getElementById('images').click()">
+                                <i class="fas fa-plus fs-4 text-muted mb-1"></i>
+                                <span class="small text-muted fw-semibold" style="font-size: 0.72rem;">Ajouter</span>
+                            </div>
+                        </div>
+
+                        <input type="file" 
+                               id="images" 
+                               name="images[]" 
+                               accept="image/*" 
+                               multiple 
+                               style="display: none;" 
+                               onchange="handleNewImages(event)">
+                    </div>
+
+                    <div class="alert alert-light border rounded-3 p-2.5 mb-0 small text-muted d-flex align-items-start gap-2">
+                        <i class="fas fa-info-circle text-primary mt-0.5"></i>
+                        <div>Touchez <strong>×</strong> pour retirer une photo. Utilisez <strong>Studio 4K</strong> pour importer des visuels officiels ultra-HD.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Colonne Latérale (Droite) -->
+            <div class="col-12 col-lg-4">
+                <!-- Tarification & Rentabilité -->
+                <div class="product-form-card">
+                    <div class="product-form-card-header">
+                        <h2 class="product-form-card-title">
+                            <i class="fas fa-tag text-success"></i> Tarifs & Rentabilité
+                        </h2>
+                    </div>
+
+                    <!-- Prix de vente -->
+                    <div class="mb-3">
+                        <label for="price" class="form-label fw-semibold text-dark">
+                            Prix de vente ({{ setting('currency_symbol', 'MAD') }}) <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </span>
+                            <input type="number" 
+                                   id="price" 
+                                   name="price" 
+                                   class="form-control form-control-lg fw-bold @error('price') is-invalid @enderror" 
+                                   value="{{ old('price', $product->price) }}" 
+                                   placeholder="0.00" 
+                                   step="0.01" 
+                                   min="0" 
+                                   required 
+                                   oninput="updateProfitCalc()">
+                        </div>
+                        @error('price')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <!-- Prix d'achat / revient -->
+                    <div class="mb-3">
+                        <label for="cost_price" class="form-label fw-semibold text-dark">
+                            Prix d'achat / revient ({{ setting('currency_symbol', 'MAD') }})
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted">
+                                <i class="fas fa-coins"></i>
+                            </span>
+                            <input type="number" 
+                                   id="cost_price" 
+                                   name="cost_price" 
+                                   class="form-control @error('cost_price') is-invalid @enderror" 
+                                   value="{{ old('cost_price', $product->cost_price) }}" 
+                                   placeholder="0.00" 
+                                   step="0.01" 
+                                   min="0" 
+                                   oninput="updateProfitCalc()">
+                        </div>
+                        <div class="form-text small text-muted">Coût unitaire pour calculer votre marge commerciale.</div>
+                        @error('cost_price')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <!-- Calcul en direct de la marge (Cartes KPI) -->
+                    <div class="profit-calc-box" id="profitCalcBox" style="{{ $product->cost_price ? 'display: block;' : 'display: none;' }}">
+                        <div class="row g-2 text-center">
+                            <div class="col-6">
+                                <div class="p-2 rounded-3 bg-white border border-success-subtle shadow-xs">
+                                    <div class="text-muted small fw-semibold" style="font-size: 0.7rem;">Marge brute</div>
+                                    <div class="fw-bold text-success fs-6" id="profitMarginVal">
+                                        {{ $product->cost_price && $product->price > 0 ? number_format((($product->price - $product->cost_price) / $product->price) * 100, 1) . '%' : '0%' }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-2 rounded-3 bg-white border shadow-xs">
+                                    <div class="text-muted small fw-semibold" style="font-size: 0.7rem;">Bénéfice net</div>
+                                    <div class="fw-bold text-dark fs-6" id="profitAmountVal">
+                                        {{ currency($product->price - ($product->cost_price ?? 0)) }}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <input type="file" 
-                       id="images" 
-                       name="images[]" 
-                       accept="image/*" 
-                       multiple
-                       style="display: none;" 
-                       onchange="handleNewImages(event)">
-                <small class="form-help">Upload new images or use <strong>Find 4K Studio Images</strong> to get ultra-high-definition official product photography.</small>
-            </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="name" class="form-label">
-                        Product Name <span class="required">*</span>
-                    </label>
-                    <input type="text" 
-                           id="name" 
-                           name="name" 
-                           class="form-control" 
-                           value="{{ old('name', $product->name) }}" 
-                           placeholder="Enter product name" 
-                           required>
-                </div>
+                <!-- Organisation & Stock -->
+                <div class="product-form-card">
+                    <div class="product-form-card-header">
+                        <h2 class="product-form-card-title">
+                            <i class="fas fa-warehouse text-warning"></i> Organisation & Stock
+                        </h2>
+                    </div>
 
-                <div class="form-group">
-                    <label for="sku" class="form-label">
-                        SKU <span class="required">*</span>
-                    </label>
-                    <input type="text" 
-                           id="sku" 
-                           name="sku" 
-                           class="form-control" 
-                           value="{{ old('sku', $product->sku) }}" 
-                           placeholder="e.g., PROD-001" 
-                           required>
-                    <small class="form-help">Unique product identifier</small>
-                </div>
-            </div>
+                    <!-- Catégorie -->
+                    <div class="mb-3">
+                        <label for="category_id" class="form-label fw-semibold text-dark">
+                            Catégorie
+                        </label>
+                        <select id="category_id" name="category_id" class="form-select @error('category_id') is-invalid @enderror">
+                            <option value="">-- Sans catégorie parente --</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
+                                    {{ $category->breadcrumb }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('category_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
 
-            @include('products.partials.smart-editor', ['value' => old('description', $product->description)])
+                    <!-- Statut -->
+                    <div class="mb-3">
+                        <label for="status" class="form-label fw-semibold text-dark">
+                            Statut de visibilité <span class="text-danger">*</span>
+                        </label>
+                        <select id="status" name="status" class="form-select @error('status') is-invalid @enderror" required>
+                            <option value="active" {{ old('status', $product->status) == 'active' ? 'selected' : '' }}>🟢 Actif (Visible en ligne)</option>
+                            <option value="inactive" {{ old('status', $product->status) == 'inactive' ? 'selected' : '' }}>⚪ Inactif (Brouillon masqué)</option>
+                        </select>
+                        @error('status')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="cost_price" class="form-label">
-                        <i class="fas fa-coins"></i> Cost Price ({{ setting('currency_symbol', '$') }})
-                    </label>
-                    <input type="number" 
-                           id="cost_price" 
-                           name="cost_price" 
-                           class="form-control" 
-                           value="{{ old('cost_price', $product->cost_price) }}" 
-                           placeholder="0.00" 
-                           step="0.01" 
-                           min="0">
-                    <small class="form-help">How much you pay for this product</small>
-                </div>
+                    <!-- Stock actuel & alerte -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label for="stock" class="form-label fw-semibold text-dark">
+                                Stock <span class="text-danger">*</span>
+                            </label>
+                            <input type="number" 
+                                   id="stock" 
+                                   name="stock" 
+                                   class="form-control @error('stock') is-invalid @enderror" 
+                                   value="{{ old('stock', $product->stock) }}" 
+                                   placeholder="0" 
+                                   min="0" 
+                                   required>
+                            @error('stock')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                <div class="form-group">
-                    <label for="price" class="form-label">
-                        <i class="fas fa-tag"></i> Selling Price ({{ setting('currency_symbol', '$') }}) <span class="required">*</span>
-                    </label>
-                    <input type="number" 
-                           id="price" 
-                           name="price" 
-                           class="form-control" 
-                           value="{{ old('price', $product->price) }}" 
-                           placeholder="0.00" 
-                           step="0.01" 
-                           min="0" 
-                           required>
-                    <small class="form-help">Price you sell to customers</small>
-                </div>
-            </div>
+                        <div class="col-6">
+                            <label for="min_stock" class="form-label fw-semibold text-dark">
+                                Seuil alerte <span class="text-danger">*</span>
+                            </label>
+                            <input type="number" 
+                                   id="min_stock" 
+                                   name="min_stock" 
+                                   class="form-control @error('min_stock') is-invalid @enderror" 
+                                   value="{{ old('min_stock', $product->min_stock) }}" 
+                                   placeholder="5" 
+                                   min="0" 
+                                   required>
+                            @error('min_stock')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
 
-            @if($product->cost_price)
-            <div class="alert alert-info" style="margin-bottom: 24px;">
-                <i class="fas fa-chart-line"></i>
-                <strong>Profit Margin:</strong> {{ number_format($product->profit_margin, 2) }}% 
-                (Profit: {{ currency($product->price - $product->cost_price) }} per unit)
-            </div>
-            @endif
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="stock" class="form-label">
-                        <i class="fas fa-boxes"></i> Current Stock <span class="required">*</span>
-                    </label>
-                    <input type="number" 
-                           id="stock" 
-                           name="stock" 
-                           class="form-control" 
-                           value="{{ old('stock', $product->stock) }}" 
-                           placeholder="0" 
-                           min="0" 
-                           required>
-                    @if($product->isLowStock())
-                        <small class="form-help" style="color: #d97706;">⚠️ Stock is below minimum level!</small>
+                    <!-- Alerte Stock Faible si applicable -->
+                    @if($product->stock <= 0)
+                        <div class="alert alert-danger border-0 p-2.5 rounded-3 mb-0 small d-flex align-items-center gap-2">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span><strong>Rupture de stock :</strong> 0 unité restante.</span>
+                        </div>
+                    @elseif($product->isLowStock())
+                        <div class="alert alert-warning border-0 p-2.5 rounded-3 mb-0 small d-flex align-items-center gap-2">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span><strong>Stock faible :</strong> niveau sous le seuil d'alerte ({{ $product->stock }} restant).</span>
+                        </div>
                     @endif
                 </div>
 
-                <div class="form-group">
-                    <label for="min_stock" class="form-label">
-                        <i class="fas fa-exclamation-triangle"></i> Minimum Stock Level <span class="required">*</span>
-                    </label>
-                    <input type="number" 
-                           id="min_stock" 
-                           name="min_stock" 
-                           class="form-control" 
-                           value="{{ old('min_stock', $product->min_stock) }}" 
-                           placeholder="10" 
-                           min="0" 
-                           required>
-                    <small class="form-help">Alert when stock falls below this level</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="category_id" class="form-label"><i class="fas fa-folder"></i> Category</label>
-                    <select id="category_id" name="category_id" class="form-control">
-                        <option value="">-- Select Category --</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
-                                {{ $category->breadcrumb }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <small class="form-help">Select a category for this product</small>
+                <!-- Boutons d'Action -->
+                <div class="product-form-card">
+                    <button type="submit" class="btn-brand-primary w-100 py-2.5 justify-content-center shadow-sm">
+                        <i class="fas fa-save me-2"></i> Enregistrer les modifications
+                    </button>
+                    <a href="{{ route('products.index') }}" class="btn btn-outline-secondary w-100 py-2 mt-2 rounded-pill text-center d-block text-decoration-none">
+                        Annuler
+                    </a>
                 </div>
             </div>
-
-            <div class="form-group">
-                <label for="status" class="form-label">
-                    Status <span class="required">*</span>
-                </label>
-                <select id="status" name="status" class="form-control" required>
-                    <option value="active" {{ old('status', $product->status) == 'active' ? 'selected' : '' }}>Active</option>
-                    <option value="inactive" {{ old('status', $product->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                </select>
-            </div>
-
-            <div class="form-actions">
-                <a href="{{ route('products.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> Cancel
-                </a>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Update Product
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+        </div>
+    </form>
+@endsection
 
 @push('scripts')
 <script>
@@ -296,6 +534,7 @@ function markImageForRemoval(imageId, button) {
         imagesToRemove.push(imageId);
         button.parentElement.style.opacity = '0.3';
         button.innerHTML = '↺';
+        button.title = 'Restaurer cette image';
         
         // Add hidden input
         const input = document.createElement('input');
@@ -308,8 +547,10 @@ function markImageForRemoval(imageId, button) {
         // Undo removal
         imagesToRemove = imagesToRemove.filter(id => id !== imageId);
         button.parentElement.style.opacity = '1';
-        button.innerHTML = '×';
-        document.getElementById('remove_' + imageId).remove();
+        button.innerHTML = '&times;';
+        button.title = 'Supprimer cette image';
+        const el = document.getElementById('remove_' + imageId);
+        if (el) el.remove();
     }
 }
 
@@ -317,20 +558,38 @@ function handleNewImages(event) {
     const container = document.getElementById('imagePreviewContainer');
     const files = Array.from(event.target.files);
     
-    files.forEach((file, index) => {
+    files.forEach((file) => {
         const reader = new FileReader();
         reader.onload = function(e) {
             const box = document.createElement('div');
             box.className = 'image-upload-box';
             box.innerHTML = `
-                <img src="${e.target.result}" alt="New image">
-                <span class="image-remove-btn" onclick="this.parentElement.remove()">×</span>
+                <img src="${e.target.result}" alt="Nouvelle image">
+                <span class="image-remove-btn" onclick="this.parentElement.remove()" title="Supprimer">&times;</span>
             `;
-            // Insert before the "add more" button
             container.insertBefore(box, container.lastElementChild);
         };
         reader.readAsDataURL(file);
     });
+}
+
+// Live Profit Calculation
+function updateProfitCalc() {
+    const price = parseFloat(document.getElementById('price').value) || 0;
+    const cost = parseFloat(document.getElementById('cost_price').value) || 0;
+    const box = document.getElementById('profitCalcBox');
+    
+    if (price > 0 && cost > 0) {
+        const profit = price - cost;
+        const margin = ((profit / price) * 100).toFixed(1);
+        
+        box.style.display = 'block';
+        document.getElementById('profitMarginVal').textContent = margin + '%';
+        document.getElementById('profitMarginVal').className = profit >= 0 ? 'fw-bold text-success' : 'fw-bold text-danger';
+        document.getElementById('profitAmountVal').textContent = profit.toFixed(2) + ' {{ setting("currency_symbol", "MAD") }}';
+    } else {
+        box.style.display = 'none';
+    }
 }
 
 // 4K Studio Image Finder Logic
@@ -339,7 +598,6 @@ function open4kImageModal() {
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
     
-    // Auto-search if empty
     const grid = document.getElementById('grid4k');
     if (grid.children.length === 0) {
         trigger4kSearch();
@@ -362,7 +620,7 @@ function trigger4kSearch() {
     loading.style.display = 'block';
     grid.innerHTML = '';
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Recherche...';
 
     const url = "{{ route('products.search-4k-images', $product) }}?q=" + encodeURIComponent(query);
 
@@ -376,20 +634,20 @@ function trigger4kSearch() {
     .then(data => {
         loading.style.display = 'none';
         btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-bolt"></i> Search 4K';
+        btn.innerHTML = '<i class="fas fa-bolt me-1"></i> Rechercher';
 
         if (!data.candidates || data.candidates.length === 0) {
             grid.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #64748b;">
                     <i class="fas fa-image" style="font-size: 36px; margin-bottom: 12px; color: #cbd5e1;"></i>
-                    <p style="font-weight: 600;">No 4K studio images found for "${query}"</p>
-                    <p style="font-size: 13px;">Try simplifying the search name above or searching for the brand and model number.</p>
+                    <p style="font-weight: 600;">Aucune image 4K studio trouvée pour "${query}"</p>
+                    <p style="font-size: 13px;">Essayez de simplifier la requête ou vérifiez la marque et la référence.</p>
                 </div>
             `;
             return;
         }
 
-        data.candidates.forEach((cand, idx) => {
+        data.candidates.forEach((cand) => {
             const card = document.createElement('div');
             card.style.cssText = "background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.04);";
             card.onmouseenter = () => { card.style.borderColor = '#6366f1'; card.style.boxShadow = '0 8px 20px rgba(99, 102, 241, 0.15)'; };
@@ -410,7 +668,7 @@ function trigger4kSearch() {
                 </div>
                 <div style="padding: 12px; display: flex; flex-direction: column; gap: 8px; background: #ffffff; border-top: 1px solid #f1f5f9;">
                     <button type="button" onclick="applySelected4kImage('${cand.url.replace(/'/g, "\\'")}', this)" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; border: none; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s;">
-                        <i class="fas fa-check-circle"></i> Set as Product Image
+                        <i class="fas fa-check-circle"></i> Appliquer comme photo officielle
                     </button>
                 </div>
             `;
@@ -420,15 +678,15 @@ function trigger4kSearch() {
     .catch(err => {
         loading.style.display = 'none';
         btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-bolt"></i> Search 4K';
-        grid.innerHTML = `<div style="grid-column: 1 / -1; color: #ef4444; padding: 20px; text-align: center;">Error searching images: ${err.message}</div>`;
+        btn.innerHTML = '<i class="fas fa-bolt me-1"></i> Rechercher';
+        grid.innerHTML = `<div style="grid-column: 1 / -1; color: #ef4444; padding: 20px; text-align: center;">Erreur : ${err.message}</div>`;
     });
 }
 
 function applySelected4kImage(imageUrl, button) {
     const origHtml = button.innerHTML;
     button.disabled = true;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Downloading 4K...';
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Téléchargement 4K...';
 
     const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]')?.value;
 
@@ -448,7 +706,6 @@ function applySelected4kImage(imageUrl, button) {
         button.innerHTML = origHtml;
 
         if (data.success) {
-            // Update preview box on page
             const container = document.getElementById('imagePreviewContainer');
             let currentBox = document.getElementById('box-img-current');
             
@@ -460,68 +717,74 @@ function applySelected4kImage(imageUrl, button) {
             }
             
             currentBox.innerHTML = `
-                <img src="${data.image_url}?v=${new Date().getTime()}" alt="Product image">
-                <span class="primary-badge" style="background: #10b981;">4K MASTER</span>
+                <img src="${data.image_url}?v=${new Date().getTime()}" alt="Image produit">
+                <span class="primary-badge-indicator" style="background: #10b981;">4K MASTER</span>
             `;
 
-            // Success feedback
-            button.style.background = '#10b981';
-            button.innerHTML = '<i class="fas fa-check"></i> Applied 4K!';
-            
+            Swal.fire({
+                title: 'Image 4K Appliquée !',
+                text: `Résolution studio : ${data.width}×${data.height} pixels`,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false,
+                toast: true,
+                position: 'top-end'
+            });
+
             setTimeout(() => {
                 close4kImageModal();
-            }, 800);
+            }, 600);
         } else {
-            alert(data.message || 'Could not apply 4K image.');
+            Swal.fire('Erreur', data.message || 'Impossible d\'appliquer l\'image 4K', 'error');
         }
     })
     .catch(err => {
         button.disabled = false;
         button.innerHTML = origHtml;
-        alert('Error: ' + err.message);
+        Swal.fire('Erreur', err.message, 'error');
     });
 }
 </script>
 
 <!-- 4K Image Finder Modal -->
 <div id="modal4k" style="display: none; position: fixed; inset: 0; z-index: 99999; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 20px;">
-    <div style="background: #ffffff; border-radius: 16px; max-width: 900px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); overflow: hidden;">
+    <div style="background: #ffffff; border-radius: 16px; max-width: 900px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.2);">
         <!-- Header -->
-        <div style="padding: 20px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(to right, #faf5ff, #ffffff);">
+        <div style="padding: 20px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%); color: white;">
             <div style="display: flex; align-items: center; gap: 12px;">
-                <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #4f46e5, #7c3aed); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);">
-                    <i class="fas fa-magic"></i>
+                <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(255, 255, 255, 0.15); display: flex; align-items: center; justify-content: center; color: #fbbf24; font-size: 18px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <i class="fas fa-wand-magic-sparkles"></i>
                 </div>
                 <div>
-                    <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: #1e293b;">4K Ultra-HD Image Studio Finder</h3>
-                    <p style="margin: 2px 0 0; font-size: 12px; color: #64748b;">Find and apply authentic 4K master studio photography</p>
+                    <h3 style="margin: 0; font-size: 18px; font-weight: 700;">Studio Recherche 4K Ultra-HD</h3>
+                    <p style="margin: 2px 0 0; font-size: 12px; color: #c7d2fe;">Sélectionnez un master haute résolution sans filigrane</p>
                 </div>
             </div>
-            <button type="button" onclick="close4kImageModal()" style="background: none; border: none; font-size: 24px; color: #94a3b8; cursor: pointer; padding: 4px 8px; border-radius: 6px;">&times;</button>
+            <button type="button" onclick="close4kImageModal()" style="background: rgba(255,255,255,0.1); border: none; font-size: 18px; color: white; cursor: pointer; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
 
         <!-- Search Bar -->
         <div style="padding: 16px 24px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; gap: 10px; align-items: center;">
             <div style="position: relative; flex: 1;">
                 <i class="fas fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 14px;"></i>
-                <input type="text" id="query4k" value="{{ $product->name }}" placeholder="Search official 4K photography..." style="width: 100%; padding: 10px 14px 10px 38px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); trigger4kSearch();}">
+                <input type="text" id="query4k" value="{{ $product->name }}" placeholder="Rechercher par nom officiel..." style="width: 100%; padding: 10px 14px 10px 38px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 14px; outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); trigger4kSearch();}">
             </div>
-            <button type="button" id="btnRun4kSearch" onclick="trigger4kSearch()" style="background: #4f46e5; color: white; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 600; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                <i class="fas fa-bolt"></i> Search 4K
+            <button type="button" id="btnRun4kSearch" onclick="trigger4kSearch()" class="btn btn-primary" style="background: #4f46e5; border-color: #4f46e5; border-radius: 10px; padding: 10px 20px; font-weight: 600; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;">
+                <i class="fas fa-bolt me-1"></i> Rechercher
             </button>
         </div>
 
         <!-- Content Area -->
         <div id="results4kContainer" style="padding: 24px; overflow-y: auto; flex: 1; min-height: 350px;">
             <div id="loading4k" style="display: none; text-align: center; padding: 60px 20px;">
-                <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: #6366f1; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
-                <p style="margin-top: 16px; font-weight: 600; color: #475569;">Searching official 4K & studio master assets...</p>
-                <p style="font-size: 12px; color: #94a3b8;">Scanning Amazon Master, B&H Master, Brand CDNs and Media Kits</p>
-                <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+                <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
+                <p style="margin-top: 16px; font-weight: 600; color: #475569;">Exploration des masters studio 4K Ultra-HD...</p>
+                <p style="font-size: 12px; color: #94a3b8;">Extraction sans compression depuis les serveurs officiels</p>
             </div>
             <div id="grid4k" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;"></div>
         </div>
     </div>
 </div>
 @endpush
-@endsection

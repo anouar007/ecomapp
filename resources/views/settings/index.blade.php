@@ -1,1061 +1,979 @@
 @extends('layouts.app')
 
-@section('title', 'Settings')
-
-@push('styles')
-<style>
-    .settings-container {
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-
-    .settings-header {
-        margin-bottom: 30px;
-    }
-
-    .settings-title {
-        font-size: 32px;
-        font-weight: 700;
-        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin: 0 0 8px 0;
-    }
-
-    .settings-subtitle {
-        color: #64748b;
-        font-size: 14px;
-    }
-
-    .settings-layout {
-        display: grid;
-        grid-template-columns: 250px 1fr;
-        gap: 24px;
-    }
-
-    .settings-tabs {
-        background: white;
-        border-radius: 16px;
-        padding: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        height: fit-content;
-        position: sticky;
-        top: 20px;
-    }
-
-    .settings-tab {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px 16px;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: all 0.2s;
-        border: none;
-        background: transparent;
-        width: 100%;
-        text-align: left;
-        color: #64748b;
-        font-size: 14px;
-        font-weight: 500;
-    }
-
-    .settings-tab:hover {
-        background: #f8fafc;
-        color: #1e293b;
-    }
-
-    .settings-tab.active {
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-        color: white;
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-    }
-
-    .settings-tab i {
-        font-size: 18px;
-        width: 20px;
-    }
-
-    .settings-content {
-        background: white;
-        border-radius: 16px;
-        padding: 32px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-
-    .tab-pane {
-        display: none;
-    }
-
-    .tab-pane.active {
-        display: block;
-    }
-
-    .settings-section {
-        margin-bottom: 32px;
-    }
-
-    .settings-section:last-child {
-        margin-bottom: 0;
-    }
-
-    .section-title {
-        font-size: 18px;
-        font-weight: 700;
-        color: #1e293b;
-        margin-bottom: 16px;
-        padding-bottom: 12px;
-        border-bottom: 2px solid #f1f5f9;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-label {
-        display: block;
-        font-weight: 600;
-        margin-bottom: 8px;
-        color: #334155;
-        font-size: 13px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .form-input,
-    .form-select {
-        width: 100%;
-        padding: 12px 16px;
-        border: 2px solid #e2e8f0;
-        border-radius: 10px;
-        font-size: 14px;
-        transition: all 0.2s;
-    }
-
-    .form-input:focus,
-    .form-select:focus {
-        outline: none;
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
-
-    .color-picker-group {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 20px;
-    }
-
-    .color-input-wrapper {
-        position: relative;
-    }
-
-    .color-input {
-        width: 100%;
-        height: 50px;
-        border: 2px solid #e2e8f0;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .color-input:hover {
-        border-color: #3b82f6;
-    }
-
-    .color-value {
-        position: absolute;
-        top: 50%;
-        left: 16px;
-        transform: translateY(-50%);
-        font-weight: 600;
-        font-size: 12px;
-        color: #1e293b;
-        pointer-events: none;
-        text-transform: uppercase;
-    }
-
-    .logo-upload-area {
-        border: 2px d
-
-ashed #cbd5e1;
-        border-radius: 12px;
-        padding: 32px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .logo-upload-area:hover {
-        border-color: #3b82f6;
-        background: #f8fafc;
-    }
-
-    .logo-preview {
-        max-width: 200px;
-        max-height: 100px;
-        margin: 0 auto 16px;
-    }
-
-    .btn-primary {
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-        color: white;
-        padding: 12px 24px;
-        border: none;
-        border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
-    }
-
-    .btn-secondary {
-        background: #f1f5f9;
-        color: #64748b;
-        padding: 12px 24px;
-        border: none;
-        border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .btn-secondary:hover {
-        background: #e2e8f0;
-    }
-
-    .btn-danger {
-        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-        color: white;
-        padding: 12px 24px;
-        border: none;
-        border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .form-actions {
-        display: flex;
-        gap: 12px;
-        justify-content: flex-end;
-        margin-top: 32px;
-        padding-top: 24px;
-        border-top: 2px solid #f1f5f9;
-    }
-
-    .alert {
-        padding: 16px 20px;
-        border-radius: 12px;
-        margin-bottom: 24px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .alert-success {
-        background: #d1fae5;
-        color: #065f46;
-        border-left: 4px solid #10b981;
-    }
-
-    @media (max-width: 968px) {
-        .settings-layout {
-            grid-template-columns: 1fr;
-        }
-
-        .settings-tabs {
-            position: static;
-            display: flex;
-            overflow-x: auto;
-            gap: 8px;
-        }
-
-        .settings-tab {
-            flex-shrink: 0;
-        }
-    }
-</style>
-@endpush
+@section('title', 'Paramètres de la Boutique')
 
 @section('content')
-<div class="settings-container">
-    <div class="settings-header">
-        <h1 class="settings-title">Paramètres</h1>
-        <p class="settings-subtitle">Personnalisez les préférences, configurations et informations de votre boutique</p>
+    <!-- En-tête de page (Clean & Pro Executive Brand Header - Aligned with Invoices, Orders & Inventory) -->
+    <div class="brand-header">
+        <div class="d-flex align-items-center gap-2.5">
+            <div class="brand-header-icon flex-shrink-0">
+                <i class="fas fa-cog"></i>
+            </div>
+            <div>
+                <h1 class="brand-title">Paramètres de la Boutique</h1>
+                <p class="brand-subtitle">Configurez l'identité d'entreprise, la fiscalité, les garanties, le thème et la boutique</p>
+            </div>
+        </div>
+        <div class="brand-header-actions">
+            <a href="{{ route('custom-codes.index') }}" class="btn btn-outline-secondary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
+                <i class="fas fa-code text-primary"></i> <span>Codes & Scripts</span>
+            </a>
+            <button type="submit" form="settings-form" class="btn-brand-primary flex-grow-1 flex-md-grow-0 justify-content-center text-nowrap px-3.5 py-2 shadow-sm rounded-pill" style="font-size: 0.84rem;">
+                <i class="fas fa-save me-1.5"></i> <span>Enregistrer</span>
+            </button>
+        </div>
     </div>
 
+    {{-- Flash Notifications --}}
     @if(session('success'))
-    <div class="alert alert-success">
-        <i class="fas fa-check-circle"></i>
-        {{ session('success') }}
-    </div>
+        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 rounded-4 border-0 shadow-sm mb-4" role="alert">
+            <i class="fas fa-check-circle fs-5 text-success"></i>
+            <div>{{ session('success') }}</div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     @endif
 
-    @if($errors->any())
-    <div class="alert alert-danger" style="background: #fee2e2; color: #991b1b; border-left: 4px solid #ef4444;">
-        <i class="fas fa-exclamation-circle"></i>
-        <div style="margin-left: 8px;">
-            <ul style="margin: 0; padding-left: 16px;">
+    @if(isset($errors) && $errors->any())
+        <div class="alert alert-danger alert-dismissible fade show rounded-4 border-0 shadow-sm mb-4" role="alert">
+            <div class="fw-bold mb-1"><i class="fas fa-exclamation-triangle me-1"></i> Veuillez corriger les erreurs suivantes :</div>
+            <ul class="mb-0 ps-3">
                 @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
             </ul>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-    </div>
     @endif
 
-    <div class="settings-layout">
-        <!-- Tabs -->
-        <div class="settings-tabs">
-            <button class="settings-tab" onclick="switchTab('general')">
-                <i class="fas fa-sliders-h"></i>
-                <span>Général</span>
-            </button>
-            <button class="settings-tab" onclick="switchTab('company')">
-                <i class="fas fa-building"></i>
-                <span>Entreprise</span>
-            </button>
-            <button class="settings-tab" onclick="switchTab('guarantee')">
-                <i class="fas fa-shield-alt"></i>
-                <span>Garantie & SAV</span>
-            </button>
-            <button class="settings-tab" onclick="switchTab('theme')">
-                <i class="fas fa-palette"></i>
-                <span>Thème & Couleurs</span>
-            </button>
-            <button class="settings-tab" onclick="switchTab('social')">
-                <i class="fas fa-share-alt"></i>
-                <span>Réseaux sociaux</span>
-            </button>
-            <button class="settings-tab" onclick="switchTab('frontend')">
-                <i class="fas fa-desktop"></i>
-                <span>Boutique en ligne</span>
-            </button>
-            <button class="settings-tab" onclick="switchTab('localization')">
-                <i class="fas fa-globe"></i>
-                <span>Langue & Région</span>
-            </button>
-            <button class="settings-tab" onclick="switchTab('advanced')">
-                <i class="fas fa-cogs"></i>
-                <span>Avancé</span>
-            </button>
-        </div>
-
-        <!-- Content -->
-        <div class="settings-content">
-            <form action="{{ route('settings.update') }}" method="POST" id="settings-form">
-                @csrf
-                @method('PUT')
-
-                <!-- General Tab -->
-                <div class="tab-pane active" id="general-tab">
-                    <div class="settings-section">
-                        <h3 class="section-title">Application Information</h3>
-                        
-                        @php
-                            $generalSettings = $settings->get('general', collect());
-                        @endphp
-                        
-                        <div class="form-group">
-                            <label class="form-label">Application Name</label>
-                            <input type="text" name="settings[app_name]" class="form-input" 
-                                   value="{{ $generalSettings->where('key', 'app_name')->first()?->value ?? '' }}">
+    {{-- Executive KPI Metrics Row --}}
+    <div class="row g-3 mb-4">
+        {{-- Boutique Active --}}
+        <div class="col-6 col-lg-3">
+            <div class="stat-kpi-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Boutique Active</div>
+                        <div class="stat-kpi-value text-dark text-truncate" style="max-width: 170px;" title="{{ setting('app_name', 'Full Frame House') }}">
+                            {{ setting('app_name', 'Full Frame House') }}
                         </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Application Description</label>
-                            <input type="text" name="settings[app_description]" class="form-input" 
-                                   value="{{ $generalSettings->where('key', 'app_description')->first()?->value ?? '' }}">
+                        <div class="stat-kpi-sub text-muted">
+                            <span class="badge bg-light text-secondary border">Nom commercial</span>
                         </div>
                     </div>
-
-                    <div class="settings-section">
-                        <h3 class="section-title">Logo</h3>
-                        
-                        @if(setting('app_logo'))
-                            <div style="text-align: center; margin-bottom: 20px;">
-                                <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="Logo" class="logo-preview">
-                                    <button type="submit" form="remove-logo-form" class="btn-danger" onclick="return confirm('Remove logo?')">
-                                        <i class="fas fa-trash"></i> Remove Logo
-                                    </button>
-                            </div>
-                        @endif
-
-                            <div class="logo-upload-area" onclick="document.getElementById('logo-input').click()">
-                                <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #3b82f6; margin-bottom: 16px;"></i>
-                                <p style="margin: 0; color: #64748b;">Click to upload logo</p>
-                                <p style="margin: 4px 0 0 0; font-size: 12px; color: #94a3b8;">PNG, JPG, SVG up to 2MB</p>
-                                <input type="file" id="logo-input" form="logo-upload-form" name="logo" accept="image/*" style="display: none;" onchange="document.getElementById('logo-upload-form').submit()">
-                            </div>
-                    </div>
-
-                    <div class="settings-section">
-                        <h3 class="section-title">Regional Settings</h3>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Timezone</label>
-                            <select name="settings[timezone]" class="form-select">
-                                <option value="UTC" {{ setting('timezone') == 'UTC' ? 'selected' : '' }}>UTC</option>
-                                <option value="America/New_York" {{ setting('timezone') == 'America/New_York' ? 'selected' : '' }}>America/New York</option>
-                                <option value="Europe/London" {{ setting('timezone') == 'Europe/London' ? 'selected' : '' }}>Europe/London</option>
-                                <option value="Asia/Dubai" {{ setting('timezone') == 'Asia/Dubai' ? 'selected' : '' }}>Asia/Dubai</option>
-                                <option value="Asia/Tokyo" {{ setting('timezone') == 'Asia/Tokyo' ? 'selected' : '' }}>Asia/Tokyo</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Date Format</label>
-                            <select name="settings[date_format]" class="form-select">
-                                <option value="Y-m-d" {{ setting('date_format') == 'Y-m-d' ? 'selected' : '' }}>2026-01-11</option>
-                                <option value="m/d/Y" {{ setting('date_format') == 'm/d/Y' ? 'selected' : '' }}>01/11/2026</option>
-                                <option value="d/m/Y" {{ setting('date_format') == 'd/m/Y' ? 'selected' : '' }}>11/01/2026</option>
-                                <option value="M d, Y" {{ setting('date_format') == 'M d, Y' ? 'selected' : '' }}>Jan 11, 2026</option>
-                                <option value="d M Y" {{ setting('date_format') == 'd M Y' ? 'selected' : '' }}>11 Jan 2026</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Time Format</label>
-                            <select name="settings[time_format]" class="form-select">
-                                <option value="H:i" {{ setting('time_format') == 'H:i' ? 'selected' : '' }}>24-hour (14:30)</option>
-                                <option value="h:i A" {{ setting('time_format') == 'h:i A' ? 'selected' : '' }}>12-hour (02:30 PM)</option>
-                            </select>
-                        </div>
+                    <div class="stat-kpi-icon bg-danger-subtle text-danger">
+                        <i class="fas fa-store"></i>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Company Info Tab -->
-                <div class="tab-pane" id="company-tab">
-                    <div class="settings-section">
-                        <h3 class="section-title">Company Details</h3>
-                        <p style="color: #64748b; font-size: 13px; margin-bottom: 24px;">This information will appear on invoices and reports.</p>
-                        
-                        @php
-                            $companySettings = $settings->get('company', collect());
-                        @endphp
-
-                        <div class="form-group">
-                            <label class="form-label">Company Name</label>
-                            <input type="text" name="settings[company_name]" class="form-input" 
-                                   value="{{ $companySettings->where('key', 'company_name')->first()->value ?? '' }}">
+        {{-- Devise & Taxe --}}
+        <div class="col-6 col-lg-3">
+            <div class="stat-kpi-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Devise & Fiscalité</div>
+                        <div class="stat-kpi-value text-success">
+                            {{ setting('currency_code', 'MAD') }} &bull; {{ setting('tax_rate', 20) }}%
                         </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Address</label>
-                            <textarea name="settings[company_address]" class="form-input" rows="3" style="resize: vertical;">{{ $companySettings->where('key', 'company_address')->first()->value ?? '' }}</textarea>
+                        <div class="stat-kpi-sub text-muted">
+                            <i class="fas fa-receipt text-success me-1"></i>Taux {{ setting('tax_label', 'TVA') }}
                         </div>
                     </div>
+                    <div class="stat-kpi-icon bg-success-subtle text-success">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                    <div class="settings-section">
-                        <h3 class="section-title">Invoicing Information</h3>
-                        
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                            <div class="form-group">
-                                <label class="form-label">Tax ID / ICE (Morocco)</label>
-                                <input type="text" name="settings[company_tax_id]" class="form-input" 
-                                       value="{{ $companySettings->where('key', 'company_tax_id')->first()->value ?? '' }}"
-                                       placeholder="e.g., 001569874000089">
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Registry ID / RC (Morocco)</label>
-                                <input type="text" name="settings[company_registry_id]" class="form-input" 
-                                       value="{{ $companySettings->where('key', 'company_registry_id')->first()->value ?? '' }}"
-                                       placeholder="e.g., 12345">
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Professional Tax / Patente</label>
-                                <input type="text" name="settings[company_patente]" class="form-input" 
-                                       value="{{ $companySettings->where('key', 'company_patente')->first()->value ?? '' }}"
-                                       placeholder="e.g., 45891236">
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Fiscal ID / IF</label>
-                                <input type="text" name="settings[company_fiscal_id]" class="form-input" 
-                                       value="{{ $companySettings->where('key', 'company_fiscal_id')->first()->value ?? '' }}"
-                                       placeholder="e.g., 33221144">
-                            </div>
+        {{-- Cachet & Signature --}}
+        <div class="col-6 col-lg-3">
+            <div class="stat-kpi-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Cachet & Signature</div>
+                        <div class="stat-kpi-value {{ setting('company_stamp') ? 'text-info' : 'text-secondary' }}">
+                            {{ setting('company_stamp') ? 'Actif' : 'Non défini' }}
+                        </div>
+                        <div class="stat-kpi-sub text-muted">
+                            <i class="fas fa-file-invoice text-info me-1"></i>Factures & Devis
                         </div>
                     </div>
+                    <div class="stat-kpi-icon bg-info-subtle text-info">
+                        <i class="fas fa-stamp"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                    <div class="settings-section">
-                        <h3 class="section-title">Contact Information</h3>
-                        
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                            <div class="form-group">
-                                <label class="form-label">Email Address</label>
-                                <input type="email" name="settings[company_email]" class="form-input" 
-                                       value="{{ $companySettings->where('key', 'company_email')->first()->value ?? '' }}">
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Phone Number</label>
-                                <input type="text" name="settings[company_phone]" class="form-input" 
-                                       value="{{ $companySettings->where('key', 'company_phone')->first()->value ?? '' }}">
-                            </div>
+        {{-- Garantie & SAV --}}
+        <div class="col-6 col-lg-3">
+            <div class="stat-kpi-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Garantie & SAV</div>
+                        <div class="stat-kpi-value text-warning">
+                            {{ setting('guarantee_period_default', '12 Mois') }}
                         </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Website</label>
-                            <input type="url" name="settings[company_website]" class="form-input" 
-                                   value="{{ $companySettings->where('key', 'company_website')->first()->value ?? '' }}">
+                        <div class="stat-kpi-sub text-muted">
+                            <i class="fas fa-shield-alt text-warning me-1"></i>Durée par défaut
                         </div>
                     </div>
+                    <div class="stat-kpi-icon bg-warning-subtle text-warning">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                    <div class="settings-section">
-                        <h3 class="section-title">Company Stamp & Signature (Cachet)</h3>
-                        <p style="color: #64748b; font-size: 13px; margin-bottom: 16px;">This official stamp and signature will appear on printed and PDF invoices, quotes, and receipts.</p>
-                        
-                        @if(setting('company_stamp'))
-                            <div style="text-align: center; margin-bottom: 20px; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px dashed #cbd5e1;">
-                                <img src="{{ asset('storage/' . setting('company_stamp')) }}" alt="Company Stamp" style="max-width: 220px; max-height: 120px; margin: 0 auto 12px auto; display: block; object-fit: contain;">
-                                <div>
-                                    <button type="submit" form="remove-stamp-form" class="btn-danger" onclick="return confirm('Remove company stamp?')">
-                                        <i class="fas fa-trash"></i> Remove Stamp
-                                    </button>
+    {{-- Main Settings Layout --}}
+    <div class="row g-4">
+        {{-- Navigation Sidebar (Pills on Mobile, Sticky Vertical Card on Desktop) --}}
+        <div class="col-12 col-lg-3 col-xl-3">
+            <div class="settings-nav-card">
+                <button type="button" class="settings-nav-btn active" data-tab="general" onclick="switchSettingsTab('general')">
+                    <span class="d-inline-flex align-items-center gap-2">
+                        <i class="fas fa-sliders-h tab-icon"></i>
+                        <span>Général</span>
+                    </span>
+                    <i class="fas fa-chevron-right tab-chevron small"></i>
+                </button>
+                <button type="button" class="settings-nav-btn" data-tab="company" onclick="switchSettingsTab('company')">
+                    <span class="d-inline-flex align-items-center gap-2">
+                        <i class="fas fa-building tab-icon"></i>
+                        <span>Entreprise</span>
+                    </span>
+                    <i class="fas fa-chevron-right tab-chevron small"></i>
+                </button>
+                <button type="button" class="settings-nav-btn" data-tab="guarantee" onclick="switchSettingsTab('guarantee')">
+                    <span class="d-inline-flex align-items-center gap-2">
+                        <i class="fas fa-shield-alt tab-icon"></i>
+                        <span>Garantie & SAV</span>
+                    </span>
+                    <i class="fas fa-chevron-right tab-chevron small"></i>
+                </button>
+                <button type="button" class="settings-nav-btn" data-tab="theme" onclick="switchSettingsTab('theme')">
+                    <span class="d-inline-flex align-items-center gap-2">
+                        <i class="fas fa-palette tab-icon"></i>
+                        <span>Thème & Couleurs</span>
+                    </span>
+                    <i class="fas fa-chevron-right tab-chevron small"></i>
+                </button>
+                <button type="button" class="settings-nav-btn" data-tab="social" onclick="switchSettingsTab('social')">
+                    <span class="d-inline-flex align-items-center gap-2">
+                        <i class="fas fa-share-alt tab-icon"></i>
+                        <span>Réseaux sociaux</span>
+                    </span>
+                    <i class="fas fa-chevron-right tab-chevron small"></i>
+                </button>
+                <button type="button" class="settings-nav-btn" data-tab="frontend" onclick="switchSettingsTab('frontend')">
+                    <span class="d-inline-flex align-items-center gap-2">
+                        <i class="fas fa-desktop tab-icon"></i>
+                        <span>Boutique en ligne</span>
+                    </span>
+                    <i class="fas fa-chevron-right tab-chevron small"></i>
+                </button>
+                <button type="button" class="settings-nav-btn" data-tab="localization" onclick="switchSettingsTab('localization')">
+                    <span class="d-inline-flex align-items-center gap-2">
+                        <i class="fas fa-globe tab-icon"></i>
+                        <span>Langue & Région</span>
+                    </span>
+                    <i class="fas fa-chevron-right tab-chevron small"></i>
+                </button>
+                <button type="button" class="settings-nav-btn" data-tab="advanced" onclick="switchSettingsTab('advanced')">
+                    <span class="d-inline-flex align-items-center gap-2">
+                        <i class="fas fa-cogs tab-icon"></i>
+                        <span>Avancé</span>
+                    </span>
+                    <i class="fas fa-chevron-right tab-chevron small"></i>
+                </button>
+
+                <div class="d-none d-lg-block border-top pt-3 mt-2 px-2">
+                    <button type="submit" form="reset-settings-form" class="btn btn-sm btn-outline-danger w-100 rounded-pill d-inline-flex align-items-center justify-content-center gap-1.5" onclick="return confirm('Êtes-vous sûr de vouloir réinitialiser tous les paramètres aux valeurs par défaut ?')">
+                        <i class="fas fa-undo"></i>
+                        <span>Réinitialiser par défaut</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {{-- Settings Content Area --}}
+        <div class="col-12 col-lg-9 col-xl-9">
+            <div class="settings-content-card">
+                <form action="{{ route('settings.update') }}" method="POST" id="settings-form">
+                    @csrf
+                    @method('PUT')
+
+                    {{-- 1. General Tab --}}
+                    <div class="tab-pane d-none" id="general-tab">
+                        <div class="settings-section-card">
+                            <h3 class="settings-section-title">
+                                <i class="fas fa-info-circle text-danger"></i>
+                                <span>Informations Générales de l'Application</span>
+                            </h3>
+                            <p class="settings-section-desc">Définissez le nom public et la description générale de votre plateforme e-commerce.</p>
+                            
+                            @php
+                                $generalSettings = $settings->get('general', collect());
+                            @endphp
+                            
+                            <div class="row g-3 mb-4">
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Nom de l'application / Boutique</label>
+                                    <input type="text" name="settings[app_name]" class="form-control rounded-3" 
+                                           value="{{ $generalSettings->where('key', 'app_name')->first()?->value ?? '' }}" placeholder="Ex: Full Frame House">
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Description courte</label>
+                                    <input type="text" name="settings[app_description]" class="form-control rounded-3" 
+                                           value="{{ $generalSettings->where('key', 'app_description')->first()?->value ?? '' }}" placeholder="Ex: Équipements audiovisuels professionnels">
                                 </div>
                             </div>
-                        @endif
-
-                        <div class="logo-upload-area" onclick="document.getElementById('stamp-input').click()">
-                            <i class="fas fa-stamp" style="font-size: 48px; color: #3b82f6; margin-bottom: 16px;"></i>
-                            <p style="margin: 0; color: #64748b; font-weight: 500;">Click to upload Company Stamp / Cachet</p>
-                            <p style="margin: 4px 0 0 0; font-size: 12px; color: #94a3b8;">PNG (transparent recommended), JPG, SVG, WebP up to 2MB</p>
-                            <input type="file" id="stamp-input" form="stamp-upload-form" name="stamp" accept="image/*" style="display: none;" onchange="document.getElementById('stamp-upload-form').submit()">
                         </div>
 
-                        {{-- Stamp Scale Control --}}
-                        <div style="margin-top: 24px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
-                            <h4 style="font-size: 14px; font-weight: 700; color: #1e293b; margin: 0 0 4px 0;">
-                                <i class="fas fa-search-plus" style="color: #3b82f6; margin-right: 6px;"></i>
-                                Stamp Scale on Documents
-                            </h4>
-                            <p style="font-size: 12px; color: #64748b; margin: 0 0 20px 0;">Uniformly scales the stamp image on invoices, quotes, and guarantee certificates while keeping its original proportions.</p>
+                        {{-- Logo Section --}}
+                        <div class="settings-section-card">
+                            <h3 class="settings-section-title">
+                                <i class="fas fa-image text-danger"></i>
+                                <span>Logo Officiel de la Boutique</span>
+                            </h3>
+                            <p class="settings-section-desc">Le logo s'affiche dans l'en-tête, les factures et les communications clients.</p>
+                            
+                            @if(setting('app_logo'))
+                                <div class="p-3 bg-light rounded-4 text-center mb-3 border">
+                                    <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="Logo" class="img-fluid rounded-2 mb-2" style="max-height: 80px; object-fit: contain;">
+                                    <div>
+                                        <button type="submit" form="remove-logo-form" class="btn btn-sm btn-brand-soft-danger rounded-pill px-3 py-1.5" onclick="return confirm('Supprimer le logo actuel ?')">
+                                            <i class="fas fa-trash me-1"></i> Supprimer le logo
+                                        </button>
+                                    </div>
+                                </div>
+                            @endif
 
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label class="form-label" for="stamp-scale-range" style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span>Scale</span>
-                                    <span style="display: flex; align-items: center; gap: 6px;">
-                                        <span id="stamp-scale-value" style="font-size: 22px; font-weight: 800; color: #3b82f6; line-height: 1;">{{ setting('company_stamp_scale', 100) }}</span>
-                                        <span style="font-size: 13px; color: #64748b;">%</span>
+                            <div class="settings-upload-dropzone" onclick="document.getElementById('logo-input').click()">
+                                <i class="fas fa-cloud-upload-alt text-danger mb-2" style="font-size: 2.5rem;"></i>
+                                <p class="fw-bold text-dark mb-1">Cliquez pour téléverser un nouveau logo</p>
+                                <p class="small text-muted mb-0">Formats supportés : PNG (fond transparent recommandé), JPG, SVG jusqu'à 2 Mo</p>
+                                <input type="file" id="logo-input" form="logo-upload-form" name="logo" accept="image/*" class="d-none" onchange="document.getElementById('logo-upload-form').submit()">
+                            </div>
+                        </div>
+
+                        {{-- Regional Settings --}}
+                        <div class="settings-section-card mt-4">
+                            <h3 class="settings-section-title">
+                                <i class="fas fa-clock text-danger"></i>
+                                <span>Fuseau Horaire & Formats de Date</span>
+                            </h3>
+                            
+                            <div class="row g-3">
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label fw-bold small text-dark">Fuseau horaire (Timezone)</label>
+                                    <select name="settings[timezone]" class="form-select rounded-3">
+                                        <option value="Africa/Casablanca" {{ setting('timezone') == 'Africa/Casablanca' ? 'selected' : '' }}>Africa/Casablanca (GMT+1)</option>
+                                        <option value="UTC" {{ setting('timezone') == 'UTC' ? 'selected' : '' }}>UTC</option>
+                                        <option value="Europe/Paris" {{ setting('timezone') == 'Europe/Paris' ? 'selected' : '' }}>Europe/Paris</option>
+                                        <option value="America/New_York" {{ setting('timezone') == 'America/New_York' ? 'selected' : '' }}>America/New York</option>
+                                        <option value="Asia/Dubai" {{ setting('timezone') == 'Asia/Dubai' ? 'selected' : '' }}>Asia/Dubai</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label fw-bold small text-dark">Format de date</label>
+                                    <select name="settings[date_format]" class="form-select rounded-3">
+                                        <option value="d/m/Y" {{ setting('date_format') == 'd/m/Y' ? 'selected' : '' }}>11/01/2026 (d/m/Y)</option>
+                                        <option value="Y-m-d" {{ setting('date_format') == 'Y-m-d' ? 'selected' : '' }}>2026-01-11 (Y-m-d)</option>
+                                        <option value="d M Y" {{ setting('date_format') == 'd M Y' ? 'selected' : '' }}>11 Jan 2026 (d M Y)</option>
+                                        <option value="m/d/Y" {{ setting('date_format') == 'm/d/Y' ? 'selected' : '' }}>01/11/2026 (m/d/Y)</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label fw-bold small text-dark">Format de l'heure</label>
+                                    <select name="settings[time_format]" class="form-select rounded-3">
+                                        <option value="H:i" {{ setting('time_format') == 'H:i' ? 'selected' : '' }}>24 heures (14:30)</option>
+                                        <option value="h:i A" {{ setting('time_format') == 'h:i A' ? 'selected' : '' }}>12 heures (02:30 PM)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- 2. Company Info Tab --}}
+                    <div class="tab-pane d-none" id="company-tab">
+                        <div class="settings-section-card">
+                            <h3 class="settings-section-title">
+                                <i class="fas fa-building text-danger"></i>
+                                <span>Identité Légale & Coordonnées de l'Entreprise</span>
+                            </h3>
+                            <p class="settings-section-desc">Ces informations légales s'impriment automatiquement sur toutes les factures, devis et bons de commande.</p>
+                            
+                            @php
+                                $companySettings = $settings->get('company', collect());
+                            @endphp
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Raison Sociale / Nom Entreprise</label>
+                                    <input type="text" name="settings[company_name]" class="form-control rounded-3" 
+                                           value="{{ $companySettings->where('key', 'company_name')->first()?->value ?? '' }}" placeholder="Ex: Full Frame House SARL">
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Adresse du Siège Social</label>
+                                    <input type="text" name="settings[company_address]" class="form-control rounded-3" 
+                                           value="{{ $companySettings->where('key', 'company_address')->first()?->value ?? '' }}" placeholder="Ex: 123 Boulevard d'Anfa, Casablanca">
+                                </div>
+
+                                <div class="col-12 col-md-3">
+                                    <label class="form-label fw-bold small text-dark">Identifiant Commun (ICE)</label>
+                                    <input type="text" name="settings[company_tax_id]" class="form-control rounded-3 font-monospace" 
+                                           value="{{ $companySettings->where('key', 'company_tax_id')->first()?->value ?? '' }}" placeholder="001569874000089">
+                                </div>
+
+                                <div class="col-12 col-md-3">
+                                    <label class="form-label fw-bold small text-dark">Registre de Commerce (RC)</label>
+                                    <input type="text" name="settings[company_registry_id]" class="form-control rounded-3 font-monospace" 
+                                           value="{{ $companySettings->where('key', 'company_registry_id')->first()?->value ?? '' }}" placeholder="Ex: 12345">
+                                </div>
+
+                                <div class="col-12 col-md-3">
+                                    <label class="form-label fw-bold small text-dark">Taxe Professionnelle (Patente)</label>
+                                    <input type="text" name="settings[company_patente]" class="form-control rounded-3 font-monospace" 
+                                           value="{{ $companySettings->where('key', 'company_patente')->first()?->value ?? '' }}" placeholder="Ex: 45891236">
+                                </div>
+
+                                <div class="col-12 col-md-3">
+                                    <label class="form-label fw-bold small text-dark">Identifiant Fiscal (IF)</label>
+                                    <input type="text" name="settings[company_fiscal_id]" class="form-control rounded-3 font-monospace" 
+                                           value="{{ $companySettings->where('key', 'company_fiscal_id')->first()?->value ?? '' }}" placeholder="Ex: 33221144">
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label fw-bold small text-dark">Email de contact</label>
+                                    <input type="email" name="settings[company_email]" class="form-control rounded-3" 
+                                           value="{{ $companySettings->where('key', 'company_email')->first()?->value ?? '' }}" placeholder="contact@fullframehouse.com">
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label fw-bold small text-dark">Téléphone</label>
+                                    <input type="text" name="settings[company_phone]" class="form-control rounded-3" 
+                                           value="{{ $companySettings->where('key', 'company_phone')->first()?->value ?? '' }}" placeholder="+212 5 22 00 00 00">
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label fw-bold small text-dark">Site web officiel</label>
+                                    <input type="url" name="settings[company_website]" class="form-control rounded-3" 
+                                           value="{{ $companySettings->where('key', 'company_website')->first()?->value ?? '' }}" placeholder="https://fullframehouse.com">
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Stamp & Signature Section --}}
+                        <div class="settings-section-card mt-4">
+                            <h3 class="settings-section-title">
+                                <i class="fas fa-stamp text-danger"></i>
+                                <span>Cachet & Signature de l'Entreprise</span>
+                            </h3>
+                            <p class="settings-section-desc">Ce cachet officiel sera imprimé sur l'ensemble de vos factures, devis et certificats de garantie.</p>
+                            
+                            @if(setting('company_stamp'))
+                                <div class="p-3 bg-light rounded-4 text-center mb-3 border">
+                                    <img src="{{ asset('storage/' . setting('company_stamp')) }}" alt="Cachet" class="img-fluid rounded-2 mb-2" style="max-height: 120px; object-fit: contain;">
+                                    <div>
+                                        <button type="submit" form="remove-stamp-form" class="btn btn-sm btn-brand-soft-danger rounded-pill px-3 py-1.5" onclick="return confirm('Supprimer le cachet d\'entreprise ?')">
+                                            <i class="fas fa-trash me-1"></i> Supprimer le cachet
+                                        </button>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <div class="settings-upload-dropzone mb-3" onclick="document.getElementById('stamp-input').click()">
+                                <i class="fas fa-stamp text-danger mb-2" style="font-size: 2.5rem;"></i>
+                                <p class="fw-bold text-dark mb-1">Cliquez pour téléverser votre cachet / signature</p>
+                                <p class="small text-muted mb-0">PNG transparent recommandé, JPG, SVG, WebP jusqu'à 2 Mo</p>
+                                <input type="file" id="stamp-input" form="stamp-upload-form" name="stamp" accept="image/*" class="d-none" onchange="document.getElementById('stamp-upload-form').submit()">
+                            </div>
+
+                            {{-- Stamp Scale Control --}}
+                            <div class="p-3 bg-light rounded-4 border">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="form-label fw-bold small text-dark mb-0">
+                                        <i class="fas fa-search-plus text-danger me-1"></i>
+                                        Échelle d'affichage sur les documents
+                                    </label>
+                                    <span class="badge bg-dark text-white rounded-pill px-2.5 py-1">
+                                        <span id="stamp-scale-value" class="fw-bold">{{ setting('company_stamp_scale', 100) }}</span> %
                                     </span>
-                                </label>
+                                </div>
 
                                 <input type="range" id="stamp-scale-range"
                                        name="settings[company_stamp_scale]"
                                        min="25" max="200" step="5"
                                        value="{{ setting('company_stamp_scale', 100) }}"
-                                       style="width: 100%; accent-color: #3b82f6; cursor: pointer; height: 6px;"
+                                       class="form-range"
                                        oninput="updateStampSize()">
 
-                                <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-top: 6px;">
-                                    <span>25% (tiny)</span>
-                                    <span>100% (default)</span>
-                                    <span>200% (large)</span>
+                                <div class="d-flex justify-content-between small text-muted">
+                                    <span>25% (Compact)</span>
+                                    <span>100% (Standard)</span>
+                                    <span>200% (Large)</span>
                                 </div>
-                            </div>
 
-                            {{-- Live preview --}}
-                            @if(setting('company_stamp'))
-                            @php $initScale = intval(setting('company_stamp_scale', 100)) / 100; @endphp
-                            <div style="margin-top: 20px; text-align: center; background: white; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 24px; overflow: hidden;">
-                                <p style="font-size: 11px; color: #94a3b8; margin: 0 0 14px 0; text-transform: uppercase; letter-spacing: 0.5px;">Live Preview</p>
-                                <div style="display: inline-block; transform-origin: center top;" id="stamp-preview-wrap">
-                                    <img id="stamp-preview-img"
-                                         src="{{ asset('storage/' . setting('company_stamp')) }}"
-                                         alt="Stamp Preview"
-                                         style="width: {{ round(160 * $initScale) }}px; height: auto; display: block; transition: width 0.15s;">
-                                </div>
+                                @if(setting('company_stamp'))
+                                    @php $initScale = intval(setting('company_stamp_scale', 100)) / 100; @endphp
+                                    <div class="mt-3 text-center p-3 bg-white rounded-3 border">
+                                        <div class="small text-muted mb-2 text-uppercase fw-semibold" style="font-size: 11px;">Aperçu direct en taille réelle</div>
+                                        <div id="stamp-preview-wrap" class="d-inline-block">
+                                            <img id="stamp-preview-img"
+                                                 src="{{ asset('storage/' . setting('company_stamp')) }}"
+                                                 alt="Aperçu Cachet"
+                                                 style="width: {{ round(160 * $initScale) }}px; height: auto; max-width: 100%; transition: width 0.15s;">
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
-                            @endif
                         </div>
                     </div>
-                </div>
 
-                <!-- Guarantee & Warranty Tab -->
-                <div class="tab-pane" id="guarantee-tab">
-                    <div class="settings-section">
-                        <h3 class="section-title">
-                            <i class="fas fa-shield-alt text-primary me-2"></i> {{ __('Guarantee & Warranty Settings') }}
-                        </h3>
-                        <p style="color: #64748b; font-size: 13px; margin-bottom: 24px;">
-                            {{ __('Customize the document title, default duration, and description terms that will appear on warranty & guarantee certificates generated for your invoices.') }}
-                        </p>
+                    {{-- 3. Guarantee & Warranty Tab --}}
+                    <div class="tab-pane d-none" id="guarantee-tab">
+                        <div class="settings-section-card">
+                            <h3 class="settings-section-title">
+                                <i class="fas fa-shield-alt text-danger"></i>
+                                <span>Paramètres de Garantie & SAV</span>
+                            </h3>
+                            <p class="settings-section-desc">Personnalisez les clauses, durées et mentions légales éditées sur vos certificats de garantie officiels.</p>
 
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label class="form-label">{{ __('Certificate Document Title') }}</label>
-                                <input type="text" name="settings[guarantee_title]" class="form-input" 
-                                       value="{{ setting('guarantee_title', 'CERTIFICAT DE GARANTIE') }}" 
-                                       placeholder="e.g. CERTIFICAT DE GARANTIE / WARRANTY CERTIFICATE">
-                                <small style="color: #94a3b8; font-size: 12px; display: block; margin-top: 4px;">{{ __('Main document title printed on the guarantee certificate.') }}</small>
-                            </div>
-
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label class="form-label">{{ __('Default Guarantee Duration') }}</label>
-                                <input type="text" name="settings[guarantee_period_default]" class="form-input" 
-                                       value="{{ setting('guarantee_period_default', '12 Mois') }}" 
-                                       placeholder="e.g. 12 Mois, 24 Mois, 1 An, 2 Years">
-                                <small style="color: #94a3b8; font-size: 12px; display: block; margin-top: 4px;">{{ __('Default warranty period applied to covered invoice items.') }}</small>
-                            </div>
-                        </div>
-
-                        <div class="form-group" style="margin-bottom: 24px;">
-                            <label class="form-label">{{ __('Guarantee Description & Terms of Coverage') }}</label>
-                            <textarea name="settings[guarantee_terms]" class="form-input" rows="8" style="font-family: inherit; line-height: 1.6; font-size: 13px;" placeholder="{{ __('Enter warranty terms, conditions, and coverage details...') }}">{{ setting('guarantee_terms', "1. La présente garantie couvre tous les défauts de fabrication et de fonctionnement du matériel pour la durée spécifiée à compter de la date d'émission de la facture.\n2. La garantie s'applique uniquement sur présentation du présent bon de garantie accompagné de la facture d'achat originale.\n3. Sont exclus de la garantie : les dommages dus à une mauvaise utilisation, à une négligence, aux surtensions électriques, aux dégâts des eaux, ou à toute intervention technique non autorisée.\n4. En cas de panne couverte par la garantie, notre service après-vente procédera gratuitement à la réparation ou au remplacement du composant défectueux dans les meilleurs délais.\n5. Les consommables, accessoires d'usure et pièces externes ne sont pas couverts par la garantie.") }}</textarea>
-                            <small style="color: #94a3b8; font-size: 12px; display: block; margin-top: 4px;">{{ __('These terms and conditions will be printed directly in the warranty terms section of the certificate.') }}</small>
-                        </div>
-
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label class="form-label">{{ __('Additional Guarantee Notes & Disclaimer (Optional)') }}</label>
-                            <textarea name="settings[guarantee_notes]" class="form-input" rows="3" style="font-size: 13px;" placeholder="e.g. Pour toute assistance technique, contactez notre service SAV...">{{ setting('guarantee_notes', 'Pour toute assistance technique ou réclamation sous garantie, veuillez vous munir de votre numéro de facture et contacter notre service après-vente.') }}</textarea>
-                            <small style="color: #94a3b8; font-size: 12px; display: block; margin-top: 4px;">{{ __('Printed at the bottom of the certificate before signatures.') }}</small>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Theme Tab -->
-                <div class="tab-pane" id="theme-tab">
-                    <div class="settings-section">
-                        <h3 class="section-title">Colors</h3>
-                        
-                        <div class="color-picker-group">
-                            <div class="form-group">
-                                <label class="form-label">Primary Color</label>
-                                <div class="color-input-wrapper">
-                                    <input type="color" name="settings[primary_color]" class="color-input" 
-                                           value="{{ setting('primary_color', '#3b82f6') }}">
-                                    <span class="color-value">{{ setting('primary_color', '#3b82f6') }}</span>
+                            <div class="row g-3 mb-4">
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Titre officiel du document de garantie</label>
+                                    <input type="text" name="settings[guarantee_title]" class="form-control rounded-3" 
+                                           value="{{ setting('guarantee_title', 'CERTIFICAT DE GARANTIE') }}" 
+                                           placeholder="Ex: CERTIFICAT DE GARANTIE">
                                 </div>
-                            </div>
 
-                            <div class="form-group">
-                                <label class="form-label">Secondary Color</label>
-                                <div class="color-input-wrapper">
-                                    <input type="color" name="settings[secondary_color]" class="color-input" 
-                                           value="{{ setting('secondary_color', '#10b981') }}">
-                                    <span class="color-value">{{ setting('secondary_color', '#10b981') }}</span>
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Durée de garantie par défaut</label>
+                                    <input type="text" name="settings[guarantee_period_default]" class="form-control rounded-3" 
+                                           value="{{ setting('guarantee_period_default', '12 Mois') }}" 
+                                           placeholder="Ex: 12 Mois, 24 Mois, 2 Ans">
                                 </div>
-                            </div>
 
-                            <div class="form-group">
-                                <label class="form-label">Accent Color</label>
-                                <div class="color-input-wrapper">
-                                    <input type="color" name="settings[accent_color]" class="color-input" 
-                                           value="{{ setting('accent_color', '#8b5cf6') }}">
-                                    <span class="color-value">{{ setting('accent_color', '#8b5cf6') }}</span>
+                                <div class="col-12">
+                                    <label class="form-label fw-bold small text-dark">Clauses & Conditions de la garantie</label>
+                                    <textarea name="settings[guarantee_terms]" class="form-control rounded-3 font-monospace small" rows="8" placeholder="Clauses de garantie...">{{ setting('guarantee_terms', "1. La présente garantie couvre tous les défauts de fabrication et de fonctionnement du matériel pour la durée spécifiée à compter de la date d'émission de la facture.\n2. La garantie s'applique uniquement sur présentation du présent bon de garantie accompagné de la facture d'achat originale.\n3. Sont exclus de la garantie : les dommages dus à une mauvaise utilisation, à une négligence, aux surtensions électriques, aux dégâts des eaux, ou à toute intervention technique non autorisée.\n4. En cas de panne couverte par la garantie, notre service après-vente procédera gratuitement à la réparation ou au remplacement du composant défectueux dans les meilleurs délais.\n5. Les consommables, accessoires d'usure et pièces externes ne sont pas couverts par la garantie.") }}</textarea>
                                 </div>
-                            </div>
 
-                            <div class="form-group">
-                                <label class="form-label">Success Color</label>
-                                <div class="color-input-wrapper">
-                                    <input type="color" name="settings[success_color]" class="color-input" 
-                                           value="{{ setting('success_color', '#10b981') }}">
-                                    <span class="color-value">{{ setting('success_color', '#10b981') }}</span>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Warning Color</label>
-                                <div class="color-input-wrapper">
-                                    <input type="color" name="settings[warning_color]" class="color-input" 
-                                           value="{{ setting('warning_color', '#f59e0b') }}">
-                                    <span class="color-value">{{ setting('warning_color', '#f59e0b') }}</span>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Danger Color</label>
-                                <div class="color-input-wrapper">
-                                    <input type="color" name="settings[danger_color]" class="color-input" 
-                                           value="{{ setting('danger_color', '#ef4444') }}">
-                                    <span class="color-value">{{ setting('danger_color', '#ef4444') }}</span>
+                                <div class="col-12">
+                                    <label class="form-label fw-bold small text-dark">Mentions d'assistance SAV & Bas de page</label>
+                                    <textarea name="settings[guarantee_notes]" class="form-control rounded-3" rows="3" placeholder="Notes SAV...">{{ setting('guarantee_notes', 'Pour toute assistance technique ou réclamation sous garantie, veuillez vous munir de votre numéro de facture et contacter notre service après-vente.') }}</textarea>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="settings-section">
-                        <h3 class="section-title">Typography</h3>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Font Family</label>
-                            <select name="settings[font_family]" class="form-select">
-                                <option value="Inter, system-ui, sans-serif" {{ setting('font_family') == 'Inter, system-ui, sans-serif' ? 'selected' : '' }}>Inter</option>
-                                <option value="Roboto, sans-serif" {{ setting('font_family') == 'Roboto, sans-serif' ? 'selected' : '' }}>Roboto</option>
-                                <option value="Open Sans, sans-serif" {{ setting('font_family') == 'Open Sans, sans-serif' ? 'selected' : '' }}>Open Sans</option>
-                                <option value="Poppins, sans-serif" {{ setting('font_family') == 'Poppins, sans-serif' ? 'selected' : '' }}>Poppins</option>
-                                <option value="Montserrat, sans-serif" {{ setting('font_family') == 'Montserrat, sans-serif' ? 'selected' : '' }}>Montserrat</option>
-                            </select>
-                        </div>
+                    {{-- 4. Theme & Appearance Tab --}}
+                    <div class="tab-pane d-none" id="theme-tab">
+                        <div class="settings-section-card">
+                            <h3 class="settings-section-title">
+                                <i class="fas fa-palette text-danger"></i>
+                                <span>Palette de Couleurs & Thème</span>
+                            </h3>
+                            <p class="settings-section-desc">Personnalisez les teintes principales utilisées à travers les interfaces et documents.</p>
 
-                        <div class="form-group">
-                            <label class="form-label">Base Font Size (px)</label>
-                            <input type="number" name="settings[font_size_base]" class="form-input" min="12" max="20"
-                                   value="{{ setting('font_size_base', 14) }}">
-                        </div>
+                            <div class="row g-3 mb-4">
+                                <div class="col-6 col-md-4">
+                                    <div class="settings-color-card d-flex align-items-center gap-2.5">
+                                        <div class="settings-color-preview-slot" style="background-color: {{ setting('primary_color', '#dc2626') }};">
+                                            <input type="color" name="settings[primary_color]" value="{{ setting('primary_color', '#dc2626') }}" onchange="updateColorSlot(this)">
+                                        </div>
+                                        <div>
+                                            <div class="small fw-bold text-dark">Couleur Primaire</div>
+                                            <div class="small text-muted font-monospace color-text">{{ setting('primary_color', '#dc2626') }}</div>
+                                        </div>
+                                    </div>
+                                </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Border Radius (px)</label>
-                            <input type="number" name="settings[border_radius]" class="form-input" min="0" max="24"
-                                   value="{{ setting('border_radius', 12) }}">
-                        </div>
-                    </div>
-                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="settings-color-card d-flex align-items-center gap-2.5">
+                                        <div class="settings-color-preview-slot" style="background-color: {{ setting('secondary_color', '#0f172a') }};">
+                                            <input type="color" name="settings[secondary_color]" value="{{ setting('secondary_color', '#0f172a') }}" onchange="updateColorSlot(this)">
+                                        </div>
+                                        <div>
+                                            <div class="small fw-bold text-dark">Couleur Sombre</div>
+                                            <div class="small text-muted font-monospace color-text">{{ setting('secondary_color', '#0f172a') }}</div>
+                                        </div>
+                                    </div>
+                                </div>
 
-                <!-- Localization Tab -->
-                <div class="tab-pane" id="localization-tab">
-                    <div class="settings-section">
-                        <h3 class="section-title">Language & Region</h3>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Language</label>
-                            <select name="settings[language]" class="form-select">
-                                <option value="en" {{ setting('language') == 'en' ? 'selected' : '' }}>English</option>
-                                <option value="ar" {{ setting('language') == 'ar' ? 'selected' : '' }}>Arabic (العربية)</option>
-                                <option value="fr" {{ setting('language') == 'fr' ? 'selected' : '' }}>French (Français)</option>
-                                <option value="es" {{ setting('language') == 'es' ? 'selected' : '' }}>Spanish (Español)</option>
-                            </select>
-                        </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="settings-color-card d-flex align-items-center gap-2.5">
+                                        <div class="settings-color-preview-slot" style="background-color: {{ setting('accent_color', '#8b5cf6') }};">
+                                            <input type="color" name="settings[accent_color]" value="{{ setting('accent_color', '#8b5cf6') }}" onchange="updateColorSlot(this)">
+                                        </div>
+                                        <div>
+                                            <div class="small fw-bold text-dark">Couleur Accent</div>
+                                            <div class="small text-muted font-monospace color-text">{{ setting('accent_color', '#8b5cf6') }}</div>
+                                        </div>
+                                    </div>
+                                </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Text Direction</label>
-                            <select name="settings[text_direction]" class="form-select">
-                                <option value="ltr" {{ setting('text_direction') == 'ltr' ? 'selected' : '' }}>Left to Right (LTR)</option>
-                                <option value="rtl" {{ setting('text_direction') == 'rtl' ? 'selected' : '' }}>Right to Left (RTL)</option>
-                            </select>
-                        </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="settings-color-card d-flex align-items-center gap-2.5">
+                                        <div class="settings-color-preview-slot" style="background-color: {{ setting('success_color', '#10b981') }};">
+                                            <input type="color" name="settings[success_color]" value="{{ setting('success_color', '#10b981') }}" onchange="updateColorSlot(this)">
+                                        </div>
+                                        <div>
+                                            <div class="small fw-bold text-dark">Succès</div>
+                                            <div class="small text-muted font-monospace color-text">{{ setting('success_color', '#10b981') }}</div>
+                                        </div>
+                                    </div>
+                                </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Default Country</label>
-                            <select name="settings[default_country]" class="form-select">
-                                <option value="US" {{ setting('default_country') == 'US' ? 'selected' : '' }}>United States</option>
-                                <option value="GB" {{ setting('default_country') == 'GB' ? 'selected' : '' }}>United Kingdom</option>
-                                <option value="AE" {{ setting('default_country') == 'AE' ? 'selected' : '' }}>United Arab Emirates</option>
-                                <option value="SA" {{ setting('default_country') == 'SA' ? 'selected' : '' }}>Saudi Arabia</option>
-                                <option value="FR" {{ setting('default_country') == 'FR' ? 'selected' : '' }}>France</option>
-                            </select>
-                        </div>
-                    </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="settings-color-card d-flex align-items-center gap-2.5">
+                                        <div class="settings-color-preview-slot" style="background-color: {{ setting('warning_color', '#f59e0b') }};">
+                                            <input type="color" name="settings[warning_color]" value="{{ setting('warning_color', '#f59e0b') }}" onchange="updateColorSlot(this)">
+                                        </div>
+                                        <div>
+                                            <div class="small fw-bold text-dark">Avertissement</div>
+                                            <div class="small text-muted font-monospace color-text">{{ setting('warning_color', '#f59e0b') }}</div>
+                                        </div>
+                                    </div>
+                                </div>
 
-                    <div class="settings-section">
-                        <h3 class="section-title">Currency Settings</h3>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Currency Code</label>
-                            <div class="mb-2">
-                                <input type="text" id="currency-search" class="form-input" placeholder="Search currency (code or name)..." style="margin-bottom: 10px;">
+                                <div class="col-6 col-md-4">
+                                    <div class="settings-color-card d-flex align-items-center gap-2.5">
+                                        <div class="settings-color-preview-slot" style="background-color: {{ setting('danger_color', '#ef4444') }};">
+                                            <input type="color" name="settings[danger_color]" value="{{ setting('danger_color', '#ef4444') }}" onchange="updateColorSlot(this)">
+                                        </div>
+                                        <div>
+                                            <div class="small fw-bold text-dark">Danger / Erreur</div>
+                                            <div class="small text-muted font-monospace color-text">{{ setting('danger_color', '#ef4444') }}</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <select name="settings[currency_code]" id="currency-select" class="form-select">
-                                @foreach($currencies as $code => $data)
-                                    <option value="{{ $code }}" 
-                                            data-symbol="{{ $data['symbol'] }}"
-                                            {{ setting('currency_code') == $code ? 'selected' : '' }}>
-                                        {{ $code }} - {{ $data['name'] }} ({{ $data['symbol'] }})
-                                    </option>
-                                @endforeach
-                            </select>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Currency Symbol</label>
-                            <input type="text" name="settings[currency_symbol]" class="form-input" maxlength="5"
-                                   value="{{ setting('currency_symbol', '$') }}" placeholder="$">
-                        </div>
+                        {{-- Typography & Radius --}}
+                        <div class="settings-section-card mt-4">
+                            <h3 class="settings-section-title">
+                                <i class="fas fa-font text-danger"></i>
+                                <span>Typographie & Arrondis d'Interface</span>
+                            </h3>
 
-                        <div class="form-group">
-                            <label class="form-label">Symbol Position</label>
-                            <select name="settings[currency_position]" class="form-select">
-                                <option value="before" {{ setting('currency_position') == 'before' ? 'selected' : '' }}>Before amount ($100)</option>
-                                <option value="after" {{ setting('currency_position') == 'after' ? 'selected' : '' }}>After amount (100 $)</option>
-                            </select>
-                        </div>
+                            <div class="row g-3">
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label fw-bold small text-dark">Police de caractères (Font)</label>
+                                    <select name="settings[font_family]" class="form-select rounded-3">
+                                        <option value="Inter, system-ui, sans-serif" {{ setting('font_family') == 'Inter, system-ui, sans-serif' ? 'selected' : '' }}>Inter (Recommandé)</option>
+                                        <option value="Roboto, sans-serif" {{ setting('font_family') == 'Roboto, sans-serif' ? 'selected' : '' }}>Roboto</option>
+                                        <option value="Open Sans, sans-serif" {{ setting('font_family') == 'Open Sans, sans-serif' ? 'selected' : '' }}>Open Sans</option>
+                                        <option value="Poppins, sans-serif" {{ setting('font_family') == 'Poppins, sans-serif' ? 'selected' : '' }}>Poppins</option>
+                                        <option value="Montserrat, sans-serif" {{ setting('font_family') == 'Montserrat, sans-serif' ? 'selected' : '' }}>Montserrat</option>
+                                    </select>
+                                </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Decimal Places</label>
-                            <input type="number" name="settings[currency_decimals]" class="form-input" min="0" max="4"
-                                   value="{{ setting('currency_decimals', 2) }}">
-                        </div>
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label fw-bold small text-dark">Taille de police de base (px)</label>
+                                    <input type="number" name="settings[font_size_base]" class="form-control rounded-3" min="12" max="20"
+                                           value="{{ setting('font_size_base', 14) }}">
+                                </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Decimal Separator</label>
-                            <input type="text" name="settings[decimal_separator]" class="form-input" maxlength="1"
-                                   value="{{ setting('decimal_separator', '.') }}" placeholder=".">
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Thousands Separator</label>
-                            <input type="text" name="settings[thousands_separator]" class="form-input" maxlength="1"
-                                   value="{{ setting('thousands_separator', ',') }}" placeholder=",">
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label fw-bold small text-dark">Rayon de bordure (Border Radius px)</label>
+                                    <input type="number" name="settings[border_radius]" class="form-control rounded-3" min="0" max="24"
+                                           value="{{ setting('border_radius', 12) }}">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="settings-section">
-                        <h3 class="section-title">Tax Configuration (TVA)</h3>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Tax Rate (%) / Taux TVA (%)</label>
-                            <input type="number" name="settings[tax_rate]" class="form-input" min="0" max="100" step="0.01"
-                                   value="{{ setting('tax_rate', 20) }}">
-                            <small style="display: block; margin-top: 4px; font-size: 12px; color: #64748b;">
-                                Ce taux s'applique dynamiquement sur l'ensemble des devis, factures, commandes et POS (ex. 20 pour 20%).
-                            </small>
-                        </div>
+                    {{-- 5. Social Media Tab --}}
+                    <div class="tab-pane d-none" id="social-tab">
+                        <div class="settings-section-card">
+                            <h3 class="settings-section-title">
+                                <i class="fas fa-share-alt text-danger"></i>
+                                <span>Profils & Réseaux Sociaux</span>
+                            </h3>
+                            <p class="settings-section-desc">Liens intégrés dans le pied de page de la boutique et les documents numériques.</p>
 
-                        <div class="form-group">
-                            <label class="form-label">Tax Label / Libellé de Taxe (ex: TVA)</label>
-                            <input type="text" name="settings[tax_label]" class="form-input"
-                                   value="{{ setting('tax_label', 'TVA') }}" placeholder="TVA">
-                            <small style="display: block; margin-top: 4px; font-size: 12px; color: #64748b;">
-                                Libellé affiché sur les devis, factures et récapitulatifs (ex: TVA).
-                            </small>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Advanced Tab -->
-                <div class="tab-pane" id="advanced-tab">
-                    <div class="settings-section">
-                        <h3 class="section-title">Pagination</h3>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Items Per Page</label>
-                            <input type="number" name="settings[items_per_page]" class="form-input" min="5" max="100"
-                                   value="{{ setting('items_per_page', 10) }}">
-                        </div>
-                    </div>
-
-                    <div class="settings-section">
-                        <h3 class="section-title">Inventory</h3>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Low Stock Threshold</label>
-                            <input type="number" name="settings[low_stock_threshold]" class="form-input" min="0"
-                                   value="{{ setting('low_stock_threshold', 10) }}">
+                            <div class="row g-3">
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark"><i class="fab fa-facebook text-primary me-1"></i> Page Facebook</label>
+                                    <input type="text" name="settings[social_facebook]" class="form-control rounded-3" value="{{ setting('social_facebook', '#') }}">
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark"><i class="fab fa-instagram text-danger me-1"></i> Compte Instagram</label>
+                                    <input type="text" name="settings[social_instagram]" class="form-control rounded-3" value="{{ setting('social_instagram', '#') }}">
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark"><i class="fab fa-x-twitter text-dark me-1"></i> Compte X (Twitter)</label>
+                                    <input type="text" name="settings[social_twitter]" class="form-control rounded-3" value="{{ setting('social_twitter', '#') }}">
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark"><i class="fab fa-linkedin text-info me-1"></i> Page LinkedIn</label>
+                                    <input type="text" name="settings[social_linkedin]" class="form-control rounded-3" value="{{ setting('social_linkedin', '#') }}">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-bold small text-dark"><i class="fab fa-whatsapp text-success me-1"></i> Numéro WhatsApp Pro</label>
+                                    <input type="text" name="settings[social_whatsapp]" class="form-control rounded-3" value="{{ setting('social_whatsapp') }}" placeholder="Ex: 212600000000 (format international sans +)">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="settings-section">
-                        <h3 class="section-title">Default Values</h3>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Default Order Status</label>
-                            <select name="settings[default_order_status]" class="form-select">
-                                <option value="pending" {{ setting('default_order_status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="processing" {{ setting('default_order_status') == 'processing' ? 'selected' : '' }}>Processing</option>
-                                <option value="shipped" {{ setting('default_order_status') == 'shipped' ? 'selected' : '' }}>Shipped</option>
-                            </select>
-                        </div>
+                    {{-- 6. Frontend Tab --}}
+                    <div class="tab-pane d-none" id="frontend-tab">
+                        <div class="settings-section-card">
+                            <h3 class="settings-section-title">
+                                <i class="fas fa-desktop text-danger"></i>
+                                <span>Expérience Visuelle de la Boutique</span>
+                            </h3>
 
-                        <div class="form-group">
-                            <label class="form-label">Default Payment Status</label>
-                            <select name="settings[default_payment_status]" class="form-select">
-                                <option value="pending" {{ setting('default_payment_status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="paid" {{ setting('default_payment_status') == 'paid' ? 'selected' : '' }}>Paid</option>
-                                <option value="failed" {{ setting('default_payment_status') == 'failed' ? 'selected' : '' }}>Failed</option>
-                            </select>
+                            <div class="row g-3">
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Barre de navigation fixe (Sticky Header)</label>
+                                    <select name="settings[frontend_sticky_header]" class="form-select rounded-3">
+                                        <option value="1" {{ setting('frontend_sticky_header') == '1' ? 'selected' : '' }}>Activée (Fixe au défilement)</option>
+                                        <option value="0" {{ setting('frontend_sticky_header') == '0' ? 'selected' : '' }}>Désactivée</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Animations fluides au défilement (AOS)</label>
+                                    <select name="settings[frontend_enable_animations]" class="form-select rounded-3">
+                                        <option value="1" {{ setting('frontend_enable_animations') == '1' ? 'selected' : '' }}>Activées</option>
+                                        <option value="0" {{ setting('frontend_enable_animations') == '0' ? 'selected' : '' }}>Désactivées</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Police Google Fonts Principale</label>
+                                    <input type="text" name="settings[frontend_primary_font]" class="form-control rounded-3" value="{{ setting('frontend_primary_font', 'Inter') }}">
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label fw-bold small text-dark">Texte de présentation / Slogan du pied de page</label>
+                                    <textarea name="settings[frontend_footer_text]" class="form-control rounded-3" rows="3" placeholder="Slogan ou présentation de la boutique dans le footer...">{{ setting('frontend_footer_text') }}</textarea>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="settings-section">
-                        <h3 class="section-title">Cache Settings</h3>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Cache Duration (seconds)</label>
-                            <input type="number" name="settings[cache_duration]" class="form-input" min="0"
-                                   value="{{ setting('cache_duration', 3600) }}">
-                            <small style="color: #64748b; font-size: 12px;">Set to 0 to disable caching</small>
+                    {{-- 7. Localization & Tax Tab --}}
+                    <div class="tab-pane d-none" id="localization-tab">
+                        <div class="settings-section-card">
+                            <h3 class="settings-section-title">
+                                <i class="fas fa-globe text-danger"></i>
+                                <span>Langue & Pays par Défaut</span>
+                            </h3>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label fw-bold small text-dark">Langue de l'interface</label>
+                                    <select name="settings[language]" class="form-select rounded-3">
+                                        <option value="fr" {{ setting('language') == 'fr' ? 'selected' : '' }}>Français (French)</option>
+                                        <option value="en" {{ setting('language') == 'en' ? 'selected' : '' }}>English</option>
+                                        <option value="ar" {{ setting('language') == 'ar' ? 'selected' : '' }}>العربية (Arabic)</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label fw-bold small text-dark">Sens de lecture</label>
+                                    <select name="settings[text_direction]" class="form-select rounded-3">
+                                        <option value="ltr" {{ setting('text_direction') == 'ltr' ? 'selected' : '' }}>De gauche à droite (LTR)</option>
+                                        <option value="rtl" {{ setting('text_direction') == 'rtl' ? 'selected' : '' }}>De droite à gauche (RTL)</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label fw-bold small text-dark">Pays par défaut</label>
+                                    <select name="settings[default_country]" class="form-select rounded-3">
+                                        <option value="MA" {{ setting('default_country', 'MA') == 'MA' ? 'selected' : '' }}>Maroc (Morocco)</option>
+                                        <option value="FR" {{ setting('default_country') == 'FR' ? 'selected' : '' }}>France</option>
+                                        <option value="US" {{ setting('default_country') == 'US' ? 'selected' : '' }}>États-Unis</option>
+                                        <option value="AE" {{ setting('default_country') == 'AE' ? 'selected' : '' }}>Émirats Arabes Unis</option>
+                                        <option value="SA" {{ setting('default_country') == 'SA' ? 'selected' : '' }}>Arabie Saoudite</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Currency Configuration --}}
+                        <div class="settings-section-card mt-4">
+                            <h3 class="settings-section-title">
+                                <i class="fas fa-coins text-danger"></i>
+                                <span>Configuration de la Devise Commerciale</span>
+                            </h3>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Sélection de la devise</label>
+                                    <div class="mb-2">
+                                        <input type="text" id="currency-search" class="form-control rounded-3 form-control-sm" placeholder="Rechercher une devise (ex: MAD, EUR, USD)...">
+                                    </div>
+                                    <select name="settings[currency_code]" id="currency-select" class="form-select rounded-3">
+                                        @foreach($currencies as $code => $data)
+                                            <option value="{{ $code }}" 
+                                                    data-symbol="{{ $data['symbol'] }}"
+                                                    {{ setting('currency_code', 'MAD') == $code ? 'selected' : '' }}>
+                                                {{ $code }} - {{ $data['name'] }} ({{ $data['symbol'] }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Symbole monétaire</label>
+                                    <input type="text" name="settings[currency_symbol]" class="form-control rounded-3" maxlength="5"
+                                           value="{{ setting('currency_symbol', 'DH') }}" placeholder="DH">
+                                </div>
+
+                                <div class="col-12 col-md-3">
+                                    <label class="form-label fw-bold small text-dark">Position du symbole</label>
+                                    <select name="settings[currency_position]" class="form-select rounded-3">
+                                        <option value="after" {{ setting('currency_position', 'after') == 'after' ? 'selected' : '' }}>Après le montant (100 DH)</option>
+                                        <option value="before" {{ setting('currency_position') == 'before' ? 'selected' : '' }}>Avant le montant (DH 100)</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-12 col-md-3">
+                                    <label class="form-label fw-bold small text-dark">Décimales</label>
+                                    <input type="number" name="settings[currency_decimals]" class="form-control rounded-3" min="0" max="4"
+                                           value="{{ setting('currency_decimals', 2) }}">
+                                </div>
+
+                                <div class="col-12 col-md-3">
+                                    <label class="form-label fw-bold small text-dark">Séparateur décimal</label>
+                                    <input type="text" name="settings[decimal_separator]" class="form-control rounded-3 text-center font-monospace" maxlength="1"
+                                           value="{{ setting('decimal_separator', ',') }}" placeholder=",">
+                                </div>
+
+                                <div class="col-12 col-md-3">
+                                    <label class="form-label fw-bold small text-dark">Séparateur de milliers</label>
+                                    <input type="text" name="settings[thousands_separator]" class="form-control rounded-3 text-center font-monospace" maxlength="1"
+                                           value="{{ setting('thousands_separator', ' ') }}" placeholder="espace">
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Tax Configuration --}}
+                        <div class="settings-section-card mt-4">
+                            <h3 class="settings-section-title">
+                                <i class="fas fa-file-invoice-dollar text-danger"></i>
+                                <span>Fiscalité & Taxe sur la Valeur Ajoutée (TVA)</span>
+                            </h3>
+
+                            <div class="row g-3">
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Taux de Taxe (%) / Taux TVA (%)</label>
+                                    <div class="input-group">
+                                        <input type="number" name="settings[tax_rate]" class="form-control rounded-start-3" min="0" max="100" step="0.01"
+                                               value="{{ setting('tax_rate', 20) }}">
+                                        <span class="input-group-text bg-light text-muted rounded-end-3 fw-bold">%</span>
+                                    </div>
+                                    <div class="form-text small text-muted">Ce taux s'applique automatiquement sur tous les devis, factures, commandes et POS.</div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Libellé officiel de la taxe</label>
+                                    <input type="text" name="settings[tax_label]" class="form-control rounded-3"
+                                           value="{{ setting('tax_label', 'TVA') }}" placeholder="Ex: TVA">
+                                    <div class="form-text small text-muted">Libellé officiel imprimé sur les factures et récapitulatifs (ex: TVA).</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="settings-section">
-                        <h3 class="section-title">Danger Zone</h3>
-                        
-                            <button type="submit" form="reset-settings-form" class="btn-danger" onclick="return confirm('Are you sure you want to reset all settings to default values?')">
-                                <i class="fas fa-undo"></i> Reset All Settings to Default
+                    {{-- 8. Advanced Tab --}}
+                    <div class="tab-pane d-none" id="advanced-tab">
+                        <div class="settings-section-card">
+                            <h3 class="settings-section-title">
+                                <i class="fas fa-cogs text-danger"></i>
+                                <span>Seuils & Valeurs Système par Défaut</span>
+                            </h3>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Articles par page (Pagination)</label>
+                                    <input type="number" name="settings[items_per_page]" class="form-control rounded-3" min="5" max="100"
+                                           value="{{ setting('items_per_page', 10) }}">
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Seuil d'alerte stock faible</label>
+                                    <input type="number" name="settings[low_stock_threshold]" class="form-control rounded-3" min="0"
+                                           value="{{ setting('low_stock_threshold', 10) }}">
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Statut de commande par défaut</label>
+                                    <select name="settings[default_order_status]" class="form-select rounded-3">
+                                        <option value="pending" {{ setting('default_order_status') == 'pending' ? 'selected' : '' }}>En attente (Pending)</option>
+                                        <option value="processing" {{ setting('default_order_status') == 'processing' ? 'selected' : '' }}>En traitement (Processing)</option>
+                                        <option value="shipped" {{ setting('default_order_status') == 'shipped' ? 'selected' : '' }}>Expédiée (Shipped)</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Statut de paiement par défaut</label>
+                                    <select name="settings[default_payment_status]" class="form-select rounded-3">
+                                        <option value="pending" {{ setting('default_payment_status') == 'pending' ? 'selected' : '' }}>En attente (Pending)</option>
+                                        <option value="paid" {{ setting('default_payment_status') == 'paid' ? 'selected' : '' }}>Payé (Paid)</option>
+                                        <option value="failed" {{ setting('default_payment_status') == 'failed' ? 'selected' : '' }}>Échoué (Failed)</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label fw-bold small text-dark">Durée du cache système (secondes)</label>
+                                    <input type="number" name="settings[cache_duration]" class="form-control rounded-3" min="0"
+                                           value="{{ setting('cache_duration', 3600) }}">
+                                    <div class="form-text small text-muted">Mettre à 0 pour désactiver le cache en environnement de développement.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Danger Zone --}}
+                        <div class="settings-section-card mt-4 p-3 bg-danger-subtle bg-opacity-25 rounded-4 border border-danger-subtle">
+                            <h3 class="settings-section-title text-danger border-danger-subtle">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>Zone Sensible (Danger Zone)</span>
+                            </h3>
+                            <p class="small text-muted mb-3">Réinitialise toutes les variables de configuration à leurs valeurs d'origine pré-établies.</p>
+                            
+                            <button type="submit" form="reset-settings-form" class="btn btn-outline-danger rounded-pill px-3 py-2 fw-semibold" onclick="return confirm('Êtes-vous sûr de vouloir réinitialiser tous les paramètres aux valeurs d\'usine ?')">
+                                <i class="fas fa-undo me-1.5"></i> Réinitialiser tous les paramètres par défaut
                             </button>
-                    </div>
-                </div>
-
-                <!-- Social Media Tab -->
-                <div class="tab-pane" id="social-tab">
-                    <div class="settings-section">
-                        <h3 class="section-title">Social Media Profiles</h3>
-                        <div class="row g-4">
-                            <div class="col-md-6">
-                                <label class="form-label">Facebook URL</label>
-                                <input type="text" name="settings[social_facebook]" class="form-input" value="{{ setting('social_facebook', '#') }}">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Instagram URL</label>
-                                <input type="text" name="settings[social_instagram]" class="form-input" value="{{ setting('social_instagram', '#') }}">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Twitter/X URL</label>
-                                <input type="text" name="settings[social_twitter]" class="form-input" value="{{ setting('social_twitter', '#') }}">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">LinkedIn URL</label>
-                                <input type="text" name="settings[social_linkedin]" class="form-input" value="{{ setting('social_linkedin', '#') }}">
-                            </div>
-                            <div class="col-md-12">
-                                <label class="form-label">WhatsApp (International Format)</label>
-                                <input type="text" name="settings[social_whatsapp]" class="form-input" value="{{ setting('social_whatsapp') }}" placeholder="e.g. 212600000000">
-                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Frontend Tab -->
-                <div class="tab-pane" id="frontend-tab">
-                    <div class="settings-section">
-                        <h3 class="section-title">Frontend Experience</h3>
-                        <div class="row g-4">
-                            <div class="col-md-6">
-                                <label class="form-label">Sticky Header</label>
-                                <select name="settings[frontend_sticky_header]" class="form-select">
-                                    <option value="1" {{ setting('frontend_sticky_header') == '1' ? 'selected' : '' }}>Enabled</option>
-                                    <option value="0" {{ setting('frontend_sticky_header') == '0' ? 'selected' : '' }}>Disabled</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Scroll Animations (AOS)</label>
-                                <select name="settings[frontend_enable_animations]" class="form-select">
-                                    <option value="1" {{ setting('frontend_enable_animations') == '1' ? 'selected' : '' }}>Enabled</option>
-                                    <option value="0" {{ setting('frontend_enable_animations') == '0' ? 'selected' : '' }}>Disabled</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Primary Google Font</label>
-                                <input type="text" name="settings[frontend_primary_font]" class="form-input" value="{{ setting('frontend_primary_font', 'Inter') }}">
-                            </div>
-                            <div class="col-md-12">
-                                <label class="form-label">Footer Biography / Tagline</label>
-                                <textarea name="settings[frontend_footer_text]" class="form-input" rows="3">{{ setting('frontend_footer_text') }}</textarea>
-                            </div>
-                        </div>
+                    {{-- Form Actions Bar --}}
+                    <div class="d-flex align-items-center justify-content-end gap-2 pt-4 border-top mt-4 flex-wrap">
+                        <button type="button" class="btn btn-light rounded-pill px-3.5 py-2 fw-semibold" onclick="window.location.reload()">
+                            <i class="fas fa-times me-1.5"></i> Annuler
+                        </button>
+                        <button type="submit" class="btn btn-brand-primary rounded-pill px-4 py-2 fw-semibold shadow-sm">
+                            <i class="fas fa-save me-1.5"></i> Enregistrer les modifications
+                        </button>
                     </div>
-                </div>
-
-                <!-- Form Actions -->
-                <div class="form-actions">
-                    <button type="button" class="btn-secondary" onclick="window.location.reload()">
-                        <i class="fas fa-times"></i> Cancel
-                    </button>
-                    <button type="submit" class="btn-primary">
-                        <i class="fas fa-save"></i> Save Changes
-                    </button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 
-</div>
+    <!-- Hidden Forms for Uploads and Resets -->
+    <form id="remove-logo-form" action="{{ route('settings.logo.remove') }}" method="POST" class="d-none">
+        @csrf
+        @method('DELETE')
+    </form>
 
-<!-- Hidden Forms -->
-<form id="remove-logo-form" action="{{ route('settings.logo.remove') }}" method="POST" style="display: none;">
-    @csrf
-    @method('DELETE')
-</form>
+    <form id="logo-upload-form" action="{{ route('settings.logo') }}" method="POST" enctype="multipart/form-data" class="d-none">
+        @csrf
+    </form>
 
-<form id="logo-upload-form" action="{{ route('settings.logo') }}" method="POST" enctype="multipart/form-data" style="display: none;">
-    @csrf
-</form>
+    <form id="remove-stamp-form" action="{{ route('settings.stamp.remove') }}" method="POST" class="d-none">
+        @csrf
+        @method('DELETE')
+    </form>
 
-<form id="remove-stamp-form" action="{{ route('settings.stamp.remove') }}" method="POST" style="display: none;">
-    @csrf
-    @method('DELETE')
-</form>
+    <form id="stamp-upload-form" action="{{ route('settings.stamp') }}" method="POST" enctype="multipart/form-data" class="d-none">
+        @csrf
+    </form>
 
-<form id="stamp-upload-form" action="{{ route('settings.stamp') }}" method="POST" enctype="multipart/form-data" style="display: none;">
-    @csrf
-</form>
-
-<form id="reset-settings-form" action="{{ route('settings.reset') }}" method="POST" style="display: none;">
-    @csrf
-</form>
-
+    <form id="reset-settings-form" action="{{ route('settings.reset') }}" method="POST" class="d-none">
+        @csrf
+    </form>
 @endsection
 
 @push('scripts')
 <script>
-    function switchTab(tabName) {
-        // Update tab buttons
-        document.querySelectorAll('.settings-tab').forEach(tab => {
-            tab.classList.remove('active');
+    function switchSettingsTab(tabName) {
+        // Update nav buttons
+        document.querySelectorAll('.settings-nav-btn').forEach(btn => {
+            btn.classList.remove('active');
         });
-        event.target.closest('.settings-tab').classList.add('active');
+        const activeBtn = document.querySelector(`.settings-nav-btn[data-tab="${tabName}"]`);
+        if (activeBtn) activeBtn.classList.add('active');
 
-        // Update tab panes
-        document.querySelectorAll('.tab-pane').forEach(pane => {
+        // Update tab content panes
+        document.querySelectorAll('.settings-content-card .tab-pane').forEach(pane => {
+            pane.classList.add('d-none');
             pane.classList.remove('active');
         });
-        document.getElementById(tabName + '-tab').classList.add('active');
+        const activePane = document.getElementById(tabName + '-tab');
+        if (activePane) {
+            activePane.classList.remove('d-none');
+            activePane.classList.add('active');
+        }
+
+        // Store active tab
+        sessionStorage.setItem('active_settings_tab', tabName);
+        history.replaceState(null, null, '#' + tabName);
     }
 
-    // Update color value labels
-    document.querySelectorAll('input[type="color"]').forEach(input => {
-        input.addEventListener('input', function() {
-            const valueSpan = this.nextElementSibling;
-            if (valueSpan && valueSpan.classList.contains('color-value')) {
-                valueSpan.textContent = this.value;
-            }
-        });
-    });
-    // Currency Search & Auto-Symbol
-    const currencySearch = document.getElementById('currency-search');
-    const currencySelect = document.getElementById('currency-select');
-    const currencySymbolInput = document.querySelector('input[name="settings[currency_symbol]"]');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tab based on URL hash or sessionStorage
+        const hash = window.location.hash.replace('#', '');
+        const stored = sessionStorage.getItem('active_settings_tab');
+        const initialTab = hash || stored || 'general';
+        switchSettingsTab(initialTab);
 
-    if (currencySearch && currencySelect) {
-        currencySearch.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const options = currencySelect.options;
-            
-            for (let i = 0; i < options.length; i++) {
-                const text = options[i].text.toLowerCase();
-                const display = text.includes(searchTerm);
-                options[i].hidden = !display;
-                if (!display && options[i].selected) {
-                    // find first visible one? optional
+        // Color input changes
+        document.querySelectorAll('.settings-color-preview-slot input[type="color"]').forEach(input => {
+            input.addEventListener('input', function() {
+                updateColorSlot(this);
+            });
+        });
+
+        // Currency Search Filter
+        const currencySearch = document.getElementById('currency-search');
+        const currencySelect = document.getElementById('currency-select');
+        const currencySymbolInput = document.querySelector('input[name="settings[currency_symbol]"]');
+
+        if (currencySearch && currencySelect) {
+            currencySearch.addEventListener('input', function() {
+                const term = this.value.toLowerCase();
+                const options = currencySelect.options;
+                for (let i = 0; i < options.length; i++) {
+                    const text = options[i].text.toLowerCase();
+                    options[i].hidden = !text.includes(term);
                 }
-            }
-        });
+            });
 
-        currencySelect.addEventListener('change', function() {
-            const selectedOption = this.options[this.selectedIndex];
-            const symbol = selectedOption.getAttribute('data-symbol');
-            if (symbol && currencySymbolInput) {
-                currencySymbolInput.value = symbol;
-            }
-        });
+            currencySelect.addEventListener('change', function() {
+                const opt = this.options[this.selectedIndex];
+                const sym = opt.getAttribute('data-symbol');
+                if (sym && currencySymbolInput) {
+                    currencySymbolInput.value = sym;
+                }
+            });
+        }
+    });
+
+    function updateColorSlot(input) {
+        const slot = input.closest('.settings-color-preview-slot');
+        if (slot) slot.style.backgroundColor = input.value;
+        const card = input.closest('.settings-color-card');
+        if (card) {
+            const text = card.querySelector('.color-text');
+            if (text) text.textContent = input.value;
+        }
     }
 
-    // Stamp scale slider
     function updateStampSize() {
-        const scaleRange = document.getElementById('stamp-scale-range');
-        const scaleVal   = document.getElementById('stamp-scale-value');
-        const preview    = document.getElementById('stamp-preview-img');
+        const range = document.getElementById('stamp-scale-range');
+        const val   = document.getElementById('stamp-scale-value');
+        const img   = document.getElementById('stamp-preview-img');
+        if (!range) return;
 
-        if (!scaleRange) return;
-
-        const pct = parseInt(scaleRange.value, 10);
-
-        if (scaleVal) {
-            scaleVal.textContent = pct;
-        }
-
-        // Base reference width at 100% = 160px
-        if (preview) {
-            preview.style.width = Math.round(160 * pct / 100) + 'px';
-        }
+        const pct = parseInt(range.value, 10);
+        if (val) val.textContent = pct;
+        if (img) img.style.width = Math.round(160 * pct / 100) + 'px';
     }
 </script>
 @endpush
