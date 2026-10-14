@@ -47,6 +47,9 @@ class AppServiceProvider extends ServiceProvider
                 config(['app.locale' => $locale]);
                 \App::setLocale($locale);
             }
+
+            // Dynamically configure SMTP mail settings from database
+            \App\Services\MailConfigService::applyConfig();
         } catch (\Throwable $e) {
             // Fail silently during early setup/migrations
         }

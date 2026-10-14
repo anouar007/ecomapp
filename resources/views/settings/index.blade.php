@@ -182,6 +182,13 @@
                     </span>
                     <i class="fas fa-chevron-right tab-chevron small"></i>
                 </button>
+                <button type="button" class="settings-nav-btn" data-tab="email" onclick="switchSettingsTab('email')">
+                    <span class="d-inline-flex align-items-center gap-2">
+                        <i class="fas fa-envelope-open-text tab-icon"></i>
+                        <span>Emails & Notifications</span>
+                    </span>
+                    <i class="fas fa-chevron-right tab-chevron small"></i>
+                </button>
                 <button type="button" class="settings-nav-btn" data-tab="advanced" onclick="switchSettingsTab('advanced')">
                     <span class="d-inline-flex align-items-center gap-2">
                         <i class="fas fa-cogs tab-icon"></i>
@@ -852,6 +859,156 @@
                         </div>
                     </div>
 
+                    {{-- 9. Email & SMTP Notifications Tab --}}
+                    <div class="tab-pane d-none" id="email-tab">
+                        {{-- Notification Header Card --}}
+                        <div class="settings-section-card">
+                            <h3 class="settings-section-title">
+                                <i class="fas fa-bell text-danger"></i>
+                                <span>Notifications de Nouvelles Commandes</span>
+                            </h3>
+                            <p class="settings-section-desc">Recevez une alerte email instantanée avec le récapitulatif complet (client, téléphone, ville, articles, total) dès qu'un client passe commande sur le site.</p>
+
+                            <div class="row g-3">
+                                <div class="col-12 col-md-5">
+                                    <label class="form-label fw-bold small text-dark">Statut des alertes</label>
+                                    <div class="form-check form-switch mt-2">
+                                        <input type="hidden" name="settings[order_notifications_enabled]" value="0">
+                                        <input class="form-check-input" type="checkbox" name="settings[order_notifications_enabled]" value="1" id="order_notifications_enabled" {{ setting('order_notifications_enabled', true) ? 'checked' : '' }}>
+                                        <label class="form-check-label fw-semibold text-dark small" for="order_notifications_enabled">
+                                            Activer l'envoi d'email à chaque nouvelle commande
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-7">
+                                    <label class="form-label fw-bold small text-dark">Email(s) qui reçoivent les alertes <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-inbox text-danger"></i></span>
+                                        <input type="text" name="settings[order_notification_email]" class="form-control rounded-end-3" 
+                                               value="{{ setting('order_notification_email', setting('contact_email', 'contact@winashop.ma')) }}" 
+                                               placeholder="ex: contact@winashop.ma ou manager@winashop.ma">
+                                    </div>
+                                    <div class="form-text small text-muted">
+                                        L'adresse où vous recevrez les commandes. Vous pouvez en saisir plusieurs séparées par une virgule.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- SMTP Server Configuration Card --}}
+                        <div class="settings-section-card mt-4">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                                <h3 class="settings-section-title mb-0">
+                                    <i class="fas fa-server text-danger"></i>
+                                    <span>Configuration du Serveur d'Envoi (SMTP)</span>
+                                </h3>
+                                <div class="d-flex align-items-center gap-1.5">
+                                    <span class="badge bg-light text-dark border">
+                                        <i class="fas fa-lock text-success me-1"></i>Connexion Sécurisée
+                                    </span>
+                                </div>
+                            </div>
+                            <p class="settings-section-desc">Identifiants de la boîte email utilisée par votre site pour expédier les notifications.</p>
+
+                            {{-- Quick Preset Buttons --}}
+                            <div class="d-flex align-items-center gap-2 mb-3 flex-wrap bg-light p-2.5 rounded-3 border">
+                                <span class="small text-muted fw-bold"><i class="fas fa-magic text-warning me-1"></i> Pré-remplir pour :</span>
+                                <button type="button" class="btn btn-sm btn-white bg-white border shadow-sm rounded-pill px-3 py-1" onclick="applySmtpPreset('hostinger')">
+                                    <i class="fas fa-cloud me-1 text-primary"></i> <strong>Hostinger Webmail</strong> (Recommandé)
+                                </button>
+                                <button type="button" class="btn btn-sm btn-white bg-white border shadow-sm rounded-pill px-3 py-1" onclick="applySmtpPreset('gmail')">
+                                    <i class="fab fa-google me-1 text-danger"></i> <strong>Gmail SMTP</strong>
+                                </button>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Email d'envoi / Compte SMTP <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-user-circle text-muted"></i></span>
+                                        <input type="text" name="settings[mail_username]" id="mail_username_input" class="form-control rounded-end-3" 
+                                               value="{{ setting('mail_username', '') }}" 
+                                               placeholder="ex: contact@anouar.top ou no-reply@winashop.ma"
+                                               oninput="syncFromAddress(this.value)">
+                                    </div>
+                                    <div class="form-text small text-muted">L'adresse email complète créée sur votre hébergement.</div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Mot de passe de la boîte email <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-key text-muted"></i></span>
+                                        <input type="password" name="settings[mail_password]" id="mail_password_input" class="form-control" 
+                                               value="{{ setting('mail_password', '') }}" 
+                                               placeholder="Mot de passe de la boîte email">
+                                        <button class="btn btn-outline-secondary rounded-end-3" type="button" onclick="togglePasswordVisibility('mail_password_input', this)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-text small text-muted">Mot de passe secret utilisé pour envoyer les emails.</div>
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label fw-bold small text-dark">Serveur SMTP (Host)</label>
+                                    <input type="text" name="settings[mail_host]" id="mail_host_input" class="form-control rounded-3" 
+                                           value="{{ setting('mail_host', 'smtp.hostinger.com') }}" 
+                                           placeholder="smtp.hostinger.com">
+                                </div>
+
+                                <div class="col-6 col-md-4">
+                                    <label class="form-label fw-bold small text-dark">Port SMTP</label>
+                                    <input type="number" name="settings[mail_port]" id="mail_port_input" class="form-control rounded-3" 
+                                           value="{{ setting('mail_port', 465) }}" 
+                                           placeholder="465">
+                                </div>
+
+                                <div class="col-6 col-md-4">
+                                    <label class="form-label fw-bold small text-dark">Chiffrement (Encryption)</label>
+                                    <select name="settings[mail_encryption]" id="mail_encryption_input" class="form-select rounded-3">
+                                        <option value="ssl" {{ setting('mail_encryption', 'ssl') == 'ssl' ? 'selected' : '' }}>SSL (Port 465 - Recommandé)</option>
+                                        <option value="tls" {{ setting('mail_encryption') == 'tls' ? 'selected' : '' }}>TLS (Port 587)</option>
+                                        <option value="none" {{ setting('mail_encryption') == 'none' ? 'selected' : '' }}>Aucun (Non sécurisé)</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Email expéditeur affiché aux destinataires</label>
+                                    <input type="email" name="settings[mail_from_address]" id="mail_from_address_input" class="form-control rounded-3" 
+                                           value="{{ setting('mail_from_address', setting('mail_username', 'contact@winashop.ma')) }}" 
+                                           placeholder="ex: no-reply@winashop.ma">
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Nom de l'expéditeur affiché</label>
+                                    <input type="text" name="settings[mail_from_name]" class="form-control rounded-3" 
+                                           value="{{ setting('mail_from_name', setting('app_name', 'Wina Shop')) }}" 
+                                           placeholder="ex: Wina Shop Maroc">
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Test SMTP Diagnostic Card --}}
+                        <div class="settings-section-card mt-4 border-primary shadow-sm" style="background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                                <div>
+                                    <h4 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2" style="font-size: 1.05rem;">
+                                        <i class="fas fa-paper-plane text-primary"></i>
+                                        <span>Tester la configuration et envoyer un email test</span>
+                                    </h4>
+                                    <p class="small text-muted mb-0">
+                                        N'oubliez pas de cliquer sur <strong>"Enregistrer les modifications"</strong> avant de lancer le test.
+                                    </p>
+                                </div>
+                                <div>
+                                    <button type="submit" form="test-email-form" class="btn btn-primary rounded-pill px-4 py-2.5 fw-semibold shadow-sm">
+                                        <i class="fas fa-vial me-1.5"></i> Tester l'envoi immédiat
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- Form Actions Bar --}}
                     <div class="d-flex align-items-center justify-content-end gap-2 pt-4 border-top mt-4 flex-wrap">
                         <button type="button" class="btn btn-light rounded-pill px-3.5 py-2 fw-semibold" onclick="window.location.reload()">
@@ -886,6 +1043,10 @@
     </form>
 
     <form id="reset-settings-form" action="{{ route('settings.reset') }}" method="POST" class="d-none">
+        @csrf
+    </form>
+
+    <form id="test-email-form" action="{{ route('settings.test-email') }}" method="POST" class="d-none">
         @csrf
     </form>
 @endsection
@@ -974,6 +1135,41 @@
         const pct = parseInt(range.value, 10);
         if (val) val.textContent = pct;
         if (img) img.style.width = Math.round(160 * pct / 100) + 'px';
+    }
+
+    function togglePasswordVisibility(inputId, btn) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        const icon = btn.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            if (icon) { icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); }
+        } else {
+            input.type = 'password';
+            if (icon) { icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }
+        }
+    }
+
+    function syncFromAddress(val) {
+        const fromInput = document.getElementById('mail_from_address_input');
+        if (fromInput && (!fromInput.value || fromInput.value.includes('@'))) {
+            fromInput.value = val;
+        }
+    }
+
+    function applySmtpPreset(preset) {
+        const host = document.getElementById('mail_host_input');
+        const port = document.getElementById('mail_port_input');
+        const enc = document.getElementById('mail_encryption_input');
+        if (preset === 'hostinger') {
+            if (host) host.value = 'smtp.hostinger.com';
+            if (port) port.value = 465;
+            if (enc) enc.value = 'ssl';
+        } else if (preset === 'gmail') {
+            if (host) host.value = 'smtp.gmail.com';
+            if (port) port.value = 465;
+            if (enc) enc.value = 'ssl';
+        }
     }
 </script>
 @endpush

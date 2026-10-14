@@ -4,7 +4,6 @@ namespace App\Mail;
 
 use App\Models\Order;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -29,8 +28,11 @@ class NewOrderNotification extends Mailable
      */
     public function envelope(): Envelope
     {
+        $appName = setting('app_name', config('app.name', 'Wina Shop'));
+        $totalFormatted = number_format($this->order->total, 2, ',', ' ') . ' ' . setting('currency_code', 'DH');
+
         return new Envelope(
-            subject: 'New Order Received #' . $this->order->order_number,
+            subject: "🔔 [{$appName}] Nouvelle Commande #{$this->order->order_number} ({$totalFormatted})",
         );
     }
 
@@ -46,8 +48,6 @@ class NewOrderNotification extends Mailable
 
     /**
      * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
      */
     public function attachments(): array
     {

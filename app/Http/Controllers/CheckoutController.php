@@ -116,10 +116,23 @@ class CheckoutController extends Controller
             }
         }
 
-        // Send Emails
+        // Send Emails (Customer confirmation + Admin new order notification)
         try {
-            \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderConfirmation($order));
-            \Illuminate\Support\Facades\Mail::to(setting('contact_email', 'admin@speed.com'))->send(new \App\Mail\NewOrderNotification($order));
+            \App\Services\MailConfigService::applyConfig();
+
+            // 1. Customer confirmation email
+            if (!empty($order->customer_email) && filter_var($order->customer_email, FILTER_VALIDATE_EMAIL)) {
+                \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderConfirmation($order));
+            }
+
+            // 2. Admin order notification email
+            $notificationsEnabled = (bool)setting('order_notifications_enabled', true);
+            if ($notificationsEnabled) {
+                $recipients = \App\Services\MailConfigService::getOrderNotificationRecipients();
+                if (!empty($recipients)) {
+                    \Illuminate\Support\Facades\Mail::to($recipients)->send(new \App\Mail\NewOrderNotification($order));
+                }
+            }
         } catch (\Exception $e) {
             \Log::error('Failed to send checkout emails: ' . $e->getMessage());
         }

@@ -201,8 +201,10 @@ class SettingsController extends Controller
             'items_per_page' => 'advanced',
             'low_stock_' => 'advanced',
             'default_order_' => 'advanced',
-            'default_payment_' => 'advanced',
             'cache_' => 'advanced',
+            'mail_' => 'email',
+            'order_notification_' => 'email',
+            'smtp_' => 'email',
         ];
 
         foreach ($prefixGroups as $prefix => $group) {
@@ -349,5 +351,41 @@ class SettingsController extends Controller
         Setting::clearCache();
 
         return back()->with('success', 'Settings reset to default values!');
+    }
+
+    /**
+     * Send a test email to verify SMTP configuration
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function sendTestEmail(Request $request)
+    {
+        $recipient = $request->input('test_email') 
+            ?: Setting::get('order_notification_email') 
+            ?: auth()->user()?->email 
+            ?: 'contact@winashop.ma';
+
+        try {
+            \App\Services\MailConfigService::applyConfig();
+
+            $appName = Setting::get('app_name', 'Wina Shop');
+            $senderEmail = config('mail.from.address');
+            $host = config('mail.mailers.smtp.host');
+            $port = config('mail.mailers.smtp.port');
+
+            \Illuminate\Support\Facades\Mail::raw(
+                "Félicitations !\n\nVotre configuration SMTP fonctionne parfaitement sur {$appName}.\n\nServeur : {$host}:{$port}\nExpéditeur : {$senderEmail}\nDestinataire : {$recipient}\nDate : " . now()->format('d/m/Y H:i:s') . "\n\nVous recevrez désormais les notifications instantanées à chaque nouvelle commande client !",
+                function ($message) use ($recipient, $appName) {
+                    $message->to($recipient)
+                            ->subject("✅ Test Réussi : Notification Email & SMTP — {$appName}");
+                }
+            );
+
+            return back()->with('success', "Email de test envoyé avec succès à {$recipient} via {$host}:{$port} !");
+        } catch (\Throwable $e) {
+            \Log::error('SMTP Test Email Error: ' . $e->getMessage());
+            return back()->with('error', "Échec de l'envoi de l'email : " . $e->getMessage());
+        }
     }
 }

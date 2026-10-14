@@ -176,6 +176,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/settings/stamp', [\App\Http\Controllers\SettingsController::class, 'uploadStamp'])->name('settings.stamp');
         Route::delete('/settings/stamp', [\App\Http\Controllers\SettingsController::class, 'removeStamp'])->name('settings.stamp.remove');
         Route::post('/settings/reset', [\App\Http\Controllers\SettingsController::class, 'reset'])->name('settings.reset');
+        Route::post('/settings/test-email', [\App\Http\Controllers\SettingsController::class, 'sendTestEmail'])->name('settings.test-email');
         
         // Custom Code Manager
         Route::resource('custom-codes', \App\Http\Controllers\CustomCodeController::class);
