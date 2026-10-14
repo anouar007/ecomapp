@@ -223,10 +223,23 @@ class ImportFullProductsJson extends Command
                 $desc = trim($item['Description courte'] ?? '');
             }
 
-            // 7. Parse Images
+            // 7. Resolve Images (Check local public/images/products first)
             $imagesStr = $item['Images'] ?? '';
-            $imageUrls = array_values(array_filter(array_map('trim', explode(',', $imagesStr))));
-            $primaryImage = $imageUrls[0] ?? 'images/camera/cat_cameras.jpg';
+            $rawUrls = array_values(array_filter(array_map('trim', explode(',', $imagesStr))));
+            $resolvedImagePaths = [];
+
+            foreach ($rawUrls as $url) {
+                $parsedPath = parse_url($url, PHP_URL_PATH);
+                $filename = rawurldecode(basename($parsedPath));
+
+                if (file_exists(public_path('images/products/' . $filename))) {
+                    $resolvedImagePaths[] = 'images/products/' . $filename;
+                } else {
+                    $resolvedImagePaths[] = $url;
+                }
+            }
+
+            $primaryImage = $resolvedImagePaths[0] ?? 'images/camera/cat_cameras.jpg';
 
             // 8. Create Product Record
             $product = Product::create([
@@ -251,10 +264,10 @@ class ImportFullProductsJson extends Command
             ]);
 
             // 9. Insert Images into product_images
-            if (!empty($imageUrls)) {
+            if (!empty($resolvedImagePaths)) {
                 $imgRecords = [];
                 $now = now();
-                foreach ($imageUrls as $idx => $url) {
+                foreach ($resolvedImagePaths as $idx => $url) {
                     $imgRecords[] = [
                         'product_id' => $product->id,
                         'image_path' => $url,
