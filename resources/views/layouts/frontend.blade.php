@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('meta_title', setting('app_name', 'Speed Platform'))</title>
-    <meta name="description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
-    <meta name="keywords" content="@yield('meta_keywords', setting('app_name', 'boutique') . ', e-commerce, Maroc, acheter en ligne, livraison Maroc')">
-    <meta name="robots" content="@yield('meta_robots', 'index, follow')">
-    <meta name="author" content="{{ setting('app_name', 'Speed Platform') }}">
+    <title>@yield('meta_title', setting('app_name', 'WINA SHOP') . ' — ' . __('Matériel Photo, Vidéo, Caméras & Drones au Maroc'))</title>
+    <meta name="description" content="@yield('meta_description', setting('app_description', 'WINA SHOP Casablanca : Votre référence au Maroc pour le matériel photo & vidéo professionnel. Caméras Sony, Canon, drones & stabilisateurs DJI, optiques, éclairage studio Godox. Garantie 2 ans, devis proforma INDH et livraison partout au Maroc.'))">
+    <meta name="keywords" content="@yield('meta_keywords', setting('app_name', 'WINA SHOP') . ', Winashop, matériel photo Maroc, vente caméras Casablanca, caméras cinéma, Sony Alpha Maroc, Canon EOS, DJI Osmo, drones DJI, stabilisateurs gimbals, éclairage Godox, objectifs photo, devis proforma INDH, facture avec ICE, matériel audiovisuel, كاميرات المغرب, بيع معدات التصوير الدار البيضاء, درون دي جي اي, إضاءة استوديو, شراء كاميرا كانون سوني')">
+    <meta name="robots" content="@yield('meta_robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')">
+    <meta name="author" content="{{ setting('app_name', 'WINA SHOP') }}">
     <meta name="developer" content="Elegant Boost (https://elegantboost.com/)">
     <meta name="designer" content="Elegant Boost">
     <meta name="theme-color" content="#ffffff">
@@ -15,6 +15,19 @@
 
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Multi-Language Hreflang Tags (French & Arabic + x-default) -->
+    <link rel="alternate" hreflang="fr" href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}">
+    <link rel="alternate" hreflang="fr-MA" href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}">
+    <link rel="alternate" hreflang="ar" href="{{ request()->fullUrlWithQuery(['lang' => 'ar']) }}">
+    <link rel="alternate" hreflang="ar-MA" href="{{ request()->fullUrlWithQuery(['lang' => 'ar']) }}">
+    <link rel="alternate" hreflang="x-default" href="{{ url()->current() }}">
+
+    <!-- Geographic & Local Search Meta Tags (Morocco) -->
+    <meta name="geo.region" content="MA-CAS">
+    <meta name="geo.placename" content="Casablanca, Maroc">
+    <meta name="geo.position" content="33.5574;-7.6744">
+    <meta name="ICBM" content="33.5574, -7.6744">
 
     <!-- Preconnect to external resources for faster loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,7 +52,8 @@
     <meta property="og:image" content="@yield('meta_image', setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/camera/hero_cinema_rig.jpg'))">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:locale" content="{{ setting('language', 'fr') === 'ar' ? 'ar_MA' : 'fr_MA' }}">
+    <meta property="og:locale" content="{{ app()->getLocale() === 'ar' ? 'ar_MA' : 'fr_MA' }}">
+    <meta property="og:locale:alternate" content="{{ app()->getLocale() === 'ar' ? 'fr_MA' : 'ar_MA' }}">
     <meta property="og:updated_time" content="{{ now()->toIso8601String() }}">
 
     <!-- Twitter Card -->
@@ -57,29 +71,53 @@
     @yield('json_ld')
     @hasSection('json_ld')
     @else
-    {{-- Global Default Organization & WebSite Schema --}}
+    {{-- Global Default CameraStore & WebSite Schema --}}
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Organization",
+      "@type": ["CameraStore", "Store", "LocalBusiness"],
       "name": "{{ setting('company_name', setting('app_name', 'WINA SHOP')) }}",
+      "alternateName": ["Winashop", "Wina Shop Maroc", "وينا شوب"],
       "url": "{{ url('/') }}",
       "logo": "{{ setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/camera/logo.png') }}",
+      "image": "{{ asset('images/camera/hero_winashop.jpg') }}",
       "description": "{{ addslashes(setting('app_description', 'Votre référence au Maroc pour le matériel photo & vidéo professionnel — Caméras Sony, Canon, drones DJI, stabilisateurs et éclairage studio.')) }}",
+      "priceRange": "MAD 100 - MAD 150000",
+      "currenciesAccepted": "MAD",
+      "paymentAccepted": "Cash on Delivery, Bank Transfer, Credit Card",
+      "openingHours": "Mo,Tu,We,Th,Fr,Sa 09:30-19:30",
       @if(setting('company_phone'))
       "telephone": "{{ setting('company_phone') }}",
+      @else
+      "telephone": "+212629035777",
       @endif
       @if(setting('company_email'))
       "email": "{{ setting('company_email') }}",
+      @else
+      "email": "contact@winashop.com",
       @endif
-      @if(setting('company_address'))
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "{{ setting('company_address') }}",
+        "streetAddress": "{{ setting('company_address', '01 Rue 102, Hay Wiam, Al Oulfa') }}",
         "addressLocality": "{{ setting('company_city', 'Casablanca') }}",
+        "addressRegion": "Grand Casablanca",
+        "postalCode": "20220",
         "addressCountry": "MA"
       },
-      @endif
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 33.5574,
+        "longitude": -7.6744
+      },
+      "areaServed": [
+        { "@type": "AdministrativeArea", "name": "Maroc" },
+        { "@type": "City", "name": "Casablanca" },
+        { "@type": "City", "name": "Rabat" },
+        { "@type": "City", "name": "Marrakech" },
+        { "@type": "City", "name": "Tanger" },
+        { "@type": "City", "name": "Agadir" },
+        { "@type": "City", "name": "Fès" }
+      ],
       "sameAs": [
         @php
           $socials = array_values(array_filter([
@@ -101,6 +139,7 @@
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "{{ setting('app_name', 'WINA SHOP') }}",
+      "alternateName": ["Winashop", "Wina Shop Maroc", "وينا شوب"],
       "url": "{{ url('/') }}",
       "potentialAction": {
         "@type": "SearchAction",

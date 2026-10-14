@@ -1,0 +1,31 @@
+# WINA SHOP Robots.txt - Optimized for Google, Bing, and Search Engine Crawlers
+User-agent: *
+Allow: /
+Allow: /shop
+Allow: /about
+Allow: /a-propos
+Allow: /contact
+Allow: /images/
+Allow: /storage/
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /cart
+Disallow: /checkout
+Disallow: /my-account
+Disallow: /pos
+Disallow: /profile
+Disallow: /login
+Disallow: /register
+Disallow: /password/
+Disallow: /orders/
+Disallow: /invoices/
+Disallow: /customers/
+Disallow: /inventory/
+Disallow: /coupons/
+Disallow: /settings/
+Disallow: /activity-logs/
+Disallow: /analytics/
+Disallow: /reports/
+Disallow: /api/
+
+Sitemap: https://anouar.top/sitemap.xml

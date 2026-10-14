@@ -1,7 +1,62 @@
 @extends('layouts.frontend')
 
-@section('meta_title', $product->name . ' — ' . setting('app_name', 'WINA SHOP') . ' Maroc')
-@section('meta_description', Str::limit(strip_tags($product->description), 155) ?: $product->name . ' — ' . setting('app_name', 'WINA SHOP'))
+@php
+    $brandGuess = 'WINA SHOP';
+    $nameLower = strtolower($product->name);
+    if (str_contains($nameLower, 'sony')) $brandGuess = 'Sony';
+    elseif (str_contains($nameLower, 'canon')) $brandGuess = 'Canon';
+    elseif (str_contains($nameLower, 'dji')) $brandGuess = 'DJI';
+    elseif (str_contains($nameLower, 'godox')) $brandGuess = 'Godox';
+    elseif (str_contains($nameLower, 'lexar')) $brandGuess = 'Lexar';
+    elseif (str_contains($nameLower, 'nikon')) $brandGuess = 'Nikon';
+    elseif (str_contains($nameLower, 'fujifilm') || str_contains($nameLower, 'fuji')) $brandGuess = 'Fujifilm';
+    elseif (str_contains($nameLower, 'blackmagic')) $brandGuess = 'Blackmagic Design';
+    elseif (str_contains($nameLower, 'sigma')) $brandGuess = 'Sigma';
+    elseif (str_contains($nameLower, 'tamron')) $brandGuess = 'Tamron';
+    elseif (str_contains($nameLower, 'rode') || str_contains($nameLower, 'røde')) $brandGuess = 'RØDE';
+    elseif (str_contains($nameLower, 'hollyland')) $brandGuess = 'Hollyland';
+    elseif (str_contains($nameLower, 'smallrig')) $brandGuess = 'SmallRig';
+    elseif (str_contains($nameLower, 'zhiyun')) $brandGuess = 'Zhiyun';
+    elseif (str_contains($nameLower, 'insta360')) $brandGuess = 'Insta360';
+    elseif (str_contains($nameLower, 'sandisk')) $brandGuess = 'SanDisk';
+    elseif (str_contains($nameLower, 'aputure')) $brandGuess = 'Aputure';
+    elseif (str_contains($nameLower, 'nanlite')) $brandGuess = 'Nanlite';
+    elseif (str_contains($nameLower, 'manfrotto')) $brandGuess = 'Manfrotto';
+
+    $isOccasion = str_contains($nameLower, 'occasion') || ($product->category && str_contains(strtolower($product->category->name), 'occasion'));
+    $itemConditionUrl = $isOccasion ? 'https://schema.org/UsedCondition' : 'https://schema.org/NewCondition';
+    
+    $cleanDesc = Str::limit(strip_tags($product->description), 160) ?: ($product->name . ' disponible au Maroc chez WINA SHOP Casablanca. Matériel garanti, devis proforma avec ICE et livraison express partout au Maroc.');
+    
+    $productKeywords = implode(', ', [
+        $product->name,
+        'Acheter ' . $product->name . ' Maroc',
+        'Prix ' . $product->name . ' Casablanca',
+        $brandGuess . ' Maroc',
+        $product->category ? $product->category->name : 'Matériel photo',
+        'Vente matériel audiovisuel Maroc',
+        'Garantie constructeur 2 ans',
+        'Devis proforma INDH',
+        'Livraison Casablanca Rabat Marrakech Maroc',
+        'شراء ' . $product->name . ' المغرب',
+        'سعر ' . $product->name . ' الدار البيضاء',
+        'كاميرات ومعدات تصوير المغرب'
+    ]);
+
+    $allImages = [$product->thumbnail];
+    if ($product->relationLoaded('images') && $product->images) {
+        foreach ($product->images as $img) {
+            if (!empty($img->image_path)) {
+                $allImages[] = str_starts_with($img->image_path, 'http') ? $img->image_path : asset('storage/' . $img->image_path);
+            }
+        }
+    }
+    $allImages = array_values(array_unique(array_filter($allImages)));
+@endphp
+
+@section('meta_title', $product->name . ' — Prix au Maroc, Achat & Garantie | ' . setting('app_name', 'WINA SHOP'))
+@section('meta_description', $cleanDesc)
+@section('meta_keywords', $productKeywords)
 @section('meta_type', 'product')
 @section('meta_image', $product->thumbnail)
 
@@ -9,7 +64,8 @@
 <meta property="product:price:amount" content="{{ $product->isOnSale() ? $product->sale_price : $product->price }}">
 <meta property="product:price:currency" content="{{ setting('currency_code', 'MAD') }}">
 <meta property="product:availability" content="{{ $product->isInStock() ? 'in stock' : 'out of stock' }}">
-<meta property="product:condition" content="new">
+<meta property="product:condition" content="{{ $isOccasion ? 'used' : 'new' }}">
+<meta property="product:brand" content="{{ $brandGuess }}">
 <meta property="product:retailer_item_id" content="{{ $product->sku ?? ('PROD-' . $product->id) }}">
 @endsection
 
@@ -21,19 +77,106 @@
 <script type="application/ld+json">
 [
   {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Accueil",
+        "item": "{{ url('/') }}"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Boutique",
+        "item": "{{ route('shop.index') }}"
+      }
+      @if($product->category)
+      ,{
+        "@type": "ListItem",
+        "position": 3,
+        "name": "{{ addslashes($product->category->name) }}",
+        "item": "{{ route('shop.index', ['category' => $product->category->slug]) }}"
+      },
+      {
+        "@type": "ListItem",
+        "position": 4,
+        "name": "{{ addslashes($product->name) }}",
+        "item": "{{ url()->current() }}"
+      }
+      @else
+      ,{
+        "@type": "ListItem",
+        "position": 3,
+        "name": "{{ addslashes($product->name) }}",
+        "item": "{{ url()->current() }}"
+      }
+      @endif
+    ]
+  },
+  {
     "@context": "https://schema.org/",
     "@type": "Product",
     "name": "{{ addslashes($product->name) }}",
-    "image": ["{{ $product->thumbnail }}"],
-    "description": "{{ addslashes(Str::limit(strip_tags($product->description), 155)) }}",
-    "sku": "{{ $product->sku ?? 'PROD-' . $product->id }}",
+    "image": {!! json_encode($allImages) !!},
+    "description": "{{ addslashes($cleanDesc) }}",
+    "sku": "{{ $product->sku ?? 'WINA-' . $product->id }}",
+    "mpn": "{{ $product->sku ?? 'WINA-' . $product->id }}",
+    "brand": {
+      "@type": "Brand",
+      "name": "{{ addslashes($brandGuess) }}"
+    },
+    @if($product->category)
+    "category": "{{ addslashes($product->category->name) }}",
+    @endif
     "offers": {
       "@type": "Offer",
       "url": "{{ url()->current() }}",
       "priceCurrency": "{{ setting('currency_code', 'MAD') }}",
-      "price": "{{ $product->isOnSale() ? $product->sale_price : $product->price }}",
-      "itemCondition": "https://schema.org/NewCondition",
-      "availability": "{{ $product->isInStock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}"
+      "price": "{{ number_format($product->final_price, 2, '.', '') }}",
+      "priceValidUntil": "{{ now()->addYear()->format('Y-12-31') }}",
+      "itemCondition": "{{ $itemConditionUrl }}",
+      "availability": "{{ $product->isInStock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
+      "seller": {
+        "@type": "Store",
+        "name": "{{ setting('app_name', 'WINA SHOP') }}"
+      },
+      "shippingDetails": {
+        "@type": "OfferShippingDetails",
+        "shippingRate": {
+          "@type": "MonetaryAmount",
+          "value": "0",
+          "currency": "{{ setting('currency_code', 'MAD') }}"
+        },
+        "shippingDestination": {
+          "@type": "DefinedRegion",
+          "addressCountry": "MA"
+        },
+        "deliveryTime": {
+          "@type": "ShippingDeliveryTime",
+          "handlingTime": {
+            "@type": "QuantitativeValue",
+            "minValue": 0,
+            "maxValue": 1,
+            "unitCode": "d"
+          },
+          "transitTime": {
+            "@type": "QuantitativeValue",
+            "minValue": 1,
+            "maxValue": 2,
+            "unitCode": "d"
+          }
+        }
+      },
+      "hasMerchantReturnPolicy": {
+        "@type": "MerchantReturnPolicy",
+        "applicableCountry": "MA",
+        "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+        "merchantReturnDays": 7,
+        "returnMethod": "https://schema.org/ReturnByMail",
+        "returnFees": "https://schema.org/FreeReturn"
+      }
     }
     @if($reviewCount > 0)
     ,
