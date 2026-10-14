@@ -296,6 +296,25 @@
                         @endif
                     </div>
 
+                    @php
+                        $cleanDescText = $product->clean_description;
+                        $shortSnippet = null;
+                        if (!empty($cleanDescText)) {
+                            $firstLine = trim(explode("\n", $cleanDescText)[0] ?? $cleanDescText);
+                            $shortSnippet = Str::limit($firstLine, 210);
+                        }
+                    @endphp
+                    @if($shortSnippet)
+                    <div class="pdp-short-desc">
+                        <p class="mb-1">{{ $shortSnippet }}</p>
+                        @if(strlen($cleanDescText) > 210)
+                            <a href="#pdp-full-description" class="pdp-read-more-link">
+                                {{ __('Voir la fiche complète') }} <i class="fas fa-arrow-down ms-1"></i>
+                            </a>
+                        @endif
+                    </div>
+                    @endif
+
                     <div class="pdp-divider"></div>
 
                     @if($product->isInStock())
@@ -361,7 +380,7 @@
             $cleanDescription = $product->clean_description;
         @endphp
         @if(!empty($cleanDescription))
-        <div class="pdp-description-wrapper mt-4">
+        <div class="pdp-description-wrapper mt-4" id="pdp-full-description">
             <div class="pdp-section-card pdp-description-card">
                 <div class="pdp-description-header d-flex align-items-center justify-content-between pb-3 mb-4 border-bottom flex-wrap gap-2">
                     <h2 class="pdp-section-title mb-0 d-flex align-items-center">

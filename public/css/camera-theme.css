@@ -10823,3 +10823,34 @@ body:has(.cart-page) .floating-checkout-wrap {
 .pdp-clean-p:last-child {
     margin-bottom: 0;
 }
+
+/* ================================================================
+   PDP SHORT DESCRIPTION IN BUY BOX
+   ================================================================ */
+.pdp-short-desc {
+    margin-top: 14px;
+    margin-bottom: 20px;
+}
+
+.pdp-short-desc p {
+    font-size: clamp(0.88rem, 1.25vw, 0.94rem);
+    line-height: 1.65;
+    color: #475569;
+    margin-bottom: 6px;
+}
+
+.pdp-read-more-link {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--brand-red, #dc2626);
+    text-decoration: none;
+    transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.pdp-read-more-link:hover {
+    color: #b91c1c;
+    text-decoration: underline;
+    transform: translateY(1px);
+}
