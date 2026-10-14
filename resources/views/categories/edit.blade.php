@@ -43,7 +43,7 @@
             <a href="{{ route('shop.index', ['category' => $category->slug]) }}" target="_blank" class="btn-brand-light d-none d-md-inline-flex" title="Voir sur la boutique en direct">
                 <i class="fas fa-external-link-alt text-danger me-1"></i> <span>Boutique</span>
             </a>
-            <button type="button" class="btn-brand-primary flex-grow-1 flex-sm-grow-0 justify-content-center" onclick="document.getElementById('categoryEditForm').requestSubmit()">
+            <button type="submit" form="categoryEditForm" id="btn-save-category-top" class="btn-brand-primary flex-grow-1 flex-sm-grow-0 justify-content-center">
                 <i class="fas fa-check me-1"></i> <span>Enregistrer</span>
             </button>
         </div>
@@ -486,18 +486,10 @@
                         <p class="text-muted small mb-2.5" style="font-size: 0.72rem;">
                             Cette catégorie est vide. Elle peut être supprimée en toute sécurité.
                         </p>
-                        <form method="POST"
-                              action="{{ route('categories.destroy', $category->id) }}"
-                              data-confirm-delete="true"
-                              data-item-type="category"
-                              data-item-name="{{ $category->name }}">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-outline-danger w-100 py-1.5 d-flex align-items-center justify-content-center gap-1.5" style="border-radius: 8px; font-weight: 600;">
-                                <i class="fas fa-trash-alt"></i>
-                                <span>Supprimer la catégorie</span>
-                            </button>
-                        </form>
+                        <button type="button" class="btn btn-sm btn-outline-danger w-100 py-1.5 d-flex align-items-center justify-content-center gap-1.5" style="border-radius: 8px; font-weight: 600;" onclick="submitDeleteCategory()">
+                            <i class="fas fa-trash-alt"></i>
+                            <span>Supprimer la catégorie</span>
+                        </button>
                     @else
                         <div class="d-flex align-items-start gap-2 text-muted small" style="font-size: 0.72rem;">
                             <i class="fas fa-lock text-warning fs-6 mt-0.5 flex-shrink-0"></i>
@@ -526,6 +518,12 @@
                 </button>
             </div>
         </div>
+    </form>
+
+    <!-- Formulaire de Suppression Standalone (En dehors de categoryEditForm) -->
+    <form id="deleteCategoryForm" method="POST" action="{{ route('categories.destroy', $category->id) }}" class="d-none">
+        @csrf
+        @method('DELETE')
     </form>
 </div>
 
@@ -721,9 +719,52 @@ document.addEventListener('keydown', function(e) {
     if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
         e.preventDefault();
         const form = document.getElementById('categoryEditForm');
-        if (form) form.requestSubmit();
+        if (form) {
+            if (typeof form.requestSubmit === 'function') {
+                form.requestSubmit();
+            } else {
+                form.submit();
+            }
+        }
     }
 });
+
+// Top save button listener
+document.getElementById('btn-save-category-top')?.addEventListener('click', function(e) {
+    const form = document.getElementById('categoryEditForm');
+    if (form) {
+        e.preventDefault();
+        if (typeof form.requestSubmit === 'function') {
+            form.requestSubmit();
+        } else {
+            form.submit();
+        }
+    }
+});
+
+// Delete confirmation handler
+function submitDeleteCategory() {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: 'Êtes-vous sûr ?',
+            text: 'Voulez-vous vraiment supprimer cette catégorie ?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Oui, supprimer',
+            cancelButtonText: 'Annuler'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('deleteCategoryForm').submit();
+            }
+        });
+    } else {
+        if (confirm('Voulez-vous vraiment supprimer cette catégorie ?')) {
+            document.getElementById('deleteCategoryForm').submit();
+        }
+    }
+}
 </script>
 @endpush
 @endsection

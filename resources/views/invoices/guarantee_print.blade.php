@@ -7,10 +7,10 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: "Roboto", sans-serif !important;
             color: #1e293b;
             line-height: 1.4;
             margin: 0;
@@ -18,6 +18,19 @@
             background: #f8fafc;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
+        }
+
+        body, table, th, td, p, span:not([class*="fa"]):not(.fas):not(.far):not(.fab), div:not([class*="fa"]), a, h1, h2, h3, h4, h5, h6 {
+            font-family: "Roboto", sans-serif !important;
+        }
+
+        b, strong, th, h1, h2, h3, h4, h5, h6, .fw-bold, .guarantee-title {
+            font-weight: 400 !important;
+        }
+
+        .fas, .fa-solid {
+            font-family: "Font Awesome 6 Free" !important;
+            font-weight: 900 !important;
         }
 
         .guarantee-card {

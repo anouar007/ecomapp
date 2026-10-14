@@ -3,7 +3,7 @@
 @section('content')
 @php $withStamp = $withStamp ?? ($invoice->with_stamp ?? true); @endphp
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
     /* ====================================================
        PROFESSIONAL MOROCCAN FACTURE / DEVIS — VIEW / PREVIEW
@@ -15,7 +15,7 @@
         padding: 32px 20px 60px 20px;
         max-width: 1040px;
         margin: 0 auto;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-family: "Roboto", sans-serif;
     }
 
     /* ── Pro Header & Action Buttons System ── */
@@ -1271,9 +1271,9 @@
                             <th style="width:5%; text-align:center;">N°</th>
                             <th style="width:45%;">Désignation / Description</th>
                             <th style="width:8%; text-align:center;">Qté</th>
-                            <th style="width:14%; text-align:right;">P.U. HT</th>
+                            <th style="width:14%; text-align:right;">P.U. TTC</th>
                             <th style="width:10%; text-align:center;">{{ $invoice->tax_label }} %</th>
-                            <th style="width:18%; text-align:right;">Total HT</th>
+                            <th style="width:18%; text-align:right;">Total TTC</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1287,9 +1287,9 @@
                                 @endif
                             </td>
                             <td style="text-align:center; font-weight:700; font-size:13px;">{{ $item->quantity }}</td>
-                            <td style="text-align:right; font-size:12.5px;">{{ $item->formatted_unit_price_ht }}</td>
+                            <td style="text-align:right; font-size:12.5px;">{{ $item->formatted_unit_price }}</td>
                             <td style="text-align:center; color:#64748b; font-size:12px;">{{ $invoice->formatted_tax_rate }}</td>
-                            <td style="text-align:right; font-weight:800; font-size:13px; color:#0f172a;">{{ $item->formatted_total_price_ht }}</td>
+                            <td style="text-align:right; font-weight:800; font-size:13px; color:#0f172a;">{{ $item->formatted_total_price }}</td>
                         </tr>
                         @endforeach
                     </tbody>

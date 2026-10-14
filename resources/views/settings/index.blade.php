@@ -18,7 +18,7 @@
             <a href="{{ route('custom-codes.index') }}" class="btn btn-outline-secondary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
                 <i class="fas fa-code text-primary"></i> <span>Codes & Scripts</span>
             </a>
-            <button type="submit" form="settings-form" class="btn-brand-primary flex-grow-1 flex-md-grow-0 justify-content-center text-nowrap px-3.5 py-2 shadow-sm rounded-pill" style="font-size: 0.84rem;">
+            <button type="submit" form="settings-form" id="btn-save-settings-top" class="btn-brand-primary flex-grow-1 flex-md-grow-0 justify-content-center text-nowrap px-3.5 py-2 shadow-sm rounded-pill" style="font-size: 0.84rem;">
                 <i class="fas fa-save me-1.5"></i> <span>Enregistrer</span>
             </button>
         </div>
@@ -209,7 +209,7 @@
         {{-- Settings Content Area --}}
         <div class="col-12 col-lg-9 col-xl-9">
             <div class="settings-content-card">
-                <form action="{{ route('settings.update') }}" method="POST" id="settings-form">
+                <form action="{{ route('settings.update') }}" method="POST" id="settings-form" novalidate>
                     @csrf
                     @method('PUT')
 
@@ -372,8 +372,8 @@
 
                                 <div class="col-12 col-md-4">
                                     <label class="form-label fw-bold small text-dark">Site web officiel</label>
-                                    <input type="url" name="settings[company_website]" class="form-control rounded-3" 
-                                           value="{{ $companySettings->where('key', 'company_website')->first()?->value ?? '' }}" placeholder="https://fullframehouse.com">
+                                    <input type="text" name="settings[company_website]" class="form-control rounded-3" 
+                                           value="{{ $companySettings->where('key', 'company_website')->first()?->value ?? '' }}" placeholder="https://winashop.ma">
                                 </div>
                             </div>
                         </div>
@@ -1083,6 +1083,22 @@
         const stored = sessionStorage.getItem('active_settings_tab');
         const initialTab = hash || stored || 'general';
         switchSettingsTab(initialTab);
+
+        // Top save button handler
+        const topBtn = document.getElementById('btn-save-settings-top');
+        if (topBtn) {
+            topBtn.addEventListener('click', function(e) {
+                const form = document.getElementById('settings-form');
+                if (form) {
+                    e.preventDefault();
+                    if (typeof form.requestSubmit === 'function') {
+                        form.requestSubmit();
+                    } else {
+                        form.submit();
+                    }
+                }
+            });
+        }
 
         // Color input changes
         document.querySelectorAll('.settings-color-preview-slot input[type="color"]').forEach(input => {

@@ -129,9 +129,7 @@
     <div class="container position-relative">
         <div class="d-flex align-items-center justify-content-between mb-3 mb-md-4">
             <div>
-                <span class="badge text-white fw-bold px-2 px-md-3 py-1 mb-1 mb-md-2 d-inline-block" style="background: #0f172a; border-radius: 999px; font-size: 0.70rem; letter-spacing: 0.5px;">
-                    <i class="fas fa-layer-group me-1 text-danger"></i> RAYONS PHARES
-                </span>
+                
                 <h2 class="fw-bold text-dark mb-0 mb-md-1" style="font-size: clamp(1.25rem, 3.5vw, 1.65rem); letter-spacing: -0.4px;">Catégories Populaires</h2>
                 <p class="text-secondary small mb-0 d-none d-md-block" style="font-size: 0.88rem;">Explorez nos rayons phares et équipements audiovisuels certifiés au Maroc</p>
             </div>
@@ -213,7 +211,7 @@
             </div>
 
             {{-- Products Grid (5-column on desktop matching Screenshot 3, 2-column on mobile) --}}
-            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-2 g-md-3">
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-2 home-products-grid">
                 @foreach($featuredProducts->take(10) as $product)
                     @php
                         $brand = 'PRO';
@@ -255,23 +253,15 @@
                                 </div>
 
                                 <div>
-                                    {{-- Price in vivid green --}}
-                                    <div class="d-flex align-items-baseline gap-2 mb-1">
-                                        @if($product->sale_price && $product->sale_price < $product->price)
-                                            <span class="fw-bold price-tag-green" style="font-size: 1.05rem;">
-                                                MAD {{ number_format($product->sale_price, 2, ',', '.') }}
-                                            </span>
-                                            <span class="text-danger text-decoration-line-through small" style="font-size: 0.78rem;">
-                                                MAD {{ number_format($product->price, 2, ',', '.') }}
-                                            </span>
+                                    {{-- Price formatted dynamically as on the shop card --}}
+                                    <div class="pcard-price mb-2">
+                                        @if($product->isOnSale())
+                                            <span class="pcard-price-current text-nowrap">{{ $product->formatted_sale_price }}</span>
+                                            <span class="pcard-price-old text-nowrap">{{ $product->formatted_price }}</span>
                                         @elseif($product->price && $product->price > 0)
-                                            <span class="fw-bold price-tag-green" style="font-size: 1.05rem;">
-                                                MAD {{ number_format($product->price, 2, ',', '.') }}
-                                            </span>
+                                            <span class="pcard-price-current text-nowrap">{{ $product->formatted_price }}</span>
                                         @else
-                                            <span class="fw-bold text-dark" style="font-size: 0.95rem;">
-                                                Sur devis
-                                            </span>
+                                            <span class="pcard-price-current text-nowrap">{{ __('Sur devis') }}</span>
                                         @endif
                                     </div>
 
@@ -390,7 +380,7 @@
                 </a>
             </div>
 
-            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-2 g-md-3">
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-2 home-products-grid">
                 @foreach($newArrivalProducts->take(6) as $product)
                     @php
                         $brand = 'PRO';
@@ -426,23 +416,15 @@
                                 </div>
 
                                 <div>
-                                    {{-- Price in vivid green --}}
-                                    <div class="d-flex align-items-baseline gap-2 mb-1">
-                                        @if($product->sale_price && $product->sale_price < $product->price)
-                                            <span class="fw-bold price-tag-green" style="font-size: 1.05rem;">
-                                                MAD {{ number_format($product->sale_price, 2, ',', '.') }}
-                                            </span>
-                                            <span class="text-danger text-decoration-line-through small" style="font-size: 0.78rem;">
-                                                MAD {{ number_format($product->price, 2, ',', '.') }}
-                                            </span>
+                                    {{-- Price formatted dynamically as on the shop card --}}
+                                    <div class="pcard-price mb-2">
+                                        @if($product->isOnSale())
+                                            <span class="pcard-price-current text-nowrap">{{ $product->formatted_sale_price }}</span>
+                                            <span class="pcard-price-old text-nowrap">{{ $product->formatted_price }}</span>
                                         @elseif($product->price && $product->price > 0)
-                                            <span class="fw-bold price-tag-green" style="font-size: 1.05rem;">
-                                                MAD {{ number_format($product->price, 2, ',', '.') }}
-                                            </span>
+                                            <span class="pcard-price-current text-nowrap">{{ $product->formatted_price }}</span>
                                         @else
-                                            <span class="fw-bold text-dark" style="font-size: 0.95rem;">
-                                                Sur devis
-                                            </span>
+                                            <span class="pcard-price-current text-nowrap">{{ __('Sur devis') }}</span>
                                         @endif
                                     </div>
 
@@ -498,7 +480,6 @@
         <div>
             <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
                 <div class="d-flex align-items-center gap-2">
-                    <span class="badge bg-primary text-white fw-bold px-2 py-1" style="font-size: 0.7rem; border-radius: 4px;">PRO</span>
                     <h2 class="fw-bold text-dark mb-0" style="font-size: clamp(1.2rem, 2.5vw, 1.45rem); letter-spacing: -0.3px;">
                         Coin Occasion (Reconditionné & Certifié)
                     </h2>
@@ -509,7 +490,7 @@
                 </a>
             </div>
 
-            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-2 g-md-3">
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-2 home-products-grid">
                 @foreach($occasionProducts as $product)
                     @php
                         $brand = 'PRO';
@@ -553,23 +534,15 @@
                                 </div>
 
                                 <div>
-                                    {{-- Price in vivid green --}}
-                                    <div class="d-flex align-items-baseline gap-2 mb-1">
-                                        @if($product->sale_price && $product->sale_price < $product->price)
-                                            <span class="fw-bold price-tag-green" style="font-size: 1.05rem;">
-                                                MAD {{ number_format($product->sale_price, 2, ',', '.') }}
-                                            </span>
-                                            <span class="text-danger text-decoration-line-through small" style="font-size: 0.78rem;">
-                                                MAD {{ number_format($product->price, 2, ',', '.') }}
-                                            </span>
+                                    {{-- Price formatted dynamically as on the shop card --}}
+                                    <div class="pcard-price mb-2">
+                                        @if($product->isOnSale())
+                                            <span class="pcard-price-current text-nowrap">{{ $product->formatted_sale_price }}</span>
+                                            <span class="pcard-price-old text-nowrap">{{ $product->formatted_price }}</span>
                                         @elseif($product->price && $product->price > 0)
-                                            <span class="fw-bold price-tag-green" style="font-size: 1.05rem;">
-                                                MAD {{ number_format($product->price, 2, ',', '.') }}
-                                            </span>
+                                            <span class="pcard-price-current text-nowrap">{{ $product->formatted_price }}</span>
                                         @else
-                                            <span class="fw-bold text-dark" style="font-size: 0.95rem;">
-                                                Sur devis
-                                            </span>
+                                            <span class="pcard-price-current text-nowrap">{{ __('Sur devis') }}</span>
                                         @endif
                                     </div>
 
@@ -1039,7 +1012,7 @@
                                 <div class="d-inline-flex align-items-center gap-1 text-warning stars-row text-nowrap">
                                     <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
                                 </div>
-                                <span class="badge text-success px-2 py-1" style="background: #dcfce7; border-radius: 999px; font-size: 0.68rem; font-weight: 700;">
+                                <span class="badge text-success px-2 py-1" style="background: #dcfce7; border-radius: 999px; font-size: 0.68rem; font-weight: 400;">
                                     <i class="fas fa-check-circle me-1"></i> Achat Vérifié
                                 </span>
                             </div>
@@ -1064,7 +1037,7 @@
                                 <div class="d-inline-flex align-items-center gap-1 text-warning stars-row text-nowrap">
                                     <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
                                 </div>
-                                <span class="badge text-success px-2 py-1" style="background: #dcfce7; border-radius: 999px; font-size: 0.68rem; font-weight: 700;">
+                                <span class="badge text-success px-2 py-1" style="background: #dcfce7; border-radius: 999px; font-size: 0.68rem; font-weight: 400;">
                                     <i class="fas fa-check-circle me-1"></i> Achat Vérifié
                                 </span>
                             </div>
@@ -1089,7 +1062,7 @@
                                 <div class="d-inline-flex align-items-center gap-1 text-warning stars-row text-nowrap">
                                     <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
                                 </div>
-                                <span class="badge text-success px-2 py-1" style="background: #dcfce7; border-radius: 999px; font-size: 0.68rem; font-weight: 700;">
+                                <span class="badge text-success px-2 py-1" style="background: #dcfce7; border-radius: 999px; font-size: 0.68rem; font-weight: 400;">
                                     <i class="fas fa-check-circle me-1"></i> Achat Vérifié
                                 </span>
                             </div>
@@ -1104,6 +1077,7 @@
                                 <span class="text-muted small" style="font-size: 0.74rem;">Photographe Studio • Rabat</span>
                             </div>
                         </div>
+                    </div>
                 </div>
             </div>
         </div>

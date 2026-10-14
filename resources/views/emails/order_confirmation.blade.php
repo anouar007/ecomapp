@@ -22,7 +22,7 @@
         </div>
 
         <h2>Thank you for your order! 🎉</h2>
-        <p>Hi {{ $order->shipping_name }},</p>
+        <p>Hi {{ $order->customer_name }},</p>
         <p>We've received your order and are getting it ready. We'll verify your details and let you know when it's on the way.</p>
 
         <div class="order-info">
@@ -45,7 +45,7 @@
                 <tr>
                     <td>{{ $item->product_name }}</td>
                     <td>{{ $item->quantity }}</td>
-                    <td style="text-align: right;">${{ number_format($item->subtotal, 2) }}</td>
+                    <td style="text-align: right;">{{ currency($item->subtotal ?: ($item->price * $item->quantity)) }}</td>
                 </tr>
                 @endforeach
                 <tr class="total-row">
@@ -58,16 +58,16 @@
         <h3>Shipping Details</h3>
         <p>
             {{ $order->shipping_address }}<br>
-            {{ $order->shipping_city }}, {{ $order->shipping_state }} {{ $order->shipping_zip }}<br>
+            {{ $order->shipping_city }}{{ $order->shipping_state ? ', ' . $order->shipping_state : '' }}<br>
             {{ $order->shipping_country }}
         </p>
 
         <p style="text-align: center; margin-top: 30px;">
-            <a href="{{ route('customer.orders.show', $order) }}" class="btn">View Order Status</a>
+            <a href="{{ route('checkout.success', $order->id) }}" class="btn">View Order Details</a>
         </p>
 
         <div class="footer">
-            &copy; {{ date('Y') }} {{ setting('company_name') }}. All rights reserved.
+            &copy; {{ date('Y') }} {{ setting('app_name', 'Wina Shop') }}. All rights reserved.
         </div>
     </div>
 </body>

@@ -8,11 +8,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+    <style>
+        body, input, button, select, textarea, .auth-title, .auth-subtitle, .form-label, a {
+            font-family: "Roboto", sans-serif !important;
+        }
+        b, strong, .fw-bold, .fw-semibold, h1, h2, h3, h4, h5, h6, .auth-title, .form-label, .btn {
+            font-weight: 400 !important;
+        }
+        .fas, .fa-solid {
+            font-family: "Font Awesome 6 Free" !important;
+            font-weight: 900 !important;
+        }
+    </style>
     @if(app()->getLocale() === 'ar')
     <style>
-        body, input, button, select, textarea { font-family: 'Tajawal', sans-serif !important; }
         .form-check { padding-right: 1.5em; padding-left: 0; }
         .form-check .form-check-input { float: right; margin-right: -1.5em; margin-left: 0; }
     </style>
@@ -83,7 +94,7 @@
             </form>
 
             <div class="auth-footer" style="text-align: center; margin-top: 24px; padding-top: 24px; border-top: 1px solid #e2e8f0;">
-                <p style="color: #64748b; font-size: 14px;">{{ __("Don't have an account?") }} <a href="{{ route('register') }}" style="color: #667eea; text-decoration: none; font-weight: 600;">{{ __('Create one') }}</a></p>
+                <p style="color: #64748b; font-size: 14px;">{{ __("Don't have an account?") }} <a href="{{ route('register') }}" style="color: #667eea; text-decoration: none; font-weight: 400;">{{ __('Create one') }}</a></p>
             </div>
         </div>
     </div>

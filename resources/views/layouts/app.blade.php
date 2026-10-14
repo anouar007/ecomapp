@@ -9,13 +9,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.7.32/sweetalert2.min.css">
     
-    <!-- Winashop Theme Variables -->
+    <link rel="stylesheet" href="{{ asset('css/driver.css') }}">
+    @stack('styles')
+    
+    <!-- Winashop Theme Variables & Global Typography -->
     <style>
         :root {
             --primary-color: #dc2626;
@@ -25,27 +28,42 @@
             --success-color: #10b981;
             --warning-color: #f59e0b;
             --danger-color: #dc2626;
-            --font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-            --font-heading: 'Outfit', sans-serif;
+            --font-family: "Roboto", sans-serif;
+            --font-heading: "Roboto", sans-serif;
             --font-size-base: 14px;
             --border-radius: 12px;
         }
         
+        body, input, button, select, textarea, .brand-title, .page-title, .navbar-brand, table, th, td, p, span:not([class*="fa"]):not([class*="icon"]):not(.fas):not(.far):not(.fab):not(.fa-solid):not(.fa-regular):not(.fa-brands), a:not([class*="fa"]):not(.fas):not(.far):not(.fab), label, li, small, dt, dd {
+            font-family: "Roboto", sans-serif !important;
+        }
+
         body {
-            font-family: var(--font-family);
             font-size: var(--font-size-base);
             background-color: #f8fafc;
             color: #0f172a;
+            -webkit-font-smoothing: antialiased;
         }
 
-        h1, h2, h3, h4, h5, h6, .brand-title, .page-title, .navbar-brand {
-            font-family: var(--font-heading);
-            letter-spacing: -0.02em;
+        /* Don't use bold on text */
+        b, strong, .fw-bold, .fw-bolder, .fw-semibold, .fw-extrabold, h1, h2, h3, h4, h5, h6, .brand-title, .page-title, .navbar-brand, th, dt, .btn, .nav-link, .stat-value-pro, .order-ref-badge, .font-heading, .brand-subtitle strong, .stat-kpi-value, .stat-sub-text strong, .card-title, .stat-title, .badge {
+            font-weight: 400 !important;
+        }
+
+        /* Protect FontAwesome icon font and solid weights */
+        .fa, .fas, .fa-solid {
+            font-family: "Font Awesome 6 Free" !important;
+            font-weight: 900 !important;
+        }
+        .far, .fa-regular {
+            font-family: "Font Awesome 6 Free" !important;
+            font-weight: 400 !important;
+        }
+        .fab, .fa-brands {
+            font-family: "Font Awesome 6 Brands" !important;
+            font-weight: 400 !important;
         }
     </style>
-    
-    <link rel="stylesheet" href="{{ asset('css/driver.css') }}">
-    @stack('styles')
 </head>
 <body>
     <!-- Navbar -->
@@ -58,7 +76,7 @@
                 $winaLogo = file_exists(public_path('images/camera/logo.png')) ? asset('images/camera/logo.png') : (setting('app_logo') ? asset('storage/' . setting('app_logo')) : null);
             @endphp
             @if($winaLogo)
-                <img src="{{ $winaLogo }}" alt="WINA SHOP" style="height: 38px; max-width: 150px; object-fit: contain; margin-right: 10px;">
+                <img src="{{ $winaLogo }}" alt="WINA SHOP" style="height: 48px; max-width: 180px; object-fit: contain; margin-right: 10px;">
             @else
                 <i class="fas fa-camera text-danger me-2"></i>
                 <span style="font-weight: 800; color: #0f172a;">WINA<span style="color: #dc2626;">SHOP</span></span>

@@ -168,8 +168,8 @@
                                 <tr>
                                     <th style="min-width: 220px;">Produit / Description</th>
                                     <th class="text-center" style="width: 110px;">Qté</th>
-                                    <th class="text-end" style="width: 130px;">Prix Unitaire</th>
-                                    <th class="text-end" style="width: 140px;">Total Ligne</th>
+                                    <th class="text-end" style="width: 130px;">P.U. TTC</th>
+                                    <th class="text-end" style="width: 140px;">Total TTC</th>
                                     <th style="width: 50px;"></th>
                                 </tr>
                             </thead>
@@ -320,11 +320,11 @@
                 <input type="number" name="items[{index}][quantity]" class="form-control form-control-sm text-center quantity-input" value="1" min="1" onchange="updateTotals()" onkeyup="updateTotals()" required>
             </td>
             <td class="p-2.5 text-md-end col-price">
-                <label class="d-md-none form-label text-muted small fw-semibold mb-1">P.U.</label>
+                <label class="d-md-none form-label text-muted small fw-semibold mb-1">P.U. TTC</label>
                 <div class="text-muted font-monospace unit-price">0.00</div>
             </td>
             <td class="p-2.5 text-md-end col-total">
-                <label class="d-md-none form-label text-muted small fw-semibold mb-1">Total</label>
+                <label class="d-md-none form-label text-muted small fw-semibold mb-1">Total TTC</label>
                 <div class="fw-bold text-dark font-monospace row-total">0.00</div>
             </td>
             <td class="p-2.5 text-center col-action">

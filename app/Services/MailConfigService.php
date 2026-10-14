@@ -30,6 +30,7 @@ class MailConfigService
             Config::set('mail.mailers.smtp.encryption', ($encryption === 'none' || empty($encryption)) ? null : $encryption);
             Config::set('mail.mailers.smtp.username', $username);
             Config::set('mail.mailers.smtp.password', $password);
+            Config::set('mail.mailers.smtp.timeout', 4);
 
             if (!empty($fromAddress)) {
                 Config::set('mail.from.address', $fromAddress);

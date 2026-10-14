@@ -6,7 +6,7 @@
     <title>{{ $invoice->getTypeLabel() }} {{ $invoice->display_number ?? $invoice->invoice_number }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
         /* ====================================================
            PROFESSIONAL MOROCCAN FACTURE / DEVIS — PRINT
@@ -17,7 +17,7 @@
         * { box-sizing: border-box; }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: "Roboto", sans-serif !important;
             color: #0f172a;
             line-height: 1.4;
             margin: 0;
@@ -25,6 +25,19 @@
             background: #e2e8f0;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
+        }
+
+        body, table, th, td, p, span:not([class*="fa"]):not(.fas):not(.far):not(.fab), div:not([class*="fa"]), a, h1, h2, h3, h4, h5, h6 {
+            font-family: "Roboto", sans-serif !important;
+        }
+
+        b, strong, th, h1, h2, h3, h4, h5, h6, .fw-bold, .invoice-title, .brand-title, .total-value {
+            font-weight: 400 !important;
+        }
+
+        .fas, .fa-solid {
+            font-family: "Font Awesome 6 Free" !important;
+            font-weight: 900 !important;
         }
 
         /* ── Page card ── */
@@ -607,9 +620,9 @@
                         <th style="width:5%; text-align:center;">N°</th>
                         <th style="width:45%;">Désignation / Description</th>
                         <th style="width:8%; text-align:center;">Qté</th>
-                        <th style="width:14%; text-align:right;">P.U. HT</th>
+                        <th style="width:14%; text-align:right;">P.U. TTC</th>
                         <th style="width:10%; text-align:center;">{{ $invoice->tax_label }} %</th>
-                        <th style="width:18%; text-align:right;">Total HT</th>
+                        <th style="width:18%; text-align:right;">Total TTC</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -623,9 +636,9 @@
                             @endif
                         </td>
                         <td style="text-align:center; font-weight:700; font-size:13px;">{{ $item->quantity }}</td>
-                        <td style="text-align:right; font-size:12.5px;">{{ $item->formatted_unit_price_ht }}</td>
+                        <td style="text-align:right; font-size:12.5px;">{{ $item->formatted_unit_price }}</td>
                         <td style="text-align:center; color:#64748b; font-size:12px;">{{ $invoice->formatted_tax_rate }}</td>
-                        <td style="text-align:right; font-weight:800; font-size:13px; color:#0f172a;">{{ $item->formatted_total_price_ht }}</td>
+                        <td style="text-align:right; font-weight:800; font-size:13px; color:#0f172a;">{{ $item->formatted_total_price }}</td>
                     </tr>
                     @endforeach
                 </tbody>

@@ -508,41 +508,81 @@
                     {{ __('See all') }} <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left ms-1' : 'fa-arrow-right ms-1' }}"></i>
                 </a>
             </div>
-            <div class="row g-4">
+            <div class="row g-2 g-md-3">
                 @foreach($relatedProducts as $related)
+                @php
+                    $relInCart = isset(session('cart', [])[$related->id]);
+                    $isAr = app()->getLocale() === 'ar';
+                @endphp
                 <div class="col-6 col-md-3">
-                    <div class="pcard">
-                        <div class="pcard-img">
-                            <a href="{{ route('shop.show', $related->id) }}">
+                    <div class="featured-pro-card selection-card h-100 d-flex flex-column justify-content-between position-relative">
+                        {{-- Product Image with clean white background --}}
+                        <div class="featured-pro-img-box mb-2 position-relative">
+                            @if(!$related->isInStock())
+                                <span class="featured-card-oos-badge">{{ $isAr ? 'نفذت الكمية' : 'Épuisé' }}</span>
+                            @elseif($related->isOnSale())
+                                <span class="pcard-badge pcard-badge--sale" style="position: absolute; top: 8px; left: 8px; z-index: 2;">−{{ $related->discount_percentage }}%</span>
+                            @endif
+                            <a href="{{ route('shop.show', $related->slug ?: $related->id) }}" class="w-100 h-100 d-flex align-items-center justify-content-center">
                                 <img src="{{ $related->thumbnail }}"
                                      alt="{{ $related->name }}" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                             </a>
-                            @if(!$related->isInStock())
-                                <div class="pcard-badges"><span class="pcard-badge pcard-badge--oos">{{ __('Out of Stock (badge)') }}</span></div>
-                            @elseif($related->isOnSale())
-                                <div class="pcard-badges"><span class="pcard-badge pcard-badge--sale">−{{ $related->discount_percentage }}%</span></div>
-                            @endif
-                            <div class="pcard-overlay">
-                                <a href="{{ route('shop.show', $related->id) }}" class="pcard-overlay-btn pcard-overlay-btn--ghost">
-                                    <i class="fas fa-eye"></i> {{ __('View') }}
-                                </a>
+                        </div>
+                        <div class="mb-2 flex-grow-1 d-flex flex-column justify-content-between">
+                            <div>
+                                <h3 class="featured-pro-title">
+                                    <a href="{{ route('shop.show', $related->slug ?: $related->id) }}">{{ Str::limit($related->name, 42) }}</a>
+                                </h3>
+                            </div>
+                            <div>
+                                <div class="pcard-price mb-2">
+                                    @if($related->isOnSale())
+                                        <span class="pcard-price-current text-nowrap">{{ $related->formatted_sale_price }}</span>
+                                        <span class="pcard-price-old text-nowrap">{{ $related->formatted_price }}</span>
+                                    @elseif($related->price && $related->price > 0)
+                                        <span class="pcard-price-current text-nowrap">{{ $related->formatted_price }}</span>
+                                    @else
+                                        <span class="pcard-price-current text-nowrap">{{ __('Sur devis') }}</span>
+                                    @endif
+                                </div>
+                                <div class="d-flex align-items-center gap-1 mb-2">
+                                    @if($related->isInStock())
+                                        <span class="featured-stock-pill">
+                                            <span class="stock-pulse-dot"></span>
+                                            <span>{{ $isAr ? 'متوفر' : 'EN STOCK' }}</span>
+                                        </span>
+                                    @else
+                                        <span class="featured-stock-pill featured-stock-pill--out">
+                                            <i class="fas fa-times-circle text-danger" style="font-size: 10px;"></i>
+                                            <span>{{ $isAr ? 'نفذت الكمية' : 'RUPTURE DE STOCK' }}</span>
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
                         </div>
-                        <div class="pcard-body">
-                            @if($related->category_name)
-                                <a href="{{ route('shop.index', ['category' => $related->category_slug ?? optional($related->category)->slug ?? optional($related->productCategory)->slug]) }}" class="pcard-cat text-decoration-none d-block">{{ $related->category_name }}</a>
+                        <div class="mt-auto pt-1">
+                            @if($related->isInStock())
+                                <button type="button" 
+                                        class="btn w-100 featured-pro-btn {{ $relInCart ? 'is-in-cart' : '' }}" 
+                                        onclick="addToCart({{ $related->id }}, 1, this)"
+                                        data-product-id="{{ $related->id }}"
+                                        title="{{ $relInCart ? ($isAr ? 'في السلة' : 'Dans le panier') : ($isAr ? 'أضف إلى السلة' : 'Ajouter au panier') }}">
+                                    @if($relInCart)
+                                        <i class="fas fa-check" style="font-size: 11px;"></i>
+                                        <span>{{ $isAr ? 'في السلة' : 'Dans le panier' }}</span>
+                                    @else
+                                        <span>{{ $isAr ? 'أضف إلى السلة' : 'Ajouter au panier' }}</span>
+                                    @endif
+                                </button>
+                            @else
+                                <button type="button" 
+                                        class="btn w-100 featured-pro-btn featured-pro-btn--out" 
+                                        disabled 
+                                        title="{{ $isAr ? 'نفذت الكمية' : 'Rupture de stock' }}">
+                                    <i class="fas fa-ban" style="font-size: 11px;"></i>
+                                    <span>{{ $isAr ? 'نفذت الكمية' : 'Rupture de stock' }}</span>
+                                </button>
                             @endif
-                            <h4 class="pcard-name">
-                                <a href="{{ route('shop.show', $related->id) }}">{{ Str::limit($related->name, 42) }}</a>
-                            </h4>
-                            <div class="pcard-price">
-                                @if($related->isOnSale())
-                                    <span class="pcard-price-current">{{ $related->formatted_sale_price }}</span>
-                                    <span class="pcard-price-old">{{ $related->formatted_price }}</span>
-                                @else
-                                    <span class="pcard-price-current">{{ $related->formatted_price }}</span>
-                                @endif
-                            </div>
                         </div>
                     </div>
                 </div>

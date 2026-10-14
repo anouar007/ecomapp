@@ -2,7 +2,7 @@
 
 @section('content')
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
     
     .guarantee-card {
         background: white;
@@ -10,7 +10,7 @@
         box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
         border: 1px solid #e2e8f0;
         overflow: hidden;
-        font-family: 'Inter', sans-serif;
+        font-family: "Roboto", sans-serif;
     }
     
     .guarantee-accent-bar {

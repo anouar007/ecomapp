@@ -153,7 +153,7 @@
     </script>
     @endif
     
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Outfit:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css">
@@ -165,6 +165,38 @@
     @endif
     <link rel="stylesheet" href="{{ asset('css/frontend.css') }}?v={{ file_exists(public_path('css/frontend.css')) ? filemtime(public_path('css/frontend.css')) : time() }}">
     <link rel="stylesheet" href="{{ asset('css/camera-theme.css') }}?v={{ file_exists(public_path('css/camera-theme.css')) ? filemtime(public_path('css/camera-theme.css')) : time() }}">
+    
+    <!-- Global Roboto & Normal Weight Typography System -->
+    <style>
+        :root {
+            --font-heading: "Roboto", sans-serif !important;
+            --font-body: "Roboto", sans-serif !important;
+            --font-family: "Roboto", sans-serif !important;
+        }
+        body, input, button, select, textarea, p, span:not([class*="fa"]):not(.fas):not(.far):not(.fab), a, li, label, table, th, td {
+            font-family: "Roboto", sans-serif !important;
+        }
+        h1, h2, h3, h4, h5, h6, .font-heading, .brand-title, .page-title, .hero-title, .section-title, .product-title, .product-card-title {
+            font-family: "Roboto", sans-serif !important;
+            font-weight: 400 !important;
+        }
+        b, strong, .fw-bold, .fw-semibold, .fw-bolder, .fw-extrabold, th, dt, .product-price, .nav-link-item, .price-display, .badge, .btn {
+            font-weight: 400 !important;
+        }
+        /* Protect FontAwesome icon font and solid weights */
+        .fas, .fa-solid {
+            font-family: "Font Awesome 6 Free" !important;
+            font-weight: 900 !important;
+        }
+        .far, .fa-regular {
+            font-family: "Font Awesome 6 Free" !important;
+            font-weight: 400 !important;
+        }
+        .fab, .fa-brands {
+            font-family: "Font Awesome 6 Brands" !important;
+            font-weight: 400 !important;
+        }
+    </style>
     <!-- Custom Head Codes -->
     @php
         $headCodes = \App\Models\CustomCode::where('is_active', true)
@@ -205,7 +237,7 @@
                 <div class="d-flex align-items-center gap-2 gap-lg-3 gap-xl-4 flex-nowrap">
                     <!-- Brand Logo (Enlarged) -->
                     <a class="navbar-brand m-0 p-0 d-flex align-items-center me-1 me-lg-2" href="{{ url('/') }}" style="flex-shrink: 0;" title="{{ setting('app_name', 'WINA SHOP') }}">
-                        <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" class="brand-logo-img" style="height: 78px; max-height: 85px; width: auto; max-width: 220px; object-fit: contain;">
+                        <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" class="brand-logo-img" style="height: 96px; max-height: 105px; width: auto; max-width: 280px; object-fit: contain;">
                     </a>
 
                     @php
@@ -342,16 +374,16 @@
                 </div>
 
                 <!-- Right: Search Bar + Cart Icon -->
-                <div class="d-flex align-items-center gap-3 gap-xl-4 flex-grow-1 justify-content-end" style="max-width: 480px;">
+                <div class="d-flex align-items-center gap-2 gap-md-3 gap-xl-4 flex-grow-1 justify-content-end header-actions-wrap" style="max-width: 580px;">
                     <!-- Search Input (Pill shape #f1f3f5) -->
-                    <form action="{{ route('shop.index') }}" method="GET" class="header-search-wrap w-100 d-none d-md-block position-relative" style="max-width: 380px;" id="headerSearchForm" autocomplete="off">
-                        <div class="position-relative d-flex align-items-center" style="background: #f1f3f5; border-radius: 9999px; padding: 0 16px; height: 44px;">
+                    <form action="{{ route('shop.index') }}" method="GET" class="header-search-wrap w-100 position-relative" style="max-width: 380px;" id="headerSearchForm" autocomplete="off">
+                        <div class="position-relative d-flex align-items-center header-search-box" style="background: #f1f3f5; border-radius: 9999px; padding: 0 14px; height: 42px;">
                             <i class="fas fa-search text-muted me-2" style="font-size: 13px;"></i>
                             <input class="form-control border-0 bg-transparent shadow-none p-0 header-search-input" 
                                    type="search" 
                                    name="q" 
                                    id="headerSearchInput" 
-                                   placeholder="Rechercher des produits..." 
+                                   placeholder="{{ __('Rechercher...') }}" 
                                    aria-label="{{ __('Search') }}" 
                                    value="{{ request('q') }}" 
                                    autocomplete="off" 
@@ -393,10 +425,8 @@
                         </div>
                     </form>
 
-                    <!-- Mobile search icon button -->
-                    <button class="bg-transparent border-0 p-1 text-dark d-md-none" type="button" id="mobileSearchTriggerBtn" title="{{ __('Search') }}" aria-label="{{ __('Search') }}">
-                        <i class="fas fa-search" style="font-size: 19px;"></i>
-                    </button>
+                    <!-- Dummy button to preserve any JS bindings -->
+                    <button class="d-none" type="button" id="mobileSearchTriggerBtn" aria-hidden="true"></button>
 
                     <!-- Cart Icon with Red Badge -->
                     <div class="position-relative ms-1">
@@ -424,7 +454,7 @@
     <div class="offcanvas offcanvas-start border-0 shadow-lg d-lg-none" tabindex="-1" id="mobileNavDrawer" aria-labelledby="mobileNavDrawerLabel" style="width: 310px;">
         <div class="offcanvas-header border-bottom py-3">
             <a href="{{ url('/') }}" class="navbar-brand m-0">
-                <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" style="height: 48px; width: auto;">
+                <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" style="height: 58px; width: auto;">
             </a>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
@@ -759,8 +789,9 @@
         }
         body.has-whatsapp-float .floating-checkout-wrap.is-visible,
         body:has(.whatsapp-float) .floating-checkout-wrap.is-visible {
-            bottom: 24px !important;
-            right: 90px !important;
+            bottom: 96px !important;
+            right: 24px !important;
+            left: auto !important;
         }
         html[dir="rtl"] .floating-checkout-wrap {
             right: auto !important;
@@ -768,14 +799,14 @@
         }
         html[dir="rtl"] body.has-whatsapp-float .floating-checkout-wrap.is-visible,
         html[dir="rtl"] body:has(.whatsapp-float) .floating-checkout-wrap.is-visible {
-            bottom: 24px !important;
-            left: 90px !important;
+            bottom: 96px !important;
+            left: 24px !important;
             right: auto !important;
         }
         @media (max-width: 768px) {
             .floating-checkout-wrap {
-                bottom: calc(22px + env(safe-area-inset-bottom, 0px)) !important;
-                right: 14px !important;
+                bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important;
+                right: 16px !important;
                 left: auto !important;
                 z-index: 99999 !important;
                 display: none !important;
@@ -789,19 +820,24 @@
                 visibility: visible !important;
                 pointer-events: auto !important;
                 transform: translateY(0) scale(1) !important;
+                right: 16px !important;
+                left: auto !important;
             }
             body.has-whatsapp-float .floating-checkout-wrap.is-visible,
             body:has(.whatsapp-float) .floating-checkout-wrap.is-visible {
-                bottom: calc(84px + env(safe-area-inset-bottom, 0px)) !important;
+                bottom: calc(82px + env(safe-area-inset-bottom, 0px)) !important;
+                right: 16px !important;
+                left: auto !important;
             }
             html[dir="rtl"] .floating-checkout-wrap {
-                left: 14px !important;
+                left: 16px !important;
                 right: auto !important;
             }
             html[dir="rtl"] body.has-whatsapp-float .floating-checkout-wrap.is-visible,
             html[dir="rtl"] body:has(.whatsapp-float) .floating-checkout-wrap.is-visible {
-                bottom: calc(22px + env(safe-area-inset-bottom, 0px)) !important;
-                left: 14px !important;
+                bottom: calc(82px + env(safe-area-inset-bottom, 0px)) !important;
+                left: 16px !important;
+                right: auto !important;
             }
             .floating-checkout-btn {
                 padding: 10px 16px 10px 12px !important;
@@ -810,7 +846,7 @@
             }
             .floating-checkout-label {
                 font-size: 0.88rem !important;
-                font-weight: 700 !important;
+                font-weight: 400 !important;
             }
         }
     </style>
@@ -1155,12 +1191,12 @@
                 b.disabled = false;
                 if (inCart) {
                     b.classList.add('is-in-cart');
-                    b.innerHTML = '<i class="fas fa-check"></i>';
+                    b.innerHTML = '<span class="pcard-quick-cart-label">Dans le panier</span>';
                     b.setAttribute('title', inCartLabel);
                     b.setAttribute('aria-label', inCartLabel);
                 } else {
                     b.classList.remove('is-in-cart');
-                    b.innerHTML = '<i class="fas fa-shopping-bag"></i>';
+                    b.innerHTML = '<span class="pcard-quick-cart-label">Ajouter</span>';
                     b.setAttribute('title', notInCartLabel);
                     b.setAttribute('aria-label', notInCartLabel);
                 }

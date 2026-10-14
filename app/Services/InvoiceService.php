@@ -91,7 +91,7 @@ class InvoiceService
                 throw new \Exception('Invoice already exists for this order.');
             }
 
-            $subtotal = $order->items->sum(fn($item) => $item->unit_price * $item->quantity);
+            $subtotal = $order->items->sum(fn($item) => ($item->price ?? $item->unit_price) * $item->quantity);
             $taxRate = floatval(setting('tax_rate', 20));
             $totalAmount = $subtotal;
             $taxAmount = $taxRate > 0 ? ($totalAmount - ($totalAmount / (1 + ($taxRate / 100)))) : 0;

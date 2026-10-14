@@ -167,6 +167,9 @@
             <a href="{{ route('products.index') }}" class="btn btn-sm btn-light border rounded-pill px-3 py-1.5 text-muted fw-semibold d-inline-flex align-items-center">
                 <i class="fas fa-arrow-left me-1.5"></i> <span>Retour aux produits</span>
             </a>
+            <button type="submit" form="productForm" id="btn-create-product-top" class="btn-brand-primary flex-grow-1 flex-md-grow-0 justify-content-center text-nowrap px-3.5 py-1.5 shadow-sm rounded-pill" style="font-size: 0.84rem;">
+                <i class="fas fa-save me-1.5"></i> <span>Enregistrer</span>
+            </button>
         </div>
     </div>
 
@@ -187,7 +190,7 @@
         </div>
     @endif
 
-    <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data" id="productForm">
+    <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data" id="productForm" novalidate>
         @csrf
 
         <div class="row g-4">
@@ -311,7 +314,7 @@
                     <!-- Prix de vente -->
                     <div class="mb-3">
                         <label for="price" class="form-label fw-semibold text-dark">
-                            Prix de vente ({{ setting('currency_symbol', 'MAD') }}) <span class="text-danger">*</span>
+                            Prix de vente TTC ({{ setting('currency_symbol', 'MAD') }}) <span class="text-danger">*</span>
                         </label>
                         <div class="input-group">
                             <span class="input-group-text bg-light text-muted">
@@ -327,6 +330,9 @@
                                    min="0" 
                                    required 
                                    oninput="updateProfitCalc()">
+                        </div>
+                        <div class="form-text text-muted small mt-1">
+                            <i class="fas fa-info-circle text-primary me-1"></i>Le prix saisi est <strong>TTC</strong> (TVA comprise).
                         </div>
                         @error('price')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -472,6 +478,18 @@
 
 @push('scripts')
 <script>
+document.getElementById('btn-create-product-top')?.addEventListener('click', function(e) {
+    const form = document.getElementById('productForm');
+    if (form) {
+        e.preventDefault();
+        if (typeof form.requestSubmit === 'function') {
+            form.requestSubmit();
+        } else {
+            form.submit();
+        }
+    }
+});
+
 let selectedFiles = [];
 
 function handleMultipleImages(event) {

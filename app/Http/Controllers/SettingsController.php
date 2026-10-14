@@ -166,7 +166,7 @@ class SettingsController extends Controller
         \Artisan::call('cache:clear');
         \Artisan::call('config:clear');
 
-        return back()->with('success', 'Settings updated successfully!');
+        return back()->with('success', 'Paramètres mis à jour avec succès !');
     }
 
     /**

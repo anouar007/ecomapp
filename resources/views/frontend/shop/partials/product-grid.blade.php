@@ -7,101 +7,92 @@
      data-last-page="{{ $products->lastPage() }}"
      data-has-pages="{{ $products->hasPages() ? '1' : '0' }}"></div>
 
-<div class="row g-2 g-sm-3 g-md-4" id="shopProductRow">
+<div class="row g-2 g-md-3" id="shopProductRow">
     @forelse($products as $product)
+    @php
+        $inCart = isset(session('cart', [])[$product->id]);
+        $isAr = app()->getLocale() === 'ar';
+    @endphp
     <div class="col-6 col-sm-6 col-md-4 col-xl-4 col-xxl-3 product-col">
-        <div class="pcard h-100 d-flex flex-column position-relative">
-            {{-- Image & Badges --}}
-            <div class="pcard-img position-relative overflow-hidden">
-                <a href="{{ route('shop.show', $product->id) }}" class="pcard-img-link d-block w-100 h-100" aria-label="{{ $product->name }}">
+        <div class="featured-pro-card selection-card pcard h-100 d-flex flex-column justify-content-between position-relative">
+            {{-- Product Image with clean white background --}}
+            <div class="featured-pro-img-box mb-2 position-relative">
+                @if(!$product->isInStock())
+                    <span class="featured-card-oos-badge">{{ $isAr ? 'نفذت الكمية' : 'Épuisé' }}</span>
+                @elseif($product->isOnSale())
+                    <span class="pcard-badge pcard-badge--sale" style="position: absolute; top: 8px; left: 8px; z-index: 2;">−{{ $product->discount_percentage }}%</span>
+                @elseif($product->created_at && $product->created_at->diffInDays(now()) < 14)
+                    <span class="pcard-badge pcard-badge--new" style="position: absolute; top: 8px; left: 8px; z-index: 2;">{{ $isAr ? 'جديد' : 'Nouveau' }}</span>
+                @endif
+                <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" class="w-100 h-100 d-flex align-items-center justify-content-center" aria-label="{{ $product->name }}">
                     <img src="{{ $product->thumbnail }}" alt="{{ $product->name }}" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/camera/hero_cinema_rig.jpg') }}';">
                 </a>
-
-                {{-- Badges --}}
-                <div class="pcard-badges">
-                    @if(!$product->isInStock())
-                        <span class="pcard-badge pcard-badge--oos">{{ __('Épuisé') }}</span>
-                    @elseif($product->created_at && $product->created_at->diffInDays(now()) < 14)
-                        <span class="pcard-badge pcard-badge--new">{{ __('Nouveau') }}</span>
-                    @elseif($product->isOnSale())
-                        <span class="pcard-badge pcard-badge--sale">−{{ $product->discount_percentage }}%</span>
-                    @endif
-                </div>
-
-                {{-- Desktop Hover overlay actions --}}
-                @php $inCart = isset(session('cart', [])[$product->id]); @endphp
-                <div class="pcard-overlay d-none d-md-flex">
-                    @if($product->isInStock())
-                    <button type="button" class="pcard-overlay-btn {{ $inCart ? 'is-in-cart' : '' }}" data-product-id="{{ $product->id }}" onclick="addToCart({{ $product->id }}, 1, this)" title="{{ $inCart ? __('Dans le panier') : __('Ajouter au panier') }}">
-                        <i class="fas {{ $inCart ? 'fa-check' : 'fa-cart-plus' }}"></i> <span>{{ $inCart ? __('Ajouté') : __('Ajouter') }}</span>
-                    </button>
-                    @endif
-                    <a href="{{ route('shop.show', $product->id) }}" class="pcard-overlay-btn pcard-overlay-btn--ghost" title="{{ __('Voir les détails') }}">
-                        <i class="fas fa-eye"></i> <span>{{ __('Détails') }}</span>
-                    </a>
-                </div>
             </div>
 
-            {{-- Info Body --}}
-            <div class="pcard-body d-flex flex-column flex-grow-1">
-                @if($product->category_name)
-                    @php
-                        $catSlug = $product->category_slug ?? optional($product->category)->slug ?? optional($product->productCategory)->slug ?? '';
-                    @endphp
-                    <a href="{{ route('shop.index', ['category' => $catSlug]) }}" 
-                       class="pcard-cat text-truncate text-decoration-none d-block shop-filter-cat-link" 
-                       data-slug="{{ $catSlug }}"
-                       title="{{ $product->category_name }}">
-                        {{ $product->category_name }}
-                    </a>
-                @else
-                    <span class="pcard-cat pcard-cat--placeholder d-block" style="visibility: hidden;" aria-hidden="true">&nbsp;</span>
-                @endif
-
-                <h4 class="pcard-name">
-                    <a href="{{ route('shop.show', $product->id) }}" title="{{ $product->name }}">{{ $product->name }}</a>
-                </h4>
-
-                <div class="pcard-rating">
-                    @php $reviewsCount = (int)($product->reviews_count ?? 0); @endphp
-                    @if($reviewsCount > 0)
-                        <div class="pcard-stars">
-                            @php $rating = round($product->reviews_avg_rating ?? 0); @endphp
-                            @for($i = 0; $i < 5; $i++)
-                                <i class="fa{{ $i < $rating ? 's' : 'r' }} fa-star"></i>
-                            @endfor
-                        </div>
-                        <span class="pcard-reviews">({{ $reviewsCount }})</span>
-                    @else
-                        <span class="pcard-trust-pill">
-                            <i class="fas fa-shield-alt me-1 text-danger"></i>{{ __('Garantie Constructeur') }}
-                        </span>
-                    @endif
+            {{-- Product Info --}}
+            <div class="mb-2 flex-grow-1 d-flex flex-column justify-content-between">
+                <div>
+                    <h3 class="featured-pro-title">
+                        <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" title="{{ $product->name }}">
+                            {{ $product->name }}
+                        </a>
+                    </h3>
                 </div>
-                
-                {{-- Price & Quick Cart Button --}}
-                <div class="pcard-bottom-row mt-auto">
-                    <div class="pcard-price">
+
+                <div>
+                    {{-- Price --}}
+                    <div class="pcard-price mb-2">
                         @if($product->isOnSale())
                             <span class="pcard-price-current text-nowrap">{{ $product->formatted_sale_price }}</span>
                             <span class="pcard-price-old text-nowrap">{{ $product->formatted_price }}</span>
-                        @else
+                        @elseif($product->price && $product->price > 0)
                             <span class="pcard-price-current text-nowrap">{{ $product->formatted_price }}</span>
+                        @else
+                            <span class="pcard-price-current text-nowrap">{{ __('Sur devis') }}</span>
                         @endif
                     </div>
 
-                    @if($product->isInStock())
-                    <button type="button" class="pcard-quick-cart-btn {{ $inCart ? 'is-in-cart' : '' }}" data-product-id="{{ $product->id }}" onclick="addToCart({{ $product->id }}, 1, this)" title="{{ $inCart ? __('Déjà dans le panier') : __('Ajouter au panier') }}" aria-label="{{ $inCart ? __('Déjà dans le panier') : __('Ajouter au panier') }}">
-                        <i class="fas {{ $inCart ? 'fa-check' : 'fa-shopping-bag' }}"></i>
-                        <span class="pcard-quick-cart-label d-none">{{ $inCart ? __('Dans le panier') : __('Ajouter') }}</span>
-                    </button>
-                    @else
-                    <span class="pcard-quick-out" title="{{ __('Rupture de stock') }}" aria-label="{{ __('Rupture de stock') }}">
-                        <i class="fas fa-ban"></i>
-                        <span class="pcard-quick-out-label d-none">{{ __('Épuisé') }}</span>
-                    </span>
-                    @endif
+                    {{-- Stock badge --}}
+                    <div class="d-flex align-items-center gap-1 mb-2">
+                        @if($product->isInStock())
+                            <span class="featured-stock-pill">
+                                <span class="stock-pulse-dot"></span>
+                                <span>{{ $isAr ? 'متوفر' : 'EN STOCK' }}</span>
+                            </span>
+                        @else
+                            <span class="featured-stock-pill featured-stock-pill--out">
+                                <i class="fas fa-times-circle text-danger" style="font-size: 10px;"></i>
+                                <span>{{ $isAr ? 'نفذت الكمية' : 'RUPTURE DE STOCK' }}</span>
+                            </span>
+                        @endif
+                    </div>
                 </div>
+            </div>
+
+            {{-- Full-width Action Button --}}
+            <div class="mt-auto pt-1">
+                @if($product->isInStock())
+                    <button type="button" 
+                            class="btn w-100 featured-pro-btn {{ $inCart ? 'is-in-cart' : '' }}" 
+                            onclick="addToCart({{ $product->id }}, 1, this)"
+                            data-product-id="{{ $product->id }}"
+                            title="{{ $inCart ? ($isAr ? 'في السلة' : 'Dans le panier') : ($isAr ? 'أضف إلى السلة' : 'Ajouter au panier') }}">
+                        @if($inCart)
+                            <i class="fas fa-check" style="font-size: 11px;"></i>
+                            <span>{{ $isAr ? 'في السلة' : 'Dans le panier' }}</span>
+                        @else
+                            <span>{{ $isAr ? 'أضف إلى السلة' : 'Ajouter au panier' }}</span>
+                        @endif
+                    </button>
+                @else
+                    <button type="button" 
+                            class="btn w-100 featured-pro-btn featured-pro-btn--out" 
+                            disabled 
+                            title="{{ $isAr ? 'نفذت الكمية' : 'Rupture de stock' }}">
+                        <i class="fas fa-ban" style="font-size: 11px;"></i>
+                        <span>{{ $isAr ? 'نفذت الكمية' : 'Rupture de stock' }}</span>
+                    </button>
+                @endif
             </div>
         </div>
     </div>

@@ -10,35 +10,60 @@
                 <div class="card border-0 shadow-sm rounded-4 mb-4">
                     <div class="card-body p-4">
                         <h4 class="fw-bold mb-4">{{ __('Shipping Information') }}</h4>
+
+                        @if(isset($errors) && $errors->any())
+                            <div class="alert alert-danger border-0 rounded-4 shadow-sm mb-4">
+                                <div class="d-flex align-items-start gap-2.5">
+                                    <i class="fas fa-exclamation-triangle text-danger fs-5 mt-1"></i>
+                                    <div>
+                                        <strong class="d-block mb-1">{{ __('Please correct the following errors:') }}</strong>
+                                        <ul class="mb-0 ps-3 small">
+                                            @foreach($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        @if(session('error'))
+                            <div class="alert alert-danger border-0 rounded-4 shadow-sm mb-4">
+                                <i class="fas fa-exclamation-circle me-1.5"></i> {{ session('error') }}
+                            </div>
+                        @endif
+
                         <form action="{{ route('checkout.store') }}" method="POST" id="checkout-form">
                             @csrf
                             <div class="row g-3">
                                 <div class="col-12">
-                                    <label class="form-label small fw-bold text-muted">{{ __('FULL NAME') }}</label>
-                                    <input type="text" name="customer_name" class="form-control bg-light border-0 py-2" required>
+                                    <label class="form-label small fw-bold text-muted">{{ __('FULL NAME') }} <span class="text-danger">*</span></label>
+                                    <input type="text" name="customer_name" class="form-control bg-light border-0 py-2" required value="{{ old('customer_name', auth()->user()->name ?? '') }}" placeholder="Ex: Mohamed Alami">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label small fw-bold text-muted">{{ __('EMAIL ADDRESS') }} <span class="text-muted fw-normal">({{ __('optional') }})</span></label>
-                                    <input type="email" name="customer_email" class="form-control bg-light border-0 py-2" placeholder="{{ __('For order confirmation') }}">
+                                    <input type="email" name="customer_email" class="form-control bg-light border-0 py-2" placeholder="{{ __('For order confirmation') }}" value="{{ old('customer_email', auth()->user()->email ?? '') }}">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">{{ __('PHONE NUMBER') }}</label>
+                                    <label class="form-label small fw-bold text-muted">{{ __('PHONE NUMBER') }} <span class="text-danger">*</span></label>
                                     <div class="input-group">
-                                        <span class="input-group-text bg-light border-0">+212</span>
+                                        <span class="input-group-text bg-light border-0"><i class="fas fa-phone-alt text-muted small"></i></span>
                                         <input type="tel" name="customer_phone" class="form-control bg-light border-0 py-2" 
-                                               placeholder="6 XX XX XX XX" 
-                                               pattern="[0-9]{9}" 
-                                               title="Enter 9 digits (e.g. 612345678)" 
-                                               required>
+                                               placeholder="06 XX XX XX XX ou +212..." 
+                                               required
+                                               value="{{ old('customer_phone', auth()->user()->phone ?? '') }}">
+                                    </div>
+                                    <div class="form-text text-muted small" style="font-size: 0.75rem;">
+                                        Ex: 0612345678, 0712345678 ou +212612345678
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label small fw-bold text-muted">ICE <span class="text-muted fw-normal">({{ __('optional') }})</span></label>
-                                    <input type="text" name="ice" class="form-control bg-light border-0 py-2" placeholder="{{ __('Common Company Identifier') }}">
+                                    <input type="text" name="ice" class="form-control bg-light border-0 py-2" placeholder="{{ __('Common Company Identifier') }}" value="{{ old('ice', auth()->user()->ice ?? '') }}">
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label small fw-bold text-muted">{{ __('ADDRESS') }}</label>
-                                    <input type="text" name="shipping_address" class="form-control bg-light border-0 py-2" required>
+                                    <label class="form-label small fw-bold text-muted">{{ __('ADDRESS') }} <span class="text-danger">*</span></label>
+                                    <input type="text" name="shipping_address" class="form-control bg-light border-0 py-2" required value="{{ old('shipping_address', auth()->user()->address ?? '') }}" placeholder="Ex: Boulevard d'Anfa, Quartier Racine, Résidence Al Amal, Étage 2">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label small fw-bold text-muted">
@@ -54,7 +79,7 @@
                                                    placeholder="{{ __('Type your city (e.g. Casablanca, Agadir, فاس...)') }}" 
                                                    autocomplete="off" 
                                                    required
-                                                   value="{{ old('shipping_city') }}">
+                                                   value="{{ old('shipping_city', auth()->user()->city ?? '') }}">
                                             <button class="btn btn-light border-0 text-muted px-3" type="button" id="city-clear-btn" style="display: none;" title="{{ __('Clear city') }}">
                                                 <i class="fas fa-times-circle"></i>
                                             </button>
@@ -71,7 +96,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label small fw-bold text-muted">{{ __('REGION') }} <span class="text-muted fw-normal">({{ __('optional') }})</span></label>
-                                    <input type="text" name="shipping_state" class="form-control bg-light border-0 py-2" placeholder="ex. Casablanca-Settat">
+                                    <input type="text" name="shipping_state" class="form-control bg-light border-0 py-2" placeholder="ex. Casablanca-Settat" value="{{ old('shipping_state', auth()->user()->state ?? '') }}">
                                 </div>
                             </div>
                         </form>
@@ -121,7 +146,7 @@
                         <hr class="my-4 opacity-10">
                         
                         <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted">{{ __('Subtotal') }}</span>
+                            <span class="text-muted">{{ __('Articles (TTC)') }}</span>
                             <span class="fw-bold" id="checkout-subtotal" 
                                   data-subtotal="{{ $total }}"
                                   data-currency-symbol="{{ setting('currency_symbol', 'DH') }}"
@@ -132,19 +157,22 @@
                                 {{ currency($total) }}
                             </span>
                         </div>
-                        <div class="d-flex justify-content-between mb-4 align-items-center">
+                        <div class="d-flex justify-content-between mb-2 align-items-center">
                             <span class="text-muted">{{ __('Shipping Fee') }}</span>
                             <span class="fw-bold" id="checkout-shipping-cost">
                                 <span class="text-muted small">{{ __('Select a city') }}</span>
                             </span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center py-3 border-top">
-                            <span class="h5 fw-bold mb-0">{{ __('Total') }}</span>
-                            <span class="h4 fw-bold text-danger mb-0" id="checkout-total">{{ currency($total) }}</span>
+                            <div>
+                                <span class="h5 fw-bold mb-0 d-block">{{ __('Total TTC') }}</span>
+                                <span class="text-muted small" style="font-size: 0.75rem;"><i class="fas fa-check-circle text-success me-1"></i>TVA comprise</span>
+                            </div>
+                            <span class="h4 fw-bold text-danger mb-0 font-heading" id="checkout-total">{{ currency($total) }}</span>
                         </div>
 
                         <button type="submit" form="checkout-form" id="checkout-submit-btn" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow">
-                            {{ __('Place Order') }} (<span id="btn-total-label">{{ currency($total) }}</span>)
+                            <i class="fas fa-lock me-2 small"></i>{{ __('Place Order') }} (<span id="btn-total-label">{{ currency($total) }}</span>)
                         </button>
                     </div>
                 </div>

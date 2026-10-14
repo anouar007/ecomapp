@@ -113,7 +113,7 @@
      MAIN SHOP LAYOUT
      ============================================= --}}
 <section class="shop-body">
-    <div class="container-shop px-3 px-md-4">
+    <div class="container-shop px-2 px-md-4">
         {{-- ── MOBILE CATEGORY SELECTOR CARD (Prominent Full-width Dropdown) ── --}}
         @php
             $catIcons = [
@@ -147,7 +147,7 @@
 
         {{-- ── MOBILE HORIZONTAL CATEGORY SCROLLER STRIP (Direct Category Pills) ── --}}
         <button type="button" class="d-none" id="mobileCategoryDropdownBtn" aria-hidden="true"></button>
-        <div class="shop-mobile-categories-wrap d-lg-none mb-2">
+        <div class="shop-mobile-categories-wrap d-none mb-2">
             <div class="shop-mobile-cat-scroll">
                 <button type="button" class="mobile-cat-pill {{ !request('category') ? 'active' : '' }}" data-slug="" data-name="{{ __('Tout le catalogue') }}">
                     <i class="fas fa-th-large"></i>
@@ -208,7 +208,7 @@
             </div>
         </div>
 
-        <div class="row gx-3 gx-xl-4 gy-4 align-items-start">
+        <div class="row gx-0 gx-lg-3 gx-xl-4 gy-3 gy-lg-4 align-items-start">
             {{-- ── SIDEBAR (Desktop) ── --}}
             <div class="col-lg-3 col-xl-3 d-none d-lg-block shop-sidebar-col">
                 <div class="shop-sidebar sticky-top" style="top: 24px;">
@@ -276,7 +276,7 @@
                 </div>
 
                 {{-- Skeleton Loader Grid (Shimmer during AJAX) --}}
-                <div id="shopSkeletonGrid" class="row g-2 g-sm-3 g-md-4 d-none mb-4">
+                <div id="shopSkeletonGrid" class="row g-2 g-md-3 d-none mb-4">
                     @for($s = 0; $s < 6; $s++)
                     <div class="col-6 col-sm-6 col-md-4 col-xl-4 col-xxl-3 product-col">
                         <div class="shop-skeleton-card">

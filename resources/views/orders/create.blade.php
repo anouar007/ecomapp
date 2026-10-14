@@ -256,9 +256,9 @@
                                 <thead class="bg-light small text-muted text-uppercase">
                                     <tr>
                                         <th class="border-0 ps-3">Produit</th>
-                                        <th class="border-0 text-center" style="width: 130px;">Prix Unit.</th>
+                                        <th class="border-0 text-center" style="width: 130px;">P.U. TTC</th>
                                         <th class="border-0 text-center" style="width: 140px;">Quantité</th>
-                                        <th class="border-0 text-end pe-3" style="width: 130px;">Total</th>
+                                        <th class="border-0 text-end pe-3" style="width: 130px;">Total TTC</th>
                                         <th class="border-0 text-center" style="width: 50px;"></th>
                                     </tr>
                                 </thead>

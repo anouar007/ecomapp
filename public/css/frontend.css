@@ -44,8 +44,8 @@
     --shadow-accent: 0 10px 40px rgba(25,100,214,.3);
 
     /* Typography */
-    --font-heading: 'Inter', system-ui, sans-serif;
-    --font-body:    'Inter', system-ui, sans-serif;
+    --font-heading: 'Roboto', sans-serif;
+    --font-body:    'Roboto', sans-serif;
 }
 
 /* ── Base ── */
@@ -62,7 +62,7 @@ body {
 
 h1,h2,h3,h4,h5,h6 {
     font-family: var(--font-heading);
-    font-weight: 700;
+    font-weight: 400;
     color: var(--text-dark);
     line-height: 1.2;
 }
@@ -1900,14 +1900,13 @@ a { text-decoration: none; }
 .pcard-badge--oos  { background: #6b7280; }
 
 /* Hover overlay */
-.pcard-overlay {
-    position: absolute; inset: 0;
-    background: rgba(26,26,46,.82);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 10px;
-    opacity: 0; transition: opacity .25s;
+.pcard-overlay,
+.pcard:hover .pcard-overlay {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
 }
-.pcard:hover .pcard-overlay { opacity: 1; }
 .pcard-overlay-btn {
     background: var(--accent); color: #fff; border: none;
     border-radius: 30px; padding: 10px 22px;
@@ -2715,4 +2714,35 @@ section {
 
 .hero-slider-section {
     overflow: hidden !important;
+}
+
+/* ================================================================
+   FRONTEND ROBOTO & NORMAL FONT WEIGHT SYSTEM
+   ================================================================ */
+body, input, button, select, textarea, p, h1, h2, h3, h4, h5, h6,
+span:not([class*="fa"]):not([class*="icon"]):not(.fas):not(.far):not(.fab):not(.fa-solid):not(.fa-regular):not(.fa-brands),
+a:not([class*="fa"]):not(.fas):not(.far):not(.fab),
+label, li, td, th, dt, dd, .nav-link, .btn, .badge {
+    font-family: "Roboto", sans-serif !important;
+}
+
+b, strong, .fw-bold, .fw-semibold, .fw-bolder, .fw-extrabold,
+h1, h2, h3, h4, h5, h6, th, dt, .btn, .badge, .product-price, .price-display,
+.nav-link-item, .brand-title, .page-title, .hero-title, .section-title,
+.product-title, .product-card-title, .section-eyebrow {
+    font-weight: 400 !important;
+}
+
+/* Explicitly preserve Font Awesome 6 icons */
+.fa, .fas, .fa-solid {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900 !important;
+}
+.far, .fa-regular {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 400 !important;
+}
+.fab, .fa-brands {
+    font-family: "Font Awesome 6 Brands" !important;
+    font-weight: 400 !important;
 }

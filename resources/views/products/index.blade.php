@@ -377,7 +377,7 @@
                         <th class="col-product">Produit</th>
                         <th class="col-sku">SKU</th>
                         <th class="col-category">Catégorie</th>
-                        <th class="col-price">Prix</th>
+                        <th class="col-price">Prix TTC</th>
                         <th class="col-stock">Stock</th>
                         <th class="col-status">Statut</th>
                         <th class="col-actions text-end">Actions</th>

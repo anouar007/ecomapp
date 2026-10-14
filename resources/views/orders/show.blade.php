@@ -150,9 +150,9 @@
                         <thead class="bg-light text-muted small text-uppercase">
                             <tr>
                                 <th class="border-0 ps-3">Produit</th>
-                                <th class="border-0 text-center">Prix Unitaire</th>
+                                <th class="border-0 text-center">P.U. TTC</th>
                                 <th class="border-0 text-center">Quantité</th>
-                                <th class="border-0 text-end pe-3">Total</th>
+                                <th class="border-0 text-end pe-3">Total TTC</th>
                             </tr>
                         </thead>
                         <tbody>
