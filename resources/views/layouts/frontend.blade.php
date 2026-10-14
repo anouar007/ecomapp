@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('meta_title', setting('app_name', 'WINA SHOP') . ' — ' . __('Matériel Photo, Vidéo, Caméras & Drones au Maroc'))</title>
-    <meta name="description" content="@yield('meta_description', setting('app_description', 'WINA SHOP Casablanca : Votre référence au Maroc pour le matériel photo & vidéo professionnel. Caméras Sony, Canon, drones & stabilisateurs DJI, optiques, éclairage studio Godox. Garantie 2 ans, devis proforma INDH et livraison partout au Maroc.'))">
+    <meta name="description" content="@yield('meta_description', setting('app_description', 'WINA SHOP Casablanca : Votre référence au Maroc pour le matériel photo & vidéo professionnel. Caméras Sony, Canon, drones & stabilisateurs DJI, optiques, éclairage studio Godox. Garantie, devis proforma INDH et livraison partout au Maroc.'))">
     <meta name="keywords" content="@yield('meta_keywords', setting('app_name', 'WINA SHOP') . ', Winashop, matériel photo Maroc, vente caméras Casablanca, caméras cinéma, Sony Alpha Maroc, Canon EOS, DJI Osmo, drones DJI, stabilisateurs gimbals, éclairage Godox, objectifs photo, devis proforma INDH, facture avec ICE, matériel audiovisuel, كاميرات المغرب, بيع معدات التصوير الدار البيضاء, درون دي جي اي, إضاءة استوديو, شراء كاميرا كانون سوني')">
     <meta name="robots" content="@yield('meta_robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')">
     <meta name="author" content="{{ setting('app_name', 'WINA SHOP') }}">

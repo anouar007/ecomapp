@@ -327,7 +327,7 @@
                                         {{ __('Suivi de commande & livraison') }}
                                     </option>
                                     <option value="after_sales" {{ old('subject') === 'after_sales' ? 'selected' : '' }}>
-                                        {{ __('Service Après-Vente (SAV) & Garantie 2 Ans') }}
+                                        {{ __('Service Après-Vente (SAV) & Garantie') }}
                                     </option>
                                     <option value="other" {{ old('subject') === 'other' ? 'selected' : '' }}>
                                         {{ __('Autre demande technique') }}

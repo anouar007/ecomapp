@@ -296,27 +296,6 @@
                         @endif
                     </div>
 
-                    @php
-                        $cleanDescText = $product->clean_description;
-                        $shortSnippet = null;
-                        if (!empty($cleanDescText)) {
-                            $firstLine = trim(explode("\n", $cleanDescText)[0] ?? $cleanDescText);
-                            $shortSnippet = Str::limit($firstLine, 210);
-                        }
-                    @endphp
-                    @if($shortSnippet)
-                    <div class="pdp-short-desc">
-                        <p class="mb-1">{{ $shortSnippet }}</p>
-                        @if(strlen($cleanDescText) > 210)
-                            <a href="#pdp-full-description" class="pdp-read-more-link">
-                                {{ __('Voir la fiche complète') }} <i class="fas fa-arrow-down ms-1"></i>
-                            </a>
-                        @endif
-                    </div>
-                    @endif
-
-                    <div class="pdp-divider"></div>
-
                     @if($product->isInStock())
                     @php
                         $isInCart = isset(session('cart', [])[$product->id]);
@@ -335,8 +314,8 @@
                     <form id="addToCartForm" onsubmit="pdpAddToCart(event)">
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
-                        <div class="pdp-cart-row">
-                            <div class="pdp-qty-wrap">
+                        <div class="pdp-cart-row d-flex flex-row flex-nowrap align-items-stretch w-100">
+                            <div class="pdp-qty-wrap flex-shrink-0">
                                 <button type="button" class="pdp-qty-btn" onclick="pdpChangeQty(-1)">
                                     <i class="fas fa-minus"></i>
                                 </button>
@@ -347,7 +326,7 @@
                                 </button>
                             </div>
                             <button type="submit" id="addToCartBtn" 
-                                    class="pdp-add-btn {{ $isInCart ? 'is-in-cart' : '' }}" 
+                                    class="pdp-add-btn flex-grow-1 text-nowrap {{ $isInCart ? 'is-in-cart' : '' }}" 
                                     data-product-id="{{ $product->id }}" 
                                     title="{{ $isInCart ? $inCartLabel : $notInCartLabel }}">
                                 <i class="fas {{ $isInCart ? 'fa-check' : 'fa-cart-plus' }} me-2"></i>
@@ -356,15 +335,35 @@
                         </div>
                     </form>
                     @else
-                    <div class="pdp-cart-row">
-                        <button type="button" id="addToCartBtn" class="pdp-add-btn pdp-add-btn--out" disabled>
+                    <div class="pdp-cart-row d-flex flex-row flex-nowrap align-items-stretch w-100">
+                        <button type="button" id="addToCartBtn" class="pdp-add-btn pdp-add-btn--out w-100 text-nowrap" disabled>
                             <i class="fas fa-ban me-2"></i>
                             <span id="addToCartText">{{ __('Out of stock') }}</span>
                         </button>
                     </div>
                     @endif
 
-                    <div class="pdp-trust-row">
+                    @php
+                        $cleanDescText = $product->clean_description;
+                        $shortSnippet = null;
+                        if (!empty($cleanDescText)) {
+                            $firstLine = trim(explode("\n", $cleanDescText)[0] ?? $cleanDescText);
+                            $shortSnippet = Str::limit($firstLine, 210);
+                        }
+                    @endphp
+                    @if($shortSnippet)
+                    <div class="pdp-divider my-3"></div>
+                    <div class="pdp-short-desc">
+                        <p class="mb-1">{{ $shortSnippet }}</p>
+                        @if(strlen($cleanDescText) > 210)
+                            <a href="#pdp-full-description" class="pdp-read-more-link">
+                                {{ __('Voir la fiche complète') }} <i class="fas fa-arrow-down ms-1"></i>
+                            </a>
+                        @endif
+                    </div>
+                    @endif
+
+                    <div class="pdp-trust-row mt-3">
                         <div class="pdp-trust-pill"><i class="fas fa-shield-halved"></i> {{ __('2-Year Warranty') }}</div>
                         <div class="pdp-trust-pill"><i class="fas fa-truck-fast"></i> {{ __('Secure Delivery 24/48h') }}</div>
                         <div class="pdp-trust-pill"><i class="fas fa-file-invoice"></i> {{ __('ICE Invoicing') }}</div>
@@ -508,7 +507,7 @@
                     {{ __('See all') }} <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left ms-1' : 'fa-arrow-right ms-1' }}"></i>
                 </a>
             </div>
-            <div class="row g-2 g-md-3">
+            <div class="row g-2 home-products-grid">
                 @foreach($relatedProducts as $related)
                 @php
                     $relInCart = isset(session('cart', [])[$related->id]);
