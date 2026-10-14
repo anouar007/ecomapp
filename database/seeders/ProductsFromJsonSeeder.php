@@ -230,11 +230,31 @@ class ProductsFromJsonSeeder extends Seeder
                 $stock = 0;
             }
 
-            // F. Description
+            // F. Description (Clean of all HTML tags, scripts, and escaped characters)
             $desc = trim($item['Description'] ?? '');
             if ($desc === '') {
                 $desc = trim($item['Description courte'] ?? '');
             }
+            $desc = str_replace(["\\r\\n", "\\n", "\\r", "\\,", "\\\""], ["\n", "\n", "\n", ",", "\""], $desc);
+            $desc = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $desc);
+            $desc = preg_replace('/<style\b[^>]*>(.*?)<\/style>/is', '', $desc);
+            $desc = strip_tags($desc);
+            $desc = html_entity_decode($desc, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $descLines = array_map('trim', explode("\n", $desc));
+            $cleanLines = [];
+            $emptyCount = 0;
+            foreach ($descLines as $line) {
+                if ($line === '') {
+                    $emptyCount++;
+                    if ($emptyCount <= 1) {
+                        $cleanLines[] = '';
+                    }
+                } else {
+                    $emptyCount = 0;
+                    $cleanLines[] = $line;
+                }
+            }
+            $desc = trim(implode("\n", $cleanLines));
 
             // G. Resolve local images from /public/images/products
             $imagesStr = $item['Images'] ?? '';

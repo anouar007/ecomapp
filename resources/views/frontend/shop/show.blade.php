@@ -357,7 +357,10 @@
         </div>
 
         {{-- DEDICATED PRODUCT DESCRIPTION CONTAINER --}}
-        @if($product->description)
+        @php
+            $cleanDescription = $product->clean_description;
+        @endphp
+        @if(!empty($cleanDescription))
         <div class="pdp-description-wrapper mt-4">
             <div class="pdp-section-card pdp-description-card">
                 <div class="pdp-description-header d-flex align-items-center justify-content-between pb-3 mb-4 border-bottom flex-wrap gap-2">
@@ -369,12 +372,12 @@
                         <i class="fas fa-check-double text-success me-1"></i>{{ __('Fiche technique officielle') }}
                     </span>
                 </div>
-                <div class="pdp-description entry-content">
-                    @if(strip_tags($product->description) !== $product->description)
-                        {!! $product->description !!}
-                    @else
-                        {!! nl2br(e($product->description)) !!}
-                    @endif
+                <div class="pdp-description pdp-description--clean">
+                    @foreach(explode("\n\n", $cleanDescription) as $para)
+                        @if(trim($para))
+                            <p class="pdp-clean-p">{!! nl2br(e(trim($para))) !!}</p>
+                        @endif
+                    @endforeach
                 </div>
             </div>
         </div>

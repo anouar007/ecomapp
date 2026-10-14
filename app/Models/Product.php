@@ -171,6 +171,48 @@ class Product extends Model
     }
 
     /**
+     * Get clean plain-text description free of all HTML tags, scripts, and escaped characters.
+     */
+    public function getCleanDescriptionAttribute(): string
+    {
+        $text = $this->description ?? '';
+        if (empty($text)) {
+            return '';
+        }
+
+        // Remove literal escaped newlines and slashes (\r\n, \n, \r, \,)
+        $text = str_replace(["\\r\\n", "\\n", "\\r", "\\,", "\\\""], ["\n", "\n", "\n", ",", "\""], $text);
+
+        // Strip scripts and styles
+        $text = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $text);
+        $text = preg_replace('/<style\b[^>]*>(.*?)<\/style>/is', '', $text);
+
+        // Strip all HTML tags
+        $text = strip_tags($text);
+
+        // Decode HTML entities
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        // Clean extra whitespace and excessive empty lines
+        $lines = array_map('trim', explode("\n", $text));
+        $cleanLines = [];
+        $emptyCount = 0;
+        foreach ($lines as $line) {
+            if ($line === '') {
+                $emptyCount++;
+                if ($emptyCount <= 1) {
+                    $cleanLines[] = '';
+                }
+            } else {
+                $emptyCount = 0;
+                $cleanLines[] = $line;
+            }
+        }
+
+        return trim(implode("\n", $cleanLines));
+    }
+
+    /**
      * Check if product is in stock
      */
     public function isInStock()

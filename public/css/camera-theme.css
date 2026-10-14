@@ -10791,48 +10791,35 @@ body:has(.cart-page) .floating-checkout-wrap {
     border-bottom: 1px solid #f1f5f9;
 }
 
+.pdp-description,
+.pdp-description--clean,
 .pdp-description-wrapper .pdp-description {
+    max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
+    overflow-y: visible !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+    scrollbar-width: none !important;
     font-size: clamp(0.92rem, 1.4vw, 1rem);
-    line-height: 1.8;
+    line-height: 1.85;
     color: #334155;
     margin-bottom: 0;
 }
 
-.pdp-description-wrapper .pdp-description img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 14px;
-    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
-    margin: 16px auto;
-    display: block;
+.pdp-description::-webkit-scrollbar,
+.pdp-description--clean::-webkit-scrollbar,
+.pdp-description-wrapper .pdp-description::-webkit-scrollbar {
+    display: none !important;
 }
 
-.pdp-description-wrapper .pdp-description table {
-    width: 100% !important;
-    max-width: 100%;
-    overflow-x: auto;
-    display: block;
-    margin: 18px 0;
-    border-collapse: collapse;
-}
-
-.pdp-description-wrapper .pdp-description h1,
-.pdp-description-wrapper .pdp-description h2,
-.pdp-description-wrapper .pdp-description h3,
-.pdp-description-wrapper .pdp-description h4 {
-    color: var(--brand-black, #0f172a);
-    font-family: var(--font-heading);
-    font-weight: 700;
-    margin-top: 1.5rem;
-    margin-bottom: 0.75rem;
-}
-
-.pdp-description-wrapper .pdp-description ul,
-.pdp-description-wrapper .pdp-description ol {
-    padding-inline-start: 1.5rem;
+.pdp-clean-p {
+    font-size: clamp(0.92rem, 1.35vw, 1rem);
+    line-height: 1.85;
+    color: #334155;
     margin-bottom: 1.25rem;
 }
 
-.pdp-description-wrapper .pdp-description li {
-    margin-bottom: 0.4rem;
+.pdp-clean-p:last-child {
+    margin-bottom: 0;
 }
