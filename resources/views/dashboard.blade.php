@@ -19,7 +19,7 @@
             <a href="{{ route('products.create') }}" class="btn-brand-primary">
                 <i class="fas fa-plus"></i> <span>Nouveau produit</span>
             </a>
-            <a href="{{ route('invoices.create') }}" class="btn-brand-outline d-none d-sm-inline-flex">
+            <a href="{{ route('invoices.create') }}" class="btn-brand-outline">
                 <i class="fas fa-file-invoice text-danger"></i> <span>+ Devis / Facture</span>
             </a>
         </div>
@@ -536,8 +536,8 @@
                     backgroundColor: '#0f172a',
                     titleColor: '#ffffff',
                     bodyColor: '#ffffff',
-                    titleFont: { size: 12, family: "'Plus Jakarta Sans', sans-serif" },
-                    bodyFont: { size: 12, weight: 'bold', family: "'Plus Jakarta Sans', sans-serif" },
+                    titleFont: { size: 12, family: "'Roboto', sans-serif" },
+                    bodyFont: { size: 12, weight: 'normal', family: "'Roboto', sans-serif" },
                     padding: 10,
                     cornerRadius: 8,
                     callbacks: {
@@ -553,7 +553,7 @@
                     grid: { borderDash: [4, 4], color: '#f1f5f9' },
                     ticks: { 
                         color: '#94a3b8', 
-                        font: { size: 10, family: "'Plus Jakarta Sans', sans-serif" },
+                        font: { size: 10, family: "'Roboto', sans-serif" },
                         maxTicksLimit: 5,
                         callback: function(val) {
                             return val >= 1000 ? (val/1000) + 'k DH' : val + ' DH';
@@ -564,10 +564,10 @@
                     grid: { display: false },
                     ticks: { 
                         color: '#94a3b8', 
-                        font: { size: 10, family: "'Plus Jakarta Sans', sans-serif" },
+                        font: { size: 10, family: "'Roboto', sans-serif" },
                         maxRotation: 0,
                         autoSkip: true,
-                        maxTicksLimit: 7
+                        maxTicksLimit: window.innerWidth < 576 ? 4 : 7
                     }
                 }
             }

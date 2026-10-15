@@ -31,7 +31,12 @@
             --font-family: "Roboto", sans-serif;
             --font-heading: "Roboto", sans-serif;
             --font-size-base: 14px;
-            --border-radius: 12px;
+            --border-radius: 8px !important;
+            --bs-border-radius: 8px !important;
+            --bs-border-radius-sm: 8px !important;
+            --bs-border-radius-lg: 8px !important;
+            --bs-border-radius-xl: 8px !important;
+            --bs-border-radius-pill: 8px !important;
         }
         
         body, input, button, select, textarea, .brand-title, .page-title, .navbar-brand, table, th, td, p, span:not([class*="fa"]):not([class*="icon"]):not(.fas):not(.far):not(.fab):not(.fa-solid):not(.fa-regular):not(.fa-brands), a:not([class*="fa"]):not(.fas):not(.far):not(.fab), label, li, small, dt, dd {
@@ -62,6 +67,43 @@
         .fab, .fa-brands {
             font-family: "Font Awesome 6 Brands" !important;
             font-weight: 400 !important;
+        }
+
+        /* Universal 8px Border Radius System */
+        [class*="rounded"],
+        .rounded,
+        .rounded-1,
+        .rounded-2,
+        .rounded-3,
+        .rounded-4,
+        .rounded-5,
+        .rounded-pill,
+        .btn,
+        .badge,
+        .card,
+        .card-header,
+        .card-footer,
+        .modal-content,
+        .dropdown-menu,
+        .alert,
+        input,
+        select,
+        textarea,
+        .form-control,
+        .form-select,
+        .input-group,
+        .input-group-text,
+        .page-link,
+        .nav-pills .nav-link,
+        .stat-card-pro,
+        .table-responsive {
+            border-radius: 8px !important;
+        }
+
+        .badge-dot,
+        .status-dot,
+        .live-dot {
+            border-radius: 50% !important;
         }
     </style>
 </head>
@@ -97,29 +139,48 @@
                 <span>Guide</span>
             </button>
 
-            <div class="user-avatar" id="user-menu-trigger">
-                {{ strtoupper(substr(auth()->user()?->name ?? 'A', 0, 1)) }}
-            </div>
-            <div class="user-dropdown">
-                <div class="user-dropdown-header">
-                    <div class="user-dropdown-name">{{ auth()->user()?->name ?? 'Admin' }}</div>
-                    <div class="user-dropdown-email">{{ auth()->user()?->email ?? '' }}</div>
+            <div class="dropdown navbar-user-dropdown">
+                <button type="button" 
+                        class="user-avatar" 
+                        id="user-menu-trigger" 
+                        data-bs-toggle="dropdown" 
+                        data-bs-display="static" 
+                        data-bs-auto-close="true"
+                        aria-expanded="false" 
+                        title="{{ auth()->user()?->name ?? 'Compte' }}">
+                    {{ strtoupper(substr(auth()->user()?->name ?? 'A', 0, 1)) }}
+                </button>
+                <div class="dropdown-menu dropdown-menu-end user-dropdown" 
+                     id="user-dropdown-menu" 
+                     aria-labelledby="user-menu-trigger">
+                    <div class="user-dropdown-header">
+                        <div class="user-dropdown-name">{{ auth()->user()?->name ?? 'Admin' }}</div>
+                        <div class="user-dropdown-email text-truncate" style="max-width: 220px;">{{ auth()->user()?->email ?? '' }}</div>
+                        @if(auth()->user()?->role)
+                        <div class="mt-1">
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle" style="font-size: 0.72rem; padding: 2px 6px;">
+                                {{ ucfirst(auth()->user()->role) }}
+                            </span>
+                        </div>
+                        @endif
+                    </div>
+                    <a href="{{ route('profile.show') }}" class="user-dropdown-item">
+                        <i class="fas fa-user text-muted me-2"></i>
+                        <span>Mon Profil</span>
+                    </a>
+                    <a href="{{ route('profile.edit') }}" class="user-dropdown-item">
+                        <i class="fas fa-user-pen text-muted me-2"></i>
+                        <span>Modifier le profil</span>
+                    </a>
+                    <div class="dropdown-divider my-1 border-top" style="opacity: 0.15;"></div>
+                    <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
+                        @csrf
+                        <button type="submit" class="user-dropdown-item text-danger" style="width: 100%;">
+                            <i class="fas fa-arrow-right-from-bracket text-danger me-2"></i>
+                            <span>Déconnexion</span>
+                        </button>
+                    </form>
                 </div>
-                <a href="{{ route('profile.show') }}" class="user-dropdown-item">
-                    <i class="fas fa-user"></i>
-                    Mon Profil
-                </a>
-                <a href="{{ route('profile.edit') }}" class="user-dropdown-item">
-                    <i class="fas fa-edit"></i>
-                    Modifier le profil
-                </a>
-                <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
-                    @csrf
-                    <button type="submit" class="user-dropdown-item" style="width: 100%;">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Déconnexion
-                    </button>
-                </form>
             </div>
         </div>
     </nav>
@@ -261,6 +322,14 @@
                 title: '{{ session('error') }}'
             });
         @endif
+
+        // Initialize Bootstrap dropdown
+        document.addEventListener('DOMContentLoaded', function () {
+            const trigger = document.getElementById('user-menu-trigger');
+            if (trigger && typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
+                bootstrap.Dropdown.getOrCreateInstance(trigger);
+            }
+        });
     </script>
     @stack('scripts')
 </body>

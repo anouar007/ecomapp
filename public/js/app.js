@@ -129,21 +129,3 @@ function toggleSubmenu(e) {
     }
 }
 
-// Toggle profile dropdown (if exists)
-function toggleProfileMenu() {
-    const dropdown = document.getElementById('profileDropdown');
-    if (dropdown) {
-        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-    }
-}
-
-// Close profile dropdown when clicking outside
-document.addEventListener('click', function (e) {
-    const dropdown = document.getElementById('profileDropdown');
-    const userMenu = document.querySelector('.user-menu');
-
-    if (dropdown && userMenu && !userMenu.contains(e.target)) {
-        dropdown.style.display = 'none';
-    }
-});
-

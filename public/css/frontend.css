@@ -31,10 +31,13 @@
     --section-py: 90px;
 
     /* Radius */
-    --radius-sm: 6px;
-    --radius-md: 12px;
-    --radius-lg: 20px;
-    --radius-xl: 28px;
+    --radius-sm: 8px;
+    --radius-md: 8px;
+    --radius-lg: 8px;
+    --radius-xl: 8px;
+    --border-radius: 8px;
+    --bs-border-radius: 8px;
+    --bs-border-radius-pill: 8px;
 
     /* Shadows */
     --shadow-xs: 0 1px 3px rgba(0, 0, 0, .05);
@@ -3970,4 +3973,106 @@ dt,
 .fa-brands {
     font-family: "Font Awesome 6 Brands" !important;
     font-weight: 400 !important;
+}
+
+/* ================================================================
+   UNIVERSAL 8PX BORDER RADIUS SYSTEM
+   ================================================================ */
+[class*="rounded"],
+.rounded,
+.rounded-1,
+.rounded-2,
+.rounded-3,
+.rounded-4,
+.rounded-5,
+.rounded-pill,
+.rounded-top,
+.rounded-bottom,
+.rounded-start,
+.rounded-end,
+.btn,
+.btn-group,
+.btn-group > .btn,
+button:not([class*="pulse"]):not([class*="dot"]),
+input,
+select,
+textarea,
+.form-control,
+.form-select,
+.input-group,
+.input-group-text,
+.badge,
+.card,
+.card-header,
+.card-footer,
+.card-body,
+.pcard,
+.pcard-img,
+.pcard-img img,
+.featured-pro-card,
+.featured-pro-img-box,
+.selection-showcase-box,
+.pdp-card,
+.pdp-section-card,
+.pdp-main-image-wrap,
+.pdp-thumb,
+.pdp-thumb img,
+.pdp-qty-wrap,
+.pdp-add-btn,
+.pdp-trust-pill,
+.popular-category-card,
+.popular-cat-img-wrap,
+.popular-cat-img-wrap img,
+.client-review-box,
+.indh-step-card-pro,
+.indh-guarantee-pill,
+.indh-feature-pill,
+.indh-banner-cta,
+.indh-step-icon-slot,
+.indh-step-btn,
+.shop-filter-card,
+.shop-toolbar,
+.product-card-v2,
+.cat-card-v2,
+.service-card,
+.app-card,
+.process-step,
+.usp-mini-card,
+.review-card,
+.faq-item,
+.newsletter-banner,
+.newsletter-v2-inner,
+.hero-slide,
+.hero-badge,
+.order-card,
+.modal-content,
+.dropdown-menu,
+.dropdown-item,
+.offcanvas,
+.alert,
+.page-link,
+.header-search-wrap,
+.header-search-box,
+.header-search-dropdown,
+.action-btn-circle,
+.btn-cat-swiper-arrow,
+.brand-chip,
+.filter-pill,
+.trust-pill,
+.badge-v2,
+.featured-stock-pill,
+.featured-brand-chip,
+.pcard-badge,
+.about-hero-pill,
+.category-row-card {
+    border-radius: 8px !important;
+}
+
+/* Pulse dots retain circular geometry */
+.stock-pulse-dot,
+.tally-dot,
+.about-pulse-dot,
+.nav-live-pulse,
+.badge-dot {
+    border-radius: 50% !important;
 }

@@ -118,17 +118,17 @@
   {
     "@context": "https://schema.org/",
     "@type": "Product",
-    "name": "{{ addslashes($product->name) }}",
+    "name": {!! json_encode($product->name) !!},
     "image": {!! json_encode($allImages) !!},
-    "description": "{{ addslashes($cleanDesc) }}",
+    "description": {!! json_encode($cleanDesc) !!},
     "sku": "{{ $product->sku ?? 'WINA-' . $product->id }}",
     "mpn": "{{ $product->sku ?? 'WINA-' . $product->id }}",
     "brand": {
       "@type": "Brand",
-      "name": "{{ addslashes($brandGuess) }}"
+      "name": {!! json_encode($brandGuess) !!}
     },
     @if($product->category)
-    "category": "{{ addslashes($product->category->name) }}",
+    "category": {!! json_encode($product->category->name) !!},
     @endif
     "offers": {
       "@type": "Offer",
@@ -265,7 +265,7 @@
 
                     <h1 class="pdp-title">{{ $product->name }}</h1>
 
-                    @if($reviews->total() > 0)
+                    @if(isset($reviews) && $reviews->total() > 0)
                     <div class="pdp-rating-row">
                         <div class="pdp-stars">
                             @php $avg = $product->reviews()->avg('rating') ?? 0; @endphp
@@ -326,7 +326,7 @@
                                 </button>
                             </div>
                             <button type="submit" id="addToCartBtn" 
-                                    class="pdp-add-btn flex-grow-1 text-nowrap {{ $isInCart ? 'is-in-cart' : '' }}" 
+                                    class="pdp-add-btn {{ $isInCart ? 'is-in-cart' : '' }} flex-grow-1 text-nowrap" 
                                     data-product-id="{{ $product->id }}" 
                                     title="{{ $isInCart ? $inCartLabel : $notInCartLabel }}">
                                 <i class="fas {{ $isInCart ? 'fa-check' : 'fa-cart-plus' }} me-2"></i>
@@ -342,6 +342,20 @@
                         </button>
                     </div>
                     @endif
+
+                    {{-- Commander Button (Shown when cart has at least 1 product) --}}
+                    @php
+                        $cartTotalCount = array_sum(array_column(session('cart', []), 'quantity'));
+                        $currentLocale = app()->getLocale();
+                        $commanderLabel = $currentLocale === 'ar' ? 'إتمام الطلب' : ($currentLocale === 'en' ? 'Checkout' : 'Commander');
+                    @endphp
+                    <div id="pdpCommanderWrap" class="pdp-commander-wrap mt-2 {{ $cartTotalCount > 0 ? '' : 'd-none' }}">
+                        <button type="button" id="pdpCommanderBtn" class="pdp-commander-btn w-100" onclick="pdpCommanderAction(event)">
+                            <i class="fas fa-shopping-bag me-2"></i>
+                            <span id="pdpCommanderText">{{ $commanderLabel }}</span>
+                            <i class="fas {{ $currentLocale === 'ar' ? 'fa-arrow-left ms-2' : 'fa-arrow-right ms-2' }}"></i>
+                        </button>
+                    </div>
 
                     @php
                         $cleanDescText = $product->clean_description;
@@ -515,51 +529,48 @@
                 @endphp
                 <div class="col-6 col-md-3">
                     <div class="featured-pro-card selection-card h-100 d-flex flex-column justify-content-between position-relative">
+                        {{-- Stock Status Badge at Top Left of Card --}}
+                        @if($related->isInStock())
+                            <span class="featured-stock-pill featured-stock-badge-corner">
+                                <span class="stock-pulse-dot"></span>
+                                <span>{{ $isAr ? 'متوفر' : 'EN STOCK' }}</span>
+                            </span>
+                        @else
+                            <span class="featured-stock-pill featured-stock-pill--out featured-stock-badge-corner">
+                                <i class="fas fa-times-circle text-danger" style="font-size: 10px;"></i>
+                                <span>{{ $isAr ? 'نفذت الكمية' : 'RUPTURE DE STOCK' }}</span>
+                            </span>
+                        @endif
+
                         {{-- Product Image with clean white background --}}
-                        <div class="featured-pro-img-box mb-2 position-relative">
-                            @if(!$related->isInStock())
-                                <span class="featured-card-oos-badge">{{ $isAr ? 'نفذت الكمية' : 'Épuisé' }}</span>
-                            @elseif($related->isOnSale())
-                                <span class="pcard-badge pcard-badge--sale" style="position: absolute; top: 8px; left: 8px; z-index: 2;">−{{ $related->discount_percentage }}%</span>
-                            @endif
+                        <div class="featured-pro-img-box mb-2">
                             <a href="{{ route('shop.show', $related->slug ?: $related->id) }}" class="w-100 h-100 d-flex align-items-center justify-content-center">
                                 <img src="{{ $related->thumbnail }}"
                                      alt="{{ $related->name }}" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                             </a>
                         </div>
-                        <div class="mb-2 flex-grow-1 d-flex flex-column justify-content-between">
+                        <div class="featured-pro-body mb-1 flex-grow-1 d-flex flex-column justify-content-between">
                             <div>
                                 <h3 class="featured-pro-title">
-                                    <a href="{{ route('shop.show', $related->slug ?: $related->id) }}">{{ Str::limit($related->name, 42) }}</a>
+                                    <a href="{{ route('shop.show', $related->slug ?: $related->id) }}">{{ $related->name }}</a>
                                 </h3>
                             </div>
                             <div>
-                                <div class="pcard-price mb-2">
+                                <div class="pcard-price mb-0">
                                     @if($related->isOnSale())
                                         <span class="pcard-price-current text-nowrap">{{ $related->formatted_sale_price }}</span>
                                         <span class="pcard-price-old text-nowrap">{{ $related->formatted_price }}</span>
                                     @elseif($related->price && $related->price > 0)
                                         <span class="pcard-price-current text-nowrap">{{ $related->formatted_price }}</span>
+                                        <span class="pcard-price-old text-nowrap invisible" aria-hidden="true">&nbsp;</span>
                                     @else
                                         <span class="pcard-price-current text-nowrap">{{ __('Sur devis') }}</span>
-                                    @endif
-                                </div>
-                                <div class="d-flex align-items-center gap-1 mb-2">
-                                    @if($related->isInStock())
-                                        <span class="featured-stock-pill">
-                                            <span class="stock-pulse-dot"></span>
-                                            <span>{{ $isAr ? 'متوفر' : 'EN STOCK' }}</span>
-                                        </span>
-                                    @else
-                                        <span class="featured-stock-pill featured-stock-pill--out">
-                                            <i class="fas fa-times-circle text-danger" style="font-size: 10px;"></i>
-                                            <span>{{ $isAr ? 'نفذت الكمية' : 'RUPTURE DE STOCK' }}</span>
-                                        </span>
+                                        <span class="pcard-price-old text-nowrap invisible" aria-hidden="true">&nbsp;</span>
                                     @endif
                                 </div>
                             </div>
                         </div>
-                        <div class="mt-auto pt-1">
+                        <div class="featured-pro-action mt-auto pt-0">
                             @if($related->isInStock())
                                 <button type="button" 
                                         class="btn w-100 featured-pro-btn {{ $relInCart ? 'is-in-cart' : '' }}" 
@@ -633,8 +644,82 @@ function pdpAddToCart(event) {
     const productId = {{ $product->id }};
 
     if (typeof window.addToCart === 'function') {
-        window.addToCart(productId, quantity, btn);
+        const promise = window.addToCart(productId, quantity, btn);
+        if (promise && typeof promise.then === 'function') {
+            promise.then(() => {
+                const commanderWrap = document.getElementById('pdpCommanderWrap');
+                if (commanderWrap) {
+                    commanderWrap.classList.remove('d-none');
+                }
+            });
+        }
     }
+}
+
+function pdpCommanderAction(event) {
+    if (event) event.preventDefault();
+    const btn = document.getElementById('pdpCommanderBtn');
+    if (!btn || btn.disabled) return;
+
+    const productId = {{ $product->id }};
+    const addBtn = document.getElementById('addToCartBtn');
+    const isProductInStock = {{ $product->isInStock() ? 'true' : 'false' }};
+    const isCurrentInCart = addBtn ? addBtn.classList.contains('is-in-cart') : false;
+
+    const isAr = document.documentElement.lang === 'ar' || document.documentElement.dir === 'rtl';
+    const redirectingText = isAr ? 'جاري التحويل...' : 'Redirection...';
+
+    // If product is ALREADY in cart, or out of stock -> go directly to checkout
+    if (isCurrentInCart || !isProductInStock) {
+        btn.disabled = true;
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span><span>${redirectingText}</span>`;
+        window.location.href = "{{ route('checkout.index') }}";
+        return;
+    }
+
+    // Product is NOT in cart and IS in stock -> add it first with chosen quantity, then go to checkout!
+    const qtyInput = document.getElementById('pdpQty');
+    const quantity = qtyInput ? (parseInt(qtyInput.value) || 1) : 1;
+
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span><span>${redirectingText}</span>`;
+
+    fetch(`{{ url('/cart/add') }}/${productId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({ quantity: quantity })
+    })
+    .then(async response => {
+        const data = await response.json();
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || 'Error adding product to cart');
+        }
+        if (typeof window.syncAllProductCartButtons === 'function' && data.cartProductIds) {
+            window.syncAllProductCartButtons(data.cartProductIds);
+        }
+        window.location.href = "{{ route('checkout.index') }}";
+    })
+    .catch(err => {
+        btn.disabled = false;
+        const defaultLabel = isAr ? 'إتمام الطلب' : 'Commander';
+        const arrowClass = isAr ? 'fa-arrow-left ms-2' : 'fa-arrow-right ms-2';
+        btn.innerHTML = `<i class="fas fa-shopping-bag me-2"></i><span>${defaultLabel}</span><i class="fas ${arrowClass}"></i>`;
+
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'error',
+                title: isAr ? 'خطأ' : 'Erreur',
+                text: err.message || (isAr ? 'تعذر إضافة المنتج إلى السلة' : 'Impossible d\'ajouter le produit au panier')
+            });
+        } else {
+            alert(err.message || 'Impossible d\'ajouter le produit au panier');
+        }
+    });
 }
 </script>
 @endpush
