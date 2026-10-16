@@ -15,8 +15,8 @@
             </div>
         </div>
         <div class="brand-header-actions">
-            <a href="{{ route('export.orders') }}" class="btn-brand-outline">
-                <i class="fas fa-file-csv me-1.5" style="color: var(--success-color)"></i><span>Exporter CSV</span>
+            <a href="{{ route('export.orders') }}" class="btn btn-outline-secondary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
+                <i class="fas fa-file-csv text-success"></i> <span>Exporter CSV</span>
             </a>
             <a href="{{ route('orders.create') }}" class="btn-brand-primary flex-grow-1 flex-md-grow-0 justify-content-center text-nowrap px-3 py-2" style="font-size: 0.84rem;">
                 <i class="fas fa-plus me-1"></i> <span class="d-none d-sm-inline">Nouvelle commande</span><span class="d-sm-none">Créer</span>
@@ -294,55 +294,38 @@
     <!-- Tableau des commandes Desktop (d-none d-md-block) -->
     <div class="brand-table-card orders-table-card d-none d-md-block" style="overflow: visible;">
         <div class="table-responsive" style="overflow: visible; min-height: 280px;">
-            <table class="brand-table brand-table-orders">
+            <table class="brand-table">
                 <thead>
                     <tr>
-                        <th style="padding-left: 1.25rem;">Commande & Client</th>
-                        <th class="text-center" style="width: 110px;">Articles</th>
-                        <th class="text-end" style="width: 130px;">Total TTC</th>
-                        <th class="text-center" style="width: 145px;">Livraison</th>
-                        <th class="text-center" style="width: 145px;">Paiement</th>
-                        <th style="width: 115px;">Date</th>
-                        <th class="col-actions text-end" style="width: 155px; padding-right: 1.25rem;">Actions</th>
+                        <th style="padding-left: 1.5rem;">N° Commande</th>
+                        <th>Client</th>
+                        <th class="text-center">Articles</th>
+                        <th class="text-end">Total</th>
+                        <th class="text-center">Livraison</th>
+                        <th class="text-center">Paiement</th>
+                        <th>Date</th>
+                        <th class="text-end" style="padding-right: 1.5rem;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($orders as $order)
-                    <tr id="order-row-{{ $order->id }}">
-                        <td style="padding-left: 1.25rem;">
-                            <div class="d-flex align-items-center gap-2.5">
-                                <div class="brand-avatar prod-avatar" style="width: 40px; height: 40px; border-radius: 8px; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 15px; color: #0f172a; flex-shrink: 0;">
-                                    <i class="fas fa-receipt text-danger opacity-75"></i>
-                                </div>
-                                <div class="prod-info-wrap">
-                                    <div class="d-flex align-items-center gap-1.5 flex-wrap">
-                                        <a href="{{ route('orders.show', $order) }}" class="fw-bold text-dark text-decoration-none font-monospace" style="font-size: 13.5px;">
-                                            #{{ $order->order_number }}
-                                        </a>
-                                        <button type="button" 
-                                                class="btn btn-sm btn-link text-muted p-0 border-0" 
-                                                onclick="copyOrderNumber('{{ $order->order_number }}', this)" 
-                                                title="Copier le N°">
-                                            <i class="far fa-copy" style="font-size: 11px;"></i>
-                                        </button>
-                                    </div>
-                                    <div class="d-flex align-items-center gap-1 text-muted small mt-0.5 text-truncate" style="font-size: 12px;">
-                                        <span class="fw-semibold text-secondary">{{ $order->customer_name ?: 'Client invité' }}</span>
-                                        @if($order->customer_email || $order->customer_phone)
-                                            <span class="opacity-40">&bull;</span>
-                                            <span class="text-truncate">{{ $order->customer_email ?: $order->customer_phone }}</span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
+                    <tr>
+                        <td style="padding-left: 1.5rem;">
+                            <a href="{{ route('orders.show', $order) }}" class="fw-bold text-primary text-decoration-none font-monospace">
+                                #{{ $order->order_number }}
+                            </a>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-dark fs-6">{{ $order->customer_name ?: 'Client invité' }}</div>
+                            <div class="text-muted small">{{ $order->customer_email ?: ($order->customer_phone ?: 'Aucun contact') }}</div>
                         </td>
                         <td class="text-center">
-                            <span class="badge-category" title="{{ $order->items->count() }} article(s)">
-                                <i class="fas fa-box me-1 opacity-60"></i>{{ $order->items->count() }}
+                            <span class="badge bg-light text-secondary px-3 py-1 border" style="border-radius: 6px;">
+                                {{ $order->items->count() }}
                             </span>
                         </td>
-                        <td class="text-end">
-                            <div class="fw-bold text-dark font-heading fs-6">{{ $order->formatted_total }}</div>
+                        <td class="text-end fw-bold text-dark fs-6 font-heading">
+                            {{ $order->formatted_total }}
                         </td>
                         <td class="text-center">
                             @php
@@ -485,29 +468,20 @@
                             </div>
                         </td>
                         <td>
-                            <div class="text-muted small fw-medium">{{ $order->created_at->format('d/m/Y') }}</div>
+                            <div class="text-muted small">{{ $order->created_at->format('d/m/Y') }}</div>
                             <div class="text-muted" style="font-size: 0.72rem;">{{ $order->created_at->format('H:i') }}</div>
                         </td>
-                        <td class="col-actions text-end" style="padding-right: 1.25rem;">
-                            <div class="action-buttons-group">
-                                <a href="{{ route('orders.show', $order) }}" 
-                                   class="action-btn action-btn-view" 
-                                   title="Consulter la commande" 
-                                   data-bs-toggle="tooltip">
-                                    <i class="fas fa-eye"></i>
+                        <td style="padding-right: 1.5rem;">
+                            <div class="d-flex justify-content-end gap-1.5">
+                                <a href="{{ route('orders.show', $order) }}" class="btn-action-icon" title="Détails de la commande">
+                                    <i class="fas fa-eye text-primary"></i>
                                 </a>
-                                <a href="{{ route('orders.edit', $order) }}" 
-                                   class="action-btn action-btn-edit" 
-                                   title="Modifier la commande" 
-                                   data-bs-toggle="tooltip">
-                                    <i class="fas fa-pencil-alt"></i>
+                                <a href="{{ route('orders.edit', $order) }}" class="btn-action-icon" title="Modifier la commande">
+                                    <i class="fas fa-pencil-alt text-info"></i>
                                 </a>
                                 @if($order->invoice)
-                                    <a href="{{ route('invoices.show', $order->invoice) }}" 
-                                       class="action-btn action-btn-pdf" 
-                                       title="Facture #{{ $order->invoice->invoice_number }}" 
-                                       data-bs-toggle="tooltip">
-                                        <i class="fas fa-file-invoice"></i>
+                                    <a href="{{ route('invoices.show', $order->invoice) }}" class="btn-action-icon" title="Voir la facture">
+                                        <i class="fas fa-file-invoice text-success"></i>
                                     </a>
                                 @endif
                                 @if(in_array($order->status, ['pending', 'cancelled']))
@@ -519,10 +493,7 @@
                                           data-item-name="Commande #{{ $order->order_number }}">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" 
-                                                class="action-btn action-btn-delete" 
-                                                title="Supprimer la commande" 
-                                                data-bs-toggle="tooltip">
+                                        <button type="submit" class="btn-action-icon danger" title="Supprimer la commande">
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </form>
@@ -532,18 +503,13 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7">
+                        <td colspan="8">
                             <div class="text-center py-5">
                                 <div class="brand-avatar mx-auto mb-3" style="width: 64px; height: 64px; font-size: 24px;">
                                     <i class="fas fa-shopping-bag text-muted"></i>
                                 </div>
                                 <h5 class="fw-bold text-dark">Aucune commande trouvée</h5>
                                 <p class="text-muted">Aucun enregistrement ne correspond à vos critères de recherche.</p>
-                                @if(request('search') || $hasActiveFilters)
-                                    <a href="{{ route('orders.index') }}" class="btn-brand-primary btn-sm mt-2">
-                                        <i class="fas fa-redo me-1"></i> Réinitialiser les filtres
-                                    </a>
-                                @endif
                             </div>
                         </td>
                     </tr>
@@ -551,53 +517,17 @@
                 </tbody>
             </table>
         </div>
-        
-        <div class="products-table-footer px-4 py-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
-            <div class="text-muted small">
-                <i class="fas fa-list-ul me-1 opacity-50"></i>
-                Affichage de <span class="fw-semibold text-dark">{{ $orders->firstItem() ?? 0 }}</span> à <span class="fw-semibold text-dark">{{ $orders->lastItem() ?? 0 }}</span> sur <span class="fw-semibold text-dark">{{ $orders->total() }}</span> commandes
+        @if($orders->hasPages())
+        <div class="px-4 py-3 border-top d-flex justify-content-between align-items-center">
+            <span class="text-muted small">
+                Affichage de {{ $orders->firstItem() ?? 0 }} à {{ $orders->lastItem() ?? 0 }} sur {{ $orders->total() }} commandes
+            </span>
+            <div>
+                {{ $orders->links() }}
             </div>
-            @if($orders->hasPages())
-                <div>
-                    {{ $orders->links() }}
-                </div>
-            @endif
         </div>
+        @endif
     </div>
-
-@push('styles')
-<style>
-    .brand-table-orders {
-        width: 100%;
-        table-layout: fixed;
-        border-collapse: separate;
-        border-spacing: 0;
-        margin: 0;
-    }
-    .brand-table-orders thead th {
-        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-        padding: 0.85rem 0.65rem;
-        font-size: 0.72rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: #64748b;
-        border-bottom: 1px solid #e2e8f0;
-        white-space: nowrap;
-        vertical-align: middle;
-    }
-    .brand-table-orders tbody td {
-        padding: 0.75rem 0.65rem;
-        border-bottom: 1px solid #f1f5f9;
-        vertical-align: middle;
-        color: #1e293b;
-        font-size: 0.85rem;
-    }
-    .brand-table-orders tbody tr:hover {
-        background-color: #f8fafc;
-    }
-</style>
-@endpush
 @endsection
 
 @push('scripts')
