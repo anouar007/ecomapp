@@ -11,7 +11,7 @@
             </div>
             <div>
                 <h1 class="brand-title">Facturation & Devis</h1>
-                <p class="brand-subtitle">Suivez vos règlements, générez vos factures & devis et gérez la conformité fiscale</p>
+                <p class="brand-subtitle">Gérez vos factures officielles, devis proforma et suivez vos règlements clients</p>
             </div>
         </div>
         <div class="brand-header-actions">
@@ -22,6 +22,40 @@
                 <i class="fas fa-plus me-1"></i> <span class="d-none d-sm-inline">Nouveau document</span><span class="d-sm-none">Créer</span>
             </a>
         </div>
+    </div>
+
+    <!-- Segmented Navigation Tabs (Executive Quick Filters) -->
+    <div class="invoice-nav-tabs">
+        <a href="{{ route('invoices.index') }}" 
+           class="invoice-nav-tab {{ !request('type') && !request('status') ? 'active' : '' }}">
+            <i class="fas fa-layer-group"></i>
+            <span>Tous les documents</span>
+            <span class="tab-badge">{{ ($stats['total_invoices'] ?? 0) + ($stats['total_quotes'] ?? 0) }}</span>
+        </a>
+        <a href="{{ route('invoices.index', ['type' => 'invoice']) }}" 
+           class="invoice-nav-tab {{ request('type') === 'invoice' && !request('status') ? 'active' : '' }}">
+            <i class="fas fa-file-invoice text-primary"></i>
+            <span>Factures</span>
+            <span class="tab-badge">{{ $stats['total_invoices'] ?? 0 }}</span>
+        </a>
+        <a href="{{ route('invoices.index', ['type' => 'quote']) }}" 
+           class="invoice-nav-tab {{ request('type') === 'quote' && !request('status') ? 'active' : '' }}">
+            <i class="fas fa-file-signature text-warning"></i>
+            <span>Devis</span>
+            <span class="tab-badge">{{ $stats['total_quotes'] ?? 0 }}</span>
+        </a>
+        <a href="{{ route('invoices.index', ['status' => 'unpaid']) }}" 
+           class="invoice-nav-tab {{ request('status') === 'unpaid' ? 'active' : '' }}">
+            <i class="fas fa-clock text-warning"></i>
+            <span>Impayés</span>
+            <span class="tab-badge badge-unpaid">{{ $stats['unpaid_count'] ?? 0 }}</span>
+        </a>
+        <a href="{{ route('invoices.index', ['status' => 'paid']) }}" 
+           class="invoice-nav-tab {{ request('status') === 'paid' ? 'active' : '' }}">
+            <i class="fas fa-check-circle text-success"></i>
+            <span>Payés</span>
+            <span class="tab-badge badge-paid">{{ $stats['paid_count'] ?? 0 }}</span>
+        </a>
     </div>
 
     <!-- KPI Metric Stat Cards (Row of 4) -->
@@ -101,7 +135,7 @@
                 <div class="brand-search-wrapper flex-grow-1" style="min-width: 240px;">
                     <i class="fas fa-search"></i>
                     <input type="text" name="search" class="form-control" 
-                           placeholder="N° facture, devis, nom ou contact du client..."
+                           placeholder="Rechercher par N° document, client, email..."
                            value="{{ request('search') }}">
                 </div>
 
@@ -140,15 +174,15 @@
                 </div>
             </div>
 
-            <!-- Row 2 : Grille Parfaite de 6 Filtres Déroulants (Exactement 6 colonnes uniformes) -->
+            <!-- Row 2 : Filtres Déroulants Épurés (Sans emojis, Style Pro) -->
             <div class="collapse d-md-block {{ $hasActiveFilters ? 'show' : '' }} mt-2.5 pt-2.5 border-top" id="invoiceFiltersCollapse">
                 <div class="row g-2 align-items-center">
                     <!-- Type de document -->
                     <div class="col-6 col-md-4 col-xl-2">
                         <select name="type" class="form-select form-select-sm w-100" onchange="this.form.submit()">
                             <option value="">Tous les types</option>
-                            <option value="invoice" {{ request('type') === 'invoice' ? 'selected' : '' }}>📄 Factures</option>
-                            <option value="quote" {{ request('type') === 'quote' ? 'selected' : '' }}>📑 Devis</option>
+                            <option value="invoice" {{ request('type') === 'invoice' ? 'selected' : '' }}>Factures</option>
+                            <option value="quote" {{ request('type') === 'quote' ? 'selected' : '' }}>Devis</option>
                         </select>
                     </div>
 
@@ -156,18 +190,18 @@
                     <div class="col-6 col-md-4 col-xl-2">
                         <select name="status" class="form-select form-select-sm w-100" onchange="this.form.submit()">
                             <option value="">Tous les statuts</option>
-                            <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>✅ Payé</option>
-                            <option value="unpaid" {{ request('status') === 'unpaid' ? 'selected' : '' }}>⏳ Impayé</option>
-                            <option value="partial" {{ request('status') === 'partial' ? 'selected' : '' }}>🔄 Partiel</option>
-                            <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>❌ Annulé</option>
+                            <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Payé</option>
+                            <option value="unpaid" {{ request('status') === 'unpaid' ? 'selected' : '' }}>Impayé</option>
+                            <option value="partial" {{ request('status') === 'partial' ? 'selected' : '' }}>Règlement partiel</option>
+                            <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Annulé</option>
                         </select>
                     </div>
 
                     <!-- Cachet -->
                     <div class="col-6 col-md-4 col-xl-2">
                         <select name="with_stamp" class="form-select form-select-sm w-100" onchange="this.form.submit()">
-                            <option value="">Tous les cachets</option>
-                            <option value="1" {{ request('with_stamp') === '1' ? 'selected' : '' }}>💮 Avec Cachet</option>
+                            <option value="">Tous les documents</option>
+                            <option value="1" {{ request('with_stamp') === '1' ? 'selected' : '' }}>Avec Cachet officiel</option>
                             <option value="0" {{ request('with_stamp') === '0' ? 'selected' : '' }}>Sans Cachet</option>
                         </select>
                     </div>
@@ -176,14 +210,14 @@
                     <div class="col-6 col-md-4 col-xl-2">
                         <select name="payment_method" class="form-select form-select-sm w-100" onchange="this.form.submit()">
                             <option value="">Tous les modes</option>
-                            <option value="cash" {{ request('payment_method') === 'cash' ? 'selected' : '' }}>💵 Espèces</option>
-                            <option value="card" {{ request('payment_method') === 'card' ? 'selected' : '' }}>💳 Carte bancaire</option>
-                            <option value="bank_transfer" {{ request('payment_method') === 'bank_transfer' ? 'selected' : '' }}>🏦 Virement</option>
-                            <option value="other" {{ request('payment_method') === 'other' ? 'selected' : '' }}>Autre</option>
+                            <option value="cash" {{ request('payment_method') === 'cash' ? 'selected' : '' }}>Espèces</option>
+                            <option value="card" {{ request('payment_method') === 'card' ? 'selected' : '' }}>Carte bancaire</option>
+                            <option value="bank_transfer" {{ request('payment_method') === 'bank_transfer' ? 'selected' : '' }}>Virement bancaire</option>
+                            <option value="other" {{ request('payment_method') === 'other' ? 'selected' : '' }}>Autre mode</option>
                         </select>
                     </div>
 
-                    <!-- Date début avec Badge Label -->
+                    <!-- Date début -->
                     <div class="col-6 col-md-4 col-xl-2">
                         <div class="input-group input-group-sm w-100">
                             <span class="input-group-text bg-light text-muted border-end-0 fw-semibold px-2" style="font-size: 0.75rem;">Du</span>
@@ -191,7 +225,7 @@
                         </div>
                     </div>
 
-                    <!-- Date fin avec Badge Label -->
+                    <!-- Date fin -->
                     <div class="col-6 col-md-4 col-xl-2">
                         <div class="input-group input-group-sm w-100">
                             <span class="input-group-text bg-light text-muted border-end-0 fw-semibold px-2" style="font-size: 0.75rem;">Au</span>
@@ -244,6 +278,12 @@
             @if(request('with_stamp') !== null && request('with_stamp') !== '')
                 <a href="{{ request()->fullUrlWithQuery(['with_stamp' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
                     Cachet : {{ request('with_stamp') == '1' ? 'Avec Cachet' : 'Sans Cachet' }} <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
+            @if(request('payment_method'))
+                <a href="{{ request()->fullUrlWithQuery(['payment_method' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
+                    Mode : {{ ucfirst(str_replace('_', ' ', request('payment_method'))) }} <i class="fas fa-times text-muted ms-0.5"></i>
                 </a>
             @endif
 
@@ -307,29 +347,27 @@
         @endif
     </div>
 
-    <!-- Desktop Table (d-none d-md-block) -->
+    <!-- Desktop Table (Spacious 6-Column Pro Layout, d-none d-md-block) -->
     <div class="brand-table-card invoices-table-card d-none d-md-block">
         <div class="table-responsive">
             <table class="brand-table align-middle">
                 <thead>
                     <tr>
-                        <th style="width: 15%; padding-left: 1.25rem;">N° Document</th>
-                        <th style="width: 20%;">Client</th>
-                        <th style="width: 13%;">Date & Échéance</th>
-                        <th class="text-end" style="width: 12%;">Total TTC</th>
-                        <th class="text-center" style="width: 14%;">Statut Paiement</th>
-                        <th class="text-center" style="width: 7%;">Cachet</th>
-                        <th class="text-center" style="width: 7%;">Mode</th>
+                        <th style="width: 20%; padding-left: 1.25rem;">Document</th>
+                        <th style="width: 23%;">Client</th>
+                        <th style="width: 16%;">Émission & Échéance</th>
+                        <th class="text-end" style="width: 14%;">Montant Total TTC</th>
+                        <th class="text-center" style="width: 15%;">Règlement & Mode</th>
                         <th class="text-end" style="width: 12%; padding-right: 1.25rem;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($invoices as $invoice)
                     <tr>
-                        <!-- N° Document (No-wrap guaranteed) -->
+                        <!-- 1. Document (N°, Type & Cachet) -->
                         <td style="padding-left: 1.25rem;">
                             <div class="d-flex align-items-center gap-1.5 text-nowrap">
-                                <a href="{{ route('invoices.show', $invoice) }}" class="fw-bold text-primary text-decoration-none font-monospace text-nowrap" style="font-size: 0.88rem; letter-spacing: -0.01em;">
+                                <a href="{{ route('invoices.show', $invoice) }}" class="fw-bold text-dark text-decoration-none font-monospace text-nowrap" style="font-size: 0.9rem;" title="Consulter la fiche">
                                     #{{ $invoice->display_number ?? $invoice->invoice_number }}
                                 </a>
                                 <button type="button" 
@@ -340,63 +378,91 @@
                                     <i class="far fa-copy"></i>
                                 </button>
                             </div>
-                            <div class="mt-1">
+                            <div class="d-flex align-items-center gap-1.5 flex-wrap mt-1">
                                 @if($invoice->isQuote())
-                                    <span class="badge bg-warning-subtle text-warning fw-bold border border-warning-subtle px-1.5 py-0.5" style="font-size: 0.65rem; letter-spacing: 0.03em;">
-                                        DEVIS
+                                    <span class="badge-doc-quote">
+                                        <i class="fas fa-file-signature" style="font-size: 0.6rem;"></i> DEVIS
                                     </span>
                                 @else
-                                    <span class="badge bg-primary-subtle text-primary fw-bold border border-primary-subtle px-1.5 py-0.5" style="font-size: 0.65rem; letter-spacing: 0.03em;">
-                                        FACTURE
+                                    <span class="badge-doc-invoice">
+                                        <i class="fas fa-file-invoice" style="font-size: 0.6rem;"></i> FACTURE
+                                    </span>
+                                @endif
+
+                                @if($invoice->with_stamp)
+                                    <span class="badge-doc-stamp" title="Document officiel certifié avec cachet">
+                                        <i class="fas fa-stamp" style="font-size: 0.6rem;"></i> Cachet
                                     </span>
                                 @endif
                             </div>
                         </td>
 
-                        <!-- Client -->
+                        <!-- 2. Client (Avatar, Nom, Contact, ICE) -->
                         <td>
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="brand-avatar-sm" style="width: 34px; height: 34px; min-width: 34px; border-radius: 9px; background: #f8fafc; color: #475569; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.82rem; border: 1px solid #e2e8f0; flex-shrink: 0;">
+                            <div class="d-flex align-items-center gap-2.5">
+                                <div class="invoice-client-avatar">
                                     {{ strtoupper(substr($invoice->customer_name ?: 'C', 0, 1)) }}
                                 </div>
-                                <div class="min-w-0" style="max-width: 190px;">
-                                    <div class="fw-bold text-dark text-truncate" style="font-size: 0.88rem;" title="{{ $invoice->customer_name ?: 'Client sans nom' }}">
+                                <div class="min-w-0" style="max-width: 220px;">
+                                    <div class="fw-semibold text-dark text-truncate" style="font-size: 0.88rem;" title="{{ $invoice->customer_name ?: 'Client sans nom' }}">
                                         {{ $invoice->customer_name ?: 'Client sans nom' }}
                                     </div>
                                     <div class="text-muted small text-truncate" style="font-size: 0.74rem;" title="{{ $invoice->customer_email ?: ($invoice->customer_phone ?: 'Aucun contact') }}">
-                                        {{ $invoice->customer_email ?: ($invoice->customer_phone ?: 'Aucun contact') }}
+                                        @if($invoice->customer_email)
+                                            <i class="far fa-envelope me-1 opacity-75"></i>{{ $invoice->customer_email }}
+                                        @elseif($invoice->customer_phone)
+                                            <i class="fas fa-phone me-1 opacity-75"></i>{{ $invoice->customer_phone }}
+                                        @else
+                                            <span class="opacity-50">Aucun contact</span>
+                                        @endif
                                     </div>
+                                    @if(!empty($invoice->ice))
+                                        <div class="text-muted small text-truncate mt-0.5" style="font-size: 0.68rem;">
+                                            <span class="badge bg-light text-secondary border px-1 py-0">ICE: {{ $invoice->ice }}</span>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         </td>
 
-                        <!-- Date & Échéance -->
+                        <!-- 3. Dates (Émission & Échéance) -->
                         <td>
                             <div class="text-dark fw-semibold" style="font-size: 0.85rem;">
                                 <i class="far fa-calendar-alt text-muted me-1"></i>{{ $invoice->issued_at->format('d/m/Y') }}
                             </div>
-                            <div class="text-muted" style="font-size: 0.72rem;">
-                                @if($invoice->due_date)
-                                    <i class="far fa-clock text-muted me-1"></i>Échéance : {{ $invoice->due_date->format('d/m/Y') }}
+                            <div class="mt-1">
+                                @if($invoice->isOverdue())
+                                    <div class="badge-overdue-alert" title="Paiement en retard">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        <span>Échue le {{ $invoice->due_date->format('d/m/Y') }}</span>
+                                    </div>
+                                @elseif($invoice->due_date)
+                                    <div class="text-muted" style="font-size: 0.74rem;">
+                                        <i class="far fa-clock text-muted me-1"></i>Échéance : {{ $invoice->due_date->format('d/m/Y') }}
+                                    </div>
                                 @else
-                                    Créé à {{ $invoice->issued_at->format('H:i') }}
+                                    <div class="text-muted opacity-75" style="font-size: 0.72rem;">
+                                        À {{ $invoice->issued_at->format('H:i') }}
+                                    </div>
                                 @endif
                             </div>
                         </td>
 
-                        <!-- Montant Total -->
+                        <!-- 4. Montant Total TTC -->
                         <td class="text-end">
-                            <div class="fw-bold text-dark fs-6 font-heading">
+                            <div class="fw-bold text-dark invoice-amount-value">
                                 {{ $invoice->formatted_total_amount }}
                             </div>
-                            @if($invoice->items && $invoice->items->count())
-                                <div class="text-muted" style="font-size: 0.7rem;">
-                                    {{ $invoice->items->count() }} article{{ $invoice->items->count() > 1 ? 's' : '' }}
-                                </div>
-                            @endif
+                            <div class="text-muted" style="font-size: 0.72rem; margin-top: 2px;">
+                                @if($invoice->payment_status === 'partial')
+                                    <span class="text-danger fw-semibold">Reste : {{ $invoice->formatted_remaining_balance }}</span>
+                                @elseif($invoice->items && $invoice->items->count())
+                                    <span>{{ $invoice->items->count() }} article{{ $invoice->items->count() > 1 ? 's' : '' }}</span>
+                                @endif
+                            </div>
                         </td>
 
-                        <!-- Statut de paiement (In-Place Interactive Dropdown) -->
+                        <!-- 5. Règlement & Mode (Interactive Dropdown + Method) -->
                         <td class="text-center">
                             @php
                                 $pStatus = strtolower($invoice->payment_status);
@@ -462,127 +528,44 @@
                                     </li>
                                 </ul>
                             </div>
+
+                            <!-- Mode de règlement sous le statut -->
+                            <div class="mt-1">
+                                @php
+                                    $pm = strtolower($invoice->payment_method ?? '');
+                                @endphp
+                                @if($pm === 'cash')
+                                    <span class="text-muted" style="font-size: 0.74rem;" title="Paiement en espèces">
+                                        <i class="fas fa-money-bill-wave text-success me-1"></i>Espèces
+                                    </span>
+                                @elseif($pm === 'card')
+                                    <span class="text-muted" style="font-size: 0.74rem;" title="Carte bancaire">
+                                        <i class="fas fa-credit-card text-primary me-1"></i>Carte
+                                    </span>
+                                @elseif($pm === 'bank_transfer')
+                                    <span class="text-muted" style="font-size: 0.74rem;" title="Virement bancaire">
+                                        <i class="fas fa-university text-info me-1"></i>Virement
+                                    </span>
+                                @else
+                                    <span class="text-muted opacity-75" style="font-size: 0.74rem;" title="{{ $invoice->payment_method }}">
+                                        {{ ucfirst(str_replace('_', ' ', $invoice->payment_method ?: 'Non spécifié')) }}
+                                    </span>
+                                @endif
+                            </div>
                         </td>
 
-                        <!-- Cachet -->
-                        <td class="text-center">
-                            @if($invoice->with_stamp)
-                                <span class="badge rounded-pill bg-indigo-subtle border border-indigo-subtle px-2.5 py-1 d-inline-flex align-items-center gap-1" style="background: #eef2ff; color: #4338ca; border-color: #c7d2fe !important; font-size: 0.72rem; font-weight: 600;">
-                                    <i class="fas fa-stamp" style="font-size: 0.65rem;"></i> Oui
-                                </span>
-                            @else
-                                <span class="badge rounded-pill bg-light text-secondary border px-2 py-1" style="font-size: 0.72rem; font-weight: 500;">
-                                    Non
-                                </span>
-                            @endif
-                        </td>
-
-                        <!-- Mode -->
-                        <td class="text-center">
-                            @php
-                                $pm = strtolower($invoice->payment_method ?? '');
-                            @endphp
-                            @if($pm === 'cash')
-                                <span class="badge bg-light text-dark border px-2 py-1 fw-semibold" style="font-size: 0.72rem;" title="Espèces">
-                                    <i class="fas fa-money-bill-wave text-success me-1"></i>Espèces
-                                </span>
-                            @elseif($pm === 'card')
-                                <span class="badge bg-light text-dark border px-2 py-1 fw-semibold" style="font-size: 0.72rem;" title="Carte Bancaire">
-                                    <i class="fas fa-credit-card text-primary me-1"></i>Carte
-                                </span>
-                            @elseif($pm === 'bank_transfer')
-                                <span class="badge bg-light text-dark border px-2 py-1 fw-semibold" style="font-size: 0.72rem;" title="Virement bancaire">
-                                    <i class="fas fa-university text-info me-1"></i>Virement
-                                </span>
-                            @else
-                                <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.72rem;" title="{{ $invoice->payment_method }}">
-                                    {{ ucfirst(str_replace('_', ' ', $invoice->payment_method ?: 'N/A')) }}
-                                </span>
-                            @endif
-                        </td>
-
-                        <!-- Actions (Compact 5-Button Action Group, Fully Contained) -->
+                        <!-- 6. Actions (Aperçu + Email + Menu "...") -->
                         <td class="text-end" style="padding-right: 1.25rem;">
                             <div class="action-buttons-group">
-                                <!-- Aperçu Rapide -->
-                                <button type="button" class="action-btn action-btn-view" title="Aperçu rapide" 
+                                <!-- Aperçu Rapide Direct -->
+                                <button type="button" 
+                                        class="action-btn action-btn-view" 
+                                        title="Aperçu rapide interactif" 
                                         onclick="openInvoicePreview('{{ $invoice->id }}', '{{ $invoice->display_number ?? $invoice->invoice_number }}', '{{ $invoice->isQuote() ? 'devis' : 'facture' }}', {{ $invoice->with_stamp ? 'true' : 'false' }})">
                                     <i class="fas fa-eye"></i>
                                 </button>
 
-                                <!-- PDF Dropdown -->
-                                <div class="dropdown d-inline-block">
-                                    <button class="action-btn action-btn-pdf" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Télécharger PDF">
-                                        <i class="fas fa-file-pdf"></i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border rounded-3 p-1.5 status-dropdown-menu" style="min-width: 215px;">
-                                        <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem;">
-                                            <i class="fas fa-file-invoice text-primary me-1"></i> Facture
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item rounded-2 py-1.5 px-2" href="{{ route('invoices.download', [$invoice, 'as' => 'facture', 'with_stamp' => 1]) }}">
-                                                <i class="fas fa-stamp text-indigo me-1.5" style="color: #6366f1;"></i> Facture avec Cachet
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item rounded-2 py-1.5 px-2" href="{{ route('invoices.download', [$invoice, 'as' => 'facture', 'with_stamp' => 0]) }}">
-                                                <i class="far fa-file-pdf text-muted me-1.5"></i> Facture sans Cachet
-                                            </a>
-                                        </li>
-                                        <li><hr class="dropdown-divider my-1"></li>
-                                        <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem;">
-                                            <i class="fas fa-file-signature text-warning me-1"></i> Devis
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item rounded-2 py-1.5 px-2" href="{{ route('invoices.download', [$invoice, 'as' => 'devis', 'with_stamp' => 1]) }}">
-                                                <i class="fas fa-stamp text-warning me-1.5"></i> Devis avec Cachet
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item rounded-2 py-1.5 px-2" href="{{ route('invoices.download', [$invoice, 'as' => 'devis', 'with_stamp' => 0]) }}">
-                                                <i class="far fa-file-pdf text-muted me-1.5"></i> Devis sans Cachet
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-
-                                <!-- Imprimer Dropdown -->
-                                <div class="dropdown d-inline-block">
-                                    <button class="action-btn action-btn-print" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Imprimer">
-                                        <i class="fas fa-print"></i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border rounded-3 p-1.5 status-dropdown-menu" style="min-width: 215px;">
-                                        <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem;">
-                                            <i class="fas fa-file-invoice text-primary me-1"></i> Facture
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item rounded-2 py-1.5 px-2" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'facture', 'with_stamp' => 1]) }}">
-                                                <i class="fas fa-stamp text-indigo me-1.5" style="color: #6366f1;"></i> Imprimer avec Cachet
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item rounded-2 py-1.5 px-2" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'facture', 'with_stamp' => 0]) }}">
-                                                <i class="fas fa-print text-muted me-1.5"></i> Imprimer sans Cachet
-                                            </a>
-                                        </li>
-                                        <li><hr class="dropdown-divider my-1"></li>
-                                        <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem;">
-                                            <i class="fas fa-file-signature text-warning me-1"></i> Devis
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item rounded-2 py-1.5 px-2" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'devis', 'with_stamp' => 1]) }}">
-                                                <i class="fas fa-stamp text-warning me-1.5"></i> Devis avec Cachet
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item rounded-2 py-1.5 px-2" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'devis', 'with_stamp' => 0]) }}">
-                                                <i class="fas fa-print text-muted me-1.5"></i> Devis sans Cachet
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-
-                                <!-- Envoyer par Email -->
+                                <!-- Envoyer par Email Direct -->
                                 <button type="button" 
                                         class="action-btn action-btn-email" 
                                         title="Envoyer par email au client"
@@ -590,36 +573,111 @@
                                     <i class="fas fa-paper-plane"></i>
                                 </button>
 
-                                <!-- Modifier -->
-                                <a href="{{ route('invoices.edit', $invoice) }}" class="action-btn action-btn-edit" title="Modifier">
-                                    <i class="fas fa-pencil-alt"></i>
-                                </a>
-
-                                <!-- Supprimer -->
-                                <form method="POST" 
-                                      action="{{ route('invoices.destroy', $invoice) }}" 
-                                      class="m-0 p-0 d-inline"
-                                      data-confirm-delete="true"
-                                      data-item-type="document"
-                                      data-item-name="{{ ($invoice->isQuote() ? 'Devis #' : 'Facture #') . ($invoice->display_number ?? $invoice->invoice_number) }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="action-btn action-btn-delete" title="Supprimer">
-                                        <i class="fas fa-trash-alt"></i>
+                                <!-- Menu Déroulant Plus d'Actions "..." -->
+                                <div class="dropdown d-inline-block">
+                                    <button class="action-btn action-btn-more" 
+                                            type="button" 
+                                            data-bs-toggle="dropdown" 
+                                            data-bs-boundary="viewport"
+                                            aria-expanded="false" 
+                                            title="Plus d'actions">
+                                        <i class="fas fa-ellipsis-v"></i>
                                     </button>
-                                </form>
+                                    <ul class="dropdown-menu dropdown-menu-end invoice-actions-dropdown">
+                                        <li class="dropdown-header text-uppercase fw-bold">Aperçu & Consultation</li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('invoices.show', $invoice) }}">
+                                                <i class="fas fa-external-link-alt text-primary" style="width: 16px;"></i>
+                                                <span>Consulter la fiche complète</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="dropdown-item" onclick="openInvoicePreview('{{ $invoice->id }}', '{{ $invoice->display_number ?? $invoice->invoice_number }}', '{{ $invoice->isQuote() ? 'devis' : 'facture' }}', {{ $invoice->with_stamp ? 'true' : 'false' }})">
+                                                <i class="fas fa-eye text-info" style="width: 16px;"></i>
+                                                <span>Aperçu rapide du document</span>
+                                            </button>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li class="dropdown-header text-uppercase fw-bold">Documents PDF & Impression</li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('invoices.download', [$invoice, 'as' => 'facture', 'with_stamp' => 1]) }}">
+                                                <i class="fas fa-stamp text-indigo" style="color: #6366f1; width: 16px;"></i>
+                                                <span>Facture avec Cachet</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('invoices.download', [$invoice, 'as' => 'facture', 'with_stamp' => 0]) }}">
+                                                <i class="far fa-file-pdf text-muted" style="width: 16px;"></i>
+                                                <span>Facture standard</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('invoices.download', [$invoice, 'as' => 'devis', 'with_stamp' => 1]) }}">
+                                                <i class="fas fa-stamp text-warning" style="width: 16px;"></i>
+                                                <span>Devis avec Cachet</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('invoices.download', [$invoice, 'as' => 'devis', 'with_stamp' => 0]) }}">
+                                                <i class="far fa-file-pdf text-muted" style="width: 16px;"></i>
+                                                <span>Devis standard</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => $invoice->isQuote() ? 'devis' : 'facture', 'with_stamp' => $invoice->with_stamp ? 1 : 0]) }}">
+                                                <i class="fas fa-print text-secondary" style="width: 16px;"></i>
+                                                <span>Imprimer le document</span>
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li class="dropdown-header text-uppercase fw-bold">Gestion & Modification</li>
+                                        <li>
+                                            <button type="button" class="dropdown-item" onclick="openInvoiceEmailModal({{ $invoice->id }}, '{{ addslashes($invoice->display_number ?? $invoice->invoice_number) }}', '{{ addslashes($invoice->customer_name ?? '') }}', '{{ addslashes($invoice->customer_email ?? '') }}', '{{ $invoice->isQuote() ? 'devis' : 'facture' }}', {{ $invoice->with_stamp ? 'true' : 'false' }}, '{{ $invoice->formatted_total_amount }}')">
+                                                <i class="fas fa-paper-plane text-primary" style="width: 16px;"></i>
+                                                <span>Envoyer par email</span>
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('invoices.edit', $invoice) }}">
+                                                <i class="fas fa-pencil-alt text-dark" style="width: 16px;"></i>
+                                                <span>Modifier le document</span>
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <form method="POST" 
+                                                  action="{{ route('invoices.destroy', $invoice) }}" 
+                                                  class="m-0 p-0"
+                                                  data-confirm-delete="true"
+                                                  data-item-type="document"
+                                                  data-item-name="{{ ($invoice->isQuote() ? 'Devis #' : 'Facture #') . ($invoice->display_number ?? $invoice->invoice_number) }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="dropdown-item text-danger">
+                                                    <i class="fas fa-trash-alt text-danger" style="width: 16px;"></i>
+                                                    <span>Supprimer le document</span>
+                                                </button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8">
+                        <td colspan="6">
                             <div class="text-center py-5">
                                 <div class="brand-avatar mx-auto mb-3" style="width: 64px; height: 64px; font-size: 24px;">
                                     <i class="fas fa-file-invoice-dollar text-muted"></i>
                                 </div>
                                 <h5 class="fw-bold text-dark">Aucun document trouvé</h5>
                                 <p class="text-muted">Aucune facture ou devis ne correspond à vos critères de recherche.</p>
+                                @if(request('search') || $hasActiveFilters)
+                                    <a href="{{ route('invoices.index') }}" class="btn-brand-primary btn-sm mt-2">
+                                        <i class="fas fa-redo me-1"></i> Réinitialiser les filtres
+                                    </a>
+                                @endif
                             </div>
                         </td>
                     </tr>
@@ -907,7 +965,7 @@
      */
     function initStatusDropdowns() {
         if (typeof bootstrap === 'undefined' || !bootstrap.Dropdown) return;
-        const triggers = document.querySelectorAll('.brand-badge-btn[data-bs-toggle="dropdown"], .mobile-order-pay-pill[data-bs-toggle="dropdown"], .mobile-act-btn.dropdown-toggle');
+        const triggers = document.querySelectorAll('.brand-badge-btn[data-bs-toggle="dropdown"], .mobile-order-pay-pill[data-bs-toggle="dropdown"], .mobile-act-btn.dropdown-toggle, .action-btn-more[data-bs-toggle="dropdown"]');
         triggers.forEach(el => {
             const current = bootstrap.Dropdown.getInstance(el);
             if (current) current.dispose();

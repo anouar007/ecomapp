@@ -71,6 +71,8 @@ class InvoiceController extends Controller
             'total_quotes' => Invoice::where('type', 'quote')->count(),
             'paid_amount' => Invoice::where('type', 'invoice')->byStatus('paid')->sum('total_amount'),
             'unpaid_amount' => Invoice::where('type', 'invoice')->byStatus('unpaid')->sum('total_amount'),
+            'paid_count' => Invoice::where('type', 'invoice')->byStatus('paid')->count(),
+            'unpaid_count' => Invoice::where('type', 'invoice')->byStatus('unpaid')->count(),
             'total_revenue' => Invoice::where('type', 'invoice')->where('payment_status', '!=', 'cancelled')->sum('total_amount'),
         ];
 
@@ -740,6 +742,8 @@ class InvoiceController extends Controller
             'stats' => [
                 'total_invoices' => $stats['total_invoices'],
                 'total_quotes' => $stats['total_quotes'],
+                'paid_count' => Invoice::where('type', 'invoice')->byStatus('paid')->count(),
+                'unpaid_count' => Invoice::where('type', 'invoice')->byStatus('unpaid')->count(),
                 'paid_amount_formatted' => currency($stats['paid_amount']),
                 'unpaid_amount_formatted' => currency($stats['unpaid_amount']),
                 'total_revenue_formatted' => currency($stats['total_revenue']),
