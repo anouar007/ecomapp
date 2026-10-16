@@ -18,5 +18,14 @@ class CustomCode extends Model
         'priority',
     ];
 
-    //
+    protected static function booted()
+    {
+        static::saved(function () {
+            \Illuminate\Support\Facades\Cache::forget('active_custom_codes_v1');
+        });
+
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget('active_custom_codes_v1');
+        });
+    }
 }

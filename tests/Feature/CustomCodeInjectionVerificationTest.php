@@ -38,24 +38,26 @@ class CustomCodeInjectionVerificationTest extends TestCase
             'priority' => 10
         ]);
 
-        // 2. Visit Frontend Page
-        $response = $this->get(route('home'));
-        
-        // 3. Assert Content
-        $response->assertStatus(200);
-        
-        // Head Check
-        $response->assertSee("console.log('Head Injected');", false);
-        
-        // Body Start Check
-        $response->assertSee("<div id='body-start-marker'>Start</div>", false);
-        
-        // Body End Check
-        $response->assertSee("console.log('Footer Injected');", false);
-
-        // Cleanup
-        $headCode->delete();
-        $bodyStartCode->delete();
-        $bodyEndCode->delete();
+        try {
+            // 2. Visit Frontend Page
+            $response = $this->get(route('home'));
+            
+            // 3. Assert Content
+            $response->assertStatus(200);
+            
+            // Head Check
+            $response->assertSee("console.log('Head Injected');", false);
+            
+            // Body Start Check
+            $response->assertSee("<div id='body-start-marker'>Start</div>", false);
+            
+            // Body End Check
+            $response->assertSee("console.log('Footer Injected');", false);
+        } finally {
+            // Cleanup
+            $headCode->delete();
+            $bodyStartCode->delete();
+            $bodyEndCode->delete();
+        }
     }
 }
