@@ -2055,9 +2055,17 @@
 
             function highlightText(text, query) {
                 if (!query || !text) return escapeHtml(text);
-                const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                const regex = new RegExp('(' + escapedQuery + ')', 'gi');
-                return escapeHtml(text).replace(regex, '<mark class="search-highlight">$1</mark>');
+                const escaped = escapeHtml(text);
+                const expanded = query.replace(/(\d)([a-zA-Z])/g, '$1 $2').replace(/([a-zA-Z]+)(\d+)/g, '$1 $2');
+                let words = (query + ' ' + expanded)
+                    .split(/\s+/)
+                    .map(w => w.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+                    .filter(w => w.length > 0);
+                words = Array.from(new Set(words));
+                if (words.length === 0) return escaped;
+                words.sort((a, b) => b.length - a.length);
+                const regex = new RegExp('(' + words.join('|') + ')', 'gi');
+                return escaped.replace(regex, '<mark class="search-highlight">$1</mark>');
             }
 
             function openDropdown() {
