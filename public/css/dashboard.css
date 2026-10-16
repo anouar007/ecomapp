@@ -1903,27 +1903,28 @@ body {
 }
 
 .action-btn-email {
-    background: #f0fdf4;
-    color: #16a34a;
-    border-color: #bbf7d0;
+    background: #eff6ff;
+    color: #2563eb;
+    border-color: #bfdbfe;
 }
 .action-btn-email:hover {
-    background: #16a34a;
+    background: #2563eb;
     color: #ffffff;
-    border-color: #16a34a;
+    border-color: #2563eb;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
 }
 
 .mobile-act-email {
-    background: #f0fdf4;
-    color: #16a34a;
-    border-color: #bbf7d0;
+    background: #eff6ff;
+    color: #2563eb;
+    border-color: #bfdbfe;
     width: 32px;
     padding: 0;
 }
 .mobile-act-email:hover {
-    background: #16a34a;
+    background: #2563eb;
     color: #ffffff;
-    border-color: #16a34a;
+    border-color: #2563eb;
 }
 
 /* Smooth Transitions for sidebar etc */
@@ -3633,43 +3634,51 @@ i.fa-sparkles:before {
    PRO INVOICE & QUOTE ENTERPRISE WORKSPACE
    ========================================================================== */
 .invoice-nav-tabs {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
-    border-bottom: 1px solid #e2e8f0;
+    gap: 4px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 4px;
     margin-bottom: 1.25rem;
     overflow-x: auto;
     white-space: nowrap;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 2px;
+    max-width: 100%;
 }
 .invoice-nav-tab {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 9px 16px;
-    font-size: 0.85rem;
+    gap: 7px;
+    padding: 7px 14px;
+    font-size: 0.84rem;
+    font-weight: 500;
     color: #64748b;
     text-decoration: none !important;
-    border-radius: 8px 8px 0 0;
-    border-bottom: 2px solid transparent;
-    transition: all 0.15s ease;
+    border-radius: 8px;
+    border: none;
+    transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .invoice-nav-tab:hover {
     color: #0f172a;
-    background: #f8fafc;
+    background: rgba(255, 255, 255, 0.65);
 }
 .invoice-nav-tab.active {
     color: #0f172a;
-    border-bottom-color: #0f172a;
+    font-weight: 600;
     background: #ffffff;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 .invoice-nav-tab .tab-badge {
     font-size: 0.72rem;
-    padding: 2px 7px;
+    font-weight: 600;
+    padding: 2px 7.5px;
     border-radius: 999px;
-    background: #f1f5f9;
+    background: #e2e8f0;
     color: #475569;
+    line-height: 1.2;
+    transition: all 0.16s ease;
 }
 .invoice-nav-tab.active .tab-badge {
     background: #0f172a;
@@ -3680,7 +3689,7 @@ i.fa-sparkles:before {
     color: #b45309;
 }
 .invoice-nav-tab.active .tab-badge.badge-unpaid {
-    background: #d97706;
+    background: #f59e0b;
     color: #ffffff;
 }
 .invoice-nav-tab .tab-badge.badge-paid {
@@ -3688,7 +3697,7 @@ i.fa-sparkles:before {
     color: #15803d;
 }
 .invoice-nav-tab.active .tab-badge.badge-paid {
-    background: #16a34a;
+    background: #10b981;
     color: #ffffff;
 }
 
@@ -3787,6 +3796,7 @@ i.fa-sparkles:before {
     border-radius: 10px;
     background: #f1f5f9;
     color: #334155;
+    font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3794,6 +3804,12 @@ i.fa-sparkles:before {
     border: 1px solid #e2e8f0;
     flex-shrink: 0;
 }
+.invoice-client-avatar.avatar-c-blue { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
+.invoice-client-avatar.avatar-c-emerald { background: #ecfdf5; color: #059669; border-color: #a7f3d0; }
+.invoice-client-avatar.avatar-c-purple { background: #faf5ff; color: #7c3aed; border-color: #ddd6fe; }
+.invoice-client-avatar.avatar-c-amber { background: #fffbeb; color: #d97706; border-color: #fde68a; }
+.invoice-client-avatar.avatar-c-rose { background: #fff1f2; color: #e11d48; border-color: #fecdd3; }
+.invoice-client-avatar.avatar-c-slate { background: #f8fafc; color: #475569; border-color: #cbd5e1; }
 .invoice-amount-value {
     font-size: 0.95rem;
     color: #0f172a;
