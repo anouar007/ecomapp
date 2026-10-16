@@ -582,6 +582,14 @@
                                     </ul>
                                 </div>
 
+                                <!-- Envoyer par Email -->
+                                <button type="button" 
+                                        class="action-btn action-btn-email" 
+                                        title="Envoyer par email au client"
+                                        onclick="openInvoiceEmailModal({{ $invoice->id }}, '{{ addslashes($invoice->display_number ?? $invoice->invoice_number) }}', '{{ addslashes($invoice->customer_name ?? '') }}', '{{ addslashes($invoice->customer_email ?? '') }}', '{{ $invoice->isQuote() ? 'devis' : 'facture' }}', {{ $invoice->with_stamp ? 'true' : 'false' }}, '{{ $invoice->formatted_total_amount }}')">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+
                                 <!-- Modifier -->
                                 <a href="{{ route('invoices.edit', $invoice) }}" class="action-btn action-btn-edit" title="Modifier">
                                     <i class="fas fa-pencil-alt"></i>
@@ -656,6 +664,7 @@
                             </div>
 
                             <div class="d-flex align-items-center gap-1.5">
+                                <button type="button" class="btn btn-sm btn-info text-white px-2.5" onclick="openEmailFromPreview()"><i class="fas fa-paper-plane me-1"></i> Email</button>
                                 <button type="button" class="btn btn-sm btn-light px-2.5" onclick="printFromPreview()"><i class="fas fa-print me-1"></i> Imprimer</button>
                                 <a href="#" id="previewDownloadLink" class="btn btn-sm btn-danger px-2.5"><i class="fas fa-download me-1"></i> PDF</a>
                                 <button type="button" class="btn-close btn-close-white ms-2 d-none d-md-inline-block" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -669,6 +678,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal d'Envoi par Email (Devis & Factures) -->
+    @include('invoices.partials.email-modal')
 @endsection
 
 @push('scripts')
@@ -993,6 +1005,12 @@
         if (iframe && iframe.contentWindow) {
             iframe.contentWindow.print();
         }
+    }
+
+    function openEmailFromPreview() {
+        if (!currentPreviewId) return;
+        const number = document.getElementById('previewModalTitle')?.innerText?.replace(/^(Devis|Facture)\s*#/i, '') || '';
+        openInvoiceEmailModal(currentPreviewId, number, '', '', currentPreviewType, currentPreviewStamp, '');
     }
 </script>
 @endpush

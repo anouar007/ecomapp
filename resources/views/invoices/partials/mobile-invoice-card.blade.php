@@ -214,6 +214,14 @@
                 </ul>
             </div>
 
+            <!-- Envoyer par Email -->
+            <button type="button" 
+                    class="mobile-act-btn mobile-act-email" 
+                    title="Envoyer par email au client"
+                    onclick="openInvoiceEmailModal({{ $invoice->id }}, '{{ addslashes($invoice->display_number ?? $invoice->invoice_number) }}', '{{ addslashes($invoice->customer_name ?? '') }}', '{{ addslashes($invoice->customer_email ?? '') }}', '{{ $invoice->isQuote() ? 'devis' : 'facture' }}', {{ $invoice->with_stamp ? 'true' : 'false' }}, '{{ $invoice->formatted_total_amount }}')">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+
             <!-- Modifier -->
             <a href="{{ route('invoices.edit', $invoice) }}" class="mobile-act-btn mobile-act-edit" title="Modifier la facture">
                 <i class="fas fa-pencil-alt"></i>

@@ -1902,6 +1902,30 @@ body {
     border-color: #334155;
 }
 
+.action-btn-email {
+    background: #f0fdf4;
+    color: #16a34a;
+    border-color: #bbf7d0;
+}
+.action-btn-email:hover {
+    background: #16a34a;
+    color: #ffffff;
+    border-color: #16a34a;
+}
+
+.mobile-act-email {
+    background: #f0fdf4;
+    color: #16a34a;
+    border-color: #bbf7d0;
+    width: 32px;
+    padding: 0;
+}
+.mobile-act-email:hover {
+    background: #16a34a;
+    color: #ffffff;
+    border-color: #16a34a;
+}
+
 /* Smooth Transitions for sidebar etc */
 .main-content,
 .sidebar,

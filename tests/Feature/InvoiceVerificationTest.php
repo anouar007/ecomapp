@@ -170,7 +170,7 @@ class InvoiceVerificationTest extends TestCase
         // 9. Create Page Verification
         $response = $this->actingAs($admin)->get(route('invoices.create'));
         $response->assertStatus(200);
-        $response->assertSee('Create New Invoice');
+        $response->assertSee('Nouveau document');
         $response->assertSee('Invoiceable Product');
     }
 }

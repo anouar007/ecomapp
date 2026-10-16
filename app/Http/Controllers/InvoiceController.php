@@ -439,22 +439,72 @@ class InvoiceController extends Controller
     }
 
     /**
-     * Send invoice via email.
+     * Send invoice or devis via email to client.
      */
-    public function email(Invoice $invoice)
+    public function email(Request $request, Invoice $invoice)
     {
-        if (!$invoice->customer_email) {
-            return back()->with('error', 'Customer email is not available.');
+        $recipientEmail = trim($request->input('recipient_email', $invoice->customer_email ?? ''));
+
+        if (empty($recipientEmail) || !filter_var($recipientEmail, FILTER_VALIDATE_EMAIL)) {
+            $msg = __('L\'adresse email du client est invalide ou non renseignée.');
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => $msg], 422);
+            }
+            return back()->with('error', $msg);
         }
 
-        // Send email
+        // Save email to invoice if it was missing or if user requested to update it
+        if (empty($invoice->customer_email) || $request->boolean('update_customer_email')) {
+            $invoice->update(['customer_email' => $recipientEmail]);
+        }
+
+        $as = strtolower($request->input('as', $invoice->isQuote() ? 'devis' : 'facture'));
+        $withStamp = $request->has('with_stamp') ? $request->boolean('with_stamp') : ($invoice->with_stamp ?? true);
+        $subject = $request->input('subject');
+        $customMessage = $request->input('custom_message');
+        $sendCopy = $request->boolean('send_copy');
+
         try {
-            \Illuminate\Support\Facades\Mail::to($invoice->customer_email)
-                ->send(new \App\Mail\InvoiceEmail($invoice));
-            
-            return back()->with('success', 'Invoice sent successfully!');
+            $mail = new \App\Mail\InvoiceEmail(
+                invoice: $invoice,
+                as: $as,
+                withStamp: $withStamp,
+                customSubject: $subject,
+                customMessage: $customMessage
+            );
+
+            $mailer = \Illuminate\Support\Facades\Mail::to($recipientEmail);
+
+            if ($sendCopy) {
+                $copyEmail = setting('company_email', config('mail.from.address'));
+                if ($copyEmail && filter_var($copyEmail, FILTER_VALIDATE_EMAIL)) {
+                    $mailer->cc($copyEmail);
+                }
+            }
+
+            $mailer->send($mail);
+
+            $docLabel = $as === 'devis' ? 'Le devis' : 'La facture';
+            $successMsg = __(':doc #:num a été envoyé(e) avec succès à :email.', [
+                'doc' => $docLabel,
+                'num' => $invoice->display_number ?? $invoice->invoice_number,
+                'email' => $recipientEmail
+            ]);
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => true, 'message' => $successMsg]);
+            }
+
+            return back()->with('success', $successMsg);
         } catch (\Exception $e) {
-            return back()->with('error', 'Failed to send email: ' . $e->getMessage());
+            \Log::error('Invoice email sending failed: ' . $e->getMessage());
+            $errorMsg = __('Échec de l\'envoi de l\'email : ') . $e->getMessage();
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => $errorMsg], 500);
+            }
+
+            return back()->with('error', $errorMsg);
         }
     }
 

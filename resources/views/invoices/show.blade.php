@@ -172,6 +172,25 @@
         box-shadow: 0 4px 14px rgba(16, 185, 129, 0.28) !important;
     }
 
+    /* Info Blue Gradient (Envoyer par Email) */
+    .btn-pro-info {
+        background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%) !important;
+        color: #ffffff !important;
+        border-color: #1d4ed8 !important;
+        box-shadow: 0 1px 2px rgba(37, 99, 235, 0.15), 0 3px 8px rgba(37, 99, 235, 0.22) !important;
+    }
+
+    .btn-pro-info:hover {
+        background: linear-gradient(180deg, #1d4ed8 0%, #1e40af 100%) !important;
+        color: #ffffff !important;
+        border-color: #1e40af !important;
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3) !important;
+    }
+
+    .btn-pro-info i:not(.btn-chevron) {
+        color: #ffffff;
+    }
+
     /* Dropdown Floating Glass Card */
     .pro-dropdown-menu {
         border-radius: 12px !important;
@@ -1155,6 +1174,15 @@
                     </ul>
                 </div>
 
+                <!-- Send by Email Button -->
+                <button type="button" 
+                        class="btn-pro btn-pro-info" 
+                        onclick="openInvoiceEmailModal({{ $invoice->id }}, '{{ addslashes($invoice->display_number ?? $invoice->invoice_number) }}', '{{ addslashes($invoice->customer_name ?? '') }}', '{{ addslashes($invoice->customer_email ?? '') }}', '{{ $invoice->isQuote() ? 'devis' : 'facture' }}', {{ $withStamp ? 'true' : 'false' }}, '{{ $invoice->formatted_total_amount }}')"
+                        title="Envoyer la facture ou le devis par email au client">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>{{ __('Envoyer par Email') }}</span>
+                </button>
+
                 @if($invoice->canEdit())
                 <a href="{{ route('invoices.edit', $invoice) }}" class="btn-pro btn-pro-secondary">
                     <i class="fas fa-pen-to-square"></i>
@@ -1476,4 +1504,6 @@
     </div>
 </div>
 @endif
+
+@include('invoices.partials.email-modal')
 @endsection
