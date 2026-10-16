@@ -313,21 +313,21 @@
             <table class="brand-table align-middle">
                 <thead>
                     <tr>
-                        <th style="width: 16%;">N° Document</th>
+                        <th style="width: 15%; padding-left: 1.25rem;">N° Document</th>
                         <th style="width: 20%;">Client</th>
                         <th style="width: 13%;">Date & Échéance</th>
-                        <th class="text-end" style="width: 12%;">Montant Total</th>
-                        <th class="text-center" style="width: 13%;">Statut Paiement</th>
-                        <th class="text-center" style="width: 6%;">Cachet</th>
+                        <th class="text-end" style="width: 12%;">Total TTC</th>
+                        <th class="text-center" style="width: 14%;">Statut Paiement</th>
+                        <th class="text-center" style="width: 7%;">Cachet</th>
                         <th class="text-center" style="width: 7%;">Mode</th>
-                        <th class="text-end" style="width: 13%;">Actions</th>
+                        <th class="text-end" style="width: 12%; padding-right: 1.25rem;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($invoices as $invoice)
                     <tr>
                         <!-- N° Document (No-wrap guaranteed) -->
-                        <td>
+                        <td style="padding-left: 1.25rem;">
                             <div class="d-flex align-items-center gap-1.5 text-nowrap">
                                 <a href="{{ route('invoices.show', $invoice) }}" class="fw-bold text-primary text-decoration-none font-monospace text-nowrap" style="font-size: 0.88rem; letter-spacing: -0.01em;">
                                     #{{ $invoice->display_number ?? $invoice->invoice_number }}
@@ -502,7 +502,7 @@
                         </td>
 
                         <!-- Actions (Compact 5-Button Action Group, Fully Contained) -->
-                        <td class="text-end">
+                        <td class="text-end" style="padding-right: 1.25rem;">
                             <div class="action-buttons-group">
                                 <!-- Aperçu Rapide -->
                                 <button type="button" class="action-btn action-btn-view" title="Aperçu rapide" 

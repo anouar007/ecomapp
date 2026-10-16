@@ -292,25 +292,25 @@
     </div>
 
     <!-- Tableau des commandes Desktop (d-none d-md-block) -->
-    <div class="brand-table-card orders-table-card d-none d-md-block" style="overflow: visible;">
-        <div class="table-responsive" style="overflow: visible; min-height: 280px;">
-            <table class="brand-table">
+    <div class="brand-table-card orders-table-card d-none d-md-block">
+        <div class="table-responsive">
+            <table class="brand-table align-middle">
                 <thead>
                     <tr>
-                        <th style="padding-left: 1.5rem;">N° Commande</th>
-                        <th>Client</th>
-                        <th class="text-center">Articles</th>
-                        <th class="text-end">Total</th>
-                        <th class="text-center">Livraison</th>
-                        <th class="text-center">Paiement</th>
-                        <th>Date</th>
-                        <th class="text-end" style="padding-right: 1.5rem;">Actions</th>
+                        <th style="width: 15%; padding-left: 1.25rem;">N° Commande</th>
+                        <th style="width: 20%;">Client</th>
+                        <th class="text-center" style="width: 8%;">Articles</th>
+                        <th class="text-end" style="width: 12%;">Total TTC</th>
+                        <th class="text-center" style="width: 13%;">Livraison</th>
+                        <th class="text-center" style="width: 13%;">Paiement</th>
+                        <th style="width: 9%;">Date</th>
+                        <th class="text-end" style="width: 10%; padding-right: 1.25rem;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($orders as $order)
                     <tr>
-                        <td style="padding-left: 1.5rem;">
+                        <td style="padding-left: 1.25rem;">
                             <a href="{{ route('orders.show', $order) }}" class="fw-bold text-primary text-decoration-none font-monospace">
                                 #{{ $order->order_number }}
                             </a>
@@ -471,7 +471,7 @@
                             <div class="text-muted small">{{ $order->created_at->format('d/m/Y') }}</div>
                             <div class="text-muted" style="font-size: 0.72rem;">{{ $order->created_at->format('H:i') }}</div>
                         </td>
-                        <td style="padding-right: 1.5rem;">
+                        <td class="text-end" style="padding-right: 1.25rem;">
                             <div class="d-flex justify-content-end gap-1.5">
                                 <a href="{{ route('orders.show', $order) }}" class="btn-action-icon" title="Détails de la commande">
                                     <i class="fas fa-eye text-primary"></i>

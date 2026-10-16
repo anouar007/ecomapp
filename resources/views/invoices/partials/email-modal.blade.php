@@ -553,6 +553,43 @@
         opacity: 0.7;
         cursor: not-allowed;
     }
+
+    /* Mobile First Bottom Sheet for screen <= 576px */
+    @media (max-width: 575.98px) {
+        #invoiceEmailModal .modal-dialog {
+            margin: 0 !important;
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+        #invoiceEmailModal .invoice-email-modal-card {
+            border-radius: 20px 20px 0 0 !important;
+            max-height: 90vh !important;
+        }
+        #invoiceEmailModal .email-modal-header {
+            padding: 14px 16px 12px !important;
+        }
+        #invoiceEmailModal .email-modal-body {
+            padding: 14px 16px !important;
+            max-height: calc(90vh - 140px) !important;
+            overflow-y: auto !important;
+        }
+        #invoiceEmailModal .email-modal-footer {
+            padding: 12px 16px 16px !important;
+            flex-direction: column-reverse !important;
+            gap: 8px !important;
+        }
+        #invoiceEmailModal .btn-email-modal-submit,
+        #invoiceEmailModal .btn-email-modal-cancel {
+            width: 100% !important;
+            justify-content: center !important;
+            height: 44px !important;
+            font-size: 14px !important;
+        }
+    }
 </style>
 
 <script>

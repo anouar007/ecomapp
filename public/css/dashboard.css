@@ -2973,9 +2973,10 @@ i.fa-sparkles:before {
 }
 
 .mobile-act-btn {
-    height: 32px;
-    border-radius: 8px;
-    font-size: 0.75rem;
+    height: 36px;
+    min-width: 36px;
+    border-radius: 9px;
+    font-size: 0.78rem;
     font-weight: 600;
     display: inline-flex;
     align-items: center;
@@ -2997,7 +2998,7 @@ i.fa-sparkles:before {
     background: #f0fdfa;
     color: #0d9488;
     border-color: #ccfbf1;
-    width: 32px;
+    width: 36px;
     padding: 0;
 }
 
@@ -3584,12 +3585,15 @@ i.fa-sparkles:before {
 .invoices-table-card .table-responsive {
     overflow-x: auto !important;
     overflow-y: visible !important;
+    -webkit-overflow-scrolling: touch;
     min-height: 320px;
     width: 100%;
 }
 
 .invoices-table-card .brand-table {
     width: 100% !important;
+    min-width: 980px !important;
+    table-layout: fixed !important;
     margin-bottom: 0;
 }
 
@@ -3610,11 +3614,11 @@ i.fa-sparkles:before {
 }
 
 .invoices-table-card .action-btn {
-    width: 28px !important;
-    height: 28px !important;
-    min-width: 28px !important;
-    border-radius: 6px !important;
-    font-size: 0.76rem !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    border-radius: 8px !important;
+    font-size: 0.8rem !important;
 }
 
 .invoices-table-card .action-buttons-group {
@@ -3625,22 +3629,85 @@ i.fa-sparkles:before {
     white-space: nowrap;
 }
 
+/* Orders Table Card - Guaranteed 100% Contained & Responsive */
 .orders-table-card,
 .brand-table-card.orders-table-card {
-    overflow: visible !important;
+    background: #ffffff !important;
+    border-radius: var(--radius-xl) !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    box-shadow: var(--shadow-soft) !important;
+    overflow: hidden !important;
+    margin-bottom: 2rem;
+    position: relative;
+    width: 100%;
 }
 
 .orders-table-card .table-responsive,
 .brand-table-card.orders-table-card .table-responsive {
-    overflow: visible !important;
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+    -webkit-overflow-scrolling: touch;
     min-height: 280px;
+    width: 100%;
 }
 
-.brand-table-card.orders-table-card table,
-.brand-table-card.orders-table-card tbody,
-.brand-table-card.orders-table-card tr,
-.brand-table-card.orders-table-card td {
-    overflow: visible !important;
+.orders-table-card .brand-table,
+.brand-table-card.orders-table-card .brand-table {
+    width: 100% !important;
+    min-width: 940px !important;
+    table-layout: fixed !important;
+    margin-bottom: 0;
+}
+
+.orders-table-card .brand-table th,
+.orders-table-card .brand-table td {
+    padding: 0.82rem 0.65rem !important;
+    vertical-align: middle;
+}
+
+.orders-table-card .brand-table th:first-child,
+.orders-table-card .brand-table td:first-child {
+    padding-left: 1.25rem !important;
+}
+
+.orders-table-card .brand-table th:last-child,
+.orders-table-card .brand-table td:last-child {
+    padding-right: 1.25rem !important;
+}
+
+.orders-table-card .action-btn {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    border-radius: 8px !important;
+    font-size: 0.8rem !important;
+}
+
+.orders-table-card .action-buttons-group {
+    gap: 4px !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    white-space: nowrap;
+}
+
+/* Custom Scrollbar for guaranteed clean appearance */
+.invoices-table-card .table-responsive::-webkit-scrollbar,
+.orders-table-card .table-responsive::-webkit-scrollbar {
+    height: 6px;
+}
+.invoices-table-card .table-responsive::-webkit-scrollbar-track,
+.orders-table-card .table-responsive::-webkit-scrollbar-track {
+    background: #f8fafc;
+}
+.invoices-table-card .table-responsive::-webkit-scrollbar-thumb,
+.orders-table-card .table-responsive::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 999px;
+}
+.invoices-table-card .table-responsive::-webkit-scrollbar-thumb:hover,
+.orders-table-card .table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
 }
 
 .status-dropdown-menu {
