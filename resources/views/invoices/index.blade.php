@@ -15,8 +15,8 @@
             </div>
         </div>
         <div class="brand-header-actions">
-            <a href="{{ route('export.invoices') }}" class="btn btn-outline-secondary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
-                <i class="fas fa-file-csv text-success"></i> <span>Exporter CSV</span>
+            <a href="{{ route('export.invoices') }}" class="btn-brand-outline">
+                <i class="fas fa-file-csv me-1.5" style="color: var(--success-color)"></i><span>Exporter CSV</span>
             </a>
             <a href="{{ route('invoices.create') }}" class="btn-brand-primary flex-grow-1 flex-md-grow-0 justify-content-center text-nowrap px-3 py-2" style="font-size: 0.84rem;">
                 <i class="fas fa-plus me-1"></i> <span class="d-none d-sm-inline">Nouveau document</span><span class="d-sm-none">Créer</span>
@@ -310,61 +310,48 @@
     <!-- Desktop Table (d-none d-md-block) -->
     <div class="brand-table-card invoices-table-card d-none d-md-block">
         <div class="table-responsive">
-            <table class="brand-table align-middle">
+            <table class="brand-table brand-table-invoices align-middle">
                 <thead>
                     <tr>
-                        <th style="width: 16%;">N° Document</th>
-                        <th style="width: 20%;">Client</th>
-                        <th style="width: 13%;">Date & Échéance</th>
-                        <th class="text-end" style="width: 12%;">Montant Total</th>
-                        <th class="text-center" style="width: 13%;">Statut Paiement</th>
-                        <th class="text-center" style="width: 6%;">Cachet</th>
-                        <th class="text-center" style="width: 7%;">Mode</th>
-                        <th class="text-end" style="width: 13%;">Actions</th>
+                        <th style="padding-left: 1.25rem;">Document & Client</th>
+                        <th style="width: 140px;">Date & Échéance</th>
+                        <th class="text-end" style="width: 130px;">Total TTC</th>
+                        <th class="text-center" style="width: 135px;">Paiement</th>
+                        <th class="text-center" style="width: 90px;">Cachet</th>
+                        <th class="text-center" style="width: 95px;">Mode</th>
+                        <th class="col-actions text-end" style="width: 195px; padding-right: 1.25rem;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($invoices as $invoice)
-                    <tr>
-                        <!-- N° Document (No-wrap guaranteed) -->
-                        <td>
-                            <div class="d-flex align-items-center gap-1.5 text-nowrap">
-                                <a href="{{ route('invoices.show', $invoice) }}" class="fw-bold text-primary text-decoration-none font-monospace text-nowrap" style="font-size: 0.88rem; letter-spacing: -0.01em;">
-                                    #{{ $invoice->display_number ?? $invoice->invoice_number }}
-                                </a>
-                                <button type="button" 
-                                        class="btn btn-sm btn-light border-0 p-1 text-muted" 
-                                        style="font-size: 0.7rem; line-height: 1;"
-                                        onclick="copyInvoiceNumber('{{ $invoice->display_number ?? $invoice->invoice_number }}', this)"
-                                        title="Copier le N°">
-                                    <i class="far fa-copy"></i>
-                                </button>
-                            </div>
-                            <div class="mt-1">
-                                @if($invoice->isQuote())
-                                    <span class="badge bg-warning-subtle text-warning fw-bold border border-warning-subtle px-1.5 py-0.5" style="font-size: 0.65rem; letter-spacing: 0.03em;">
-                                        DEVIS
-                                    </span>
-                                @else
-                                    <span class="badge bg-primary-subtle text-primary fw-bold border border-primary-subtle px-1.5 py-0.5" style="font-size: 0.65rem; letter-spacing: 0.03em;">
-                                        FACTURE
-                                    </span>
-                                @endif
-                            </div>
-                        </td>
-
-                        <!-- Client -->
-                        <td>
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="brand-avatar-sm" style="width: 34px; height: 34px; min-width: 34px; border-radius: 9px; background: #f8fafc; color: #475569; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.82rem; border: 1px solid #e2e8f0; flex-shrink: 0;">
-                                    {{ strtoupper(substr($invoice->customer_name ?: 'C', 0, 1)) }}
+                    <tr id="invoice-row-{{ $invoice->id }}">
+                        <!-- Document & Client (Rich Avatar Identity Cell) -->
+                        <td style="padding-left: 1.25rem;">
+                            <div class="d-flex align-items-center gap-2.5">
+                                <div class="brand-avatar prod-avatar" style="width: 40px; height: 40px; border-radius: 8px; background: {{ $invoice->isQuote() ? '#fff7ed' : '#f8fafc' }}; border: 1px solid {{ $invoice->isQuote() ? '#fed7aa' : '#e2e8f0' }}; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">
+                                    <i class="fas {{ $invoice->isQuote() ? 'fa-file-signature text-warning' : 'fa-file-invoice text-primary' }}"></i>
                                 </div>
-                                <div class="min-w-0" style="max-width: 190px;">
-                                    <div class="fw-bold text-dark text-truncate" style="font-size: 0.88rem;" title="{{ $invoice->customer_name ?: 'Client sans nom' }}">
-                                        {{ $invoice->customer_name ?: 'Client sans nom' }}
+                                <div class="prod-info-wrap">
+                                    <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                                        <span class="badge {{ $invoice->isQuote() ? 'bg-warning-subtle text-warning border border-warning-subtle' : 'bg-primary-subtle text-primary border border-primary-subtle' }} px-1.5 py-0.5 fw-bold" style="font-size: 0.68rem; letter-spacing: 0.04em;">
+                                            {{ $invoice->isQuote() ? 'DEVIS' : 'FACTURE' }}
+                                        </span>
+                                        <a href="{{ route('invoices.show', $invoice) }}" class="fw-bold text-dark text-decoration-none font-monospace" style="font-size: 13.5px;">
+                                            #{{ $invoice->display_number ?? $invoice->invoice_number }}
+                                        </a>
+                                        <button type="button" 
+                                                class="btn btn-sm btn-link text-muted p-0 border-0" 
+                                                onclick="copyInvoiceNumber('{{ $invoice->display_number ?? $invoice->invoice_number }}', this)" 
+                                                title="Copier le N°">
+                                            <i class="far fa-copy" style="font-size: 11px;"></i>
+                                        </button>
                                     </div>
-                                    <div class="text-muted small text-truncate" style="font-size: 0.74rem;" title="{{ $invoice->customer_email ?: ($invoice->customer_phone ?: 'Aucun contact') }}">
-                                        {{ $invoice->customer_email ?: ($invoice->customer_phone ?: 'Aucun contact') }}
+                                    <div class="d-flex align-items-center gap-1 text-muted small mt-0.5 text-truncate" style="font-size: 12px;">
+                                        <span class="fw-semibold text-secondary">{{ $invoice->customer_name ?: 'Client sans nom' }}</span>
+                                        @if($invoice->customer_email || $invoice->customer_phone)
+                                            <span class="opacity-40">&bull;</span>
+                                            <span class="text-truncate">{{ $invoice->customer_email ?: $invoice->customer_phone }}</span>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -613,13 +600,18 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8">
+                        <td colspan="7">
                             <div class="text-center py-5">
                                 <div class="brand-avatar mx-auto mb-3" style="width: 64px; height: 64px; font-size: 24px;">
                                     <i class="fas fa-file-invoice-dollar text-muted"></i>
                                 </div>
                                 <h5 class="fw-bold text-dark">Aucun document trouvé</h5>
                                 <p class="text-muted">Aucune facture ou devis ne correspond à vos critères de recherche.</p>
+                                @if(request('search') || $hasActiveFilters)
+                                    <a href="{{ route('invoices.index') }}" class="btn-brand-primary btn-sm mt-2">
+                                        <i class="fas fa-redo me-1"></i> Réinitialiser les filtres
+                                    </a>
+                                @endif
                             </div>
                         </td>
                     </tr>
@@ -627,16 +619,18 @@
                 </tbody>
             </table>
         </div>
-        @if($invoices->hasPages())
-        <div class="px-4 py-3 border-top d-flex justify-content-between align-items-center">
-            <span class="text-muted small">
-                Affichage de {{ $invoices->firstItem() ?? 0 }} à {{ $invoices->lastItem() ?? 0 }} sur {{ $invoices->total() }} documents
-            </span>
-            <div>
-                {{ $invoices->links() }}
+        
+        <div class="products-table-footer px-4 py-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div class="text-muted small">
+                <i class="fas fa-list-ul me-1 opacity-50"></i>
+                Affichage de <span class="fw-semibold text-dark">{{ $invoices->firstItem() ?? 0 }}</span> à <span class="fw-semibold text-dark">{{ $invoices->lastItem() ?? 0 }}</span> sur <span class="fw-semibold text-dark">{{ $invoices->total() }}</span> documents
             </div>
+            @if($invoices->hasPages())
+                <div>
+                    {{ $invoices->links() }}
+                </div>
+            @endif
         </div>
-        @endif
     </div>
 
     <!-- Quick Preview Modal -->
@@ -682,6 +676,40 @@
     <!-- Modal d'Envoi par Email (Devis & Factures) -->
     @include('invoices.partials.email-modal')
 @endsection
+
+@push('styles')
+<style>
+    .brand-table-invoices {
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 0;
+    }
+    .brand-table-invoices thead th {
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        padding: 0.85rem 0.65rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #64748b;
+        border-bottom: 1px solid #e2e8f0;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+    .brand-table-invoices tbody td {
+        padding: 0.75rem 0.65rem;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+        color: #1e293b;
+        font-size: 0.85rem;
+    }
+    .brand-table-invoices tbody tr:hover {
+        background-color: #f8fafc;
+    }
+</style>
+@endpush
 
 @push('scripts')
 <script>
