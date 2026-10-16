@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\Banner; // Added import
+use App\Models\Banner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
@@ -19,23 +20,17 @@ class HomeController extends Controller
      */
     public function index()
     {
-        // 1. Hero Data & Banners
-        $heroSlides = Banner::where('position', 'main_hero')
-            ->where('status', 'active')
-            ->orderBy('sort_order', 'asc')
-            ->get();
+        // 1. Hero Data & Banners (Single cached query)
+        $banners = Cache::remember('home_active_banners_v1', 3600, function () {
+            return Banner::where('status', 'active')
+                ->orderBy('sort_order', 'asc')
+                ->get();
+        });
 
-        $heroSideTop = Banner::where('position', 'side_top')
-            ->where('status', 'active')
-            ->first();
-
-        $heroSideBottom = Banner::where('position', 'side_bottom')
-            ->where('status', 'active')
-            ->first();
-
-        $promoMiddleBanner = Banner::where('position', 'wide_middle')
-            ->where('status', 'active')
-            ->first();
+        $heroSlides = $banners->where('position', 'main_hero')->values();
+        $heroSideTop = $banners->firstWhere('position', 'side_top');
+        $heroSideBottom = $banners->firstWhere('position', 'side_bottom');
+        $promoMiddleBanner = $banners->firstWhere('position', 'wide_middle');
 
         // 2. Popular Categories matching screenshot 2 + additional store categories
         $popularCategories = [
@@ -134,52 +129,67 @@ class HomeController extends Controller
 
         // 3. Featured Flagship Products ("Notre sélection de produits" matching Screenshot 3)
         $featuredIds = [594, 45, 374, 36, 18, 2, 7, 14];
-        $featuredProducts = Product::where('status', 'active')
-            ->whereIn('id', $featuredIds)
-            ->orderByRaw('FIELD(id, 594, 45, 374, 36, 18, 2, 7, 14)')
-            ->get();
-
-        if ($featuredProducts->count() < 8) {
-            $extra = Product::where('status', 'active')
-                ->whereNotNull('price')
-                ->where('price', '>', 0)
-                ->whereNotIn('id', $featuredProducts->pluck('id'))
-                ->take(8 - $featuredProducts->count())
+        $featuredProducts = Cache::remember('home_featured_products_v1', 1800, function () use ($featuredIds) {
+            $prods = Product::where('status', 'active')
+                ->whereIn('id', $featuredIds)
+                ->with(['images', 'productCategory'])
+                ->orderByRaw('FIELD(id, 594, 45, 374, 36, 18, 2, 7, 14)')
                 ->get();
-            $featuredProducts = $featuredProducts->merge($extra);
-        }
+
+            if ($prods->count() < 8) {
+                $extra = Product::where('status', 'active')
+                    ->whereNotNull('price')
+                    ->where('price', '>', 0)
+                    ->whereNotIn('id', $prods->pluck('id'))
+                    ->with(['images', 'productCategory'])
+                    ->take(8 - $prods->count())
+                    ->get();
+                $prods = $prods->merge($extra);
+            }
+            return $prods;
+        });
 
         // 4. New Arrivals ("Nouvelle Arrivage")
         $newArrivalIds = [251, 239, 129, 130, 126, 127];
-        $newArrivalProducts = Product::where('status', 'active')
-            ->whereIn('id', $newArrivalIds)
-            ->orderByRaw('FIELD(id, 251, 239, 129, 130, 126, 127)')
-            ->get();
-
-        if ($newArrivalProducts->count() < 6) {
-            $extraNew = Product::where('status', 'active')
-                ->whereNotIn('id', $newArrivalProducts->pluck('id'))
-                ->latest()
-                ->take(6 - $newArrivalProducts->count())
+        $newArrivalProducts = Cache::remember('home_new_arrival_products_v1', 1800, function () use ($newArrivalIds) {
+            $prods = Product::where('status', 'active')
+                ->whereIn('id', $newArrivalIds)
+                ->with(['images', 'productCategory'])
+                ->orderByRaw('FIELD(id, 251, 239, 129, 130, 126, 127)')
                 ->get();
-            $newArrivalProducts = $newArrivalProducts->merge($extraNew);
-        }
+
+            if ($prods->count() < 6) {
+                $extraNew = Product::where('status', 'active')
+                    ->whereNotIn('id', $prods->pluck('id'))
+                    ->with(['images', 'productCategory'])
+                    ->latest()
+                    ->take(6 - $prods->count())
+                    ->get();
+                $prods = $prods->merge($extraNew);
+            }
+            return $prods;
+        });
 
         // 5. Occasion Products ("Coin Occasion") - ONLY products of this category
-        $occasionProducts = Product::where('status', 'active')
-            ->where(function ($q) {
-                $q->whereHas('productCategory', function ($c) {
-                    $c->where('slug', 'occasion');
-                })->orWhere('name', 'like', '%(occasion)%')
-                  ->orWhere('name', 'like', '%occasion%');
-            })
-            ->orderByRaw('FIELD(id, 71, 31, 9, 12, 84) DESC')
-            ->get();
+        $occasionProducts = Cache::remember('home_occasion_products_v1', 1800, function () {
+            return Product::where('status', 'active')
+                ->where(function ($q) {
+                    $q->whereHas('productCategory', function ($c) {
+                        $c->where('slug', 'occasion');
+                    })->orWhere('name', 'like', '%(occasion)%')
+                      ->orWhere('name', 'like', '%occasion%');
+                })
+                ->with(['images', 'productCategory'])
+                ->orderByRaw('FIELD(id, 71, 31, 9, 12, 84) DESC')
+                ->get();
+        });
 
-        // General categories for navbar / footer
-        $allCategories = Category::where('status', 'active')
-            ->orderBy('sort_order', 'asc')
-            ->get();
+        // General categories for navbar / footer (cached)
+        $allCategories = Cache::remember('all_active_categories_sorted_v1', 3600, function () {
+            return Category::where('status', 'active')
+                ->orderBy('sort_order', 'asc')
+                ->get();
+        });
 
         return view('frontend.home', compact(
             'heroSlides',

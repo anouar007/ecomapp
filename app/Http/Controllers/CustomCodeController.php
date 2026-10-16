@@ -41,6 +41,7 @@ class CustomCodeController extends Controller
         $validated['is_active'] = $request->has('is_active');
 
         \App\Models\CustomCode::create($validated);
+        \Illuminate\Support\Facades\Cache::forget('active_custom_codes_v1');
 
         return redirect()->route('custom-codes.index')
             ->with('success', 'Snippet created successfully.');
@@ -72,6 +73,7 @@ class CustomCodeController extends Controller
         $validated['is_active'] = $request->has('is_active');
 
         $customCode->update($validated);
+        \Illuminate\Support\Facades\Cache::forget('active_custom_codes_v1');
 
         return redirect()->route('custom-codes.index')
             ->with('success', 'Snippet updated successfully.');
@@ -83,6 +85,7 @@ class CustomCodeController extends Controller
     public function destroy(\App\Models\CustomCode $customCode)
     {
         $customCode->delete();
+        \Illuminate\Support\Facades\Cache::forget('active_custom_codes_v1');
 
         return redirect()->route('custom-codes.index')
             ->with('success', 'Snippet deleted successfully.');

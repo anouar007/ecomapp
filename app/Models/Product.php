@@ -434,27 +434,33 @@ class Product extends Model
      */
     public function getMainImageAttribute()
     {
-        // 1. Check for primary image in dedicated table
+        // 1. Prioritize already-loaded 'images' relation in-memory (prevents N+1 queries)
+        if ($this->relationLoaded('images')) {
+            $img = $this->images->firstWhere('is_primary', 1) ?? $this->images->first();
+            if ($img) {
+                return $img->image_path;
+            }
+        }
+
+        // 2. Prioritize already-loaded 'primaryImage' relation
         if ($this->relationLoaded('primaryImage')) {
             if ($this->primaryImage) {
                 return $this->primaryImage->image_path;
             }
-        } elseif ($this->primaryImage) {
+        }
+
+        // 3. Fallback to legacy image column on product
+        if (!empty($this->attributes['image'])) {
+            return $this->attributes['image'];
+        }
+
+        // 4. Fallback to dynamic relation only if not eager-loaded
+        if ($this->primaryImage) {
             return $this->primaryImage->image_path;
         }
 
-        // 2. Check for any image in dedicated table
-        if ($this->relationLoaded('images')) {
-            if ($this->images->count() > 0) {
-                return $this->images->first()->image_path;
-            }
-        } elseif ($this->images && $this->images->count() > 0) {
+        if ($this->images && $this->images->count() > 0) {
             return $this->images->first()->image_path;
-        }
-
-        // 3. Fallback to the legacy/simple image column
-        if (!empty($this->attributes['image'])) {
-            return $this->attributes['image'];
         }
 
         return null;

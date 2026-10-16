@@ -152,8 +152,7 @@
     }
     </script>
     @endif
-    
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Outfit:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Cairo:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css">
@@ -597,12 +596,14 @@
             }
         }
     </style>
-    <!-- Custom Head Codes -->
+    <!-- Custom Head & Body Codes (Cached) -->
     @php
-        $headCodes = \App\Models\CustomCode::where('is_active', true)
-            ->where('position', 'head')
-            ->orderBy('priority', 'desc')
-            ->get();
+        $activeCustomCodes = \Illuminate\Support\Facades\Cache::remember('active_custom_codes_v1', 86400, function() {
+            return \App\Models\CustomCode::where('is_active', true)->orderBy('priority', 'desc')->get();
+        });
+        $headCodes = $activeCustomCodes->where('position', 'head');
+        $bodyStartCodes = $activeCustomCodes->where('position', 'body_start');
+        $bodyEndCodes = $activeCustomCodes->where('position', 'body_end');
     @endphp
     @foreach($headCodes as $code)
         @if($code->type == 'css')
@@ -616,12 +617,6 @@
 </head>
 <body class="{{ request()->routeIs('cart.*') ? 'cart-page' : '' }} {{ request()->routeIs('checkout.*') ? 'checkout-page' : '' }}">
     <!-- Custom Body Start Codes -->
-    @php
-        $bodyStartCodes = \App\Models\CustomCode::where('is_active', true)
-            ->where('position', 'body_start')
-            ->orderBy('priority', 'desc')
-            ->get();
-    @endphp
     @foreach($bodyStartCodes as $code)
         {!! $code->content !!}
     @endforeach
@@ -2622,12 +2617,7 @@
     @stack('scripts')
 
     <!-- Custom Body End Codes -->
-    @php
-        $bodyEndCodes = \App\Models\CustomCode::where('is_active', true)
-            ->where('position', 'body_end')
-            ->orderBy('priority', 'desc')
-            ->get();
-    @endphp
+    @if(isset($bodyEndCodes))
     @foreach($bodyEndCodes as $code)
         @if($code->type == 'css')
             <style>{!! $code->content !!}</style>
@@ -2637,5 +2627,6 @@
             {!! $code->content !!}
         @endif
     @endforeach
+    @endif
 </body>
 </html>
