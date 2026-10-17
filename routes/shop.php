@@ -42,6 +42,8 @@ Route::get('/cart/mini-footer', [\App\Http\Controllers\CartController::class, 'm
 // Checkout
 Route::get('/checkout', [\App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('/checkout', [\App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout.store');
+Route::get('/checkout/orders/{order}/live-status', [\App\Http\Controllers\CheckoutController::class, 'liveStatus'])->name('checkout.liveStatus');
+Route::get('/checkout/success/{order}/status', [\App\Http\Controllers\CheckoutController::class, 'liveStatus']);
 Route::get('/checkout/success/{order}', [\App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
 
 // Dynamic Frontend Pages (Catch-all)

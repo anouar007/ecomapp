@@ -26,42 +26,42 @@
         </div>
 
         <!-- Boutons d'action responsive -->
-        <div class="brand-header-actions flex-wrap">
+        <div class="brand-header-actions d-flex align-items-center gap-2 flex-wrap">
             <!-- Retour -->
-            <a href="{{ route('orders.index') }}" class="btn btn-sm btn-light border rounded-pill px-3 py-1.5 text-muted fw-semibold d-inline-flex align-items-center gap-1.5 shadow-2xs" title="Retour aux commandes">
+            <a href="{{ route('orders.index') }}" class="btn btn-sm btn-light border rounded-pill px-3 py-1.5 text-secondary d-inline-flex align-items-center gap-1.5 shadow-2xs" title="Retour aux commandes">
                 <i class="fas fa-arrow-left"></i> <span>Retour</span>
             </a>
 
             <!-- Facture -->
             @if(!$order->invoice)
-                <form action="{{ route('orders.generate-invoice', $order) }}" method="POST" class="d-inline m-0 p-0 flex-grow-1 flex-md-grow-0">
+                <form action="{{ route('orders.generate-invoice', $order) }}" method="POST" class="d-inline-flex m-0 p-0">
                     @csrf
-                    <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center justify-content-center gap-1.5 w-100 shadow-2xs">
+                    <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3 py-1.5 d-inline-flex align-items-center justify-content-center gap-1.5 shadow-2xs">
                         <i class="fas fa-file-invoice"></i> <span>Créer Facture</span>
                     </button>
                 </form>
             @else
-                <a href="{{ route('invoices.show', $order->invoice) }}" class="btn btn-sm btn-success rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 shadow-sm text-white">
+                <a href="{{ route('invoices.show', $order->invoice) }}" class="btn btn-sm btn-success rounded-pill px-3 py-1.5 d-inline-flex align-items-center justify-content-center gap-1.5 shadow-sm text-white">
                     <i class="fas fa-file-invoice"></i> <span>Facture #{{ $order->invoice->invoice_number }}</span>
                 </a>
             @endif
 
             <!-- Devis -->
             @if(!$order->quote)
-                <form action="{{ route('orders.generate-quote', $order) }}" method="POST" class="d-inline m-0 p-0 flex-grow-1 flex-md-grow-0">
+                <form action="{{ route('orders.generate-quote', $order) }}" method="POST" class="d-inline-flex m-0 p-0">
                     @csrf
-                    <button type="submit" class="btn btn-sm btn-outline-warning rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center justify-content-center gap-1.5 w-100 shadow-2xs" style="color: #b45309; border-color: #fde68a; background: #fffdf5;">
+                    <button type="submit" class="btn btn-sm btn-outline-warning rounded-pill px-3 py-1.5 d-inline-flex align-items-center justify-content-center gap-1.5 shadow-2xs" style="color: #b45309; border-color: #fde68a; background: #fffdf5;">
                         <i class="fas fa-file-alt"></i> <span>Créer Devis</span>
                     </button>
                 </form>
             @else
-                <a href="{{ route('invoices.show', $order->quote) }}" class="btn btn-sm btn-warning rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 shadow-sm" style="color: #78350f;">
+                <a href="{{ route('invoices.show', $order->quote) }}" class="btn btn-sm btn-warning rounded-pill px-3 py-1.5 d-inline-flex align-items-center justify-content-center gap-1.5 shadow-sm" style="color: #78350f;">
                     <i class="fas fa-file-alt"></i> <span>Devis #{{ $order->quote->invoice_number }}</span>
                 </a>
             @endif
 
             <!-- Modifier -->
-            <a href="{{ route('orders.edit', $order) }}" class="btn-brand-primary btn-sm rounded-pill flex-grow-1 flex-md-grow-0 justify-content-center text-nowrap px-3 py-1.5 shadow-sm d-inline-flex align-items-center gap-1.5">
+            <a href="{{ route('orders.edit', $order) }}" class="btn btn-sm btn-danger rounded-pill px-3.5 py-1.5 shadow-xs d-inline-flex align-items-center gap-1.5 text-white" style="background: #dc2626; border-color: #dc2626;">
                 <i class="fas fa-pencil-alt"></i> <span>Modifier</span>
             </a>
         </div>

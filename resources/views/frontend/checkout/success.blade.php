@@ -13,6 +13,129 @@
         ? "مرحبا WINA SHOP، أود الاستفسار بخصوص طلبيتي رقم #" . $order->order_number 
         : "Bonjour WINA SHOP, je vous contacte concernant ma commande #" . $order->order_number;
     $waLink = "https://wa.me/{$waCleanPhone}?text=" . urlencode($waMessage);
+
+    $status = $order->status ?? 'pending';
+    $paymentStatus = $order->payment_status ?? 'pending';
+
+    $heroConfig = match($status) {
+        'processing' => [
+            'badge' => __('Commande en cours de préparation'),
+            'badge_class' => 'bg-info-subtle text-info border border-info-subtle',
+            'badge_icon' => 'fas fa-box-open',
+            'title' => __('Commande en préparation !'),
+            'subtitle' => __('Votre commande est actuellement en cours de préparation et de vérification par notre équipe logistique.'),
+            'icon' => 'fas fa-box-open',
+            'accent' => 'linear-gradient(90deg, #0284c7 0%, #0369a1 50%, #10b981 100%)',
+            'icon_bg' => 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+            'icon_glow' => 'rgba(2, 132, 199, 0.35)',
+        ],
+        'shipped' => [
+            'badge' => __('Commande expédiée — En cours de livraison'),
+            'badge_class' => 'bg-primary-subtle text-primary border border-primary-subtle',
+            'badge_icon' => 'fas fa-truck-fast',
+            'title' => __('Votre commande est en route !'),
+            'subtitle' => __('Votre colis a été remis à notre transporteur express et sera livré sous 24h à 48h.'),
+            'icon' => 'fas fa-truck-fast',
+            'accent' => 'linear-gradient(90deg, #3b82f6 0%, #1d4ed8 50%, #059669 100%)',
+            'icon_bg' => 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+            'icon_glow' => 'rgba(59, 130, 246, 0.35)',
+        ],
+        'delivered' => [
+            'badge' => __('Commande livrée avec succès'),
+            'badge_class' => 'bg-success-subtle text-success border border-success-subtle',
+            'badge_icon' => 'fas fa-circle-check',
+            'title' => __('Commande livrée !'),
+            'subtitle' => __('Votre commande a été livrée avec succès. Merci d\'avoir choisi WINA SHOP !'),
+            'icon' => 'fas fa-check-double',
+            'accent' => 'linear-gradient(90deg, #10b981 0%, #059669 100%)',
+            'icon_bg' => 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            'icon_glow' => 'rgba(16, 185, 129, 0.35)',
+        ],
+        'cancelled' => [
+            'badge' => __('Commande annulée'),
+            'badge_class' => 'bg-danger-subtle text-danger border border-danger-subtle',
+            'badge_icon' => 'fas fa-circle-xmark',
+            'title' => __('Commande annulée'),
+            'subtitle' => __('Cette commande a été annulée. Contactez notre support WhatsApp si vous avez la moindre question.'),
+            'icon' => 'fas fa-xmark',
+            'accent' => 'linear-gradient(90deg, #ef4444 0%, #b91c1c 100%)',
+            'icon_bg' => 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)',
+            'icon_glow' => 'rgba(239, 68, 68, 0.35)',
+        ],
+        default => [
+            'badge' => __('Commande enregistrée avec succès'),
+            'badge_class' => 'bg-success-subtle text-success border border-success-subtle',
+            'badge_icon' => 'fas fa-circle-check',
+            'title' => __('Order confirmed!'),
+            'subtitle' => __('Thank you for your trust,') . ' ' . $order->customer_name . ' ! ' . __('We have received your order and are preparing it right away.'),
+            'icon' => 'fas fa-check',
+            'accent' => 'linear-gradient(90deg, #10b981 0%, #059669 50%, #dc2626 100%)',
+            'icon_bg' => 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            'icon_glow' => 'rgba(16, 185, 129, 0.35)',
+        ],
+    };
+
+    $isStep1Complete = true;
+    $isStep2Complete = in_array($status, ['shipped', 'delivered']);
+    $isStep2Active = in_array($status, ['pending', 'processing']);
+    $isStep3Complete = ($status === 'delivered');
+    $isStep3Active = ($status === 'shipped');
+    $isStep4Complete = ($status === 'delivered');
+
+    $step1Class = ($status === 'cancelled') ? 'is-cancelled' : 'is-complete';
+    $step2Class = ($status === 'cancelled') ? '' : ($isStep2Complete ? 'is-complete' : ($isStep2Active ? 'is-active' : ''));
+    $step3Class = ($status === 'cancelled') ? '' : ($isStep3Complete ? 'is-complete' : ($isStep3Active ? 'is-active' : ''));
+    $step4Class = ($status === 'cancelled') ? '' : ($isStep4Complete ? 'is-active is-complete' : '');
+
+    $stepperProgressPercent = match($status) {
+        'pending' => 20,
+        'processing' => 45,
+        'shipped' => 75,
+        'delivered' => 100,
+        'cancelled' => 0,
+        default => 20,
+    };
+
+    $statusLabel = match($status) {
+        'pending' => __('Validée'),
+        'processing' => __('En préparation'),
+        'shipped' => __('Expédiée'),
+        'delivered' => __('Livrée'),
+        'cancelled' => __('Annulée'),
+        default => ucfirst($status),
+    };
+
+    $statusBadgeClass = match($status) {
+        'pending' => 'bg-warning-subtle text-warning-emphasis border border-warning-subtle',
+        'processing' => 'bg-info-subtle text-info border border-info-subtle',
+        'shipped' => 'bg-primary-subtle text-primary border border-primary-subtle',
+        'delivered' => 'bg-success-subtle text-success border border-success-subtle',
+        'cancelled' => 'bg-danger-subtle text-danger border border-danger-subtle',
+        default => 'bg-light text-dark border',
+    };
+
+    $statusBadgeIcon = match($status) {
+        'pending' => 'fas fa-clock text-warning',
+        'processing' => 'fas fa-box-open text-info',
+        'shipped' => 'fas fa-truck-fast text-primary',
+        'delivered' => 'fas fa-circle-check text-success',
+        'cancelled' => 'fas fa-circle-xmark text-danger',
+        default => 'fas fa-clock text-secondary',
+    };
+
+    $paymentLabel = match($paymentStatus) {
+        'paid' => __('Payé'),
+        'failed' => __('Échoué'),
+        'refunded' => __('Remboursé'),
+        default => __('En attente (Paiement à la livraison)'),
+    };
+
+    $paymentBadgeClass = match($paymentStatus) {
+        'paid' => 'bg-success-subtle text-success border border-success-subtle',
+        'failed' => 'bg-danger-subtle text-danger border border-danger-subtle',
+        'refunded' => 'bg-secondary-subtle text-secondary border border-secondary-subtle',
+        default => 'bg-white text-success border border-success-subtle',
+    };
 @endphp
 
 @section('content')
@@ -29,33 +152,42 @@
         </nav>
 
         {{-- TOP HERO CONFIRMATION CARD --}}
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 bg-white order-success-hero">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 bg-white order-success-hero" id="orderHeroCard">
             <div class="card-body p-4 p-md-5 text-center position-relative">
-                <div class="order-hero-bg-accent"></div>
+                <div class="order-hero-bg-accent" id="heroAccentBar" style="background: {{ $heroConfig['accent'] }};"></div>
                 
                 {{-- Celebration Icon with Glowing Pulse --}}
-                <div class="order-success-icon-wrap mx-auto mb-3">
-                    <div class="order-success-icon">
-                        <i class="fas fa-check"></i>
+                <div class="order-success-icon-wrap mx-auto mb-3" id="heroIconWrap">
+                    <div class="order-success-icon" id="heroIcon" style="background: {{ $heroConfig['icon_bg'] }}; box-shadow: 0 6px 16px {{ $heroConfig['icon_glow'] }};">
+                        <i class="{{ $heroConfig['icon'] }}" id="heroIconInner"></i>
                     </div>
                 </div>
 
-                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1.5 mb-2 font-monospace" style="font-size: 0.82rem; font-weight: 500;">
-                    <i class="fas fa-circle-check me-1.5"></i>{{ __('Commande enregistrée avec succès') }}
+                <span class="badge {{ $heroConfig['badge_class'] }} rounded-pill px-3 py-1.5 mb-2 font-monospace" style="font-size: 0.82rem; font-weight: 500;" id="heroBadge">
+                    <i class="{{ $heroConfig['badge_icon'] }} me-1.5"></i>{{ $heroConfig['badge'] }}
                 </span>
 
-                <h1 class="order-hero-title mb-2 text-dark">{{ __('Order confirmed!') }}</h1>
-                <p class="order-hero-subtitle text-muted mb-3 mx-auto" style="max-width: 620px;">
-                    {{ __('Thank you for your trust,') }} <strong class="text-dark">{{ $order->customer_name }}</strong> ! {{ __('We have received your order and are preparing it right away.') }}
+                <h1 class="order-hero-title mb-2 text-dark" id="heroTitle">{{ $heroConfig['title'] }}</h1>
+                <p class="order-hero-subtitle text-muted mb-3 mx-auto" style="max-width: 620px;" id="heroSubtitle">
+                    {{ $heroConfig['subtitle'] }}
                 </p>
 
-                {{-- Order Reference Pill & WhatsApp Button --}}
+                {{-- Order Reference Pill & Live Tracker & WhatsApp Button --}}
                 <div class="d-flex flex-wrap align-items-center justify-content-center gap-2.5 mt-2">
                     <div class="order-ref-pill d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill bg-light border">
                         <span class="text-muted small">{{ __('Order:') }}</span>
                         <span class="text-dark font-monospace order-ref-code" id="orderRefText">#{{ $order->order_number }}</span>
                         <button type="button" class="btn btn-sm btn-link text-muted p-0 ms-1 copy-ref-btn" onclick="copyOrderReference('{{ $order->order_number }}')" title="{{ __('Copy') }}">
                             <i class="far fa-copy" id="copyIcon"></i>
+                        </button>
+                    </div>
+
+                    {{-- LIVE TRACKING BADGE --}}
+                    <div class="order-live-tracker d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill bg-white border shadow-xs" id="liveTrackerBadge" title="{{ __('Mise à jour en direct automatique') }}">
+                        <span class="live-dot-pulse" id="liveDotPulse"></span>
+                        <span class="text-dark small" style="font-size: 0.82rem;" id="liveSyncStatus">{{ __('Suivi en direct actif') }}</span>
+                        <button type="button" class="btn btn-sm btn-link text-muted p-0 ms-1" id="manualRefreshBtn" onclick="refreshOrderStatus(true)" title="{{ __('Actualiser le statut maintenant') }}">
+                            <i class="fas fa-arrows-rotate" id="refreshIcon"></i>
                         </button>
                     </div>
 
@@ -67,11 +199,15 @@
             </div>
 
             {{-- 4-STEP ORDER TIMELINE STEPPER --}}
-            <div class="order-stepper-wrap border-top px-3 py-3.5 px-md-5 bg-slate-50">
+            <div class="order-stepper-wrap border-top px-3 py-3.5 px-md-5 bg-slate-50" id="orderStepperWrap">
                 <div class="order-stepper d-flex justify-content-between position-relative">
-                    <div class="order-step is-complete">
+                    <div class="order-stepper-line-track">
+                        <div class="order-stepper-line-fill" id="stepperLineFill" style="width: {{ $stepperProgressPercent }}%;"></div>
+                    </div>
+
+                    <div class="order-step {{ $step1Class }}" id="step1">
                         <div class="order-step-circle">
-                            <i class="fas fa-check"></i>
+                            <i class="fas fa-check" id="step1Icon"></i>
                         </div>
                         <div class="order-step-label">
                             <span class="order-step-title text-dark">{{ __('Validée') }}</span>
@@ -79,9 +215,9 @@
                         </div>
                     </div>
 
-                    <div class="order-step is-active">
+                    <div class="order-step {{ $step2Class }}" id="step2">
                         <div class="order-step-circle">
-                            <i class="fas fa-box-open"></i>
+                            <i class="fas fa-box-open" id="step2Icon"></i>
                         </div>
                         <div class="order-step-label">
                             <span class="order-step-title text-dark">{{ __('Préparation') }}</span>
@@ -89,9 +225,9 @@
                         </div>
                     </div>
 
-                    <div class="order-step">
+                    <div class="order-step {{ $step3Class }}" id="step3">
                         <div class="order-step-circle">
-                            <i class="fas fa-truck-fast"></i>
+                            <i class="fas fa-truck-fast" id="step3Icon"></i>
                         </div>
                         <div class="order-step-label">
                             <span class="order-step-title text-dark">{{ __('Expédition') }}</span>
@@ -99,13 +235,24 @@
                         </div>
                     </div>
 
-                    <div class="order-step">
+                    <div class="order-step {{ $step4Class }}" id="step4">
                         <div class="order-step-circle">
-                            <i class="fas fa-hand-holding-dollar"></i>
+                            <i class="fas fa-hand-holding-dollar" id="step4Icon"></i>
                         </div>
                         <div class="order-step-label">
                             <span class="order-step-title text-dark">{{ __('Livraison') }}</span>
                             <span class="order-step-desc text-muted d-none d-sm-block">{{ __('Règlement à réception') }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- CANCELLED ALERT (if cancelled) --}}
+                <div id="cancelledAlert" class="alert alert-danger border-0 rounded-3 mb-0 mt-3 {{ $order->status === 'cancelled' ? '' : 'd-none' }}">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-circle-xmark fs-5"></i>
+                        <div>
+                            <strong class="d-block">{{ __('Cette commande a été annulée.') }}</strong>
+                            <span class="small">{{ __('Si vous avez des questions ou souhaitez modifier votre commande, veuillez contacter notre support WhatsApp.') }}</span>
                         </div>
                     </div>
                 </div>
@@ -116,6 +263,22 @@
             {{-- LEFT COLUMN: ORDER ITEMS & DELIVERY DETAILS --}}
             <div class="col-12 col-lg-7">
                 
+                {{-- ORDER NOTES / CARRIER TRACKING ALERT --}}
+                <div id="orderNotesAlert" class="card border-0 shadow-sm rounded-4 mb-4 bg-white overflow-hidden {{ empty($order->notes) ? 'd-none' : '' }}" style="border-left: 4px solid #0284c7 !important;">
+                    <div class="card-body p-3.5 d-flex align-items-start gap-3">
+                        <div class="order-card-icon-box text-primary bg-primary-subtle rounded-3 flex-shrink-0">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <h6 class="m-0 text-dark fs-6" style="font-weight: 500;">{{ __('Note de suivi / Informations de livraison') }}</h6>
+                                <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2 py-0.5" style="font-size: 0.70rem;">{{ __('Mise à jour en direct') }}</span>
+                            </div>
+                            <p class="text-secondary small mb-0" id="orderNotesContent" style="white-space: pre-line;">{{ $order->notes }}</p>
+                        </div>
+                    </div>
+                </div>
+
                 {{-- ORDER ITEMS CARD --}}
                 <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden bg-white">
                     <div class="card-header bg-white px-4 py-3.5 border-bottom d-flex justify-content-between align-items-center">
@@ -128,8 +291,8 @@
                                 <span class="text-muted small" style="font-size: 0.76rem;">{{ $order->items->count() }} {{ __('référence(s) incluse(s)') }}</span>
                             </div>
                         </div>
-                        <span class="badge bg-light text-dark border rounded-pill px-3 py-1.5" style="font-size: 0.78rem;">
-                            <i class="fas fa-clock text-warning me-1"></i>{{ ucfirst($order->status ?? 'En attente') }}
+                        <span class="badge {{ $statusBadgeClass }} rounded-pill px-3 py-1.5" style="font-size: 0.78rem;" id="orderStatusBadge">
+                            <i class="{{ $statusBadgeIcon }} me-1" id="orderStatusBadgeIcon"></i><span id="orderStatusBadgeText">{{ $statusLabel }}</span>
                         </span>
                     </div>
 
@@ -284,9 +447,15 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <span class="badge bg-white text-success border border-success-subtle px-3 py-1.5 rounded-pill flex-shrink-0" style="font-size: 0.78rem;">
-                                        <i class="fas fa-lock me-1"></i>{{ __('100% Sécurisé') }}
-                                    </span>
+                                    <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                                        <span class="badge {{ $paymentBadgeClass }} px-3 py-1.5 rounded-pill" id="orderPaymentStatusBadge" style="font-size: 0.78rem;">
+                                            <i class="{{ $order->payment_status === 'paid' ? 'fas fa-circle-check me-1' : 'fas fa-clock me-1' }}"></i>
+                                            <span id="orderPaymentStatusText">{{ $paymentLabel }}</span>
+                                        </span>
+                                        <span class="badge bg-white text-muted border px-2.5 py-1.5 rounded-pill d-none d-sm-inline-block" style="font-size: 0.74rem;">
+                                            <i class="fas fa-lock me-1 text-success"></i>{{ __('100% Sécurisé') }}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -560,17 +729,26 @@
     .order-stepper-wrap {
         background: #f8fafc;
         border-color: #e2e8f0 !important;
+        position: relative;
     }
 
-    .order-stepper::before {
-        content: "";
+    .order-stepper-line-track {
         position: absolute;
         top: 18px;
-        left: 30px;
-        right: 30px;
-        height: 2px;
+        left: 45px;
+        right: 45px;
+        height: 3px;
         background: #e2e8f0;
         z-index: 1;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .order-stepper-line-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+        border-radius: 4px;
+        transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .order-step {
@@ -592,7 +770,7 @@
         justify-content: center;
         margin: 0 auto 8px;
         font-size: 0.85rem;
-        transition: all 0.25s ease;
+        transition: all 0.35s ease;
     }
 
     .order-step.is-complete .order-step-circle {
@@ -606,7 +784,56 @@
         background: #0f172a;
         border-color: #0f172a;
         color: #ffffff;
-        box-shadow: 0 4px 10px rgba(15, 23, 42, 0.3);
+        box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.12), 0 4px 10px rgba(15, 23, 42, 0.3);
+        animation: activeStepPulse 2.2s infinite ease-in-out;
+    }
+
+    .order-step.is-cancelled .order-step-circle {
+        background: #ef4444;
+        border-color: #ef4444;
+        color: #ffffff;
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+    }
+
+    @keyframes activeStepPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.08); }
+    }
+
+    /* LIVE PULSE DOT */
+    .live-dot-pulse {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #10b981;
+        position: relative;
+        display: inline-block;
+        flex-shrink: 0;
+    }
+    .live-dot-pulse::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        border-radius: 50%;
+        background-color: #10b981;
+        animation: pulseLive 2s infinite ease-out;
+    }
+    @keyframes pulseLive {
+        0% { transform: scale(1); opacity: 0.9; }
+        100% { transform: scale(2.8); opacity: 0; }
+    }
+
+    /* HIGHLIGHT FLASH ON ORDER UPDATED */
+    @keyframes orderHighlightFlash {
+        0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+        50% { box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    .order-updated-highlight {
+        animation: orderHighlightFlash 1.6s ease-out 2;
     }
 
     .order-step-title {
@@ -718,7 +945,7 @@
             background: #ffffff !important;
             color: #000000 !important;
         }
-        nav, header, footer, .whatsapp-float, .breadcrumb, .order-hero-wa-btn, .order-primary-action-btn, .order-print-action-btn, #mobileNavDrawer, #miniCart {
+        nav, header, footer, .whatsapp-float, .breadcrumb, .order-hero-wa-btn, .order-primary-action-btn, .order-print-action-btn, #mobileNavDrawer, #miniCart, .order-live-tracker {
             display: none !important;
         }
         .order-success-page {
@@ -782,5 +1009,275 @@ function showCopiedFeedback() {
         });
     }
 }
+
+/* REAL-TIME LIVE ORDER TRACKING SCRIPT */
+let currentOrderStatus = '{{ $order->status }}';
+let currentOrderPaymentStatus = '{{ $order->payment_status }}';
+let currentOrderNotes = {!! json_encode($order->notes ?? '') !!};
+let pollingTimer = null;
+let isCheckingStatus = false;
+
+function refreshOrderStatus(isManual = false) {
+    if (isCheckingStatus) return;
+    isCheckingStatus = true;
+
+    const refreshIcon = document.getElementById('refreshIcon');
+    if (refreshIcon) {
+        refreshIcon.classList.add('fa-spin');
+    }
+
+    const liveStatusText = document.getElementById('liveSyncStatus');
+
+    fetch('{{ route('checkout.liveStatus', $order->id) }}', {
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        cache: 'no-store'
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Live status fetch failed');
+        return response.json();
+    })
+    .then(data => {
+        if (!data || !data.success) return;
+
+        const hasStatusChanged = (data.status !== currentOrderStatus);
+        const hasPaymentChanged = (data.payment_status !== currentOrderPaymentStatus);
+        const hasNotesChanged = ((data.notes ?? '') !== (currentOrderNotes ?? ''));
+
+        if (hasStatusChanged || hasPaymentChanged || hasNotesChanged) {
+            applyOrderUpdates(data, {
+                status: hasStatusChanged,
+                payment: hasPaymentChanged,
+                notes: hasNotesChanged
+            });
+
+            currentOrderStatus = data.status;
+            currentOrderPaymentStatus = data.payment_status;
+            currentOrderNotes = data.notes ?? '';
+        } else if (isManual) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'info',
+                    title: '{{ __("Votre commande est à jour") }}',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    background: '#0f172a',
+                    color: '#ffffff'
+                });
+            }
+        }
+
+        if (liveStatusText) {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            liveStatusText.textContent = '{{ __("Suivi en direct actif") }} (' + timeStr + ')';
+        }
+    })
+    .catch(err => {
+        console.warn('Live order status check notice:', err);
+    })
+    .finally(() => {
+        isCheckingStatus = false;
+        if (refreshIcon) {
+            setTimeout(() => refreshIcon.classList.remove('fa-spin'), 350);
+        }
+    });
+}
+
+function applyOrderUpdates(data, flags) {
+    // 1. Toast notification for the customer
+    if (flags.status) {
+        showUpdateToast('{{ __("Mise à jour de votre commande") }}', '{{ __("Nouveau statut :") }} ' + data.status_label, 'success');
+    } else if (flags.payment) {
+        showUpdateToast('{{ __("Statut de paiement mis à jour") }}', data.payment_status_label, 'info');
+    } else if (flags.notes) {
+        showUpdateToast('{{ __("Nouvelle note de suivi reçue") }}', data.notes, 'info');
+    }
+
+    // 2. Pulse visual highlight on Hero & Stepper
+    const heroCard = document.getElementById('orderHeroCard');
+    const stepperWrap = document.getElementById('orderStepperWrap');
+    if (heroCard) {
+        heroCard.classList.remove('order-updated-highlight');
+        void heroCard.offsetWidth; // reflow
+        heroCard.classList.add('order-updated-highlight');
+    }
+    if (stepperWrap) {
+        stepperWrap.classList.remove('order-updated-highlight');
+        void stepperWrap.offsetWidth;
+        stepperWrap.classList.add('order-updated-highlight');
+    }
+
+    // 3. Update Hero Card
+    if (data.hero) {
+        const heroBadge = document.getElementById('heroBadge');
+        if (heroBadge) {
+            heroBadge.className = 'badge ' + data.hero.badge_class + ' rounded-pill px-3 py-1.5 mb-2 font-monospace';
+            heroBadge.innerHTML = '<i class="' + data.hero.badge_icon + ' me-1.5"></i>' + data.hero.badge_text;
+        }
+
+        const heroTitle = document.getElementById('heroTitle');
+        if (heroTitle) {
+            heroTitle.textContent = data.hero.title;
+        }
+
+        const heroSubtitle = document.getElementById('heroSubtitle');
+        if (heroSubtitle) {
+            heroSubtitle.textContent = data.hero.subtitle;
+        }
+
+        const heroIconInner = document.getElementById('heroIconInner');
+        if (heroIconInner) {
+            heroIconInner.className = data.hero.icon;
+        }
+
+        const heroAccentBar = document.getElementById('heroAccentBar');
+        if (heroAccentBar && data.hero.accent) {
+            heroAccentBar.style.background = data.hero.accent;
+        }
+
+        const heroIcon = document.getElementById('heroIcon');
+        if (heroIcon && data.hero.icon_bg) {
+            heroIcon.style.background = data.hero.icon_bg;
+            heroIcon.style.boxShadow = '0 6px 16px ' + data.hero.icon_glow;
+        }
+    }
+
+    // 4. Update Stepper classes & progress line
+    updateStepperClasses(data.status);
+
+    // 5. Update Order Items Card status badge
+    const orderStatusBadge = document.getElementById('orderStatusBadge');
+    if (orderStatusBadge) {
+        orderStatusBadge.className = 'badge rounded-pill px-3 py-1.5 ' + data.status_badge_class;
+        orderStatusBadge.innerHTML = '<i class="' + data.status_badge_icon + ' me-1" id="orderStatusBadgeIcon"></i><span id="orderStatusBadgeText">' + data.status_label + '</span>';
+    }
+
+    // 6. Update Payment status badge
+    const paymentStatusBadge = document.getElementById('orderPaymentStatusBadge');
+    if (paymentStatusBadge) {
+        paymentStatusBadge.className = 'badge rounded-pill px-3 py-1.5 flex-shrink-0 ' + data.payment_badge_class;
+        const iconClass = (data.payment_status === 'paid') ? 'fas fa-circle-check me-1 text-success' : 'fas fa-clock me-1';
+        paymentStatusBadge.innerHTML = '<i class="' + iconClass + '"></i><span id="orderPaymentStatusText">' + data.payment_status_label + '</span>';
+    }
+
+    // 7. Update Notes Alert
+    const orderNotesAlert = document.getElementById('orderNotesAlert');
+    const orderNotesContent = document.getElementById('orderNotesContent');
+    if (orderNotesAlert && orderNotesContent) {
+        if (data.notes && data.notes.trim() !== '') {
+            orderNotesContent.textContent = data.notes;
+            orderNotesAlert.classList.remove('d-none');
+        } else {
+            orderNotesAlert.classList.add('d-none');
+        }
+    }
+
+    // 8. Cancelled notice
+    const cancelledAlert = document.getElementById('cancelledAlert');
+    if (cancelledAlert) {
+        if (data.status === 'cancelled') {
+            cancelledAlert.classList.remove('d-none');
+        } else {
+            cancelledAlert.classList.add('d-none');
+        }
+    }
+}
+
+function updateStepperClasses(status) {
+    const s1 = document.getElementById('step1');
+    const s2 = document.getElementById('step2');
+    const s3 = document.getElementById('step3');
+    const s4 = document.getElementById('step4');
+    const lineFill = document.getElementById('stepperLineFill');
+
+    if (!s1 || !s2 || !s3 || !s4) return;
+
+    // Clear existing classes
+    [s1, s2, s3, s4].forEach(el => el.classList.remove('is-complete', 'is-active', 'is-cancelled'));
+
+    if (status === 'cancelled') {
+        s1.classList.add('is-cancelled');
+        if (lineFill) lineFill.style.width = '0%';
+        return;
+    }
+
+    if (status === 'pending') {
+        s1.classList.add('is-complete');
+        s2.classList.add('is-active');
+        if (lineFill) lineFill.style.width = '20%';
+    } else if (status === 'processing') {
+        s1.classList.add('is-complete');
+        s2.classList.add('is-active');
+        if (lineFill) lineFill.style.width = '45%';
+    } else if (status === 'shipped') {
+        s1.classList.add('is-complete');
+        s2.classList.add('is-complete');
+        s3.classList.add('is-active');
+        if (lineFill) lineFill.style.width = '75%';
+    } else if (status === 'delivered') {
+        s1.classList.add('is-complete');
+        s2.classList.add('is-complete');
+        s3.classList.add('is-complete');
+        s4.classList.add('is-complete', 'is-active');
+        if (lineFill) lineFill.style.width = '100%';
+    }
+}
+
+function showUpdateToast(title, text, icon) {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: icon || 'info',
+            title: title,
+            text: text,
+            showConfirmButton: false,
+            timer: 4500,
+            timerProgressBar: true,
+            background: '#0f172a',
+            color: '#ffffff'
+        });
+    }
+}
+
+function startPolling(interval) {
+    stopPolling();
+    pollingTimer = setInterval(refreshOrderStatus, interval);
+}
+
+function stopPolling() {
+    if (pollingTimer) {
+        clearInterval(pollingTimer);
+        pollingTimer = null;
+    }
+}
+
+// Lifecycle listeners
+document.addEventListener('DOMContentLoaded', () => {
+    // Start active polling every 4 seconds
+    startPolling(4000);
+
+    // Initial check after 2 seconds
+    setTimeout(refreshOrderStatus, 2000);
+
+    // Slower polling in background tab, resume instant on focus
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            startPolling(18000);
+        } else {
+            startPolling(4000);
+            refreshOrderStatus();
+        }
+    });
+
+    window.addEventListener('focus', () => {
+        refreshOrderStatus();
+    });
+});
 </script>
 @endsection

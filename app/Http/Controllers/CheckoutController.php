@@ -191,4 +191,145 @@ class CheckoutController extends Controller
         $order = Order::with('items.product')->findOrFail($id);
         return view('frontend.checkout.success', compact('order'));
     }
+
+    /**
+     * Return real-time status and details of the order for live tracking.
+     */
+    public function liveStatus($id)
+    {
+        $order = Order::with('items.product')
+            ->where('id', $id)
+            ->orWhere('order_number', $id)
+            ->firstOrFail();
+
+        $status = $order->status;
+        $paymentStatus = $order->payment_status;
+
+        $stepIndex = match($status) {
+            'pending' => 1,
+            'processing' => 2,
+            'shipped' => 3,
+            'delivered' => 4,
+            'cancelled' => -1,
+            default => 1,
+        };
+
+        $statusLabel = match($status) {
+            'pending' => __('Validée'),
+            'processing' => __('En préparation'),
+            'shipped' => __('Expédiée'),
+            'delivered' => __('Livrée'),
+            'cancelled' => __('Annulée'),
+            default => ucfirst($status),
+        };
+
+        $statusBadgeClass = match($status) {
+            'pending' => 'bg-warning-subtle text-warning-emphasis border border-warning-subtle',
+            'processing' => 'bg-info-subtle text-info border border-info-subtle',
+            'shipped' => 'bg-primary-subtle text-primary border border-primary-subtle',
+            'delivered' => 'bg-success-subtle text-success border border-success-subtle',
+            'cancelled' => 'bg-danger-subtle text-danger border border-danger-subtle',
+            default => 'bg-light text-dark border',
+        };
+
+        $statusBadgeIcon = match($status) {
+            'pending' => 'fas fa-clock text-warning',
+            'processing' => 'fas fa-box-open text-info',
+            'shipped' => 'fas fa-truck-fast text-primary',
+            'delivered' => 'fas fa-circle-check text-success',
+            'cancelled' => 'fas fa-circle-xmark text-danger',
+            default => 'fas fa-clock text-secondary',
+        };
+
+        $paymentLabel = match($paymentStatus) {
+            'paid' => __('Payé'),
+            'failed' => __('Échoué'),
+            'refunded' => __('Remboursé'),
+            default => __('En attente (Paiement à la livraison)'),
+        };
+
+        $paymentBadgeClass = match($paymentStatus) {
+            'paid' => 'bg-success-subtle text-success border border-success-subtle',
+            'failed' => 'bg-danger-subtle text-danger border border-danger-subtle',
+            'refunded' => 'bg-secondary-subtle text-secondary border border-secondary-subtle',
+            default => 'bg-white text-success border border-success-subtle',
+        };
+
+        $hero = match($status) {
+            'processing' => [
+                'badge_text' => __('Commande en cours de préparation'),
+                'badge_class' => 'bg-info-subtle text-info border border-info-subtle',
+                'badge_icon' => 'fas fa-box-open me-1.5',
+                'title' => __('Commande en préparation !'),
+                'subtitle' => __('Votre commande est actuellement en cours de préparation et de vérification par notre équipe logistique.'),
+                'icon' => 'fas fa-box-open',
+                'accent' => 'linear-gradient(90deg, #0284c7 0%, #0369a1 50%, #10b981 100%)',
+                'icon_bg' => 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+                'icon_glow' => 'rgba(2, 132, 199, 0.35)',
+            ],
+            'shipped' => [
+                'badge_text' => __('Commande expédiée — En cours de livraison'),
+                'badge_class' => 'bg-primary-subtle text-primary border border-primary-subtle',
+                'badge_icon' => 'fas fa-truck-fast me-1.5',
+                'title' => __('Votre commande est en route !'),
+                'subtitle' => __('Votre colis a été remis à notre transporteur express et sera livré sous 24h à 48h.'),
+                'icon' => 'fas fa-truck-fast',
+                'accent' => 'linear-gradient(90deg, #3b82f6 0%, #1d4ed8 50%, #059669 100%)',
+                'icon_bg' => 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                'icon_glow' => 'rgba(59, 130, 246, 0.35)',
+            ],
+            'delivered' => [
+                'badge_text' => __('Commande livrée avec succès'),
+                'badge_class' => 'bg-success-subtle text-success border border-success-subtle',
+                'badge_icon' => 'fas fa-circle-check me-1.5',
+                'title' => __('Commande livrée !'),
+                'subtitle' => __('Votre commande a été livrée avec succès. Merci d\'avoir choisi WINA SHOP !'),
+                'icon' => 'fas fa-check-double',
+                'accent' => 'linear-gradient(90deg, #10b981 0%, #059669 100%)',
+                'icon_bg' => 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                'icon_glow' => 'rgba(16, 185, 129, 0.35)',
+            ],
+            'cancelled' => [
+                'badge_text' => __('Commande annulée'),
+                'badge_class' => 'bg-danger-subtle text-danger border border-danger-subtle',
+                'badge_icon' => 'fas fa-circle-xmark me-1.5',
+                'title' => __('Commande annulée'),
+                'subtitle' => __('Cette commande a été annulée. Contactez notre support WhatsApp si vous avez la moindre question.'),
+                'icon' => 'fas fa-xmark',
+                'accent' => 'linear-gradient(90deg, #ef4444 0%, #b91c1c 100%)',
+                'icon_bg' => 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)',
+                'icon_glow' => 'rgba(239, 68, 68, 0.35)',
+            ],
+            default => [
+                'badge_text' => __('Commande enregistrée avec succès'),
+                'badge_class' => 'bg-success-subtle text-success border border-success-subtle',
+                'badge_icon' => 'fas fa-circle-check me-1.5',
+                'title' => __('Order confirmed!'),
+                'subtitle' => __('Thank you for your trust,') . ' ' . $order->customer_name . ' ! ' . __('We have received your order and are preparing it right away.'),
+                'icon' => 'fas fa-check',
+                'accent' => 'linear-gradient(90deg, #10b981 0%, #059669 50%, #dc2626 100%)',
+                'icon_bg' => 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                'icon_glow' => 'rgba(16, 185, 129, 0.35)',
+            ],
+        };
+
+        return response()->json([
+            'success' => true,
+            'id' => $order->id,
+            'order_number' => $order->order_number,
+            'customer_name' => $order->customer_name,
+            'status' => $order->status,
+            'status_label' => $statusLabel,
+            'status_badge_class' => $statusBadgeClass,
+            'status_badge_icon' => $statusBadgeIcon,
+            'payment_status' => $order->payment_status,
+            'payment_status_label' => $paymentLabel,
+            'payment_badge_class' => $paymentBadgeClass,
+            'notes' => $order->notes,
+            'step_index' => $stepIndex,
+            'hero' => $hero,
+            'updated_at' => $order->updated_at ? $order->updated_at->toIso8601String() : null,
+            'updated_at_formatted' => $order->updated_at ? $order->updated_at->format('H:i:s') : null,
+        ]);
+    }
 }

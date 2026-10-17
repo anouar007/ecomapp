@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}?v={{ file_exists(public_path('css/dashboard.css')) ? filemtime(public_path('css/dashboard.css')) : time() }}">
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.7.32/sweetalert2.min.css">
     
@@ -105,6 +105,128 @@
         .live-dot {
             border-radius: 50% !important;
         }
+
+        /* ── High-Priority Navbar Action Buttons (Top Bar) ── */
+        .navbar-user {
+            margin-left: auto !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+            position: relative !important;
+        }
+
+        .nav-btn-pro {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 7px !important;
+            height: 36px !important;
+            padding: 0 14px !important;
+            border-radius: 9999px !important;
+            font-size: 12.5px !important;
+            font-weight: 500 !important;
+            text-decoration: none !important;
+            border: 1px solid #cbd5e1 !important;
+            background: #ffffff !important;
+            color: #334155 !important;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05) !important;
+            cursor: pointer !important;
+            line-height: 1 !important;
+            outline: none !important;
+            user-select: none;
+            white-space: nowrap !important;
+            margin: 0 !important;
+        }
+
+        .nav-btn-pro:hover {
+            color: #0f172a !important;
+            background: #f8fafc !important;
+            border-color: #94a3b8 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(15, 23, 42, 0.08) !important;
+        }
+
+        .nav-btn-shop {
+            border-color: #cbd5e1 !important;
+        }
+
+        .nav-btn-shop .nav-live-pulse {
+            width: 8px !important;
+            height: 8px !important;
+            border-radius: 50% !important;
+            background: #10b981 !important;
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: navLivePulse 2s infinite ease-out;
+            display: inline-block !important;
+            flex-shrink: 0 !important;
+        }
+
+        @keyframes navLivePulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .nav-btn-shop i {
+            font-size: 11px !important;
+            color: #64748b !important;
+            transition: transform 0.15s, color 0.15s;
+        }
+
+        .nav-btn-shop:hover i {
+            color: #dc2626 !important;
+            transform: translate(1px, -1px);
+        }
+
+        .nav-btn-guide {
+            background: #ffffff !important;
+            color: #334155 !important;
+            border-color: #cbd5e1 !important;
+        }
+
+        .nav-btn-guide i {
+            font-size: 13px !important;
+            color: #dc2626 !important;
+            transition: transform 0.15s;
+        }
+
+        .nav-btn-guide:hover i {
+            transform: scale(1.15);
+        }
+
+        .navbar-user-dropdown {
+            position: relative !important;
+            display: inline-flex !important;
+            align-items: center !important;
+        }
+
+        .user-avatar {
+            width: 38px !important;
+            height: 38px !important;
+            border-radius: 10px !important;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+            border: 2px solid rgba(220, 38, 38, 0.4) !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            font-size: 14px !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12) !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            outline: none !important;
+            line-height: 1 !important;
+        }
+
+        .user-avatar:hover {
+            transform: translateY(-1px);
+            border-color: #dc2626 !important;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25) !important;
+        }
     </style>
 </head>
 <body>
@@ -125,16 +247,16 @@
             @endif
         </a>
         
-        <div class="navbar-user">
+        <div class="navbar-user d-flex align-items-center gap-2">
             <!-- Link to Frontend -->
-            <a href="{{ route('home') }}" target="_blank" class="nav-btn-pro nav-btn-shop d-none d-sm-inline-flex" title="Voir la boutique en direct">
+            <a href="{{ route('home') }}" target="_blank" class="nav-btn-pro nav-btn-shop d-none d-sm-inline-flex align-items-center text-decoration-none" title="Voir la boutique en direct">
                 <span class="nav-live-pulse"></span>
                 <span>Boutique en direct</span>
                 <i class="fas fa-arrow-up-right-from-square"></i>
             </a>
 
             <!-- Help/Tour Button -->
-            <button onclick="startTour()" class="nav-btn-pro nav-btn-guide d-none d-md-inline-flex" title="Guide interactif">
+            <button type="button" onclick="startTour()" class="nav-btn-pro nav-btn-guide d-none d-md-inline-flex align-items-center" title="Guide interactif">
                 <i class="fas fa-circle-question"></i>
                 <span>Guide</span>
             </button>
