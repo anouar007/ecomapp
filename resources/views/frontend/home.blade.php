@@ -159,25 +159,24 @@
                 @foreach($popularCategories as $cat)
                     <div class="swiper-slide h-auto">
                         <a href="{{ $cat['url'] }}" 
-                           class="cat-item-card h-100 text-decoration-none d-flex flex-column justify-content-end position-relative overflow-hidden {{ !empty($cat['highlight']) ? 'cat-item-highlight' : '' }}">
+                           class="cat-item-card h-100 bg-white text-decoration-none d-flex flex-column justify-content-between position-relative overflow-hidden {{ !empty($cat['highlight']) ? 'cat-item-highlight' : '' }}">
                             
-                            {{-- Background Image of Category --}}
-                            <img src="{{ $cat['image'] ?? $cat['icon'] }}" 
-                                 alt="{{ $cat['title'] }}" 
-                                 class="cat-card-bg-img" 
-                                 loading="lazy"
-                                 onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
-
-                            {{-- Dark Gradient Overlay for Contrast & Readability --}}
-                            <div class="cat-card-overlay"></div>
-
                             {{-- Item Count Badge at Top Right --}}
                             <span class="cat-badge-counter badge text-white fw-bold">
                                 {{ $cat['count'] }}
                             </span>
 
-                            {{-- Category Title at the Bottom --}}
-                            <div class="cat-bottom-content text-center w-100 position-relative">
+                            {{-- Category Image (Unobscured & Clear) --}}
+                            <div class="cat-image-wrapper">
+                                <img src="{{ $cat['image'] ?? $cat['icon'] }}" 
+                                     alt="{{ $cat['title'] }}" 
+                                     class="cat-card-img" 
+                                     loading="lazy"
+                                     onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                            </div>
+
+                            {{-- Category Title pushed to the Bottom --}}
+                            <div class="cat-bottom-content text-center w-100">
                                 <span class="cat-label text-uppercase fw-bold text-center d-block">
                                     {{ $cat['title'] }}
                                 </span>
