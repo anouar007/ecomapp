@@ -84,7 +84,7 @@ class OrderEmailNotificationTest extends TestCase
         Setting::set('order_notifications_enabled', '1', 'boolean', 'email');
         Setting::set('order_notification_email', 'orders-alert@winashop.ma', 'string', 'email');
 
-        $product = Product::first();
+        $product = Product::where('stock', '>', 0)->first();
         if (!$product) {
             $product = Product::factory()->create([
                 'name' => 'Sony A7 IV',
@@ -92,6 +92,8 @@ class OrderEmailNotificationTest extends TestCase
                 'stock' => 10,
                 'track_inventory' => 1,
             ]);
+        } else {
+            $product->update(['stock' => max($product->stock, 10)]);
         }
 
         // Simulate Cart in session

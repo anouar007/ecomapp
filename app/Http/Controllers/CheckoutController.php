@@ -155,30 +155,42 @@ class CheckoutController extends Controller
             return back()->withInput()->with('error', 'Une erreur est survenue lors de la création de votre commande. Veuillez réessayer.');
         }
 
-        // Send Emails (Customer confirmation + Admin new order notification)
-        try {
-            MailConfigService::applyConfig();
-
-            // 1. Customer confirmation email
-            if (!empty($order->customer_email) && filter_var($order->customer_email, FILTER_VALIDATE_EMAIL)) {
-                Mail::to($order->customer_email)->send(new OrderConfirmation($order));
-            }
-
-            // 2. Admin order notification email
-            $notificationsEnabled = (bool)setting('order_notifications_enabled', true);
-            if ($notificationsEnabled) {
-                $recipients = MailConfigService::getOrderNotificationRecipients();
-                if (!empty($recipients)) {
-                    Mail::to($recipients)->send(new NewOrderNotification($order));
-                }
-            }
-        } catch (\Exception $e) {
-            Log::error('Failed to send checkout emails: ' . $e->getMessage());
-        }
-
         // Clear Cart & remember order
         session()->forget('cart');
         session()->put('last_order_id', $order->id);
+
+        // Send Emails asynchronously / after response so the customer experiences instant order confirmation without SMTP delays
+        $sendEmails = function () use ($order) {
+            try {
+                MailConfigService::applyConfig();
+
+                // 1. Customer confirmation email
+                if (!empty($order->customer_email) && filter_var($order->customer_email, FILTER_VALIDATE_EMAIL)) {
+                    Mail::to($order->customer_email)->send(new OrderConfirmation($order));
+                }
+
+                // 2. Admin order notification email
+                $notificationsEnabled = (bool)setting('order_notifications_enabled', true);
+                if ($notificationsEnabled) {
+                    $recipients = MailConfigService::getOrderNotificationRecipients();
+                    if (!empty($recipients)) {
+                        Mail::to($recipients)->send(new NewOrderNotification($order));
+                    }
+                }
+            } catch (\Throwable $e) {
+                Log::error('Failed to send checkout emails: ' . $e->getMessage());
+            }
+        };
+
+        if (app()->runningUnitTests()) {
+            $sendEmails();
+        } elseif (function_exists('defer')) {
+            defer($sendEmails);
+        } elseif (function_exists('dispatch')) {
+            dispatch($sendEmails)->afterResponse();
+        } else {
+            $sendEmails();
+        }
 
         return redirect()->route('checkout.success', ['order' => $order->id]);
     }

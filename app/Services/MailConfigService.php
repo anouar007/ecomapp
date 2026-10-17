@@ -22,8 +22,13 @@ class MailConfigService
             $fromAddress = Setting::get('mail_from_address') ?: ($username ?: config('mail.from.address', 'contact@winashop.ma'));
             $fromName = Setting::get('mail_from_name') ?: Setting::get('app_name', config('mail.from.name', 'Wina Shop'));
 
-            // Always configure smtp transport
-            Config::set('mail.default', !empty($username) ? 'smtp' : config('mail.default', 'log'));
+            // Always configure smtp transport (unless Mail is currently faked in tests)
+            $isFaked = class_exists(\Illuminate\Support\Testing\Fakes\MailFake::class) 
+                && (\Illuminate\Support\Facades\Mail::getFacadeRoot() instanceof \Illuminate\Support\Testing\Fakes\MailFake);
+            
+            if (!$isFaked) {
+                Config::set('mail.default', !empty($username) ? 'smtp' : config('mail.default', 'log'));
+            }
             Config::set('mail.mailers.smtp.transport', 'smtp');
             Config::set('mail.mailers.smtp.host', $host);
             Config::set('mail.mailers.smtp.port', $port);

@@ -3,6 +3,7 @@
 @section('meta_title', __('Checkout') . ' — ' . setting('app_name', 'WINA SHOP'))
 
 @section('content')
+<div id="checkout-progress-bar" class="checkout-progress-bar" style="display: none;"></div>
 <div class="bg-light py-5">
     <div class="container">
         <div class="row">
@@ -505,13 +506,36 @@ document.addEventListener('DOMContentLoaded', function() {
         cityInput.focus();
     });
 
-    // Ensure manual city is validated on form submit
+    // Ensure manual city is validated on form submit & show instant loading state
     const checkoutForm = document.getElementById('checkout-form');
+    const submitBtn = document.getElementById('checkout-submit-btn');
+    const progressBar = document.getElementById('checkout-progress-bar');
+    let isSubmitting = false;
+
     if (checkoutForm) {
-        checkoutForm.addEventListener('submit', function() {
+        checkoutForm.addEventListener('submit', function(e) {
+            if (isSubmitting) {
+                e.preventDefault();
+                return false;
+            }
+
             const val = cityInput.value.trim();
             if (val) {
                 selectManual(val);
+            }
+
+            if (checkoutForm.checkValidity()) {
+                isSubmitting = true;
+                if (progressBar) {
+                    progressBar.style.display = 'block';
+                }
+                if (submitBtn) {
+                    submitBtn.classList.add('btn-checkout-submitting');
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> {{ __('Confirmation en cours...') }}';
+                    setTimeout(function() {
+                        submitBtn.disabled = true;
+                    }, 20);
+                }
             }
         });
     }
