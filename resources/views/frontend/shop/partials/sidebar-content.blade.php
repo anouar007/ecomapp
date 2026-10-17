@@ -125,14 +125,14 @@
 
             @foreach($categories as $cat)
             @php
-                $cImg = !empty($cat->image) && file_exists(public_path($cat->image)) ? asset($cat->image) : null;
+                $cImg = $cat->image_url;
                 $cIcon = !empty($cat->icon) ? (str_starts_with($cat->icon, 'fa') ? $cat->icon : 'fas fa-' . $cat->icon) : ($catIcons[$cat->slug] ?? 'fas fa-camera');
             @endphp
             <button type="button" class="cat-mega-item shop-cat-link w-100 {{ request('category') == $cat->slug ? 'active' : '' }}" data-slug="{{ $cat->slug }}" data-name="{{ $cat->name }}">
                 <div class="d-flex align-items-center gap-2 me-1 flex-grow-1" style="min-width: 0;">
                     <span class="cat-slot-box">
                         @if($cImg)
-                            <img src="{{ $cImg }}" alt="{{ $cat->name }}" class="cat-slot-media" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                            <img src="{{ $cImg }}" alt="{{ $cat->name }}" class="cat-slot-media" loading="lazy" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-flex';">
                             <i class="{{ $cIcon }} cat-slot-icon" style="display: none;"></i>
                         @else
                             <i class="{{ $cIcon }} cat-slot-icon"></i>

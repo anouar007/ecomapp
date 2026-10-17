@@ -157,9 +157,15 @@
                 @foreach($categories as $cat)
                 @php
                     $cIcon = !empty($cat->icon) ? (str_starts_with($cat->icon, 'fa') ? $cat->icon : 'fas fa-' . $cat->icon) : ($catIcons[$cat->slug] ?? 'fas fa-camera');
+                    $cImg = $cat->image_url;
                 @endphp
                 <button type="button" class="mobile-cat-pill {{ request('category') == $cat->slug ? 'active' : '' }}" data-slug="{{ $cat->slug }}" data-name="{{ $cat->name }}">
-                    <i class="{{ $cIcon }}"></i>
+                    @if($cImg)
+                        <img src="{{ $cImg }}" alt="{{ $cat->name }}" class="mobile-cat-pill-img" loading="lazy" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-flex';">
+                        <i class="{{ $cIcon }}" style="display: none;"></i>
+                    @else
+                        <i class="{{ $cIcon }}"></i>
+                    @endif
                     <span>{{ $cat->name }}</span>
                     <span class="mobile-cat-badge">{{ $cat->products_count }}</span>
                 </button>
@@ -409,10 +415,16 @@
                     @foreach($categories as $cat)
                     @php
                         $cIcon = !empty($cat->icon) ? (str_starts_with($cat->icon, 'fa') ? $cat->icon : 'fas fa-' . $cat->icon) : ($catIcons[$cat->slug] ?? 'fas fa-camera');
+                        $cImg = $cat->image_url;
                     @endphp
                     <button type="button" class="sheet-cat-card sheet-cat-chip {{ request('category') == $cat->slug ? 'active' : '' }}" data-slug="{{ $cat->slug }}" data-name="{{ $cat->name }}">
                         <span class="sheet-cat-card-icon">
-                            <i class="{{ $cIcon }}"></i>
+                            @if($cImg)
+                                <img src="{{ $cImg }}" alt="{{ $cat->name }}" class="sheet-cat-card-img" loading="lazy" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-flex';">
+                                <i class="{{ $cIcon }}" style="display: none;"></i>
+                            @else
+                                <i class="{{ $cIcon }}"></i>
+                            @endif
                         </span>
                         <span class="sheet-cat-card-name">{{ $cat->name }}</span>
                         <span class="sheet-chip-count sheet-cat-card-count">{{ $cat->products_count }}</span>

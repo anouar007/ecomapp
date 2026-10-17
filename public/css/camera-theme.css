@@ -3041,12 +3041,12 @@ body:has(.offcanvas.show) .whatsapp-float {
 }
 
 .shop-cat-list .cat-slot-box {
-    width: 28px !important;
-    height: 28px !important;
-    min-width: 28px !important;
-    min-height: 28px !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
     border-radius: 8px !important;
-    background: #f1f5f9 !important;
+    background: #f8fafc !important;
     border: 1px solid #e2e8f0 !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -3057,29 +3057,30 @@ body:has(.offcanvas.show) .whatsapp-float {
 }
 
 .shop-cat-list .cat-slot-media {
-    width: 17px !important;
-    height: 17px !important;
-    max-width: 17px !important;
-    max-height: 17px !important;
-    object-fit: contain !important;
-    opacity: 0.72 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: cover !important;
+    opacity: 1 !important;
+    border-radius: 7px !important;
     transition: all 0.18s ease !important;
 }
 
 .shop-cat-list .cat-mega-item:hover .cat-slot-media {
     opacity: 1 !important;
-    transform: scale(1.1) !important;
+    transform: scale(1.08) !important;
 }
 
 .shop-cat-list .cat-mega-item.active .cat-slot-media {
-    filter: brightness(0) invert(1) !important;
+    filter: none !important;
     opacity: 1 !important;
 }
 
 .shop-cat-list .cat-slot-icon {
     font-size: 13px !important;
-    width: 17px !important;
-    height: 17px !important;
+    width: 18px !important;
+    height: 18px !important;
     color: #64748b !important;
 }
 
@@ -3952,6 +3953,20 @@ body:has(.offcanvas.show) .whatsapp-float {
     transition: color 0.2s ease;
 }
 
+.mobile-cat-pill-img {
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    object-fit: cover;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.mobile-cat-pill:hover .mobile-cat-pill-img,
+.mobile-cat-pill.active .mobile-cat-pill-img {
+    transform: scale(1.1);
+}
+
 .mobile-cat-pill.active {
     background: var(--brand-red) !important;
     border-color: var(--brand-red) !important;
@@ -4459,8 +4474,8 @@ body:has(.offcanvas.show) .whatsapp-float {
 }
 
 .sheet-cat-card-icon {
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
     border-radius: 6px;
     background: #edf2f7;
     color: #64748b;
@@ -4469,7 +4484,22 @@ body:has(.offcanvas.show) .whatsapp-float {
     justify-content: center;
     font-size: 0.72rem;
     flex-shrink: 0;
+    overflow: hidden;
     transition: all 0.18s;
+}
+
+.sheet-cat-card-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.18s ease;
+}
+
+.sheet-cat-card:hover .sheet-cat-card-img,
+.sheet-cat-card.active .sheet-cat-card-img {
+    transform: scale(1.1);
 }
 
 .sheet-cat-card.active .sheet-cat-card-icon {
@@ -8464,14 +8494,14 @@ html[dir="rtl"] .floating-checkout-badge {
 
 /* Identical sizing container for both icons and uploaded images */
 .cat-slot-box {
-    width: 26px;
-    height: 26px;
-    min-width: 26px;
-    min-height: 26px;
-    max-width: 26px;
-    max-height: 26px;
-    border-radius: 7px;
-    background: #f1f5f9;
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    min-height: 30px;
+    max-width: 30px;
+    max-height: 30px;
+    border-radius: 8px;
+    background: #f8fafc;
     color: #64748b;
     display: inline-flex;
     align-items: center;
@@ -8483,13 +8513,13 @@ html[dir="rtl"] .floating-checkout-badge {
 }
 
 .cat-slot-media {
-    width: 16px;
-    height: 16px;
-    max-width: 16px;
-    max-height: 16px;
-    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
     display: block;
-    border-radius: 3px;
+    border-radius: 7px;
     transition: transform 0.18s ease;
 }
 
