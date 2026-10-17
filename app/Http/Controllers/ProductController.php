@@ -462,7 +462,8 @@ class ProductController extends Controller
     {
         $query = $request->input('q', $product->name);
         $service = app(\App\Services\OfficialProductImageService::class);
-        $candidates = $service->find4kCandidates($query, $product->category_name);
+        $brand = $product->brand ?? null;
+        $candidates = $service->find4kCandidates($query, $brand);
 
         return response()->json([
             'success' => true,
@@ -571,7 +572,7 @@ class ProductController extends Controller
         }
 
         $service = app(\App\Services\OfficialProductImageService::class);
-        $result = $service->bulkUpgrade4k($productIds, 1200);
+        $result = $service->bulkUpgrade4k($productIds, 800);
 
         return response()->json([
             'success' => true,

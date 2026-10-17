@@ -527,7 +527,47 @@
                 </div>
             </div>
         </div>
-    </form>
+    <!-- 4K Image Finder Modal -->
+    <div id="modal4k" style="display: none; position: fixed; inset: 0; z-index: 99999; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 20px;">
+        <div style="background: #ffffff; border-radius: 16px; max-width: 900px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.2);">
+            <!-- Header -->
+            <div style="padding: 20px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%); color: white;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(255, 255, 255, 0.15); display: flex; align-items: center; justify-content: center; color: #fbbf24; font-size: 18px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                        <i class="fas fa-wand-magic-sparkles"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 18px; font-weight: 700;">Studio Recherche 4K Ultra-HD</h3>
+                        <p style="margin: 2px 0 0; font-size: 12px; color: #c7d2fe;">Sélectionnez un master haute résolution sans filigrane</p>
+                    </div>
+                </div>
+                <button type="button" onclick="close4kImageModal()" style="background: rgba(255,255,255,0.1); border: none; font-size: 18px; color: white; cursor: pointer; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Search Bar -->
+            <div style="padding: 16px 24px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; gap: 10px; align-items: center;">
+                <div style="position: relative; flex: 1;">
+                    <i class="fas fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 14px;"></i>
+                    <input type="text" id="query4k" value="{{ $product->name }}" placeholder="Rechercher par nom officiel..." style="width: 100%; padding: 10px 14px 10px 38px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 14px; outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); trigger4kSearch();}">
+                </div>
+                <button type="button" id="btnRun4kSearch" onclick="trigger4kSearch()" class="btn btn-primary" style="background: #4f46e5; border-color: #4f46e5; border-radius: 10px; padding: 10px 20px; font-weight: 600; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;">
+                    <i class="fas fa-bolt me-1"></i> Rechercher
+                </button>
+            </div>
+
+            <!-- Content Area -->
+            <div id="results4kContainer" style="padding: 24px; overflow-y: auto; flex: 1; min-height: 350px;">
+                <div id="loading4k" style="display: none; text-align: center; padding: 60px 20px;">
+                    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
+                    <p style="margin-top: 16px; font-weight: 600; color: #475569;">Exploration des masters studio 4K Ultra-HD...</p>
+                    <p style="font-size: 12px; color: #94a3b8;">Extraction sans compression depuis les serveurs officiels</p>
+                </div>
+                <div id="grid4k" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;"></div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -674,18 +714,22 @@ function trigger4kSearch() {
             const is4k = cand.width >= 2000;
             const badgeColor = is4k ? "background: linear-gradient(135deg, #10b981, #059669); color: white;" : "background: #f1f5f9; color: #475569;";
 
+            const previewSrc = cand.preview_url || cand.url;
+            const safeUrl = cand.url.replace(/'/g, "\\'");
+            const fallbackImg = "{{ asset('images/camera/cat_cameras.jpg') }}";
+
             card.innerHTML = `
                 <div style="position: relative; width: 100%; height: 200px; background: #f8fafc; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 10px;">
-                    <img src="${cand.url}" alt="Preview" style="max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.src='{{ asset('images/camera/cat_cameras.jpg') }}'">
+                    <img src="${previewSrc}" alt="Preview" referrerpolicy="no-referrer" loading="lazy" style="max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='${fallbackImg}';">
                     <span style="position: absolute; top: 8px; left: 8px; ${badgeColor} font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                         ${cand.width}×${cand.height} ${is4k ? '4K UHD' : 'HD'}
                     </span>
-                    <span style="position: absolute; bottom: 8px; right: 8px; background: rgba(15,23,42,0.7); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px;">
+                    <span style="position: absolute; bottom: 8px; right: 8px; background: rgba(15,23,42,0.8); backdrop-filter: blur(4px); color: white; font-size: 10px; padding: 2px 8px; border-radius: 6px; font-weight: 600;">
                         ${cand.source}
                     </span>
                 </div>
                 <div style="padding: 12px; display: flex; flex-direction: column; gap: 8px; background: #ffffff; border-top: 1px solid #f1f5f9;">
-                    <button type="button" onclick="applySelected4kImage('${cand.url.replace(/'/g, "\\'")}', this)" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; border: none; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s;">
+                    <button type="button" onclick="applySelected4kImage('${safeUrl}', this)" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; border: none; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s;">
                         <i class="fas fa-check-circle"></i> Appliquer comme photo officielle
                     </button>
                 </div>
@@ -725,33 +769,35 @@ function applySelected4kImage(imageUrl, button) {
 
         if (data.success) {
             const container = document.getElementById('imagePreviewContainer');
-            let currentBox = document.getElementById('box-img-current');
-            
-            if (!currentBox) {
-                currentBox = document.createElement('div');
-                currentBox.className = 'image-upload-box';
-                currentBox.id = 'box-img-current';
-                container.insertBefore(currentBox, container.firstElementChild);
+            if (container) {
+                // Remove existing primary indicators
+                container.querySelectorAll('.primary-badge-indicator').forEach(b => b.remove());
+
+                let currentBox = document.getElementById('box-img-current');
+                if (!currentBox) {
+                    currentBox = document.createElement('div');
+                    currentBox.className = 'image-upload-box';
+                    currentBox.id = 'box-img-current';
+                    container.insertBefore(currentBox, container.firstElementChild);
+                }
+                
+                currentBox.innerHTML = `
+                    <img src="${data.image_url}?v=${new Date().getTime()}" alt="Image produit">
+                    <span class="primary-badge-indicator" style="background: #10b981;">4K MASTER</span>
+                `;
             }
-            
-            currentBox.innerHTML = `
-                <img src="${data.image_url}?v=${new Date().getTime()}" alt="Image produit">
-                <span class="primary-badge-indicator" style="background: #10b981;">4K MASTER</span>
-            `;
+
+            close4kImageModal();
 
             Swal.fire({
                 title: 'Image 4K Appliquée !',
-                text: `Résolution studio : ${data.width}×${data.height} pixels`,
+                text: `Résolution studio : ${data.width}×${data.height} pixels (${data.quality.toUpperCase()})`,
                 icon: 'success',
-                timer: 2000,
+                timer: 2500,
                 showConfirmButton: false,
                 toast: true,
                 position: 'top-end'
             });
-
-            setTimeout(() => {
-                close4kImageModal();
-            }, 600);
         } else {
             Swal.fire('Erreur', data.message || 'Impossible d\'appliquer l\'image 4K', 'error');
         }
@@ -764,45 +810,4 @@ function applySelected4kImage(imageUrl, button) {
 }
 </script>
 
-<!-- 4K Image Finder Modal -->
-<div id="modal4k" style="display: none; position: fixed; inset: 0; z-index: 99999; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 20px;">
-    <div style="background: #ffffff; border-radius: 16px; max-width: 900px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.2);">
-        <!-- Header -->
-        <div style="padding: 20px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%); color: white;">
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(255, 255, 255, 0.15); display: flex; align-items: center; justify-content: center; color: #fbbf24; font-size: 18px; border: 1px solid rgba(255, 255, 255, 0.2);">
-                    <i class="fas fa-wand-magic-sparkles"></i>
-                </div>
-                <div>
-                    <h3 style="margin: 0; font-size: 18px; font-weight: 700;">Studio Recherche 4K Ultra-HD</h3>
-                    <p style="margin: 2px 0 0; font-size: 12px; color: #c7d2fe;">Sélectionnez un master haute résolution sans filigrane</p>
-                </div>
-            </div>
-            <button type="button" onclick="close4kImageModal()" style="background: rgba(255,255,255,0.1); border: none; font-size: 18px; color: white; cursor: pointer; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-
-        <!-- Search Bar -->
-        <div style="padding: 16px 24px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; gap: 10px; align-items: center;">
-            <div style="position: relative; flex: 1;">
-                <i class="fas fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 14px;"></i>
-                <input type="text" id="query4k" value="{{ $product->name }}" placeholder="Rechercher par nom officiel..." style="width: 100%; padding: 10px 14px 10px 38px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 14px; outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); trigger4kSearch();}">
-            </div>
-            <button type="button" id="btnRun4kSearch" onclick="trigger4kSearch()" class="btn btn-primary" style="background: #4f46e5; border-color: #4f46e5; border-radius: 10px; padding: 10px 20px; font-weight: 600; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;">
-                <i class="fas fa-bolt me-1"></i> Rechercher
-            </button>
-        </div>
-
-        <!-- Content Area -->
-        <div id="results4kContainer" style="padding: 24px; overflow-y: auto; flex: 1; min-height: 350px;">
-            <div id="loading4k" style="display: none; text-align: center; padding: 60px 20px;">
-                <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
-                <p style="margin-top: 16px; font-weight: 600; color: #475569;">Exploration des masters studio 4K Ultra-HD...</p>
-                <p style="font-size: 12px; color: #94a3b8;">Extraction sans compression depuis les serveurs officiels</p>
-            </div>
-            <div id="grid4k" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;"></div>
-        </div>
-    </div>
-</div>
 @endpush

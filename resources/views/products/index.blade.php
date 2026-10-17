@@ -1220,18 +1220,22 @@
                 const is4k = cand.width >= 2000;
                 const badgeColor = is4k ? "background: linear-gradient(135deg, #10b981, #059669); color: white;" : "background: #f1f5f9; color: #475569;";
 
+                const previewSrc = cand.preview_url || cand.url;
+                const safeUrl = cand.url.replace(/'/g, "\\'");
+                const fallbackImg = "{{ asset('images/camera/cat_cameras.jpg') }}";
+
                 card.innerHTML = `
                     <div style="position: relative; width: 100%; height: 210px; background: #f8fafc; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 10px;">
-                        <img src="${cand.url}" alt="Preview" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                        <img src="${previewSrc}" alt="Preview" referrerpolicy="no-referrer" loading="lazy" onerror="this.onerror=null; this.src='${fallbackImg}';" style="max-width: 100%; max-height: 100%; object-fit: contain;">
                         <span style="position: absolute; top: 8px; left: 8px; ${badgeColor} font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                             ${cand.width}×${cand.height} ${is4k ? '4K UHD' : 'HD'}
                         </span>
-                        <span style="position: absolute; bottom: 8px; right: 8px; background: rgba(15,23,42,0.7); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px;">
+                        <span style="position: absolute; bottom: 8px; right: 8px; background: rgba(15,23,42,0.8); backdrop-filter: blur(4px); color: white; font-size: 10px; padding: 2px 8px; border-radius: 6px; font-weight: 600;">
                             ${cand.source}
                         </span>
                     </div>
                     <div style="padding: 12px; display: flex; flex-direction: column; gap: 8px; background: #ffffff; border-top: 1px solid #f1f5f9;">
-                        <button type="button" onclick="applySelected4kImage('${cand.url.replace(/'/g, "\\'")}', this)" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; border: none; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s;">
+                        <button type="button" onclick="applySelected4kImage('${safeUrl}', this)" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; border: none; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s;">
                             <i class="fas fa-check-circle"></i> Choisir cette image 4K
                         </button>
                     </div>
@@ -1406,7 +1410,7 @@
                     </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px; flex-grow: 1; max-width: 500px;">
-                    <input type="text" id="query4k" class="form-control" placeholder="Rechercher par nom de produit..." style="border-radius: 10px; font-size: 13px; padding: 9px 14px;">
+                    <input type="text" id="query4k" class="form-control" placeholder="Rechercher par nom de produit..." style="border-radius: 10px; font-size: 13px; padding: 9px 14px;" onkeydown="if(event.key==='Enter'){event.preventDefault(); trigger4kSearch();}">
                     <button type="button" id="btnRun4kSearch" onclick="trigger4kSearch()" class="btn btn-primary" style="background: #4f46e5; border-color: #4f46e5; border-radius: 10px; padding: 9px 18px; font-size: 13px; font-weight: 600; white-space: nowrap;">
                         <i class="fas fa-bolt me-1"></i> Rechercher
                     </button>

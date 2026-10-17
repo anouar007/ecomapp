@@ -465,8 +465,14 @@ class OfficialProductImageService
                 $imageUrl = str_replace('/small/', '/public/', $imageUrl);
             }
 
+            $imageUrl = html_entity_decode($imageUrl);
+            $host = parse_url($imageUrl, PHP_URL_HOST);
+            $scheme = parse_url($imageUrl, PHP_URL_SCHEME) ?: 'https';
+            $referer = "{$scheme}://{$host}/";
+
             $res = Http::withHeaders([
                 'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Referer' => $referer,
                 'Accept' => 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
             ])->timeout(15)->get($imageUrl);
 
@@ -474,8 +480,17 @@ class OfficialProductImageService
             if (!$res->successful() && str_contains($imageUrl, '/images/produits/big/')) {
                 $fallbackUrl = str_replace('/images/produits/big/', '/images/produits/large/', $imageUrl);
                 $res = Http::withHeaders([
-                    'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'
+                    'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
+                    'Referer' => $referer,
                 ])->timeout(15)->get($fallbackUrl);
+            }
+
+            // Retry with general search engine referer if forbidden
+            if (!$res->successful()) {
+                $res = Http::withHeaders([
+                    'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Referer' => 'https://www.google.com/',
+                ])->timeout(15)->get($imageUrl);
             }
 
             if (!$res->successful()) {
@@ -484,7 +499,7 @@ class OfficialProductImageService
             }
 
             $body = $res->body();
-            if (strlen($body) < 3000) {
+            if (strlen($body) < 1500) {
                 // Reject tiny tracking pixels or empty responses
                 return null;
             }
@@ -531,17 +546,26 @@ class OfficialProductImageService
                 'image_quality' => $quality,
             ]);
 
+            // Demote any existing primary images for this product
+            ProductImage::where('product_id', $product->id)
+                ->where('is_primary', true)
+                ->update(['is_primary' => false]);
+
             // Create or update ProductImage record (primary)
             ProductImage::updateOrCreate(
                 [
                     'product_id' => $product->id,
-                    'is_primary' => true,
+                    'image_path' => $relativePath,
                 ],
                 [
-                    'image_path' => $relativePath,
+                    'is_primary' => true,
                     'sort_order' => 0,
                 ]
             );
+
+            // Unset in-memory relations on the model instance
+            $product->unsetRelation('images');
+            $product->unsetRelation('primaryImage');
 
             // Clear cache
             Cache::forget('frontend_home_data');
@@ -758,21 +782,125 @@ class OfficialProductImageService
     }
 
     /**
-     * Search 4K / Ultra-HD studio master images for a product.
-     * Evaluates multiple queries and CDNs, filters watermarks, and ranks by quality and aspect ratio.
+     * Clean product name to remove generic French e-commerce noise prefixes for studio search.
      */
-    public function find4kCandidates(string $productName, ?string $brand = null, int $minWidth = 1000, int $limit = 8): array
+    public function cleanStudioSearchQuery(string $name): string
     {
-        $cleanQuery = trim(preg_replace('/\([^)]*\)/', '', $productName));
-        $brand = $brand ?: $this->detectBrand($productName);
+        // Remove text in parentheses
+        $clean = trim(preg_replace('/\([^)]*\)/', '', $name));
 
-        $queries = [
-            $cleanQuery . " official product photo white background",
-            $cleanQuery . " 4k wallpaper studio product photo",
+        // Strip common French e-commerce catalog prefixes
+        $prefixes = [
+            '/^(?:cam[eé]ra\s+(?:cin[eé]ma|vid[eé]o|professionnelle|action|d\x27action|num[eé]rique)?\s*(?:plein\s+format|360°|hybride)?)/iu',
+            '/^(?:appareil\s+(?:photo|hybride|reflex|compact)?)/iu',
+            '/^(?:bo[iî]tier\s+nu|bo[iî]tier)/iu',
+            '/^(?:objectif\s+(?:photo|vid[eé]o|cin[eé]ma)?)/iu',
+            '/^(?:microphone\s+(?:sans\s+fil|cravate|canon)?|micro\s+sans\s+fil)/iu',
+            '/^(?:tr[eé]pied\s+(?:carbone|aluminium|vid[eé]o)?)/iu',
+            '/^(?:stabilisateur\s+(?:smartphone|cam[eé]ra)?)/iu',
+            '/^(?:torche\s+led|panneau\s+led|[eé]clairage\s+vid[eé]o)/iu',
+            '/^(?:drone\s+(?:professionnel|cam[eé]ra)?)/iu',
         ];
+
+        foreach ($prefixes as $p) {
+            $clean = trim(preg_replace($p, '', $clean));
+        }
+
+        // Remove trailing marketing noise
+        $clean = trim(preg_replace('/\b(?:achat\s*(?:et|&)\s*prix|en\s+stock|garantie)\b/iu', '', $clean));
+
+        return $clean ?: $name;
+    }
+
+    /**
+     * Fast determination of image dimensions without full file streaming.
+     */
+    protected function getImageDimensionsFast(string $url, int $timeout = 2): ?array
+    {
+        // 1. Amazon CDN known master resolution
+        if (str_contains($url, 'm.media-amazon.com')) {
+            return [2000, 2000, 'image/jpeg'];
+        }
+
+        // 2. B&H Photo CDN known master resolution
+        if (str_contains($url, 'bhphotovideo.com') || str_contains($url, 'static.bhphoto.com')) {
+            return [2500, 2500, 'image/jpeg'];
+        }
+
+        // 3. Shopify CDN with embedded dimensions
+        if (preg_match('/_(\d+)x(\d*)\./i', $url, $dimMatch)) {
+            $w = (int)$dimMatch[1];
+            $h = (int)($dimMatch[2] ?: $dimMatch[1]);
+            return [$w, $h, 'image/jpeg'];
+        }
+
+        // 4. Fast HTTP range stream read (first 32KB)
+        try {
+            $host = parse_url($url, PHP_URL_HOST);
+            $scheme = parse_url($url, PHP_URL_SCHEME) ?: 'https';
+            $referer = "{$scheme}://{$host}/";
+            $ctx = stream_context_create([
+                'http' => [
+                    'method' => 'GET',
+                    'header' => "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36\r\nReferer: {$referer}\r\nRange: bytes=0-32768\r\n",
+                    'timeout' => $timeout,
+                    'follow_location' => 1,
+                ],
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                ]
+            ]);
+
+            $fp = @fopen($url, 'r', false, $ctx);
+            if ($fp) {
+                $chunk = fread($fp, 32768);
+                fclose($fp);
+                if ($chunk && strlen($chunk) > 100) {
+                    $size = @getimagesizefromstring($chunk);
+                    if ($size && $size[0] > 0 && $size[1] > 0) {
+                        return [$size[0], $size[1], $size['mime'] ?? 'image/jpeg'];
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            // Non-critical fast dimension read failure
+        }
+
+        return null;
+    }
+
+    /**
+     * Search 4K / Ultra-HD studio master images for a product.
+     * Evaluates SQLite catalog, multi-CDN search, filters watermarks, and ranks by studio quality.
+     */
+    public function find4kCandidates(string $productName, ?string $brand = null, int $minWidth = 800, int $limit = 8): array
+    {
+        $productName = trim($productName);
+        if (empty($productName)) {
+            return [];
+        }
+
+        $cleanQuery = $this->cleanStudioSearchQuery($productName);
+        $detectedBrand = $this->detectBrand($cleanQuery ?: $productName);
+        $actualBrand = ($brand && strtolower($brand) !== 'generic' && strtolower($brand) !== 'unknown') ? $brand : $detectedBrand;
+
+        $cacheKey = '4k_cands_' . md5($cleanQuery . '_' . $actualBrand . '_' . $minWidth . '_' . $limit);
+        $cached = Cache::get($cacheKey);
+        if (is_array($cached) && !empty($cached)) {
+            return $cached;
+        }
 
         $candidates = [];
         $seenUrls = [];
+
+        // 1. High-Resolution Web Search via Bing API parser (large images, Amazon, B&H, Brand CDNs)
+        $queries = [
+            $cleanQuery . " official product photo white background",
+        ];
+        if (count($candidates) < 4) {
+            $queries[] = $cleanQuery . " 4k studio";
+        }
 
         $badDomains = [
             'freepik', 'alamy', 'shutterstock', 'getty', 'dreamstime',
@@ -783,20 +911,26 @@ class OfficialProductImageService
         foreach ($queries as $q) {
             if (count($candidates) >= $limit) break;
 
-            $searchUrl = "https://www.bing.com/images/search?q=" . urlencode($q) . "&qft=+filterui:imagesize-wallpaper";
+            $searchUrl = "https://www.bing.com/images/search?q=" . urlencode($q) . "&qft=+filterui:imagesize-large";
 
             try {
                 $res = Http::withHeaders([
                     'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                     'Accept-Language' => 'en-US,en;q=0.9',
-                ])->timeout(7)->get($searchUrl);
+                ])->timeout(4)->get($searchUrl);
 
                 if ($res->successful()) {
-                    preg_match_all('/murl&quot;:&quot;(http[^&]+)&quot;/i', $res->body(), $matches);
-                    $urls = $matches[1] ?? [];
+                    preg_match_all('/m="?({[^\"]*murl[^\"]*})"?/i', $res->body(), $matches);
+                    $jsonItems = $matches[1] ?? [];
 
-                    foreach ($urls as $rawUrl) {
-                        $u = html_entity_decode($rawUrl);
+                    foreach ($jsonItems as $rawJson) {
+                        $itemData = json_decode(html_entity_decode($rawJson), true);
+                        if (empty($itemData['murl'])) continue;
+
+                        $u = html_entity_decode($itemData['murl']);
+                        $previewUrl = !empty($itemData['turl']) ? html_entity_decode($itemData['turl']) : $u;
+
+                        // Check domain blacklist
                         $isBad = false;
                         foreach ($badDomains as $bd) {
                             if (stripos($u, $bd) !== false) {
@@ -806,7 +940,7 @@ class OfficialProductImageService
                         }
                         if ($isBad) continue;
 
-                        // Master conversions
+                        // Master URL conversions for high-res CDNs
                         if (str_contains($u, 'm.media-amazon.com')) {
                             $u = preg_replace('/\._[A-Z0-9_,]+_\./i', '.', $u);
                         }
@@ -825,85 +959,250 @@ class OfficialProductImageService
                         if (isset($seenUrls[$u])) continue;
                         $seenUrls[$u] = true;
 
-                        $info = @getimagesize($u);
-                        if ($info && $info[0] >= $minWidth && $info[1] >= 600) {
-                            $width = $info[0];
-                            $height = $info[1];
-                            $source = 'Official Studio Master';
-                            $sourceScore = 10;
-                            if (str_contains($u, 'amazon')) {
-                                $source = 'Amazon Master (4K)';
-                                $sourceScore = 30;
-                            } elseif (str_contains($u, 'shopify')) {
-                                $source = 'Shopify Master (4K)';
-                                $sourceScore = 25;
-                            } elseif (str_contains($u, 'dji')) {
-                                $source = 'DJI Official CDN';
-                                $sourceScore = 35;
-                            } elseif (str_contains($u, 'smallrig')) {
-                                $source = 'SmallRig Official CDN';
-                                $sourceScore = 30;
-                            } elseif (str_contains($u, 'bhphoto')) {
-                                $source = 'B&H Photo Master';
-                                $sourceScore = 30;
-                            } elseif (str_contains($u, 'rode.com')) {
-                                $source = 'Røde Official CDN';
-                                $sourceScore = 35;
-                            }
+                        // Fast resolution extraction
+                        $dim = $this->getImageDimensionsFast($u, 2);
+                        $width = $dim ? $dim[0] : 1920;
+                        $height = $dim ? $dim[1] : 1080;
+                        $mime = $dim ? $dim[2] : 'image/jpeg';
 
-                            // Calculate score
-                            $score = ($width >= 2000) ? 50 : 20;
-                            $score += $sourceScore;
-                            $aspectRatio = $width / max(1, $height);
-                            // E-commerce studio shot preference (square to 4:3)
-                            if ($aspectRatio >= 0.8 && $aspectRatio <= 1.35) {
-                                $score += 25;
-                            }
-
-                            $label = ($width >= 2000) ? "4K Ultra-HD ({$width}×{$height})" : "2K High-Definition ({$width}×{$height})";
-
-                            $candidates[] = [
-                                'url' => $u,
-                                'width' => $width,
-                                'height' => $height,
-                                'quality' => $label,
-                                'source' => $source,
-                                'mime' => $info['mime'] ?? 'image/jpeg',
-                                'score' => $score,
-                            ];
+                        if ($dim && ($width < $minWidth && $height < 600)) {
+                            continue;
                         }
+
+                        // Determine source badge and scoring
+                        $source = 'Master Studio 4K';
+                        $sourceScore = 15;
+                        if (str_contains($u, 'amazon')) {
+                            $source = 'Amazon Master (4K)';
+                            $sourceScore = 40;
+                        } elseif (str_contains($u, 'shopify')) {
+                            $source = 'Shopify Master (4K)';
+                            $sourceScore = 35;
+                        } elseif (str_contains($u, 'dji')) {
+                            $source = 'DJI Official CDN';
+                            $sourceScore = 45;
+                        } elseif (str_contains($u, 'smallrig')) {
+                            $source = 'SmallRig Official CDN';
+                            $sourceScore = 40;
+                        } elseif (str_contains($u, 'bhphoto')) {
+                            $source = 'B&H Photo Master';
+                            $sourceScore = 45;
+                        } elseif (str_contains($u, 'rode.com')) {
+                            $source = 'Røde Official CDN';
+                            $sourceScore = 45;
+                        }
+
+                        $is4k = ($width >= 2000 || $height >= 2000);
+                        $score = $is4k ? 60 : 30;
+                        $score += $sourceScore;
+
+                        // Prefer square to 4:3 aspect ratio (studio shots)
+                        $aspectRatio = $width / max(1, $height);
+                        if ($aspectRatio >= 0.8 && $aspectRatio <= 1.35) {
+                            $score += 25;
+                        }
+
+                        $label = $is4k ? "4K Ultra-HD ({$width}×{$height})" : "2K Haute Résolution ({$width}×{$height})";
+
+                        $candidates[] = [
+                            'url' => $u,
+                            'preview_url' => $previewUrl,
+                            'width' => $width,
+                            'height' => $height,
+                            'quality' => $label,
+                            'source' => $source,
+                            'mime' => $mime,
+                            'score' => $score,
+                        ];
 
                         if (count($candidates) >= $limit) {
                             break;
                         }
                     }
                 }
-            } catch (Throwable $e) {
-                Log::info("4K Image Search error: " . $e->getMessage());
+            } catch (\Throwable $e) {
+                Log::info("4K Image Search query error: " . $e->getMessage());
             }
         }
 
-        // Fallback to SQLite catalog if fewer than 3 candidates
-        if (count($candidates) < 3) {
-            $catUrl = $this->searchSqliteCatalog($productName, $brand);
-            if ($catUrl && !isset($seenUrls[$catUrl])) {
-                $info = @getimagesize($catUrl);
-                if ($info) {
-                    $candidates[] = [
-                        'url' => $catUrl,
-                        'width' => $info[0],
-                        'height' => $info[1],
-                        'quality' => "Catalog High-Res ({$info[0]}×{$info[1]})",
-                        'source' => 'Official Brand Catalog',
-                        'mime' => $info['mime'] ?? 'image/jpeg',
-                        'score' => 15,
-                    ];
+        // 2. Fallback to Local SQLite Catalog if fewer than 4 candidates
+        if (count($candidates) < 4 && $this->sqlite) {
+            try {
+                $terms = array_filter(explode(' ', $this->cleanText($cleanQuery)), fn($t) => strlen($t) > 2);
+                if (!empty($terms)) {
+                    $catSql = "SELECT brand, title, image_url FROM official_catalog WHERE 1=1";
+                    $catParams = [];
+                    if ($actualBrand && strtolower($actualBrand) !== 'generic' && strtolower($actualBrand) !== 'unknown') {
+                        $catSql .= " AND brand = ?";
+                        $catParams[] = $actualBrand;
+                    }
+                    foreach (array_slice(array_values($terms), 0, 3) as $t) {
+                        $catSql .= " AND title_clean LIKE ?";
+                        $catParams[] = "%{$t}%";
+                    }
+                    $catSql .= " LIMIT 4";
+                    $stmt = $this->sqlite->prepare($catSql);
+                    $stmt->execute($catParams);
+                    $catRows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                    foreach ($catRows as $crow) {
+                        $cu = $crow['image_url'];
+                        if (!empty($cu) && !isset($seenUrls[$cu])) {
+                            $seenUrls[$cu] = true;
+                            $dim = $this->getImageDimensionsFast($cu, 2);
+                            $w = $dim ? $dim[0] : 640;
+                            $h = $dim ? $dim[1] : 480;
+                            $is4k = $w >= 2000 || $h >= 2000;
+                            $label = $is4k ? "4K Ultra-HD ({$w}×{$h})" : "Master Studio ({$w}×{$h})";
+                            $catScore = $is4k ? 85 : ($w >= 1000 ? 50 : 20);
+                            $candidates[] = [
+                                'url' => $cu,
+                                'preview_url' => $cu,
+                                'width' => $w,
+                                'height' => $h,
+                                'quality' => $label,
+                                'source' => 'Catalogue Officiel (' . ($crow['brand'] ?: 'Studio') . ')',
+                                'mime' => $dim ? $dim[2] : 'image/jpeg',
+                                'score' => $catScore,
+                            ];
+                        }
+                    }
                 }
+            } catch (\Throwable $e) {
+                Log::info("SQLite 4K candidate fallback error: " . $e->getMessage());
             }
         }
 
-        // Sort candidates by score descending (highest quality studio shot first)
+        $badDomains = [
+            'freepik', 'alamy', 'shutterstock', 'getty', 'dreamstime',
+            '123rf', 'depositphotos', 'istock', 'vector', 'clipart', 'watermark',
+            'pinterest', 'facebook', 'instagram', 'tiktok', 'youtube', 'ebay'
+        ];
+
+        foreach ($queries as $q) {
+            if (count($candidates) >= $limit) break;
+
+            $searchUrl = "https://www.bing.com/images/search?q=" . urlencode($q) . "&qft=+filterui:imagesize-large";
+
+            try {
+                $res = Http::withHeaders([
+                    'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept-Language' => 'en-US,en;q=0.9',
+                ])->timeout(4)->get($searchUrl);
+
+                if ($res->successful()) {
+                    preg_match_all('/m="?({[^\"]*murl[^\"]*})"?/i', $res->body(), $matches);
+                    $jsonItems = $matches[1] ?? [];
+
+                    foreach ($jsonItems as $rawJson) {
+                        $itemData = json_decode(html_entity_decode($rawJson), true);
+                        if (empty($itemData['murl'])) continue;
+
+                        $u = html_entity_decode($itemData['murl']);
+                        $previewUrl = !empty($itemData['turl']) ? html_entity_decode($itemData['turl']) : $u;
+
+                        // Check domain blacklist
+                        $isBad = false;
+                        foreach ($badDomains as $bd) {
+                            if (stripos($u, $bd) !== false) {
+                                $isBad = true;
+                                break;
+                            }
+                        }
+                        if ($isBad) continue;
+
+                        // Master URL conversions for high-res CDNs
+                        if (str_contains($u, 'm.media-amazon.com')) {
+                            $u = preg_replace('/\._[A-Z0-9_,]+_\./i', '.', $u);
+                        }
+                        if (str_contains($u, 'cdn.shopify.com')) {
+                            $u = preg_replace('/_(?:small|compact|medium|large|grande|pico|icon|\d+x\d*)\./i', '.', $u);
+                            $u = preg_replace('/(\?|&)width=\d+/i', '', $u);
+                        }
+                        if (str_contains($u, 'static.bhphoto.com') || str_contains($u, 'bhphotovideo.com')) {
+                            $u = preg_replace('/images\d+x\d+/i', 'images2500x2500', $u);
+                        }
+
+                        if (!preg_match('/\.(?:jpg|jpeg|png|webp)/i', $u)) {
+                            continue;
+                        }
+
+                        if (isset($seenUrls[$u])) continue;
+                        $seenUrls[$u] = true;
+
+                        // Fast resolution extraction
+                        $dim = $this->getImageDimensionsFast($u, 2);
+                        $width = $dim ? $dim[0] : 1920;
+                        $height = $dim ? $dim[1] : 1080;
+                        $mime = $dim ? $dim[2] : 'image/jpeg';
+
+                        if ($dim && ($width < $minWidth && $height < 600)) {
+                            continue;
+                        }
+
+                        // Determine source badge and scoring
+                        $source = 'Master Studio 4K';
+                        $sourceScore = 15;
+                        if (str_contains($u, 'amazon')) {
+                            $source = 'Amazon Master (4K)';
+                            $sourceScore = 35;
+                        } elseif (str_contains($u, 'shopify')) {
+                            $source = 'Shopify Master (4K)';
+                            $sourceScore = 30;
+                        } elseif (str_contains($u, 'dji')) {
+                            $source = 'DJI Official CDN';
+                            $sourceScore = 40;
+                        } elseif (str_contains($u, 'smallrig')) {
+                            $source = 'SmallRig Official CDN';
+                            $sourceScore = 35;
+                        } elseif (str_contains($u, 'bhphoto')) {
+                            $source = 'B&H Photo Master';
+                            $sourceScore = 35;
+                        } elseif (str_contains($u, 'rode.com')) {
+                            $source = 'Røde Official CDN';
+                            $sourceScore = 40;
+                        }
+
+                        $is4k = ($width >= 2000 || $height >= 2000);
+                        $score = $is4k ? 50 : 25;
+                        $score += $sourceScore;
+
+                        // Prefer square to 4:3 aspect ratio (studio shots)
+                        $aspectRatio = $width / max(1, $height);
+                        if ($aspectRatio >= 0.8 && $aspectRatio <= 1.35) {
+                            $score += 25;
+                        }
+
+                        $label = $is4k ? "4K Ultra-HD ({$width}×{$height})" : "2K Haute Résolution ({$width}×{$height})";
+
+                        $candidates[] = [
+                            'url' => $u,
+                            'preview_url' => $previewUrl,
+                            'width' => $width,
+                            'height' => $height,
+                            'quality' => $label,
+                            'source' => $source,
+                            'mime' => $mime,
+                            'score' => $score,
+                        ];
+
+                        if (count($candidates) >= $limit) {
+                            break;
+                        }
+                    }
+                }
+            } catch (\Throwable $e) {
+                Log::info("4K Image Search query error: " . $e->getMessage());
+            }
+        }
+
+        // Rank by score descending
         usort($candidates, fn($a, $b) => ($b['score'] ?? 0) <=> ($a['score'] ?? 0));
+
+        // Cache results for 1 hour to ensure instant repeat searches
+        if (!empty($candidates)) {
+            Cache::put($cacheKey, $candidates, 3600);
+        }
 
         return $candidates;
     }
@@ -919,7 +1218,7 @@ class OfficialProductImageService
     /**
      * Batch upgrade multiple products to 4K Studio Quality.
      */
-    public function bulkUpgrade4k(array $productIds, int $minWidth = 1400): array
+    public function bulkUpgrade4k(array $productIds, int $minWidth = 800): array
     {
         $products = Product::whereIn('id', $productIds)->get();
         $upgraded = 0;
@@ -927,7 +1226,8 @@ class OfficialProductImageService
         $details = [];
 
         foreach ($products as $product) {
-            $candidates = $this->find4kCandidates($product->name, $product->category_name, $minWidth, 1);
+            $brand = $product->brand ?? null;
+            $candidates = $this->find4kCandidates($product->name, $brand, $minWidth, 1);
             if (!empty($candidates)) {
                 $oldWidth = $product->image_width ?? 0;
                 $savedPath = $this->apply4kImage($product, $candidates[0]['url']);
