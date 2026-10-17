@@ -462,7 +462,7 @@ class ProductController extends Controller
     {
         $query = $request->input('q', $product->name);
         $service = app(\App\Services\OfficialProductImageService::class);
-        $brand = $product->brand ?? null;
+        $brand = $service->detectBrand($query ?: $product->name);
         $candidates = $service->find4kCandidates($query, $brand);
 
         return response()->json([
