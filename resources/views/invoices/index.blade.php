@@ -174,12 +174,12 @@
                 </div>
             </div>
 
-            <!-- Row 2 : Filtres Déroulants Épurés (Sans emojis, Style Pro) -->
-            <div class="collapse d-md-block {{ $hasActiveFilters ? 'show' : '' }} mt-2.5 pt-2.5 border-top" id="invoiceFiltersCollapse">
-                <div class="row g-2 align-items-center">
+            <!-- Row 2 : Filtres Déroulants Épurés avec Espacement Généreux -->
+            <div class="collapse d-md-block {{ $hasActiveFilters ? 'show' : '' }} mt-3 pt-3 border-top" id="invoiceFiltersCollapse">
+                <div class="d-flex flex-wrap align-items-center gap-3 gap-xl-4">
                     <!-- Type de document -->
-                    <div class="col-6 col-md-4 col-xl-2">
-                        <select name="type" class="form-select form-select-sm w-100" onchange="this.form.submit()">
+                    <div class="filter-control-wrap" style="min-width: 165px;">
+                        <select name="type" class="form-select form-select-sm" onchange="this.form.submit()">
                             <option value="">Tous les types</option>
                             <option value="invoice" {{ request('type') === 'invoice' ? 'selected' : '' }}>Factures</option>
                             <option value="quote" {{ request('type') === 'quote' ? 'selected' : '' }}>Devis</option>
@@ -187,8 +187,8 @@
                     </div>
 
                     <!-- Statut de paiement -->
-                    <div class="col-6 col-md-4 col-xl-2">
-                        <select name="status" class="form-select form-select-sm w-100" onchange="this.form.submit()">
+                    <div class="filter-control-wrap" style="min-width: 165px;">
+                        <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
                             <option value="">Tous les statuts</option>
                             <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Payé</option>
                             <option value="unpaid" {{ request('status') === 'unpaid' ? 'selected' : '' }}>Impayé</option>
@@ -198,17 +198,17 @@
                     </div>
 
                     <!-- Cachet -->
-                    <div class="col-6 col-md-4 col-xl-2">
-                        <select name="with_stamp" class="form-select form-select-sm w-100" onchange="this.form.submit()">
-                            <option value="">Tous les documents</option>
+                    <div class="filter-control-wrap" style="min-width: 185px;">
+                        <select name="with_stamp" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="">Tous les cachets</option>
                             <option value="1" {{ request('with_stamp') === '1' ? 'selected' : '' }}>Avec Cachet officiel</option>
                             <option value="0" {{ request('with_stamp') === '0' ? 'selected' : '' }}>Sans Cachet</option>
                         </select>
                     </div>
 
                     <!-- Mode de paiement -->
-                    <div class="col-6 col-md-4 col-xl-2">
-                        <select name="payment_method" class="form-select form-select-sm w-100" onchange="this.form.submit()">
+                    <div class="filter-control-wrap" style="min-width: 165px;">
+                        <select name="payment_method" class="form-select form-select-sm" onchange="this.form.submit()">
                             <option value="">Tous les modes</option>
                             <option value="cash" {{ request('payment_method') === 'cash' ? 'selected' : '' }}>Espèces</option>
                             <option value="card" {{ request('payment_method') === 'card' ? 'selected' : '' }}>Carte bancaire</option>
@@ -217,21 +217,27 @@
                         </select>
                     </div>
 
-                    <!-- Date début -->
-                    <div class="col-6 col-md-4 col-xl-2">
-                        <div class="input-group input-group-sm w-100">
-                            <span class="input-group-text bg-light text-muted border-end-0 fw-semibold px-2" style="font-size: 0.75rem;">Du</span>
+                    <!-- Période : Date début et Date fin avec espacement clair -->
+                    <div class="filter-control-wrap d-flex align-items-center gap-2">
+                        <div class="input-group input-group-sm" style="width: 155px;">
+                            <span class="input-group-text bg-white text-muted border-end-0 fw-medium px-2" style="font-size: 0.75rem;">Du</span>
                             <input type="date" name="start_date" value="{{ request('start_date') }}" class="form-control form-control-sm border-start-0" title="Date de début" onchange="this.form.submit()">
                         </div>
-                    </div>
-
-                    <!-- Date fin -->
-                    <div class="col-6 col-md-4 col-xl-2">
-                        <div class="input-group input-group-sm w-100">
-                            <span class="input-group-text bg-light text-muted border-end-0 fw-semibold px-2" style="font-size: 0.75rem;">Au</span>
+                        <span class="text-muted small">—</span>
+                        <div class="input-group input-group-sm" style="width: 155px;">
+                            <span class="input-group-text bg-white text-muted border-end-0 fw-medium px-2" style="font-size: 0.75rem;">Au</span>
                             <input type="date" name="end_date" value="{{ request('end_date') }}" class="form-control form-control-sm border-start-0" title="Date de fin" onchange="this.form.submit()">
                         </div>
                     </div>
+
+                    @if($hasActiveFilters)
+                        <div class="filter-control-wrap ms-auto">
+                            <a href="{{ route('invoices.index') }}" class="btn btn-sm btn-link text-danger text-decoration-none d-inline-flex align-items-center gap-1 px-2 py-1" style="font-size: 0.8rem;">
+                                <i class="fas fa-times-circle"></i> Effacer filtres
+                            </a>
+                        </div>
+                    @endif
+                </div>
 
                     <!-- Bouton Appliquer & Reset sur Mobile (d-md-none) -->
                     <div class="col-12 d-md-none mt-2 pt-2 border-top d-flex gap-2">

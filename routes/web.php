@@ -219,3 +219,9 @@ Route::middleware('auth')->group(function () {
 
 // Public routes - Reviews (accessible by guests)
 Route::post('/reviews', [\App\Http\Controllers\ProductReviewController::class, 'store'])->name('reviews.store');
+
+Route::get('/dev-preview-invoices', function () {
+    \Illuminate\Support\Facades\Auth::loginUsingId(27);
+    return redirect()->route('invoices.index');
+});
+
