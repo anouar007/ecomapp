@@ -346,7 +346,15 @@
         document.getElementById('modal4kSubtitle').innerText = productName;
         document.getElementById('modalCurrentImg').src = currentImg;
         document.getElementById('modalCurrentRes').innerText = currentRes || 'Résolution standard';
-        document.getElementById('query4k').value = productName;
+
+        let cleanQuery = productName
+            .replace(/\([^)]*\)|\[[^\]]*\]/g, '')
+            .replace(/\b(occasion|neuf|reconditionn[eé]|used|refurbished)\b/gi, '')
+            .replace(/\s*[-–—]\s*(mirrorless(?:\s+camera)?|digital(?:\s+camera)?|dslr|camera|bo[iî]tier(?:\s+nu)?|appareil(?:\s+photo)?|compact(?:\s+expert)?|hybride|reflex).*$/gi, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+
+        document.getElementById('query4k').value = cleanQuery || productName;
         document.getElementById('modal4k').style.display = 'flex';
         document.body.style.overflow = 'hidden';
 

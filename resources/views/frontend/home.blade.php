@@ -166,9 +166,13 @@
                                 {{ $cat['count'] }}
                             </span>
 
-                            {{-- SVG Icon --}}
-                            <div class="cat-icon-slot mb-2 mb-md-3 d-flex align-items-center justify-content-center">
-                                <img src="{{ $cat['icon'] }}" alt="{{ $cat['title'] }}" class="cat-icon-svg" loading="lazy">
+                            {{-- Category Image --}}
+                            <div class="cat-icon-slot mb-2 mb-md-3 d-flex align-items-center justify-content-center overflow-hidden">
+                                <img src="{{ $cat['image'] ?? $cat['icon'] }}" 
+                                     alt="{{ $cat['title'] }}" 
+                                     class="cat-img-media" 
+                                     loading="lazy"
+                                     onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                             </div>
 
                             {{-- Title --}}

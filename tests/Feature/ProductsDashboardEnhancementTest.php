@@ -105,7 +105,7 @@ class ProductsDashboardEnhancementTest extends TestCase
         // 1. Create page renders with 200 and no blade error
         $response = $this->actingAs($this->admin)->get(route('products.create'));
         $response->assertStatus(200);
-        $response->assertSee('Add New Product');
+        $response->assertSee('Nouveau produit');
 
         // 2. Edit page renders with 200 and product data
         $response = $this->actingAs($this->admin)->get(route('products.edit', $product));

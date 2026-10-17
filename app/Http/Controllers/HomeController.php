@@ -32,100 +32,53 @@ class HomeController extends Controller
         $heroSideBottom = $banners->firstWhere('position', 'side_bottom');
         $promoMiddleBanner = $banners->firstWhere('position', 'wide_middle');
 
-        // 2. Popular Categories matching screenshot 2 + additional store categories
-        $popularCategories = [
-            [
-                'title' => 'CARTE MÉMOIRE / LECTEUR',
-                'count' => 35,
-                'icon' => asset('images/camera/icons/cat_sdcard.svg'),
-                'url' => route('shop.index', ['category' => 'carte-memoire-lecteur']),
-                'highlight' => false,
-            ],
-            [
-                'title' => 'ACCESSOIRES',
-                'count' => 564,
-                'icon' => asset('images/camera/icons/cat_accessories.svg'),
-                'url' => route('shop.index', ['category' => 'accessoires']),
-                'highlight' => false,
-            ],
-            [
-                'title' => 'MATÉRIEL DE PODCAST',
-                'count' => 15,
-                'icon' => asset('images/camera/icons/cat_podcast.svg'),
-                'url' => route('shop.index', ['category' => 'materiel-de-podcast']),
-                'highlight' => false,
-            ],
-            [
-                'title' => 'FILTRES ND / CPL POLARISÉ',
-                'count' => 65,
-                'icon' => asset('images/camera/icons/cat_filter.svg'),
-                'url' => route('shop.index', ['category' => 'filtres-nd-cpl-polarise']),
-                'highlight' => false,
-            ],
-            [
-                'title' => 'MATTE BOX',
-                'count' => 88,
-                'icon' => asset('images/camera/icons/cat_mattebox.svg'),
-                'url' => route('shop.index', ['category' => 'matte-box']),
-                'highlight' => false,
-            ],
-            [
-                'title' => 'ACCESSOIRES INSTA360',
-                'count' => 87,
-                'icon' => asset('images/camera/icons/cat_insta360.svg'),
-                'url' => route('shop.index', ['category' => 'accessoires-insta360']),
-                'highlight' => false,
-            ],
-            [
-                'title' => 'KIT DE NETTOYAGE',
-                'count' => 7,
-                'icon' => asset('images/camera/icons/cat_cleaning.svg'),
-                'url' => route('shop.index', ['category' => 'kit-de-nettoyage']),
-                'highlight' => false,
-            ],
-            [
-                'title' => 'OCCASION',
-                'count' => 5,
-                'icon' => asset('images/camera/icons/cat_occasion.svg'),
-                'url' => route('shop.index', ['category' => 'occasion']),
-                'highlight' => true,
-            ],
-            [
-                'title' => 'TRÉPIEDS',
-                'count' => 97,
-                'icon' => asset('images/camera/icons/cat_tripod.svg'),
-                'url' => route('shop.index', ['category' => 'trepieds']),
-                'highlight' => false,
-            ],
-            [
-                'title' => 'BATTERIE / CHARGEUR',
-                'count' => 110,
-                'icon' => asset('images/camera/icons/cat_battery.svg'),
-                'url' => route('shop.index', ['category' => 'batterie-chargeur']),
-                'highlight' => false,
-            ],
-            [
-                'title' => 'SACS DE CAMÉRA',
-                'count' => 36,
-                'icon' => asset('images/camera/icons/cat_bag.svg'),
-                'url' => route('shop.index', ['category' => 'sacs-de-camera']),
-                'highlight' => false,
-            ],
-            [
-                'title' => 'OBJECTIFS',
-                'count' => 34,
-                'icon' => asset('images/camera/icons/cat_lens.svg'),
-                'url' => route('shop.index', ['category' => 'objectifs']),
-                'highlight' => false,
-            ],
-            [
-                'title' => 'CAMÉRAS & HYBRIDES',
-                'count' => 81,
-                'icon' => asset('images/camera/icons/cat_camera.svg'),
-                'url' => route('shop.index', ['category' => 'camera']),
-                'highlight' => false,
-            ],
+        // 2. Popular Categories loaded dynamically from DB with dashboard-uploaded images
+        $defaultIcons = [
+            'camera' => asset('images/camera/icons/cat_camera.svg'),
+            'objectifs' => asset('images/camera/icons/cat_lens.svg'),
+            'carte-memoire-lecteur' => asset('images/camera/icons/cat_sdcard.svg'),
+            'accessoires' => asset('images/camera/icons/cat_accessories.svg'),
+            'materiel-de-podcast' => asset('images/camera/icons/cat_podcast.svg'),
+            'filtres-nd-cpl-polarise' => asset('images/camera/icons/cat_filter.svg'),
+            'matte-box' => asset('images/camera/icons/cat_mattebox.svg'),
+            'accessoires-insta360' => asset('images/camera/icons/cat_insta360.svg'),
+            'kit-de-nettoyage' => asset('images/camera/icons/cat_cleaning.svg'),
+            'trepieds' => asset('images/camera/icons/cat_tripod.svg'),
+            'batterie-chargeur' => asset('images/camera/icons/cat_battery.svg'),
+            'sacs-de-camera' => asset('images/camera/icons/cat_bag.svg'),
+            'lumieres-materiel-de-studio' => asset('images/camera/icons/cat_lighting.svg'),
+            'son' => asset('images/camera/icons/cat_audio.svg'),
+            'stabilisateurs' => asset('images/camera/icons/cat_gimbals.svg'),
+            'occasion' => asset('images/camera/icons/cat_occasion.svg'),
         ];
+
+        $popularCategories = Cache::remember('home_popular_categories_v2', 1800, function () use ($defaultIcons) {
+            $categories = Category::where('status', 'active')
+                ->whereNull('parent_id')
+                ->where('slug', '!=', 'test-cat')
+                ->withCount('products')
+                ->orderBy('sort_order', 'asc')
+                ->orderBy('name', 'asc')
+                ->get();
+
+            return $categories->map(function ($cat) use ($defaultIcons) {
+                // Determine image: dashboard uploaded image takes top priority
+                $imageUrl = $cat->image_url;
+                if (empty($imageUrl)) {
+                    $imageUrl = $defaultIcons[$cat->slug] ?? asset('images/camera/cat_cameras.jpg');
+                }
+
+                return [
+                    'id' => $cat->id,
+                    'title' => $cat->name,
+                    'count' => $cat->products_count,
+                    'image' => $imageUrl,
+                    'icon' => $imageUrl, // backwards compatibility for any view referencing icon
+                    'url' => route('shop.index', ['category' => $cat->slug]),
+                    'highlight' => stripos($cat->name, 'occasion') !== false,
+                ];
+            })->toArray();
+        });
 
         // 3. Featured Flagship Products ("Notre sélection de produits" matching Screenshot 3)
         $featuredIds = [594, 45, 374, 36, 18, 2, 7, 14];

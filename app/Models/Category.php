@@ -48,12 +48,14 @@ class Category extends Model
             \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
             \Illuminate\Support\Facades\Cache::forget('frontend_nav_categories');
             \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
+            \Illuminate\Support\Facades\Cache::forget('home_popular_categories_v2');
         });
 
         static::deleted(function () {
             \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
             \Illuminate\Support\Facades\Cache::forget('frontend_nav_categories');
             \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
+            \Illuminate\Support\Facades\Cache::forget('home_popular_categories_v2');
         });
     }
 

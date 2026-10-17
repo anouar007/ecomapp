@@ -673,15 +673,35 @@ class OfficialProductImageService
         if ($this->isAccessory($clean)) {
             return false;
         }
+
         $keywords = [
             'camera', 'caméra', 'caméscope', 'camescope', 'boitier', 'boîtier', 'appareil',
-            'action cam', 'action cam 360', 'cinema camera', 'compact expert', 'hybride', 'reflex'
+            'action cam', 'action cam 360', 'cinema camera', 'compact expert', 'hybride', 'reflex',
+            'mirrorless', 'dslr'
         ];
         foreach ($keywords as $kw) {
             if (str_contains($clean, $kw)) {
                 return true;
             }
         }
+
+        // Camera family patterns (Fujifilm, Canon, Sony, Nikon, Panasonic, Leica, Blackmagic, GoPro, DJI, Insta360)
+        $patterns = [
+            '/\b(?:x-t\d+|x-h\d+|x-s\d+|x-pro\d+|x-e\d+|x-a\d+|x100[a-z0-9]*|gfx\s*\d+[a-z0-9]*)\b/i',
+            '/\b(?:eos\s*[a-z0-9]+|powershot|rebel|ixus)\b/i',
+            '/\b(?:alpha\s*\d+|a7[a-z0-9]*|a9[a-z0-9]*|a1\b|a6\d{3}|fx3\b|fx30|fx6|fx9|zv-[a-z0-9]+|zv1|rx100|rx10|ilce)\b/i',
+            '/\b(?:z30|z50|zfc|z5\b|z6[a-z0-9]*|z7[a-z0-9]*|z8\b|z9\b|d[0-9]{3,4}|coolpix)\b/i',
+            '/\b(?:lumix\s*[a-z0-9]+|gh[0-9]+|s5[a-z0-9]*|s1[a-z0-9]*|g9\b|fz[0-9]+)\b/i',
+            '/\b(?:leica\s+[mqs]|leica\s+sl)\b/i',
+            '/\b(?:pocket\s+cinema|ursa|bmpcc)\b/i',
+            '/\b(?:hero\s*[0-9]+|osmo\s+action|osmo\s+pocket|insta360\s+(?:x[0-9]+|ace|go[0-9]*))\b/i'
+        ];
+        foreach ($patterns as $p) {
+            if (preg_match($p, $clean)) {
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -799,10 +819,16 @@ class OfficialProductImageService
      */
     public function cleanStudioSearchQuery(string $name): string
     {
-        // Remove text in parentheses
-        $clean = trim(preg_replace('/\([^)]*\)/', '', $name));
+        // 1. Remove text in parentheses or square brackets like (Occasion), [Used]
+        $clean = trim(preg_replace('/\([^)]*\)|\[[^\]]*\]/', '', $name));
 
-        // Strip common French e-commerce catalog prefixes
+        // 2. Strip common French condition tags
+        $clean = trim(preg_replace('/\b(?:occasion|neuf|reconditionn[eé]|used|refurbished|comme\s+neuf|bon\s+[eé]tat|tr[eè]s\s+bon\s+[eé]tat)\b/iu', '', $clean));
+
+        // 3. Strip trailing dashes with category/condition descriptors (e.g. " – Mirrorless Camera", " - Boîtier Nu")
+        $clean = trim(preg_replace('/\s*[-–—]\s*(?:mirrorless(?:\s+camera)?|digital(?:\s+camera)?|dslr|camera|bo[iî]tier(?:\s+nu)?|appareil(?:\s+photo)?|compact(?:\s+expert)?|hybride|reflex|pack|bundle).*$/iu', '', $clean));
+
+        // 4. Strip common French e-commerce catalog prefixes
         $prefixes = [
             '/^(?:cam[eé]ra\s+(?:cin[eé]ma|vid[eé]o|professionnelle|action|d\x27action|num[eé]rique)?\s*(?:plein\s+format|360°|hybride)?)/iu',
             '/^(?:appareil\s+(?:photo|hybride|reflex|compact)?)/iu',
@@ -816,11 +842,18 @@ class OfficialProductImageService
         ];
 
         foreach ($prefixes as $p) {
-            $clean = trim(preg_replace($p, '', $clean));
+            $candidate = trim(preg_replace($p, '', $clean));
+            if (!empty($candidate)) {
+                $clean = $candidate;
+            }
         }
 
-        // Remove trailing marketing noise
+        // 5. Remove trailing marketing noise
         $clean = trim(preg_replace('/\b(?:achat\s*(?:et|&)\s*prix|en\s+stock|garantie)\b/iu', '', $clean));
+
+        // 6. Clean multiple spaces and trailing punctuation
+        $clean = trim(preg_replace('/\s+/', ' ', $clean));
+        $clean = trim($clean, " -–—:,");
 
         return $clean ?: $name;
     }
@@ -898,7 +931,7 @@ class OfficialProductImageService
         $detectedBrand = $this->detectBrand($cleanQuery ?: $productName);
         $actualBrand = ($brand && strtolower($brand) !== 'generic' && strtolower($brand) !== 'unknown') ? $brand : $detectedBrand;
 
-        $cacheKey = '4k_cands_v3_' . md5($cleanQuery . '_' . $actualBrand . '_' . $minWidth . '_' . $limit);
+        $cacheKey = '4k_cands_v4_' . md5($cleanQuery . '_' . $actualBrand . '_' . $minWidth . '_' . $limit);
         $cached = Cache::get($cacheKey);
         if (is_array($cached) && !empty($cached)) {
             return $cached;
@@ -911,24 +944,56 @@ class OfficialProductImageService
         $isTargetCamera = $this->isCameraBody($cleanQuery) || $this->isCameraBody($productName);
         $isTargetAccessory = $this->isAccessory($cleanQuery) || $this->isAccessory($productName);
 
-        // Extract key model identification tokens
-        $rawTokens = array_values(array_filter(explode(' ', strtolower(preg_replace('/[^a-z0-9]/i', ' ', $cleanQuery))), fn($t) => strlen($t) > 1));
-        $modelTokens = array_values(array_filter($rawTokens, function ($t) use ($actualBrand) {
-            if ($actualBrand && strtolower($t) === strtolower($actualBrand)) return false;
-            return preg_match('/[0-9]/', $t) || in_array($t, ['pro', 'max', 'air', 'mini', 'plus', 'ultra', 'pocket', 'action', 'mark', 'combo', 'powershot', 'ace', 'alpha', 'cinema']);
-        }));
+        // Extract key model identification tokens while preserving hyphenated codes (e.g. x-t4, a7-iv)
+        preg_match_all('/\b[a-z0-9]+(?:-[a-z0-9]+)*\b/i', $cleanQuery, $rawMatches);
+        $rawTokens = $rawMatches[0] ?? [];
+
+        $modelTokens = [];
+        foreach ($rawTokens as $t) {
+            $tLower = strtolower($t);
+            if ($actualBrand && $tLower === strtolower($actualBrand)) continue;
+            if (preg_match('/[0-9]/', $tLower) || str_contains($tLower, '-') || in_array($tLower, ['pro', 'max', 'air', 'mini', 'plus', 'ultra', 'pocket', 'action', 'mark', 'combo', 'powershot', 'ace', 'alpha', 'cinema'])) {
+                $modelTokens[] = $tLower;
+                if (str_contains($tLower, '-')) {
+                    $modelTokens[] = str_replace('-', '', $tLower);
+                }
+            }
+        }
+        $modelTokens = array_values(array_unique($modelTokens));
 
         // 1. High-Resolution Multi-Source Web Search via Bing API parser (large images, Amazon, B&H, Best Buy, Brand CDNs)
-        $searchQueries = [
-            $cleanQuery,
-            $cleanQuery . ' studio photo',
-        ];
+        $searchQueries = [];
+        if ($isTargetCamera) {
+            $searchQueries[] = $cleanQuery . ' camera product';
+            $searchQueries[] = $cleanQuery . ' mirrorless camera';
+            $searchQueries[] = $cleanQuery . ' studio photo';
+        } elseif ($isTargetAccessory) {
+            $searchQueries[] = $cleanQuery . ' product';
+            $searchQueries[] = $cleanQuery . ' official';
+        } else {
+            $searchQueries[] = $cleanQuery . ' product';
+            $searchQueries[] = $cleanQuery . ' studio';
+            $searchQueries[] = $cleanQuery;
+        }
 
-        $badWords = ['review', ' vs ', 'vs.', 'comparison', 'wallpaper', 'tear down', 'unboxing', 'sample photo', 'louer', 'rent'];
+        $badWords = [
+            // Review / test shot / sample gallery blacklist
+            'sample photo', 'sample image', 'sample pictures', 'sample shot', 'sample gallery', 'sample raw',
+            'samples gallery', 'test shot', 'field test', 'taken with', 'shot with', 'shot on', 'captured with',
+            'iso test', 'autofocus test', 'tracking test', 'review sample', 'af test', 'samples', 'dpreview sample',
+            'tear down', 'teardown', 'unboxing', 'wallpaper', 'louer', 'rent', 'location', 'vs.', ' vs ',
+            // Vehicle / motorsport blacklist (prevents cars photographed in camera AF tracking reviews)
+            'porsche', 'ferrari', 'lamborghini', 'mclaren', 'bugatti', 'race car', 'racing', 'motorsport',
+            'race track', 'racetrack', 'circuit', 'supercar', 'sports car', 'formula 1', 'f1', 'nascar',
+            'gt4', 'gt3', 'gt2', 'clubsport', 'bmw', 'audi', 'mercedes-benz', 'mercedes', 'volkswagen',
+            'honda', 'toyota', 'corvette', 'mustang', 'automobile', 'vehicule', 'voiture', 'car review',
+            // Apparel / accessories / toys
+            't-shirt', 'clothing', 'poster', 'skin sticker', 'skin wrap', 'decal', 'toy', 'lego'
+        ];
         $badDomains = [
             'freepik', 'alamy', 'shutterstock', 'getty', 'dreamstime',
             '123rf', 'depositphotos', 'istock', 'vector', 'clipart', 'watermark',
-            'pinterest', 'facebook', 'instagram', 'tiktok', 'youtube', 'ebay', 'aliexpress', 'temu'
+            'pinterest', 'facebook', 'instagram', 'tiktok', 'youtube', 'ebay', 'aliexpress', 'temu', 'redbubble', 'etsy'
         ];
 
         foreach ($searchQueries as $q) {
@@ -967,9 +1032,10 @@ class OfficialProductImageService
                         }
                         if ($isBad) continue;
 
-                        // Reject review/comparison titles
+                        // Reject review/comparison/vehicle/sample titles (unless query explicitly searches for it)
+                        $cleanLower = strtolower($cleanQuery);
                         foreach ($badWords as $bw) {
-                            if (str_contains($titleLower, $bw)) {
+                            if (!str_contains($cleanLower, $bw) && str_contains($titleLower, $bw)) {
                                 $isBad = true;
                                 break;
                             }
@@ -981,11 +1047,12 @@ class OfficialProductImageService
                             continue;
                         }
 
-                        // Check model token match
+                        // Check model token match with word boundaries
                         if (!empty($modelTokens)) {
                             $hasKeyToken = false;
                             foreach ($modelTokens as $mt) {
-                                if (str_contains($titleLower, $mt)) {
+                                $pattern = '/\b' . preg_quote($mt, '/') . '\b/i';
+                                if (preg_match($pattern, $titleLower)) {
                                     $hasKeyToken = true;
                                     break;
                                 }
@@ -1046,11 +1113,17 @@ class OfficialProductImageService
                         if (isset($seenFingerprints[$fingerprint])) continue;
                         $seenFingerprints[$fingerprint] = true;
 
+                        // Brand match bonus
+                        if ($actualBrand && str_contains($titleLower, strtolower($actualBrand))) {
+                            $sourceScore += 15;
+                        }
+
                         // Check model token completeness bonus
                         if (!empty($modelTokens)) {
                             $allMatched = true;
                             foreach ($modelTokens as $mt) {
-                                if (!str_contains($titleLower, $mt)) {
+                                $pattern = '/\b' . preg_quote($mt, '/') . '\b/i';
+                                if (!preg_match($pattern, $titleLower)) {
                                     $allMatched = false;
                                     break;
                                 }

@@ -550,7 +550,7 @@
             <div style="padding: 16px 24px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; gap: 10px; align-items: center;">
                 <div style="position: relative; flex: 1;">
                     <i class="fas fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 14px;"></i>
-                    <input type="text" id="query4k" value="{{ $product->name }}" placeholder="Rechercher par nom officiel..." style="width: 100%; padding: 10px 14px 10px 38px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 14px; outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); trigger4kSearch();}">
+                    <input type="text" id="query4k" value="{{ app(\App\Services\OfficialProductImageService::class)->cleanStudioSearchQuery($product->name) }}" placeholder="Rechercher par nom officiel..." style="width: 100%; padding: 10px 14px 10px 38px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 14px; outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); trigger4kSearch();}">
                 </div>
                 <button type="button" id="btnRun4kSearch" onclick="trigger4kSearch()" class="btn btn-primary" style="background: #4f46e5; border-color: #4f46e5; border-radius: 10px; padding: 10px 20px; font-weight: 600; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;">
                     <i class="fas fa-bolt me-1"></i> Rechercher
