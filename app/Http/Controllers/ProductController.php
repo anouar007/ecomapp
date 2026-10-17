@@ -463,7 +463,7 @@ class ProductController extends Controller
         $query = $request->input('q', $product->name);
         $service = app(\App\Services\OfficialProductImageService::class);
         $brand = $service->detectBrand($query ?: $product->name);
-        $candidates = $service->find4kCandidates($query, $brand);
+        $candidates = $service->find4kCandidates($query, $brand, 800, 12);
 
         return response()->json([
             'success' => true,
