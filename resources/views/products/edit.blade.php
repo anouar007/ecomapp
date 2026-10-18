@@ -349,10 +349,11 @@
                         </h2>
                     </div>
 
-                    <!-- Prix de vente -->
+                    <!-- Nouveau prix de vente -->
                     <div class="mb-3">
-                        <label for="price" class="form-label fw-semibold text-dark">
-                            Prix de vente TTC ({{ setting('currency_symbol', 'MAD') }}) <span class="text-danger">*</span>
+                        <label for="price" class="form-label fw-semibold text-dark d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-tag text-success me-1"></i> Nouveau prix (Prix de vente TTC) <span class="text-danger">*</span></span>
+                            <span class="badge bg-success-subtle text-success small">Prix actuel</span>
                         </label>
                         <div class="input-group">
                             <span class="input-group-text bg-light text-muted">
@@ -362,19 +363,62 @@
                                    id="price" 
                                    name="price" 
                                    class="form-control form-control-lg fw-bold @error('price') is-invalid @enderror" 
-                                   value="{{ old('price', $product->price) }}" 
+                                   value="{{ old('price', $product->isOnSale() ? $product->sale_price : $product->price) }}" 
                                    placeholder="0.00" 
                                    step="0.01" 
                                    min="0" 
                                    required 
-                                   oninput="updateProfitCalc()">
+                                   oninput="updatePricingAndProfit()">
+                            <span class="input-group-text bg-light text-muted fw-bold">
+                                {{ setting('currency_symbol', 'MAD') }}
+                            </span>
                         </div>
                         <div class="form-text text-muted small mt-1">
-                            <i class="fas fa-info-circle text-primary me-1"></i>Le prix saisi est <strong>TTC</strong> (TVA comprise).
+                            Prix réel et effectif payé par le client (TVA comprise).
                         </div>
                         @error('price')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
+                    </div>
+
+                    <!-- Ancien prix (Prix barré / Promo) -->
+                    <div class="mb-3">
+                        <label for="old_price" class="form-label fw-semibold text-dark d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-history text-secondary me-1"></i> Ancien prix (Prix barré)</span>
+                            <span class="badge bg-light text-muted border small">Optionnel</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted">
+                                <i class="fas fa-strikethrough"></i>
+                            </span>
+                            <input type="number" 
+                                   id="old_price" 
+                                   name="old_price" 
+                                   class="form-control @error('old_price') is-invalid @enderror" 
+                                   value="{{ old('old_price', $product->isOnSale() ? $product->price : '') }}" 
+                                   placeholder="0.00" 
+                                   step="0.01" 
+                                   min="0" 
+                                   oninput="updatePricingAndProfit()">
+                            <span class="input-group-text bg-light text-muted fw-bold">
+                                {{ setting('currency_symbol', 'MAD') }}
+                            </span>
+                        </div>
+                        <div class="form-text text-muted small mt-1">
+                            Affiché barré pour mettre en valeur la promotion (ex: <del class="text-muted">799 MAD</del> <strong class="text-success">599 MAD</strong>).
+                        </div>
+                        @error('old_price')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+
+                        <!-- Promo pill live preview -->
+                        <div id="promoBadgeBox" class="mt-2 p-2 rounded-3 bg-danger-subtle border border-danger-subtle text-danger small {{ $product->isOnSale() ? 'd-flex' : 'd-none' }} align-items-center justify-content-between">
+                            <span><i class="fas fa-fire me-1"></i> Remise : <strong id="promoPercentVal">-{{ $product->discount_percentage }}%</strong></span>
+                            <span class="text-muted" id="promoSavingsVal">Économie: {{ currency(($product->price ?? 0) - ($product->sale_price ?? 0)) }}</span>
+                        </div>
+                        <div id="promoWarningBox" class="mt-2 p-2 rounded-3 bg-warning-subtle text-warning-emphasis small d-none">
+                            <i class="fas fa-exclamation-triangle me-1"></i> L'ancien prix doit être supérieur au nouveau prix pour appliquer une réduction.
+                        </div>
                     </div>
 
                     <!-- Prix d'achat / revient -->
@@ -394,7 +438,7 @@
                                    placeholder="0.00" 
                                    step="0.01" 
                                    min="0" 
-                                   oninput="updateProfitCalc()">
+                                   oninput="updatePricingAndProfit()">
                         </div>
                         <div class="form-text small text-muted">Coût unitaire pour calculer votre marge commerciale.</div>
                         @error('cost_price')
@@ -409,7 +453,7 @@
                                 <div class="p-2 rounded-3 bg-white border border-success-subtle shadow-xs">
                                     <div class="text-muted small fw-semibold" style="font-size: 0.7rem;">Marge brute</div>
                                     <div class="fw-bold text-success fs-6" id="profitMarginVal">
-                                        {{ $product->cost_price && $product->price > 0 ? number_format((($product->price - $product->cost_price) / $product->price) * 100, 1) . '%' : '0%' }}
+                                        {{ $product->cost_price && $product->active_price > 0 ? number_format((($product->active_price - $product->cost_price) / $product->active_price) * 100, 1) . '%' : '0%' }}
                                     </div>
                                 </div>
                             </div>
@@ -417,7 +461,7 @@
                                 <div class="p-2 rounded-3 bg-white border shadow-xs">
                                     <div class="text-muted small fw-semibold" style="font-size: 0.7rem;">Bénéfice net</div>
                                     <div class="fw-bold text-dark fs-6" id="profitAmountVal">
-                                        {{ currency($product->price - ($product->cost_price ?? 0)) }}
+                                        {{ currency($product->active_price - ($product->cost_price ?? 0)) }}
                                     </div>
                                 </div>
                             </div>
@@ -631,24 +675,51 @@ function handleNewImages(event) {
     });
 }
 
-// Live Profit Calculation
-function updateProfitCalc() {
+// Live Pricing & Profit Calculation
+function updatePricingAndProfit() {
     const price = parseFloat(document.getElementById('price').value) || 0;
+    const oldPrice = parseFloat(document.getElementById('old_price').value) || 0;
     const cost = parseFloat(document.getElementById('cost_price').value) || 0;
-    const box = document.getElementById('profitCalcBox');
     
+    // 1. Promo Badge live preview
+    const promoBox = document.getElementById('promoBadgeBox');
+    const warningBox = document.getElementById('promoWarningBox');
+    
+    if (oldPrice > 0 && price > 0) {
+        if (oldPrice > price) {
+            const savings = oldPrice - price;
+            const discountPercent = Math.round((savings / oldPrice) * 100);
+            document.getElementById('promoPercentVal').textContent = '-' + discountPercent + '%';
+            document.getElementById('promoSavingsVal').textContent = 'Économie: ' + savings.toFixed(2) + ' {{ setting("currency_symbol", "MAD") }}';
+            promoBox.classList.remove('d-none');
+            promoBox.classList.add('d-flex');
+            warningBox.classList.add('d-none');
+        } else {
+            promoBox.classList.add('d-none');
+            promoBox.classList.remove('d-flex');
+            warningBox.classList.remove('d-none');
+        }
+    } else {
+        promoBox.classList.add('d-none');
+        promoBox.classList.remove('d-flex');
+        warningBox.classList.add('d-none');
+    }
+
+    // 2. Profit margin calculation
+    const profitBox = document.getElementById('profitCalcBox');
     if (price > 0 && cost > 0) {
         const profit = price - cost;
         const margin = ((profit / price) * 100).toFixed(1);
         
-        box.style.display = 'block';
+        profitBox.style.display = 'block';
         document.getElementById('profitMarginVal').textContent = margin + '%';
         document.getElementById('profitMarginVal').className = profit >= 0 ? 'fw-bold text-success' : 'fw-bold text-danger';
         document.getElementById('profitAmountVal').textContent = profit.toFixed(2) + ' {{ setting("currency_symbol", "MAD") }}';
     } else {
-        box.style.display = 'none';
+        profitBox.style.display = 'none';
     }
 }
+window.updateProfitCalc = updatePricingAndProfit;
 
 // 4K Studio Image Finder Logic
 function open4kImageModal() {
@@ -808,6 +879,10 @@ function applySelected4kImage(imageUrl, button) {
         Swal.fire('Erreur', err.message, 'error');
     });
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    updatePricingAndProfit();
+});
 </script>
 
 @endpush

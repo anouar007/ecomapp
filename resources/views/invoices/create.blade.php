@@ -667,9 +667,10 @@
                             @foreach($products as $product)
                                 @php
                                     $taxRateVal = floatval(setting('tax_rate', 20)) / 100;
-                                    $pPriceHt = $taxRateVal > 0 ? ($product->price / (1 + $taxRateVal)) : $product->price;
+                                    $pSellingPrice = $product->active_price;
+                                    $pPriceHt = $taxRateVal > 0 ? ($pSellingPrice / (1 + $taxRateVal)) : $pSellingPrice;
                                 @endphp
-                                <option value="{{ $product->id }}" data-price="{{ $product->price }}" data-price-ht="{{ round($pPriceHt, 2) }}">
+                                <option value="{{ $product->id }}" data-price="{{ $pSellingPrice }}" data-price-ht="{{ round($pPriceHt, 2) }}">
                                     {{ $product->name }} • {{ number_format(round($pPriceHt, 2), 2) }} DH HT
                                 </option>
                             @endforeach

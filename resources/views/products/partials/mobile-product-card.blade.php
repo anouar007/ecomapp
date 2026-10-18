@@ -43,7 +43,12 @@
 
                 <!-- Price Top-Right -->
                 <div class="mobile-prod-price-box text-end flex-shrink-0">
-                    <div class="mobile-prod-price-val">{{ currency($product->price) }}</div>
+                    @if($product->isOnSale())
+                        <div class="mobile-prod-price-val text-success">{{ currency($product->sale_price) }}</div>
+                        <div class="text-muted small text-decoration-line-through">{{ currency($product->price) }}</div>
+                    @else
+                        <div class="mobile-prod-price-val">{{ currency($product->price) }}</div>
+                    @endif
                 </div>
             </div>
 

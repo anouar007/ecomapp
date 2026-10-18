@@ -2860,7 +2860,7 @@ a {
     height: 480px;
     min-height: 320px;
     max-height: 560px;
-    padding: 28px;
+    padding: 0px;
     position: relative;
     cursor: zoom-in;
     overflow: hidden;
@@ -2998,21 +2998,32 @@ a {
     align-items: center;
     gap: 12px;
     flex-wrap: wrap;
-    margin-bottom: 20px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border);
+    margin-bottom: 13px;
+    padding-bottom: 13px;
+    border-bottom: none;
+}
+
+.pdp-price-group {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    line-height: 1.1;
 }
 
 .pdp-price-main {
     font-size: 2rem;
     font-weight: 800;
     color: var(--text-dark);
+    line-height: 1.1;
 }
 
 .pdp-price-old {
     font-size: 1rem;
-    color: var(--text-muted);
+    color: #c10f2b;
     text-decoration: line-through;
+    margin-top: 3px;
+    line-height: 1.1;
 }
 
 .pdp-discount-badge {
@@ -3379,7 +3390,7 @@ a {
         height: 300px;
         min-height: 240px;
         max-height: 360px;
-        padding: 20px;
+        padding: 0px;
     }
 }
 

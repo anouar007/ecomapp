@@ -149,5 +149,105 @@ class ProductsDashboardEnhancementTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Studio Qualité Images 4K');
     }
+
+    public function test_product_store_with_new_price_and_old_price(): void
+    {
+        $sku = 'TEST-PRICING-' . time();
+        $response = $this->actingAs($this->admin)->post(route('products.store'), [
+            'name' => 'Promotion Test Product',
+            'sku' => $sku,
+            'price' => 350.00,      // New Price
+            'old_price' => 500.00,  // Old Price (strikethrough)
+            'cost_price' => 200.00,
+            'stock' => 10,
+            'min_stock' => 2,
+            'status' => 'active',
+            'category_id' => '',
+        ]);
+
+        $response->assertRedirect(route('products.index'));
+
+        $product = Product::where('sku', $sku)->first();
+        $this->assertNotNull($product);
+        $this->assertEquals(500.00, (float)$product->price);
+        $this->assertEquals(350.00, (float)$product->sale_price);
+        $this->assertTrue($product->isOnSale());
+        $this->assertEquals(350.00, (float)$product->active_price);
+        $this->assertEquals(500.00, (float)$product->old_price);
+        $this->assertEquals(30, $product->discount_percentage);
+
+        // Edit page loads with both values
+        $editResponse = $this->actingAs($this->admin)->get(route('products.edit', $product));
+        $editResponse->assertStatus(200);
+        $editResponse->assertSee('350');
+        $editResponse->assertSee('500');
+
+        // Cleanup
+        $product->delete();
+    }
+
+    public function test_product_update_and_clearing_old_price(): void
+    {
+        $product = Product::create([
+            'name' => 'Update Pricing Product',
+            'sku' => 'TEST-UPD-' . time(),
+            'price' => 100.00,
+            'stock' => 5,
+            'min_stock' => 1,
+            'status' => 'active',
+        ]);
+
+        // 1. Add promotion (New price: 80, Old price: 100)
+        $this->actingAs($this->admin)->put(route('products.update', $product), [
+            'name' => 'Update Pricing Product',
+            'sku' => $product->sku,
+            'price' => 80.00,
+            'old_price' => 100.00,
+            'stock' => 5,
+            'min_stock' => 1,
+            'status' => 'active',
+        ]);
+
+        $product->refresh();
+        $this->assertEquals(100.00, (float)$product->price);
+        $this->assertEquals(80.00, (float)$product->sale_price);
+        $this->assertTrue($product->isOnSale());
+
+        // 2. Remove promotion (New price: 90, Old price: empty)
+        $this->actingAs($this->admin)->put(route('products.update', $product), [
+            'name' => 'Update Pricing Product',
+            'sku' => $product->sku,
+            'price' => 90.00,
+            'old_price' => '',
+            'stock' => 5,
+            'min_stock' => 1,
+            'status' => 'active',
+        ]);
+
+        $product->refresh();
+        $this->assertEquals(90.00, (float)$product->price);
+        $this->assertNull($product->sale_price);
+        $this->assertFalse($product->isOnSale());
+
+        // Cleanup
+        $product->delete();
+    }
+
+    public function test_product_store_rejects_old_price_lower_than_new_price(): void
+    {
+        $sku = 'TEST-INVALID-' . time();
+        $response = $this->actingAs($this->admin)->post(route('products.store'), [
+            'name' => 'Invalid Pricing Product',
+            'sku' => $sku,
+            'price' => 500.00,
+            'old_price' => 400.00, // Invalid: old price lower than new price
+            'stock' => 10,
+            'min_stock' => 2,
+            'status' => 'active',
+        ]);
+
+        $response->assertSessionHasErrors('old_price');
+        $this->assertNull(Product::where('sku', $sku)->first());
+    }
 }
 

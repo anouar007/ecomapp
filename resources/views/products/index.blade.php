@@ -439,7 +439,12 @@
                             @endif
                         </td>
                         <td class="col-price">
-                            <div class="fw-bold text-dark">{{ currency($product->price) }}</div>
+                            @if($product->isOnSale())
+                                <div class="fw-bold text-success">{{ currency($product->sale_price) }}</div>
+                                <div class="text-muted small text-decoration-line-through">{{ currency($product->price) }}</div>
+                            @else
+                                <div class="fw-bold text-dark">{{ currency($product->price) }}</div>
+                            @endif
                             @if($product->cost_price)
                                 <div class="text-muted small prod-cost-text" title="Prix de revient">Coût: {{ currency($product->cost_price) }}</div>
                             @endif

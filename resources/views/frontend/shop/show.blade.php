@@ -261,13 +261,16 @@
                     @endif
 
                     <div class="pdp-price-row">
-                        @if($product->isOnSale())
-                            <span class="pdp-price-main">{{ $product->formatted_sale_price }}</span>
-                            <span class="pdp-price-old">{{ $product->formatted_price }}</span>
-                            <span class="pdp-discount-badge">−{{ $product->discount_percentage }}%</span>
-                        @else
-                            <span class="pdp-price-main">{{ $product->formatted_price }}</span>
-                        @endif
+                        <div class="pdp-price-group">
+                            @if($product->isOnSale())
+                                <span class="pdp-discount-badge">−{{ $product->discount_percentage }}%</span>
+                            @endif
+                            <span class="pdp-price-main">{{ $product->isOnSale() ? $product->formatted_sale_price : $product->formatted_price }}</span>
+                            @if($product->isOnSale())
+                                <span class="pdp-price-old">{{ $product->formatted_price }}</span>
+                            @endif
+                        </div>
+
                         @if($product->isInStock())
                             <span class="pdp-stock-badge pdp-stock-badge--in">
                                 <i class="fas fa-check-circle me-1"></i>{{ __('In stock') }}

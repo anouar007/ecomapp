@@ -409,7 +409,7 @@
         .featured-pro-card .pcard-price-old,
         .selection-card .pcard-price-old {
             font-size: 0.72rem !important;
-            color: #94a3b8 !important;
+            color: #c10f2b !important;
             text-decoration: line-through !important;
             line-height: 1.1 !important;
             height: 14px !important;

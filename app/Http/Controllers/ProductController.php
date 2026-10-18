@@ -133,13 +133,36 @@ class ProductController extends Controller
             'sku' => ['required', 'string', 'max:255', 'unique:products,sku'],
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
+            'old_price' => ['nullable', 'numeric', 'min:0'],
             'cost_price' => ['nullable', 'numeric', 'min:0'],
             'stock' => ['required', 'integer', 'min:0'],
             'min_stock' => ['required', 'integer', 'min:0'],
             'category_id' => ['nullable', 'exists:categories,id'],
             'images.*' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
+        ], [
+            'old_price.numeric' => "L'ancien prix doit être un nombre valide.",
+            'old_price.min' => "L'ancien prix ne peut pas être négatif.",
         ]);
+
+        $newPrice = floatval($validated['price']);
+        $hasOldPrice = $request->filled('old_price') && is_numeric($request->old_price) && floatval($request->old_price) > 0;
+
+        if ($hasOldPrice) {
+            $oldPrice = floatval($request->old_price);
+            if ($oldPrice > $newPrice) {
+                $validated['price'] = $oldPrice;
+                $validated['sale_price'] = $newPrice;
+            } else {
+                return back()->withErrors(['old_price' => "L'ancien prix doit être supérieur au nouveau prix de vente."])->withInput();
+            }
+        } elseif ($request->has('sale_price')) {
+            $validated['sale_price'] = $request->sale_price ? floatval($request->sale_price) : null;
+        } else {
+            $validated['price'] = $newPrice;
+            $validated['sale_price'] = null;
+        }
+        unset($validated['old_price']);
 
         if (empty($validated['slug'])) {
             $baseSlug = \Illuminate\Support\Str::slug($validated['name']);
@@ -213,6 +236,7 @@ class ProductController extends Controller
             'sku' => ['required', 'string', 'max:255', 'unique:products,sku,' . $product->id],
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
+            'old_price' => ['nullable', 'numeric', 'min:0'],
             'cost_price' => ['nullable', 'numeric', 'min:0'],
             'stock' => ['required', 'integer', 'min:0'],
             'min_stock' => ['required', 'integer', 'min:0'],
@@ -221,7 +245,29 @@ class ProductController extends Controller
             'status' => ['required', 'in:active,inactive'],
             'remove_images' => ['nullable', 'array'],
             'remove_images.*' => ['exists:product_images,id'],
+        ], [
+            'old_price.numeric' => "L'ancien prix doit être un nombre valide.",
+            'old_price.min' => "L'ancien prix ne peut pas être négatif.",
         ]);
+
+        $newPrice = floatval($validated['price']);
+        $hasOldPrice = $request->filled('old_price') && is_numeric($request->old_price) && floatval($request->old_price) > 0;
+
+        if ($hasOldPrice) {
+            $oldPrice = floatval($request->old_price);
+            if ($oldPrice > $newPrice) {
+                $validated['price'] = $oldPrice;
+                $validated['sale_price'] = $newPrice;
+            } else {
+                return back()->withErrors(['old_price' => "L'ancien prix doit être supérieur au nouveau prix de vente."])->withInput();
+            }
+        } elseif ($request->has('sale_price')) {
+            $validated['sale_price'] = $request->sale_price ? floatval($request->sale_price) : null;
+        } else {
+            $validated['price'] = $newPrice;
+            $validated['sale_price'] = null;
+        }
+        unset($validated['old_price']);
 
         if (empty($product->slug)) {
             $baseSlug = \Illuminate\Support\Str::slug($validated['name']);

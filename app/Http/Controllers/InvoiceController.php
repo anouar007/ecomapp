@@ -157,7 +157,7 @@ class InvoiceController extends Controller
                     $unitPriceTtc = floatval($item['unit_price']);
                     $unitPriceHt = $taxRate > 0 ? round($unitPriceTtc / (1 + ($taxRate / 100)), 2) : $unitPriceTtc;
                 } elseif ($product) {
-                    $unitPriceTtc = floatval($product->price);
+                    $unitPriceTtc = floatval($product->active_price);
                     $unitPriceHt = $taxRate > 0 ? round($unitPriceTtc / (1 + ($taxRate / 100)), 2) : $unitPriceTtc;
                 } else {
                     $unitPriceHt = 0;

@@ -112,6 +112,32 @@ class Product extends Model
     }
 
     /**
+     * Get the active selling price (New Price / Prix de vente).
+     */
+    public function getActivePriceAttribute()
+    {
+        return $this->isOnSale() ? $this->sale_price : $this->price;
+    }
+
+    /**
+     * Get the old comparison price (Ancien prix / Prix barré).
+     */
+    public function getOldPriceAttribute()
+    {
+        return $this->isOnSale() ? $this->price : null;
+    }
+
+    public function getFormattedActivePriceAttribute()
+    {
+        return currency($this->active_price);
+    }
+
+    public function getFormattedOldPriceAttribute()
+    {
+        return $this->old_price ? currency($this->old_price) : null;
+    }
+
+    /**
      * Get the category that owns the product.
      */
     public function productCategory()

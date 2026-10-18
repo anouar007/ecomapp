@@ -107,14 +107,15 @@ class OrderController extends Controller
                     return back()->with('error', "Insufficient stock for {$product->name}.")->withInput();
                 }
 
-                $itemSubtotal = $product->price * $itemData['quantity'];
+                $effectivePrice = $product->active_price;
+                $itemSubtotal = $effectivePrice * $itemData['quantity'];
                 $subtotal += $itemSubtotal;
 
                 $items[] = [
                     'product_id' => $product->id,
                     'product_name' => $product->name,
                     'product_sku' => $product->sku,
-                    'price' => $product->price,
+                    'price' => $effectivePrice,
                     'quantity' => $itemData['quantity'],
                     'subtotal' => $itemSubtotal,
                 ];
