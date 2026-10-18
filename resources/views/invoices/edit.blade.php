@@ -183,6 +183,16 @@
                             </select>
                         </div>
 
+                        <!-- Frais de livraison -->
+                        <div>
+                            <label class="form-label fw-semibold text-dark small mb-1">Frais de livraison (DH)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0 text-muted"><i class="fas fa-truck"></i></span>
+                                <input type="number" step="0.01" min="0" name="shipping_cost" id="shipping_cost" value="{{ old('shipping_cost', $invoice->shipping_cost) }}" class="form-control border-start-0" placeholder="0.00">
+                            </div>
+                            <small class="text-muted" style="font-size: 11px;">Non soumis à la TVA</small>
+                        </div>
+
                         <!-- Date d'échéance -->
                         <div>
                             <label class="form-label fw-semibold text-dark small mb-1">Date d'échéance</label>

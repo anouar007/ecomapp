@@ -50,20 +50,15 @@ class InvoiceItem extends Model
         if ($taxRate <= 0) {
             return floatval($this->unit_price);
         }
-        return floatval($this->unit_price) / (1 + $taxRate);
+        return round(floatval($this->unit_price) / (1 + $taxRate), 2);
     }
 
     /**
-     * Get total price HT (Hors Taxe).
+     * Get total price HT (Hors Taxe) - strictly HT unit price * quantity.
      */
     public function getTotalPriceHtAttribute(): float
     {
-        $rate = $this->invoice ? $this->invoice->tax_rate : floatval(setting('tax_rate', 20));
-        $taxRate = $rate / 100;
-        if ($taxRate <= 0) {
-            return floatval($this->total_price);
-        }
-        return floatval($this->total_price) / (1 + $taxRate);
+        return round($this->unit_price_ht * $this->quantity, 2);
     }
 
     /**

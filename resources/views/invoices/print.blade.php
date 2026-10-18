@@ -6,33 +6,36 @@
     <title>{{ $invoice->getTypeLabel() }} {{ $invoice->display_number ?? $invoice->invoice_number }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&display=swap');
 
         /* ====================================================
            PROFESSIONAL MOROCCAN FACTURE / DEVIS — PRINT
-           Brand: Deep Slate #0f172a | Moroccan Ruby #dc2626
-           Space-optimized, executive layout (DGI compliant)
+           Full A4 balanced vertical distribution
            ==================================================== */
 
         * { box-sizing: border-box; }
 
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: "Roboto", sans-serif !important;
+            font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
             color: #0f172a;
             line-height: 1.4;
-            margin: 0;
             padding: 24px;
             background: #e2e8f0;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         body, table, th, td, p, span:not([class*="fa"]):not(.fas):not(.far):not(.fab), div:not([class*="fa"]), a, h1, h2, h3, h4, h5, h6 {
             font-family: "Roboto", sans-serif !important;
-        }
-
-        b, strong, th, h1, h2, h3, h4, h5, h6, .fw-bold, .invoice-title, .brand-title, .total-value {
-            font-weight: 400 !important;
         }
 
         .fas, .fa-solid {
@@ -40,27 +43,36 @@
             font-weight: 900 !important;
         }
 
-        /* ── Page card ── */
+        /* ── Full A4 Page card ── */
         .invoice-card {
             background: #ffffff;
-            max-width: 920px;
-            margin: 0 auto;
-            border-radius: 4px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 900px;
+            min-height: 1060px;
+            border-radius: 6px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
             border: 1px solid #e2e8f0;
             overflow: hidden;
             color: #1e293b;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         /* ── Top accent stripe ── */
         .accent-bar {
-            height: 3px;
-            background: #334155;
+            height: 4px;
+            background: #0f172a;
+            width: 100%;
+            flex-shrink: 0;
         }
 
-        /* ── Document container padding ── */
+        /* ── Document container ── */
         .doc-body {
-            padding: 28px 36px;
+            padding: 28px 36px 16px 36px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         /* ── Header ── */
@@ -69,20 +81,35 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1.5px solid #e2e8f0;
-            padding-bottom: 18px;
-            margin-bottom: 18px;
+            padding-bottom: 16px;
+            margin-bottom: 16px;
+            flex-shrink: 0;
         }
 
         .header-brand {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 14px;
         }
 
         .header-logo {
-            max-height: 54px;
-            max-width: 140px;
+            max-height: 56px;
+            max-width: 150px;
             object-fit: contain;
+        }
+
+        .brand-monogram {
+            width: 48px;
+            height: 48px;
+            background: #0f172a;
+            color: #ffffff;
+            font-size: 22px;
+            font-weight: 800;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: -1px;
         }
 
         .brand-text {
@@ -103,7 +130,7 @@
             font-size: 11px;
             font-weight: 500;
             color: #64748b;
-            margin-top: 4px;
+            margin-top: 3px;
             letter-spacing: 0.2px;
         }
 
@@ -131,15 +158,12 @@
             color: #0f172a;
         }
 
-        .doc-type-label.facture { color: #0f172a; }
-        .doc-type-label.devis   { color: #0f172a; }
-
         .doc-number-badge {
             font-size: 12px;
             font-weight: 700;
-            color: #1e293b;
+            color: #0f172a;
             background: #f8fafc;
-            border: 1px solid #cbd5e1;
+            border: 1.5px solid #cbd5e1;
             padding: 3px 10px;
             border-radius: 4px;
             letter-spacing: 0.3px;
@@ -168,132 +192,122 @@
             color: #0f172a;
         }
 
-        /* ── Parties row ── */
-        .parties-row {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .party-box {
-            flex: 1;
+        /* ── Wide, Low-Height Client Banner (Full Width, Low Height) ── */
+        .client-banner {
+            width: 100%;
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-top: 2px solid #475569;
-            padding: 14px 16px;
+            border-left: 3.5px solid #0f172a;
             border-radius: 4px;
+            padding: 10px 16px;
+            margin-bottom: 18px;
+            flex-shrink: 0;
+        }
+
+        .client-banner-header {
             display: flex;
-            flex-direction: column;
             justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
         }
 
-        .party-box.client {
-            border-top-color: #475569;
-        }
-
-        .party-role {
+        .client-role-badge {
             font-size: 9px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1.2px;
-            color: #64748b;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .party-box.client .party-role {
-            color: #64748b;
-        }
-
-        .party-name {
-            font-size: 14.5px;
-            font-weight: 800;
-            color: #0f172a;
-            margin-bottom: 4px;
-        }
-
-        .party-detail {
-            font-size: 11.5px;
+            letter-spacing: 0.8px;
             color: #475569;
-            line-height: 1.5;
-        }
-
-        .fiscal-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4px 8px;
-            margin-top: 10px;
-            padding-top: 8px;
-            border-top: 1px solid #e2e8f0;
-            font-size: 11px;
-            color: #334155;
-        }
-
-        .fiscal-grid .f-item {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 3px;
-            padding: 2px 7px;
-            font-size: 10.5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .fiscal-grid strong {
-            color: #0f172a;
-            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .client-ice-badge {
             display: inline-block;
-            background: #f1f5f9;
-            color: #334155;
-            border: 1px solid #e2e8f0;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 11px;
+            background: #ffffff;
+            color: #0f172a;
+            border: 1px solid #cbd5e1;
+            padding: 1px 8px;
+            border-radius: 3px;
+            font-size: 10.5px;
             font-weight: 700;
-            margin-top: 6px;
         }
 
-        /* ── Items table ── */
+        .client-banner-body {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .client-main-name {
+            font-size: 15px;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.2px;
+        }
+
+        .client-details-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 11.5px;
+            color: #475569;
+            flex-wrap: wrap;
+        }
+
+        .c-info-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .c-info-item i {
+            font-size: 10px;
+            color: #94a3b8;
+        }
+
+        /* ── Items table container ── */
+        .items-section {
+            margin-bottom: 18px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
         .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 18px;
-            border: 1px solid #e2e8f0;
-            border-bottom: 1.5px solid #cbd5e1;
+            border: 1px solid #cbd5e1;
         }
 
         .items-table thead tr {
-            background: #f8fafc;
+            background: #0f172a;
+            color: #ffffff;
         }
 
         .items-table thead th {
             padding: 10px 12px;
-            font-size: 9.5px;
+            font-size: 10px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.6px;
-            color: #475569;
-            border-top: 1px solid #e2e8f0;
-            border-bottom: 1.5px solid #e2e8f0;
+            color: #ffffff;
             text-align: left;
+            border: 1px solid #0f172a;
         }
 
         .items-table tbody tr {
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid #e2e8f0;
         }
 
         .items-table tbody tr:nth-child(even) {
-            background: #fafafa;
+            background: #f8fafc;
         }
 
         .items-table tbody td {
-            padding: 9px 12px;
+            padding: 12px 14px;
             vertical-align: middle;
             font-size: 12px;
             color: #1e293b;
@@ -314,15 +328,18 @@
         /* ── Summary & Bottom Balanced Row ── */
         .summary-row {
             display: flex;
-            gap: 18px;
-            align-items: flex-start;
+            gap: 16px;
+            align-items: stretch;
+            margin-bottom: 16px;
+            flex-shrink: 0;
         }
 
         .summary-left {
             flex: 1.25;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
+            justify-content: space-between;
         }
 
         .summary-right {
@@ -330,15 +347,15 @@
             max-width: 370px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            justify-content: space-between;
         }
 
         /* Words / Arrêté */
         .words-card {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-left: 3px solid #64748b;
-            padding: 10px 14px;
+            border-left: 3px solid #0f172a;
+            padding: 9px 12px;
             border-radius: 0 4px 4px 0;
         }
 
@@ -347,50 +364,40 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: #64748b;
-            margin-bottom: 3px;
+            color: #475569;
+            margin-bottom: 2px;
         }
 
         .words-text {
             font-size: 11.5px;
             color: #475569;
-            line-height: 1.4;
+            line-height: 1.35;
         }
 
         .words-highlight {
             font-size: 12px;
-            font-weight: 700;
+            font-weight: 800;
             color: #0f172a;
             margin-top: 2px;
             display: block;
         }
 
         /* Banners */
-        .validity-banner {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 4px;
-            padding: 8px 12px;
-            font-size: 11px;
-            color: #64748b;
-            line-height: 1.4;
-        }
-
         .legal-banner {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 4px;
             padding: 8px 12px;
-            font-size: 11px;
-            color: #64748b;
-            line-height: 1.4;
+            font-size: 10.5px;
+            color: #475569;
+            line-height: 1.35;
         }
 
         .notes-card {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-left: 3px solid #94a3b8;
-            padding: 8px 12px;
+            padding: 7px 12px;
             border-radius: 0 4px 4px 0;
         }
 
@@ -404,18 +411,18 @@
         }
 
         .notes-text {
-            font-size: 11px;
+            font-size: 10.5px;
             color: #475569;
             margin: 0;
-            line-height: 1.4;
+            line-height: 1.35;
         }
 
         /* Totals card */
         .totals-card {
             background: #f8fafc;
-            border: 1px solid #e2e8f0;
+            border: 1.5px solid #cbd5e1;
             border-radius: 6px;
-            padding: 14px 18px;
+            padding: 12px 16px;
             color: #0f172a;
         }
 
@@ -423,7 +430,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
             font-size: 12px;
         }
 
@@ -440,18 +447,19 @@
 
         .totals-divider {
             border: none;
-            border-top: 1.5px solid #e2e8f0;
-            margin: 8px 0;
+            border-top: 1.5px solid #cbd5e1;
+            margin: 6px 0;
         }
 
         .grand-total-row {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
+            padding-top: 2px;
         }
 
         .grand-label {
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.8px;
@@ -459,58 +467,106 @@
         }
 
         .grand-value {
-            font-size: 20px;
+            font-size: 21px;
             font-weight: 800;
             color: #0f172a;
             letter-spacing: -0.3px;
         }
 
-        /* Stamp card under totals */
+        /* ── Cachet Area (Stamp auto-added) ── */
         .stamp-box {
-            background: transparent;
-            border: none;
-            padding: 6px 0 0 0;
-            text-align: center;
+            margin-top: 10px;
+            min-height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
+            text-align: center;
         }
 
         .stamp-img {
+            max-width: 140px;
+            max-height: 80px;
             object-fit: contain;
-            display: block;
-            margin: 0 auto;
+            display: inline-block;
         }
 
-        /* ── Footer ── */
+        /* ── Footer Pinned at Bottom ── */
         .footer {
             background: #ffffff;
-            border-top: 1px solid #e2e8f0;
-            padding: 14px 36px;
+            border-top: 1.5px solid #e2e8f0;
+            padding: 12px 36px;
             text-align: center;
             color: #64748b;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 500;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.2px;
+            line-height: 1.5;
+            margin-top: auto;
+            flex-shrink: 0;
+        }
+
+        .footer-legal {
+            color: #334155;
+            font-weight: 600;
+        }
+
+        .footer-fiscal {
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .footer-closing {
+            margin-top: 4px;
+            font-size: 10.5px;
+            color: #0f172a;
+            font-weight: 700;
         }
 
         /* ── Print Media Optimization ── */
         @media print {
-            body {
-                background: white;
-                padding: 0;
+            @page {
+                size: A4 portrait;
+                margin: 8mm 10mm 8mm 10mm;
             }
+
+            html, body {
+                background: #ffffff !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                height: 100% !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
             .invoice-card {
-                box-shadow: none;
-                max-width: 100%;
-                border-radius: 0;
-                border: none;
+                box-shadow: none !important;
+                border: none !important;
+                border-radius: 0 !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                min-height: calc(297mm - 16mm) !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+                page-break-inside: avoid !important;
             }
+
             .doc-body {
-                padding: 20px 28px;
+                padding: 10px 14px 6px 14px !important;
+                flex: 1 !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
             }
+
+            .items-section {
+                flex: 1 !important;
+            }
+
             .footer {
-                padding: 10px 28px;
+                margin-top: auto !important;
+                padding: 8px 14px !important;
+                border-top: 1px solid #cbd5e1 !important;
             }
         }
 
@@ -518,10 +574,24 @@
         [dir="rtl"] .items-table td { text-align: right; }
         [dir="rtl"] .doc-badge-block { align-items: flex-start; text-align: left; }
         [dir="rtl"] .doc-meta-grid { justify-content: flex-start; }
-        [dir="rtl"] .party-box { border-top: 2px solid #475569; }
-        [dir="rtl"] .party-box.client { border-top-color: #475569; }
     </style>
 </head>
+
+@php
+    $companyName = setting('company_name') ?: (setting('app_name') ?: config('app.name', 'WINA SHOP'));
+    $companyTagline = setting('company_tagline') ?: (setting('company_website') ?: 'Vente de Matériel & Accessoires');
+    $companyLogo = setting('company_logo') ?: setting('app_logo');
+    $companyAddress = setting('company_address') ?: 'Casablanca, Maroc';
+    $companyPhone = setting('company_phone');
+    $companyEmail = setting('company_email') ?: config('mail.from.address', 'contact@winashop.com');
+    $companyIce = setting('company_tax_id') ?: setting('company_ice', '002938475000089');
+    $companyRc = setting('company_registry_id') ?: setting('company_rc', '49821');
+    $companyIf = setting('company_fiscal_id') ?: setting('company_if', '39482710');
+    $companyPatente = setting('company_patente') ?: '37920194';
+    $companyCnss = setting('company_cnss');
+    $isQuote = $invoice->isQuote();
+@endphp
+
 <body dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
     <div class="invoice-card">
         <div class="accent-bar"></div>
@@ -531,28 +601,30 @@
             <div class="header-row">
                 {{-- Left: Brand & Logo --}}
                 <div class="header-brand">
-                    @if(setting('app_logo'))
-                        <img src="{{ asset('storage/' . setting('app_logo')) }}" class="header-logo" alt="Logo">
+                    @if($companyLogo)
+                        <img src="{{ asset('storage/' . $companyLogo) }}" class="header-logo" alt="Logo">
+                    @else
+                        <div class="brand-monogram">
+                            {{ strtoupper(substr($companyName, 0, 1)) }}
+                        </div>
                     @endif
                     <div class="brand-text">
-                        <div class="company-name">{{ setting('company_name', setting('app_name')) }}</div>
-                        @if(setting('company_website'))
-                            <div class="company-tagline">{{ setting('company_website') }}</div>
-                        @endif
+                        <div class="company-name">{{ $companyName }}</div>
+                        <div class="company-tagline">{{ $companyTagline }}</div>
                     </div>
                 </div>
 
                 {{-- Right: Document Type, Number & Key Dates --}}
                 <div class="doc-badge-block">
                     <div class="doc-title-row">
-                        <span class="doc-type-label {{ $invoice->isQuote() ? 'devis' : 'facture' }}">
-                            {{ $invoice->isQuote() ? 'DEVIS' : 'FACTURE' }}
+                        <span class="doc-type-label {{ $isQuote ? 'devis' : 'facture' }}">
+                            {{ $isQuote ? 'DEVIS' : 'FACTURE' }}
                         </span>
                         <span class="doc-number-badge">N° {{ $invoice->display_number ?? $invoice->invoice_number }}</span>
                     </div>
                     <div class="doc-meta-grid">
                         <div class="meta-item"><span class="meta-k">Date :</span> <span class="meta-v">{{ $invoice->issued_at->format('d/m/Y') }}</span></div>
-                        @if($invoice->isQuote())
+                        @if($isQuote)
                             <div class="meta-item"><span class="meta-k">Validité :</span> <span class="meta-v">{{ $invoice->issued_at->addDays(30)->format('d/m/Y') }} (30j)</span></div>
                         @elseif($invoice->due_date)
                             <div class="meta-item"><span class="meta-k">Échéance :</span> <span class="meta-v">{{ $invoice->due_date->format('d/m/Y') }}</span></div>
@@ -564,119 +636,106 @@
                 </div>
             </div>
 
-            {{-- ══════════ PARTIES (ÉMETTEUR & CLIENT) ══════════ --}}
-            <div class="parties-row">
-                {{-- Vendor / Émetteur --}}
-                <div class="party-box">
-                    <div>
-                        <div class="party-role"><i class="fas fa-building"></i>Émetteur / Fournisseur</div>
-                        <div class="party-name">{{ setting('company_name', setting('app_name')) }}</div>
-                        <div class="party-detail">
-                            @if(setting('company_address'))<div>{{ setting('company_address') }}</div>@endif
-                            <div style="margin-top:3px;">
-                                @if(setting('company_phone'))<span><i class="fas fa-phone" style="font-size:10px; color:#94a3b8; margin-right:3px;"></i>{{ setting('company_phone') }}</span>@endif
-                                @if(setting('company_phone') && setting('company_email'))&nbsp;•&nbsp;@endif
-                                @if(setting('company_email'))<span><i class="fas fa-envelope" style="font-size:10px; color:#94a3b8; margin-right:3px;"></i>{{ setting('company_email') }}</span>@endif
-                            </div>
-                        </div>
-                    </div>
-                    @if(setting('company_tax_id') || setting('company_registry_id') || setting('company_fiscal_id') || setting('company_patente'))
-                    <div class="fiscal-grid">
-                        @if(setting('company_tax_id'))<div class="f-item"><strong>ICE:</strong> {{ setting('company_tax_id') }}</div>@endif
-                        @if(setting('company_registry_id'))<div class="f-item"><strong>RC:</strong> {{ setting('company_registry_id') }}</div>@endif
-                        @if(setting('company_fiscal_id'))<div class="f-item"><strong>IF:</strong> {{ setting('company_fiscal_id') }}</div>@endif
-                        @if(setting('company_patente'))<div class="f-item"><strong>Patente:</strong> {{ setting('company_patente') }}</div>@endif
-                    </div>
+            {{-- ══════════ CLIENT (FULL WIDTH, LOW HEIGHT) ══════════ --}}
+            <div class="client-banner">
+                <div class="client-banner-header">
+                    <span class="client-role-badge">
+                        <i class="fas fa-user-check"></i>
+                        {{ $isQuote ? 'Destinataire / Devis pour' : 'Client / Facturé à' }}
+                    </span>
+                    @if($invoice->ice)
+                        <span class="client-ice-badge">ICE : {{ $invoice->ice }}</span>
                     @endif
                 </div>
-
-                {{-- Client / Destinataire --}}
-                <div class="party-box client">
-                    <div>
-                        <div class="party-role"><i class="fas fa-user-check"></i>{{ $invoice->isQuote() ? 'Destinataire' : 'Client / Facturé à' }}</div>
-                        <div class="party-name">{{ $invoice->customer_name }}</div>
-                        <div class="party-detail">
-                            @php $address = $invoice->customer_address ?: ($invoice->order->shipping_address ?? null); @endphp
-                            @if($address)<div>{{ $address }}</div>@endif
-                            <div style="margin-top:3px;">
-                                @if($invoice->customer_phone)<span><i class="fas fa-phone" style="font-size:10px; color:#94a3b8; margin-right:3px;"></i>{{ $invoice->customer_phone }}</span>@endif
-                                @if($invoice->customer_phone && $invoice->customer_email)&nbsp;•&nbsp;@endif
-                                @if($invoice->customer_email)<span><i class="fas fa-envelope" style="font-size:10px; color:#94a3b8; margin-right:3px;"></i>{{ $invoice->customer_email }}</span>@endif
-                            </div>
-                        </div>
+                <div class="client-banner-body">
+                    <div class="client-main-name">{{ $invoice->customer_name }}</div>
+                    <div class="client-details-row">
+                        @php $address = $invoice->customer_address ?: ($invoice->order->shipping_address ?? null); @endphp
+                        @if($address)
+                            <span class="c-info-item"><i class="fas fa-map-marker-alt"></i> {{ $address }}{{ $invoice->customer_city ? ', ' . $invoice->customer_city : '' }}</span>
+                        @elseif($invoice->customer_city)
+                            <span class="c-info-item"><i class="fas fa-map-marker-alt"></i> {{ $invoice->customer_city }}</span>
+                        @endif
+                        @if($invoice->customer_phone)
+                            <span class="c-info-item"><i class="fas fa-phone"></i> {{ $invoice->customer_phone }}</span>
+                        @endif
+                        @if($invoice->customer_email)
+                            <span class="c-info-item"><i class="fas fa-envelope"></i> {{ $invoice->customer_email }}</span>
+                        @endif
                     </div>
-                    @if($invoice->ice)
-                    <div style="margin-top:10px; padding-top:8px; border-top:1px solid #e2e8f0;">
-                        <span class="client-ice-badge"><strong>ICE Client :</strong> {{ $invoice->ice }}</span>
-                    </div>
-                    @endif
                 </div>
             </div>
 
             {{-- ══════════ ITEMS TABLE ══════════ --}}
-            <table class="items-table">
-                <thead>
-                    <tr>
-                        <th style="width:5%; text-align:center;">N°</th>
-                        <th style="width:45%;">Désignation / Description</th>
-                        <th style="width:8%; text-align:center;">Qté</th>
-                        <th style="width:14%; text-align:right;">P.U. TTC</th>
-                        <th style="width:10%; text-align:center;">{{ $invoice->tax_label }} %</th>
-                        <th style="width:18%; text-align:right;">Total TTC</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($invoice->items as $i => $item)
-                    <tr>
-                        <td style="text-align:center; color:#94a3b8; font-size:11px;">{{ $i + 1 }}</td>
-                        <td>
-                            <div class="item-name">{{ $item->product_name }}</div>
-                            @if($item->product_sku)
-                            <div class="item-sku">Réf : {{ $item->product_sku }}</div>
-                            @endif
-                        </td>
-                        <td style="text-align:center; font-weight:700; font-size:13px;">{{ $item->quantity }}</td>
-                        <td style="text-align:right; font-size:12.5px;">{{ $item->formatted_unit_price }}</td>
-                        <td style="text-align:center; color:#64748b; font-size:12px;">{{ $invoice->formatted_tax_rate }}</td>
-                        <td style="text-align:right; font-weight:800; font-size:13px; color:#0f172a;">{{ $item->formatted_total_price }}</td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="items-section">
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%; text-align: center;">N°</th>
+                            <th style="width: 50%;">Désignation / Description</th>
+                            <th style="width: 15%; text-align: right;">P.U. HT</th>
+                            <th style="width: 10%; text-align: center;">Qté</th>
+                            <th style="width: 20%; text-align: right;">Total HT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($invoice->items as $idx => $item)
+                        <tr>
+                            <td style="text-align: center; color: #64748b; font-weight: 600;">{{ $idx + 1 }}</td>
+                            <td>
+                                <div class="item-name">{{ $item->product_name }}</div>
+                                @if($item->product_sku)
+                                    <div class="item-sku">Réf : {{ $item->product_sku }}</div>
+                                @endif
+                            </td>
+                            <td style="text-align: right; color: #334155; font-weight: 500;">
+                                {{ $item->formatted_unit_price_ht }}
+                            </td>
+                            <td style="text-align: center; font-weight: 700; color: #0f172a;">
+                                {{ $item->quantity }}
+                            </td>
+                            <td style="text-align: right; font-weight: 800; color: #0f172a;">
+                                {{ $item->formatted_total_price_ht }}
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
 
-            {{-- ══════════ SUMMARY ROW (BALANCED SPACE USAGE) ══════════ --}}
+            {{-- ══════════ SUMMARY & FINANCIAL TOTALS ══════════ --}}
             <div class="summary-row">
                 {{-- Left: Arrêté + Mentions légales + Notes --}}
                 <div class="summary-left">
                     <div class="words-card">
                         <div class="words-label"><i class="fas fa-file-contract" style="margin-right:4px;"></i>Montant en Lettres</div>
                         <div class="words-text">
-                            {{ $invoice->isQuote() ? 'Arrêté le présent devis à la somme de :' : 'Arrêtée la présente facture à la somme de :' }}
+                            {{ $isQuote ? 'Arrêté le présent devis à la somme de :' : 'Arrêtée la présente facture à la somme de :' }}
                             <span class="words-highlight">{{ $invoice->total_in_words }} {{ setting('currency_code', 'MAD') }} TTC</span>
                         </div>
                     </div>
 
-                    @if($invoice->isQuote())
-                    <div class="validity-banner">
-                        <i class="fas fa-calendar-check" style="margin-right:5px;"></i>
-                        Validité de l'offre : <strong>30 jours</strong> à compter de la date d'émission. Ce document ne constitue pas une facture.
+                    @if($isQuote)
+                    <div class="legal-banner">
+                        <i class="fas fa-calendar-check" style="margin-right:5px; color:#0f172a;"></i>
+                        Validité de l'offre : <strong>30 jours</strong>. Ce devis est une proposition commerciale. Pour accord, veuillez nous le retourner signé et revêtu de votre mention <em>« Bon pour accord »</em>.
                     </div>
                     @else
                     <div class="legal-banner">
                         <i class="fas fa-shield-alt" style="margin-right:5px; color:#0f172a;"></i>
-                        Facture payable à réception. En cas de retard de paiement, des pénalités seront appliquées conformément aux dispositions légales (CGI Maroc).
+                        Facture payable selon les conditions convenues. Mode de règlement : <strong>{{ ucfirst(str_replace('_', ' ', $invoice->payment_method ?: 'Espèces')) }}</strong>. En cas de retard, des pénalités seront appliquées (Art. 78-3 du Code de Commerce / CGI Maroc).
                     </div>
                     @endif
 
                     @if($invoice->notes)
                     <div class="notes-card">
-                        <div class="notes-label"><i class="fas fa-sticky-note" style="margin-right:4px;"></i>Observations / Notes</div>
+                        <div class="notes-label"><i class="fas fa-sticky-note" style="margin-right:4px;"></i>Observations / Instructions</div>
                         <p class="notes-text">{{ $invoice->notes }}</p>
                     </div>
                     @endif
                 </div>
 
-                {{-- Right: Totals Card + Cachet Box --}}
+                {{-- Right: Totals Card + Cachet Auto-Added --}}
                 <div class="summary-right">
                     <div class="totals-card">
                         <div class="total-row">
@@ -687,6 +746,12 @@
                             <span class="total-row-label">{{ $invoice->tax_label }} ({{ $invoice->formatted_tax_rate }})</span>
                             <span class="total-row-val">{{ $invoice->formatted_tax_amount }}</span>
                         </div>
+                        @if($invoice->shipping_cost > 0)
+                        <div class="total-row">
+                            <span class="total-row-label">Frais de livraison</span>
+                            <span class="total-row-val">{{ $invoice->formatted_shipping_cost }}</span>
+                        </div>
+                        @endif
                         @if($invoice->discount_amount > 0)
                         <div class="total-row">
                             <span class="total-row-label">Remise</span>
@@ -700,24 +765,41 @@
                         </div>
                     </div>
 
-                    {{-- Cachet Société placed right under Totals for perfect visual balance --}}
-                    @if(($withStamp ?? $invoice->with_stamp ?? true) && setting('company_stamp'))
+                    {{-- Dedicated space for the auto-added Cachet --}}
                     <div class="stamp-box">
-                        <img src="{{ asset('storage/' . setting('company_stamp')) }}"
-                             class="stamp-img"
-                             style="max-width:{{ round(140 * intval(setting('company_stamp_scale', 100)) / 100) }}px; max-height:85px;"
-                             alt="Cachet">
+                        @if(($withStamp ?? $invoice->with_stamp ?? true) && setting('company_stamp'))
+                            <img src="{{ asset('storage/' . setting('company_stamp')) }}"
+                                 class="stamp-img"
+                                 style="max-width:{{ round(140 * intval(setting('company_stamp_scale', 100)) / 100) }}px; max-height:80px;"
+                                 alt="Cachet">
+                        @endif
                     </div>
-                    @endif
                 </div>
             </div>
 
         </div>
 
-        {{-- ══════════ FOOTER ══════════ --}}
+        {{-- ══════════ EXECUTIVE MOROCCAN LEGAL FOOTER (PINNED TO BOTTOM) ══════════ --}}
         <div class="footer">
-            <i class="fas fa-handshake" style="margin-right:6px; font-size:11px; color:#94a3b8;"></i>
-            {{ $invoice->isQuote() ? 'Merci de votre confiance !' : 'Merci pour votre achat !' }}
+            <div class="footer-legal">
+                <strong>{{ $companyName }}</strong>
+                @if(setting('company_legal_form', 'SARL')) &bull; Société {{ setting('company_legal_form', 'SARL') }} @endif
+                @if(setting('company_capital')) &bull; Capital : {{ setting('company_capital') }} DH @endif
+                @if($companyAddress) &bull; {{ $companyAddress }} @endif
+                @if($companyPhone) &bull; Tél : {{ $companyPhone }} @endif
+                @if($companyEmail) &bull; {{ $companyEmail }} @endif
+            </div>
+            <div class="footer-fiscal">
+                @if($companyIce) <span><strong>ICE :</strong> {{ $companyIce }}</span> @endif
+                @if($companyRc) <span>&bull; <strong>RC :</strong> {{ $companyRc }}</span> @endif
+                @if($companyIf) <span>&bull; <strong>IF :</strong> {{ $companyIf }}</span> @endif
+                @if($companyPatente) <span>&bull; <strong>Patente :</strong> {{ $companyPatente }}</span> @endif
+                @if($companyCnss) <span>&bull; <strong>CNSS :</strong> {{ $companyCnss }}</span> @endif
+            </div>
+            <div class="footer-closing">
+                <i class="fas fa-handshake" style="margin-right:4px; font-size:10.5px; color:#0f172a;"></i>
+                {{ $isQuote ? 'Merci pour votre confiance ! Proposition soumise à nos conditions générales.' : 'Merci pour votre achat et votre confiance !' }}
+            </div>
         </div>
     </div>
 

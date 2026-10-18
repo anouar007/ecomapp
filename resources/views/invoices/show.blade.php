@@ -191,6 +191,25 @@
         color: #ffffff;
     }
 
+    /* Sky Blue Gradient (Bon de Livraison) */
+    .btn-pro-sky {
+        background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important;
+        color: #ffffff !important;
+        border-color: #0369a1 !important;
+        box-shadow: 0 1px 2px rgba(2, 132, 199, 0.15), 0 3px 8px rgba(2, 132, 199, 0.22) !important;
+    }
+
+    .btn-pro-sky:hover {
+        background: linear-gradient(180deg, #0369a1 0%, #075985 100%) !important;
+        color: #ffffff !important;
+        border-color: #075985 !important;
+        box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3) !important;
+    }
+
+    .btn-pro-sky i:not(.btn-chevron) {
+        color: #ffffff;
+    }
+
     /* Dropdown Floating Glass Card */
     .pro-dropdown-menu {
         border-radius: 12px !important;
@@ -421,21 +440,30 @@
     /* ── The Document Card (Identical to Print) ── */
     .invoice-card {
         background: #ffffff;
-        border-radius: 4px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        border-radius: 6px;
+        box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
         border: 1px solid #e2e8f0;
         overflow: hidden;
         margin: 0 auto;
         color: #1e293b;
+        min-height: 1060px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     .accent-bar {
-        height: 3px;
-        background: #334155;
+        height: 4px;
+        background: #0f172a;
+        width: 100%;
+        flex-shrink: 0;
     }
 
     .doc-body {
-        padding: 28px 36px;
+        padding: 28px 36px 16px 36px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
     }
 
     /* ── Header ── */
@@ -543,93 +571,80 @@
         color: #0f172a;
     }
 
-    /* ── Parties row ── */
-    .parties-row {
-        display: flex;
-        gap: 16px;
-        margin-bottom: 20px;
-    }
-
-    .party-box {
-        flex: 1;
+    /* ── Wide, Low-Height Client Banner (Full Width, Low Height) ── */
+    .client-banner {
+        width: 100%;
         background: #f8fafc;
         border: 1px solid #e2e8f0;
-        border-top: 2px solid #475569;
-        padding: 14px 16px;
+        border-left: 3.5px solid #0f172a;
         border-radius: 4px;
+        padding: 10px 16px;
+        margin-bottom: 18px;
+        flex-shrink: 0;
+    }
+
+    .client-banner-header {
         display: flex;
-        flex-direction: column;
         justify-content: space-between;
+        align-items: center;
+        margin-bottom: 5px;
     }
 
-    .party-box.client {
-        border-top-color: #475569;
-    }
-
-    .party-role {
+    .client-role-badge {
         font-size: 9px;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 1.2px;
-        color: #64748b;
-        margin-bottom: 6px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .party-box.client .party-role {
-        color: #64748b;
-    }
-
-    .party-name {
-        font-size: 14.5px;
-        font-weight: 800;
-        color: #0f172a;
-        margin-bottom: 4px;
-    }
-
-    .party-detail {
-        font-size: 11.5px;
+        letter-spacing: 0.8px;
         color: #475569;
-        line-height: 1.5;
-    }
-
-    .fiscal-grid {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px 8px;
-        margin-top: 10px;
-        padding-top: 8px;
-        border-top: 1px solid #e2e8f0;
-        font-size: 11px;
-        color: #334155;
-    }
-
-    .fiscal-grid .f-item {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 3px;
-        padding: 2px 7px;
-        font-size: 10.5px;
-        white-space: nowrap;
-    }
-
-    .fiscal-grid strong {
-        color: #0f172a;
-        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
     }
 
     .client-ice-badge {
         display: inline-block;
-        background: #f1f5f9;
-        color: #334155;
-        border: 1px solid #e2e8f0;
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-size: 11px;
+        background: #ffffff;
+        color: #0f172a;
+        border: 1px solid #cbd5e1;
+        padding: 1px 8px;
+        border-radius: 3px;
+        font-size: 10.5px;
         font-weight: 700;
-        margin-top: 6px;
+    }
+
+    .client-banner-body {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .client-main-name {
+        font-size: 15px;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.2px;
+    }
+
+    .client-details-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-size: 11.5px;
+        color: #475569;
+        flex-wrap: wrap;
+    }
+
+    .c-info-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .c-info-item i {
+        font-size: 10px;
+        color: #94a3b8;
     }
 
     /* ── Items table ── */
@@ -851,16 +866,37 @@
         margin: 0 auto;
     }
 
+
     /* ── Footer ── */
     .doc-footer {
         background: #ffffff;
-        border-top: 1px solid #e2e8f0;
-        padding: 14px 36px;
+        border-top: 1.5px solid #e2e8f0;
+        padding: 12px 36px;
         text-align: center;
         color: #64748b;
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 500;
-        letter-spacing: 0.3px;
+        letter-spacing: 0.2px;
+        line-height: 1.5;
+        margin-top: auto;
+        flex-shrink: 0;
+    }
+
+    .footer-legal {
+        color: #334155;
+        font-weight: 600;
+    }
+
+    .footer-fiscal {
+        color: #64748b;
+        margin-top: 2px;
+    }
+
+    .footer-closing {
+        margin-top: 4px;
+        font-size: 10.5px;
+        color: #0f172a;
+        font-weight: 700;
     }
 
     /* ── Mobile First & Super Responsive Layouts ── */
@@ -915,14 +951,10 @@
             width: 100% !important;
             gap: 6px 12px !important;
         }
-        .parties-row {
+        .client-banner-body {
             flex-direction: column !important;
-            gap: 12px !important;
-            margin-bottom: 16px !important;
-        }
-        .party-box {
-            width: 100% !important;
-            padding: 12px 14px !important;
+            align-items: flex-start !important;
+            gap: 8px !important;
         }
         .items-table {
             min-width: 520px !important;
@@ -1174,6 +1206,73 @@
                     </ul>
                 </div>
 
+                <!-- Delivery Note (Bon de Livraison) Dropdown -->
+                <div class="dropdown">
+                    <button class="btn-pro btn-pro-sky dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" aria-expanded="false">
+                        <i class="fas fa-truck"></i>
+                        <span>{{ __('Bon de Livraison') }}</span>
+                        <i class="fas fa-chevron-down btn-chevron"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end pro-dropdown-menu">
+                        <li class="pro-dropdown-header">
+                            <i class="fas fa-truck text-primary"></i> Bon de Livraison (BL Maroc)
+                        </li>
+                        <li>
+                            <a class="pro-dropdown-item" href="{{ route('invoices.delivery-note', $invoice) }}">
+                                <span class="pro-icon-box emerald" style="background:#e0f2fe; color:#0284c7;"><i class="fas fa-eye"></i></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">Consulter le BL</span>
+                                    <span class="text-muted" style="font-size: 11px;">Document conforme & décharge</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="pro-dropdown-divider"></li>
+                        <li class="pro-dropdown-header">
+                            <i class="fas fa-file-pdf text-muted"></i> Télécharger PDF
+                        </li>
+                        <li>
+                            <a class="pro-dropdown-item" href="{{ route('invoices.delivery-note.download', [$invoice, 'with_stamp' => 1]) }}">
+                                <span class="pro-icon-box emerald"><i class="fas fa-stamp"></i></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">BL avec Cachet</span>
+                                    <span class="text-muted" style="font-size: 11px;">Document officiel tamponné</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="pro-dropdown-item" href="{{ route('invoices.delivery-note.download', [$invoice, 'with_stamp' => 0]) }}">
+                                <span class="pro-icon-box slate"><i class="far fa-file-pdf"></i></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">BL sans Cachet</span>
+                                    <span class="text-muted" style="font-size: 11px;">Pour signature manuelle</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="pro-dropdown-divider"></li>
+                        <li class="pro-dropdown-header">
+                            <i class="fas fa-print text-muted"></i> Impression Directe
+                        </li>
+                        <li>
+                            <a class="pro-dropdown-item" target="_blank" href="{{ route('invoices.delivery-note.print', [$invoice, 'with_stamp' => 1]) }}">
+                                <span class="pro-icon-box emerald"><i class="fas fa-print"></i></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">Imprimer BL (avec Cachet)</span>
+                                    <span class="text-muted" style="font-size: 11px;">Format A4</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="pro-dropdown-item" target="_blank" href="{{ route('invoices.delivery-note.print', [$invoice, 'with_stamp' => 0]) }}">
+                                <span class="pro-icon-box slate"><i class="fas fa-print"></i></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold">Imprimer BL (sans Cachet)</span>
+                                    <span class="text-muted" style="font-size: 11px;">Format A4 standard</span>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
                 <!-- Send by Email Button -->
                 <button type="button" 
                         class="btn-pro btn-pro-info" 
@@ -1200,6 +1299,21 @@
         </div>
     </div>
 
+    @php
+        $companyName = setting('company_name') ?: (setting('app_name') ?: config('app.name', 'WINA SHOP'));
+        $companyTagline = setting('company_tagline') ?: (setting('company_website') ?: 'Vente de Matériel & Accessoires');
+        $companyLogo = setting('company_logo') ?: setting('app_logo');
+        $companyAddress = setting('company_address') ?: 'Casablanca, Maroc';
+        $companyPhone = setting('company_phone');
+        $companyEmail = setting('company_email') ?: config('mail.from.address', 'contact@winashop.com');
+        $companyIce = setting('company_tax_id') ?: setting('company_ice', '002938475000089');
+        $companyRc = setting('company_registry_id') ?: setting('company_rc', '49821');
+        $companyIf = setting('company_fiscal_id') ?: setting('company_if', '39482710');
+        $companyPatente = setting('company_patente') ?: '37920194';
+        $companyCnss = setting('company_cnss');
+        $isQuote = $invoice->isQuote();
+    @endphp
+
     <!-- ══════════ EXACT MOROCCAN DOCUMENT VIEW (IDENTICAL TO PRINT & PDF) ══════════ -->
     <div class="invoice-card">
         <div class="accent-bar"></div>
@@ -1209,28 +1323,30 @@
             <div class="header-row">
                 {{-- Left: Brand & Logo --}}
                 <div class="header-brand">
-                    @if(setting('app_logo'))
-                        <img src="/storage/{{ setting('app_logo') }}" class="header-logo" alt="Logo" onerror="this.src='{{ asset('storage/' . setting('app_logo')) }}'">
+                    @if($companyLogo)
+                        <img src="{{ asset('storage/' . $companyLogo) }}" class="header-logo" alt="Logo" onerror="this.src='/storage/{{ $companyLogo }}'">
+                    @else
+                        <div style="width: 46px; height: 46px; background: #0f172a; color: #ffffff; font-size: 22px; font-weight: 800; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            {{ strtoupper(substr($companyName, 0, 1)) }}
+                        </div>
                     @endif
                     <div class="brand-text">
-                        <div class="company-name">{{ setting('company_name', setting('app_name')) }}</div>
-                        @if(setting('company_website'))
-                            <div class="company-tagline">{{ setting('company_website') }}</div>
-                        @endif
+                        <div class="company-name">{{ $companyName }}</div>
+                        <div class="company-tagline">{{ $companyTagline }}</div>
                     </div>
                 </div>
 
                 {{-- Right: Document Type, Number & Key Dates --}}
                 <div class="doc-badge-block">
                     <div class="doc-title-row">
-                        <span class="doc-type-label {{ $invoice->isQuote() ? 'devis' : 'facture' }}">
-                            {{ $invoice->isQuote() ? 'DEVIS' : 'FACTURE' }}
+                        <span class="doc-type-label {{ $isQuote ? 'devis' : 'facture' }}">
+                            {{ $isQuote ? 'DEVIS' : 'FACTURE' }}
                         </span>
                         <span class="doc-number-badge">N° {{ $invoice->display_number ?? $invoice->invoice_number }}</span>
                     </div>
                     <div class="doc-meta-grid">
                         <div class="meta-item"><span class="meta-k">Date :</span> <span class="meta-v">{{ $invoice->issued_at->format('d/m/Y') }}</span></div>
-                        @if($invoice->isQuote())
+                        @if($isQuote)
                             <div class="meta-item"><span class="meta-k">Validité :</span> <span class="meta-v">{{ $invoice->issued_at->addDays(30)->format('d/m/Y') }} (30j)</span></div>
                         @elseif($invoice->due_date)
                             <div class="meta-item"><span class="meta-k">Échéance :</span> <span class="meta-v">{{ $invoice->due_date->format('d/m/Y') }}</span></div>
@@ -1242,66 +1358,46 @@
                 </div>
             </div>
 
-            {{-- ══════════ PARTIES (ÉMETTEUR & CLIENT) ══════════ --}}
-            <div class="parties-row">
-                {{-- Vendor / Émetteur --}}
-                <div class="party-box">
-                    <div>
-                        <div class="party-role"><i class="fas fa-building"></i>Émetteur / Fournisseur</div>
-                        <div class="party-name">{{ setting('company_name', setting('app_name')) }}</div>
-                        <div class="party-detail">
-                            @if(setting('company_address'))<div>{{ setting('company_address') }}</div>@endif
-                            <div style="margin-top:3px;">
-                                @if(setting('company_phone'))<span><i class="fas fa-phone" style="font-size:10px; color:#94a3b8; margin-right:3px;"></i>{{ setting('company_phone') }}</span>@endif
-                                @if(setting('company_phone') && setting('company_email'))&nbsp;•&nbsp;@endif
-                                @if(setting('company_email'))<span><i class="fas fa-envelope" style="font-size:10px; color:#94a3b8; margin-right:3px;"></i>{{ setting('company_email') }}</span>@endif
-                            </div>
-                        </div>
-                    </div>
-                    @if(setting('company_tax_id') || setting('company_registry_id') || setting('company_fiscal_id') || setting('company_patente'))
-                    <div class="fiscal-grid">
-                        @if(setting('company_tax_id'))<div class="f-item"><strong>ICE:</strong> {{ setting('company_tax_id') }}</div>@endif
-                        @if(setting('company_registry_id'))<div class="f-item"><strong>RC:</strong> {{ setting('company_registry_id') }}</div>@endif
-                        @if(setting('company_fiscal_id'))<div class="f-item"><strong>IF:</strong> {{ setting('company_fiscal_id') }}</div>@endif
-                        @if(setting('company_patente'))<div class="f-item"><strong>Patente:</strong> {{ setting('company_patente') }}</div>@endif
-                    </div>
+            {{-- ══════════ CLIENT (FULL WIDTH, LOW HEIGHT) ══════════ --}}
+            <div class="client-banner">
+                <div class="client-banner-header">
+                    <span class="client-role-badge">
+                        <i class="fas fa-user-check"></i>
+                        {{ $isQuote ? 'Destinataire / Devis pour' : 'Client / Facturé à' }}
+                    </span>
+                    @if($invoice->ice)
+                        <span class="client-ice-badge">ICE : {{ $invoice->ice }}</span>
                     @endif
                 </div>
-
-                {{-- Client / Destinataire --}}
-                <div class="party-box client">
-                    <div>
-                        <div class="party-role"><i class="fas fa-user-check"></i>{{ $invoice->isQuote() ? 'Destinataire' : 'Client / Facturé à' }}</div>
-                        <div class="party-name">{{ $invoice->customer_name }}</div>
-                        <div class="party-detail">
-                            @php $address = $invoice->customer_address ?: ($invoice->order->shipping_address ?? null); @endphp
-                            @if($address)<div>{{ $address }}</div>@endif
-                            <div style="margin-top:3px;">
-                                @if($invoice->customer_phone)<span><i class="fas fa-phone" style="font-size:10px; color:#94a3b8; margin-right:3px;"></i>{{ $invoice->customer_phone }}</span>@endif
-                                @if($invoice->customer_phone && $invoice->customer_email)&nbsp;•&nbsp;@endif
-                                @if($invoice->customer_email)<span><i class="fas fa-envelope" style="font-size:10px; color:#94a3b8; margin-right:3px;"></i>{{ $invoice->customer_email }}</span>@endif
-                            </div>
-                        </div>
+                <div class="client-banner-body">
+                    <div class="client-main-name">{{ $invoice->customer_name }}</div>
+                    <div class="client-details-row">
+                        @php $address = $invoice->customer_address ?: ($invoice->order->shipping_address ?? null); @endphp
+                        @if($address)
+                            <span class="c-info-item"><i class="fas fa-map-marker-alt"></i> {{ $address }}{{ $invoice->customer_city ? ', ' . $invoice->customer_city : '' }}</span>
+                        @elseif($invoice->customer_city)
+                            <span class="c-info-item"><i class="fas fa-map-marker-alt"></i> {{ $invoice->customer_city }}</span>
+                        @endif
+                        @if($invoice->customer_phone)
+                            <span class="c-info-item"><i class="fas fa-phone"></i> {{ $invoice->customer_phone }}</span>
+                        @endif
+                        @if($invoice->customer_email)
+                            <span class="c-info-item"><i class="fas fa-envelope"></i> {{ $invoice->customer_email }}</span>
+                        @endif
                     </div>
-                    @if($invoice->ice)
-                    <div style="margin-top:10px; padding-top:8px; border-top:1px solid #e2e8f0;">
-                        <span class="client-ice-badge"><strong>ICE Client :</strong> {{ $invoice->ice }}</span>
-                    </div>
-                    @endif
                 </div>
             </div>
 
             {{-- ══════════ ITEMS TABLE ══════════ --}}
-            <div class="table-responsive border-0 mb-3" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+            <div class="table-responsive border-0 mb-3" style="overflow-x: auto; -webkit-overflow-scrolling: touch; flex: 1;">
                 <table class="items-table mb-0">
                     <thead>
                         <tr>
                             <th style="width:5%; text-align:center;">N°</th>
-                            <th style="width:45%;">Désignation / Description</th>
-                            <th style="width:8%; text-align:center;">Qté</th>
-                            <th style="width:14%; text-align:right;">P.U. TTC</th>
-                            <th style="width:10%; text-align:center;">{{ $invoice->tax_label }} %</th>
-                            <th style="width:18%; text-align:right;">Total TTC</th>
+                            <th style="width:47%;">Désignation / Description</th>
+                            <th style="width:18%; text-align:right;">P.U. HT</th>
+                            <th style="width:10%; text-align:center;">Qté</th>
+                            <th style="width:20%; text-align:right;">Total HT</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1314,10 +1410,9 @@
                                 <div class="item-sku">Réf : {{ $item->product_sku }}</div>
                                 @endif
                             </td>
+                            <td style="text-align:right; font-size:12.5px;">{{ $item->formatted_unit_price_ht }}</td>
                             <td style="text-align:center; font-weight:700; font-size:13px;">{{ $item->quantity }}</td>
-                            <td style="text-align:right; font-size:12.5px;">{{ $item->formatted_unit_price }}</td>
-                            <td style="text-align:center; color:#64748b; font-size:12px;">{{ $invoice->formatted_tax_rate }}</td>
-                            <td style="text-align:right; font-weight:800; font-size:13px; color:#0f172a;">{{ $item->formatted_total_price }}</td>
+                            <td style="text-align:right; font-weight:800; font-size:13px; color:#0f172a;">{{ $item->formatted_total_price_ht }}</td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -1331,32 +1426,32 @@
                     <div class="words-card">
                         <div class="words-label"><i class="fas fa-file-contract" style="margin-right:4px;"></i>Montant en Lettres</div>
                         <div class="words-text">
-                            {{ $invoice->isQuote() ? 'Arrêté le présent devis à la somme de :' : 'Arrêtée la présente facture à la somme de :' }}
+                            {{ $isQuote ? 'Arrêté le présent devis à la somme de :' : 'Arrêtée la présente facture à la somme de :' }}
                             <span class="words-highlight">{{ $invoice->total_in_words }} {{ setting('currency_code', 'MAD') }} TTC</span>
                         </div>
                     </div>
 
-                    @if($invoice->isQuote())
+                    @if($isQuote)
                     <div class="validity-banner">
-                        <i class="fas fa-calendar-check" style="margin-right:5px;"></i>
-                        Validité de l'offre : <strong>30 jours</strong> à compter de la date d'émission. Ce document ne constitue pas une facture.
+                        <i class="fas fa-calendar-check" style="margin-right:5px; color:#0f172a;"></i>
+                        Validité de l'offre : <strong>30 jours</strong>. Ce devis est une proposition commerciale. Pour accord, veuillez nous le retourner signé et revêtu de votre mention <em>« Bon pour accord »</em>.
                     </div>
                     @else
                     <div class="legal-banner">
                         <i class="fas fa-shield-alt" style="margin-right:5px; color:#0f172a;"></i>
-                        Facture payable à réception. En cas de retard de paiement, des pénalités seront appliquées conformément aux dispositions légales (CGI Maroc).
+                        Facture payable selon les conditions convenues. Mode de règlement : <strong>{{ ucfirst(str_replace('_', ' ', $invoice->payment_method ?: 'Espèces')) }}</strong>. En cas de retard de paiement, des pénalités seront appliquées conformément au CGI Maroc.
                     </div>
                     @endif
 
                     @if($invoice->notes)
                     <div class="notes-card">
-                        <div class="notes-label"><i class="fas fa-sticky-note" style="margin-right:4px;"></i>Observations / Notes</div>
+                        <div class="notes-label"><i class="fas fa-sticky-note" style="margin-right:4px;"></i>Observations / Instructions</div>
                         <p class="notes-text">{{ $invoice->notes }}</p>
                     </div>
                     @endif
                 </div>
 
-                {{-- Right: Totals Card + Cachet Box --}}
+                {{-- Right: Totals Card --}}
                 <div class="summary-right">
                     <div class="totals-card">
                         <div class="total-row">
@@ -1367,6 +1462,12 @@
                             <span class="total-row-label">{{ $invoice->tax_label }} ({{ $invoice->formatted_tax_rate }})</span>
                             <span class="total-row-val">{{ $invoice->formatted_tax_amount }}</span>
                         </div>
+                        @if($invoice->shipping_cost > 0)
+                        <div class="total-row">
+                            <span class="total-row-label">Frais de livraison</span>
+                            <span class="total-row-val">{{ $invoice->formatted_shipping_cost }}</span>
+                        </div>
+                        @endif
                         @if($invoice->discount_amount > 0)
                         <div class="total-row">
                             <span class="total-row-label">Remise</span>
@@ -1380,25 +1481,42 @@
                         </div>
                     </div>
 
-                    {{-- Cachet Société placed right under Totals for perfect visual balance --}}
-                    @if(($withStamp ?? $invoice->with_stamp ?? true) && setting('company_stamp'))
+                    {{-- Dedicated space for the auto-added Cachet --}}
                     <div class="stamp-box">
-                        <img src="/storage/{{ setting('company_stamp') }}"
-                             class="stamp-img"
-                             style="max-width:{{ round(140 * intval(setting('company_stamp_scale', 100)) / 100) }}px; max-height:85px;"
-                             alt="Cachet"
-                             onerror="this.src='{{ asset('storage/' . setting('company_stamp')) }}'">
+                        @if(($withStamp ?? $invoice->with_stamp ?? true) && setting('company_stamp'))
+                            <img src="{{ asset('storage/' . setting('company_stamp')) }}"
+                                 class="stamp-img"
+                                 style="max-width:{{ round(140 * intval(setting('company_stamp_scale', 100)) / 100) }}px; max-height:80px;"
+                                 alt="Cachet"
+                                 onerror="this.src='/storage/{{ setting('company_stamp') }}'">
+                        @endif
                     </div>
-                    @endif
                 </div>
             </div>
 
         </div>
 
-        {{-- ══════════ FOOTER ══════════ --}}
+        {{-- ══════════ EXECUTIVE MOROCCAN LEGAL FOOTER (PINNED TO BOTTOM) ══════════ --}}
         <div class="doc-footer">
-            <i class="far fa-handshake" style="margin-right:6px; font-size:11px;"></i>
-            {{ $invoice->isQuote() ? 'Merci de votre confiance !' : 'Merci pour votre achat !' }}
+            <div class="footer-legal">
+                <strong>{{ $companyName }}</strong>
+                @if(setting('company_legal_form', 'SARL')) &bull; Société {{ setting('company_legal_form', 'SARL') }} @endif
+                @if(setting('company_capital')) &bull; Capital : {{ setting('company_capital') }} DH @endif
+                @if($companyAddress) &bull; {{ $companyAddress }} @endif
+                @if($companyPhone) &bull; Tél : {{ $companyPhone }} @endif
+                @if($companyEmail) &bull; {{ $companyEmail }} @endif
+            </div>
+            <div class="footer-fiscal">
+                @if($companyIce) <span><strong>ICE :</strong> {{ $companyIce }}</span> @endif
+                @if($companyRc) <span>&bull; <strong>RC :</strong> {{ $companyRc }}</span> @endif
+                @if($companyIf) <span>&bull; <strong>IF :</strong> {{ $companyIf }}</span> @endif
+                @if($companyPatente) <span>&bull; <strong>Patente :</strong> {{ $companyPatente }}</span> @endif
+                @if($companyCnss) <span>&bull; <strong>CNSS :</strong> {{ $companyCnss }}</span> @endif
+            </div>
+            <div class="footer-closing">
+                <i class="fas fa-handshake" style="margin-right:4px; font-size:10.5px; color:#0f172a;"></i>
+                {{ $isQuote ? 'Merci pour votre confiance ! Proposition soumise à nos conditions générales.' : 'Merci pour votre achat et votre confiance !' }}
+            </div>
         </div>
     </div>
 

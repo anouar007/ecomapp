@@ -221,6 +221,26 @@
                     </tr>
                     @endif
                     <tr>
+                        <td style="color: #64748b; font-size: 13px; padding-bottom: 6px;">Sous-total HT :</td>
+                        <td style="font-weight: 600; text-align: right; font-size: 13px; padding-bottom: 6px;">{{ $invoice->formatted_subtotal }}</td>
+                    </tr>
+                    <tr>
+                        <td style="color: #64748b; font-size: 13px; padding-bottom: 6px;">{{ $invoice->tax_label }} ({{ $invoice->formatted_tax_rate }}) :</td>
+                        <td style="font-weight: 600; text-align: right; font-size: 13px; padding-bottom: 6px;">{{ $invoice->formatted_tax_amount }}</td>
+                    </tr>
+                    @if($invoice->shipping_cost > 0)
+                    <tr>
+                        <td style="color: #64748b; font-size: 13px; padding-bottom: 6px;">Frais de livraison :</td>
+                        <td style="font-weight: 600; text-align: right; font-size: 13px; padding-bottom: 6px;">{{ $invoice->formatted_shipping_cost }}</td>
+                    </tr>
+                    @endif
+                    @if($invoice->discount_amount > 0)
+                    <tr>
+                        <td style="color: #059669; font-size: 13px; padding-bottom: 6px;">Remise :</td>
+                        <td style="font-weight: 600; text-align: right; font-size: 13px; color: #059669; padding-bottom: 6px;">- {{ $invoice->formatted_discount_amount }}</td>
+                    </tr>
+                    @endif
+                    <tr>
                         <td style="border-top: 2px dashed #cbd5e1; padding-top: 10px; font-weight: 700; font-size: 16px; color: #0f172a;">Total TTC :</td>
                         <td style="border-top: 2px dashed #cbd5e1; padding-top: 10px; font-weight: 700; font-size: 16px; text-align: right; color: #0f172a;">{{ $invoice->formatted_total_amount }}</td>
                     </tr>
@@ -234,18 +254,23 @@
                     <thead>
                         <tr>
                             <th>Désignation</th>
+                            <th style="text-align: right; width: 90px;">P.U. HT</th>
                             <th style="text-align: center; width: 60px;">Qté</th>
-                            <th style="text-align: right; width: 100px;">Total</th>
+                            <th style="text-align: right; width: 100px;">Total HT</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($invoice->items as $item)
                         <tr>
                             <td>
-                                <strong>{{ $item->product ? $item->product->name : $item->item_name }}</strong>
+                                <strong>{{ $item->product ? $item->product->name : ($item->product_name ?? $item->item_name) }}</strong>
+                                @if($item->product_sku)
+                                    <div style="font-size: 11px; color: #94a3b8;">Réf : {{ $item->product_sku }}</div>
+                                @endif
                             </td>
+                            <td style="text-align: right;">{{ $item->formatted_unit_price_ht }}</td>
                             <td style="text-align: center;">{{ $item->quantity }}</td>
-                            <td style="text-align: right; font-weight: 600;">{{ currency($item->total_price ?? ($item->quantity * $item->unit_price)) }}</td>
+                            <td style="text-align: right; font-weight: 600;">{{ $item->formatted_total_price_ht }}</td>
                         </tr>
                         @endforeach
                     </tbody>

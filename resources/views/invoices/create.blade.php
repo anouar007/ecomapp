@@ -2,6 +2,316 @@
 
 @section('title', 'Nouveau document — Facture / Devis')
 
+@push('styles')
+<style>
+    /* Modern Invoice Items Table & Inputs Styling */
+    .invoice-table-head {
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .invoice-table-head th {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #64748b;
+        padding: 12px 14px;
+        border-bottom: none;
+    }
+
+    .item-row {
+        transition: background-color 0.15s ease;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .item-row:hover {
+        background-color: #fafbfc;
+    }
+
+    .item-row td {
+        padding: 12px 10px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    /* Product Cell & Modern Inputs */
+    .product-cell-container {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .invoice-custom-select,
+    .invoice-custom-input {
+        height: 38px;
+        font-size: 0.85rem;
+        color: #0f172a;
+        background-color: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px !important;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+    }
+
+    .invoice-custom-select:hover,
+    .invoice-custom-input:hover {
+        border-color: #94a3b8;
+        background-color: #fbfcfe;
+    }
+
+    .invoice-custom-select:focus,
+    .invoice-custom-input:focus {
+        border-color: var(--primary-color, #dc2626);
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+        background-color: #ffffff;
+        outline: none;
+    }
+
+    /* Badges & Mode Switchers */
+    .badge-mode-catalog {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: #475569;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        padding: 2px 7px;
+        border-radius: 6px;
+    }
+
+    .badge-mode-manual {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: #c2410c;
+        background: #fff7ed;
+        border: 1px solid #ffedd5;
+        padding: 2px 7px;
+        border-radius: 6px;
+    }
+
+    .btn-mode-switch {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.74rem;
+        font-weight: 500;
+        color: #64748b;
+        background: transparent;
+        border: 1px solid transparent;
+        padding: 2px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        text-decoration: none;
+    }
+
+    .btn-mode-switch:hover {
+        color: var(--primary-color, #dc2626);
+        background: #fee2e2;
+        border-color: #fecaca;
+    }
+
+    /* Manual Mode Grid (Side-by-side on desktop, compact on mobile) */
+    .manual-fields-grid {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .manual-name-wrapper {
+        flex: 1;
+        min-width: 0;
+        position: relative;
+    }
+
+    .manual-sku-wrapper {
+        width: 140px;
+        flex-shrink: 0;
+    }
+
+    .modern-input-icon-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .modern-input-icon-wrap .input-icon {
+        position: absolute;
+        left: 11px;
+        color: #94a3b8;
+        font-size: 0.8rem;
+        pointer-events: none;
+    }
+
+    .modern-input-icon-wrap .item-manual-name {
+        padding-left: 32px;
+    }
+
+    /* P.U. HT Input with integrated badge */
+    .modern-price-field {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .modern-price-field .unit-price-input {
+        padding-right: 48px;
+        font-weight: 600;
+        font-size: 0.88rem;
+        text-align: right;
+        color: #0f172a;
+    }
+
+    .modern-price-field .price-suffix {
+        position: absolute;
+        right: 8px;
+        pointer-events: none;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        color: #64748b;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        padding: 2px 5px;
+        border-radius: 4px;
+    }
+
+    /* Quantity Field */
+    .modern-qty-field .quantity-input {
+        text-align: center;
+        font-weight: 600;
+        font-size: 0.88rem;
+        color: #0f172a;
+    }
+
+    /* Row Total Display */
+    .row-total-container {
+        padding-right: 4px;
+    }
+
+    .row-total-value {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.2;
+    }
+
+    .row-total-sub {
+        font-size: 0.65rem;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    /* Action delete button */
+    .btn-remove-row {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: none;
+        background: transparent;
+        color: #94a3b8;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s ease;
+    }
+
+    .btn-remove-row:hover {
+        background: #fee2e2;
+        color: #dc2626;
+        transform: scale(1.05);
+    }
+
+    /* Bottom Add Line Interactive Cards */
+    .btn-add-line {
+        background: #ffffff;
+        border: 1px dashed #cbd5e1;
+        border-radius: 12px;
+        padding: 11px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        color: #334155;
+        text-align: left;
+    }
+
+    .btn-add-line:hover {
+        border-color: var(--primary-color, #dc2626);
+        background: #fef2f2;
+        box-shadow: 0 2px 6px rgba(220, 38, 38, 0.06);
+        transform: translateY(-1px);
+    }
+
+    .btn-add-line-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+    }
+
+    .btn-add-catalog .btn-add-line-icon {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+    .btn-add-catalog:hover .btn-add-line-icon {
+        background: #e2e8f0;
+        color: #0f172a;
+    }
+
+    .btn-add-manual .btn-add-line-icon {
+        background: #fee2e2;
+        color: var(--primary-color, #dc2626);
+    }
+
+    .btn-add-manual:hover .btn-add-line-icon {
+        background: var(--primary-color, #dc2626);
+        color: #ffffff;
+    }
+
+    .btn-add-line-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #0f172a;
+    }
+
+    .btn-add-line-sub {
+        font-size: 0.72rem;
+        color: #64748b;
+        margin-top: 2px;
+    }
+
+    @media (max-width: 767.98px) {
+        .manual-fields-grid {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .manual-sku-wrapper {
+            width: 100%;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
     <!-- En-tête de page (Clean & Pro Executive Brand Header) -->
     <div class="brand-header">
@@ -150,27 +460,32 @@
 
                 <!-- Section 2 : Articles & Lignes de Facture -->
                 <div class="product-form-card mb-4">
-                    <div class="product-form-card-header d-flex justify-content-between align-items-center">
+                    <div class="product-form-card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <div>
                             <h2 class="product-form-card-title">
-                                <i class="fas fa-boxes text-primary"></i> 2. Articles & Produits
+                                <i class="fas fa-boxes-stacked text-primary"></i> 2. Articles & Lignes de Facture
                             </h2>
-                            <p class="product-form-card-subtitle">Ajoutez les articles, quantités et prix de la facture</p>
+                            <p class="product-form-card-subtitle">Ajoutez des produits du catalogue ou saisissez des articles et prestations avec prix HT libre</p>
                         </div>
-                        <button type="button" onclick="addItem()" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1">
-                            <i class="fas fa-plus"></i> <span>Ajouter une ligne</span>
-                        </button>
+                        <div class="d-flex gap-2">
+                            <button type="button" onclick="addItem('catalog')" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1.5 fw-medium d-inline-flex align-items-center gap-1.5 shadow-2xs">
+                                <i class="fas fa-boxes-stacked text-muted"></i> <span>Du catalogue</span>
+                            </button>
+                            <button type="button" onclick="addItem('manual')" class="btn btn-sm btn-brand-primary rounded-pill px-3 py-1.5 fw-medium d-inline-flex align-items-center gap-1.5 shadow-2xs">
+                                <i class="fas fa-feather-pointed"></i> <span>Saisie manuelle HT</span>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="table-responsive border rounded-3 overflow-hidden mb-3 invoice-items-wrap">
                         <table class="table table-hover align-middle mb-0" id="itemsTable">
-                            <thead class="table-light text-muted small text-uppercase">
+                            <thead class="invoice-table-head">
                                 <tr>
-                                    <th style="min-width: 220px;">Produit / Description</th>
-                                    <th class="text-center" style="width: 110px;">Qté</th>
-                                    <th class="text-end" style="width: 130px;">P.U. TTC</th>
-                                    <th class="text-end" style="width: 140px;">Total TTC</th>
-                                    <th style="width: 50px;"></th>
+                                    <th class="ps-3" style="min-width: 320px;">Produit / Description</th>
+                                    <th class="text-end" style="width: 140px;">P.U. HT</th>
+                                    <th class="text-center" style="width: 85px;">Qté</th>
+                                    <th class="text-end" style="width: 130px;">Total HT</th>
+                                    <th class="pe-3 text-center" style="width: 44px;"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -179,10 +494,30 @@
                         </table>
                     </div>
 
-                    <button type="button" onclick="addItem()" class="btn btn-sm btn-brand-light w-100 py-2 d-flex align-items-center justify-content-center gap-1.5">
-                        <i class="fas fa-plus-circle text-primary"></i>
-                        <span>Ajouter un autre article</span>
-                    </button>
+                    <div class="row g-2 w-100">
+                        <div class="col-12 col-sm-6">
+                            <button type="button" onclick="addItem('catalog')" class="btn-add-line btn-add-catalog w-100">
+                                <div class="btn-add-line-icon">
+                                    <i class="fas fa-boxes-stacked"></i>
+                                </div>
+                                <div class="text-start">
+                                    <div class="btn-add-line-title">+ Produit du catalogue</div>
+                                    <div class="btn-add-line-sub">Sélectionner parmi vos produits enregistrés</div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <button type="button" onclick="addItem('manual')" class="btn-add-line btn-add-manual w-100">
+                                <div class="btn-add-line-icon">
+                                    <i class="fas fa-feather-pointed"></i>
+                                </div>
+                                <div class="text-start">
+                                    <div class="btn-add-line-title">+ Article ou Prestation libre</div>
+                                    <div class="btn-add-line-sub">Désignation libre & Prix unitaire HT personnalisable</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Section 3 : Notes et Mentions Légales -->
@@ -245,6 +580,16 @@
                             </select>
                         </div>
 
+                        <!-- Frais de livraison -->
+                        <div>
+                            <label class="form-label fw-semibold text-dark small mb-1">Frais de livraison (DH)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0 text-muted"><i class="fas fa-truck"></i></span>
+                                <input type="number" step="0.01" min="0" name="shipping_cost" id="shipping_cost" value="{{ old('shipping_cost', '0.00') }}" class="form-control border-start-0" onchange="updateTotals()" onkeyup="updateTotals()" placeholder="0.00">
+                            </div>
+                            <small class="text-muted" style="font-size: 11px;">Non soumis à la TVA</small>
+                        </div>
+
                         <!-- Date d'échéance -->
                         <div>
                             <label class="form-label fw-semibold text-dark small mb-1">Date d'échéance</label>
@@ -282,6 +627,10 @@
                             <span id="summaryTaxLabel">{{ setting('tax_label', 'TVA') }} ({{ floatval(setting('tax_rate', 20)) }}%) :</span>
                             <span class="fw-semibold text-dark" id="summaryTax">0.00 DH</span>
                         </div>
+                        <div class="d-flex justify-content-between text-muted small" id="summaryShippingRow">
+                            <span>Frais de livraison :</span>
+                            <span class="fw-semibold text-dark" id="summaryShipping">0.00 DH</span>
+                        </div>
                         <hr class="my-1 border-secondary-subtle">
                         <div class="d-flex justify-content-between align-items-baseline">
                             <span class="fw-bold text-dark fs-6">Montant Total TTC :</span>
@@ -306,30 +655,66 @@
     <!-- Template de ligne d'article -->
     <template id="itemRowTemplate">
         <tr class="item-row">
-            <td class="p-2.5 col-product">
+            <td class="ps-3 pe-2 col-product">
                 <label class="d-md-none form-label text-muted small fw-semibold mb-1">Produit / Description</label>
-                <select name="items[{index}][product_id]" class="form-select form-select-sm product-select" onchange="updateItem(this)" required>
-                    <option value="">-- Sélectionner un produit --</option>
-                    @foreach($products as $product)
-                        <option value="{{ $product->id }}" data-price="{{ $product->price }}">{{ $product->name }} ({{ number_format($product->price, 2) }})</option>
-                    @endforeach
-                </select>
+                
+                <div class="product-cell-container">
+                    <!-- Mode Catalogue -->
+                    <div class="catalog-mode-box">
+                        <select name="items[{index}][product_id]" class="form-select invoice-custom-select product-select" onchange="updateItem(this)">
+                            <option value="">-- Sélectionner un produit du catalogue --</option>
+                            <option value="custom" class="fw-bold text-primary">➕ Saisie libre / Article personnalisé...</option>
+                            @foreach($products as $product)
+                                @php
+                                    $taxRateVal = floatval(setting('tax_rate', 20)) / 100;
+                                    $pPriceHt = $taxRateVal > 0 ? ($product->price / (1 + $taxRateVal)) : $product->price;
+                                @endphp
+                                <option value="{{ $product->id }}" data-price="{{ $product->price }}" data-price-ht="{{ round($pPriceHt, 2) }}">
+                                    {{ $product->name }} • {{ number_format(round($pPriceHt, 2), 2) }} DH HT
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Mode Saisie Manuelle -->
+                    <div class="manual-mode-box d-none position-relative">
+                        <div class="modern-input-icon-wrap w-100">
+                            <i class="fas fa-pen-nib input-icon"></i>
+                            <input type="text" name="items[{index}][product_name]" class="form-control invoice-custom-input item-manual-name w-100 pe-5" placeholder="Désignation complète du produit, article ou prestation...">
+                            <input type="hidden" name="items[{index}][product_sku]" class="item-manual-sku" value="">
+                        </div>
+                        <button type="button" onclick="switchRowToCatalog(this)" class="btn btn-sm btn-link text-muted position-absolute end-0 top-50 translate-middle-y me-1 p-1 text-decoration-none" title="Choisir du catalogue" style="font-size: 0.78rem;">
+                            <i class="fas fa-list text-secondary"></i>
+                        </button>
+                    </div>
+                </div>
             </td>
-            <td class="p-2.5 col-qty">
+            <td class="p-2 text-md-end col-price">
+                <label class="d-md-none form-label text-muted small fw-semibold mb-1">P.U. HT</label>
+                <div class="modern-price-field">
+                    <input type="number" step="0.01" min="0" name="items[{index}][unit_price_ht]" class="form-control invoice-custom-input unit-price-input font-monospace text-end" value="0.00" onchange="updateTotals()" onkeyup="updateTotals()" placeholder="0.00" required>
+                    <span class="price-suffix">HT</span>
+                </div>
+            </td>
+            <td class="p-2 col-qty">
                 <label class="d-md-none form-label text-muted small fw-semibold mb-1">Qté</label>
-                <input type="number" name="items[{index}][quantity]" class="form-control form-control-sm text-center quantity-input" value="1" min="1" onchange="updateTotals()" onkeyup="updateTotals()" required>
+                <div class="modern-qty-field">
+                    <input type="number" name="items[{index}][quantity]" class="form-control invoice-custom-input quantity-input font-monospace text-center" value="1" min="1" onchange="updateTotals()" onkeyup="updateTotals()" required>
+                </div>
             </td>
-            <td class="p-2.5 text-md-end col-price">
-                <label class="d-md-none form-label text-muted small fw-semibold mb-1">P.U. TTC</label>
-                <div class="text-muted font-monospace unit-price">0.00</div>
+            <td class="p-2 text-md-end col-total">
+                <label class="d-md-none form-label text-muted small fw-semibold mb-1">Total HT</label>
+                <div class="row-total-container text-end">
+                    <div class="row-total-value">
+                        <span class="row-total font-monospace">0.00</span>
+                        <span class="text-xs text-muted ms-0.5">DH</span>
+                    </div>
+                    <div class="row-total-sub">Total HT</div>
+                </div>
             </td>
-            <td class="p-2.5 text-md-end col-total">
-                <label class="d-md-none form-label text-muted small fw-semibold mb-1">Total TTC</label>
-                <div class="fw-bold text-dark font-monospace row-total">0.00</div>
-            </td>
-            <td class="p-2.5 text-center col-action">
+            <td class="pe-3 ps-1 text-center col-action">
                 <label class="d-md-none form-label text-muted small fw-semibold mb-1 d-block opacity-0">&nbsp;</label>
-                <button type="button" onclick="removeItem(this)" class="btn btn-sm btn-light border-0 text-danger p-1" title="Supprimer la ligne">
+                <button type="button" onclick="removeItem(this)" class="btn-remove-row" title="Supprimer cette ligne">
                     <i class="fas fa-trash-alt"></i>
                 </button>
             </td>
@@ -352,44 +737,124 @@
             : `${value} ${currencySymbol}`;
     }
 
-    function addItem() {
+    function addItem(mode = 'catalog') {
         const template = document.getElementById('itemRowTemplate').innerHTML;
         const tbody = document.querySelector('#itemsTable tbody');
         const rowHtml = template.replace(/{index}/g, itemIndex++);
         tbody.insertAdjacentHTML('beforeend', rowHtml);
+
+        const newRow = tbody.lastElementChild;
+        if (mode === 'manual') {
+            switchRowToManual(newRow.querySelector('.manual-mode-box'));
+        }
+        updateTotals();
     }
 
     function removeItem(btn) {
         btn.closest('tr').remove();
-        updateTotals();
+        if (document.querySelectorAll('#itemsTable tbody .item-row').length === 0) {
+            addItem('catalog');
+        } else {
+            updateTotals();
+        }
+    }
+
+    function switchRowToManual(el) {
+        const row = el.closest('tr');
+        if (!row) return;
+        const catalogBox = row.querySelector('.catalog-mode-box');
+        const manualBox = row.querySelector('.manual-mode-box');
+        const productSelect = row.querySelector('.product-select');
+        const nameInput = row.querySelector('.item-manual-name');
+
+        catalogBox.classList.add('d-none');
+        manualBox.classList.remove('d-none');
+        
+        productSelect.value = '';
+        productSelect.removeAttribute('required');
+
+        nameInput.setAttribute('required', 'required');
+        nameInput.focus();
+    }
+
+    function switchRowToCatalog(el) {
+        const row = el.closest('tr');
+        if (!row) return;
+        const catalogBox = row.querySelector('.catalog-mode-box');
+        const manualBox = row.querySelector('.manual-mode-box');
+        const productSelect = row.querySelector('.product-select');
+        const nameInput = row.querySelector('.item-manual-name');
+        const skuInput = row.querySelector('.item-manual-sku');
+
+        manualBox.classList.add('d-none');
+        catalogBox.classList.remove('d-none');
+
+        nameInput.removeAttribute('required');
+        nameInput.value = '';
+        if (skuInput) skuInput.value = '';
+
+        productSelect.setAttribute('required', 'required');
+        productSelect.focus();
     }
 
     function updateItem(select) {
         const row = select.closest('tr');
-        const price = parseFloat(select.selectedOptions[0]?.dataset.price || 0);
-        row.querySelector('.unit-price').textContent = price.toFixed(2);
+        if (select.value === 'custom') {
+            switchRowToManual(select);
+            return;
+        }
+
+        const opt = select.selectedOptions[0];
+        const taxPercent = {{ floatval(setting('tax_rate', 20)) }};
+        const taxRate = taxPercent / 100;
+        let priceHt = 0;
+        if (opt && opt.dataset.priceHt !== undefined && opt.dataset.priceHt !== '') {
+            priceHt = parseFloat(opt.dataset.priceHt);
+        } else if (opt && opt.dataset.price !== undefined && opt.dataset.price !== '') {
+            const priceTtc = parseFloat(opt.dataset.price);
+            priceHt = taxRate > 0 ? (priceTtc / (1 + taxRate)) : priceTtc;
+        }
+
+        const priceInput = row.querySelector('.unit-price-input');
+        if (priceInput) {
+            priceInput.value = priceHt > 0 ? priceHt.toFixed(2) : '0.00';
+        }
         updateTotals();
     }
 
     function updateTotals() {
-        let subtotal = 0;
-        document.querySelectorAll('.item-row').forEach(row => {
-            const price = parseFloat(row.querySelector('.unit-price').textContent || 0);
-            const qty = parseInt(row.querySelector('.quantity-input').value || 0);
-            const total = price * qty;
-            row.querySelector('.row-total').textContent = total.toFixed(2);
-            subtotal += total;
-        });
-
+        let subtotalHt = 0;
         const taxPercent = {{ floatval(setting('tax_rate', 20)) }};
         const taxRate = taxPercent / 100;
-        const totalAmount = subtotal;
-        const taxAmount = taxRate > 0 ? (totalAmount - (totalAmount / (1 + taxRate))) : 0;
-        const subtotalNet = totalAmount - taxAmount;
+        const shippingCost = parseFloat(document.getElementById('shipping_cost')?.value || 0) || 0;
 
-        document.getElementById('summarySubtotal').innerText = formatCurrency(subtotalNet);
-        document.getElementById('summaryTax').innerText = formatCurrency(taxAmount);
-        document.getElementById('summaryTotal').innerText = formatCurrency(totalAmount);
+        document.querySelectorAll('.item-row').forEach(row => {
+            const priceInput = row.querySelector('.unit-price-input');
+            const priceHt = parseFloat(priceInput ? priceInput.value : 0) || 0;
+            const qty = parseInt(row.querySelector('.quantity-input')?.value || 0) || 0;
+            const totalHt = Math.round(priceHt * qty * 100) / 100;
+            
+            const rowTotalEl = row.querySelector('.row-total');
+            if (rowTotalEl) {
+                rowTotalEl.textContent = totalHt.toFixed(2);
+            }
+            subtotalHt += totalHt;
+        });
+
+        const taxAmount = Math.round(subtotalHt * taxRate * 100) / 100;
+        const totalAmount = Math.round((subtotalHt + taxAmount + shippingCost) * 100) / 100;
+
+        const subtotalEl = document.getElementById('summarySubtotal');
+        if (subtotalEl) subtotalEl.innerText = formatCurrency(subtotalHt);
+
+        const taxEl = document.getElementById('summaryTax');
+        if (taxEl) taxEl.innerText = formatCurrency(taxAmount);
+
+        const shippingEl = document.getElementById('summaryShipping');
+        if (shippingEl) shippingEl.innerText = formatCurrency(shippingCost);
+
+        const totalEl = document.getElementById('summaryTotal');
+        if (totalEl) totalEl.innerText = formatCurrency(totalAmount);
     }
 
     function fillCustomerInfo() {
@@ -406,7 +871,7 @@
 
     // Add initial row on load
     document.addEventListener('DOMContentLoaded', function() {
-        addItem();
+        addItem('catalog');
     });
 </script>
 @endpush

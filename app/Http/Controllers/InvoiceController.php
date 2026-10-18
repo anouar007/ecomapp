@@ -99,14 +99,20 @@ class InvoiceController extends Controller
             'customer_email' => 'nullable|email|max:255',
             'customer_phone' => 'nullable|string|max:20',
             'customer_address' => 'nullable|string',
+            'ice' => 'nullable|string',
             'type' => 'required|in:invoice,quote',
             'payment_method' => 'required|in:cash,card,bank_transfer,cod,other',
             'payment_status' => 'required|in:paid,unpaid,partial,cancelled',
             'with_stamp' => 'nullable',
             'notes' => 'nullable|string',
             'due_date' => 'nullable|date',
+            'shipping_cost' => 'nullable|numeric|min:0',
             'items' => 'required|array|min:1',
-            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.product_id' => 'nullable',
+            'items.*.product_name' => 'nullable|string|max:255',
+            'items.*.product_sku' => 'nullable|string|max:100',
+            'items.*.unit_price_ht' => 'nullable|numeric|min:0',
+            'items.*.unit_price' => 'nullable|numeric|min:0',
             'items.*.quantity' => 'required|integer|min:1',
         ]);
 
@@ -115,29 +121,69 @@ class InvoiceController extends Controller
 
             // Get dynamic tax rate from settings
             $taxRate = floatval(setting('tax_rate', 20));
+            $shippingCost = floatval($request->input('shipping_cost', 0));
 
             // Calculate totals
-            $subtotal = 0;
+            $subtotalNet = 0;
             $itemsData = [];
 
-            foreach ($validated['items'] as $item) {
-                $product = Product::findOrFail($item['product_id']);
-                $totalPrice = $product->price * $item['quantity'];
-                $subtotal += $totalPrice;
+            foreach ($validated['items'] as $index => $item) {
+                $rawProductId = $item['product_id'] ?? null;
+                $productId = (!empty($rawProductId) && $rawProductId !== 'custom') ? intval($rawProductId) : null;
+                $product = $productId ? Product::find($productId) : null;
+
+                $productName = !empty($item['product_name']) 
+                    ? trim($item['product_name']) 
+                    : ($product ? $product->name : null);
+
+                if (!$productName) {
+                    if (!$product) {
+                        continue;
+                    }
+                    $productName = $product->name;
+                }
+
+                $productSku = !empty($item['product_sku']) 
+                    ? trim($item['product_sku']) 
+                    : ($product ? $product->sku : null);
+
+                $quantity = max(1, intval($item['quantity'] ?? 1));
+
+                // Determine unit price HT & unit price TTC
+                if (isset($item['unit_price_ht']) && is_numeric($item['unit_price_ht'])) {
+                    $unitPriceHt = floatval($item['unit_price_ht']);
+                    $unitPriceTtc = $taxRate > 0 ? round($unitPriceHt * (1 + ($taxRate / 100)), 2) : $unitPriceHt;
+                } elseif (isset($item['unit_price']) && is_numeric($item['unit_price'])) {
+                    $unitPriceTtc = floatval($item['unit_price']);
+                    $unitPriceHt = $taxRate > 0 ? round($unitPriceTtc / (1 + ($taxRate / 100)), 2) : $unitPriceTtc;
+                } elseif ($product) {
+                    $unitPriceTtc = floatval($product->price);
+                    $unitPriceHt = $taxRate > 0 ? round($unitPriceTtc / (1 + ($taxRate / 100)), 2) : $unitPriceTtc;
+                } else {
+                    $unitPriceHt = 0;
+                    $unitPriceTtc = 0;
+                }
+
+                $totalPriceTtc = round($unitPriceTtc * $quantity, 2);
+                $totalPriceHt = round($unitPriceHt * $quantity, 2);
+                $subtotalNet += $totalPriceHt;
 
                 $itemsData[] = [
-                    'product_id' => $product->id,
-                    'product_name' => $product->name,
-                    'product_sku' => $product->sku,
-                    'quantity' => $item['quantity'],
-                    'unit_price' => $product->price,
-                    'total_price' => $totalPrice,
+                    'product_id' => $product ? $product->id : null,
+                    'product_name' => $productName,
+                    'product_sku' => $productSku,
+                    'quantity' => $quantity,
+                    'unit_price' => $unitPriceTtc,
+                    'total_price' => $totalPriceTtc,
                 ];
             }
 
-            $totalAmount = $subtotal;
-            $taxAmount = $totalAmount - ($totalAmount / (1 + ($taxRate / 100)));
-            $subtotalNet = $totalAmount - $taxAmount;
+            if (empty($itemsData)) {
+                return back()->withErrors(['items' => 'Veuillez ajouter au moins un produit valide.'])->withInput();
+            }
+
+            $taxAmount = round($subtotalNet * ($taxRate / 100), 2);
+            $totalAmount = round($subtotalNet + $taxAmount + $shippingCost, 2);
 
             // Create invoice
             $invoice = Invoice::create([
@@ -147,10 +193,12 @@ class InvoiceController extends Controller
                 'customer_email' => $validated['customer_email'] ?? null,
                 'customer_phone' => $validated['customer_phone'] ?? null,
                 'customer_address' => $validated['customer_address'] ?? null,
+                'ice' => $validated['ice'] ?? null,
                 'subtotal' => $subtotalNet,
                 'tax_amount' => $taxAmount,
                 'tax_rate' => $taxRate,
                 'discount_amount' => 0,
+                'shipping_cost' => $shippingCost,
                 'total_amount' => $totalAmount,
                 'payment_method' => $validated['payment_method'],
                 'payment_status' => $validated['payment_status'],
@@ -245,15 +293,24 @@ class InvoiceController extends Controller
             'customer_email' => 'nullable|email|max:255',
             'customer_phone' => 'nullable|string|max:20',
             'customer_address' => 'nullable|string',
+            'ice' => 'nullable|string',
             'type' => 'required|in:invoice,quote',
             'payment_method' => 'required|in:cash,card,bank_transfer,cod,other',
             'payment_status' => 'required|in:paid,unpaid,partial,cancelled',
             'with_stamp' => 'nullable',
             'notes' => 'nullable|string',
             'due_date' => 'nullable|date',
+            'shipping_cost' => 'nullable|numeric|min:0',
         ]);
 
         $validated['with_stamp'] = $request->has('with_stamp') ? $request->boolean('with_stamp') : false;
+
+        if ($request->has('shipping_cost')) {
+            $oldShipping = floatval($invoice->shipping_cost ?? 0);
+            $newShipping = floatval($request->input('shipping_cost', 0));
+            $validated['shipping_cost'] = $newShipping;
+            $validated['total_amount'] = max(0, floatval($invoice->total_amount) - $oldShipping + $newShipping);
+        }
         
         $originalStatus = $invoice->payment_status;
         $invoice->update($validated);
@@ -441,6 +498,52 @@ class InvoiceController extends Controller
     }
 
     /**
+     * Display Moroccan delivery note (Bon de Livraison).
+     */
+    public function deliveryNote(Request $request, Invoice $invoice)
+    {
+        $invoice->load(['items.product', 'creator', 'order']);
+        $withStamp = $request->has('with_stamp') ? $request->boolean('with_stamp') : ($invoice->with_stamp ?? true);
+        return view('invoices.delivery_note', compact('invoice', 'withStamp'));
+    }
+
+    /**
+     * Download Moroccan delivery note (Bon de Livraison) as PDF.
+     */
+    public function downloadDeliveryNote(Request $request, Invoice $invoice)
+    {
+        $invoice->load(['items.product', 'creator', 'order']);
+        $withStamp = $request->has('with_stamp') ? $request->boolean('with_stamp') : ($invoice->with_stamp ?? true);
+
+        try {
+            // Clean any existing output buffers to prevent PDF corruption
+            if (ob_get_length()) {
+                ob_end_clean();
+            }
+
+            $pdf = Pdf::loadView('invoices.delivery_note_pdf', compact('invoice', 'withStamp'))
+                ->setPaper('a4', 'portrait');
+
+            $filename = 'Bon-de-Livraison-' . str_replace(['#', '/', '\\', ' '], '-', $invoice->delivery_note_number) . ($withStamp ? '-Cachet' : '') . '.pdf';
+
+            return $pdf->download($filename);
+        } catch (\Exception $e) {
+            \Log::error('Delivery Note PDF generation failed: ' . $e->getMessage());
+            return back()->with('error', 'Unable to generate Delivery Note PDF: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Display printable Moroccan delivery note (Bon de Livraison).
+     */
+    public function printDeliveryNote(Request $request, Invoice $invoice)
+    {
+        $invoice->load(['items.product', 'creator', 'order']);
+        $withStamp = $request->has('with_stamp') ? $request->boolean('with_stamp') : ($invoice->with_stamp ?? true);
+        return view('invoices.delivery_note_print', compact('invoice', 'withStamp'));
+    }
+
+    /**
      * Send invoice or devis via email to client.
      */
     public function email(Request $request, Invoice $invoice)
@@ -533,9 +636,14 @@ class InvoiceController extends Controller
             DB::beginTransaction();
 
             $taxRate = floatval(setting('tax_rate', 20));
-            $totalAmount = $order->total;
-            $taxAmount = $totalAmount - ($totalAmount / (1 + ($taxRate / 100)));
-            $subtotalNet = $totalAmount - $taxAmount;
+            $shippingCost = floatval($order->shipping_cost ?? 0);
+            $discountAmount = floatval($order->discount ?? 0);
+            $totalAmount = floatval($order->total);
+            
+            // Taxable products amount (TTC) excluding shipping and after discount
+            $productsSubtotal = max(0, $totalAmount - $shippingCost + $discountAmount);
+            $subtotalNet = $taxRate > 0 ? round($productsSubtotal / (1 + ($taxRate / 100)), 2) : $productsSubtotal;
+            $taxAmount = round($productsSubtotal - $subtotalNet, 2);
 
             // Create invoice
             $invoice = Invoice::create([
@@ -550,7 +658,8 @@ class InvoiceController extends Controller
                 'subtotal' => $subtotalNet,
                 'tax_amount' => $taxAmount,
                 'tax_rate' => $taxRate,
-                'discount_amount' => 0,
+                'discount_amount' => $discountAmount,
+                'shipping_cost' => $shippingCost,
                 'total_amount' => $totalAmount,
                 'payment_method' => $order->payment_method ?? 'cash',
                 'payment_status' => $order->payment_status === 'paid' ? 'paid' : 'unpaid',

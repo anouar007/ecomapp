@@ -211,6 +211,25 @@
                             <i class="far fa-file-pdf text-muted me-1.5"></i> Devis standard
                         </a>
                     </li>
+                    <li><hr class="dropdown-divider my-1"></li>
+                    <li class="dropdown-header text-uppercase fw-bold px-2 py-1" style="font-size: 0.65rem; color: #0284c7 !important;">
+                        <i class="fas fa-truck-loading text-info me-1"></i> Bon de Livraison (BL)
+                    </li>
+                    <li>
+                        <a class="dropdown-item rounded-2 py-1.5 px-2" href="{{ route('invoices.delivery-note', $invoice) }}">
+                            <i class="fas fa-file-alt text-info me-1.5"></i> Consulter le BL
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item rounded-2 py-1.5 px-2" href="{{ route('invoices.delivery-note.download', [$invoice, 'with_stamp' => 1]) }}">
+                            <i class="fas fa-stamp text-primary me-1.5"></i> BL avec Cachet
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item rounded-2 py-1.5 px-2" target="_blank" href="{{ route('invoices.delivery-note.print', [$invoice, 'with_stamp' => 1]) }}">
+                            <i class="fas fa-print text-secondary me-1.5"></i> Imprimer le BL
+                        </a>
+                    </li>
                 </ul>
             </div>
 

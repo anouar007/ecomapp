@@ -44,6 +44,9 @@
                 <a href="{{ route('invoices.show', $order->invoice) }}" class="btn btn-sm btn-success rounded-pill px-3 py-1.5 d-inline-flex align-items-center justify-content-center gap-1.5 shadow-sm text-white">
                     <i class="fas fa-file-invoice"></i> <span>Facture #{{ $order->invoice->invoice_number }}</span>
                 </a>
+                <a href="{{ route('invoices.delivery-note', $order->invoice) }}" class="btn btn-sm btn-info rounded-pill px-3 py-1.5 d-inline-flex align-items-center justify-content-center gap-1.5 shadow-sm text-white" style="background: #0284c7; border-color: #0284c7;" title="Consulter le Bon de Livraison conforme Maroc">
+                    <i class="fas fa-truck-loading"></i> <span>BL #{{ $order->invoice->delivery_note_number }}</span>
+                </a>
             @endif
 
             <!-- Devis -->

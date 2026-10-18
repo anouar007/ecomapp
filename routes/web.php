@@ -81,6 +81,9 @@ Route::middleware('auth')->group(function () {
         Route::get('invoices/{invoice}/guarantee', [\App\Http\Controllers\InvoiceController::class, 'guarantee'])->name('invoices.guarantee');
         Route::get('invoices/{invoice}/guarantee/download', [\App\Http\Controllers\InvoiceController::class, 'downloadGuarantee'])->name('invoices.guarantee.download');
         Route::get('invoices/{invoice}/guarantee/print', [\App\Http\Controllers\InvoiceController::class, 'printGuarantee'])->name('invoices.guarantee.print');
+        Route::get('invoices/{invoice}/delivery-note', [\App\Http\Controllers\InvoiceController::class, 'deliveryNote'])->name('invoices.delivery-note');
+        Route::get('invoices/{invoice}/delivery-note/download', [\App\Http\Controllers\InvoiceController::class, 'downloadDeliveryNote'])->name('invoices.delivery-note.download');
+        Route::get('invoices/{invoice}/delivery-note/print', [\App\Http\Controllers\InvoiceController::class, 'printDeliveryNote'])->name('invoices.delivery-note.print');
         Route::post('invoices/{invoice}/email', [\App\Http\Controllers\InvoiceController::class, 'email'])->name('invoices.email');
         Route::post('invoices/{invoice}/quick-status', [\App\Http\Controllers\InvoiceController::class, 'quickUpdateStatus'])->name('invoices.quick-status');
         Route::post('orders/{order}/generate-invoice', [\App\Http\Controllers\InvoiceController::class, 'generateFromOrder'])->name('orders.generate-invoice');

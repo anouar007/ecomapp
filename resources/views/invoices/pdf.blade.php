@@ -99,72 +99,52 @@
             color: #0f172a;
         }
 
-        /* ── Parties Table ── */
-        .parties-table {
+        /* ── Client Banner (Full Width, Low Height) ── */
+        .client-banner {
             width: 100%;
-            margin-bottom: 16px;
-        }
-
-        .party-box {
-            background: #f8fafc;
+            margin-bottom: 14px;
+            background-color: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-top: 2px solid #334155;
-            padding: 10px 12px;
-            border-radius: 0 0 4px 4px;
+            border-left: 3px solid #0f172a;
+            border-radius: 4px;
+            padding: 8px 12px;
         }
 
-        .party-box.client {
-            border-top-color: #475569;
+        .client-table {
+            width: 100%;
+            border-collapse: collapse;
         }
 
-        .party-label {
+        .client-role {
             font-size: 7.5px;
             font-weight: bold;
             color: #475569;
             text-transform: uppercase;
-            letter-spacing: 1.2px;
-            margin-bottom: 4px;
-        }
-
-        .party-box.client .party-label {
-            color: #475569;
-        }
-
-        .party-name {
-            font-size: 13px;
-            font-weight: bold;
-            color: #0f172a;
-            margin-bottom: 3px;
-        }
-
-        .party-detail {
-            font-size: 8.5px;
-            color: #475569;
-            line-height: 1.4;
-        }
-
-        .fiscal-badge {
-            display: inline-block;
-            background: #f1f5f9;
-            border: 1px solid #e2e8f0;
-            border-radius: 2px;
-            padding: 2px 5px;
-            font-size: 8px;
-            font-weight: bold;
-            color: #334155;
-            margin-right: 4px;
-            margin-top: 4px;
+            letter-spacing: 0.8px;
         }
 
         .client-ice-badge {
             display: inline-block;
-            background: #f1f5f9;
-            color: #334155;
-            border: 1px solid #e2e8f0;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 8.5px;
+            background: #ffffff;
+            color: #0f172a;
+            border: 1px solid #cbd5e1;
+            padding: 1px 6px;
+            border-radius: 2px;
+            font-size: 8px;
             font-weight: bold;
+        }
+
+        .client-name {
+            font-size: 13px;
+            font-weight: bold;
+            color: #0f172a;
+            letter-spacing: -0.2px;
+            margin-top: 2px;
+        }
+
+        .client-detail {
+            font-size: 8.5px;
+            color: #475569;
         }
 
         /* ── Items Table ── */
@@ -340,24 +320,38 @@
             text-align: center;
         }
 
+
         /* ── Fixed Footer ── */
         .footer {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            height: 28px;
+            height: 32px;
             background: #ffffff;
             border-top: 1px solid #e2e8f0;
             color: #64748b;
-            font-size: 8.5px;
+            font-size: 7.5px;
             font-weight: 500;
-            line-height: 28px;
+            line-height: 14px;
             text-align: center;
-            padding: 0 34px;
+            padding: 4px 34px 0 34px;
         }
     </style>
 </head>
+@php
+    $companyName = setting('company_name') ?: (setting('app_name') ?: config('app.name', 'WINA SHOP'));
+    $companyTagline = setting('company_tagline') ?: (setting('company_website') ?: 'Commerce & Distribution');
+    $companyAddress = setting('company_address') ?: 'Casablanca, Maroc';
+    $companyPhone = setting('company_phone');
+    $companyEmail = setting('company_email') ?: config('mail.from.address', 'contact@winashop.com');
+    $companyIce = setting('company_tax_id') ?: setting('company_ice', '002938475000089');
+    $companyRc = setting('company_registry_id') ?: setting('company_rc', '49821');
+    $companyIf = setting('company_fiscal_id') ?: setting('company_if', '39482710');
+    $companyPatente = setting('company_patente') ?: '37920194';
+    $companyCnss = setting('company_cnss');
+@endphp
+
 <body>
     <div class="top-stripe"></div>
     <div class="page">
@@ -379,10 +373,8 @@
                                 @endif
                             @endif
                             <td style="vertical-align:middle;">
-                                <div class="company-name">{{ setting('company_name', setting('app_name')) }}</div>
-                                @if(setting('company_website'))
-                                    <div class="company-tagline">{{ setting('company_website') }}</div>
-                                @endif
+                                <div class="company-name">{{ $companyName }}</div>
+                                <div class="company-tagline">{{ $companyTagline }}</div>
                             </td>
                         </tr>
                     </table>
@@ -411,58 +403,36 @@
             </tr>
         </table>
 
-        {{-- ══════════ PARTIES (ÉMETTEUR & CLIENT) ══════════ --}}
-        <table class="parties-table">
-            <tr>
-                {{-- Vendor / Émetteur --}}
-                <td style="width:48%; vertical-align:top;">
-                    <div class="party-box">
-                        <div class="party-label">ÉMETTEUR / FOURNISSEUR</div>
-                        <div class="party-name">{{ setting('company_name', setting('app_name')) }}</div>
-                        <div class="party-detail">
-                            @if(setting('company_address'))<div>{{ setting('company_address') }}</div>@endif
-                            <div style="margin-top:2px;">
-                                @if(setting('company_phone'))<span>Tél : {{ setting('company_phone') }}</span>@endif
-                                @if(setting('company_phone') && setting('company_email'))&nbsp;•&nbsp;@endif
-                                @if(setting('company_email'))<span>{{ setting('company_email') }}</span>@endif
-                            </div>
-                        </div>
-                        @if(setting('company_tax_id') || setting('company_registry_id') || setting('company_fiscal_id') || setting('company_patente'))
-                        <div style="margin-top:6px; padding-top:6px; border-top:1px solid #e2e8f0;">
-                            @if(setting('company_tax_id'))<span class="fiscal-badge">ICE : {{ setting('company_tax_id') }}</span>@endif
-                            @if(setting('company_registry_id'))<span class="fiscal-badge">RC : {{ setting('company_registry_id') }}</span>@endif
-                            @if(setting('company_fiscal_id'))<span class="fiscal-badge">IF : {{ setting('company_fiscal_id') }}</span>@endif
-                            @if(setting('company_patente'))<span class="fiscal-badge">Patente : {{ setting('company_patente') }}</span>@endif
-                        </div>
-                        @endif
-                    </div>
-                </td>
-
-                <td style="width:4%;"></td>
-
-                {{-- Client / Destinataire --}}
-                <td style="width:48%; vertical-align:top;">
-                    <div class="party-box client">
-                        <div class="party-label">{{ $invoice->isQuote() ? 'DESTINATAIRE' : 'CLIENT / FACTURÉ À' }}</div>
-                        <div class="party-name">{{ $invoice->customer_name }}</div>
-                        <div class="party-detail">
-                            @php $address = $invoice->customer_address ?: ($invoice->order->shipping_address ?? null); @endphp
-                            @if($address)<div>{{ $address }}</div>@endif
-                            <div style="margin-top:2px;">
-                                @if($invoice->customer_phone)<span>Tél : {{ $invoice->customer_phone }}</span>@endif
-                                @if($invoice->customer_phone && $invoice->customer_email)&nbsp;•&nbsp;@endif
-                                @if($invoice->customer_email)<span>{{ $invoice->customer_email }}</span>@endif
-                            </div>
-                        </div>
+        {{-- ══════════ CLIENT (FULL WIDTH, LOW HEIGHT) ══════════ --}}
+        <div class="client-banner">
+            <table class="client-table">
+                <tr>
+                    <td style="vertical-align: middle;">
+                        <span class="client-role">{{ $invoice->isQuote() ? 'DESTINATAIRE / DEVIS POUR' : 'CLIENT / FACTURÉ À' }}</span>
+                    </td>
+                    <td style="vertical-align: middle; text-align: right;">
                         @if($invoice->ice)
-                        <div style="margin-top:6px; padding-top:6px; border-top:1px solid #e2e8f0;">
-                            <span class="client-ice-badge">ICE Client : {{ $invoice->ice }}</span>
-                        </div>
+                            <span class="client-ice-badge">ICE : {{ $invoice->ice }}</span>
                         @endif
-                    </div>
-                </td>
-            </tr>
-        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: middle;">
+                        <div class="client-name">{{ $invoice->customer_name }}</div>
+                    </td>
+                    <td style="vertical-align: middle; text-align: right;">
+                        <div class="client-detail">
+                            @php $address = $invoice->customer_address ?: ($invoice->order->shipping_address ?? null); @endphp
+                            @if($address)<span>{{ $address }}{{ $invoice->customer_city ? ', ' . $invoice->customer_city : '' }}</span>@endif
+                            @if($address && $invoice->customer_phone)&nbsp;&bull;&nbsp;@endif
+                            @if($invoice->customer_phone)<span>Tél : {{ $invoice->customer_phone }}</span>@endif
+                            @if(($address || $invoice->customer_phone) && $invoice->customer_email)&nbsp;&bull;&nbsp;@endif
+                            @if($invoice->customer_email)<span>{{ $invoice->customer_email }}</span>@endif
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
 
         {{-- ══════════ ITEMS TABLE ══════════ --}}
         <table class="items-table">
@@ -470,10 +440,9 @@
                 <tr>
                     <th style="width:5%; text-align:center;">N°</th>
                     <th style="width:47%; text-align:left;">Désignation / Description</th>
-                    <th style="width:8%; text-align:center;">Qté</th>
-                    <th style="width:14%; text-align:right;">P.U. TTC</th>
-                    <th style="width:10%; text-align:center;">{{ $invoice->tax_label }} %</th>
-                    <th style="width:16%; text-align:right;">Total TTC</th>
+                    <th style="width:18%; text-align:right;">P.U. HT</th>
+                    <th style="width:10%; text-align:center;">Qté</th>
+                    <th style="width:20%; text-align:right;">Total HT</th>
                 </tr>
             </thead>
             <tbody>
@@ -486,10 +455,9 @@
                         <div class="item-sku">Réf : {{ $item->product_sku }}</div>
                         @endif
                     </td>
+                    <td style="text-align:right;">{{ $item->formatted_unit_price_ht }}</td>
                     <td style="text-align:center; font-weight:bold;">{{ $item->quantity }}</td>
-                    <td style="text-align:right;">{{ $item->formatted_unit_price }}</td>
-                    <td style="text-align:center; color:#64748b;">{{ $invoice->formatted_tax_rate }}</td>
-                    <td style="text-align:right; font-weight:bold; color:#0f172a;">{{ $item->formatted_total_price }}</td>
+                    <td style="text-align:right; font-weight:bold; color:#0f172a;">{{ $item->formatted_total_price_ht }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -538,6 +506,12 @@
                             <span class="total-label">{{ $invoice->tax_label }} ({{ $invoice->formatted_tax_rate }})</span>
                             <span class="total-val">{{ $invoice->formatted_tax_amount }}</span>
                         </div>
+                        @if($invoice->shipping_cost > 0)
+                        <div class="total-row">
+                            <span class="total-label">Frais de livraison</span>
+                            <span class="total-val">{{ $invoice->formatted_shipping_cost }}</span>
+                        </div>
+                        @endif
                         @if($invoice->discount_amount > 0)
                         <div class="total-row">
                             <span class="total-label">Remise</span>
@@ -549,27 +523,39 @@
                         <div class="grand-value">{{ $invoice->formatted_total_amount }}</div>
                     </div>
 
-                    {{-- Cachet Box under Totals --}}
-                    @if(($withStamp ?? $invoice->with_stamp ?? true) && setting('company_stamp'))
-                        @php
-                            $stampPath = public_path('storage/' . setting('company_stamp'));
-                            $stampW = round(120 * intval(setting('company_stamp_scale', 100)) / 100);
-                        @endphp
-                        @if(file_exists($stampPath))
-                        <div class="stamp-box">
-                            <img src="data:image/{{ pathinfo($stampPath, PATHINFO_EXTENSION) }};base64,{{ base64_encode(file_get_contents($stampPath)) }}"
-                                 style="max-width:{{ $stampW }}px; max-height:80px; display:block; margin:0 auto;">
-                        </div>
+                    {{-- Dedicated space for the auto-added Cachet --}}
+                    <div class="stamp-box">
+                        @if(($withStamp ?? $invoice->with_stamp ?? true) && setting('company_stamp'))
+                            @php
+                                $stampPath = public_path('storage/' . setting('company_stamp'));
+                                $stampW = round(120 * intval(setting('company_stamp_scale', 100)) / 100);
+                            @endphp
+                            @if(file_exists($stampPath))
+                                <img src="data:image/{{ pathinfo($stampPath, PATHINFO_EXTENSION) }};base64,{{ base64_encode(file_get_contents($stampPath)) }}"
+                                     style="max-width:{{ $stampW }}px; max-height:55px; display:block; margin:0 auto;">
+                            @endif
                         @endif
-                    @endif
+                    </div>
                 </td>
             </tr>
         </table>
     </div>
 
-    {{-- ══════════ FOOTER ══════════ --}}
+    {{-- ══════════ EXECUTIVE MOROCCAN LEGAL FOOTER ══════════ --}}
     <div class="footer">
-        {{ $invoice->isQuote() ? 'Merci de votre confiance !' : 'Merci pour votre achat !' }}
+        <div>
+            <strong>{{ $companyName }}</strong>
+            @if(setting('company_legal_form', 'SARL')) &bull; Société {{ setting('company_legal_form', 'SARL') }} @endif
+            @if(setting('company_capital')) &bull; Capital : {{ setting('company_capital') }} DH @endif
+            @if($companyAddress) &bull; {{ $companyAddress }} @endif
+            @if($companyPhone) &bull; Tél : {{ $companyPhone }} @endif
+            @if($companyEmail) &bull; {{ $companyEmail }} @endif
+        </div>
+        <div style="margin-top: 2px;">
+            ICE : {{ $companyIce }} &bull; IF : {{ $companyIf }} &bull; RC : {{ $companyRc }} &bull; Patente : {{ $companyPatente }}
+            @if($companyCnss) &bull; CNSS : {{ $companyCnss }} @endif
+            &bull; {{ $invoice->isQuote() ? 'Merci pour votre confiance !' : 'Merci pour votre achat !' }}
+        </div>
     </div>
 </body>
 </html>

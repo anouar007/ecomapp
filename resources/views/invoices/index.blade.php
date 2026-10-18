@@ -636,6 +636,28 @@
                                             </a>
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
+                                        <li class="dropdown-header text-uppercase fw-bold" style="color: #0284c7;">
+                                            <i class="fas fa-truck-loading me-1"></i> Bon de Livraison (BL)
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('invoices.delivery-note', $invoice) }}">
+                                                <i class="fas fa-file-alt text-info" style="width: 16px;"></i>
+                                                <span>Consulter le BL (Maroc)</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('invoices.delivery-note.download', [$invoice, 'with_stamp' => 1]) }}">
+                                                <i class="fas fa-stamp text-primary" style="width: 16px;"></i>
+                                                <span>Télécharger BL (avec cachet)</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" target="_blank" href="{{ route('invoices.delivery-note.print', [$invoice, 'with_stamp' => 1]) }}">
+                                                <i class="fas fa-print text-secondary" style="width: 16px;"></i>
+                                                <span>Imprimer le BL</span>
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
                                         <li class="dropdown-header text-uppercase fw-bold">Gestion & Modification</li>
                                         <li>
                                             <button type="button" class="dropdown-item" onclick="openInvoiceEmailModal({{ $invoice->id }}, '{{ addslashes($invoice->display_number ?? $invoice->invoice_number) }}', '{{ addslashes($invoice->customer_name ?? '') }}', '{{ addslashes($invoice->customer_email ?? '') }}', '{{ $invoice->isQuote() ? 'devis' : 'facture' }}', {{ $invoice->with_stamp ? 'true' : 'false' }}, '{{ $invoice->formatted_total_amount }}')">

@@ -15,16 +15,23 @@ class Invoice extends Model
         'type',
         'order_id',
         'customer_name',
+        'customer_company',
         'customer_email',
-        'customer_phone','ice',
+        'customer_phone',
+        'ice',
+        'customer_rc',
+        'customer_if',
+        'customer_patente',
         'customer_address',
         'subtotal',
         'tax_amount',
         'tax_rate',
         'discount_amount',
+        'shipping_cost',
         'total_amount',
         'payment_method',
         'payment_status',
+        'stock_deducted',
         'with_stamp',
         'notes',
         'issued_at',
@@ -37,8 +44,10 @@ class Invoice extends Model
         'tax_amount' => 'decimal:2',
         'tax_rate' => 'decimal:2',
         'discount_amount' => 'decimal:2',
+        'shipping_cost' => 'decimal:2',
         'total_amount' => 'decimal:2',
         'with_stamp' => 'boolean',
+        'stock_deducted' => 'boolean',
         'issued_at' => 'datetime',
         'due_date' => 'date',
     ];
@@ -169,6 +178,31 @@ class Invoice extends Model
     }
 
     /**
+     * Get the formatted delivery note (Bon de Livraison) number (e.g. BL-2026-10-0004).
+     */
+    public function getDeliveryNoteNumberAttribute(): string
+    {
+        $num = $this->invoice_number;
+        if (str_starts_with($num, 'INV-')) {
+            return 'BL-' . substr($num, 4);
+        } elseif (str_starts_with($num, 'DEV-')) {
+            return 'BL-' . substr($num, 4);
+        }
+        return 'BL-' . $num;
+    }
+
+    /**
+     * Get total quantity of items delivered.
+     */
+    public function getTotalQuantityAttribute(): int
+    {
+        if ($this->relationLoaded('items')) {
+            return (int) $this->items->sum('quantity');
+        }
+        return (int) $this->items()->sum('quantity');
+    }
+
+    /**
      * Get status badge color.
      */
 
@@ -276,29 +310,63 @@ class Invoice extends Model
     }
 
     /**
-     * Dynamic Subtotal (HT) based on dynamic tax rate from settings.
+     * Get effective shipping cost (from invoice or linked order).
+     */
+    public function getShippingCostAttribute($value): float
+    {
+        if ($value !== null && floatval($value) > 0) {
+            return floatval($value);
+        }
+        if ($this->relationLoaded('order') && $this->order && $this->order->shipping_cost > 0) {
+            return floatval($this->order->shipping_cost);
+        } elseif (!$this->relationLoaded('order') && $this->order_id) {
+            $orderShipping = $this->order?->shipping_cost;
+            if ($orderShipping > 0) {
+                return floatval($orderShipping);
+            }
+        }
+        return floatval($value ?: 0);
+    }
+
+    /**
+     * Get formatted shipping cost.
+     */
+    public function getFormattedShippingCostAttribute(): string
+    {
+        return currency($this->shipping_cost);
+    }
+
+    /**
+     * Dynamic Subtotal (HT) based on dynamic tax rate from settings, excluding delivery price from tax.
      */
     public function getSubtotalAttribute($value): float
     {
         $settingRate = setting('tax_rate');
         if ($settingRate !== null && $settingRate !== '') {
             $rate = floatval($settingRate) / 100;
+            $shipping = floatval($this->shipping_cost);
+            $taxableTtc = max(0, floatval($this->total_amount) - $shipping + floatval($this->discount_amount));
             if ($rate <= 0) {
-                return floatval($this->total_amount);
+                return round($taxableTtc, 2);
             }
-            return round(floatval($this->total_amount) / (1 + $rate), 2);
+            if ($this->relationLoaded('items') && $this->items->isNotEmpty()) {
+                return round($this->items->sum('total_price_ht'), 2);
+            }
+            return round($taxableTtc / (1 + $rate), 2);
         }
         return floatval($value ?: $this->total_amount);
     }
 
     /**
-     * Dynamic Tax Amount (TVA) based on dynamic tax rate from settings.
+     * Dynamic Tax Amount (TVA) based on dynamic tax rate from settings, excluding delivery price from tax.
      */
     public function getTaxAmountAttribute($value): float
     {
         $settingRate = setting('tax_rate');
         if ($settingRate !== null && $settingRate !== '') {
-            return round(floatval($this->total_amount) - $this->subtotal, 2);
+            $shipping = floatval($this->shipping_cost);
+            $taxableTtc = max(0, floatval($this->total_amount) - $shipping + floatval($this->discount_amount));
+            return round($taxableTtc - $this->subtotal, 2);
         }
         return floatval($value ?: 0);
     }
