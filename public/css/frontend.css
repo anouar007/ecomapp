@@ -2966,7 +2966,7 @@ a {
 }
 
 .pdp-title {
-    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-size: clamp(1.4rem, 3vw, 2.2rem);
     font-weight: 800;
     color: var(--text-dark);
     line-height: 1.2;
@@ -3992,7 +3992,7 @@ dt,
 .rounded-end,
 .btn,
 .btn-group,
-.btn-group > .btn,
+.btn-group>.btn,
 button:not([class*="pulse"]):not([class*="dot"]),
 input,
 select,

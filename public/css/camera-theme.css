@@ -5316,7 +5316,7 @@ body:has(.offcanvas.show) .whatsapp-float {
 .pdp-title {
     font-family: var(--font-heading) !important;
     font-weight: 900;
-    font-size: clamp(1.6rem, 2.5vw, 2.3rem);
+    font-size: clamp(1.4rem, 2.5vw, 2.3rem);
     color: var(--brand-black) !important;
     line-height: 1.25;
     margin-bottom: 14px;

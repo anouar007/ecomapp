@@ -195,23 +195,6 @@
 
 @section('content')
 
-{{-- BREADCRUMB --}}
-<section class="pdp-breadcrumb-bar">
-    <div class="container">
-        <nav class="pdp-breadcrumb" aria-label="breadcrumb">
-            <a href="{{ url('/') }}"><i class="fas fa-home"></i></a>
-            <span class="pdp-bc-sep">/</span>
-            <a href="{{ route('shop.index') }}">{{ __('Catalogue') }}</a>
-            @if($product->category_name)
-                <span class="pdp-bc-sep">/</span>
-                <a href="{{ route('shop.index', ['category' => $product->category_slug ?? optional($product->category)->slug ?? optional($product->productCategory)->slug]) }}">{{ $product->category_name }}</a>
-            @endif
-            <span class="pdp-bc-sep">/</span>
-            <span class="pdp-bc-current">{{ Str::limit($product->name, 40) }}</span>
-        </nav>
-    </div>
-</section>
-
 {{-- MAIN PRODUCT LAYOUT --}}
 <section class="pdp-body">
     <div class="container">
