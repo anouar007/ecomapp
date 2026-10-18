@@ -2721,7 +2721,7 @@ a {
 .pcard-price-main-line {
     display: flex;
     align-items: center;
-    justify-content: space-around !important;
+    justify-content: space-between !important;
     width: 100%;
     gap: 4px;
 }

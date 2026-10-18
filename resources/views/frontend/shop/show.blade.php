@@ -534,7 +534,7 @@
                             </div>
                             <div>
                                 <div class="pcard-price mb-0">
-                                    <div class="pcard-price-main-line d-flex align-items-center justify-content-around gap-1 w-100">
+                                    <div class="pcard-price-main-line d-flex align-items-center justify-content-between gap-1 w-100">
                                         @if($related->isOnSale())
                                             <span class="pcard-price-current text-nowrap">{{ $related->formatted_sale_price }}</span>
                                         @elseif($related->price && $related->price > 0)

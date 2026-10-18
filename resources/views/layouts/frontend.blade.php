@@ -396,7 +396,7 @@
         .selection-card .pcard-price-main-line {
             display: flex !important;
             align-items: center !important;
-            justify-content: space-around !important;
+            justify-content: space-between !important;
             width: 100% !important;
             height: 21px !important;
             min-height: 21px !important;
@@ -475,6 +475,43 @@
         .featured-pro-card .stock-pulse-dot {
             width: 4px !important;
             height: 4px !important;
+        }
+
+        .search-result-price-wrap,
+        .pro-result-price-wrap {
+            display: inline-flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            line-height: 1.15 !important;
+        }
+
+        .search-result-price,
+        .pro-result-price {
+            font-family: var(--font-mono, monospace) !important;
+            font-weight: 800 !important;
+            font-size: 0.85rem !important;
+            color: #0f172a !important;
+            line-height: 1.15 !important;
+        }
+
+        .search-result-price-old,
+        .pro-result-price-old {
+            font-family: var(--font-mono, monospace) !important;
+            font-size: 0.72rem !important;
+            color: #dc2626 !important;
+            text-decoration: line-through !important;
+            display: block !important;
+            line-height: 1.15 !important;
+            margin-top: 1px !important;
+        }
+
+        mark.search-highlight,
+        .search-highlight {
+            background: rgba(22, 163, 74, 0.16) !important;
+            color: #16a34a !important;
+            font-weight: 800 !important;
+            padding: 0 2px !important;
+            border-radius: 3px !important;
         }
 
         .featured-stock-badge-corner {
@@ -565,7 +602,7 @@
             .selection-card .pcard-price-main-line {
                 display: flex !important;
                 align-items: center !important;
-                justify-content: space-around !important;
+                justify-content: space-between !important;
                 width: 100% !important;
                 height: 19px !important;
                 min-height: 19px !important;
@@ -2172,8 +2209,8 @@
                     `;
                     data.products.forEach((p, idx) => {
                         const priceHtml = p.is_sale 
-                            ? `<span class="search-result-price">${escapeHtml(p.sale_price)}</span> <span class="search-result-price-old">${escapeHtml(p.price)}</span>`
-                            : `<span class="search-result-price">${escapeHtml(p.price)}</span>`;
+                            ? `<div class="search-result-price-wrap"><span class="search-result-price">${escapeHtml(p.sale_price)}</span><span class="search-result-price-old">${escapeHtml(p.price)}</span></div>`
+                            : `<div class="search-result-price-wrap"><span class="search-result-price">${escapeHtml(p.price)}</span></div>`;
 
                         const stockHtml = p.in_stock 
                             ? `<span class="search-result-stock">{{ __('In stock') }}</span>`
@@ -2505,8 +2542,8 @@
                     `;
                     data.products.forEach(p => {
                         const priceHtml = p.is_sale 
-                            ? `<span class="pro-result-price">${escapeHtml(p.sale_price)}</span> <span class="pro-result-price-old">${escapeHtml(p.price)}</span>`
-                            : `<span class="pro-result-price">${escapeHtml(p.price)}</span>`;
+                            ? `<div class="pro-result-price-wrap"><span class="pro-result-price">${escapeHtml(p.sale_price)}</span><span class="pro-result-price-old">${escapeHtml(p.price)}</span></div>`
+                            : `<div class="pro-result-price-wrap"><span class="pro-result-price">${escapeHtml(p.price)}</span></div>`;
 
                         const stockHtml = p.in_stock 
                             ? `<span class="pro-result-stock">{{ __('In stock') }}</span>`

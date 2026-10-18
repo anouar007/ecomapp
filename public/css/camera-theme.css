@@ -922,18 +922,29 @@ dt {
     margin-top: 2px;
 }
 
+.search-result-price-wrap {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.15;
+}
+
 .search-result-price {
     font-family: var(--font-mono);
     font-weight: 800;
     font-size: 0.85rem;
-    color: var(--brand-red);
+    color: #0f172a !important;
+    line-height: 1.15;
 }
 
 .search-result-price-old {
     font-family: var(--font-mono);
     font-size: 0.72rem;
-    color: var(--text-dim);
+    color: #dc2626 !important;
     text-decoration: line-through;
+    display: block;
+    line-height: 1.15;
+    margin-top: 1px;
 }
 
 .search-result-stock {
@@ -975,12 +986,13 @@ dt {
     color: var(--brand-red);
 }
 
-mark.search-highlight {
-    background: rgba(220, 38, 38, 0.15);
-    color: var(--brand-red);
-    font-weight: 800;
-    padding: 0 1px;
-    border-radius: 2px;
+mark.search-highlight,
+.search-highlight {
+    background: rgba(22, 163, 74, 0.16) !important;
+    color: #16a34a !important;
+    font-weight: 800 !important;
+    padding: 0 2px;
+    border-radius: 3px;
 }
 
 .search-dropdown-footer {
@@ -6825,17 +6837,28 @@ body.pro-mobile-search-open {
     flex-wrap: wrap;
 }
 
+.pro-result-price-wrap {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.15;
+}
+
 .pro-result-price {
     font-family: var(--font-mono);
     font-weight: 700;
     font-size: 0.9rem;
-    color: var(--brand-black);
+    color: #0f172a !important;
+    line-height: 1.15;
 }
 
 .pro-result-price-old {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     text-decoration: line-through;
-    color: #94a3b8;
+    color: #dc2626 !important;
+    display: block;
+    line-height: 1.15;
+    margin-top: 1px;
 }
 
 .pro-result-stock {
@@ -9456,7 +9479,7 @@ html[dir="rtl"] .insta360-promo-overlay {
 .featured-pro-card .pcard-price-main-line {
     display: flex !important;
     align-items: center !important;
-    justify-content: space-around !important;
+    justify-content: space-between !important;
     width: 100% !important;
     height: 21px !important;
     min-height: 21px !important;
@@ -10799,7 +10822,7 @@ html[dir="rtl"] .whatsapp-float:hover .whatsapp-float-tooltip {
     .featured-pro-card .pcard-price-main-line {
         display: flex !important;
         align-items: center !important;
-        justify-content: space-around !important;
+        justify-content: space-between !important;
         width: 100% !important;
         height: 19px !important;
         min-height: 19px !important;
