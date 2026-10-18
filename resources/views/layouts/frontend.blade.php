@@ -481,7 +481,7 @@
         .selection-card .featured-stock-pill:not(.featured-stock-pill--out),
         .featured-pro-card .featured-stock-pill:not(.featured-stock-pill--out) {
             background: rgba(2, 168, 38, 0.08) !important;
-            border: 1px solid rgba(2, 168, 38, 0.22) !important;
+            border: none !important;
             color: #02a826 !important;
             font-weight: 700 !important;
             border-radius: 20px !important;
@@ -493,13 +493,13 @@
         .pdp-stock-badge--in i,
         .featured-stock-pill:not(.featured-stock-pill--out) i {
             color: #02a826 !important;
-            font-size: 0.72rem !important;
+            font-size: 0.61rem !important;
         }
 
         .featured-stock-pill {
-            font-size: 0.68rem !important;
-            padding: 3px 8px !important;
-            gap: 3px !important;
+            font-size: 0.58rem !important;
+            padding: 2px 6px !important;
+            gap: 2.5px !important;
             margin: 0 !important;
             margin-left: 5px !important;
             flex-shrink: 0 !important;
@@ -529,6 +529,15 @@
             width: 4px !important;
             height: 4px !important;
             background: #02a826 !important;
+        }
+
+        /* Tighter spacing between Add to Cart row and Commander button */
+        .pdp-cart-row {
+            margin-bottom: 0px !important;
+        }
+
+        .pdp-commander-wrap {
+            margin-top: 8px !important;
         }
 
         .search-result-price-wrap,
@@ -701,15 +710,15 @@
             .selection-card .featured-stock-pill,
             .featured-pro-card .featured-stock-pill,
             .featured-stock-pill {
-                font-size: 0.58rem !important;
-                padding: 2px 6px !important;
+                font-size: 0.49rem !important;
+                padding: 1.5px 5px !important;
                 border-radius: 20px !important;
                 margin: 0 !important;
-                margin-left: 5px !important;
+                margin-left: 4px !important;
                 flex-shrink: 0 !important;
             }
             .featured-stock-pill i {
-                font-size: 0.62rem !important;
+                font-size: 0.53rem !important;
             }
 
             .featured-stock-badge-corner {

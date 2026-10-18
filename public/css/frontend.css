@@ -3063,7 +3063,7 @@ a {
 
 .pdp-stock-badge--in {
     background: rgba(2, 168, 38, .08);
-    border: 1px solid rgba(2, 168, 38, .22);
+    border: none;
     color: #02a826;
 }
 
@@ -3095,7 +3095,7 @@ a {
     gap: 12px;
     align-items: center;
     flex-wrap: wrap;
-    margin-bottom: 20px;
+    margin-bottom: 0px;
 }
 
 .pdp-qty-wrap {

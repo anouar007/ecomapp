@@ -88,6 +88,20 @@ class Product extends Model
                 }
             }
         });
+
+        static::saved(function () {
+            \Illuminate\Support\Facades\Cache::forget('home_featured_products_v1');
+            \Illuminate\Support\Facades\Cache::forget('home_new_arrival_products_v1');
+            \Illuminate\Support\Facades\Cache::forget('home_occasion_products_v1');
+            \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
+        });
+
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget('home_featured_products_v1');
+            \Illuminate\Support\Facades\Cache::forget('home_new_arrival_products_v1');
+            \Illuminate\Support\Facades\Cache::forget('home_occasion_products_v1');
+            \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
+        });
     }
 
     /**
@@ -95,20 +109,25 @@ class Product extends Model
      */
     public function isOnSale()
     {
-        return $this->sale_price 
-            && $this->sale_price < $this->price
-            && (!$this->sale_end_date || $this->sale_end_date->isFuture());
+        $hasSale = $this->sale_price !== null 
+            && (float)$this->sale_price > 0 
+            && (float)$this->price > 0 
+            && (float)$this->sale_price != (float)$this->price;
+
+        return $hasSale && (!$this->sale_end_date || $this->sale_end_date->isFuture());
     }
 
     public function getDiscountPercentageAttribute()
     {
         if (!$this->isOnSale()) return 0;
-        return round((($this->price - $this->sale_price) / $this->price) * 100);
+        $max = max((float)$this->price, (float)$this->sale_price);
+        $min = min((float)$this->price, (float)$this->sale_price);
+        return $max > 0 ? round((($max - $min) / $max) * 100) : 0;
     }
 
     public function getFormattedSalePriceAttribute()
     {
-        return currency($this->sale_price);
+        return currency($this->active_price);
     }
 
     /**
@@ -116,7 +135,10 @@ class Product extends Model
      */
     public function getActivePriceAttribute()
     {
-        return $this->isOnSale() ? $this->sale_price : $this->price;
+        if ($this->isOnSale()) {
+            return min((float)$this->price, (float)$this->sale_price);
+        }
+        return $this->price;
     }
 
     /**
@@ -124,7 +146,10 @@ class Product extends Model
      */
     public function getOldPriceAttribute()
     {
-        return $this->isOnSale() ? $this->price : null;
+        if ($this->isOnSale()) {
+            return max((float)$this->price, (float)$this->sale_price);
+        }
+        return null;
     }
 
     public function getFormattedActivePriceAttribute()
@@ -138,18 +163,11 @@ class Product extends Model
     }
 
     /**
-     * Get the comparison/reference old price to display on cards (ensures old price is always visible when product has a price).
+     * Get the comparison/reference old price to display on cards (only if available).
      */
     public function getCardOldPriceAttribute()
     {
-        if ($this->isOnSale()) {
-            return $this->price;
-        }
-        if ($this->price && $this->price > 0) {
-            $ref = round(($this->price * 1.15) / 10) * 10;
-            return $ref > $this->price ? $ref : ceil($this->price * 1.15);
-        }
-        return null;
+        return $this->old_price;
     }
 
     public function getFormattedCardOldPriceAttribute()
