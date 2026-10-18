@@ -41,23 +41,52 @@
                                style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s;">
                     </div>
                     <div>
-                        <label style="display: block; font-size: 14px; font-weight: 600; color: #64748b; margin-bottom: 8px;">Customer Email</label>
-                        <input type="email" name="customer_email" value="{{ old('customer_email', $invoice->customer_email) }}"
+                        <label style="display: block; font-size: 14px; font-weight: 600; color: #64748b; margin-bottom: 8px;">Company Name (Raison Sociale)</label>
+                        <input type="text" name="customer_company" value="{{ old('customer_company', $invoice->customer_company) }}"
                                style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px dashed #cbd5e1;">
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 6px;">ICE Client</label>
+                        <input type="text" name="ice" value="{{ old('ice', $invoice->ice) }}"
+                               style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; background: white;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 6px;">RC</label>
+                        <input type="text" name="customer_rc" value="{{ old('customer_rc', $invoice->customer_rc) }}"
+                               style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; background: white;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 6px;">IF</label>
+                        <input type="text" name="customer_if" value="{{ old('customer_if', $invoice->customer_if) }}"
+                               style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; background: white;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 6px;">Patente</label>
+                        <input type="text" name="customer_patente" value="{{ old('customer_patente', $invoice->customer_patente) }}"
+                               style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; background: white;">
                     </div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 20px;">
                     <div>
+                        <label style="display: block; font-size: 14px; font-weight: 600; color: #64748b; margin-bottom: 8px;">Customer Email</label>
+                        <input type="email" name="customer_email" value="{{ old('customer_email', $invoice->customer_email) }}"
+                               style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s;">
+                    </div>
+                    <div>
                         <label style="display: block; font-size: 14px; font-weight: 600; color: #64748b; margin-bottom: 8px;">Customer Phone</label>
                         <input type="text" name="customer_phone" value="{{ old('customer_phone', $invoice->customer_phone) }}"
                                style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s;">
                     </div>
-                    <div>
-                        <label style="display: block; font-size: 14px; font-weight: 600; color: #64748b; margin-bottom: 8px;">Address</label>
-                        <input type="text" name="customer_address" value="{{ old('customer_address', $invoice->customer_address) }}"
-                               style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s;">
-                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-size: 14px; font-weight: 600; color: #64748b; margin-bottom: 8px;">Address</label>
+                    <input type="text" name="customer_address" value="{{ old('customer_address', $invoice->customer_address) }}"
+                           style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s;">
                 </div>
             </div>
 

@@ -103,13 +103,11 @@ class CartService
             $itemCount += $item['quantity'];
         }
 
-        $taxRate = floatval(setting('tax_rate', 20)) / 100;
         $total = $subtotal;
-        $tax = $taxRate > 0 ? ($total - ($total / (1 + $taxRate))) : 0;
-        $subtotalNet = $total - $tax;
+        $tax = 0;
 
         return [
-            'subtotal' => $subtotalNet,
+            'subtotal' => $subtotal,
             'tax' => $tax,
             'total' => $total,
             'item_count' => $itemCount,

@@ -136,9 +136,7 @@ class POSController extends Controller
             }
             
             $total = $subtotal - $discount;
-            $taxRate = floatval(setting('tax_rate', 20)) / 100;
-            $tax = $taxRate > 0 ? ($total - ($total / (1 + $taxRate))) : 0;
-            $subtotalNet = $total - $tax;
+            $tax = 0;
 
             // Check if customer exists and has credit limit
             $customer = null;
@@ -182,8 +180,8 @@ class POSController extends Controller
                 'shipping_city' => 'Store',
                 'shipping_zip' => '00000',
                 'shipping_country' => 'US',
-                'subtotal' => $subtotalNet,
-                'tax' => $tax,
+                'subtotal' => $subtotal,
+                'tax' => 0,
                 'shipping_cost' => 0,
                 'discount' => $discount,
                 'total' => $total,
@@ -203,18 +201,28 @@ class POSController extends Controller
 
             // Create invoice if credit purchase
             if ($customer && $validated['payment_method'] === 'credit') {
+                $posTaxRate = floatval(setting('tax_rate', 20));
+                $posSubtotalHT = max(0, $subtotal - $discount);
+                $posTaxAmount = round($posSubtotalHT * ($posTaxRate / 100), 2);
+                $posTotalTTC = round($posSubtotalHT + $posTaxAmount, 2);
+
                 $invoice = \App\Models\Invoice::create([
                     'invoice_number' => \App\Models\Invoice::generateInvoiceNumber(),
                     'order_id' => $order->id,
                     'customer_name' => $customer->name,
+                    'customer_company' => $customer->company_name,
                     'customer_email' => $customer->email,
                     'customer_phone' => $customer->phone,
-                    'subtotal' => $subtotalNet,
-                    'tax_amount' => $tax,
-                    'tax_rate' => floatval(setting('tax_rate', 20)),
+                    'customer_rc' => $customer->rc,
+                    'customer_if' => $customer->if_number,
+                    'customer_patente' => $customer->patente,
+                    'customer_address' => $customer->address,
+                    'subtotal' => $posSubtotalHT,
+                    'tax_amount' => $posTaxAmount,
+                    'tax_rate' => $posTaxRate,
                     'ice' => $customer->ice ?? null,
-                    'discount_amount' => 0,
-                    'total_amount' => $total,
+                    'discount_amount' => $discount,
+                    'total_amount' => $posTotalTTC,
                     'payment_method' => 'credit',
                     'payment_status' => 'unpaid',
                     'notes' => 'POS Credit Purchase',
@@ -222,6 +230,17 @@ class POSController extends Controller
                     'due_date' => now()->addDays(30),
                     'created_by' => Auth::id(),
                 ]);
+
+                foreach ($orderItems as $itemData) {
+                    $invoice->items()->create([
+                        'product_id' => $itemData['product_id'],
+                        'product_name' => $itemData['product_name'],
+                        'product_sku' => $itemData['product_sku'] ?? null,
+                        'quantity' => $itemData['quantity'],
+                        'unit_price' => $itemData['price'],
+                        'total_price' => $itemData['price'] * $itemData['quantity'],
+                    ]);
+                }
 
                 // Update customer balance
                 $customer->updateBalance();

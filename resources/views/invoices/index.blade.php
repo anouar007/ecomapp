@@ -237,12 +237,26 @@
                                                 <i class="far fa-file-pdf text-muted" style="width: 14px;"></i> Devis sans Cachet
                                             </a>
                                         </li>
+                                        <li><hr class="dropdown-divider my-1"></li>
+                                        <li class="dropdown-header text-uppercase text-muted fw-bold" style="font-size: 9px; letter-spacing: 0.5px;">
+                                            <i class="fas fa-truck text-info me-1"></i> Bon de Livraison
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" href="{{ route('invoices.delivery_note.download', [$invoice, 'with_stamp' => 1]) }}">
+                                                <i class="fas fa-stamp" style="color: #0284c7; width: 14px;"></i> Bon de Livraison (Cachet)
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" href="{{ route('invoices.delivery_note.download', [$invoice, 'with_stamp' => 0]) }}">
+                                                <i class="far fa-file-pdf text-muted" style="width: 14px;"></i> Bon de Livraison (Standard)
+                                            </a>
+                                        </li>
                                     </ul>
                                 </div>
 
                                 <!-- Print Dropdown -->
                                 <div class="dropdown d-inline-block">
-                                    <button class="btn-action-icon" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" data-bs-popper-config='{"strategy":"fixed"}' aria-expanded="false" title="Imprimer (Facture / Devis)">
+                                    <button class="btn-action-icon" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" data-bs-popper-config='{"strategy":"fixed"}' aria-expanded="false" title="Imprimer (Facture / Devis / B.L.)">
                                         <i class="fas fa-print"></i>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="font-size: 12px; border-radius: 12px; min-width: 210px; padding: 6px; z-index: 99999;">
@@ -271,6 +285,20 @@
                                         <li>
                                             <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'devis', 'with_stamp' => 0]) }}">
                                                 <i class="fas fa-print text-muted" style="width: 14px;"></i> Imprimer Devis (Standard)
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider my-1"></li>
+                                        <li class="dropdown-header text-uppercase text-muted fw-bold" style="font-size: 9px; letter-spacing: 0.5px;">
+                                            <i class="fas fa-truck text-info me-1"></i> Bon de Livraison
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" target="_blank" href="{{ route('invoices.delivery_note.print', [$invoice, 'with_stamp' => 1]) }}">
+                                                <i class="fas fa-stamp" style="color: #0284c7; width: 14px;"></i> Imprimer B.L. (Cachet)
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" target="_blank" href="{{ route('invoices.delivery_note.print', [$invoice, 'with_stamp' => 0]) }}">
+                                                <i class="fas fa-print text-muted" style="width: 14px;"></i> Imprimer B.L. (Standard)
                                             </a>
                                         </li>
                                     </ul>

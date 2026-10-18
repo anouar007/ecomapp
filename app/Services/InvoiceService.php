@@ -43,9 +43,9 @@ class InvoiceService
             // Calculate tax and total
             $taxRate = floatval($data['tax_rate'] ?? setting('tax_rate', 20));
             $discountAmount = $data['discount_amount'] ?? 0;
-            $totalAmount = $subtotal - $discountAmount;
-            $taxAmount = $totalAmount - ($totalAmount / (1 + ($taxRate / 100)));
-            $subtotalNet = $totalAmount - $taxAmount;
+            $subtotalHT = $subtotal - $discountAmount;
+            $taxAmount = round($subtotalHT * ($taxRate / 100), 2);
+            $totalAmountTTC = round($subtotalHT + $taxAmount, 2);
 
             $invoice = Invoice::create([
                 'invoice_number' => Invoice::generateInvoiceNumber(),
@@ -54,18 +54,18 @@ class InvoiceService
                 'customer_email' => $data['customer_email'] ?? null,
                 'customer_phone' => $data['customer_phone'] ?? null,
                 'customer_address' => $data['customer_address'] ?? null,
-                'subtotal' => $subtotalNet,
+                'subtotal' => $subtotalHT,
                 'tax_amount' => $taxAmount,
                 'tax_rate' => $taxRate,
                 'discount_amount' => $discountAmount,
-                'total_amount' => $totalAmount,
+                'total_amount' => $totalAmountTTC,
                 'payment_method' => $data['payment_method'] ?? 'cash',
                 'payment_status' => $data['payment_status'] ?? 'unpaid',
                 'with_stamp' => $data['with_stamp'] ?? true,
                 'notes' => $data['notes'] ?? null,
                 'issued_at' => now(),
                 'due_date' => $data['due_date'] ?? now()->addDays(30),
-                'created_by' => Auth::id(),
+                'created_by' => Auth::id() ?? \App\Models\User::first()?->id,
             ]);
 
             // Create invoice items
@@ -91,42 +91,72 @@ class InvoiceService
                 throw new \Exception('Invoice already exists for this order.');
             }
 
-            $subtotal = $order->items->sum(fn($item) => $item->unit_price * $item->quantity);
             $taxRate = floatval(setting('tax_rate', 20));
-            $totalAmount = $subtotal;
-            $taxAmount = $taxRate > 0 ? ($totalAmount - ($totalAmount / (1 + ($taxRate / 100)))) : 0;
-            $subtotalNet = $totalAmount - $taxAmount;
+
+            $itemsData = [];
+            $subtotalHT = 0;
+
+            foreach ($order->items as $item) {
+                $unitPrice = floatval($item->price);
+                $qty = intval($item->quantity);
+                $totalPrice = $unitPrice * $qty;
+                $subtotalHT += $totalPrice;
+
+                $itemsData[] = [
+                    'product_id' => $item->product_id,
+                    'product_name' => $item->product_name ?? ($item->product->name ?? 'Article'),
+                    'product_sku' => $item->product_sku ?? ($item->product->sku ?? null),
+                    'quantity' => $qty,
+                    'unit_price' => $unitPrice,
+                    'total_price' => $totalPrice,
+                ];
+            }
+
+            if ($subtotalHT <= 0) {
+                $subtotalHT = floatval($order->subtotal ?: $order->total);
+            }
+
+            $shippingCost = floatval($order->shipping_cost ?? 0);
+            $discountAmount = floatval($order->discount ?? 0);
+            $taxableHT = max(0, $subtotalHT - $discountAmount);
+            $taxAmount = round($taxableHT * ($taxRate / 100), 2);
+            $totalAmountTTC = round($taxableHT + $taxAmount + $shippingCost, 2);
+
+            $customer = null;
+            if ($order->customer_email) {
+                $customer = Customer::where('email', $order->customer_email)->first();
+            }
 
             $invoice = Invoice::create([
                 'invoice_number' => Invoice::generateInvoiceNumber(),
                 'order_id' => $order->id,
-                'customer_name' => $order->customer_name ?? 'Guest',
+                'customer_name' => $order->customer_name ?? ($customer ? $customer->name : 'Guest'),
+                'customer_company' => $customer ? $customer->company_name : null,
                 'customer_email' => $order->customer_email,
-                'customer_phone' => $order->customer_phone ?? null,
-                'customer_address' => $order->shipping_address ?? null,
-                'subtotal' => $subtotalNet,
+                'customer_phone' => $order->customer_phone ?? ($customer ? $customer->phone : null),
+                'ice' => $order->ice ?? ($customer ? $customer->ice : null),
+                'customer_rc' => $customer ? $customer->rc : null,
+                'customer_if' => $customer ? $customer->if_number : null,
+                'customer_patente' => $customer ? $customer->patente : null,
+                'customer_address' => $order->shipping_address ?? ($customer ? $customer->address : null),
+                'subtotal' => $subtotalHT,
                 'tax_amount' => $taxAmount,
                 'tax_rate' => $taxRate,
-                'discount_amount' => 0,
-                'total_amount' => $totalAmount,
+                'discount_amount' => $discountAmount,
+                'shipping_cost' => $shippingCost,
+                'total_amount' => $totalAmountTTC,
                 'payment_method' => $order->payment_method ?? 'cash',
                 'payment_status' => $order->status === 'completed' ? 'paid' : 'unpaid',
                 'with_stamp' => true,
+                'notes' => $order->notes ?? null,
                 'issued_at' => now(),
                 'due_date' => now()->addDays(30),
-                'created_by' => Auth::id(),
+                'created_by' => Auth::id() ?? \App\Models\User::first()?->id,
             ]);
 
             // Create invoice items from order items
-            foreach ($order->items as $item) {
-                $invoice->items()->create([
-                    'product_id' => $item->product_id,
-                    'product_name' => $item->product_name ?? ($item->product->name ?? 'Unknown'),
-                    'product_sku' => $item->product_sku ?? ($item->product->sku ?? 'N/A'),
-                    'quantity' => $item->quantity,
-                    'unit_price' => $item->price ?? $item->unit_price,
-                    'total_price' => ($item->price ?? $item->unit_price) * $item->quantity,
-                ]);
+            foreach ($itemsData as $itemData) {
+                $invoice->items()->create($itemData);
             }
 
             return $invoice;

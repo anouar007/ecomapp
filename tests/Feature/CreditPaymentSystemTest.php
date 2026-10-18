@@ -24,10 +24,12 @@ class CreditPaymentSystemTest extends TestCase
         parent::setUp();
         
         // Create permission directly
-        \Spatie\Permission\Models\Permission::create(['name' => 'manage_products']);
+        \Spatie\Permission\Models\Permission::firstOrCreate(['name' => 'manage_products']);
+        \Spatie\Permission\Models\Permission::firstOrCreate(['name' => 'manage_invoices']);
+        \Spatie\Permission\Models\Permission::firstOrCreate(['name' => 'manage_customers']);
         
         $this->user = User::factory()->create();
-        $this->user->givePermissionTo('manage_products');
+        $this->user->givePermissionTo(['manage_products', 'manage_invoices', 'manage_customers']);
         $this->actingAs($this->user);
         
         Storage::fake('public');

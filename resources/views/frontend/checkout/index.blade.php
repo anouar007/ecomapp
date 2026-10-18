@@ -323,7 +323,7 @@
                             </span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center py-3 border-top mb-3">
-                            <span class="h6 fw-bold mb-0 text-dark">{{ __('Total TTC') }}</span>
+                            <span class="h6 fw-bold mb-0 text-dark">{{ __('Total') }}</span>
                             <span class="h4 fw-bold text-dark mb-0" id="checkout-total">{{ currency($total) }}</span>
                         </div>
 

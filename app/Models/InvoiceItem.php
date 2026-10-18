@@ -42,15 +42,11 @@ class InvoiceItem extends Model
 
     /**
      * Get unit price HT (Hors Taxe).
+     * All product prices in the catalog and entered prices are HT.
      */
     public function getUnitPriceHtAttribute(): float
     {
-        $rate = $this->invoice ? $this->invoice->tax_rate : floatval(setting('tax_rate', 20));
-        $taxRate = $rate / 100;
-        if ($taxRate <= 0) {
-            return floatval($this->unit_price);
-        }
-        return floatval($this->unit_price) / (1 + $taxRate);
+        return floatval($this->unit_price);
     }
 
     /**
@@ -58,12 +54,25 @@ class InvoiceItem extends Model
      */
     public function getTotalPriceHtAttribute(): float
     {
+        return floatval($this->total_price);
+    }
+
+    /**
+     * Get unit price TTC (Toutes Taxes Comprises).
+     */
+    public function getUnitPriceTtcAttribute(): float
+    {
         $rate = $this->invoice ? $this->invoice->tax_rate : floatval(setting('tax_rate', 20));
-        $taxRate = $rate / 100;
-        if ($taxRate <= 0) {
-            return floatval($this->total_price);
-        }
-        return floatval($this->total_price) / (1 + $taxRate);
+        return round($this->unit_price_ht * (1 + ($rate / 100)), 2);
+    }
+
+    /**
+     * Get total price TTC.
+     */
+    public function getTotalPriceTtcAttribute(): float
+    {
+        $rate = $this->invoice ? $this->invoice->tax_rate : floatval(setting('tax_rate', 20));
+        return round($this->total_price_ht * (1 + ($rate / 100)), 2);
     }
 
     /**

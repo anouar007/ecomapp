@@ -42,6 +42,14 @@ class OrderItem extends Model
     }
 
     /**
+     * Get unit price alias (maps to price).
+     */
+    public function getUnitPriceAttribute()
+    {
+        return $this->price;
+    }
+
+    /**
      * Get formatted price.
      */
     public function getFormattedPriceAttribute()

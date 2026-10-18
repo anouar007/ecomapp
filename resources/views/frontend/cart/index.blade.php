@@ -348,7 +348,7 @@
                         <hr class="my-3 opacity-10">
 
                         <div class="d-flex justify-content-between mb-4 align-items-center">
-                            <span class="h6 fw-bold mb-0 text-dark">{{ __('Total TTC') }}</span>
+                            <span class="h6 fw-bold mb-0 text-dark">{{ __('Total') }}</span>
                             <span class="h4 fw-bold text-dark mb-0 cart-summary-total" id="cart-summary-total">{{ currency($total) }}</span>
                         </div>
 
@@ -407,7 +407,7 @@
         <div class="cart-mobile-sticky-bar d-md-none">
             <div class="d-flex align-items-center justify-content-between gap-3">
                 <div>
-                    <div class="text-muted text-uppercase" style="font-size: 10px; font-weight: 700; letter-spacing: 0.5px;">{{ __('Total TTC') }}</div>
+                    <div class="text-muted text-uppercase" style="font-size: 10px; font-weight: 700; letter-spacing: 0.5px;">{{ __('Total') }}</div>
                     <div class="fw-bold text-dark fs-5 cart-bottom-bar-total" style="line-height: 1.1;">{{ currency($total) }}</div>
                 </div>
                 <button class="btn btn-dark fw-bold rounded-pill px-4 py-2.5 d-inline-flex align-items-center justify-content-center gap-2 flex-grow-1 shadow-sm" onclick="location.href='{{ route('checkout.index') }}'">

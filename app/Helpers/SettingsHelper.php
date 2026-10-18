@@ -26,13 +26,13 @@ if (!function_exists('currency')) {
      */
     function currency($amount, bool $showSymbol = true)
     {
-        $symbol = setting('currency_symbol', '$');
-        $decimals = setting('currency_decimals', 2);
-        $decimalSeparator = setting('decimal_separator', '.');
-        $thousandsSeparator = setting('thousands_separator', ',');
-        $position = setting('currency_position', 'before'); // before or after
+        $symbol = setting('currency_symbol', '$') ?: '$';
+        $decimals = intval(setting('currency_decimals') ?: 2);
+        $decimalSeparator = (string) (setting('decimal_separator') ?: '.');
+        $thousandsSeparator = (string) (setting('thousands_separator') ?? ',');
+        $position = setting('currency_position', 'before') ?: 'before'; // before or after
         
-        $formatted = number_format($amount, $decimals, $decimalSeparator, $thousandsSeparator);
+        $formatted = number_format(floatval($amount), $decimals, $decimalSeparator, $thousandsSeparator);
         
         if (!$showSymbol) {
             return $formatted;

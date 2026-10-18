@@ -67,11 +67,8 @@ class CheckoutController extends Controller
 
         // Calculate dynamic delivery fee from resolved city (defaulting to standard 40 DH if unlisted)
         $shippingCost = DeliveryService::getDeliveryCost($cityName, 40.0);
-
-        $taxRateSetting = floatval(setting('tax_rate', 20)) / 100;
-        $tax = $taxRateSetting > 0 ? ($subtotal - ($subtotal / (1 + $taxRateSetting))) : 0;
-        $subtotalNet = $subtotal - $tax;
-        $total = $subtotal + $shippingCost; // Total TTC including shipping
+        $tax = 0;
+        $total = $subtotal + $shippingCost;
 
         // Create Order
         $order = Order::create([
@@ -86,7 +83,7 @@ class CheckoutController extends Controller
             'shipping_state' => $request->shipping_state,
             'shipping_zip'   => 'N/A',
             'shipping_country' => 'Morocco',
-            'subtotal' => $subtotalNet,
+            'subtotal' => $subtotal,
             'tax' => $tax,
             'shipping_cost' => $shippingCost,
             'total' => $total,

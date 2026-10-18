@@ -77,6 +77,9 @@ Route::middleware('auth')->group(function () {
         Route::resource('invoices', \App\Http\Controllers\InvoiceController::class);
         Route::get('invoices/{invoice}/download', [\App\Http\Controllers\InvoiceController::class, 'download'])->name('invoices.download');
         Route::get('invoices/{invoice}/print', [\App\Http\Controllers\InvoiceController::class, 'print'])->name('invoices.print');
+        Route::get('invoices/{invoice}/delivery-note', [\App\Http\Controllers\InvoiceController::class, 'deliveryNote'])->name('invoices.delivery_note');
+        Route::get('invoices/{invoice}/delivery-note/download', [\App\Http\Controllers\InvoiceController::class, 'downloadDeliveryNote'])->name('invoices.delivery_note.download');
+        Route::get('invoices/{invoice}/delivery-note/print', [\App\Http\Controllers\InvoiceController::class, 'printDeliveryNote'])->name('invoices.delivery_note.print');
         Route::get('invoices/{invoice}/guarantee', [\App\Http\Controllers\InvoiceController::class, 'guarantee'])->name('invoices.guarantee');
         Route::get('invoices/{invoice}/guarantee/download', [\App\Http\Controllers\InvoiceController::class, 'downloadGuarantee'])->name('invoices.guarantee.download');
         Route::get('invoices/{invoice}/guarantee/print', [\App\Http\Controllers\InvoiceController::class, 'printGuarantee'])->name('invoices.guarantee.print');

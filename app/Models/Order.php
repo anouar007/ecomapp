@@ -64,6 +64,14 @@ class Order extends Model
     }
 
     /**
+     * Get the customer profile associated with the order.
+     */
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class, 'customer_email', 'email');
+    }
+
+    /**
      * Get the order items.
      */
     public function items()

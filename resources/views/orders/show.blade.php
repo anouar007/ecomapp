@@ -136,6 +136,9 @@
             <a href="{{ route('invoices.show', $order->invoice) }}" class="btn btn-secondary">
                 <i class="fas fa-file-invoice"></i> Invoice
             </a>
+            <a href="{{ route('invoices.show', [$order->invoice, 'as' => 'delivery_note']) }}" class="btn btn-outline-secondary">
+                <i class="fas fa-truck"></i> Bon de Livraison
+            </a>
             @endif
 
             <!-- Quote Button -->
@@ -287,10 +290,7 @@
                     <span class="info-label">Subtotal</span>
                     <span class="info-value">{{ currency($order->subtotal) }}</span>
                 </div>
-                <div class="info-row">
-                    <span class="info-label">{{ setting('tax_label', 'TVA') }} ({{ floatval(setting('tax_rate', 20)) }}%)</span>
-                    <span class="info-value">{{ currency($order->tax) }}</span>
-                </div>
+
                 <!-- Shipping -->
                 <div class="info-row">
                     <span class="info-label">Shipping</span>

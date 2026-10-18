@@ -928,7 +928,7 @@
                     <span>Discount</span>
                     <span id="discountDisplay" style="font-weight: 600; color: #10b981;">-{{ currency(0) }}</span>
                 </div>
-                <div class="bill-row">
+                <div class="bill-row" style="display: none;">
                     <span>{{ setting('tax_label', 'TVA') }} ({{ floatval(setting('tax_rate', 20)) }}%)</span>
                     <span id="tax" style="font-weight: 600; color: #1e293b;">{{ currency(0) }}</span>
                 </div>

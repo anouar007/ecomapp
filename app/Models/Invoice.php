@@ -15,13 +15,19 @@ class Invoice extends Model
         'type',
         'order_id',
         'customer_name',
+        'customer_company',
         'customer_email',
-        'customer_phone','ice',
+        'customer_phone',
+        'ice',
+        'customer_rc',
+        'customer_if',
+        'customer_patente',
         'customer_address',
         'subtotal',
         'tax_amount',
         'tax_rate',
         'discount_amount',
+        'shipping_cost',
         'total_amount',
         'payment_method',
         'payment_status',
@@ -37,6 +43,7 @@ class Invoice extends Model
         'tax_amount' => 'decimal:2',
         'tax_rate' => 'decimal:2',
         'discount_amount' => 'decimal:2',
+        'shipping_cost' => 'decimal:2',
         'total_amount' => 'decimal:2',
         'with_stamp' => 'boolean',
         'issued_at' => 'datetime',
@@ -118,6 +125,15 @@ class Invoice extends Model
     }
 
     /**
+     * Check if the document is a delivery note (bon de livraison).
+     */
+    public function isDeliveryNote($overrideType = null): bool
+    {
+        $type = $overrideType ?? $this->view_as ?? $this->type;
+        return in_array(strtolower($type), ['delivery_note', 'delivery-note', 'deliverynote', 'bon_livraison', 'bl', 'livraison']);
+    }
+
+    /**
      * Check if the document is an invoice.
      */
     public function isInvoice($overrideType = null): bool
@@ -131,6 +147,9 @@ class Invoice extends Model
      */
     public function getTypeLabel($overrideType = null)
     {
+        if ($this->isDeliveryNote($overrideType)) {
+            return __('Bon de Livraison');
+        }
         return $this->isQuote($overrideType) ? __('Quote') : __('Invoice');
     }
 
@@ -139,6 +158,9 @@ class Invoice extends Model
      */
     public function getNumberLabel($overrideType = null)
     {
+        if ($this->isDeliveryNote($overrideType)) {
+            return __('N° Bon de Livraison');
+        }
         return $this->isQuote($overrideType) ? __('Quote No') : __('Invoice No');
     }
 
@@ -147,16 +169,25 @@ class Invoice extends Model
      */
     public function getBillToLabel($overrideType = null)
     {
+        if ($this->isDeliveryNote($overrideType)) {
+            return __('Lieu de Livraison');
+        }
         return $this->isQuote($overrideType) ? __('Quote To') : __('Bill To');
     }
 
     /**
-     * Get the formatted display number (e.g. DEV-xxx when rendered as quote, INV-xxx when as invoice).
+     * Get the formatted display number (e.g. DEV-xxx when rendered as quote, BL-xxx when delivery note, INV-xxx when as invoice).
      */
-    public function getDisplayNumberAttribute(): string
+    public function getDisplayNumberAttribute($overrideType = null): string
     {
         $num = $this->invoice_number;
-        if ($this->isQuote()) {
+        if ($this->isDeliveryNote($overrideType)) {
+            if (str_starts_with($num, 'INV-') || str_starts_with($num, 'DEV-')) {
+                return 'BL-' . substr($num, 4);
+            }
+            return 'BL-' . $num;
+        }
+        if ($this->isQuote($overrideType)) {
             if (str_starts_with($num, 'INV-')) {
                 return 'DEV-' . substr($num, 4);
             }
@@ -276,31 +307,30 @@ class Invoice extends Model
     }
 
     /**
-     * Dynamic Subtotal (HT) based on dynamic tax rate from settings.
+     * Subtotal (Total HT).
      */
     public function getSubtotalAttribute($value): float
     {
-        $settingRate = setting('tax_rate');
-        if ($settingRate !== null && $settingRate !== '') {
-            $rate = floatval($settingRate) / 100;
-            if ($rate <= 0) {
-                return floatval($this->total_amount);
-            }
-            return round(floatval($this->total_amount) / (1 + $rate), 2);
+        if ($value !== null && $value !== '') {
+            return floatval($value);
         }
-        return floatval($value ?: $this->total_amount);
+        if ($this->relationLoaded('items') && $this->items->isNotEmpty()) {
+            return floatval($this->items->sum('total_price'));
+        }
+        $rate = $this->tax_rate / 100;
+        return $rate > 0 ? round(floatval($this->total_amount) / (1 + $rate), 2) : floatval($this->total_amount);
     }
 
     /**
-     * Dynamic Tax Amount (TVA) based on dynamic tax rate from settings.
+     * Tax Amount (Total TVA).
      */
     public function getTaxAmountAttribute($value): float
     {
-        $settingRate = setting('tax_rate');
-        if ($settingRate !== null && $settingRate !== '') {
-            return round(floatval($this->total_amount) - $this->subtotal, 2);
+        if ($value !== null && $value !== '') {
+            return floatval($value);
         }
-        return floatval($value ?: 0);
+        $rate = $this->tax_rate / 100;
+        return round($this->subtotal * $rate, 2);
     }
 
     /**
@@ -325,6 +355,14 @@ class Invoice extends Model
     public function getFormattedDiscountAmountAttribute(): string
     {
         return currency($this->discount_amount);
+    }
+
+    /**
+     * Get formatted shipping cost.
+     */
+    public function getFormattedShippingCostAttribute(): string
+    {
+        return currency($this->shipping_cost ?? 0);
     }
 
     /**

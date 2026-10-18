@@ -80,11 +80,16 @@ class InvoiceController extends Controller
     /**
      * Show the form for creating a new invoice.
      */
-    public function create()
+    public function create(Request $request)
     {
         $products = Product::where('status', 'active')->get();
         $customers = \App\Models\Customer::all();
-        return view('invoices.create', compact('products', 'customers'));
+        $orders = Order::with(['items.product', 'customer'])->latest()->take(50)->get();
+        $selectedOrder = null;
+        if ($request->filled('order_id')) {
+            $selectedOrder = Order::with(['items.product', 'customer'])->find($request->order_id);
+        }
+        return view('invoices.create', compact('products', 'customers', 'orders', 'selectedOrder'));
     }
 
     /**
@@ -94,18 +99,29 @@ class InvoiceController extends Controller
     {
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
+            'customer_company' => 'nullable|string|max:255',
             'customer_email' => 'nullable|email|max:255',
-            'customer_phone' => 'nullable|string|max:20',
+            'customer_phone' => 'nullable|string|max:50',
+            'ice' => 'nullable|string|max:50',
+            'customer_rc' => 'nullable|string|max:50',
+            'customer_if' => 'nullable|string|max:50',
+            'customer_patente' => 'nullable|string|max:50',
             'customer_address' => 'nullable|string',
-            'type' => 'required|in:invoice,quote',
+            'type' => 'nullable|in:invoice,quote',
             'payment_method' => 'required|in:cash,card,bank_transfer,cod,other',
             'payment_status' => 'required|in:paid,unpaid,partial,cancelled',
             'with_stamp' => 'nullable',
             'notes' => 'nullable|string',
             'due_date' => 'nullable|date',
+            'order_id' => 'nullable|exists:orders,id',
+            'discount_amount' => 'nullable|numeric|min:0',
+            'shipping_cost' => 'nullable|numeric|min:0',
             'items' => 'required|array|min:1',
-            'items.*.product_id' => 'required|exists:products,id',
-            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.product_id' => 'nullable|exists:products,id',
+            'items.*.product_name' => 'required_without:items.*.product_id|nullable|string|max:255',
+            'items.*.product_sku' => 'nullable|string|max:100',
+            'items.*.quantity' => 'required|numeric|min:1',
+            'items.*.unit_price' => 'nullable|numeric|min:0',
         ]);
 
         try {
@@ -119,44 +135,67 @@ class InvoiceController extends Controller
             $itemsData = [];
 
             foreach ($validated['items'] as $item) {
-                $product = Product::findOrFail($item['product_id']);
-                $totalPrice = $product->price * $item['quantity'];
+                $productId = !empty($item['product_id']) ? $item['product_id'] : null;
+                $quantity = intval($item['quantity']);
+
+                if ($productId) {
+                    $product = Product::find($productId);
+                    $productName = !empty($item['product_name']) ? trim($item['product_name']) : ($product ? $product->name : 'Product');
+                    $productSku = !empty($item['product_sku']) ? trim($item['product_sku']) : ($product ? $product->sku : null);
+                    $unitPrice = (isset($item['unit_price']) && $item['unit_price'] !== '') ? floatval($item['unit_price']) : ($product ? floatval($product->price) : 0);
+                } else {
+                    $productName = trim($item['product_name'] ?? 'Custom Item');
+                    $productSku = !empty($item['product_sku']) ? trim($item['product_sku']) : null;
+                    $unitPrice = floatval($item['unit_price'] ?? 0);
+                }
+
+                $totalPrice = $unitPrice * $quantity;
                 $subtotal += $totalPrice;
 
                 $itemsData[] = [
-                    'product_id' => $product->id,
-                    'product_name' => $product->name,
-                    'product_sku' => $product->sku,
-                    'quantity' => $item['quantity'],
-                    'unit_price' => $product->price,
+                    'product_id' => $productId,
+                    'product_name' => $productName,
+                    'product_sku' => $productSku,
+                    'quantity' => $quantity,
+                    'unit_price' => $unitPrice,
                     'total_price' => $totalPrice,
                 ];
             }
 
-            $totalAmount = $subtotal;
-            $taxAmount = $totalAmount - ($totalAmount / (1 + ($taxRate / 100)));
-            $subtotalNet = $totalAmount - $taxAmount;
+            $discountAmount = floatval($validated['discount_amount'] ?? 0);
+            $shippingCost = floatval($validated['shipping_cost'] ?? 0);
+            $subtotalHT = $subtotal;
+            $taxableHT = max(0, $subtotalHT - $discountAmount);
+            $taxAmount = round($taxableHT * ($taxRate / 100), 2);
+            $totalAmountTTC = round($taxableHT + $taxAmount + $shippingCost, 2);
 
             // Create invoice
             $invoice = Invoice::create([
                 'invoice_number' => Invoice::generateInvoiceNumber(),
-                'type' => $validated['type'],
+                'type' => $validated['type'] ?? 'invoice',
+                'order_id' => $validated['order_id'] ?? null,
                 'customer_name' => $validated['customer_name'],
+                'customer_company' => $validated['customer_company'] ?? null,
                 'customer_email' => $validated['customer_email'] ?? null,
                 'customer_phone' => $validated['customer_phone'] ?? null,
+                'ice' => $validated['ice'] ?? null,
+                'customer_rc' => $validated['customer_rc'] ?? null,
+                'customer_if' => $validated['customer_if'] ?? null,
+                'customer_patente' => $validated['customer_patente'] ?? null,
                 'customer_address' => $validated['customer_address'] ?? null,
-                'subtotal' => $subtotalNet,
+                'subtotal' => $subtotalHT,
                 'tax_amount' => $taxAmount,
                 'tax_rate' => $taxRate,
-                'discount_amount' => 0,
-                'total_amount' => $totalAmount,
+                'discount_amount' => $discountAmount,
+                'shipping_cost' => $shippingCost,
+                'total_amount' => $totalAmountTTC,
                 'payment_method' => $validated['payment_method'],
                 'payment_status' => $validated['payment_status'],
                 'with_stamp' => $request->has('with_stamp') ? $request->boolean('with_stamp') : true,
                 'notes' => $validated['notes'] ?? null,
                 'issued_at' => now(),
                 'due_date' => $validated['due_date'] ?? null,
-                'created_by' => Auth::id(),
+                'created_by' => Auth::id() ?? \App\Models\User::first()?->id,
             ]);
 
             // Create invoice items
@@ -170,7 +209,7 @@ class InvoiceController extends Controller
             // Deduct stock if paid
             if ($invoice->type === 'invoice' && $invoice->payment_status === 'paid' && !$invoice->stock_deducted) {
                 foreach ($invoice->items as $item) {
-                    if ($item->product) {
+                    if ($item->product_id && $item->product) {
                         $item->product->decrement('stock', $item->quantity);
                     }
                 }
@@ -179,10 +218,19 @@ class InvoiceController extends Controller
 
             DB::commit();
 
-            // Update customer balance
+            // Update customer balance & company info if existing
             if ($invoice->customer_email) {
                 $customer = \App\Models\Customer::where('email', $invoice->customer_email)->first();
                 if ($customer) {
+                    $customerUpdates = [];
+                    if (!$customer->company_name && $invoice->customer_company) $customerUpdates['company_name'] = $invoice->customer_company;
+                    if (!$customer->ice && $invoice->ice) $customerUpdates['ice'] = $invoice->ice;
+                    if (!$customer->rc && $invoice->customer_rc) $customerUpdates['rc'] = $invoice->customer_rc;
+                    if (!$customer->if_number && $invoice->customer_if) $customerUpdates['if_number'] = $invoice->customer_if;
+                    if (!$customer->patente && $invoice->customer_patente) $customerUpdates['patente'] = $invoice->customer_patente;
+                    if (!empty($customerUpdates)) {
+                        $customer->update($customerUpdates);
+                    }
                     $customer->updateBalance();
                 }
             }
@@ -209,6 +257,8 @@ class InvoiceController extends Controller
             $invoice->view_as = 'quote';
         } elseif ($docType && in_array(strtolower($docType), ['facture', 'invoice'])) {
             $invoice->view_as = 'invoice';
+        } elseif ($docType && in_array(strtolower($docType), ['delivery_note', 'delivery-note', 'bon_livraison', 'bl', 'livraison'])) {
+            $invoice->view_as = 'delivery_note';
         }
 
         $withStamp = $request->has('with_stamp') ? $request->boolean('with_stamp') : ($invoice->with_stamp ?? true);
@@ -240,8 +290,13 @@ class InvoiceController extends Controller
 
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
+            'customer_company' => 'nullable|string|max:255',
             'customer_email' => 'nullable|email|max:255',
-            'customer_phone' => 'nullable|string|max:20',
+            'customer_phone' => 'nullable|string|max:50',
+            'ice' => 'nullable|string|max:50',
+            'customer_rc' => 'nullable|string|max:50',
+            'customer_if' => 'nullable|string|max:50',
+            'customer_patente' => 'nullable|string|max:50',
             'customer_address' => 'nullable|string',
             'type' => 'required|in:invoice,quote',
             'payment_method' => 'required|in:cash,card,bank_transfer,cod,other',
@@ -350,6 +405,8 @@ class InvoiceController extends Controller
             $invoice->view_as = 'quote';
         } elseif ($docType && in_array(strtolower($docType), ['facture', 'invoice'])) {
             $invoice->view_as = 'invoice';
+        } elseif ($docType && in_array(strtolower($docType), ['delivery_note', 'delivery-note', 'bon_livraison', 'bl', 'livraison'])) {
+            $invoice->view_as = 'delivery_note';
         }
 
         $withStamp = $request->has('with_stamp') ? $request->boolean('with_stamp') : ($invoice->with_stamp ?? true);
@@ -363,7 +420,14 @@ class InvoiceController extends Controller
             $pdf = Pdf::loadView('invoices.pdf', compact('invoice', 'withStamp'))
                 ->setPaper('a4', 'portrait');
 
-            $prefix = $invoice->isQuote() ? 'Devis-' : 'Facture-';
+            if ($invoice->isDeliveryNote()) {
+                $prefix = 'Bon-de-Livraison-';
+            } elseif ($invoice->isQuote()) {
+                $prefix = 'Devis-';
+            } else {
+                $prefix = 'Facture-';
+            }
+
             $num = $invoice->display_number ?? $invoice->invoice_number;
             $filename = $prefix . str_replace(['#', '/', '\\', ' '], '-', $num) . ($withStamp ? '-Cachet' : '') . '.pdf';
 
@@ -375,7 +439,7 @@ class InvoiceController extends Controller
     }
 
     /**
-     * Display printable invoice.
+     * Display printable invoice / quote / delivery note.
      */
     public function print(Request $request, Invoice $invoice)
     {
@@ -386,10 +450,39 @@ class InvoiceController extends Controller
             $invoice->view_as = 'quote';
         } elseif ($docType && in_array(strtolower($docType), ['facture', 'invoice'])) {
             $invoice->view_as = 'invoice';
+        } elseif ($docType && in_array(strtolower($docType), ['delivery_note', 'delivery-note', 'bon_livraison', 'bl', 'livraison'])) {
+            $invoice->view_as = 'delivery_note';
         }
 
         $withStamp = $request->has('with_stamp') ? $request->boolean('with_stamp') : ($invoice->with_stamp ?? true);
         return view('invoices.print', compact('invoice', 'withStamp'));
+    }
+
+    /**
+     * Show delivery note view.
+     */
+    public function deliveryNote(Request $request, Invoice $invoice)
+    {
+        $request->merge(['as' => 'delivery_note']);
+        return $this->show($request, $invoice);
+    }
+
+    /**
+     * Download delivery note PDF.
+     */
+    public function downloadDeliveryNote(Request $request, Invoice $invoice)
+    {
+        $request->merge(['as' => 'delivery_note']);
+        return $this->download($request, $invoice);
+    }
+
+    /**
+     * Print delivery note.
+     */
+    public function printDeliveryNote(Request $request, Invoice $invoice)
+    {
+        $request->merge(['as' => 'delivery_note']);
+        return $this->print($request, $invoice);
     }
 
     /**
@@ -481,44 +574,79 @@ class InvoiceController extends Controller
             DB::beginTransaction();
 
             $taxRate = floatval(setting('tax_rate', 20));
-            $totalAmount = $order->total;
-            $taxAmount = $totalAmount - ($totalAmount / (1 + ($taxRate / 100)));
-            $subtotalNet = $totalAmount - $taxAmount;
 
-            // Create invoice
+            // 1. Process items from order
+            $itemsData = [];
+            $subtotalHT = 0;
+
+            foreach ($order->items as $orderItem) {
+                $unitPrice = floatval($orderItem->price);
+                $qty = intval($orderItem->quantity);
+                $totalPrice = $unitPrice * $qty;
+                $subtotalHT += $totalPrice;
+
+                $itemsData[] = [
+                    'product_id' => $orderItem->product_id,
+                    'product_name' => $orderItem->product_name ?? ($orderItem->product->name ?? 'Article'),
+                    'product_sku' => $orderItem->product_sku ?? ($orderItem->product->sku ?? null),
+                    'quantity' => $qty,
+                    'unit_price' => $unitPrice,
+                    'total_price' => $totalPrice,
+                ];
+            }
+
+            // Fallback if no items found
+            if ($subtotalHT <= 0) {
+                $subtotalHT = floatval($order->subtotal ?: $order->total);
+            }
+
+            // 2. Shipping cost (delivery fee) - not taxed, added to total after TVA
+            $shippingCost = floatval($order->shipping_cost ?? 0);
+
+            // 3. Discount & Tax calculation (TVA calculated on products only)
+            $discountAmount = floatval($order->discount ?? 0);
+            $taxableHT = max(0, $subtotalHT - $discountAmount);
+            $taxAmount = round($taxableHT * ($taxRate / 100), 2);
+            $totalAmountTTC = round($taxableHT + $taxAmount + $shippingCost, 2);
+
+            // 4. Check for linked customer to auto-fill company details
+            $customer = null;
+            if ($order->customer_email) {
+                $customer = \App\Models\Customer::where('email', $order->customer_email)->first();
+            }
+
+            // 5. Create invoice
             $invoice = Invoice::create([
                 'invoice_number' => Invoice::generateInvoiceNumber(),
                 'type' => $type,
                 'order_id' => $order->id,
-                'customer_name' => $order->customer_name ?? 'Walk-in Customer',
+                'customer_name' => $order->customer_name ?? ($customer ? $customer->name : 'Walk-in Customer'),
+                'customer_company' => $customer ? $customer->company_name : null,
                 'customer_email' => $order->customer_email ?? null,
-                'customer_phone' => $order->customer_phone ?? null,
-                'ice' => $order->ice ?? null,
-                'customer_address' => $order->shipping_address ?? null,
-                'subtotal' => $subtotalNet,
+                'customer_phone' => $order->customer_phone ?? ($customer ? $customer->phone : null),
+                'ice' => $order->ice ?? ($customer ? $customer->ice : null),
+                'customer_rc' => $customer ? $customer->rc : null,
+                'customer_if' => $customer ? $customer->if_number : null,
+                'customer_patente' => $customer ? $customer->patente : null,
+                'customer_address' => $order->shipping_address ?? ($customer ? $customer->address : null),
+                'subtotal' => $subtotalHT,
                 'tax_amount' => $taxAmount,
                 'tax_rate' => $taxRate,
-                'discount_amount' => 0,
-                'total_amount' => $totalAmount,
+                'discount_amount' => $discountAmount,
+                'shipping_cost' => $shippingCost,
+                'total_amount' => $totalAmountTTC,
                 'payment_method' => $order->payment_method ?? 'cash',
                 'payment_status' => $order->payment_status === 'paid' ? 'paid' : 'unpaid',
                 'with_stamp' => true,
-                'notes' => null,
+                'notes' => $order->notes ?? null,
                 'issued_at' => now(),
-                'due_date' => null,
-                'created_by' => Auth::id(),
+                'due_date' => now()->addDays(30),
+                'created_by' => Auth::id() ?? \App\Models\User::first()?->id,
             ]);
 
-            // Create invoice items from order items
-            foreach ($order->items as $orderItem) {
-                $invoice->items()->create([
-                    'product_id' => $orderItem->product_id,
-                    'product_name' => $orderItem->product_name,
-                    'product_sku' => $orderItem->product_sku ?? ($orderItem->product->sku ?? null),
-                    'quantity' => $orderItem->quantity,
-                    'unit_price' => $orderItem->price,
-                    'total_price' => $orderItem->price * $orderItem->quantity,
-                ]);
+            // 6. Create invoice items
+            foreach ($itemsData as $itemData) {
+                $invoice->items()->create($itemData);
             }
 
             DB::commit();

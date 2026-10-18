@@ -491,18 +491,18 @@
                 </a>
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.5px;">
-                        {{ $invoice->isQuote() ? 'DEVIS' : 'FACTURE' }}
+                        {{ $invoice->isDeliveryNote() ? 'BON DE LIVRAISON' : ($invoice->isQuote() ? 'DEVIS' : 'FACTURE') }}
                         <span style="color: #64748b; font-weight: 600; font-size: 19px;">#{{ $invoice->display_number ?? $invoice->invoice_number }}</span>
                     </h1>
                 </div>
 
-                {{-- Interactive Mode Controls (Facture / Devis & Stamp) --}}
+                {{-- Interactive Mode Controls (Facture / Devis / Bon de Livraison & Stamp) --}}
                 <div style="display: flex; gap: 8px; align-items: center; margin-top: 10px; flex-wrap: wrap;">
                     <span style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">{{ __('Mode Aperçu') }}:</span>
                     
                     {{-- Toggle Facture --}}
                     <a href="{{ route('invoices.show', [$invoice, 'as' => 'facture', 'with_stamp' => $withStamp ? 1 : 0]) }}" 
-                       class="btn btn-sm {{ !$invoice->isQuote() ? 'btn-dark' : 'btn-outline-secondary' }}"
+                       class="btn btn-sm {{ (!$invoice->isQuote() && !$invoice->isDeliveryNote()) ? 'btn-dark' : 'btn-outline-secondary' }}"
                        style="font-size: 11px; font-weight: 600; padding: 3px 12px; border-radius: 20px;">
                         <i class="fas fa-file-invoice me-1"></i> Facture
                     </a>
@@ -514,8 +514,15 @@
                         <i class="fas fa-file-signature me-1"></i> Devis
                     </a>
 
+                    {{-- Toggle Bon de Livraison --}}
+                    <a href="{{ route('invoices.show', [$invoice, 'as' => 'delivery_note', 'with_stamp' => $withStamp ? 1 : 0]) }}" 
+                       class="btn btn-sm {{ $invoice->isDeliveryNote() ? 'btn-dark' : 'btn-outline-secondary' }}"
+                       style="font-size: 11px; font-weight: 600; padding: 3px 12px; border-radius: 20px;">
+                        <i class="fas fa-truck me-1"></i> Bon de Livraison
+                    </a>
+
                     {{-- Toggle Stamp --}}
-                    <a href="{{ route('invoices.show', [$invoice, 'as' => $invoice->isQuote() ? 'devis' : 'facture', 'with_stamp' => $withStamp ? 0 : 1]) }}"
+                    <a href="{{ route('invoices.show', [$invoice, 'as' => $invoice->isDeliveryNote() ? 'delivery_note' : ($invoice->isQuote() ? 'devis' : 'facture'), 'with_stamp' => $withStamp ? 0 : 1]) }}"
                        class="btn btn-sm {{ $withStamp ? 'btn-success' : 'btn-outline-secondary' }}"
                        style="font-size: 11px; font-weight: 700; padding: 3px 12px; border-radius: 20px;"
                        title="{{ $withStamp ? 'Désactiver le cachet' : 'Activer le cachet' }}">
@@ -558,6 +565,20 @@
                                 <i class="far fa-file-pdf text-muted" style="width: 14px;"></i> Devis sans Cachet
                             </a>
                         </li>
+                        <li><hr class="dropdown-divider my-1"></li>
+                        <li class="dropdown-header text-uppercase text-muted fw-bold" style="font-size: 9.5px; letter-spacing: 0.5px;">
+                            <i class="fas fa-truck text-primary me-1"></i> Bon de Livraison
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" href="{{ route('invoices.delivery_note.download', [$invoice, 'with_stamp' => 1]) }}">
+                                <i class="fas fa-stamp text-success" style="width: 14px;"></i> Bon de Livraison avec Cachet
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" href="{{ route('invoices.delivery_note.download', [$invoice, 'with_stamp' => 0]) }}">
+                                <i class="far fa-file-pdf text-muted" style="width: 14px;"></i> Bon de Livraison sans Cachet
+                            </a>
+                        </li>
                     </ul>
                 </div>
 
@@ -592,6 +613,20 @@
                         <li>
                             <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" target="_blank" href="{{ route('invoices.print', [$invoice, 'as' => 'devis', 'with_stamp' => 0]) }}">
                                 <i class="fas fa-print text-muted" style="width: 14px;"></i> Imprimer Devis (Standard)
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider my-1"></li>
+                        <li class="dropdown-header text-uppercase text-muted fw-bold" style="font-size: 9.5px; letter-spacing: 0.5px;">
+                            <i class="fas fa-truck text-primary me-1"></i> Bon de Livraison
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" target="_blank" href="{{ route('invoices.delivery_note.print', [$invoice, 'with_stamp' => 1]) }}">
+                                <i class="fas fa-stamp text-success" style="width: 14px;"></i> Imprimer B.L. (Cachet)
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 rounded" target="_blank" href="{{ route('invoices.delivery_note.print', [$invoice, 'with_stamp' => 0]) }}">
+                                <i class="fas fa-print text-muted" style="width: 14px;"></i> Imprimer B.L. (Standard)
                             </a>
                         </li>
                     </ul>
@@ -653,6 +688,30 @@
         <div class="accent-bar"></div>
         <div class="doc-body">
 
+            @php
+                $companyName = setting('company_name') ?: (setting('app_name') ?: config('app.name', 'Winashop'));
+                $companyAddress = setting('company_address');
+                $companyPhone = setting('company_phone');
+                $companyEmail = setting('company_email') ?: config('mail.from.address', 'contact@winashop.com');
+                $companyWebsite = setting('company_website');
+                $companyTaxId = setting('company_tax_id');
+                $companyRegistryId = setting('company_registry_id');
+                $companyFiscalId = setting('company_fiscal_id');
+                $companyPatente = setting('company_patente');
+
+                $paymentMethodsMap = [
+                    'cash' => 'Espèces / Cash',
+                    'cod' => 'Paiement à la livraison (COD)',
+                    'card' => 'Carte Bancaire (CMI / TPE)',
+                    'bank_transfer' => 'Virement Bancaire',
+                    'check' => 'Chèque Bancaire',
+                    'other' => 'Autre moyen'
+                ];
+                $paymentLabel = $paymentMethodsMap[$invoice->payment_method] ?? ucfirst(str_replace('_', ' ', $invoice->payment_method ?? 'Espèces'));
+                $shippingCost = floatval($invoice->shipping_cost ?? ($invoice->order->shipping_cost ?? 0));
+                $showStamp = ($withStamp ?? $invoice->with_stamp ?? true) && setting('company_stamp');
+            @endphp
+
             {{-- ══════════ HEADER ══════════ --}}
             <div class="header-row">
                 {{-- Left: Brand & Logo --}}
@@ -661,9 +720,9 @@
                         <img src="/storage/{{ setting('app_logo') }}" class="header-logo" alt="Logo" onerror="this.src='{{ asset('storage/' . setting('app_logo')) }}'">
                     @endif
                     <div class="brand-text">
-                        <div class="company-name">{{ setting('company_name', setting('app_name')) }}</div>
-                        @if(setting('company_website'))
-                            <div class="company-tagline">{{ setting('company_website') }}</div>
+                        <div class="company-name">{{ $companyName }}</div>
+                        @if($companyWebsite)
+                            <div class="company-tagline">{{ $companyWebsite }}</div>
                         @endif
                     </div>
                 </div>
@@ -671,19 +730,23 @@
                 {{-- Right: Document Type, Number & Key Dates --}}
                 <div class="doc-badge-block">
                     <div class="doc-title-row">
-                        <span class="doc-type-label {{ $invoice->isQuote() ? 'devis' : 'facture' }}">
-                            {{ $invoice->isQuote() ? 'DEVIS' : 'FACTURE' }}
+                        <span class="doc-type-label {{ $invoice->isDeliveryNote() ? 'bl' : ($invoice->isQuote() ? 'devis' : 'facture') }}">
+                            {{ $invoice->isDeliveryNote() ? 'BON DE LIVRAISON' : ($invoice->isQuote() ? 'DEVIS' : 'FACTURE') }}
                         </span>
                         <span class="doc-number-badge">N° {{ $invoice->display_number ?? $invoice->invoice_number }}</span>
                     </div>
                     <div class="doc-meta-grid">
                         <div class="meta-item"><span class="meta-k">Date :</span> <span class="meta-v">{{ $invoice->issued_at->format('d/m/Y') }}</span></div>
-                        @if($invoice->isQuote())
+                        @if($invoice->isDeliveryNote())
+                            @if($invoice->order && $invoice->order->order_number)
+                                <div class="meta-item"><span class="meta-k">Réf. Commande :</span> <span class="meta-v">{{ $invoice->order->order_number }}</span></div>
+                            @endif
+                        @elseif($invoice->isQuote())
                             <div class="meta-item"><span class="meta-k">Validité :</span> <span class="meta-v">{{ $invoice->issued_at->addDays(30)->format('d/m/Y') }} (30j)</span></div>
                         @elseif($invoice->due_date)
                             <div class="meta-item"><span class="meta-k">Échéance :</span> <span class="meta-v">{{ $invoice->due_date->format('d/m/Y') }}</span></div>
                         @endif
-                        @if($invoice->order && $invoice->order->order_number)
+                        @if(!$invoice->isDeliveryNote() && $invoice->order && $invoice->order->order_number)
                             <div class="meta-item"><span class="meta-k">Réf. Commande :</span> <span class="meta-v">{{ $invoice->order->order_number }}</span></div>
                         @endif
                     </div>
@@ -696,22 +759,22 @@
                 <div class="party-box">
                     <div>
                         <div class="party-role"><i class="fas fa-building"></i>Émetteur / Fournisseur</div>
-                        <div class="party-name">{{ setting('company_name', setting('app_name')) }}</div>
+                        <div class="party-name">{{ $companyName }}</div>
                         <div class="party-detail">
-                            @if(setting('company_address'))<div>{{ setting('company_address') }}</div>@endif
+                            <div>{{ $companyAddress ?: 'Maroc' }}</div>
                             <div style="margin-top:3px;">
-                                @if(setting('company_phone'))<span><i class="fas fa-phone" style="font-size:10px; color:#94a3b8; margin-right:3px;"></i>{{ setting('company_phone') }}</span>@endif
-                                @if(setting('company_phone') && setting('company_email'))&nbsp;•&nbsp;@endif
-                                @if(setting('company_email'))<span><i class="fas fa-envelope" style="font-size:10px; color:#94a3b8; margin-right:3px;"></i>{{ setting('company_email') }}</span>@endif
+                                @if($companyPhone)<span><i class="fas fa-phone" style="font-size:10px; color:#94a3b8; margin-right:3px;"></i>{{ $companyPhone }}</span>@endif
+                                @if($companyPhone && $companyEmail)&nbsp;•&nbsp;@endif
+                                @if($companyEmail)<span><i class="fas fa-envelope" style="font-size:10px; color:#94a3b8; margin-right:3px;"></i>{{ $companyEmail }}</span>@endif
                             </div>
                         </div>
                     </div>
-                    @if(setting('company_tax_id') || setting('company_registry_id') || setting('company_fiscal_id') || setting('company_patente'))
+                    @if($companyTaxId || $companyRegistryId || $companyFiscalId || $companyPatente)
                     <div class="fiscal-grid">
-                        @if(setting('company_tax_id'))<div class="f-item"><strong>ICE:</strong> {{ setting('company_tax_id') }}</div>@endif
-                        @if(setting('company_registry_id'))<div class="f-item"><strong>RC:</strong> {{ setting('company_registry_id') }}</div>@endif
-                        @if(setting('company_fiscal_id'))<div class="f-item"><strong>IF:</strong> {{ setting('company_fiscal_id') }}</div>@endif
-                        @if(setting('company_patente'))<div class="f-item"><strong>Patente:</strong> {{ setting('company_patente') }}</div>@endif
+                        @if($companyTaxId)<div class="f-item"><strong>ICE:</strong> {{ $companyTaxId }}</div>@endif
+                        @if($companyRegistryId)<div class="f-item"><strong>RC:</strong> {{ $companyRegistryId }}</div>@endif
+                        @if($companyFiscalId)<div class="f-item"><strong>IF:</strong> {{ $companyFiscalId }}</div>@endif
+                        @if($companyPatente)<div class="f-item"><strong>Patente:</strong> {{ $companyPatente }}</div>@endif
                     </div>
                     @endif
                 </div>
@@ -719,8 +782,15 @@
                 {{-- Client / Destinataire --}}
                 <div class="party-box client">
                     <div>
-                        <div class="party-role"><i class="fas fa-user-check"></i>{{ $invoice->isQuote() ? 'Destinataire' : 'Client / Facturé à' }}</div>
-                        <div class="party-name">{{ $invoice->customer_name }}</div>
+                        <div class="party-role"><i class="fas fa-user-check"></i>{{ $invoice->getBillToLabel() }}</div>
+                        @if($invoice->customer_company)
+                            <div class="party-name" style="font-size: 16px; font-weight: 700; color: #0f172a;">{{ $invoice->customer_company }}</div>
+                            <div style="font-size: 13px; color: #475569; margin-bottom: 4px; font-weight: 500;">
+                                <i class="fas fa-user" style="font-size:10px; color:#94a3b8; margin-right:4px;"></i>Attn: {{ $invoice->customer_name }}
+                            </div>
+                        @else
+                            <div class="party-name">{{ $invoice->customer_name }}</div>
+                        @endif
                         <div class="party-detail">
                             @php $address = $invoice->customer_address ?: ($invoice->order->shipping_address ?? null); @endphp
                             @if($address)<div>{{ $address }}</div>@endif
@@ -731,9 +801,12 @@
                             </div>
                         </div>
                     </div>
-                    @if($invoice->ice)
-                    <div style="margin-top:10px; padding-top:8px; border-top:1px solid #e2e8f0;">
-                        <span class="client-ice-badge"><strong>ICE Client :</strong> {{ $invoice->ice }}</span>
+                    @if($invoice->ice || $invoice->customer_rc || $invoice->customer_if || $invoice->customer_patente)
+                    <div style="margin-top:10px; padding-top:8px; border-top:1px solid #e2e8f0; display:flex; flex-wrap:wrap; gap:6px;">
+                        @if($invoice->ice)<span class="client-ice-badge"><strong>ICE :</strong> {{ $invoice->ice }}</span>@endif
+                        @if($invoice->customer_rc)<span class="client-ice-badge"><strong>RC :</strong> {{ $invoice->customer_rc }}</span>@endif
+                        @if($invoice->customer_if)<span class="client-ice-badge"><strong>IF :</strong> {{ $invoice->customer_if }}</span>@endif
+                        @if($invoice->customer_patente)<span class="client-ice-badge"><strong>Patente :</strong> {{ $invoice->customer_patente }}</span>@endif
                     </div>
                     @endif
                 </div>
@@ -775,23 +848,31 @@
                 {{-- Left: Arrêté + Mentions légales + Notes --}}
                 <div class="summary-left">
                     <div class="words-card">
-                        <div class="words-label"><i class="fas fa-file-contract" style="margin-right:4px;"></i>Montant en Lettres</div>
+                        <div class="words-label"><i class="fas fa-file-contract" style="margin-right:4px;"></i>Montant en Toutes Lettres</div>
                         <div class="words-text">
-                            {{ $invoice->isQuote() ? 'Arrêté le présent devis à la somme de :' : 'Arrêtée la présente facture à la somme de :' }}
+                            {{ $invoice->isDeliveryNote() ? 'Arrêté le présent bon de livraison à la somme de :' : ($invoice->isQuote() ? 'Arrêté le présent devis à la somme de :' : 'Arrêtée la présente facture à la somme de :') }}
                             <span class="words-highlight">{{ $invoice->total_in_words }} {{ setting('currency_code', 'MAD') }} TTC</span>
                         </div>
                     </div>
 
-                    @if($invoice->isQuote())
-                    <div class="validity-banner">
-                        <i class="fas fa-calendar-check" style="margin-right:5px;"></i>
-                        Validité de l'offre : <strong>30 jours</strong> à compter de la date d'émission. Ce document ne constitue pas une facture.
-                    </div>
+                    @if($invoice->isDeliveryNote())
+                        <div class="validity-banner" style="border-left: 3px solid #334155; background: #f8fafc; color: #334155;">
+                            <i class="fas fa-truck-loading" style="margin-right:5px; color:#0f172a;"></i>
+                            <strong>Bon pour réception et décharge :</strong> « Marchandises reçues conformes en quantité et qualité, en parfait état. »
+                            <div style="margin-top:6px; font-size:11px; color:#64748b;">
+                                Date de réception : _____ / _____ / 20___ &nbsp;&nbsp;•&nbsp;&nbsp; Nom & Signature / Cachet :
+                            </div>
+                        </div>
+                    @elseif($invoice->isQuote())
+                        <div class="validity-banner">
+                            <i class="fas fa-calendar-check" style="margin-right:5px;"></i>
+                            Validité de l'offre : <strong>30 jours</strong> à compter de la date d'émission. Ce document ne constitue pas une facture.
+                        </div>
                     @else
-                    <div class="legal-banner">
-                        <i class="fas fa-shield-alt" style="margin-right:5px; color:#0f172a;"></i>
-                        Facture payable à réception. En cas de retard de paiement, des pénalités seront appliquées conformément aux dispositions légales (CGI Maroc).
-                    </div>
+                        <div class="legal-banner">
+                            <i class="fas fa-shield-alt" style="margin-right:5px; color:#0f172a;"></i>
+                            Facture payable à réception. En cas de retard de paiement, des pénalités seront appliquées conformément aux dispositions légales (CGI Maroc).
+                        </div>
                     @endif
 
                     @if($invoice->notes)
@@ -802,21 +883,27 @@
                     @endif
                 </div>
 
-                {{-- Right: Totals Card + Cachet Box --}}
+                {{-- Right: Totals Card + Stamp --}}
                 <div class="summary-right">
                     <div class="totals-card">
                         <div class="total-row">
-                            <span class="total-row-label">Sous-total HT</span>
+                            <span class="total-row-label">Total HT</span>
                             <span class="total-row-val">{{ $invoice->formatted_subtotal }}</span>
                         </div>
                         <div class="total-row">
-                            <span class="total-row-label">{{ $invoice->tax_label }} ({{ $invoice->formatted_tax_rate }})</span>
+                            <span class="total-row-label">Total {{ $invoice->tax_label }} ({{ $invoice->formatted_tax_rate }})</span>
                             <span class="total-row-val">{{ $invoice->formatted_tax_amount }}</span>
                         </div>
                         @if($invoice->discount_amount > 0)
                         <div class="total-row">
                             <span class="total-row-label">Remise</span>
                             <span class="total-row-val" style="color:#059669;">- {{ $invoice->formatted_discount_amount }}</span>
+                        </div>
+                        @endif
+                        @if($shippingCost > 0)
+                        <div class="total-row">
+                            <span class="total-row-label">{{ __('Frais de livraison') }}</span>
+                            <span class="total-row-val" style="color:#0f172a; font-weight:700;">+ {{ currency($shippingCost) }}</span>
                         </div>
                         @endif
                         <hr class="totals-divider">
@@ -826,12 +913,11 @@
                         </div>
                     </div>
 
-                    {{-- Cachet Société placed right under Totals for perfect visual balance --}}
-                    @if(($withStamp ?? $invoice->with_stamp ?? true) && setting('company_stamp'))
-                    <div class="stamp-box">
+                    @if($showStamp)
+                    <div class="stamp-box" style="margin-top: 8px; text-align: center;">
                         <img src="/storage/{{ setting('company_stamp') }}"
                              class="stamp-img"
-                             style="max-width:{{ round(140 * intval(setting('company_stamp_scale', 100)) / 100) }}px; max-height:85px;"
+                             style="max-width:{{ round(140 * intval(setting('company_stamp_scale', 100)) / 100) }}px; max-height:85px; display: block; margin: 0 auto;"
                              alt="Cachet"
                              onerror="this.src='{{ asset('storage/' . setting('company_stamp')) }}'">
                     </div>
@@ -841,10 +927,22 @@
 
         </div>
 
-        {{-- ══════════ FOOTER ══════════ --}}
-        <div class="doc-footer">
-            <i class="far fa-handshake" style="margin-right:6px; font-size:11px;"></i>
-            {{ $invoice->isQuote() ? 'Merci de votre confiance !' : 'Merci pour votre achat !' }}
+        {{-- ══════════ OFFICIAL CORPORATE FOOTER ══════════ --}}
+        <div class="doc-footer" style="padding: 14px 36px; text-align: center; border-top: 1.5px solid #e2e8f0; background: #ffffff;">
+            <div style="color: #0f172a; font-size: 11px; font-weight: 600; margin-bottom: 6px;">
+                <i class="fas fa-check-circle" style="color: #10b981; margin-right: 6px;"></i>
+                {{ $invoice->isDeliveryNote() ? 'Marchandise livrée sous réserve de vérification. Merci de votre confiance !' : ($invoice->isQuote() ? 'Nous vous remercions pour votre confiance. Ce devis reste à votre disposition.' : 'Nous vous remercions pour votre achat et votre confiance !') }}
+            </div>
+            <div style="color: #64748b; font-size: 9.5px; line-height: 1.5; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 12px;">
+                <span><strong>{{ $companyName }}</strong></span>
+                @if($companyAddress)<span>• {{ $companyAddress }}</span>@endif
+                @if($companyPhone)<span>• Tél : {{ $companyPhone }}</span>@endif
+                @if($companyEmail)<span>• Email : {{ $companyEmail }}</span>@endif
+                @if($companyTaxId)<span>• ICE : {{ $companyTaxId }}</span>@endif
+                @if($companyRegistryId)<span>• RC : {{ $companyRegistryId }}</span>@endif
+                @if($companyFiscalId)<span>• IF : {{ $companyFiscalId }}</span>@endif
+                @if($companyPatente)<span>• Patente : {{ $companyPatente }}</span>@endif
+            </div>
         </div>
     </div>
 
