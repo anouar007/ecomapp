@@ -266,7 +266,7 @@
                                 <span class="pdp-discount-badge">−{{ $product->discount_percentage }}%</span>
                             @endif
 
-                            <div class="pdp-price-main-line">
+                            <div class="pdp-price-main-line d-flex align-items-baseline">
                                 <span class="pdp-price-main">{{ $product->isOnSale() ? $product->formatted_sale_price : $product->formatted_price }}</span>
 
                                 @if($product->isInStock())

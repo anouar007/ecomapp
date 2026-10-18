@@ -412,7 +412,7 @@
         .featured-pro-card .pcard-price-main-line,
         .selection-card .pcard-price-main-line {
             display: flex !important;
-            align-items: center !important;
+            align-items: baseline !important;
             justify-content: left !important;
             width: 100% !important;
             height: 24px !important;
@@ -433,7 +433,7 @@
             min-height: 24px !important;
             max-height: 24px !important;
             display: inline-flex !important;
-            align-items: center !important;
+            align-items: baseline !important;
             white-space: nowrap !important;
             margin-bottom: 0px !important;
         }
@@ -538,6 +538,21 @@
 
         .pdp-commander-wrap {
             margin-top: 8px !important;
+        }
+
+        .pdp-cat-label {
+            color: #ababab !important;
+        }
+
+        .pdp-price-main-line {
+            display: flex !important;
+            align-items: baseline !important;
+            gap: 12px !important;
+        }
+
+        .search-result-meta {
+            display: flex !important;
+            align-items: baseline !important;
         }
 
         .search-result-price-wrap,
@@ -665,7 +680,7 @@
             .featured-pro-card .pcard-price-main-line,
             .selection-card .pcard-price-main-line {
                 display: flex !important;
-                align-items: center !important;
+                align-items: baseline !important;
                 justify-content: left !important;
                 width: 100% !important;
                 height: 22px !important;
@@ -683,7 +698,7 @@
                 min-height: 22px !important;
                 max-height: 22px !important;
                 display: inline-flex !important;
-                align-items: center !important;
+                align-items: baseline !important;
                 margin-bottom: 0px !important;
             }
 

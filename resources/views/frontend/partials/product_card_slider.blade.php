@@ -25,7 +25,7 @@
         <div>
             {{-- Price formatted dynamically as on the shop card --}}
             <div class="pcard-price mb-0">
-                <div class="pcard-price-main-line d-flex align-items-center justify-content-start gap-2 w-100">
+                <div class="pcard-price-main-line d-flex align-items-baseline justify-content-start gap-2 w-100">
                     @if($product->isOnSale())
                         <span class="pcard-price-current text-nowrap">{{ $product->formatted_sale_price }}</span>
                     @elseif($product->price && $product->price > 0)
