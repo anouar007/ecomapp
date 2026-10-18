@@ -7,7 +7,7 @@ use Tests\TestCase;
 
 class ProductPageCommanderButtonTest extends TestCase
 {
-    public function test_pdp_commander_button_hidden_when_cart_empty(): void
+    public function test_pdp_commander_button_visible_even_when_cart_empty(): void
     {
         session()->forget('cart');
 
@@ -17,8 +17,9 @@ class ProductPageCommanderButtonTest extends TestCase
         $response = $this->get(route('shop.show', $product->slug ?: $product->id));
         $response->assertStatus(200);
 
-        // Commander wrap should have d-none when cart is empty
-        $response->assertSee('id="pdpCommanderWrap" class="pdp-commander-wrap mt-2 d-none"', false);
+        // Commander wrap should always be visible without d-none even when cart is empty
+        $response->assertSee('id="pdpCommanderWrap" class="pdp-commander-wrap mt-2"', false);
+        $response->assertDontSee('id="pdpCommanderWrap" class="pdp-commander-wrap mt-2 d-none"', false);
         $response->assertSee('id="pdpCommanderBtn"', false);
     }
 
@@ -40,8 +41,8 @@ class ProductPageCommanderButtonTest extends TestCase
         $response = $this->get(route('shop.show', $product->slug ?: $product->id));
         $response->assertStatus(200);
 
-        // Commander wrap should NOT have d-none
-        $response->assertSee('id="pdpCommanderWrap" class="pdp-commander-wrap mt-2 "', false);
+        // Commander wrap should always be visible without d-none
+        $response->assertSee('id="pdpCommanderWrap" class="pdp-commander-wrap mt-2"', false);
         $response->assertDontSee('id="pdpCommanderWrap" class="pdp-commander-wrap mt-2 d-none"', false);
         $response->assertSee('id="pdpCommanderBtn"', false);
     }

@@ -326,13 +326,13 @@
                     </div>
                     @endif
 
-                    {{-- Commander Button (Shown when cart has at least 1 product) --}}
+                    {{-- Commander Button (Always visible on product page) --}}
                     @php
                         $cartTotalCount = array_sum(array_column(session('cart', []), 'quantity'));
                         $currentLocale = app()->getLocale();
                         $commanderLabel = $currentLocale === 'ar' ? 'إتمام الطلب' : ($currentLocale === 'en' ? 'Checkout' : 'Commander');
                     @endphp
-                    <div id="pdpCommanderWrap" class="pdp-commander-wrap mt-2 {{ $cartTotalCount > 0 ? '' : 'd-none' }}">
+                    <div id="pdpCommanderWrap" class="pdp-commander-wrap mt-2">
                         <button type="button" id="pdpCommanderBtn" class="pdp-commander-btn w-100" onclick="pdpCommanderAction(event)">
                             <i class="fas fa-shopping-bag me-2"></i>
                             <span id="pdpCommanderText">{{ $commanderLabel }}</span>

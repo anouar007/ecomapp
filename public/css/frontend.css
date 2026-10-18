@@ -2824,7 +2824,7 @@ a {
 /* ── Body ── */
 .pdp-body {
     background: var(--bg-surface);
-    padding: 40px 0 80px;
+    padding: 20px 0 80px;
 }
 
 /* ── Main Card ── */

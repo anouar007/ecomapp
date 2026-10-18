@@ -5228,7 +5228,7 @@ body:has(.offcanvas.show) .whatsapp-float {
 
 .pdp-body {
     background: var(--light-surface) !important;
-    padding: 45px 0 80px;
+    padding: 20px 0 80px;
 }
 
 .pdp-card {
@@ -5268,7 +5268,7 @@ body:has(.offcanvas.show) .whatsapp-float {
 .pdp-thumbs {
     display: flex;
     gap: 10px;
-    padding: 20px 24px;
+    padding: 10px 24px;
     border-top: 1px solid var(--light-border-sub);
     background: #f8fafc;
 }
