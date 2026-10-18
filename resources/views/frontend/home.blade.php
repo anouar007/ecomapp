@@ -238,19 +238,6 @@
                     @endphp
                     <div class="col">
                         <div class="featured-pro-card selection-card h-100 d-flex flex-column justify-content-between position-relative">
-                            {{-- Stock Status Badge at Top Left of Card --}}
-                            @if($product->isInStock())
-                                <span class="featured-stock-pill featured-stock-badge-corner">
-                                    <span class="stock-pulse-dot"></span>
-                                    <span>{{ $isAr ? 'متوفر' : 'EN STOCK' }}</span>
-                                </span>
-                            @else
-                                <span class="featured-stock-pill featured-stock-pill--out featured-stock-badge-corner">
-                                    <i class="fas fa-times-circle text-danger" style="font-size: 10px;"></i>
-                                    <span>{{ $isAr ? 'نفذت الكمية' : 'RUPTURE DE STOCK' }}</span>
-                                </span>
-                            @endif
-
                             {{-- Product Image with clean white background --}}
                             <div class="featured-pro-img-box mb-2">
                                 <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" class="w-100 h-100 d-flex align-items-center justify-content-center">
@@ -272,14 +259,34 @@
                                 <div>
                                     {{-- Price formatted dynamically as on the shop card --}}
                                     <div class="pcard-price mb-0">
+                                        <div class="pcard-price-main-line d-flex align-items-center justify-content-around gap-1 w-100">
+                                            @if($product->isOnSale())
+                                                <span class="pcard-price-current text-nowrap">{{ $product->formatted_sale_price }}</span>
+                                            @elseif($product->price && $product->price > 0)
+                                                <span class="pcard-price-current text-nowrap">{{ $product->formatted_price }}</span>
+                                            @else
+                                                <span class="pcard-price-current text-nowrap">{{ __('Sur devis') }}</span>
+                                            @endif
+
+                                            {{-- Stock Status Badge aligned with price --}}
+                                            @if($product->isInStock())
+                                                <span class="featured-stock-pill featured-stock-badge-corner">
+                                                    <span class="stock-pulse-dot"></span>
+                                                    <span>{{ $isAr ? 'متوفر' : 'EN STOCK' }}</span>
+                                                </span>
+                                            @else
+                                                <span class="featured-stock-pill featured-stock-pill--out featured-stock-badge-corner">
+                                                    <i class="fas fa-times-circle text-danger" style="font-size: 10px;"></i>
+                                                    <span>{{ $isAr ? 'نفذت الكمية' : 'RUPTURE DE STOCK' }}</span>
+                                                </span>
+                                            @endif
+                                        </div>
+
                                         @if($product->isOnSale())
-                                            <span class="pcard-price-current text-nowrap">{{ $product->formatted_sale_price }}</span>
                                             <span class="pcard-price-old text-nowrap">{{ $product->formatted_price }}</span>
                                         @elseif($product->price && $product->price > 0)
-                                            <span class="pcard-price-current text-nowrap">{{ $product->formatted_price }}</span>
                                             <span class="pcard-price-old text-nowrap invisible" aria-hidden="true">&nbsp;</span>
                                         @else
-                                            <span class="pcard-price-current text-nowrap">{{ __('Sur devis') }}</span>
                                             <span class="pcard-price-old text-nowrap invisible" aria-hidden="true">&nbsp;</span>
                                         @endif
                                     </div>
@@ -398,19 +405,6 @@
                     @endphp
                     <div class="col">
                         <div class="featured-pro-card selection-card h-100 d-flex flex-column justify-content-between position-relative">
-                            {{-- Stock Status Badge at Top Left of Card --}}
-                            @if($product->isInStock())
-                                <span class="featured-stock-pill featured-stock-badge-corner">
-                                    <span class="stock-pulse-dot"></span>
-                                    <span>{{ $isAr ? 'متوفر' : 'EN STOCK' }}</span>
-                                </span>
-                            @else
-                                <span class="featured-stock-pill featured-stock-pill--out featured-stock-badge-corner">
-                                    <i class="fas fa-times-circle text-danger" style="font-size: 10px;"></i>
-                                    <span>{{ $isAr ? 'نفذت الكمية' : 'RUPTURE DE STOCK' }}</span>
-                                </span>
-                            @endif
-
                             {{-- Product Image with clean white background --}}
                             <div class="featured-pro-img-box mb-2">
                                 <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" class="w-100 h-100 d-flex align-items-center justify-content-center">
@@ -432,14 +426,34 @@
                                 <div>
                                     {{-- Price formatted dynamically as on the shop card --}}
                                     <div class="pcard-price mb-0">
+                                        <div class="pcard-price-main-line d-flex align-items-center justify-content-around gap-1 w-100">
+                                            @if($product->isOnSale())
+                                                <span class="pcard-price-current text-nowrap">{{ $product->formatted_sale_price }}</span>
+                                            @elseif($product->price && $product->price > 0)
+                                                <span class="pcard-price-current text-nowrap">{{ $product->formatted_price }}</span>
+                                            @else
+                                                <span class="pcard-price-current text-nowrap">{{ __('Sur devis') }}</span>
+                                            @endif
+
+                                            {{-- Stock Status Badge aligned with price --}}
+                                            @if($product->isInStock())
+                                                <span class="featured-stock-pill featured-stock-badge-corner">
+                                                    <span class="stock-pulse-dot"></span>
+                                                    <span>{{ $isAr ? 'متوفر' : 'EN STOCK' }}</span>
+                                                </span>
+                                            @else
+                                                <span class="featured-stock-pill featured-stock-pill--out featured-stock-badge-corner">
+                                                    <i class="fas fa-times-circle text-danger" style="font-size: 10px;"></i>
+                                                    <span>{{ $isAr ? 'نفذت الكمية' : 'RUPTURE DE STOCK' }}</span>
+                                                </span>
+                                            @endif
+                                        </div>
+
                                         @if($product->isOnSale())
-                                            <span class="pcard-price-current text-nowrap">{{ $product->formatted_sale_price }}</span>
                                             <span class="pcard-price-old text-nowrap">{{ $product->formatted_price }}</span>
                                         @elseif($product->price && $product->price > 0)
-                                            <span class="pcard-price-current text-nowrap">{{ $product->formatted_price }}</span>
                                             <span class="pcard-price-old text-nowrap invisible" aria-hidden="true">&nbsp;</span>
                                         @else
-                                            <span class="pcard-price-current text-nowrap">{{ __('Sur devis') }}</span>
                                             <span class="pcard-price-old text-nowrap invisible" aria-hidden="true">&nbsp;</span>
                                         @endif
                                     </div>
@@ -506,19 +520,6 @@
                     @endphp
                     <div class="col">
                         <div class="featured-pro-card selection-card h-100 d-flex flex-column justify-content-between position-relative">
-                            {{-- Stock Status Badge at Top Left of Card --}}
-                            @if($product->isInStock())
-                                <span class="featured-stock-pill featured-stock-badge-corner">
-                                    <span class="stock-pulse-dot"></span>
-                                    <span>{{ $isAr ? 'متوفر' : 'EN STOCK' }}</span>
-                                </span>
-                            @else
-                                <span class="featured-stock-pill featured-stock-pill--out featured-stock-badge-corner">
-                                    <i class="fas fa-times-circle text-danger" style="font-size: 10px;"></i>
-                                    <span>{{ $isAr ? 'نفذت الكمية' : 'RUPTURE DE STOCK' }}</span>
-                                </span>
-                            @endif
-
                             {{-- Product Image with clean white background --}}
                             <div class="featured-pro-img-box mb-2">
                                 <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" class="w-100 h-100 d-flex align-items-center justify-content-center">
@@ -540,14 +541,34 @@
                                 <div>
                                     {{-- Price formatted dynamically as on the shop card --}}
                                     <div class="pcard-price mb-0">
+                                        <div class="pcard-price-main-line d-flex align-items-center justify-content-around gap-1 w-100">
+                                            @if($product->isOnSale())
+                                                <span class="pcard-price-current text-nowrap">{{ $product->formatted_sale_price }}</span>
+                                            @elseif($product->price && $product->price > 0)
+                                                <span class="pcard-price-current text-nowrap">{{ $product->formatted_price }}</span>
+                                            @else
+                                                <span class="pcard-price-current text-nowrap">{{ __('Sur devis') }}</span>
+                                            @endif
+
+                                            {{-- Stock Status Badge aligned with price --}}
+                                            @if($product->isInStock())
+                                                <span class="featured-stock-pill featured-stock-badge-corner">
+                                                    <span class="stock-pulse-dot"></span>
+                                                    <span>{{ $isAr ? 'متوفر' : 'EN STOCK' }}</span>
+                                                </span>
+                                            @else
+                                                <span class="featured-stock-pill featured-stock-pill--out featured-stock-badge-corner">
+                                                    <i class="fas fa-times-circle text-danger" style="font-size: 10px;"></i>
+                                                    <span>{{ $isAr ? 'نفذت الكمية' : 'RUPTURE DE STOCK' }}</span>
+                                                </span>
+                                            @endif
+                                        </div>
+
                                         @if($product->isOnSale())
-                                            <span class="pcard-price-current text-nowrap">{{ $product->formatted_sale_price }}</span>
                                             <span class="pcard-price-old text-nowrap">{{ $product->formatted_price }}</span>
                                         @elseif($product->price && $product->price > 0)
-                                            <span class="pcard-price-current text-nowrap">{{ $product->formatted_price }}</span>
                                             <span class="pcard-price-old text-nowrap invisible" aria-hidden="true">&nbsp;</span>
                                         @else
-                                            <span class="pcard-price-current text-nowrap">{{ __('Sur devis') }}</span>
                                             <span class="pcard-price-old text-nowrap invisible" aria-hidden="true">&nbsp;</span>
                                         @endif
                                     </div>

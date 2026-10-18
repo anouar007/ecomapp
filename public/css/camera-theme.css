@@ -66,6 +66,11 @@
 }
 
 /* Base Light Theme */
+html,
+body {
+    overflow-x: clip !important;
+}
+
 body {
     background-color: var(--light-surface) !important;
     color: var(--text-primary) !important;
@@ -205,15 +210,15 @@ dt {
    HEADER & NAVBAR (Crisp White Glass)
    ================================================================ */
 .header-main {
-    background: rgba(255, 255, 255, 0.94) !important;
+    background: rgba(255, 255, 255, 0.96) !important;
     backdrop-filter: blur(16px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
     border-bottom: 1px solid var(--light-border) !important;
-    position: sticky;
-    top: 0;
-    z-index: 1040;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1040 !important;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 15px rgba(15, 23, 42, 0.04);
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08) !important;
 }
 
 .navbar-brand {
@@ -5358,12 +5363,21 @@ body:has(.offcanvas.show) .whatsapp-float {
     line-height: 1.1;
 }
 
+.pdp-price-main-line {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    line-height: 1;
+}
+
 .pdp-price-main {
     font-family: var(--font-mono);
     font-weight: 900;
     font-size: 2.1rem;
     color: var(--brand-black);
-    line-height: 1.1;
+    line-height: 1;
+    display: inline-block;
 }
 
 .pdp-price-old {
@@ -5371,7 +5385,7 @@ body:has(.offcanvas.show) .whatsapp-float {
     font-size: 1.05rem;
     color: #c10f2b !important;
     text-decoration: line-through;
-    margin-top: 3px;
+    margin-top: 4px;
     line-height: 1.1;
 }
 
@@ -5388,13 +5402,22 @@ body:has(.offcanvas.show) .whatsapp-float {
     margin-bottom: 6px;
 }
 
+.pdp-stock-badge {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+}
+
 .pdp-stock-badge--in {
     background: rgba(16, 185, 129, 0.1) !important;
     color: #059669 !important;
     font-weight: 700;
     font-size: 0.8rem;
-    padding: 4px 12px;
+    padding: 5px 12px;
     border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
 }
 
 .pdp-description {
@@ -9420,27 +9443,42 @@ html[dir="rtl"] .insta360-promo-overlay {
     flex-direction: column !important;
     justify-content: flex-start !important;
     align-items: flex-start !important;
-    height: 34px !important;
-    min-height: 34px !important;
-    max-height: 34px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    max-height: 36px !important;
     margin-bottom: 0px !important;
     overflow: hidden !important;
     line-height: 1.1 !important;
     gap: 0px !important;
 }
 
+.selection-card .pcard-price-main-line,
+.featured-pro-card .pcard-price-main-line {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+    width: 100% !important;
+    height: 21px !important;
+    min-height: 21px !important;
+    max-height: 21px !important;
+    line-height: 1.15 !important;
+    margin-bottom: 1px !important;
+    gap: 4px !important;
+}
+
 .selection-card .pcard-price-current,
 .featured-pro-card .pcard-price-current {
-    font-size: 0.95rem !important;
+    font-size: 1.05rem !important;
     font-weight: 700 !important;
     line-height: 1.15 !important;
     color: #0f172a !important;
-    height: 19px !important;
-    min-height: 19px !important;
-    max-height: 19px !important;
-    display: block !important;
+    height: 21px !important;
+    min-height: 21px !important;
+    max-height: 21px !important;
+    display: inline-flex !important;
+    align-items: center !important;
     white-space: nowrap !important;
-    margin-bottom: 1px !important;
+    margin-bottom: 0px !important;
 }
 
 .selection-card .pcard-price-old,
@@ -9482,6 +9520,8 @@ html[dir="rtl"] .insta360-promo-overlay {
     align-items: center !important;
     gap: 3px !important;
     line-height: 1.1 !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
 }
 
 .selection-card .featured-stock-pill--out,
@@ -9498,15 +9538,20 @@ html[dir="rtl"] .insta360-promo-overlay {
 }
 
 .featured-stock-badge-corner {
-    position: absolute !important;
-    top: 10px !important;
-    left: 10px !important;
-    z-index: 10 !important;
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    z-index: auto !important;
     opacity: 1 !important;
     visibility: visible !important;
     display: inline-flex !important;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08) !important;
-    pointer-events: none !important;
+    align-items: center !important;
+    box-shadow: none !important;
+    pointer-events: auto !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
 }
 
 .featured-pro-card:hover .featured-stock-badge-corner,
@@ -9519,7 +9564,8 @@ html[dir="rtl"] .insta360-promo-overlay {
 [dir="rtl"] .featured-stock-badge-corner,
 html[dir="rtl"] .featured-stock-badge-corner {
     left: auto !important;
-    right: 10px !important;
+    right: auto !important;
+    top: auto !important;
 }
 
 .selection-card .featured-pro-btn,
@@ -10741,20 +10787,36 @@ html[dir="rtl"] .whatsapp-float:hover .whatsapp-float-tooltip {
 
     .selection-card .pcard-price,
     .featured-pro-card .pcard-price {
-        height: 30px !important;
-        min-height: 30px !important;
-        max-height: 30px !important;
+        height: 32px !important;
+        min-height: 32px !important;
+        max-height: 32px !important;
         margin-bottom: 0px !important;
         line-height: 1.1 !important;
         gap: 0px !important;
     }
 
+    .selection-card .pcard-price-main-line,
+    .featured-pro-card .pcard-price-main-line {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-around !important;
+        width: 100% !important;
+        height: 19px !important;
+        min-height: 19px !important;
+        max-height: 19px !important;
+        line-height: 1.15 !important;
+        margin-bottom: 0px !important;
+        gap: 3px !important;
+    }
+
     .selection-card .pcard-price-current,
     .featured-pro-card .pcard-price-current {
-        font-size: 0.88rem !important;
-        height: 17px !important;
-        min-height: 17px !important;
-        max-height: 17px !important;
+        font-size: 0.97rem !important;
+        height: 19px !important;
+        min-height: 19px !important;
+        max-height: 19px !important;
+        display: inline-flex !important;
+        align-items: center !important;
         margin-bottom: 0px !important;
     }
 
@@ -10783,18 +10845,24 @@ html[dir="rtl"] .whatsapp-float:hover .whatsapp-float-tooltip {
         font-size: 0.50rem !important;
         padding: 1px 4px !important;
         border-radius: 4px !important;
+        margin: 0 !important;
+        flex-shrink: 0 !important;
     }
 
     .featured-stock-badge-corner {
-        top: 8px !important;
-        left: 8px !important;
-        z-index: 10 !important;
+        position: static !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        z-index: auto !important;
     }
 
     [dir="rtl"] .featured-stock-badge-corner,
     html[dir="rtl"] .featured-stock-badge-corner {
         left: auto !important;
-        right: 8px !important;
+        right: auto !important;
+        top: auto !important;
     }
 
     .featured-pro-btn,

@@ -120,7 +120,7 @@
                 </div>
             </div>
 
-            <div class="col-lg-5">
+            <div class="col-lg-5 mt-3">
                 <div class="card border-0 shadow-sm rounded-4">
                     <div class="card-header bg-white p-4 border-bottom-0">
                         <h5 class="fw-bold m-0">{{ __('Order Summary') }}</h5>

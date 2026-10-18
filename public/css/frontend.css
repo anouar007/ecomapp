@@ -1907,6 +1907,9 @@ a {
     background: rgba(255, 255, 255, .97);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1040 !important;
 }
 
 .navbar-logo-img {
@@ -2715,6 +2718,14 @@ a {
     margin-top: auto;
 }
 
+.pcard-price-main-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-around !important;
+    width: 100%;
+    gap: 4px;
+}
+
 .pcard-price-current {
     font-size: 1.1rem;
     font-weight: 800;
@@ -3011,11 +3022,19 @@ a {
     line-height: 1.1;
 }
 
+.pdp-price-main-line {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    line-height: 1;
+}
+
 .pdp-price-main {
     font-size: 2rem;
     font-weight: 800;
     color: var(--text-dark);
-    line-height: 1.1;
+    line-height: 1;
 }
 
 .pdp-price-old {
@@ -3854,7 +3873,7 @@ a {
    ================================================================ */
 html,
 body {
-    overflow-x: hidden;
+    overflow-x: clip !important;
     width: 100%;
     position: relative;
 }
@@ -3887,7 +3906,7 @@ body {
 html,
 body {
     max-width: 100% !important;
-    overflow-x: hidden !important;
+    overflow-x: clip !important;
     position: relative;
 }
 

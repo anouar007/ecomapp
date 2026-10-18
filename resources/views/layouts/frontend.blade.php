@@ -383,27 +383,42 @@
             flex-direction: column !important;
             justify-content: flex-start !important;
             align-items: flex-start !important;
-            height: 34px !important;
-            min-height: 34px !important;
-            max-height: 34px !important;
+            height: 36px !important;
+            min-height: 36px !important;
+            max-height: 36px !important;
             margin-bottom: 0px !important;
             overflow: hidden !important;
             line-height: 1.1 !important;
             gap: 0px !important;
         }
 
+        .featured-pro-card .pcard-price-main-line,
+        .selection-card .pcard-price-main-line {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-around !important;
+            width: 100% !important;
+            height: 21px !important;
+            min-height: 21px !important;
+            max-height: 21px !important;
+            line-height: 1.15 !important;
+            margin-bottom: 1px !important;
+            gap: 4px !important;
+        }
+
         .featured-pro-card .pcard-price-current,
         .selection-card .pcard-price-current {
-            font-size: 0.95rem !important;
+            font-size: 1.05rem !important;
             font-weight: 700 !important;
             line-height: 1.15 !important;
             color: #0f172a !important;
-            height: 19px !important;
-            min-height: 19px !important;
-            max-height: 19px !important;
-            display: block !important;
+            height: 21px !important;
+            min-height: 21px !important;
+            max-height: 21px !important;
+            display: inline-flex !important;
+            align-items: center !important;
             white-space: nowrap !important;
-            margin-bottom: 1px !important;
+            margin-bottom: 0px !important;
         }
 
         .featured-pro-card .pcard-price-old,
@@ -445,6 +460,8 @@
             align-items: center !important;
             gap: 3px !important;
             line-height: 1.1 !important;
+            margin: 0 !important;
+            flex-shrink: 0 !important;
         }
 
         .selection-card .featured-stock-pill--out,
@@ -461,15 +478,20 @@
         }
 
         .featured-stock-badge-corner {
-            position: absolute !important;
-            top: 10px !important;
-            left: 10px !important;
-            z-index: 10 !important;
+            position: static !important;
+            top: auto !important;
+            left: auto !important;
+            right: auto !important;
+            bottom: auto !important;
+            z-index: auto !important;
             opacity: 1 !important;
             visibility: visible !important;
             display: inline-flex !important;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08) !important;
-            pointer-events: none !important;
+            align-items: center !important;
+            box-shadow: none !important;
+            pointer-events: auto !important;
+            margin: 0 !important;
+            flex-shrink: 0 !important;
         }
 
         .featured-pro-card:hover .featured-stock-badge-corner,
@@ -482,7 +504,8 @@
         [dir="rtl"] .featured-stock-badge-corner,
         html[dir="rtl"] .featured-stock-badge-corner {
             left: auto !important;
-            right: 10px !important;
+            right: auto !important;
+            top: auto !important;
         }
 
         .featured-pro-card .featured-pro-btn,
@@ -530,20 +553,36 @@
 
             .featured-pro-card .pcard-price,
             .selection-card .pcard-price {
-                height: 30px !important;
-                min-height: 30px !important;
-                max-height: 30px !important;
+                height: 32px !important;
+                min-height: 32px !important;
+                max-height: 32px !important;
                 margin-bottom: 0px !important;
                 line-height: 1.1 !important;
                 gap: 0px !important;
             }
 
+            .featured-pro-card .pcard-price-main-line,
+            .selection-card .pcard-price-main-line {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-around !important;
+                width: 100% !important;
+                height: 19px !important;
+                min-height: 19px !important;
+                max-height: 19px !important;
+                line-height: 1.15 !important;
+                margin-bottom: 0px !important;
+                gap: 3px !important;
+            }
+
             .featured-pro-card .pcard-price-current,
             .selection-card .pcard-price-current {
-                font-size: 0.88rem !important;
-                height: 17px !important;
-                min-height: 17px !important;
-                max-height: 17px !important;
+                font-size: 0.97rem !important;
+                height: 19px !important;
+                min-height: 19px !important;
+                max-height: 19px !important;
+                display: inline-flex !important;
+                align-items: center !important;
                 margin-bottom: 0px !important;
             }
 
@@ -572,18 +611,24 @@
                 font-size: 0.50rem !important;
                 padding: 1px 4px !important;
                 border-radius: 4px !important;
+                margin: 0 !important;
+                flex-shrink: 0 !important;
             }
 
             .featured-stock-badge-corner {
-                top: 8px !important;
-                left: 8px !important;
-                z-index: 10 !important;
+                position: static !important;
+                top: auto !important;
+                left: auto !important;
+                right: auto !important;
+                bottom: auto !important;
+                z-index: auto !important;
             }
 
             [dir="rtl"] .featured-stock-badge-corner,
             html[dir="rtl"] .featured-stock-badge-corner {
                 left: auto !important;
-                right: 8px !important;
+                right: auto !important;
+                top: auto !important;
             }
 
             .featured-pro-card .featured-pro-btn,
@@ -624,7 +669,7 @@
 
 
     <!-- Main Header / Navbar (Single Clean Row) -->
-    <div class="header-main bg-white shadow-sm w-100" style="z-index: 1040; border-bottom: 1px solid #f1f3f5;">
+    <div class="header-main sticky-top bg-white shadow-sm w-100" style="position: sticky !important; top: 0 !important; z-index: 1040; border-bottom: 1px solid #f1f3f5;">
         <div class="container py-2 py-lg-3">
             <div class="d-flex align-items-center justify-content-between gap-3 gap-xl-4">
                 
@@ -1404,16 +1449,6 @@
                     }
                 }
             });
-
-            // Reactively update PDP Commander button visibility on product pages
-            const pdpCommanderWrap = document.getElementById('pdpCommanderWrap');
-            if (pdpCommanderWrap) {
-                if (num > 0) {
-                    pdpCommanderWrap.classList.remove('d-none');
-                } else {
-                    pdpCommanderWrap.classList.add('d-none');
-                }
-            }
         };
 
         function initFloatingCheckoutState() {

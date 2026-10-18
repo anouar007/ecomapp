@@ -26,7 +26,7 @@ class HomePageSectionsTest extends TestCase
         $response->assertSee('popular-categories-section');
         $response->assertSee('popular-cats-swiper');
         $response->assertSee('cat-item-card');
-        $response->assertSee('cat-icon-slot');
+        $response->assertSee('cat-card-bg-img');
         $response->assertSee('cat-badge-counter');
         $response->assertSee('cat-label');
         $response->assertSee('slidesPerView: 3');
@@ -40,8 +40,8 @@ class HomePageSectionsTest extends TestCase
         // 4. Insta360 Promo Banner & Workflow Solutions
         $response->assertSee('insta360-promo-banner');
         $response->assertSee('promo-cta-btn');
-        $response->assertSee('workflow-card');
-        $response->assertSee('workflow-meta-pill');
+        $response->assertSee('promo-tag-red');
+        $response->assertSee('promo-bullet');
 
         // 5. Double Banners
         $response->assertSee('banner-box');

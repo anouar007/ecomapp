@@ -265,21 +265,25 @@
                             @if($product->isOnSale())
                                 <span class="pdp-discount-badge">−{{ $product->discount_percentage }}%</span>
                             @endif
-                            <span class="pdp-price-main">{{ $product->isOnSale() ? $product->formatted_sale_price : $product->formatted_price }}</span>
+
+                            <div class="pdp-price-main-line">
+                                <span class="pdp-price-main">{{ $product->isOnSale() ? $product->formatted_sale_price : $product->formatted_price }}</span>
+
+                                @if($product->isInStock())
+                                    <span class="pdp-stock-badge pdp-stock-badge--in">
+                                        <i class="fas fa-check-circle me-1"></i>{{ __('In stock') }}
+                                    </span>
+                                @else
+                                    <span class="pdp-stock-badge pdp-stock-badge--out">
+                                        <i class="fas fa-times-circle me-1"></i>{{ __('Out of stock') }}
+                                    </span>
+                                @endif
+                            </div>
+
                             @if($product->isOnSale())
                                 <span class="pdp-price-old">{{ $product->formatted_price }}</span>
                             @endif
                         </div>
-
-                        @if($product->isInStock())
-                            <span class="pdp-stock-badge pdp-stock-badge--in">
-                                <i class="fas fa-check-circle me-1"></i>{{ __('In stock') }}
-                            </span>
-                        @else
-                            <span class="pdp-stock-badge pdp-stock-badge--out">
-                                <i class="fas fa-times-circle me-1"></i>{{ __('Out of stock') }}
-                            </span>
-                        @endif
                     </div>
 
                     @if($product->isInStock())
@@ -515,19 +519,6 @@
                 @endphp
                 <div class="col-6 col-md-3">
                     <div class="featured-pro-card selection-card h-100 d-flex flex-column justify-content-between position-relative">
-                        {{-- Stock Status Badge at Top Left of Card --}}
-                        @if($related->isInStock())
-                            <span class="featured-stock-pill featured-stock-badge-corner">
-                                <span class="stock-pulse-dot"></span>
-                                <span>{{ $isAr ? 'متوفر' : 'EN STOCK' }}</span>
-                            </span>
-                        @else
-                            <span class="featured-stock-pill featured-stock-pill--out featured-stock-badge-corner">
-                                <i class="fas fa-times-circle text-danger" style="font-size: 10px;"></i>
-                                <span>{{ $isAr ? 'نفذت الكمية' : 'RUPTURE DE STOCK' }}</span>
-                            </span>
-                        @endif
-
                         {{-- Product Image with clean white background --}}
                         <div class="featured-pro-img-box mb-2">
                             <a href="{{ route('shop.show', $related->slug ?: $related->id) }}" class="w-100 h-100 d-flex align-items-center justify-content-center">
@@ -543,14 +534,34 @@
                             </div>
                             <div>
                                 <div class="pcard-price mb-0">
+                                    <div class="pcard-price-main-line d-flex align-items-center justify-content-around gap-1 w-100">
+                                        @if($related->isOnSale())
+                                            <span class="pcard-price-current text-nowrap">{{ $related->formatted_sale_price }}</span>
+                                        @elseif($related->price && $related->price > 0)
+                                            <span class="pcard-price-current text-nowrap">{{ $related->formatted_price }}</span>
+                                        @else
+                                            <span class="pcard-price-current text-nowrap">{{ __('Sur devis') }}</span>
+                                        @endif
+
+                                        {{-- Stock Status Badge aligned with price --}}
+                                        @if($related->isInStock())
+                                            <span class="featured-stock-pill featured-stock-badge-corner">
+                                                <span class="stock-pulse-dot"></span>
+                                                <span>{{ $isAr ? 'متوفر' : 'EN STOCK' }}</span>
+                                            </span>
+                                        @else
+                                            <span class="featured-stock-pill featured-stock-pill--out featured-stock-badge-corner">
+                                                <i class="fas fa-times-circle text-danger" style="font-size: 10px;"></i>
+                                                <span>{{ $isAr ? 'نفذت الكمية' : 'RUPTURE DE STOCK' }}</span>
+                                            </span>
+                                        @endif
+                                    </div>
+
                                     @if($related->isOnSale())
-                                        <span class="pcard-price-current text-nowrap">{{ $related->formatted_sale_price }}</span>
                                         <span class="pcard-price-old text-nowrap">{{ $related->formatted_price }}</span>
                                     @elseif($related->price && $related->price > 0)
-                                        <span class="pcard-price-current text-nowrap">{{ $related->formatted_price }}</span>
                                         <span class="pcard-price-old text-nowrap invisible" aria-hidden="true">&nbsp;</span>
                                     @else
-                                        <span class="pcard-price-current text-nowrap">{{ __('Sur devis') }}</span>
                                         <span class="pcard-price-old text-nowrap invisible" aria-hidden="true">&nbsp;</span>
                                     @endif
                                 </div>
@@ -630,15 +641,7 @@ function pdpAddToCart(event) {
     const productId = {{ $product->id }};
 
     if (typeof window.addToCart === 'function') {
-        const promise = window.addToCart(productId, quantity, btn);
-        if (promise && typeof promise.then === 'function') {
-            promise.then(() => {
-                const commanderWrap = document.getElementById('pdpCommanderWrap');
-                if (commanderWrap) {
-                    commanderWrap.classList.remove('d-none');
-                }
-            });
-        }
+        window.addToCart(productId, quantity, btn);
     }
 }
 
