@@ -2721,7 +2721,7 @@ a {
 .pcard-price-main-line {
     display: flex;
     align-items: center;
-    justify-content: space-between !important;
+    justify-content: left !important;
     width: 100%;
     gap: 4px;
 }
@@ -3062,8 +3062,9 @@ a {
 }
 
 .pdp-stock-badge--in {
-    background: rgba(16, 185, 129, .12);
-    color: #059669;
+    background: rgba(2, 168, 38, .08);
+    border: 1px solid rgba(2, 168, 38, .22);
+    color: #02a826;
 }
 
 .pdp-stock-badge--out {

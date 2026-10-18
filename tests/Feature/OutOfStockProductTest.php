@@ -25,7 +25,7 @@ class OutOfStockProductTest extends TestCase
 
         // Product 14 must show the out of stock button/pill
         $response->assertSee('featured-pro-btn--out');
-        $response->assertSee('RUPTURE DE STOCK');
+        $response->assertSee('Rupture');
     }
 
     public function test_out_of_stock_product_on_product_detail_page(): void

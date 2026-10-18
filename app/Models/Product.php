@@ -138,6 +138,26 @@ class Product extends Model
     }
 
     /**
+     * Get the comparison/reference old price to display on cards (ensures old price is always visible when product has a price).
+     */
+    public function getCardOldPriceAttribute()
+    {
+        if ($this->isOnSale()) {
+            return $this->price;
+        }
+        if ($this->price && $this->price > 0) {
+            $ref = round(($this->price * 1.15) / 10) * 10;
+            return $ref > $this->price ? $ref : ceil($this->price * 1.15);
+        }
+        return null;
+    }
+
+    public function getFormattedCardOldPriceAttribute()
+    {
+        return $this->card_old_price ? currency($this->card_old_price) : null;
+    }
+
+    /**
      * Get the category that owns the product.
      */
     public function productCategory()

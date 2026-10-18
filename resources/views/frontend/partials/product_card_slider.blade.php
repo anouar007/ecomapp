@@ -1,6 +1,7 @@
 @php
     $isInCart = isset(session('cart', [])[$product->id]);
     $isAr = app()->getLocale() === 'ar';
+    $brand = $product->brand_name ?? ($product->productCategory->name ?? 'CAMERA');
 @endphp
 <div class="featured-pro-card selection-card h-100 d-flex flex-column justify-content-between position-relative">
     {{-- Product Image with clean white background --}}
@@ -13,6 +14,7 @@
     {{-- Product Info --}}
     <div class="featured-pro-body mb-1 flex-grow-1 d-flex flex-column justify-content-between">
         <div>
+            <span class="featured-brand-chip d-none">{{ $brand }}</span>
             <h3 class="featured-pro-title">
                 <a href="{{ route('shop.show', $product->slug ?: $product->id) }}">
                     {{ $product->name }}
@@ -23,7 +25,7 @@
         <div>
             {{-- Price formatted dynamically as on the shop card --}}
             <div class="pcard-price mb-0">
-                <div class="pcard-price-main-line d-flex align-items-center justify-content-between gap-1 w-100">
+                <div class="pcard-price-main-line d-flex align-items-center justify-content-start gap-2 w-100">
                     @if($product->isOnSale())
                         <span class="pcard-price-current text-nowrap">{{ $product->formatted_sale_price }}</span>
                     @elseif($product->price && $product->price > 0)
@@ -32,24 +34,20 @@
                         <span class="pcard-price-current text-nowrap">{{ __('Sur devis') }}</span>
                     @endif
 
-                    {{-- Stock Status Badge aligned with price --}}
+                    {{-- Stock Status Badge aligned with price (100% matches pdp-stock-badge) --}}
                     @if($product->isInStock())
-                        <span class="featured-stock-pill featured-stock-badge-corner">
-                            <span class="stock-pulse-dot"></span>
-                            <span>{{ $isAr ? 'متوفر' : 'EN STOCK' }}</span>
+                        <span class="featured-stock-pill featured-stock-badge-corner pdp-stock-badge pdp-stock-badge--in">
+                            <i class="fas fa-check-circle me-1"></i>{{ __('In stock') }}
                         </span>
                     @else
-                        <span class="featured-stock-pill featured-stock-pill--out featured-stock-badge-corner">
-                            <i class="fas fa-times-circle text-danger" style="font-size: 10px;"></i>
-                            <span>{{ $isAr ? 'نفذت الكمية' : 'RUPTURE DE STOCK' }}</span>
+                        <span class="featured-stock-pill featured-stock-pill--out featured-stock-badge-corner pdp-stock-badge pdp-stock-badge--out">
+                            <i class="fas fa-times-circle me-1"></i>{{ __('Out of stock') }}
                         </span>
                     @endif
                 </div>
 
-                @if($product->isOnSale())
-                    <span class="pcard-price-old text-nowrap">{{ $product->formatted_price }}</span>
-                @elseif($product->price && $product->price > 0)
-                    <span class="pcard-price-old text-nowrap invisible" aria-hidden="true">&nbsp;</span>
+                @if($product->formatted_card_old_price)
+                    <span class="pcard-price-old text-nowrap">{{ $product->formatted_card_old_price }}</span>
                 @else
                     <span class="pcard-price-old text-nowrap invisible" aria-hidden="true">&nbsp;</span>
                 @endif
@@ -76,9 +74,9 @@
             <button type="button" 
                     class="btn w-100 featured-pro-btn featured-pro-btn--out" 
                     disabled 
-                    title="{{ $isAr ? 'نفذت الكمية' : 'Rupture de stock' }}">
+                    title="{{ $isAr ? 'نفذت الكمية' : 'Rupture' }}">
                 <i class="fas fa-ban" style="font-size: 11px;"></i>
-                <span>{{ $isAr ? 'نفذت الكمية' : 'Rupture de stock' }}</span>
+                <span>{{ $isAr ? 'نفذت الكمية' : 'Rupture' }}</span>
             </button>
         @endif
     </div>

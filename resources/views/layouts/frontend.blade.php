@@ -2,7 +2,7 @@
 <html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>@yield('meta_title', setting('app_name', 'WINA SHOP') . ' — ' . __('Matériel Photo, Vidéo, Caméras & Drones au Maroc'))</title>
     <meta name="description" content="@yield('meta_description', setting('app_description', 'WINA SHOP Casablanca : Votre référence au Maroc pour le matériel photo & vidéo professionnel. Caméras Sony, Canon, drones & stabilisateurs DJI, optiques, éclairage studio Godox. Garantie, devis proforma INDH et livraison partout au Maroc.'))">
     <meta name="keywords" content="@yield('meta_keywords', setting('app_name', 'WINA SHOP') . ', Winashop, matériel photo Maroc, vente caméras Casablanca, caméras cinéma, Sony Alpha Maroc, Canon EOS, DJI Osmo, drones DJI, stabilisateurs gimbals, éclairage Godox, objectifs photo, devis proforma INDH, facture avec ICE, matériel audiovisuel, كاميرات المغرب, بيع معدات التصوير الدار البيضاء, درون دي جي اي, إضاءة استوديو, شراء كاميرا كانون سوني')">
@@ -167,6 +167,24 @@
     
     <!-- Global Roboto & Normal Weight Typography System -->
     <style>
+        /* Prevent automatic zoom on mobile when focusing inputs */
+        @media screen and (max-width: 991.98px) {
+            .header-search-input,
+            #headerSearchInput,
+            .pro-search-input,
+            #proMobileSearchInput,
+            input[type="text"],
+            input[type="search"],
+            input[type="tel"],
+            input[type="email"],
+            input[type="number"],
+            input[type="password"],
+            select,
+            textarea {
+                font-size: 16px !important;
+                touch-action: manipulation;
+            }
+        }
         :root {
             --font-heading: "Roboto", sans-serif !important;
             --font-body: "Roboto", sans-serif !important;
@@ -303,7 +321,6 @@
         .filter-pill,
         .trust-pill,
         .badge-v2,
-        .featured-stock-pill,
         .featured-brand-chip,
         .pcard-badge,
         .about-hero-pill,
@@ -383,9 +400,9 @@
             flex-direction: column !important;
             justify-content: flex-start !important;
             align-items: flex-start !important;
-            height: 36px !important;
-            min-height: 36px !important;
-            max-height: 36px !important;
+            height: 42px !important;
+            min-height: 42px !important;
+            max-height: 42px !important;
             margin-bottom: 0px !important;
             overflow: hidden !important;
             line-height: 1.1 !important;
@@ -396,25 +413,25 @@
         .selection-card .pcard-price-main-line {
             display: flex !important;
             align-items: center !important;
-            justify-content: space-between !important;
+            justify-content: left !important;
             width: 100% !important;
-            height: 21px !important;
-            min-height: 21px !important;
-            max-height: 21px !important;
+            height: 24px !important;
+            min-height: 24px !important;
+            max-height: 24px !important;
             line-height: 1.15 !important;
-            margin-bottom: 1px !important;
+            margin-bottom: 2px !important;
             gap: 4px !important;
         }
 
         .featured-pro-card .pcard-price-current,
         .selection-card .pcard-price-current {
-            font-size: 1.05rem !important;
+            font-size: 1.21rem !important;
             font-weight: 700 !important;
             line-height: 1.15 !important;
             color: #0f172a !important;
-            height: 21px !important;
-            min-height: 21px !important;
-            max-height: 21px !important;
+            height: 24px !important;
+            min-height: 24px !important;
+            max-height: 24px !important;
             display: inline-flex !important;
             align-items: center !important;
             white-space: nowrap !important;
@@ -423,13 +440,13 @@
 
         .featured-pro-card .pcard-price-old,
         .selection-card .pcard-price-old {
-            font-size: 0.72rem !important;
+            font-size: 0.83rem !important;
             color: #c10f2b !important;
             text-decoration: line-through !important;
             line-height: 1.1 !important;
-            height: 14px !important;
-            min-height: 14px !important;
-            max-height: 14px !important;
+            height: 16px !important;
+            min-height: 16px !important;
+            max-height: 16px !important;
             display: block !important;
             white-space: nowrap !important;
             margin-top: 0px !important;
@@ -446,35 +463,72 @@
             padding-top: 0px !important;
         }
 
-        .selection-card .featured-stock-pill,
-        .featured-pro-card .featured-stock-pill {
-            background: #f0fdf4 !important;
-            border: 1px solid #dcfce7 !important;
-            color: #16a34a !important;
-            font-size: 0.58rem !important;
-            font-weight: 700 !important;
-            letter-spacing: 0.2px !important;
-            padding: 2px 6px !important;
-            border-radius: 6px !important;
+        /* 100% Unified PDP & Product Card Stock Badges System */
+        .pdp-stock-badge,
+        .featured-stock-pill {
             display: inline-flex !important;
             align-items: center !important;
+            line-height: 1 !important;
+            border-radius: 20px !important;
+            white-space: nowrap !important;
+            font-weight: 700 !important;
+            letter-spacing: normal !important;
+            text-transform: none !important;
+        }
+
+        .pdp-stock-badge--in,
+        .featured-stock-pill:not(.featured-stock-pill--out),
+        .selection-card .featured-stock-pill:not(.featured-stock-pill--out),
+        .featured-pro-card .featured-stock-pill:not(.featured-stock-pill--out) {
+            background: rgba(2, 168, 38, 0.08) !important;
+            border: 1px solid rgba(2, 168, 38, 0.22) !important;
+            color: #02a826 !important;
+            font-weight: 700 !important;
+            border-radius: 20px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            line-height: 1 !important;
+        }
+
+        .pdp-stock-badge--in i,
+        .featured-stock-pill:not(.featured-stock-pill--out) i {
+            color: #02a826 !important;
+            font-size: 0.72rem !important;
+        }
+
+        .featured-stock-pill {
+            font-size: 0.68rem !important;
+            padding: 3px 8px !important;
             gap: 3px !important;
-            line-height: 1.1 !important;
             margin: 0 !important;
+            margin-left: 5px !important;
             flex-shrink: 0 !important;
         }
 
+        .pdp-stock-badge--out,
+        .featured-stock-pill--out,
         .selection-card .featured-stock-pill--out,
         .featured-pro-card .featured-stock-pill--out {
-            background: #fef2f2 !important;
-            border: 1px solid #fee2e2 !important;
-            color: #dc2626 !important;
+            background: rgba(107, 114, 128, .12) !important;
+            border: 1px solid rgba(107, 114, 128, .22) !important;
+            color: #6b7280 !important;
+            font-weight: 700 !important;
+            border-radius: 20px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            line-height: 1 !important;
         }
 
-        .selection-card .stock-pulse-dot,
-        .featured-pro-card .stock-pulse-dot {
+        .pdp-stock-badge--out i,
+        .featured-stock-pill--out i {
+            color: #6b7280 !important;
+            font-size: 0.72rem !important;
+        }
+
+        .stock-pulse-dot {
             width: 4px !important;
             height: 4px !important;
+            background: #02a826 !important;
         }
 
         .search-result-price-wrap,
@@ -528,6 +582,7 @@
             box-shadow: none !important;
             pointer-events: auto !important;
             margin: 0 !important;
+            margin-left: 5px !important;
             flex-shrink: 0 !important;
         }
 
@@ -590,9 +645,9 @@
 
             .featured-pro-card .pcard-price,
             .selection-card .pcard-price {
-                height: 32px !important;
-                min-height: 32px !important;
-                max-height: 32px !important;
+                height: 38px !important;
+                min-height: 38px !important;
+                max-height: 38px !important;
                 margin-bottom: 0px !important;
                 line-height: 1.1 !important;
                 gap: 0px !important;
@@ -602,22 +657,22 @@
             .selection-card .pcard-price-main-line {
                 display: flex !important;
                 align-items: center !important;
-                justify-content: space-between !important;
+                justify-content: left !important;
                 width: 100% !important;
-                height: 19px !important;
-                min-height: 19px !important;
-                max-height: 19px !important;
+                height: 22px !important;
+                min-height: 22px !important;
+                max-height: 22px !important;
                 line-height: 1.15 !important;
-                margin-bottom: 0px !important;
+                margin-bottom: 1px !important;
                 gap: 3px !important;
             }
 
             .featured-pro-card .pcard-price-current,
             .selection-card .pcard-price-current {
-                font-size: 0.97rem !important;
-                height: 19px !important;
-                min-height: 19px !important;
-                max-height: 19px !important;
+                font-size: 1.12rem !important;
+                height: 22px !important;
+                min-height: 22px !important;
+                max-height: 22px !important;
                 display: inline-flex !important;
                 align-items: center !important;
                 margin-bottom: 0px !important;
@@ -625,10 +680,10 @@
 
             .featured-pro-card .pcard-price-old,
             .selection-card .pcard-price-old {
-                font-size: 0.68rem !important;
-                height: 13px !important;
-                min-height: 13px !important;
-                max-height: 13px !important;
+                font-size: 0.78rem !important;
+                height: 15px !important;
+                min-height: 15px !important;
+                max-height: 15px !important;
                 margin-top: 0px !important;
             }
 
@@ -644,12 +699,17 @@
             }
 
             .selection-card .featured-stock-pill,
-            .featured-pro-card .featured-stock-pill {
-                font-size: 0.50rem !important;
-                padding: 1px 4px !important;
-                border-radius: 4px !important;
+            .featured-pro-card .featured-stock-pill,
+            .featured-stock-pill {
+                font-size: 0.58rem !important;
+                padding: 2px 6px !important;
+                border-radius: 20px !important;
                 margin: 0 !important;
+                margin-left: 5px !important;
                 flex-shrink: 0 !important;
+            }
+            .featured-stock-pill i {
+                font-size: 0.62rem !important;
             }
 
             .featured-stock-badge-corner {
@@ -865,7 +925,7 @@
                                    value="{{ request('q') }}" 
                                    autocomplete="off" 
                                    spellcheck="false"
-                                   style="font-size: 13px; color: #334155;">
+                                   style="font-size: 16px; color: #334155;">
                             <button class="btn btn-search-clear d-none p-0 border-0 bg-transparent text-muted" type="button" id="headerSearchClear">
                                 <i class="fas fa-times"></i>
                             </button>
