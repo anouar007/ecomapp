@@ -939,7 +939,7 @@ dt {
 
 .search-result-price-main-line {
     display: inline-flex;
-    align-items: flex-end;
+    align-items: baseline;
     gap: 8px;
     line-height: 1;
 }
@@ -6884,7 +6884,7 @@ body.pro-mobile-search-open {
 
 .pro-result-price-main-line {
     display: inline-flex;
-    align-items: flex-end;
+    align-items: baseline;
     gap: 8px;
     line-height: 1;
 }

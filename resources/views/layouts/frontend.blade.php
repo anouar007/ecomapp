@@ -574,7 +574,7 @@
         .search-result-price-main-line,
         .pro-result-price-main-line {
             display: inline-flex !important;
-            align-items: flex-end !important;
+            align-items: baseline !important;
             gap: 8px !important;
             line-height: 1 !important;
         }
