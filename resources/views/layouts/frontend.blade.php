@@ -36,11 +36,11 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
     <!-- Favicon -->
-    @if(setting('app_logo'))
+    @if(setting('app_logo') && file_exists(public_path('storage/' . setting('app_logo'))))
         <link rel="icon" href="{{ asset('storage/' . setting('app_logo')) }}" type="image/x-icon">
         <link rel="apple-touch-icon" href="{{ asset('storage/' . setting('app_logo')) }}">
     @else
-        <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+        <link rel="icon" href="{{ asset('images/camera/logo.png') }}" type="image/png">
     @endif
 
     <!-- Open Graph / Facebook -->
@@ -480,9 +480,9 @@
         .featured-stock-pill:not(.featured-stock-pill--out),
         .selection-card .featured-stock-pill:not(.featured-stock-pill--out),
         .featured-pro-card .featured-stock-pill:not(.featured-stock-pill--out) {
-            background: rgba(2, 168, 38, 0.08) !important;
+            background: rgba(21, 128, 61, 0.08) !important;
             border: none !important;
-            color: #02a826 !important;
+            color: #15803d !important;
             font-weight: 700 !important;
             border-radius: 20px !important;
             display: inline-flex !important;
@@ -491,12 +491,12 @@
         }
 
         .pdp-stock-badge--in i {
-            color: #02a826 !important;
+            color: #15803d !important;
             font-size: 0.74rem !important;
         }
 
         .featured-stock-pill:not(.featured-stock-pill--out) i {
-            color: #02a826 !important;
+            color: #15803d !important;
             font-size: 0.67rem !important;
         }
 
@@ -528,7 +528,7 @@
         .featured-stock-pill--out {
             background: rgba(107, 114, 128, .12) !important;
             border: 1px solid rgba(107, 114, 128, .22) !important;
-            color: #6b7280 !important;
+            color: #4b5563 !important;
             font-size: 0.78rem !important;
             font-weight: 700 !important;
             border-radius: 20px !important;
@@ -543,7 +543,7 @@
         .pdp-price-main-line .pdp-stock-badge--out {
             background: rgba(107, 114, 128, .12) !important;
             border: 1px solid rgba(107, 114, 128, .22) !important;
-            color: #6b7280 !important;
+            color: #4b5563 !important;
             font-weight: 700 !important;
             border-radius: 20px !important;
             display: inline-flex !important;
@@ -1088,7 +1088,7 @@
                 <div class="d-flex align-items-center gap-2 gap-lg-3 gap-xl-4 flex-nowrap">
                     <!-- Brand Logo (Enlarged) -->
                     <a class="navbar-brand m-0 p-0 d-flex align-items-center me-1 me-lg-2" href="{{ url('/') }}" style="flex-shrink: 0;" title="{{ setting('app_name', 'WINA SHOP') }}">
-                        <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="220" height="96" class="brand-logo-img" style="height: 96px; max-height: 105px; width: auto; max-width: 280px; object-fit: contain;">
+                        <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="96" height="96" class="brand-logo-img" style="height: 96px; max-height: 105px; width: auto; max-width: 280px; object-fit: contain;">
                     </a>
 
                     @php
@@ -1305,7 +1305,7 @@
     <div class="offcanvas offcanvas-start border-0 shadow-lg d-lg-none" tabindex="-1" id="mobileNavDrawer" aria-labelledby="mobileNavDrawerLabel" style="width: 310px;">
         <div class="offcanvas-header border-bottom py-3">
             <a href="{{ url('/') }}" class="navbar-brand m-0">
-                <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="160" height="64" style="height: 64px; width: auto;">
+                <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="64" height="64" style="height: 64px; width: auto; object-fit: contain;">
             </a>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
@@ -1805,7 +1805,7 @@
             
             <div class="row align-items-center">
                 <div class="col-md-12 text-center text-md-start mb-3 mb-md-0">
-                    <p class="small text-center mb-0">&copy; {{ date('Y') }} {{ setting('app_name', 'WINA SHOP') }}. {{ __('All rights reserved') }}. {{ app()->getLocale() === 'ar' ? 'تطوير' : 'Développé par' }} <a href="https://elegantboost.com/" target="_blank" class="text-white text-decoration-none fw-bold hover-primary transition-all">Elegant Boost</a>.</p>
+                    <p class="small text-center mb-0">&copy; {{ date('Y') }} {{ setting('app_name', 'WINA SHOP') }}. {{ __('All rights reserved') }}. {{ app()->getLocale() === 'ar' ? 'تطوير' : 'Développé par' }} <a href="https://elegantboost.com/" target="_blank" rel="noopener noreferrer" class="text-white text-decoration-underline fw-bold hover-primary transition-all">Elegant Boost</a>.</p>
                 </div>
             </div>
         </div>

@@ -67,6 +67,9 @@
 <meta property="product:condition" content="{{ $isOccasion ? 'used' : 'new' }}">
 <meta property="product:brand" content="{{ $brandGuess }}">
 <meta property="product:retailer_item_id" content="{{ $product->sku ?? ('PROD-' . $product->id) }}">
+@if(!empty($product->thumbnail))
+<link rel="preload" as="image" href="{{ $product->thumbnail }}" fetchpriority="high">
+@endif
 @endsection
 
 @section('json_ld')
@@ -202,7 +205,7 @@
         @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
             <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{{ __('Close') }}"></button>
         </div>
         @endif
 
@@ -213,7 +216,7 @@
                 <div class="col-lg-6 pdp-image-panel">
                     <div class="pdp-main-image-wrap" id="zoomWrap" onmousemove="pdpZoom(event)">
                         <img id="mainImage" src="{{ $product->thumbnail }}"
-                             alt="{{ $product->name }}" width="600" height="600" class="pdp-main-image">
+                             alt="{{ $product->name }}" width="600" height="600" class="pdp-main-image" fetchpriority="high" decoding="async">
 
                         <div class="pdp-badges">
                             @if(!$product->isInStock())
@@ -245,8 +248,8 @@
                     @if($galleryImages->count() > 1)
                     <div class="pdp-thumbs" id="pdpThumbs">
                         @foreach($galleryImages as $imgUrl)
-                        <div class="pdp-thumb {{ $loop->first ? 'active' : '' }}" onclick="pdpChangeImage('{{ $imgUrl }}', this)">
-                            <img src="{{ $imgUrl }}" alt="{{ $product->name }} {{ $loop->iteration }}" width="76" height="76" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                        <div class="pdp-thumb {{ $loop->first ? 'active' : '' }}" onclick="pdpChangeImage('{{ $imgUrl }}', this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')pdpChangeImage('{{ $imgUrl }}', this)" aria-label="{{ $product->name }} {{ $loop->iteration }}">
+                            <img src="{{ $imgUrl }}" alt="{{ $product->name }} {{ $loop->iteration }}" width="76" height="76" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                         </div>
                         @endforeach
                     </div>
@@ -319,13 +322,14 @@
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
                         <div class="pdp-cart-row d-flex flex-row flex-nowrap align-items-stretch w-100">
                             <div class="pdp-qty-wrap flex-shrink-0">
-                                <button type="button" class="pdp-qty-btn" onclick="pdpChangeQty(-1)">
-                                    <i class="fas fa-minus"></i>
+                                <button type="button" class="pdp-qty-btn" onclick="pdpChangeQty(-1)" aria-label="{{ __('Diminuer la quantité') }}">
+                                    <i class="fas fa-minus" aria-hidden="true"></i>
                                 </button>
+                                <label for="pdpQty" class="visually-hidden">{{ __('Quantité') }}</label>
                                 <input type="number" name="quantity" id="pdpQty" value="1"
-                                       min="1" max="{{ $product->stock }}" class="pdp-qty-input">
-                                <button type="button" class="pdp-qty-btn" onclick="pdpChangeQty(1)">
-                                    <i class="fas fa-plus"></i>
+                                       min="1" max="{{ $product->stock }}" class="pdp-qty-input" aria-label="{{ __('Quantité') }}">
+                                <button type="button" class="pdp-qty-btn" onclick="pdpChangeQty(1)" aria-label="{{ __('Augmenter la quantité') }}">
+                                    <i class="fas fa-plus" aria-hidden="true"></i>
                                 </button>
                             </div>
                             <button type="submit" id="addToCartBtn" 
@@ -486,22 +490,22 @@
 
                         @guest
                         <div class="pdp-form-group">
-                            <label class="pdp-form-label">{{ __('Your name') }}</label>
-                            <input type="text" name="customer_name" class="pdp-form-input"
+                            <label for="reviewCustomerName" class="pdp-form-label">{{ __('Your name') }}</label>
+                            <input type="text" id="reviewCustomerName" name="customer_name" class="pdp-form-input"
                                    placeholder="{{ app()->getLocale() === 'ar' ? 'مثال: محمد الأمين' : 'ex. Jean Dupont' }}" value="{{ old('customer_name') }}" required>
                             @error('customer_name')<span class="pdp-form-error">{{ $message }}</span>@enderror
                         </div>
                         <div class="pdp-form-group">
-                            <label class="pdp-form-label">{{ __('Your email') }}</label>
-                            <input type="email" name="customer_email" class="pdp-form-input"
+                            <label for="reviewCustomerEmail" class="pdp-form-label">{{ __('Your email') }}</label>
+                            <input type="email" id="reviewCustomerEmail" name="customer_email" class="pdp-form-input"
                                    placeholder="email@exemple.com" value="{{ old('customer_email') }}" required>
                             @error('customer_email')<span class="pdp-form-error">{{ $message }}</span>@enderror
                         </div>
                         @endguest
 
                         <div class="pdp-form-group">
-                            <label class="pdp-form-label">{{ __('Rating') }}</label>
-                            <select name="rating" class="pdp-form-select" required>
+                            <label for="reviewRating" class="pdp-form-label">{{ __('Rating') }}</label>
+                            <select id="reviewRating" name="rating" class="pdp-form-select" aria-label="{{ __('Rating') }}" required>
                                 <option value="5">★★★★★ {{ __('Excellent (5/5)') }}</option>
                                 <option value="4">★★★★☆ {{ __('Very good (4/5)') }}</option>
                                 <option value="3">★★★☆☆ {{ __('Good (3/5)') }}</option>
@@ -511,15 +515,15 @@
                         </div>
 
                         <div class="pdp-form-group">
-                            <label class="pdp-form-label">{{ __('Title') }}</label>
-                            <input type="text" name="title" class="pdp-form-input"
+                            <label for="reviewTitle" class="pdp-form-label">{{ __('Title') }}</label>
+                            <input type="text" id="reviewTitle" name="title" class="pdp-form-input"
                                    placeholder="{{ __('Summary of your experience') }}" value="{{ old('title') }}" required>
                             @error('title')<span class="pdp-form-error">{{ $message }}</span>@enderror
                         </div>
 
                         <div class="pdp-form-group">
-                            <label class="pdp-form-label">{{ __('Comment') }}</label>
-                            <textarea name="comment" class="pdp-form-input" rows="4"
+                            <label for="reviewComment" class="pdp-form-label">{{ __('Comment') }}</label>
+                            <textarea id="reviewComment" name="comment" class="pdp-form-input" rows="4"
                                       placeholder="{{ __('How did you find this product?') }}" required>{{ old('comment') }}</textarea>
                             @error('comment')<span class="pdp-form-error">{{ $message }}</span>@enderror
                         </div>
