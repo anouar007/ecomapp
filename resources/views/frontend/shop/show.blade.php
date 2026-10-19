@@ -226,14 +226,27 @@
                         </div>
                     </div>
 
-                    @if($product->images->count() > 0)
-                    <div class="pdp-thumbs">
-                        <div class="pdp-thumb active" onclick="pdpChangeImage('{{ $product->thumbnail }}', this)">
-                            <img src="{{ $product->thumbnail }}" alt="{{ __('Product') }}" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
-                        </div>
-                        @foreach($product->images as $img)
-                        <div class="pdp-thumb" onclick="pdpChangeImage('{{ $img->url }}', this)">
-                            <img src="{{ $img->url }}" alt="{{ __('View') }} {{ $loop->iteration + 1 }}" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                    @php
+                        $galleryImages = collect();
+                        if (!empty($product->thumbnail)) {
+                            $galleryImages->push($product->thumbnail);
+                        }
+                        if ($product->images && $product->images->count() > 0) {
+                            foreach ($product->images as $img) {
+                                if (!empty($img->url) && !$galleryImages->contains($img->url)) {
+                                    $galleryImages->push($img->url);
+                                }
+                            }
+                        }
+                        // Enforce max 4 images
+                        $galleryImages = $galleryImages->take(4);
+                    @endphp
+
+                    @if($galleryImages->count() > 1)
+                    <div class="pdp-thumbs" id="pdpThumbs">
+                        @foreach($galleryImages as $imgUrl)
+                        <div class="pdp-thumb {{ $loop->first ? 'active' : '' }}" onclick="pdpChangeImage('{{ $imgUrl }}', this)">
+                            <img src="{{ $imgUrl }}" alt="{{ $product->name }} {{ $loop->iteration }}" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                         </div>
                         @endforeach
                     </div>
