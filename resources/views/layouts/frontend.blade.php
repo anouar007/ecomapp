@@ -16,11 +16,13 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ url()->current() }}">
 
-    <!-- Multi-Language Hreflang Tags (French & Arabic + x-default) -->
+    <!-- Multi-Language Hreflang Tags (French, Arabic & English + x-default) -->
     <link rel="alternate" hreflang="fr" href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}">
     <link rel="alternate" hreflang="fr-MA" href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}">
     <link rel="alternate" hreflang="ar" href="{{ request()->fullUrlWithQuery(['lang' => 'ar']) }}">
     <link rel="alternate" hreflang="ar-MA" href="{{ request()->fullUrlWithQuery(['lang' => 'ar']) }}">
+    <link rel="alternate" hreflang="en" href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}">
+    <link rel="alternate" hreflang="en-MA" href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}">
     <link rel="alternate" hreflang="x-default" href="{{ url()->current() }}">
 
     <!-- Geographic & Local Search Meta Tags (Morocco) -->
@@ -69,13 +71,13 @@
     
     <!-- JSON-LD Structured Data Schema -->
     @yield('json_ld')
-    @hasSection('json_ld')
-    @else
-    {{-- Global Default CameraStore & WebSite Schema --}}
+
+    {{-- Global CameraStore & WebSite Knowledge Graph Schema --}}
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": ["CameraStore", "Store", "LocalBusiness"],
+      "@id": "{{ url('/') }}#organization",
       "name": "{{ setting('company_name', setting('app_name', 'WINA SHOP')) }}",
       "alternateName": ["Winashop", "Wina Shop Maroc", "وينا شوب"],
       "url": "{{ url('/') }}",
@@ -151,7 +153,6 @@
       }
     }
     </script>
-    @endif
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Cairo:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">

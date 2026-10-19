@@ -21,6 +21,7 @@ class SeoInfrastructureTest extends TestCase
         $response->assertSee('xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"', false);
         $response->assertSee('hreflang="fr"', false);
         $response->assertSee('hreflang="ar"', false);
+        $response->assertSee('hreflang="en"', false);
         $response->assertSee('hreflang="x-default"', false);
     }
 
@@ -30,10 +31,27 @@ class SeoInfrastructureTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('User-agent: *');
+        $response->assertSee('Google-Extended');
+        $response->assertSee('GPTBot');
+        $response->assertSee('PerplexityBot');
         $response->assertSee('Allow: /');
         $response->assertSee('Disallow: /admin');
         $response->assertSee('Disallow: /dashboard');
         $response->assertSee('Sitemap:');
+        $response->assertSee('LLMs-Txt:');
+    }
+
+    public function test_llms_txt_endpoint_renders_for_ai_search_engines(): void
+    {
+        $response = $this->get('/llms.txt');
+
+        $response->assertStatus(200);
+        $response->assertSee('WINA SHOP');
+        $response->assertSee('Casablanca');
+        $response->assertSee('Maroc');
+        $response->assertSee('Sony');
+        $response->assertSee('DJI');
+        $response->assertSee('INDH');
     }
 
     public function test_homepage_includes_canonical_hreflang_and_camerastore_schema(): void
@@ -44,6 +62,7 @@ class SeoInfrastructureTest extends TestCase
         $response->assertSee('<link rel="canonical"', false);
         $response->assertSee('hreflang="fr"', false);
         $response->assertSee('hreflang="ar"', false);
+        $response->assertSee('hreflang="en"', false);
         $response->assertSee('geo.region', false);
         $response->assertSee('Casablanca, Maroc', false);
         $response->assertSee('"@type": ["CameraStore", "Store", "LocalBusiness"]', false);
@@ -68,8 +87,11 @@ class SeoInfrastructureTest extends TestCase
         $response->assertSee('المغرب', false);
         $response->assertSee('BreadcrumbList', false);
         $response->assertSee('"@type": "Product"', false);
+        $response->assertSee('"alternateName"', false);
+        $response->assertSee('"@type": "FAQPage"', false);
         $response->assertSee('"priceCurrency": "MAD"', false);
         $response->assertSee('OfferShippingDetails', false);
         $response->assertSee('MerchantReturnPolicy', false);
+        $response->assertSee('pdpFaqAccordion', false);
     }
 }

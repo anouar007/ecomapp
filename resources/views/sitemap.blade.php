@@ -79,13 +79,15 @@
 
   {{-- Product Pages with Multilingual Links and Google Images --}}
   @foreach($products as $product)
-  @php $prodUrl = route('shop.show', $product->id); @endphp
+  @php $prodUrl = route('shop.show', $product->slug ?: $product->id); @endphp
   <url>
     <loc>{{ $prodUrl }}</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="{{ $prodUrl }}"/>
     <xhtml:link rel="alternate" hreflang="fr-MA" href="{{ $prodUrl }}"/>
     <xhtml:link rel="alternate" hreflang="ar" href="{{ $prodUrl }}?lang=ar"/>
     <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ $prodUrl }}?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="en" href="{{ $prodUrl }}?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="en-MA" href="{{ $prodUrl }}?lang=en"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="{{ $prodUrl }}"/>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>

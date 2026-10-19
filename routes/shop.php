@@ -11,9 +11,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// SEO: Sitemap & Robots
+// SEO: Sitemap, Robots & AI LLM Crawlers
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
 Route::get('/robots.txt', [\App\Http\Controllers\SitemapController::class, 'robots'])->name('robots');
+Route::get('/llms.txt', [\App\Http\Controllers\SitemapController::class, 'llmsTxt'])->name('llms.txt');
 
 // Home & Newsletter
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');

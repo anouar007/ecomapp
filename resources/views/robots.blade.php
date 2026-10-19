@@ -1,6 +1,81 @@
 # Developed by Elegant Boost (https://elegantboost.com/)
+# WINA SHOP Robots.txt - Optimized for Google, Bing, Perplexity, OpenAI & AI Search Engines
+
+# Google Search & Google AI Overviews
+User-agent: Googlebot
+User-agent: Googlebot-Image
+User-agent: Google-Extended
+Allow: /
+Allow: /shop
+Allow: /about
+Allow: /contact
+Allow: /images/
+Allow: /storage/
+Allow: /llms.txt
+Allow: /sitemap.xml
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /cart
+Disallow: /checkout
+Disallow: /my-account
+Disallow: /pos
+Disallow: /profile
+Disallow: /login
+Disallow: /register
+
+# OpenAI & ChatGPT Search
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+Allow: /
+Allow: /shop
+Allow: /llms.txt
+Allow: /sitemap.xml
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /cart
+Disallow: /checkout
+
+# Perplexity AI Search
+User-agent: PerplexityBot
+Allow: /
+Allow: /shop
+Allow: /llms.txt
+Allow: /sitemap.xml
+Disallow: /dashboard
+Disallow: /admin
+
+# Anthropic Claude & Apple Intelligence
+User-agent: ClaudeBot
+User-agent: anthropic-ai
+User-agent: Applebot
+User-agent: Applebot-Extended
+Allow: /
+Allow: /shop
+Allow: /llms.txt
+Allow: /sitemap.xml
+Disallow: /dashboard
+Disallow: /admin
+
+# Microsoft Bing & Copilot
+User-agent: Bingbot
+Allow: /
+Allow: /shop
+Allow: /llms.txt
+Allow: /sitemap.xml
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /cart
+Disallow: /checkout
+
+# All Other Web Crawlers
 User-agent: *
 Allow: /
+Allow: /shop
+Allow: /about
+Allow: /contact
+Allow: /images/
+Allow: /storage/
+Allow: /llms.txt
 Disallow: /dashboard
 Disallow: /admin
 Disallow: /cart
@@ -23,3 +98,4 @@ Disallow: /analytics/
 Disallow: /reports/
 
 Sitemap: {{ $sitemapUrl }}
+# LLMs-Txt: {{ $llmsUrl ?? url('/llms.txt') }}

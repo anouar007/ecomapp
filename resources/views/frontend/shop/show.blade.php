@@ -26,7 +26,8 @@
     $isOccasion = str_contains($nameLower, 'occasion') || ($product->category && str_contains(strtolower($product->category->name), 'occasion'));
     $itemConditionUrl = $isOccasion ? 'https://schema.org/UsedCondition' : 'https://schema.org/NewCondition';
     
-    $cleanDesc = Str::limit(strip_tags($product->description), 160) ?: ($product->name . ' disponible au Maroc chez WINA SHOP Casablanca. Matériel garanti, devis proforma avec ICE et livraison express partout au Maroc.');
+    $cleanDesc = Str::limit(strip_tags($product->description), 140) ?: ($product->name . ' disponible au Maroc chez WINA SHOP Casablanca.');
+    $cleanDesc .= ' Prix: ' . number_format($product->final_price, 2, '.', ' ') . ' MAD. Garantie officielle, devis proforma INDH, facture ICE, livraison 24h/48h partout au Maroc. شراء مع التوصيل والدفع عند الاستلام.';
     
     $productKeywords = implode(', ', [
         $product->name,
@@ -35,12 +36,19 @@
         $brandGuess . ' Maroc',
         $product->category ? $product->category->name : 'Matériel photo',
         'Vente matériel audiovisuel Maroc',
-        'Garantie constructeur 2 ans',
+        'Garantie constructeur officielle',
         'Devis proforma INDH',
-        'Livraison Casablanca Rabat Marrakech Maroc',
+        'Facture avec ICE',
+        'Livraison Casablanca Rabat Marrakech Tanger Agadir Maroc',
         'شراء ' . $product->name . ' المغرب',
         'سعر ' . $product->name . ' الدار البيضاء',
-        'كاميرات ومعدات تصوير المغرب'
+        'كاميرات ومعدات تصوير المغرب',
+        'متجر وينا شوب كازابلانكا',
+        'Buy ' . $product->name . ' Morocco',
+        $product->name . ' price in Morocco',
+        'Camera shop Casablanca Morocco',
+        'Taman ' . $product->name . ' maroc',
+        'Chri ' . $product->name . ' f lmaghrib'
     ]);
 
     $allImages = [$product->thumbnail];
@@ -122,6 +130,14 @@
     "@context": "https://schema.org/",
     "@type": "Product",
     "name": {!! json_encode($product->name) !!},
+    "alternateName": [
+      {!! json_encode($product->name . ' Maroc') !!},
+      {!! json_encode('Acheter ' . $product->name . ' Casablanca') !!},
+      {!! json_encode('شراء ' . $product->name . ' المغرب') !!},
+      {!! json_encode('سعر ' . $product->name . ' في المغرب') !!},
+      {!! json_encode('Buy ' . $product->name . ' Morocco') !!},
+      {!! json_encode($brandGuess . ' ' . $product->name) !!}
+    ],
     "image": {!! json_encode($allImages) !!},
     "description": {!! json_encode($cleanDesc) !!},
     "sku": "{{ $product->sku ?? 'WINA-' . $product->id }}",
@@ -142,7 +158,8 @@
       "itemCondition": "{{ $itemConditionUrl }}",
       "availability": "{{ $product->isInStock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
       "seller": {
-        "@type": "Store",
+        "@type": "CameraStore",
+        "@id": "{{ url('/') }}#organization",
         "name": "{{ setting('app_name', 'WINA SHOP') }}"
       },
       "shippingDetails": {
@@ -191,6 +208,44 @@
       "worstRating": "1"
     }
     @endif
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": {!! json_encode('Où acheter ' . $product->name . ' au Maroc avec garantie officielle ?') !!},
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": {!! json_encode(setting('app_name', 'WINA SHOP') . ' propose ' . $product->name . ' avec garantie constructeur, disponible dans notre showroom à Casablanca (Al Oulfa) et en livraison express 24h-48h partout au Maroc (Rabat, Marrakech, Tanger, Fès, Agadir, Oujda).') !!}
+        }
+      },
+      {
+        "@type": "Question",
+        "name": {!! json_encode('Quel est le prix et le délai de livraison de ' . $product->name . ' au Maroc ?') !!},
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": {!! json_encode('Le prix de ' . $product->name . ' est de ' . number_format($product->final_price, 2, '.', ' ') . ' MAD chez WINA SHOP. La livraison est effectuée en 24h à 48h partout au Maroc avec option de paiement à la livraison (Cash on Delivery).') !!}
+        }
+      },
+      {
+        "@type": "Question",
+        "name": {!! json_encode('Proposez-vous un devis proforma INDH ou une facture avec ICE pour ' . $product->name . ' ?') !!},
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": {!! json_encode('Oui, WINA SHOP délivre des devis proforma certifiés éligibles aux dossiers INDH ainsi que des factures officielles avec identifiant fiscal (ICE) pour sociétés, auto-entrepreneurs et vidéastes professionnels.') !!}
+        }
+      },
+      {
+        "@type": "Question",
+        "name": {!! json_encode('كيف يمكنني طلب ' . $product->name . ' في المغرب وما هي طرق الدفع؟') !!},
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": {!! json_encode('يمكنك شراء ' . $product->name . ' مباشرة عبر متجر WINA SHOP أو بالتواصل عبر الواتساب على الرقم ' . setting('company_phone', '+212 629-035777') . '. نوفر الدفع نقداً عند الاستلام بعد معاينة المنتج مع التوصيل السريع لكافة المدن المغربية.') !!}
+        }
+      }
+    ]
   }
 ]
 </script>
@@ -532,6 +587,77 @@
                             <i class="fas fa-paper-plane me-2"></i>{{ __('Publish review') }}
                         </button>
                     </form>
+                </div>
+            </div>
+        </div>
+
+        {{-- QUESTIONS FRÉQUENTES & INFORMATIONS D'ACHAT MAROC (SEO, GOOGLE RICH RESULTS & AI SEARCH) --}}
+        <div class="pdp-section-card mt-4 p-4 rounded-4 bg-white shadow-sm border">
+            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-3">
+                <h2 class="h5 fw-bold m-0 d-flex align-items-center gap-2 text-dark">
+                    <i class="fas fa-question-circle text-danger"></i>
+                    <span>{{ app()->getLocale() === 'ar' ? 'الأسئلة الشائعة حول الشراء والضمان بالمغرب' : __('Questions fréquentes & Achat au Maroc') }}</span>
+                </h2>
+                <span class="badge bg-light text-muted border px-2 py-1">
+                    <i class="fas fa-shield-alt text-success me-1"></i>{{ __('Garantie & Authenticité') }}
+                </span>
+            </div>
+
+            <div class="accordion accordion-flush" id="pdpFaqAccordion">
+                {{-- FAQ 1: Where to buy & warranty --}}
+                <div class="accordion-item border-bottom">
+                    <h3 class="accordion-header" id="faqHeading1">
+                        <button class="accordion-button collapsed fw-bold py-3 text-dark bg-transparent shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse1" aria-expanded="false" aria-controls="faqCollapse1">
+                            {{ __('Où acheter') }} {{ $product->name }} {{ __('au Maroc avec garantie officielle ?') }}
+                        </button>
+                    </h3>
+                    <div id="faqCollapse1" class="accordion-collapse collapse" aria-labelledby="faqHeading1" data-bs-parent="#pdpFaqAccordion">
+                        <div class="accordion-body text-muted pt-0 pb-3" style="font-size: 0.95rem; line-height: 1.6;">
+                            {{ setting('app_name', 'WINA SHOP') }} propose <strong>{{ $product->name }}</strong> neuf et 100% authentique dans son showroom à <strong>Casablanca (Al Oulfa)</strong> ainsi qu'en vente en ligne. Nous assurons la livraison express et sécurisée dans toutes les villes marocaines : <em>Casablanca, Rabat, Marrakech, Tanger, Fès, Agadir, Oujda, Meknès, Kénitra</em>.
+                        </div>
+                    </div>
+                </div>
+
+                {{-- FAQ 2: Pricing, Delivery & Payment --}}
+                <div class="accordion-item border-bottom">
+                    <h3 class="accordion-header" id="faqHeading2">
+                        <button class="accordion-button collapsed fw-bold py-3 text-dark bg-transparent shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse2" aria-expanded="false" aria-controls="faqCollapse2">
+                            {{ __('Quel est le prix et le délai de livraison au Maroc ?') }}
+                        </button>
+                    </h3>
+                    <div id="faqCollapse2" class="accordion-collapse collapse" aria-labelledby="faqHeading2" data-bs-parent="#pdpFaqAccordion">
+                        <div class="accordion-body text-muted pt-0 pb-3" style="font-size: 0.95rem; line-height: 1.6;">
+                            Le prix de {{ $product->name }} est de <strong>{{ number_format($product->final_price, 2, '.', ' ') }} {{ setting('currency_code', 'MAD') }}</strong>. La livraison est effectuée sous <strong>24h à 48h ouvrables</strong>. Le paiement s'effectue en toute sérénité <strong>à la livraison (Cash on Delivery)</strong> après inspection de votre colis, ou par virement bancaire sécurisé.
+                        </div>
+                    </div>
+                </div>
+
+                {{-- FAQ 3: Devis INDH & Facture ICE --}}
+                <div class="accordion-item border-bottom">
+                    <h3 class="accordion-header" id="faqHeading3">
+                        <button class="accordion-button collapsed fw-bold py-3 text-dark bg-transparent shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse3" aria-expanded="false" aria-controls="faqCollapse3">
+                            {{ __('Puis-je obtenir un devis proforma INDH ou une facture avec ICE ?') }}
+                        </button>
+                    </h3>
+                    <div id="faqCollapse3" class="accordion-collapse collapse" aria-labelledby="faqHeading3" data-bs-parent="#pdpFaqAccordion">
+                        <div class="accordion-body text-muted pt-0 pb-3" style="font-size: 0.95rem; line-height: 1.6;">
+                            <strong>Oui, absolument.</strong> WINA SHOP délivre des devis proforma certifiés éligibles aux financements <strong>INDH (Initiative Nationale pour le Développement Humain)</strong> ainsi que des factures officielles avec identifiant fiscal (ICE, RC, IF) pour entreprises audiovisuelles, créateurs de contenu et administrations.
+                        </div>
+                    </div>
+                </div>
+
+                {{-- FAQ 4: Arabic summary --}}
+                <div class="accordion-item">
+                    <h3 class="accordion-header" id="faqHeading4">
+                        <button class="accordion-button collapsed fw-bold py-3 text-dark bg-transparent shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse4" aria-expanded="false" aria-controls="faqCollapse4">
+                            كيف يمكنني شراء {{ $product->name }} في المغرب وما هي الضمانات؟
+                        </button>
+                    </h3>
+                    <div id="faqCollapse4" class="accordion-collapse collapse" aria-labelledby="faqHeading4" data-bs-parent="#pdpFaqAccordion">
+                        <div class="accordion-body text-muted pt-0 pb-3" style="font-size: 0.95rem; line-height: 1.6;">
+                            يمكنك طلب <strong>{{ $product->name }}</strong> عبر متجر WINA SHOP أو بالتواصل مباشرة على الواتساب على الرقم <strong>{{ setting('company_phone', '+212 629-035777') }}</strong>. نوفر لك منتجات أصلية مع ضمان رسمي، وتوصيل سريع في ظرف 24 إلى 48 ساعة لكافة ربوع المملكة المغربية مع الدفع عند الاستلام.
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

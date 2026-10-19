@@ -38,10 +38,30 @@ class SitemapController extends Controller
     public function robots(): Response
     {
         $sitemapUrl = url('/sitemap.xml');
+        $llmsUrl = url('/llms.txt');
 
-        $content = view('robots', compact('sitemapUrl'))->render();
+        $content = view('robots', compact('sitemapUrl', 'llmsUrl'))->render();
 
         return response($content, 200)
             ->header('Content-Type', 'text/plain');
+    }
+
+    /**
+     * Generate and return the llms.txt file for Generative Engine Optimization (AI Search / LLMs).
+     */
+    public function llmsTxt(): Response
+    {
+        $products = Product::where('status', 'active')
+            ->with(['category'])
+            ->orderBy('created_at', 'desc')
+            ->take(100)
+            ->get();
+
+        $categories = Category::where('status', 'active')->get();
+
+        $content = view('llms', compact('products', 'categories'))->render();
+
+        return response($content, 200)
+            ->header('Content-Type', 'text/plain; charset=utf-8');
     }
 }
