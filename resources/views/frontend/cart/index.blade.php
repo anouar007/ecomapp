@@ -41,7 +41,7 @@
                         <div class="d-flex gap-3 align-items-center">
                             {{-- Thumbnail Image --}}
                             <a href="{{ route('shop.show', $id) }}" class="cart-mobile-thumb-link flex-shrink-0 text-decoration-none">
-                                <img src="{{ $cartImg }}" alt="{{ $details['name'] }}" class="cart-mobile-thumb rounded-3 object-fit-cover" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                                <img src="{{ $cartImg }}" alt="{{ $details['name'] }}" width="78" height="78" class="cart-mobile-thumb rounded-3 object-fit-cover" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                             </a>
 
                             {{-- Content Column Beside Image --}}
@@ -117,7 +117,7 @@
                                         <td class="py-4 px-4">
                                             <div class="d-flex align-items-center gap-3">
                                                 <div class="flex-shrink-0">
-                                                    <img src="{{ $cartImg }}" alt="{{ $details['name'] }}" class="rounded-3 shadow-xs object-fit-cover border" style="width: 72px; height: 72px;" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                                                    <img src="{{ $cartImg }}" alt="{{ $details['name'] }}" width="72" height="72" class="rounded-3 shadow-xs object-fit-cover border" style="width: 72px; height: 72px;" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                                                 </div>
                                                 <div class="min-w-0">
                                                     <h6 class="fw-bold mb-1 lh-sm">
@@ -195,7 +195,7 @@
             <div class="mb-4 bg-white rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm border" style="width: 120px; height: 120px;">
                 <i class="fas fa-shopping-basket fa-4x text-muted opacity-25"></i>
             </div>
-            <h3 class="fw-bold text-dark mb-3 font-heading">{{ __('Your cart is empty') }}</h3>
+            <h2 class="fw-bold text-dark mb-3 font-heading fs-3">{{ __('Your cart is empty') }}</h2>
             <p class="text-muted mb-4">{{ __("You haven't added anything yet.") }}</p>
             <a href="{{ route('shop.index') }}" class="btn btn-danger rounded-pill px-5 py-3 fw-bold shadow-sm hover-scale-sm transition-transform d-inline-flex align-items-center gap-2">
                 <i class="fas fa-shopping-bag"></i>

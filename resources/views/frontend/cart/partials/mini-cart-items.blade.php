@@ -9,7 +9,7 @@
                         ? asset(ltrim($details['image'], '/')) 
                         : (isset($details['image']) ? Storage::url($details['image']) : asset('images/camera/cat_cameras.jpg'));
                 @endphp
-                <img src="{{ $imgSrc }}" alt="{{ $details['name'] }}" class="rounded-3 object-fit-cover" style="width: 80px; height: 80px;">
+                <img src="{{ $imgSrc }}" alt="{{ $details['name'] }}" width="80" height="80" class="rounded-3 object-fit-cover" style="width: 80px; height: 80px;">
                 <span class="position-absolute top-0 {{ app()->getLocale() === 'ar' ? 'end-0' : 'start-0' }} translate-middle badge rounded-pill bg-light text-dark border shadow-sm" style="font-size: 0.7rem;">x{{ $details['quantity'] }}</span>
             </div>
             <div class="flex-grow-1 min-w-0">
@@ -20,11 +20,11 @@
                     <span class="text-primary fw-bold" style="font-size: 1.1rem;">{{ currency($details['price']) }}</span>
                     
                     <div class="quantity-control bg-light rounded-pill d-flex align-items-center px-1 border">
-                        <button class="btn btn-sm btn-link text-dark text-decoration-none p-1 border-0" onclick="updateQty({{ $id }}, {{ $details['quantity'] - 1 }})">
+                        <button class="btn btn-sm btn-link text-dark text-decoration-none p-1 border-0" onclick="updateQty({{ $id }}, {{ $details['quantity'] - 1 }})" aria-label="-">
                             <i class="fas fa-minus" style="font-size: 0.7rem;"></i>
                         </button>
                         <input type="text" class="form-control form-control-sm border-0 bg-transparent text-center fw-bold p-0" value="{{ $details['quantity'] }}" readonly style="width: 30px;">
-                        <button class="btn btn-sm btn-link text-dark text-decoration-none p-1 border-0" onclick="updateQty({{ $id }}, {{ $details['quantity'] + 1 }})">
+                        <button class="btn btn-sm btn-link text-dark text-decoration-none p-1 border-0" onclick="updateQty({{ $id }}, {{ $details['quantity'] + 1 }})" aria-label="+">
                             <i class="fas fa-plus" style="font-size: 0.7rem;"></i>
                         </button>
                     </div>
@@ -40,7 +40,7 @@
         <div class="mb-4 bg-white rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 100px; height: 100px;">
             <i class="fas fa-shopping-basket fa-3x text-muted opacity-25"></i>
         </div>
-        <h5 class="fw-bold text-dark">{{ __('Your cart is empty') }}</h5>
+        <div class="h5 fw-bold text-dark">{{ __('Your cart is empty') }}</div>
         <p class="text-muted small mb-4">{{ __("You haven't added anything yet.") }}</p>
         <a href="{{ route('shop.index') }}" class="btn btn-primary rounded-pill px-5 shadow-sm">{{ __('Start Shopping') }}</a>
     </div>

@@ -271,7 +271,7 @@
                         </div>
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center justify-content-between mb-1">
-                                <h6 class="m-0 text-dark fs-6" style="font-weight: 500;">{{ __('Note de suivi / Informations de livraison') }}</h6>
+                                <div class="m-0 text-dark fs-6" style="font-weight: 500;">{{ __('Note de suivi / Informations de livraison') }}</div>
                                 <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2 py-0.5" style="font-size: 0.70rem;">{{ __('Mise à jour en direct') }}</span>
                             </div>
                             <p class="text-secondary small mb-0" id="orderNotesContent" style="white-space: pre-line;">{{ $order->notes }}</p>
@@ -287,7 +287,7 @@
                                 <i class="fas fa-boxes-stacked"></i>
                             </span>
                             <div>
-                                <h5 class="m-0 fs-6 text-dark" style="font-weight: 500;">{{ __('Articles commandés') }}</h5>
+                                <h2 class="m-0 fs-6 text-dark" style="font-weight: 500;">{{ __('Articles commandés') }}</h2>
                                 <span class="text-muted small" style="font-size: 0.76rem;">{{ $order->items->count() }} {{ __('référence(s) incluse(s)') }}</span>
                             </div>
                         </div>
@@ -318,7 +318,7 @@
                                             <div class="d-flex align-items-center gap-3">
                                                 <a href="{{ $prodUrl }}" class="order-item-thumb-link flex-shrink-0">
                                                     <div class="order-item-thumb-box">
-                                                        <img src="{{ $prodImg }}" alt="{{ $item->product_name }}" class="order-item-thumb-img" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                                                        <img src="{{ $prodImg }}" alt="{{ $item->product_name }}" width="52" height="52" class="order-item-thumb-img" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                                                     </div>
                                                 </a>
                                                 <div class="min-w-0">
@@ -367,7 +367,7 @@
                                 <i class="fas fa-truck-fast"></i>
                             </span>
                             <div>
-                                <h5 class="m-0 fs-6 text-dark" style="font-weight: 500;">{{ __('Informations de livraison & Paiement') }}</h5>
+                                <h2 class="m-0 fs-6 text-dark" style="font-weight: 500;">{{ __('Informations de livraison & Paiement') }}</h2>
                                 <span class="text-muted small" style="font-size: 0.76rem;">{{ __('Coordonnées de réception de votre commande') }}</span>
                             </div>
                         </div>
@@ -474,7 +474,7 @@
                                 <i class="fas fa-receipt"></i>
                             </span>
                             <div>
-                                <h5 class="m-0 fs-6 text-dark" style="font-weight: 500;">{{ __('Récapitulatif Financier') }}</h5>
+                                <h2 class="m-0 fs-6 text-dark" style="font-weight: 500;">{{ __('Récapitulatif Financier') }}</h2>
                                 <span class="text-muted small" style="font-size: 0.76rem;">{{ __('Détail des montants facturés') }}</span>
                             </div>
                         </div>
@@ -544,12 +544,12 @@
 
                 {{-- NEXT STEPS INFO CARD --}}
                 <div class="card border-0 shadow-sm rounded-4 bg-white p-4 mb-4">
-                    <h6 class="text-dark mb-3 d-flex align-items-center gap-2" style="font-weight: 500;">
+                    <div class="text-dark mb-3 d-flex align-items-center gap-2" style="font-weight: 500;">
                         <span class="order-card-icon-box text-info bg-info-subtle rounded-3" style="width: 28px; height: 28px; font-size: 0.85rem;">
                             <i class="fas fa-circle-info"></i>
                         </span>
                         <span>{{ __('Prochaines étapes de votre commande') }}</span>
-                    </h6>
+                    </div>
 
                     <div class="d-flex flex-column gap-3 small text-secondary">
                         <div class="d-flex gap-3 align-items-start">

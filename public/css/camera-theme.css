@@ -5539,7 +5539,7 @@ body:has(.offcanvas.show) .whatsapp-float {
 
 .pdp-price-main-line {
     display: inline-flex;
-    align-items: baseline;
+    align-items: center;
     gap: 12px;
     flex-wrap: wrap;
     line-height: 1;
@@ -5551,7 +5551,8 @@ body:has(.offcanvas.show) .whatsapp-float {
     font-size: 2.1rem;
     color: var(--brand-black);
     line-height: 1;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
 }
 
 .pdp-price-old {
@@ -5591,7 +5592,8 @@ body:has(.offcanvas.show) .whatsapp-float {
     display: inline-flex;
     align-items: center;
     line-height: 1;
-    transform: translateY(-0.8px) !important;
+    transform: none !important;
+    align-self: center;
 }
 
 .pdp-stock-badge--in {
@@ -8424,8 +8426,9 @@ html[dir="rtl"] .floating-checkout-badge {
     top: 10px;
     right: 10px;
     z-index: 3;
+    background-color: #c8102e !important;
     background: linear-gradient(135deg, #c8102e 0%, #a80c26 100%) !important;
-    color: #ffffff;
+    color: #ffffff !important;
     font-size: 0.68rem;
     font-weight: 800;
     padding: 3px 8px;
@@ -9290,7 +9293,7 @@ html[dir="rtl"] .hero-side-tag {
 
 .featured-stock-pill i {
     color: #02a826 !important;
-    font-size: 0.72rem !important;
+    font-size: 0.67rem !important;
 }
 
 .featured-pro-img-box {
@@ -9679,7 +9682,7 @@ html[dir="rtl"] .insta360-promo-overlay {
 .selection-card .pcard-price-main-line,
 .featured-pro-card .pcard-price-main-line {
     display: flex !important;
-    align-items: baseline !important;
+    align-items: center !important;
     justify-content: left !important;
     width: 100% !important;
     height: 24px !important;
@@ -9700,7 +9703,7 @@ html[dir="rtl"] .insta360-promo-overlay {
     min-height: 24px !important;
     max-height: 24px !important;
     display: inline-flex !important;
-    align-items: baseline !important;
+    align-items: center !important;
     white-space: nowrap !important;
     margin-bottom: 0px !important;
 }
@@ -9748,13 +9751,14 @@ html[dir="rtl"] .insta360-promo-overlay {
     margin: 0 !important;
     margin-left: 5px !important;
     flex-shrink: 0 !important;
-    transform: translateY(0.8px) !important;
+    transform: none !important;
+    align-self: center !important;
 }
 
 .selection-card .featured-stock-pill i,
 .featured-pro-card .featured-stock-pill i {
     color: #02a826 !important;
-    font-size: 0.74rem !important;
+    font-size: 0.67rem !important;
 }
 
 .selection-card .featured-stock-pill--out,
@@ -9768,13 +9772,14 @@ html[dir="rtl"] .insta360-promo-overlay {
     display: inline-flex !important;
     align-items: center !important;
     line-height: 1 !important;
-    transform: translateY(0.8px) !important;
+    transform: none !important;
+    align-self: center !important;
 }
 
 .selection-card .featured-stock-pill--out i,
 .featured-pro-card .featured-stock-pill--out i {
     color: #6b7280 !important;
-    font-size: 0.74rem !important;
+    font-size: 0.67rem !important;
 }
 
 .featured-stock-badge-corner {
@@ -11039,7 +11044,7 @@ html[dir="rtl"] .whatsapp-float:hover .whatsapp-float-tooltip {
     .selection-card .pcard-price-main-line,
     .featured-pro-card .pcard-price-main-line {
         display: flex !important;
-        align-items: baseline !important;
+        align-items: center !important;
         justify-content: left !important;
         width: 100% !important;
         height: 22px !important;
@@ -11057,7 +11062,7 @@ html[dir="rtl"] .whatsapp-float:hover .whatsapp-float-tooltip {
         min-height: 22px !important;
         max-height: 22px !important;
         display: inline-flex !important;
-        align-items: baseline !important;
+        align-items: center !important;
         margin-bottom: 0px !important;
     }
 
@@ -11091,12 +11096,13 @@ html[dir="rtl"] .whatsapp-float:hover .whatsapp-float-tooltip {
         margin: 0 !important;
         margin-left: 4px !important;
         flex-shrink: 0 !important;
-        transform: translateY(0.5px) !important;
+        transform: none !important;
+        align-self: center !important;
     }
 
     .featured-stock-pill i,
     .featured-stock-pill--out i {
-        font-size: 0.65rem !important;
+        font-size: 0.59rem !important;
     }
 
     .featured-stock-badge-corner {
@@ -11857,5 +11863,16 @@ textarea,
     textarea {
         font-size: 16px !important;
         touch-action: manipulation;
+    }
+}
+
+/* Reliability & Accessibility: Guarantee content is immediately visible if AOS is delayed or reduced-motion is requested */
+html:not(.aos-init) [data-aos],
+@media (prefers-reduced-motion: reduce) {
+    [data-aos] {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+        visibility: visible !important;
     }
 }

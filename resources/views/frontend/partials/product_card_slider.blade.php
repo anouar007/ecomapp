@@ -6,8 +6,8 @@
 <div class="featured-pro-card selection-card h-100 d-flex flex-column justify-content-between position-relative">
     {{-- Product Image with clean white background --}}
     <div class="featured-pro-img-box mb-2">
-        <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" class="w-100 h-100 d-flex align-items-center justify-content-center">
-            <img src="{{ $product->thumbnail }}" alt="{{ $product->name }}" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+        <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" class="w-100 h-100 d-flex align-items-center justify-content-center" aria-label="{{ $product->name }}">
+            <img src="{{ $product->thumbnail }}" alt="{{ $product->name }}" width="220" height="220" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
         </a>
     </div>
 
@@ -25,7 +25,7 @@
         <div>
             {{-- Price formatted dynamically as on the shop card --}}
             <div class="pcard-price mb-0">
-                <div class="pcard-price-main-line d-flex align-items-baseline justify-content-start gap-2 w-100">
+                <div class="pcard-price-main-line d-flex align-items-center justify-content-start gap-2 w-100">
                     @if($product->isOnSale())
                         <span class="pcard-price-current text-nowrap">{{ $product->formatted_sale_price }}</span>
                     @elseif($product->price && $product->price > 0)
@@ -62,6 +62,7 @@
                     class="btn w-100 featured-pro-btn {{ $isInCart ? 'is-in-cart' : '' }}" 
                     onclick="addToCart({{ $product->id }}, 1, this)"
                     data-product-id="{{ $product->id }}"
+                    aria-label="{{ $isInCart ? ($isAr ? 'في السلة' : 'Dans le panier') : ($isAr ? 'أضف إلى السلة' : 'Ajouter au panier') }}"
                     title="{{ $isInCart ? ($isAr ? 'في السلة' : 'Dans le panier') : ($isAr ? 'أضف إلى السلة' : 'Ajouter au panier') }}">
                 @if($isInCart)
                     <i class="fas fa-check" style="font-size: 11px;"></i>

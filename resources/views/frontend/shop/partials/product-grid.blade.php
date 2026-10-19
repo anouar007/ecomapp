@@ -31,7 +31,7 @@
             <div class="shop-empty-icon-wrap mb-3 mx-auto d-flex align-items-center justify-content-center rounded-circle bg-danger-subtle text-danger" style="width: 72px; height: 72px; font-size: 1.8rem;">
                 <i class="fas fa-search"></i>
             </div>
-            <h5 class="text-dark mb-2" style="font-weight: 500;">{{ __('Aucun produit ne correspond à vos critères') }}</h5>
+            <div class="h5 text-dark mb-2" style="font-weight: 500;">{{ __('Aucun produit ne correspond à vos critères') }}</div>
             <p class="text-muted small mb-3 mx-auto" style="max-width: 440px;">
                 @if(request('q'))
                     {{ __('Aucun produit trouvé pour la recherche') }} « <strong>{{ request('q') }}</strong> ». {{ __('Vérifiez l\'orthographe ou explorez nos modèles populaires :') }}

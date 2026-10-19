@@ -120,7 +120,7 @@
             <div class="col-lg-6" data-aos="fade-right">
                 <div class="about-showcase-box position-relative">
                     <div class="about-img-frame shadow-lg rounded-4 overflow-hidden position-relative">
-                        <img src="{{ asset('images/camera/about_showroom.jpg') }}" alt="Showroom {{ setting('app_name', 'Winashop') }} Casablanca" class="w-100 h-100 object-fit-cover" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                        <img src="{{ asset('images/camera/about_showroom.jpg') }}" alt="Showroom {{ setting('app_name', 'Winashop') }} Casablanca" width="600" height="400" class="w-100 h-100 object-fit-cover" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                         <div class="about-img-overlay"></div>
                     </div>
 
@@ -261,7 +261,7 @@
                     <div class="pillar-icon-box-pro bg-danger-subtle text-danger">
                         <i class="fas fa-user-astronaut"></i>
                     </div>
-                    <h5 class="fw-bold text-dark mb-2 font-heading">{{ __('Conseil & Orientation') }}</h5>
+                    <h3 class="fw-bold text-dark mb-2 font-heading fs-5">{{ __('Conseil & Orientation') }}</h3>
                     <p class="small text-muted mb-0 lh-base">
                         {{ __('Nous vous guidons dans vos choix d’équipements en fonction de vos besoins spécifiques, pour composer le setup parfait.') }}
                     </p>
@@ -274,7 +274,7 @@
                     <div class="pillar-icon-box-pro bg-dark text-white">
                         <i class="fas fa-sliders-h"></i>
                     </div>
-                    <h5 class="fw-bold text-dark mb-2 font-heading">{{ __('Espace Test Showroom') }}</h5>
+                    <h3 class="fw-bold text-dark mb-2 font-heading fs-5">{{ __('Espace Test Showroom') }}</h3>
                     <p class="small text-muted mb-0 lh-base">
                         {{ __('Testez les optiques, configurez vos gimbals DJI et calibrez vos kits d’éclairage directement dans notre showroom à Casablanca.') }}
                     </p>
@@ -287,7 +287,7 @@
                     <div class="pillar-icon-box-pro bg-danger-subtle text-danger">
                         <i class="fas fa-boxes-packing"></i>
                     </div>
-                    <h5 class="fw-bold text-dark mb-2 font-heading">{{ __('Neuf & Occasion Vérifiée') }}</h5>
+                    <h3 class="fw-bold text-dark mb-2 font-heading fs-5">{{ __('Neuf & Occasion Vérifiée') }}</h3>
                     <p class="small text-muted mb-0 lh-base">
                         {{ __('Du matériel neuf scellé avec garantie constructeur, ainsi qu’un parc d’occasion inspecté et testé minutieusement par nos techniciens.') }}
                     </p>
@@ -300,7 +300,7 @@
                     <div class="pillar-icon-box-pro bg-dark text-white">
                         <i class="fas fa-truck-ramp-box"></i>
                     </div>
-                    <h5 class="fw-bold text-dark mb-2 font-heading">{{ __('Expédition Sécurisée Maroc') }}</h5>
+                    <h3 class="fw-bold text-dark mb-2 font-heading fs-5">{{ __('Expédition Sécurisée Maroc') }}</h3>
                     <p class="small text-muted mb-0 lh-base">
                         {{ __('Livraison rapide partout au Maroc (24h/48h) dans des emballages renforcés haute protection, avec livraison express à Casablanca.') }}
                     </p>
@@ -334,12 +334,12 @@
             <div class="col-md-6 col-lg-4">
                 <div class="about-category-card">
                     <div class="about-cat-img-wrap">
-                        <img src="{{ asset('images/camera/cat_cameras.jpg') }}" alt="Caméras et Boîtiers" class="about-cat-img" onerror="this.onerror=null; this.src='{{ asset('images/camera/hero_winashop.jpg') }}';">
+                        <img src="{{ asset('images/camera/cat_cameras.jpg') }}" alt="Caméras et Boîtiers" width="400" height="180" class="about-cat-img" onerror="this.onerror=null; this.src='{{ asset('images/camera/hero_winashop.jpg') }}';">
                         <span class="about-cat-badge">Sony · Canon · Nikon · Fuji</span>
                     </div>
                     <div class="about-cat-body">
                         <div>
-                            <h5 class="fw-bold text-dark mb-1.5 font-heading fs-6">{{ __('Appareils Photo & Caméras') }}</h5>
+                            <h3 class="fw-bold text-dark mb-1.5 font-heading fs-6">{{ __('Appareils Photo & Caméras') }}</h3>
                             <p class="small text-muted mb-3">{{ __('Boîtiers plein format, Cinema Line, caméras vidéo 4K/8K et compacts experts.') }}</p>
                         </div>
                         <a href="{{ route('shop.index', ['category' => 'camera']) }}" class="about-cat-link">
@@ -354,12 +354,12 @@
             <div class="col-md-6 col-lg-4">
                 <div class="about-category-card">
                     <div class="about-cat-img-wrap">
-                        <img src="{{ asset('images/camera/hero_lens_optics.jpg') }}" alt="Objectifs & Optiques" class="about-cat-img" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                        <img src="{{ asset('images/camera/hero_lens_optics.jpg') }}" alt="Objectifs & Optiques" width="400" height="180" class="about-cat-img" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                         <span class="about-cat-badge">Primes · Zooms · Filtres ND</span>
                     </div>
                     <div class="about-cat-body">
                         <div>
-                            <h5 class="fw-bold text-dark mb-1.5 font-heading fs-6">{{ __('Objectifs & Optiques Cinéma') }}</h5>
+                            <h3 class="fw-bold text-dark mb-1.5 font-heading fs-6">{{ __('Objectifs & Optiques Cinéma') }}</h3>
                             <p class="small text-muted mb-3">{{ __('Focales fixes ultra-lumineuses, téléobjectifs, filtres CPL/ND et matte boxes.') }}</p>
                         </div>
                         <a href="{{ route('shop.index', ['category' => 'objectifs']) }}" class="about-cat-link">
@@ -374,12 +374,12 @@
             <div class="col-md-6 col-lg-4">
                 <div class="about-category-card">
                     <div class="about-cat-img-wrap">
-                        <img src="{{ asset('images/camera/cat_lighting.jpg') }}" alt="Éclairage et Studio" class="about-cat-img" onerror="this.onerror=null; this.src='{{ asset('images/camera/banner_studio_lighting.jpg') }}';">
+                        <img src="{{ asset('images/camera/cat_lighting.jpg') }}" alt="Éclairage et Studio" width="400" height="180" class="about-cat-img" onerror="this.onerror=null; this.src='{{ asset('images/camera/banner_studio_lighting.jpg') }}';">
                         <span class="about-cat-badge">Amaran · Nicefoto · Softboxes</span>
                     </div>
                     <div class="about-cat-body">
                         <div>
-                            <h5 class="fw-bold text-dark mb-1.5 font-heading fs-6">{{ __('Lumières & Matériel de Studio') }}</h5>
+                            <h3 class="fw-bold text-dark mb-1.5 font-heading fs-6">{{ __('Lumières & Matériel de Studio') }}</h3>
                             <p class="small text-muted mb-3">{{ __('Projecteurs LED COB, panneaux RGB bicolores, softboxes paraboliques et pieds.') }}</p>
                         </div>
                         <a href="{{ route('shop.index', ['category' => 'lumieres-et-materiel-de-studio']) }}" class="about-cat-link">
@@ -394,12 +394,12 @@
             <div class="col-md-6 col-lg-4">
                 <div class="about-category-card">
                     <div class="about-cat-img-wrap">
-                        <img src="{{ asset('images/camera/cat_audio.jpg') }}" alt="Son et Podcast" class="about-cat-img" onerror="this.onerror=null; this.src='{{ asset('images/camera/banner_mic_sound.jpg') }}';">
+                        <img src="{{ asset('images/camera/cat_audio.jpg') }}" alt="Son et Podcast" width="400" height="180" class="about-cat-img" onerror="this.onerror=null; this.src='{{ asset('images/camera/banner_mic_sound.jpg') }}';">
                         <span class="about-cat-badge">Micros HF · Podcast · Studio</span>
                     </div>
                     <div class="about-cat-body">
                         <div>
-                            <h5 class="fw-bold text-dark mb-1.5 font-heading fs-6">{{ __('Prise de Son & Podcast') }}</h5>
+                            <h3 class="fw-bold text-dark mb-1.5 font-heading fs-6">{{ __('Prise de Son & Podcast') }}</h3>
                             <p class="small text-muted mb-3">{{ __('Micros HF sans fil, micros canon directionnels, enregistreurs et kits podcast.') }}</p>
                         </div>
                         <a href="{{ route('shop.index', ['category' => 'son']) }}" class="about-cat-link">
@@ -414,12 +414,12 @@
             <div class="col-md-6 col-lg-4">
                 <div class="about-category-card">
                     <div class="about-cat-img-wrap">
-                        <img src="{{ asset('images/camera/cat_gimbals.jpg') }}" alt="Stabilisateurs & Trépieds" class="about-cat-img" onerror="this.onerror=null; this.src='{{ asset('images/camera/hero_cinema_rig.jpg') }}';">
+                        <img src="{{ asset('images/camera/cat_gimbals.jpg') }}" alt="Stabilisateurs & Trépieds" width="400" height="180" class="about-cat-img" onerror="this.onerror=null; this.src='{{ asset('images/camera/hero_cinema_rig.jpg') }}';">
                         <span class="about-cat-badge">DJI Ronin · Manbily · Carbone</span>
                     </div>
                     <div class="about-cat-body">
                         <div>
-                            <h5 class="fw-bold text-dark mb-1.5 font-heading fs-6">{{ __('Stabilisateurs & Trépieds Pro') }}</h5>
+                            <h3 class="fw-bold text-dark mb-1.5 font-heading fs-6">{{ __('Stabilisateurs & Trépieds Pro') }}</h3>
                             <p class="small text-muted mb-3">{{ __('Gimbals 3 axes DJI, trépieds vidéo carbone Manbily, rotules fluides et monopodes.') }}</p>
                         </div>
                         <a href="{{ route('shop.index', ['category' => 'stabilisateurs']) }}" class="about-cat-link">
@@ -434,12 +434,12 @@
             <div class="col-md-6 col-lg-4">
                 <div class="about-category-card">
                     <div class="about-cat-img-wrap">
-                        <img src="{{ asset('images/camera/shop_hero_banner.jpg') }}" alt="Accessoires & Occasion" class="about-cat-img" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                        <img src="{{ asset('images/camera/shop_hero_banner.jpg') }}" alt="Accessoires & Occasion" width="400" height="180" class="about-cat-img" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                         <span class="about-cat-badge">V-Mount · SD V90 · Occasion</span>
                     </div>
                     <div class="about-cat-body">
                         <div>
-                            <h5 class="fw-bold text-dark mb-1.5 font-heading fs-6">{{ __('Accessoires & Parc d\'Occasion') }}</h5>
+                            <h3 class="fw-bold text-dark mb-1.5 font-heading fs-6">{{ __('Accessoires & Parc d\'Occasion') }}</h3>
                             <p class="small text-muted mb-3">{{ __('Batteries, cartes mémoire haute vitesse, sacs renforcés et matériel d\'occasion certifié.') }}</p>
                         </div>
                         <a href="{{ route('shop.index', ['category' => 'accessoires']) }}" class="about-cat-link">
@@ -595,7 +595,7 @@
             {{-- Showroom Photo Grid with Map Pin Badge --}}
             <div class="col-lg-6" data-aos="fade-left">
                 <div class="about-showroom-visual shadow-xl rounded-4 overflow-hidden position-relative">
-                    <img src="{{ asset('images/camera/hero_winashop.jpg') }}" alt="Showroom Winashop Equipements" class="w-100 h-100 object-fit-cover" onerror="this.onerror=null; this.src='{{ asset('images/camera/about_showroom.jpg') }}';">
+                    <img src="{{ asset('images/camera/hero_winashop.jpg') }}" alt="Showroom Winashop Equipements" width="600" height="420" class="w-100 h-100 object-fit-cover" onerror="this.onerror=null; this.src='{{ asset('images/camera/about_showroom.jpg') }}';">
                     <div class="about-showroom-badge">
                         <div class="d-flex align-items-center gap-2">
                             <span class="about-pulse-dot"></span>

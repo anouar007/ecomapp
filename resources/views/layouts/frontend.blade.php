@@ -2,7 +2,7 @@
 <html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('meta_title', setting('app_name', 'WINA SHOP') . ' — ' . __('Matériel Photo, Vidéo, Caméras & Drones au Maroc'))</title>
     <meta name="description" content="@yield('meta_description', setting('app_description', 'WINA SHOP Casablanca : Votre référence au Maroc pour le matériel photo & vidéo professionnel. Caméras Sony, Canon, drones & stabilisateurs DJI, optiques, éclairage studio Godox. Garantie, devis proforma INDH et livraison partout au Maroc.'))">
     <meta name="keywords" content="@yield('meta_keywords', setting('app_name', 'WINA SHOP') . ', Winashop, matériel photo Maroc, vente caméras Casablanca, caméras cinéma, Sony Alpha Maroc, Canon EOS, DJI Osmo, drones DJI, stabilisateurs gimbals, éclairage Godox, objectifs photo, devis proforma INDH, facture avec ICE, matériel audiovisuel, كاميرات المغرب, بيع معدات التصوير الدار البيضاء, درون دي جي اي, إضاءة استوديو, شراء كاميرا كانون سوني')">
@@ -156,7 +156,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
     @if(file_exists(public_path('build/manifest.json')))
@@ -412,7 +412,7 @@
         .featured-pro-card .pcard-price-main-line,
         .selection-card .pcard-price-main-line {
             display: flex !important;
-            align-items: baseline !important;
+            align-items: center !important;
             justify-content: left !important;
             width: 100% !important;
             height: 24px !important;
@@ -433,7 +433,7 @@
             min-height: 24px !important;
             max-height: 24px !important;
             display: inline-flex !important;
-            align-items: baseline !important;
+            align-items: center !important;
             white-space: nowrap !important;
             margin-bottom: 0px !important;
         }
@@ -490,10 +490,14 @@
             line-height: 1 !important;
         }
 
-        .pdp-stock-badge--in i,
-        .featured-stock-pill:not(.featured-stock-pill--out) i {
+        .pdp-stock-badge--in i {
             color: #02a826 !important;
             font-size: 0.74rem !important;
+        }
+
+        .featured-stock-pill:not(.featured-stock-pill--out) i {
+            color: #02a826 !important;
+            font-size: 0.67rem !important;
         }
 
         .pcard-price .featured-stock-pill,
@@ -506,14 +510,16 @@
             margin: 0 !important;
             margin-left: 5px !important;
             flex-shrink: 0 !important;
-            transform: translateY(0.8px) !important;
+            transform: none !important;
+            align-self: center !important;
         }
 
         .pdp-price-group .pdp-stock-badge,
         .pdp-price-main-line .pdp-stock-badge {
             font-size: 0.71rem !important;
             padding: 4.5px 11px !important;
-            transform: translateY(-0.8px) !important;
+            transform: none !important;
+            align-self: center !important;
         }
 
         .pcard-price .featured-stock-pill--out,
@@ -529,7 +535,8 @@
             display: inline-flex !important;
             align-items: center !important;
             line-height: 1 !important;
-            transform: translateY(0.8px) !important;
+            transform: none !important;
+            align-self: center !important;
         }
 
         .pdp-stock-badge--out,
@@ -544,12 +551,13 @@
             line-height: 1 !important;
             font-size: 0.71rem !important;
             padding: 4.5px 11px !important;
-            transform: translateY(-0.8px) !important;
+            transform: none !important;
+            align-self: center !important;
         }
 
         .featured-stock-pill--out i {
             color: #6b7280 !important;
-            font-size: 0.74rem !important;
+            font-size: 0.67rem !important;
         }
 
         .pdp-stock-badge--out i {
@@ -697,8 +705,14 @@
 
         .pdp-price-main-line {
             display: flex !important;
-            align-items: baseline !important;
+            align-items: center !important;
             gap: 12px !important;
+        }
+
+        .pdp-price-main {
+            display: inline-flex !important;
+            align-items: center !important;
+            line-height: 1 !important;
         }
 
         .pdp-thumbs {
@@ -943,7 +957,7 @@
             .featured-pro-card .pcard-price-main-line,
             .selection-card .pcard-price-main-line {
                 display: flex !important;
-                align-items: baseline !important;
+                align-items: center !important;
                 justify-content: left !important;
                 width: 100% !important;
                 height: 22px !important;
@@ -961,7 +975,7 @@
                 min-height: 22px !important;
                 max-height: 22px !important;
                 display: inline-flex !important;
-                align-items: baseline !important;
+                align-items: center !important;
                 margin-bottom: 0px !important;
             }
 
@@ -995,11 +1009,12 @@
                 margin: 0 !important;
                 margin-left: 4px !important;
                 flex-shrink: 0 !important;
-                transform: translateY(0.5px) !important;
+                transform: none !important;
+                align-self: center !important;
             }
             .featured-stock-pill i,
             .featured-stock-pill--out i {
-                font-size: 0.65rem !important;
+                font-size: 0.59rem !important;
             }
 
             .featured-stock-badge-corner {
@@ -1073,7 +1088,7 @@
                 <div class="d-flex align-items-center gap-2 gap-lg-3 gap-xl-4 flex-nowrap">
                     <!-- Brand Logo (Enlarged) -->
                     <a class="navbar-brand m-0 p-0 d-flex align-items-center me-1 me-lg-2" href="{{ url('/') }}" style="flex-shrink: 0;" title="{{ setting('app_name', 'WINA SHOP') }}">
-                        <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" class="brand-logo-img" style="height: 96px; max-height: 105px; width: auto; max-width: 280px; object-fit: contain;">
+                        <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="220" height="96" class="brand-logo-img" style="height: 96px; max-height: 105px; width: auto; max-width: 280px; object-fit: contain;">
                     </a>
 
                     @php
@@ -1181,7 +1196,7 @@
                                                         <div class="d-flex align-items-center gap-2 text-truncate me-2">
                                                             <span class="cat-slot-box">
                                                                 @if($catImg)
-                                                                    <img src="{{ $catImg }}" alt="{{ $cat->name }}" class="cat-slot-media" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                                                    <img src="{{ $catImg }}" alt="{{ $cat->name }}" width="30" height="30" class="cat-slot-media" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
                                                                     <i class="fas fa-folder cat-slot-icon" style="display: none;"></i>
                                                                 @else
                                                                     <i class="{{ $catIconClass }} cat-slot-icon"></i>
@@ -1225,7 +1240,7 @@
                                    autocomplete="off" 
                                    spellcheck="false"
                                    style="font-size: 16px; color: #334155;">
-                            <button class="btn btn-search-clear d-none p-0 border-0 bg-transparent text-muted" type="button" id="headerSearchClear">
+                            <button class="btn btn-search-clear d-none p-0 border-0 bg-transparent text-muted" type="button" id="headerSearchClear" aria-label="{{ __('Effacer la recherche') }}">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
@@ -1290,7 +1305,7 @@
     <div class="offcanvas offcanvas-start border-0 shadow-lg d-lg-none" tabindex="-1" id="mobileNavDrawer" aria-labelledby="mobileNavDrawerLabel" style="width: 310px;">
         <div class="offcanvas-header border-bottom py-3">
             <a href="{{ url('/') }}" class="navbar-brand m-0">
-                <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" style="height: 64px; width: auto;">
+                <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="160" height="64" style="height: 64px; width: auto;">
             </a>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
@@ -1342,7 +1357,7 @@
                             <div class="d-flex align-items-center gap-2 text-truncate me-2">
                                 <span class="cat-slot-box">
                                     @if($catImg)
-                                        <img src="{{ $catImg }}" alt="{{ $cat->name }}" class="cat-slot-media" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                        <img src="{{ $catImg }}" alt="{{ $cat->name }}" width="30" height="30" class="cat-slot-media" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
                                         <i class="fas fa-folder cat-slot-icon" style="display: none;"></i>
                                     @else
                                         <i class="{{ $catIconClass }} cat-slot-icon"></i>
@@ -1429,10 +1444,10 @@
                     <div class="pro-cats-grid">
                         @foreach($navCategories as $cat)
                             @php $icon = $catIcons[$cat->slug] ?? 'fa-camera'; @endphp
-                            <a href="{{ route('shop.index', ['category' => $cat->slug]) }}" class="pro-cat-card">
+                            <a href="{{ route('shop.index', ['category' => $cat->slug]) }}" class="pro-cat-card" aria-label="{{ $cat->name }} ({{ $cat->products_count }} {{ __('refs.') }})">
                                 <span class="pro-cat-card-icon" style="overflow: hidden; display: flex; align-items: center; justify-content: center;">
                                     @if($cat->image)
-                                        <img src="{{ $cat->thumbnail }}" alt="{{ $cat->name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                                        <img src="{{ $cat->thumbnail }}" alt="{{ $cat->name }}" width="36" height="36" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
                                         <i class="fas {{ $icon }}" style="display: none;"></i>
                                     @else
                                         <i class="fas {{ $icon }}"></i>
@@ -1456,7 +1471,7 @@
                 <div class="pro-empty-icon">
                     <i class="fas fa-search-minus"></i>
                 </div>
-                <h6 class="pro-empty-title">{{ __('No product found') }}</h6>
+                <p class="pro-empty-title h6 mb-1 fw-bold">{{ __('No product found') }}</p>
                 <p class="pro-empty-subtitle">
                     {{ __('No results match') }} « <span class="pro-empty-query text-danger fw-bold"></span> »
                 </p>
@@ -1485,9 +1500,9 @@
     <!-- Offcanvas Mini Cart -->
     <div class="offcanvas offcanvas-end border-0 shadow-lg" tabindex="-1" id="miniCart" aria-labelledby="miniCartLabel" style="width: 450px; background: #f8fafc;">
         <div class="offcanvas-header bg-white border-bottom py-3">
-            <h5 class="offcanvas-title fw-bold font-heading" id="miniCartLabel">
+            <div class="offcanvas-title fw-bold font-heading h5 mb-0" id="miniCartLabel">
                 <i class="fas fa-shopping-bag me-2 text-primary"></i>{{ __('My Cart') }}
-            </h5>
+            </div>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body p-0 d-flex flex-column h-100">
@@ -1503,22 +1518,22 @@
                                         ? asset(ltrim($details['image'], '/')) 
                                         : (isset($details['image']) ? Storage::url($details['image']) : asset('images/camera/cat_cameras.jpg'));
                                 @endphp
-                                <img src="{{ $miniImg }}" alt="{{ $details['name'] }}" class="rounded-3 object-fit-cover" style="width: 80px; height: 80px;">
+                                <img src="{{ $miniImg }}" alt="{{ $details['name'] }}" width="80" height="80" class="rounded-3 object-fit-cover" style="width: 80px; height: 80px;">
                                 <span class="position-absolute top-0 {{ app()->getLocale() === 'ar' ? 'end-0' : 'start-0' }} translate-middle badge rounded-pill bg-light text-dark border shadow-sm" style="font-size: 0.7rem;">x{{ $details['quantity'] }}</span>
                             </div>
                             <div class="flex-grow-1 min-w-0">
-                                <h6 class="fw-bold mb-1 text-truncate {{ app()->getLocale() === 'ar' ? 'ps-4' : 'pe-4' }}" title="{{ $details['name'] }}">{{ $details['name'] }}</h6>
+                                <div class="fw-bold mb-1 text-truncate h6 {{ app()->getLocale() === 'ar' ? 'ps-4' : 'pe-4' }}" title="{{ $details['name'] }}">{{ $details['name'] }}</div>
                                 <p class="mb-2 text-muted small">{{ $details['category_name'] ?? __('Product') }}</p>
                                 
                                 <div class="d-flex align-items-center justify-content-between mt-2">
                                     <span class="text-primary fw-bold" style="font-size: 1.1rem;">{{ currency($details['price']) }}</span>
                                     
                                     <div class="quantity-control bg-light rounded-pill d-flex align-items-center px-1 border">
-                                        <button class="btn btn-sm btn-link text-dark text-decoration-none p-1 border-0" onclick="updateQty({{ $id }}, {{ $details['quantity'] - 1 }})">
+                                        <button class="btn btn-sm btn-link text-dark text-decoration-none p-1 border-0" onclick="updateQty({{ $id }}, {{ $details['quantity'] - 1 }})" aria-label="{{ __('Diminuer la quantité') }}">
                                             <i class="fas fa-minus" style="font-size: 0.7rem;"></i>
                                         </button>
-                                        <input type="text" class="form-control form-control-sm border-0 bg-transparent text-center fw-bold p-0" value="{{ $details['quantity'] }}" readonly style="width: 30px;">
-                                        <button class="btn btn-sm btn-link text-dark text-decoration-none p-1 border-0" onclick="updateQty({{ $id }}, {{ $details['quantity'] + 1 }})">
+                                        <input type="text" class="form-control form-control-sm border-0 bg-transparent text-center fw-bold p-0" value="{{ $details['quantity'] }}" readonly style="width: 30px;" aria-label="{{ __('Quantité') }}">
+                                        <button class="btn btn-sm btn-link text-dark text-decoration-none p-1 border-0" onclick="updateQty({{ $id }}, {{ $details['quantity'] + 1 }})" aria-label="{{ __('Augmenter la quantité') }}">
                                             <i class="fas fa-plus" style="font-size: 0.7rem;"></i>
                                         </button>
                                     </div>
@@ -1534,7 +1549,7 @@
                         <div class="mb-4 bg-white rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 100px; height: 100px;">
                             <i class="fas fa-shopping-basket fa-3x text-muted opacity-25"></i>
                         </div>
-                        <h5 class="fw-bold text-dark">{{ __('Your cart is empty') }}</h5>
+                        <div class="fw-bold text-dark h5 mb-2">{{ __('Your cart is empty') }}</div>
                         <p class="text-muted small mb-4">{{ __("You haven't added anything yet.") }}</p>
                         <a href="{{ route('shop.index') }}" class="btn btn-primary rounded-pill px-5 shadow-sm">{{ __('Start Shopping') }}</a>
                     </div>
@@ -1711,9 +1726,9 @@
         <div class="container">
             <div class="row g-5">
                 <div class="col-lg-6">
-                    <h5 class="fw-bold text-white mb-3 text-uppercase ls-1 d-flex align-items-center gap-2">
+                    <p class="fw-bold text-white mb-3 text-uppercase ls-1 d-flex align-items-center gap-2 h5">
                         <span class="tally-dot"></span> {{ setting('app_name', 'WINA SHOP') }}
-                    </h5>
+                    </p>
                     <p class="small lh-lg mb-4 text-slate-400">
                         @if(app()->getLocale() === 'ar')
                             متجرك المرجعي في المغرب لمعدات التصوير الفوتوغرافي والفيديو الاحترافية: كاميرات، عدسات، طائرات درون ومثبتات DJI، إضاءة وصوتيات الاستوديو. مقرنا بالدار البيضاء وتوصيل سريع وموثوق في جميع أنحاء المغرب.
@@ -1732,22 +1747,22 @@
                     @endphp
                     <div class="d-flex gap-3 flex-wrap">
                         @if($validUrl($sfb))
-                        <a href="{{ $sfb }}" target="_blank" rel="noopener" class="footer-social-btn" title="Facebook">
+                        <a href="{{ $sfb }}" target="_blank" rel="noopener" class="footer-social-btn" title="Facebook" aria-label="Facebook">
                             <i class="fab fa-facebook-f"></i>
                         </a>
                         @endif
                         @if($validUrl($stw))
-                        <a href="{{ $stw }}" target="_blank" rel="noopener" class="footer-social-btn" title="Twitter / X">
+                        <a href="{{ $stw }}" target="_blank" rel="noopener" class="footer-social-btn" title="Twitter / X" aria-label="Twitter">
                             <i class="fab fa-twitter"></i>
                         </a>
                         @endif
                         @if($validUrl($sig))
-                        <a href="{{ $sig }}" target="_blank" rel="noopener" class="footer-social-btn" title="Instagram">
+                        <a href="{{ $sig }}" target="_blank" rel="noopener" class="footer-social-btn" title="Instagram" aria-label="Instagram">
                             <i class="fab fa-instagram"></i>
                         </a>
                         @endif
                         @if($validUrl($sli))
-                        <a href="{{ $sli }}" target="_blank" rel="noopener" class="footer-social-btn" title="LinkedIn">
+                        <a href="{{ $sli }}" target="_blank" rel="noopener" class="footer-social-btn" title="LinkedIn" aria-label="LinkedIn">
                             <i class="fab fa-linkedin-in"></i>
                         </a>
                         @endif
@@ -1755,7 +1770,7 @@
                         @php
                             $waFooterLink = 'https://wa.me/' . preg_replace('/[^0-9]/', '', $swa);
                         @endphp
-                        <a href="{{ $waFooterLink }}" target="_blank" rel="noopener" class="footer-social-btn footer-social-btn--wa" title="WhatsApp">
+                        <a href="{{ $waFooterLink }}" target="_blank" rel="noopener" class="footer-social-btn footer-social-btn--wa" title="WhatsApp" aria-label="WhatsApp">
                             <i class="fab fa-whatsapp"></i>
                         </a>
                         @endif
@@ -1767,7 +1782,7 @@
                 </div>
                 
                 <div class="col-lg-3 col-6">
-                    <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">{{ __('Shop') }}</h6>
+                    <p class="fw-bold text-white mb-4 text-uppercase ls-1 h6">{{ __('Shop') }}</p>
                     <ul class="list-unstyled">
                         <li><a href="{{ route('shop.index') }}" class="footer-link small">{{ __('Featured Products') }}</a></li>
                         <li><a href="{{ route('about') }}" class="footer-link small">{{ __('About') }} {{ setting('app_name', 'WINA SHOP') }}</a></li>
@@ -1776,7 +1791,7 @@
                 </div>
 
                 <div class="col-lg-3 col-6">
-                    <h6 class="fw-bold text-white mb-4 text-uppercase ls-1">{{ __('Customer Service') }}</h6>
+                    <p class="fw-bold text-white mb-4 text-uppercase ls-1 h6">{{ __('Customer Service') }}</p>
                     <ul class="list-unstyled">
                         <li><a href="{{ route('contact') }}" class="footer-link small">{{ __('Request a Quote') }}</a></li>
                         <li><a href="{{ route('about') }}#garantie" class="footer-link small">{{ __('Warranty') }}</a></li>
@@ -1797,19 +1812,17 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        @if(setting('frontend_enable_animations'))
         if (typeof AOS !== 'undefined') {
             AOS.init({
-                duration: 800,
+                duration: 600,
                 once: true,
-                offset: 100
+                offset: 40
             });
         }
-        @endif
 
         // Mini Cart & Cart Page Functions
         window.updateFloatingCheckout = function(count, total) {
@@ -2588,7 +2601,7 @@
 
                         html += `
                             <a href="${p.url}" class="search-result-item" data-index="${idx}">
-                                <img src="${p.image}" alt="${escapeHtml(p.name)}" class="search-result-thumb" loading="lazy">
+                                <img src="${p.image}" alt="${escapeHtml(p.name)}" width="44" height="44" class="search-result-thumb" loading="lazy">
                                 <div class="search-result-info">
                                     <div class="search-result-cat">${escapeHtml(p.category)}</div>
                                     <div class="search-result-name">${highlightText(p.name, query)}</div>
@@ -2931,7 +2944,7 @@
 
                         html += `
                             <a href="${p.url}" class="pro-result-card">
-                                <img src="${p.image}" alt="${escapeHtml(p.name)}" class="pro-result-thumb" loading="lazy">
+                                <img src="${p.image}" alt="${escapeHtml(p.name)}" width="62" height="62" class="pro-result-thumb" loading="lazy">
                                 <div class="pro-result-info">
                                     <span class="pro-result-cat">${escapeHtml(p.category)}</span>
                                     <div class="pro-result-title">${highlightText(p.name, query)}</div>

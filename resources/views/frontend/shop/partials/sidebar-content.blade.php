@@ -1,10 +1,10 @@
 {{-- Price Range Card (Budget MAD) --}}
 <div class="shop-filter-card mb-3">
     <div class="shop-filter-header d-flex align-items-center justify-content-between mb-2.5 pb-2 border-bottom">
-        <h6 class="shop-filter-title m-0 d-flex align-items-center gap-2 fw-bold text-dark text-uppercase fs-xs" style="letter-spacing: 0.5px;">
+        <div class="shop-filter-title m-0 d-flex align-items-center gap-2 fw-bold text-dark text-uppercase fs-xs" style="letter-spacing: 0.5px;">
             <i class="fas fa-coins text-danger"></i>
             <span>{{ __('Budget (MAD)') }}</span>
-        </h6>
+        </div>
         <button type="button" class="sidebar-reset-pill" id="sidebarPriceResetBtn" onclick="if(window.removeFilter){window.removeFilter('price');}" title="{{ __('Effacer le filtre prix') }}" style="{{ !(request('min_price') || request('max_price')) ? 'display: none;' : '' }}">
             <i class="fas fa-times"></i>
             <span>{{ __('Effacer') }}</span>
@@ -86,10 +86,10 @@
 @endphp
 <div class="shop-filter-card">
     <div class="shop-filter-header d-flex align-items-center justify-content-between mb-2.5 pb-2 border-bottom">
-        <h6 class="shop-filter-title m-0 d-flex align-items-center gap-2 fw-bold text-dark text-uppercase fs-xs" style="letter-spacing: 0.5px;">
+        <div class="shop-filter-title m-0 d-flex align-items-center gap-2 fw-bold text-dark text-uppercase fs-xs" style="letter-spacing: 0.5px;">
             <i class="fas fa-layer-group text-danger"></i>
             <span>{{ __('Rayons Pro') }}</span>
-        </h6>
+        </div>
         <div class="d-flex align-items-center gap-2">
             <button type="button" class="sidebar-reset-pill shop-cat-link" id="sidebarCatResetBtn" data-slug="" data-name="{{ __('Tout le catalogue') }}" title="{{ __('Voir tous les rayons') }}" style="{{ !request('category') ? 'display: none;' : '' }}">
                 <i class="fas fa-times"></i>
@@ -132,7 +132,7 @@
                 <div class="d-flex align-items-center gap-2 me-1 flex-grow-1" style="min-width: 0;">
                     <span class="cat-slot-box">
                         @if($cImg)
-                            <img src="{{ $cImg }}" alt="{{ $cat->name }}" class="cat-slot-media" loading="lazy" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-flex';">
+                            <img src="{{ $cImg }}" alt="{{ $cat->name }}" width="30" height="30" class="cat-slot-media" loading="lazy" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-flex';">
                             <i class="{{ $cIcon }} cat-slot-icon" style="display: none;"></i>
                         @else
                             <i class="{{ $cIcon }} cat-slot-icon"></i>

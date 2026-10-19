@@ -126,6 +126,7 @@
      2. CONTACT CHANNELS & INTERACTIVE FORM GRID
      ═════════════════════════════════════════════════════════════════ --}}
 <section class="section-py bg-surface" id="contactFormSection">
+    <h2 class="visually-hidden">{{ __('Canaux de Contact Direct et Devis') }}</h2>
     <div class="container">
         <div class="row g-4 g-lg-5 align-items-start">
 
@@ -140,7 +141,7 @@
                         </div>
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center justify-content-between mb-1">
-                                <h5 class="contact-card-title mb-0">{{ __('Showroom & Espace Test Matériel') }}</h5>
+                                <h3 class="contact-card-title mb-0 fs-6">{{ __('Showroom & Espace Test Matériel') }}</h3>
                             </div>
                             <p class="contact-card-desc mb-2 text-dark fw-semibold">
                                 01 Rue 102, Hay Wiam, Al Oulfa, Casablanca 20220
@@ -160,7 +161,7 @@
                             <i class="fas fa-phone-volume"></i>
                         </div>
                         <div class="flex-grow-1">
-                            <h5 class="contact-card-title">{{ __('Assistance Téléphonique & Conseil') }}</h5>
+                            <h3 class="contact-card-title fs-6">{{ __('Assistance Téléphonique & Conseil') }}</h3>
                             <p class="contact-card-desc mb-2">
                                 {{ __('Lundi au Samedi : 09h30 – 19h30') }}
                             </p>
@@ -177,7 +178,7 @@
                             <i class="fas fa-envelope-open-text"></i>
                         </div>
                         <div class="flex-grow-1">
-                            <h5 class="contact-card-title">{{ __('Email Commercial & Devis Pro') }}</h5>
+                            <h3 class="contact-card-title fs-6">{{ __('Email Commercial & Devis Pro') }}</h3>
                             <p class="contact-card-desc mb-2">
                                 {{ __('Devis entreprises, facturation proforma & partenariats') }}
                             </p>
@@ -196,7 +197,7 @@
                                 </div>
                                 <div>
                                     <div class="d-flex align-items-center gap-2 mb-1">
-                                        <h6 class="fw-bold text-white mb-0">{{ __('Conseiller Studio WhatsApp') }}</h6>
+                                        <h3 class="fw-bold text-white mb-0 fs-6">{{ __('Conseiller Studio WhatsApp') }}</h3>
                                         <span class="about-pulse-dot"></span>
                                     </div>
                                     <span class="small text-white-50">{{ __('Réponse instantanée durant les heures d\'ouverture') }}</span>
@@ -447,7 +448,7 @@
             {{-- Visual Showcase Column --}}
             <div class="col-lg-6" data-aos="fade-left">
                 <div class="about-showroom-visual shadow-xl rounded-4 overflow-hidden position-relative">
-                    <img src="{{ asset('images/camera/hero_winashop.jpg') }}" alt="Showroom Winashop Equipements Casablanca" class="w-100 h-100 object-fit-cover" onerror="this.onerror=null; this.src='{{ asset('images/camera/about_showroom.jpg') }}';">
+                    <img src="{{ asset('images/camera/hero_winashop.jpg') }}" alt="Showroom Winashop Equipements Casablanca" width="600" height="420" class="w-100 h-100 object-fit-cover" onerror="this.onerror=null; this.src='{{ asset('images/camera/about_showroom.jpg') }}';">
                     <div class="about-showroom-badge">
                         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                             <div class="d-flex align-items-center gap-2">
@@ -491,12 +492,12 @@
 
                     {{-- Q1 --}}
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingOne">
+                        <h3 class="accordion-header" id="headingOne">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
                                 <i class="fas fa-camera text-brand-red me-3"></i>
                                 <span>{{ __('Peut-on tester les appareils photo et caméras directement au showroom ?') }}</span>
                             </button>
-                        </h2>
+                        </h3>
                         <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
                                 {{ __('Oui, absolument. Notre showroom de Casablanca dispose d’une zone d’essais équipée. Vous pouvez manipuler les boîtiers (Sony, Canon, Nikon, Fuji), monter différentes optiques, vérifier l’ergonomie avec vos propres accessoires et essayer les gimbals DJI avant d\'arrêter votre décision.') }}
@@ -506,12 +507,12 @@
 
                     {{-- Q2 --}}
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingTwo">
+                        <h3 class="accordion-header" id="headingTwo">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
                                 <i class="fas fa-file-invoice text-brand-red me-3"></i>
                                 <span>{{ __('Délivrez-vous des factures officielles avec ICE pour les sociétés ?') }}</span>
                             </button>
-                        </h2>
+                        </h3>
                         <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
                                 {{ __('Tout à fait. Toutes nos commandes peuvent faire l\'objet d’une facture commerciale officielle avec mention de l’ICE, de l’IF, du RC et de la TVA. Indiquez simplement vos coordonnées de facturation ou cochez la case devis société pour recevoir une proforma sous 2h.') }}
@@ -521,12 +522,12 @@
 
                     {{-- Q3 --}}
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingThree">
+                        <h3 class="accordion-header" id="headingThree">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
                                 <i class="fas fa-truck-fast text-brand-red me-3"></i>
                                 <span>{{ __('Quels sont les délais et modalités de livraison partout au Maroc ?') }}</span>
                             </button>
-                        </h2>
+                        </h3>
                         <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
                                 {{ __('Nous assurons une expédition sécurisée en 24h ouvrées sur Casablanca, Rabat, Marrakech, Tanger, Fès, Agadir et sous 48h dans le reste du royaume. Tous les colis sont conditionnés dans des emballages renforcés haute protection avec numéro de suivi en temps réel.') }}
@@ -536,7 +537,7 @@
 
                     {{-- Q4 --}}
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingFour">
+                        <h3 class="accordion-header" id="headingFour">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
                                 <i class="fas fa-shield-halved text-brand-red me-3"></i>
                                 <span>{{ __('Comment fonctionne la garantie constructeur 2 ans et le SAV à Casablanca ?') }}</span>
@@ -551,7 +552,7 @@
 
                     {{-- Q5 --}}
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingFive">
+                        <h3 class="accordion-header" id="headingFive">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
                                 <i class="fas fa-wallet text-brand-red me-3"></i>
                                 <span>{{ __('Quels sont les moyens de paiement acceptés ?') }}</span>

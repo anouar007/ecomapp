@@ -161,7 +161,7 @@
                 @endphp
                 <button type="button" class="mobile-cat-pill {{ request('category') == $cat->slug ? 'active' : '' }}" data-slug="{{ $cat->slug }}" data-name="{{ $cat->name }}">
                     @if($cImg)
-                        <img src="{{ $cImg }}" alt="{{ $cat->name }}" class="mobile-cat-pill-img" loading="lazy" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-flex';">
+                        <img src="{{ $cImg }}" alt="{{ $cat->name }}" width="20" height="20" class="mobile-cat-pill-img" loading="lazy" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-flex';">
                         <i class="{{ $cIcon }}" style="display: none;"></i>
                     @else
                         <i class="{{ $cIcon }}"></i>
@@ -227,13 +227,13 @@
                 {{-- Toolbar (Desktop only) --}}
                 <div class="shop-toolbar mb-4 d-none d-lg-flex align-items-center justify-content-between gap-3">
                     <div class="shop-toolbar-left flex-shrink-0 d-flex align-items-center gap-2.5">
-                        <span class="shop-toolbar-title" id="categoryTitle">
+                        <h2 class="shop-toolbar-title" id="categoryTitle">
                             @if(request('category'))
                                 {{ $categories->where('slug', request('category'))->first()->name ?? __('Produits') }}
                             @else
                                 {{ __('Tout le catalogue') }}
                             @endif
-                        </span>
+                        </h2>
                         <span class="shop-toolbar-count" id="desktopProductTotalBadge">{{ $products->total() }} {{ __('produits') }}</span>
                     </div>
 
@@ -321,7 +321,7 @@
                 <i class="fas fa-sliders-h"></i>
             </span>
             <div>
-                <h5 class="offcanvas-title fw-bold mb-0" id="shopFilterSheetLabel" style="font-size: 0.98rem; letter-spacing: -0.2px;">{{ __('Filtres & Préférences') }}</h5>
+                <div class="offcanvas-title h5 fw-bold mb-0" id="shopFilterSheetLabel" style="font-size: 0.98rem; letter-spacing: -0.2px;">{{ __('Filtres & Préférences') }}</div>
                 <div class="sheet-header-sub text-muted" id="sheetActiveFiltersSub">{{ __('Affinez selon votre équipement et budget') }}</div>
             </div>
         </div>
@@ -420,7 +420,7 @@
                     <button type="button" class="sheet-cat-card sheet-cat-chip {{ request('category') == $cat->slug ? 'active' : '' }}" data-slug="{{ $cat->slug }}" data-name="{{ $cat->name }}">
                         <span class="sheet-cat-card-icon">
                             @if($cImg)
-                                <img src="{{ $cImg }}" alt="{{ $cat->name }}" class="sheet-cat-card-img" loading="lazy" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-flex';">
+                                <img src="{{ $cImg }}" alt="{{ $cat->name }}" width="26" height="26" class="sheet-cat-card-img" loading="lazy" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-flex';">
                                 <i class="{{ $cIcon }}" style="display: none;"></i>
                             @else
                                 <i class="{{ $cIcon }}"></i>
@@ -545,7 +545,7 @@ function updateUIState() {
     function setSlotMedia(el, img, icon, extraClass = '') {
         if (!el) return;
         if (img) {
-            el.innerHTML = `<img src="${img}" alt="" class="cat-slot-media" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';"><i class="fas ${icon} cat-slot-icon ${extraClass}" style="display: none;"></i>`;
+            el.innerHTML = `<img src="${img}" alt="" width="30" height="30" class="cat-slot-media" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';"><i class="fas ${icon} cat-slot-icon ${extraClass}" style="display: none;"></i>`;
         } else {
             el.innerHTML = `<i class="fas ${icon} cat-slot-icon ${extraClass}"></i>`;
         }

@@ -240,7 +240,7 @@
                 $winaLogo = file_exists(public_path('images/camera/logo.png')) ? asset('images/camera/logo.png') : (setting('app_logo') ? asset('storage/' . setting('app_logo')) : null);
             @endphp
             @if($winaLogo)
-                <img src="{{ $winaLogo }}" alt="WINA SHOP" style="height: 48px; max-width: 180px; object-fit: contain; margin-right: 10px;">
+                <img src="{{ $winaLogo }}" alt="WINA SHOP" width="110" height="48" style="height: 48px; max-width: 180px; object-fit: contain; margin-right: 10px;">
             @else
                 <i class="fas fa-camera text-danger me-2"></i>
                 <span style="font-weight: 800; color: #0f172a;">WINA<span style="color: #dc2626;">SHOP</span></span>

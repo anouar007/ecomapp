@@ -6,11 +6,12 @@
 <div id="checkout-progress-bar" class="checkout-progress-bar" style="display: none;"></div>
 <div class="bg-light py-5">
     <div class="container">
+        <h1 class="h3 fw-bold mb-4 font-heading">{{ __('Finaliser votre commande') }}</h1>
         <div class="row">
             <div class="col-lg-7">
                 <div class="card border-0 shadow-sm rounded-4 mb-4">
                     <div class="card-body p-4">
-                        <h4 class="fw-bold mb-4">{{ __('Shipping Information') }}</h4>
+                        <h2 class="h4 fw-bold mb-4">{{ __('Shipping Information') }}</h2>
 
                         @if(isset($errors) && $errors->any())
                             <div class="alert alert-danger border-0 rounded-4 shadow-sm mb-4">
@@ -106,7 +107,7 @@
 
                 <div class="card border-0 shadow-sm rounded-4">
                     <div class="card-body p-4">
-                        <h4 class="fw-bold mb-4">{{ __('Payment') }}</h4>
+                        <h2 class="h4 fw-bold mb-4">{{ __('Payment') }}</h2>
                         <div class="alert alert-info border-0 rounded-3">
                             <i class="fas fa-info-circle me-2"></i> {{ __('For this shop, you can pay with cash on delivery (cash upon receipt of parcel) or bank transfer.') }}
                         </div>
@@ -123,7 +124,7 @@
             <div class="col-lg-5 mt-3">
                 <div class="card border-0 shadow-sm rounded-4">
                     <div class="card-header bg-white p-4 border-bottom-0">
-                        <h5 class="fw-bold m-0">{{ __('Order Summary') }}</h5>
+                        <h2 class="h5 fw-bold m-0">{{ __('Order Summary') }}</h2>
                     </div>
                     <div class="card-body p-4 pt-0">
                         @foreach($cart as $id => $details)
@@ -134,11 +135,11 @@
                                         ? asset(ltrim($details['image'], '/')) 
                                         : (isset($details['image']) ? Storage::url($details['image']) : asset('images/camera/cat_cameras.jpg'));
                                 @endphp
-                                <img src="{{ $chkImg }}" alt="{{ $details['name'] }}" class="rounded-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                <img src="{{ $chkImg }}" alt="{{ $details['name'] }}" width="60" height="60" class="rounded-3" style="width: 60px; height: 60px; object-fit: cover;">
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary tiny-badge">{{ $details['quantity'] }}</span>
                             </div>
                             <div class="flex-grow-1">
-                                <h6 class="fw-bold mb-0 text-truncate" style="max-width: 150px;">{{ $details['name'] }}</h6>
+                                <div class="fw-bold mb-0 text-truncate fs-6" style="max-width: 150px;">{{ $details['name'] }}</div>
                             </div>
                             <div class="fw-bold">{{ currency($details['price'] * $details['quantity']) }}</div>
                         </div>

@@ -10,6 +10,7 @@
      ========================================================================= --}}
 <section class="hero-winashop-section py-3">
     <div class="container">
+        <h1 class="visually-hidden">{{ setting('app_name', 'WINA SHOP') }} — {{ __('Matériel Photo, Vidéo, Caméras & Drones au Maroc') }}</h1>
         <div class="row g-3">
             {{-- Big Hero Banner Slider on Left --}}
             <div class="col-lg-8">
@@ -166,6 +167,8 @@
                                 {{-- Category Image as Card Background --}}
                                 <img src="{{ $cat['image'] ?? $cat['icon'] }}" 
                                      alt="{{ $cat['title'] }}" 
+                                     width="120" 
+                                     height="120" 
                                      class="cat-card-bg-img" 
                                      loading="lazy"
                                      onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
@@ -574,7 +577,7 @@
                             <i class="fas fa-file-invoice"></i>
                         </div>
                         <div class="indh-guarantee-content">
-                            <h4 class="fw-bold text-dark mb-0">{{ __('Mentions Légales 100%') }}</h4>
+                            <span class="d-block fw-bold text-dark mb-0 fs-6">{{ __('Mentions Légales 100%') }}</span>
                             <span class="text-muted small">{{ __('ICE, RC, IF, Patente & TVA 20%') }}</span>
                         </div>
                     </div>
@@ -586,7 +589,7 @@
                             <i class="fas fa-clock"></i>
                         </div>
                         <div class="indh-guarantee-content">
-                            <h4 class="fw-bold text-dark mb-0">{{ __('Édition sous 2 Heures') }}</h4>
+                            <span class="d-block fw-bold text-dark mb-0 fs-6">{{ __('Édition sous 2 Heures') }}</span>
                             <span class="text-muted small">{{ __('Respect des délais de commission') }}</span>
                         </div>
                     </div>
@@ -598,7 +601,7 @@
                             <i class="fas fa-shield-halved"></i>
                         </div>
                         <div class="indh-guarantee-content">
-                            <h4 class="fw-bold text-dark mb-0">{{ __('Matériel 100% Neuf') }}</h4>
+                            <span class="d-block fw-bold text-dark mb-0 fs-6">{{ __('Matériel 100% Neuf') }}</span>
                             <span class="text-muted small">{{ __('Garantie constructeur & SAV Maroc') }}</span>
                         </div>
                     </div>
@@ -610,7 +613,7 @@
                             <i class="fas fa-user-tie"></i>
                         </div>
                         <div class="indh-guarantee-content">
-                            <h4 class="fw-bold text-dark mb-0">{{ __('Conseiller Pro Dédié') }}</h4>
+                            <span class="d-block fw-bold text-dark mb-0 fs-6">{{ __('Conseiller Pro Dédié') }}</span>
                             <span class="text-muted small">{{ __('Aide au calibrage de votre budget') }}</span>
                         </div>
                     </div>
@@ -665,7 +668,7 @@
                         <i class="fas fa-truck-fast"></i>
                     </div>
                     <div>
-                        <h4 class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">Livraison Express 24-48h</h4>
+                        <span class="d-block fw-bold text-dark mb-1" style="font-size: 0.95rem;">Livraison Express 24-48h</span>
                         <p class="text-secondary mb-0" style="font-size: 0.8rem; line-height: 1.45;">
                             Expédition rapide et sécurisée avec emballage renforcé anti-chocs dans tout le Maroc.
                         </p>
@@ -679,7 +682,7 @@
                         <i class="fas fa-shield-halved"></i>
                     </div>
                     <div>
-                        <h4 class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">100% Neuf & Scellé</h4>
+                        <span class="d-block fw-bold text-dark mb-1" style="font-size: 0.95rem;">100% Neuf & Scellé</span>
                         <p class="text-secondary mb-0" style="font-size: 0.8rem; line-height: 1.45;">
                             Matériel d'origine constructeur sous garantie officielle avec SAV réactif à Casablanca.
                         </p>
@@ -693,7 +696,7 @@
                         <i class="fas fa-headset"></i>
                     </div>
                     <div>
-                        <h4 class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">Conseil Technique Pro</h4>
+                        <span class="d-block fw-bold text-dark mb-1" style="font-size: 0.95rem;">Conseil Technique Pro</span>
                         <p class="text-secondary mb-0" style="font-size: 0.8rem; line-height: 1.45;">
                             Une équipe de vidéastes et photographes vous aide à choisir la configuration idéale.
                         </p>
@@ -707,7 +710,7 @@
                         <i class="fas fa-wallet"></i>
                     </div>
                     <div>
-                        <h4 class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">Paiement à la Livraison</h4>
+                        <span class="d-block fw-bold text-dark mb-1" style="font-size: 0.95rem;">Paiement à la Livraison</span>
                         <p class="text-secondary mb-0" style="font-size: 0.8rem; line-height: 1.45;">
                             Payez en toute sérénité à la réception de votre commande ou en ligne par carte bancaire.
                         </p>
@@ -720,9 +723,9 @@
         <div class="bg-white p-3 p-md-5 rounded-4 border shadow-sm">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
                 <div>
-                    <h3 class="fw-bold text-dark mb-1" style="font-size: clamp(1.2rem, 2.8vw, 1.45rem); letter-spacing: -0.3px;">
+                    <h2 class="fw-bold text-dark mb-1" style="font-size: clamp(1.2rem, 2.8vw, 1.45rem); letter-spacing: -0.3px;">
                         La Confiance des Professionnels de l'Image
-                    </h3>
+                    </h2>
                     <p class="text-secondary mb-0" style="font-size: 0.88rem;">
                         Découvrez les retours d'expérience de nos clients photographes, vidéastes et créateurs au Maroc.
                     </p>
@@ -755,7 +758,7 @@
                         <div class="d-flex align-items-center gap-3 mt-3 pt-3 border-top">
                             <div class="client-avatar-initials">YB</div>
                             <div>
-                                <h5 class="fw-bold text-dark mb-0" style="font-size: 0.85rem;">Youssef B.</h5>
+                                <h3 class="fw-bold text-dark mb-0 fs-6">Youssef B.</h3>
                                 <span class="text-muted small" style="font-size: 0.74rem;">Réalisateur & Cadreur • Marrakech</span>
                             </div>
                         </div>
@@ -780,7 +783,7 @@
                         <div class="d-flex align-items-center gap-3 mt-3 pt-3 border-top">
                             <div class="client-avatar-initials" style="background: #c8102e;">SM</div>
                             <div>
-                                <h5 class="fw-bold text-dark mb-0" style="font-size: 0.85rem;">Sara M.</h5>
+                                <h3 class="fw-bold text-dark mb-0 fs-6">Sara M.</h3>
                                 <span class="text-muted small" style="font-size: 0.74rem;">Créatrice de Contenu • Casablanca</span>
                             </div>
                         </div>
@@ -805,7 +808,7 @@
                         <div class="d-flex align-items-center gap-3 mt-3 pt-3 border-top">
                             <div class="client-avatar-initials" style="background: #0284c7;">KT</div>
                             <div>
-                                <h5 class="fw-bold text-dark mb-0" style="font-size: 0.85rem;">Karim T.</h5>
+                                <h3 class="fw-bold text-dark mb-0 fs-6">Karim T.</h3>
                                 <span class="text-muted small" style="font-size: 0.74rem;">Photographe Studio • Rabat</span>
                             </div>
                         </div>
@@ -835,9 +838,9 @@
                         </span>
                         <span class="text-white-50 small">Restez à la pointe de l'audiovisuel</span>
                     </div>
-                    <h3 class="fw-bold text-white mb-2" style="font-size: clamp(1.3rem, 3vw, 1.75rem); letter-spacing: -0.4px;">
+                    <h2 class="fw-bold text-white mb-2" style="font-size: clamp(1.3rem, 3vw, 1.75rem); letter-spacing: -0.4px;">
                         Rejoignez le Cercle Privilège Wina Shop
-                    </h3>
+                    </h2>
                     <p class="text-white-50 mb-0" style="font-size: 0.9rem; max-width: 540px; line-height: 1.55;">
                         Recevez nos alertes arrivages, bancs d'essai exclusifs, tutoriels d'étalonnage et offres privées réservées aux professionnels au Maroc.
                     </p>
@@ -876,19 +879,20 @@
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof Swiper !== 'undefined') {
         // 1. Hero Main Banner Swiper Slider (Left Box)
+        const heroSlideCount = document.querySelectorAll('.hero-main-swiper .swiper-slide').length;
         const heroSwiper = new Swiper('.hero-main-swiper', {
             slidesPerView: 1,
-            loop: true,
+            loop: heroSlideCount > 1,
             speed: 750,
             effect: 'fade',
             fadeEffect: {
                 crossFade: true
             },
-            autoplay: {
+            autoplay: heroSlideCount > 1 ? {
                 delay: 5000,
                 disableOnInteraction: false,
                 pauseOnMouseEnter: true,
-            },
+            } : false,
             grabCursor: true,
             pagination: {
                 el: '.hero-dash-pagination',

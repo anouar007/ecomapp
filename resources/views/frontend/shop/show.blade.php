@@ -213,7 +213,7 @@
                 <div class="col-lg-6 pdp-image-panel">
                     <div class="pdp-main-image-wrap" id="zoomWrap" onmousemove="pdpZoom(event)">
                         <img id="mainImage" src="{{ $product->thumbnail }}"
-                             alt="{{ $product->name }}" class="pdp-main-image">
+                             alt="{{ $product->name }}" width="600" height="600" class="pdp-main-image">
 
                         <div class="pdp-badges">
                             @if(!$product->isInStock())
@@ -246,7 +246,7 @@
                     <div class="pdp-thumbs" id="pdpThumbs">
                         @foreach($galleryImages as $imgUrl)
                         <div class="pdp-thumb {{ $loop->first ? 'active' : '' }}" onclick="pdpChangeImage('{{ $imgUrl }}', this)">
-                            <img src="{{ $imgUrl }}" alt="{{ $product->name }} {{ $loop->iteration }}" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                            <img src="{{ $imgUrl }}" alt="{{ $product->name }} {{ $loop->iteration }}" width="76" height="76" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                         </div>
                         @endforeach
                     </div>
@@ -279,7 +279,7 @@
                                 <span class="pdp-discount-badge">−{{ $product->discount_percentage }}%</span>
                             @endif
 
-                            <div class="pdp-price-main-line d-flex align-items-baseline">
+                            <div class="pdp-price-main-line d-flex align-items-center">
                                 <span class="pdp-price-main">{{ $product->isOnSale() ? $product->formatted_sale_price : $product->formatted_price }}</span>
 
                                 @if($product->isInStock())
@@ -346,11 +346,11 @@
                     </div>
                     @endif
 
-                    {{-- Commander Button (Always visible on product page) --}}
+                    {{-- Acheter maintenant / Buy Now Button (Always visible on product page) --}}
                     @php
                         $cartTotalCount = array_sum(array_column(session('cart', []), 'quantity'));
                         $currentLocale = app()->getLocale();
-                        $commanderLabel = $currentLocale === 'ar' ? 'إتمام الطلب' : ($currentLocale === 'en' ? 'Checkout' : 'Commander');
+                        $commanderLabel = $currentLocale === 'ar' ? 'اشتري الآن' : ($currentLocale === 'en' ? 'Buy now' : 'Acheter maintenant');
                     @endphp
                     <div id="pdpCommanderWrap" class="pdp-commander-wrap mt-2">
                         <button type="button" id="pdpCommanderBtn" class="pdp-commander-btn w-100" onclick="pdpCommanderAction(event)">
@@ -439,10 +439,10 @@
         <div class="row g-4 mt-4">
             <div class="col-lg-8">
                 <div class="pdp-section-card">
-                    <h3 class="pdp-section-title">
+                    <h2 class="pdp-section-title">
                         <i class="fas fa-star me-2 text-accent"></i>
                         {{ __('Customer reviews') }} <span class="pdp-section-count">({{ $reviews->total() }})</span>
-                    </h3>
+                    </h2>
 
                     @forelse($reviews as $review)
                     <div class="pdp-review">
@@ -477,9 +477,9 @@
             {{-- Write Review --}}
             <div class="col-lg-4">
                 <div class="pdp-section-card">
-                    <h3 class="pdp-section-title">
+                    <h2 class="pdp-section-title">
                         <i class="fas fa-pen me-2 text-accent"></i>{{ __('Write a review') }}
-                    </h3>
+                    </h2>
                     <form action="{{ route('reviews.store') }}" method="POST" class="pdp-review-form">
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -536,7 +536,7 @@
         @if($relatedProducts->count() > 0)
         <div class="pdp-related mt-5">
             <div class="pdp-related-header">
-                <h3 class="pdp-related-title">{{ __('Related products') }}</h3>
+                <h2 class="pdp-related-title">{{ __('Related products') }}</h2>
                 <a href="{{ route('shop.index') }}" class="pdp-related-link">
                     {{ __('See all') }} <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left ms-1' : 'fa-arrow-right ms-1' }}"></i>
                 </a>
@@ -648,7 +648,7 @@ function pdpCommanderAction(event) {
     })
     .catch(err => {
         btn.disabled = false;
-        const defaultLabel = isAr ? 'إتمام الطلب' : 'Commander';
+        const defaultLabel = isAr ? 'اشتري الآن' : (document.documentElement.lang === 'en' ? 'Buy now' : 'Acheter maintenant');
         const arrowClass = isAr ? 'fa-arrow-left ms-2' : 'fa-arrow-right ms-2';
         btn.innerHTML = `<i class="fas fa-shopping-bag me-2"></i><span>${defaultLabel}</span><i class="fas ${arrowClass}"></i>`;
 
