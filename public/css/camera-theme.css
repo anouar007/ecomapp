@@ -937,6 +937,13 @@ dt {
     line-height: 1.15;
 }
 
+.search-result-price-main-line {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 8px;
+    line-height: 1;
+}
+
 .search-result-price-old {
     font-family: var(--font-mono);
     font-size: 0.72rem;
@@ -944,17 +951,19 @@ dt {
     text-decoration: line-through;
     display: block;
     line-height: 1.15;
-    margin-top: 1px;
+    margin-top: 3px;
 }
 
 .search-result-stock {
     font-family: var(--font-mono);
-    font-size: 0.65rem;
+    font-size: 0.68rem;
     font-weight: 600;
-    color: #16a34a;
+    color: #02a826;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 4.5px;
+    line-height: 1;
+    margin-bottom: 0px;
 }
 
 .search-result-stock.out {
@@ -964,8 +973,8 @@ dt {
 .search-result-stock::before {
     content: '';
     display: inline-block;
-    width: 5px;
-    height: 5px;
+    width: 5.5px;
+    height: 5.5px;
     border-radius: 50%;
     background: currentColor;
 }
@@ -5430,8 +5439,8 @@ body:has(.offcanvas.show) .whatsapp-float {
     border: none !important;
     color: #02a826 !important;
     font-weight: 700;
-    font-size: 0.68rem;
-    padding: 4px 10px;
+    font-size: 0.71rem;
+    padding: 4.5px 11px;
     border-radius: 20px;
     display: inline-flex;
     align-items: center;
@@ -5440,7 +5449,7 @@ body:has(.offcanvas.show) .whatsapp-float {
 
 .pdp-stock-badge--in i {
     color: #02a826 !important;
-    font-size: 0.61rem !important;
+    font-size: 0.64rem !important;
 }
 
 .pdp-description {
@@ -6872,14 +6881,24 @@ body.pro-mobile-search-open {
     margin-top: 1px;
 }
 
+.pro-result-price-main-line {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 8px;
+    line-height: 1;
+}
+
 .pro-result-stock {
-    font-size: 0.68rem;
+    font-size: 0.71rem;
     font-weight: 600;
-    padding: 2px 7px;
+    padding: 2.2px 7.5px;
     border-radius: 50px;
     background: #ecfdf5;
-    color: #059669;
+    color: #02a826;
     margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
 }
 
 .pro-result-stock.out {
@@ -9552,11 +9571,11 @@ html[dir="rtl"] .insta360-promo-overlay {
     background: rgba(2, 168, 38, 0.08) !important;
     border: none !important;
     color: #02a826 !important;
-    font-size: 0.58rem !important;
+    font-size: 0.61rem !important;
     font-weight: 700 !important;
     letter-spacing: normal !important;
     text-transform: none !important;
-    padding: 2px 6px !important;
+    padding: 2.2px 6.5px !important;
     border-radius: 20px !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -9570,7 +9589,7 @@ html[dir="rtl"] .insta360-promo-overlay {
 .selection-card .featured-stock-pill i,
 .featured-pro-card .featured-stock-pill i {
     color: #02a826 !important;
-    font-size: 0.61rem !important;
+    font-size: 0.64rem !important;
 }
 
 .selection-card .featured-stock-pill--out,
@@ -10894,8 +10913,8 @@ html[dir="rtl"] .whatsapp-float:hover .whatsapp-float-tooltip {
     .selection-card .featured-stock-pill,
     .featured-pro-card .featured-stock-pill,
     .featured-stock-pill {
-        font-size: 0.49rem !important;
-        padding: 1.5px 5px !important;
+        font-size: 0.515rem !important;
+        padding: 1.6px 5.5px !important;
         border-radius: 20px !important;
         margin: 0 !important;
         margin-left: 4px !important;
@@ -10903,7 +10922,7 @@ html[dir="rtl"] .whatsapp-float:hover .whatsapp-float-tooltip {
     }
 
     .featured-stock-pill i {
-        font-size: 0.53rem !important;
+        font-size: 0.56rem !important;
     }
 
     .featured-stock-badge-corner {

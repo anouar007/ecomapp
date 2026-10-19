@@ -493,16 +493,21 @@
         .pdp-stock-badge--in i,
         .featured-stock-pill:not(.featured-stock-pill--out) i {
             color: #02a826 !important;
-            font-size: 0.61rem !important;
+            font-size: 0.64rem !important;
         }
 
         .featured-stock-pill {
-            font-size: 0.58rem !important;
-            padding: 2px 6px !important;
+            font-size: 0.61rem !important;
+            padding: 2.2px 6.5px !important;
             gap: 2.5px !important;
             margin: 0 !important;
             margin-left: 5px !important;
             flex-shrink: 0 !important;
+        }
+
+        .pdp-stock-badge--in {
+            font-size: 0.71rem !important;
+            padding: 4.5px 11px !important;
         }
 
         .pdp-stock-badge--out,
@@ -552,7 +557,7 @@
 
         .search-result-meta {
             display: flex !important;
-            align-items: baseline !important;
+            align-items: flex-start !important;
         }
 
         .search-result-price-wrap,
@@ -560,7 +565,15 @@
             display: inline-flex !important;
             flex-direction: column !important;
             align-items: flex-start !important;
-            line-height: 1.15 !important;
+            line-height: 1 !important;
+        }
+
+        .search-result-price-main-line,
+        .pro-result-price-main-line {
+            display: inline-flex !important;
+            align-items: flex-end !important;
+            gap: 8px !important;
+            line-height: 1 !important;
         }
 
         .search-result-price,
@@ -569,7 +582,8 @@
             font-weight: 800 !important;
             font-size: 0.85rem !important;
             color: #0f172a !important;
-            line-height: 1.15 !important;
+            line-height: 1 !important;
+            margin-bottom: 0px !important;
         }
 
         .search-result-price-old,
@@ -579,8 +593,46 @@
             color: #dc2626 !important;
             text-decoration: line-through !important;
             display: block !important;
-            line-height: 1.15 !important;
-            margin-top: 1px !important;
+            line-height: 1 !important;
+            margin-top: 3px !important;
+        }
+
+        .search-result-stock {
+            font-family: var(--font-mono, monospace) !important;
+            font-size: 0.68rem !important;
+            font-weight: 600 !important;
+            color: #02a826 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 4.5px !important;
+            line-height: 1 !important;
+            margin-bottom: 0px !important;
+        }
+
+        .search-result-stock.out {
+            color: #94a3b8 !important;
+        }
+
+        .search-result-stock::before {
+            content: '' !important;
+            display: inline-block !important;
+            width: 5.5px !important;
+            height: 5.5px !important;
+            border-radius: 50% !important;
+            background: currentColor !important;
+        }
+
+        .pro-result-stock {
+            font-size: 0.71rem !important;
+            font-weight: 600 !important;
+            padding: 2.2px 7.5px !important;
+            border-radius: 50px !important;
+            background: #ecfdf5 !important;
+            color: #02a826 !important;
+            line-height: 1 !important;
+            margin-bottom: 0px !important;
+            display: inline-flex !important;
+            align-items: center !important;
         }
 
         mark.search-highlight,
@@ -725,15 +777,15 @@
             .selection-card .featured-stock-pill,
             .featured-pro-card .featured-stock-pill,
             .featured-stock-pill {
-                font-size: 0.49rem !important;
-                padding: 1.5px 5px !important;
+                font-size: 0.515rem !important;
+                padding: 1.6px 5.5px !important;
                 border-radius: 20px !important;
                 margin: 0 !important;
                 margin-left: 4px !important;
                 flex-shrink: 0 !important;
             }
             .featured-stock-pill i {
-                font-size: 0.53rem !important;
+                font-size: 0.56rem !important;
             }
 
             .featured-stock-badge-corner {
@@ -2292,13 +2344,24 @@
                         </div>
                     `;
                     data.products.forEach((p, idx) => {
-                        const priceHtml = p.is_sale 
-                            ? `<div class="search-result-price-wrap"><span class="search-result-price">${escapeHtml(p.sale_price)}</span><span class="search-result-price-old">${escapeHtml(p.price)}</span></div>`
-                            : `<div class="search-result-price-wrap"><span class="search-result-price">${escapeHtml(p.price)}</span></div>`;
-
+                        const currentPrice = p.is_sale ? p.sale_price : p.price;
                         const stockHtml = p.in_stock 
                             ? `<span class="search-result-stock">{{ __('In stock') }}</span>`
                             : `<span class="search-result-stock out">{{ __('Out of stock') }}</span>`;
+
+                        const oldPriceHtml = p.is_sale 
+                            ? `<span class="search-result-price-old">${escapeHtml(p.price)}</span>`
+                            : '';
+
+                        const priceHtml = `
+                            <div class="search-result-price-wrap">
+                                <div class="search-result-price-main-line">
+                                    <span class="search-result-price">${escapeHtml(currentPrice)}</span>
+                                    ${stockHtml}
+                                </div>
+                                ${oldPriceHtml}
+                            </div>
+                        `;
 
                         html += `
                             <a href="${p.url}" class="search-result-item" data-index="${idx}">
@@ -2308,7 +2371,6 @@
                                     <div class="search-result-name">${highlightText(p.name, query)}</div>
                                     <div class="search-result-meta">
                                         ${priceHtml}
-                                        ${stockHtml}
                                     </div>
                                 </div>
                                 <div class="search-result-arrow">
@@ -2625,13 +2687,24 @@
                         </div>
                     `;
                     data.products.forEach(p => {
-                        const priceHtml = p.is_sale 
-                            ? `<div class="pro-result-price-wrap"><span class="pro-result-price">${escapeHtml(p.sale_price)}</span><span class="pro-result-price-old">${escapeHtml(p.price)}</span></div>`
-                            : `<div class="pro-result-price-wrap"><span class="pro-result-price">${escapeHtml(p.price)}</span></div>`;
-
+                        const currentPrice = p.is_sale ? p.sale_price : p.price;
                         const stockHtml = p.in_stock 
                             ? `<span class="pro-result-stock">{{ __('In stock') }}</span>`
                             : `<span class="pro-result-stock out">{{ __('Out of stock') }}</span>`;
+
+                        const oldPriceHtml = p.is_sale 
+                            ? `<span class="pro-result-price-old">${escapeHtml(p.price)}</span>`
+                            : '';
+
+                        const priceHtml = `
+                            <div class="pro-result-price-wrap">
+                                <div class="pro-result-price-main-line">
+                                    <span class="pro-result-price">${escapeHtml(currentPrice)}</span>
+                                    ${stockHtml}
+                                </div>
+                                ${oldPriceHtml}
+                            </div>
+                        `;
 
                         html += `
                             <a href="${p.url}" class="pro-result-card">
@@ -2641,7 +2714,6 @@
                                     <div class="pro-result-title">${highlightText(p.name, query)}</div>
                                     <div class="pro-result-price-row">
                                         ${priceHtml}
-                                        ${stockHtml}
                                     </div>
                                 </div>
                                 <div class="pro-result-arrow">
