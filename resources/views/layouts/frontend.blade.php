@@ -493,30 +493,47 @@
         .pdp-stock-badge--in i,
         .featured-stock-pill:not(.featured-stock-pill--out) i {
             color: #02a826 !important;
-            font-size: 0.64rem !important;
+            font-size: 0.74rem !important;
         }
 
+        .pcard-price .featured-stock-pill,
+        .selection-card .featured-stock-pill,
+        .featured-pro-card .featured-stock-pill,
         .featured-stock-pill {
-            font-size: 0.61rem !important;
+            font-size: 0.78rem !important;
             padding: 2.2px 6.5px !important;
             gap: 2.5px !important;
             margin: 0 !important;
             margin-left: 5px !important;
             flex-shrink: 0 !important;
-            transform: translateY(3px) !important;
+            transform: translateY(0.8px) !important;
         }
 
-        .pdp-stock-badge--in,
-        .pdp-stock-badge {
+        .pdp-price-group .pdp-stock-badge,
+        .pdp-price-main-line .pdp-stock-badge {
             font-size: 0.71rem !important;
             padding: 4.5px 11px !important;
             transform: translateY(4.5px) !important;
         }
 
-        .pdp-stock-badge--out,
-        .featured-stock-pill--out,
+        .pcard-price .featured-stock-pill--out,
         .selection-card .featured-stock-pill--out,
-        .featured-pro-card .featured-stock-pill--out {
+        .featured-pro-card .featured-stock-pill--out,
+        .featured-stock-pill--out {
+            background: rgba(107, 114, 128, .12) !important;
+            border: 1px solid rgba(107, 114, 128, .22) !important;
+            color: #6b7280 !important;
+            font-size: 0.78rem !important;
+            font-weight: 700 !important;
+            border-radius: 20px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            line-height: 1 !important;
+            transform: translateY(0.8px) !important;
+        }
+
+        .pdp-stock-badge--out,
+        .pdp-price-main-line .pdp-stock-badge--out {
             background: rgba(107, 114, 128, .12) !important;
             border: 1px solid rgba(107, 114, 128, .22) !important;
             color: #6b7280 !important;
@@ -525,10 +542,17 @@
             display: inline-flex !important;
             align-items: center !important;
             line-height: 1 !important;
+            font-size: 0.71rem !important;
+            padding: 4.5px 11px !important;
+            transform: translateY(4.5px) !important;
         }
 
-        .pdp-stock-badge--out i,
         .featured-stock-pill--out i {
+            color: #6b7280 !important;
+            font-size: 0.74rem !important;
+        }
+
+        .pdp-stock-badge--out i {
             color: #6b7280 !important;
             font-size: 0.72rem !important;
         }
@@ -779,17 +803,19 @@
 
             .selection-card .featured-stock-pill,
             .featured-pro-card .featured-stock-pill,
-            .featured-stock-pill {
-                font-size: 0.515rem !important;
+            .featured-stock-pill,
+            .featured-stock-pill--out {
+                font-size: 0.65rem !important;
                 padding: 1.6px 5.5px !important;
                 border-radius: 20px !important;
                 margin: 0 !important;
                 margin-left: 4px !important;
                 flex-shrink: 0 !important;
-                transform: translateY(3px) !important;
+                transform: translateY(0.5px) !important;
             }
-            .featured-stock-pill i {
-                font-size: 0.56rem !important;
+            .featured-stock-pill i,
+            .featured-stock-pill--out i {
+                font-size: 0.65rem !important;
             }
 
             .featured-stock-badge-corner {
@@ -815,6 +841,15 @@
                 max-height: 34px !important;
                 font-size: 0.74rem !important;
                 padding: 0 6px !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .brand-logo-img {
+                height: 57.2px !important;
+                max-height: 58px !important;
+                width: auto !important;
+                object-fit: contain;
             }
         }
     </style>
@@ -1071,7 +1106,7 @@
     <div class="offcanvas offcanvas-start border-0 shadow-lg d-lg-none" tabindex="-1" id="mobileNavDrawer" aria-labelledby="mobileNavDrawerLabel" style="width: 310px;">
         <div class="offcanvas-header border-bottom py-3">
             <a href="{{ url('/') }}" class="navbar-brand m-0">
-                <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" style="height: 58px; width: auto;">
+                <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" style="height: 64px; width: auto;">
             </a>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
