@@ -5445,6 +5445,7 @@ body:has(.offcanvas.show) .whatsapp-float {
     display: inline-flex;
     align-items: center;
     line-height: 1;
+    transform: translateY(4.5px) !important;
 }
 
 .pdp-stock-badge--in i {
@@ -9584,6 +9585,7 @@ html[dir="rtl"] .insta360-promo-overlay {
     margin: 0 !important;
     margin-left: 5px !important;
     flex-shrink: 0 !important;
+    transform: translateY(3px) !important;
 }
 
 .selection-card .featured-stock-pill i,
@@ -10919,6 +10921,7 @@ html[dir="rtl"] .whatsapp-float:hover .whatsapp-float-tooltip {
         margin: 0 !important;
         margin-left: 4px !important;
         flex-shrink: 0 !important;
+        transform: translateY(3px) !important;
     }
 
     .featured-stock-pill i {

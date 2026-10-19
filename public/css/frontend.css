@@ -3059,6 +3059,7 @@ a {
     font-weight: 600;
     padding: 4.5px 11px;
     border-radius: 20px;
+    transform: translateY(4.5px);
 }
 
 .pdp-stock-badge--in {

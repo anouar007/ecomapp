@@ -503,11 +503,14 @@
             margin: 0 !important;
             margin-left: 5px !important;
             flex-shrink: 0 !important;
+            transform: translateY(3px) !important;
         }
 
-        .pdp-stock-badge--in {
+        .pdp-stock-badge--in,
+        .pdp-stock-badge {
             font-size: 0.71rem !important;
             padding: 4.5px 11px !important;
+            transform: translateY(4.5px) !important;
         }
 
         .pdp-stock-badge--out,
@@ -783,6 +786,7 @@
                 margin: 0 !important;
                 margin-left: 4px !important;
                 flex-shrink: 0 !important;
+                transform: translateY(3px) !important;
             }
             .featured-stock-pill i {
                 font-size: 0.56rem !important;
@@ -843,7 +847,7 @@
 
     <!-- Main Header / Navbar (Single Clean Row) -->
     <div class="header-main sticky-top bg-white shadow-sm w-100" style="position: sticky !important; top: 0 !important; z-index: 1040; border-bottom: 1px solid #f1f3f5;">
-        <div class="container py-2 py-lg-3">
+        <div class="container py-0 py-lg-0">
             <div class="d-flex align-items-center justify-content-between gap-3 gap-xl-4">
                 
                 <!-- Left: Logo + Categories Button + Navigation Links on its right -->
