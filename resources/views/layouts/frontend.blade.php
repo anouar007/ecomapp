@@ -606,7 +606,7 @@
             font-weight: 600 !important;
             color: #02a826 !important;
             display: inline-flex !important;
-            align-items: center !important;
+            align-items: baseline !important;
             gap: 4.5px !important;
             line-height: 1 !important;
             margin-bottom: 0px !important;

@@ -960,7 +960,7 @@ dt {
     font-weight: 600;
     color: #02a826;
     display: inline-flex;
-    align-items: center;
+    align-items: baseline;
     gap: 4.5px;
     line-height: 1;
     margin-bottom: 0px;
