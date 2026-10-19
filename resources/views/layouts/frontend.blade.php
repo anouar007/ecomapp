@@ -513,7 +513,7 @@
         .pdp-price-main-line .pdp-stock-badge {
             font-size: 0.71rem !important;
             padding: 4.5px 11px !important;
-            transform: translateY(4.5px) !important;
+            transform: translateY(-0.8px) !important;
         }
 
         .pcard-price .featured-stock-pill--out,
@@ -544,7 +544,7 @@
             line-height: 1 !important;
             font-size: 0.71rem !important;
             padding: 4.5px 11px !important;
-            transform: translateY(4.5px) !important;
+            transform: translateY(-0.8px) !important;
         }
 
         .featured-stock-pill--out i {
@@ -573,7 +573,126 @@
         }
 
         .pdp-cat-label {
-            color: #ababab !important;
+            color: var(--brand-red, #dc2626) !important;
+        }
+
+        .pdp-cat-label:hover {
+            color: #b91c1c !important;
+        }
+
+        .pdp-top-meta {
+            margin-bottom: 8px !important;
+        }
+
+        .pdp-sku-trust-box {
+            display: flex;
+            align-items: center;
+        }
+
+        .pdp-sku-badge {
+            position: relative;
+            background: #f8fafc;
+            border: 1px solid var(--light-border, #e2e8f0);
+            color: #475569;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: all;
+            outline: none;
+            line-height: 1.3;
+        }
+
+        .pdp-sku-badge:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            color: #0f172a;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+        }
+
+        .pdp-sku-badge:active {
+            transform: translateY(0);
+        }
+
+        .pdp-sku-icon {
+            color: var(--brand-red, #dc2626);
+            font-size: 0.85rem;
+            transition: color 0.2s ease;
+        }
+
+        .pdp-sku-badge:hover .pdp-sku-icon {
+            color: var(--brand-red, #dc2626);
+        }
+
+        .pdp-sku-label {
+            color: #64748b;
+            font-weight: 600;
+            font-size: 0.78rem;
+        }
+
+        .pdp-sku-value {
+            color: #0f172a;
+            font-family: var(--font-mono, monospace);
+            font-weight: 700;
+            letter-spacing: 0.4px;
+        }
+
+        .pdp-sku-copy-icon {
+            color: #94a3b8;
+            font-size: 0.78rem;
+            transition: all 0.2s ease;
+        }
+
+        .pdp-sku-badge:hover .pdp-sku-copy-icon {
+            color: var(--brand-red, #dc2626);
+        }
+
+        .pdp-sku-copied-tooltip {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0f172a;
+            color: #ffffff;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .pdp-sku-copied-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 4px;
+            border-style: solid;
+            border-color: #0f172a transparent transparent transparent;
+        }
+
+        .pdp-sku-badge.copied .pdp-sku-copied-tooltip {
+            display: block;
+        }
+
+        .pdp-sku-badge.copied {
+            border-color: #86efac;
+            background: #f0fdf4;
+        }
+
+        .pdp-sku-badge.copied .pdp-sku-copy-icon {
+            color: #16a34a;
         }
 
         .pdp-price-main-line {

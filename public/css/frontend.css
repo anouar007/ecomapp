@@ -2972,7 +2972,7 @@ a {
     font-weight: 700;
     letter-spacing: .1em;
     text-transform: uppercase;
-    color: #ababab;
+    color: var(--brand-red, #dc2626);
     margin-bottom: 10px;
 }
 

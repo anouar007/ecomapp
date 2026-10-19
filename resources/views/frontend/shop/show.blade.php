@@ -243,7 +243,7 @@
                 {{-- INFO PANEL --}}
                 <div class="col-lg-6 pdp-info-panel">
                     @if($product->category_name)
-                    <a href="{{ route('shop.index', ['category' => $product->category_slug ?? optional($product->category)->slug ?? optional($product->productCategory)->slug]) }}" class="pdp-cat-label d-inline-block text-decoration-none">{{ $product->category_name }}</a>
+                        <a href="{{ route('shop.index', ['category' => $product->category_slug ?? optional($product->category)->slug ?? optional($product->productCategory)->slug]) }}" class="pdp-cat-label d-inline-block text-decoration-none mb-2">{{ $product->category_name }}</a>
                     @endif
 
                     <h1 class="pdp-title">{{ $product->name }}</h1>
@@ -373,6 +373,23 @@
                         <div class="pdp-trust-pill"><i class="fas fa-file-invoice"></i> {{ __('ICE Invoicing') }}</div>
                         <div class="pdp-trust-pill"><i class="fas fa-video"></i> {{ __('Showroom Demo Casablanca') }}</div>
                     </div>
+
+                    @if(!empty($product->sku))
+                    <div class="pdp-sku-trust-box mt-3">
+                        <button type="button" 
+                                class="pdp-sku-badge" 
+                                id="pdpSkuCopyBtn" 
+                                onclick="copyPdpSku('{{ e($product->sku) }}')" 
+                                title="{{ __('Cliquer pour copier le code SKU') }}"
+                                aria-label="{{ __('Code SKU : ') }}{{ $product->sku }}">
+                            <i class="fas fa-barcode pdp-sku-icon"></i>
+                            <span class="pdp-sku-label">{{ __('Code SKU') }} :</span>
+                            <span class="pdp-sku-value font-monospace" id="pdpSkuValue">{{ $product->sku }}</span>
+                            <i class="far fa-copy pdp-sku-copy-icon ms-1" id="pdpSkuCopyIcon"></i>
+                            <span class="pdp-sku-copied-tooltip" id="pdpSkuCopiedTooltip">{{ __('Copié !') }}</span>
+                        </button>
+                    </div>
+                    @endif
                 </div>
 
             </div>
@@ -632,6 +649,44 @@ function pdpCommanderAction(event) {
             alert(err.message || 'Impossible d\'ajouter le produit au panier');
         }
     });
+}
+
+function copyPdpSku(sku) {
+    if (!sku) return;
+    const badge = document.getElementById('pdpSkuCopyBtn');
+    const icon = document.getElementById('pdpSkuCopyIcon');
+
+    const onSuccess = () => {
+        if (badge && icon) {
+            badge.classList.add('copied');
+            icon.className = 'fas fa-check pdp-sku-copy-icon text-success ms-1';
+            setTimeout(() => {
+                badge.classList.remove('copied');
+                icon.className = 'far fa-copy pdp-sku-copy-icon ms-1';
+            }, 1800);
+        }
+    };
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(sku).then(onSuccess).catch(() => fallbackCopy(sku, onSuccess));
+    } else {
+        fallbackCopy(sku, onSuccess);
+    }
+}
+
+function fallbackCopy(text, cb) {
+    const temp = document.createElement('textarea');
+    temp.value = text;
+    temp.style.position = 'fixed';
+    temp.style.opacity = '0';
+    document.body.appendChild(temp);
+    temp.focus();
+    temp.select();
+    try {
+        document.execCommand('copy');
+        if (cb) cb();
+    } catch (e) {}
+    document.body.removeChild(temp);
 }
 </script>
 @endpush
