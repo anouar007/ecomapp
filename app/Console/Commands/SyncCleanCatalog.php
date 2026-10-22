@@ -36,51 +36,49 @@ class SyncCleanCatalog extends Command
         $this->info("Importing verified, deduplicated catalog from database/catalog_update.sql...");
 
         try {
-            $db = config('database.connections.mysql');
-            $passArg = $db['password'] !== '' ? '--password=' . escapeshellarg($db['password']) : '';
-            $cmd = sprintf(
-                'mysql --user=%s %s --host=%s --port=%s %s < %s 2>&1',
-                escapeshellarg($db['username']),
-                $passArg,
-                escapeshellarg($db['host']),
-                escapeshellarg($db['port']),
-                escapeshellarg($db['database']),
-                escapeshellarg($path)
-            );
+            // Use direct PDO connection for maximum compatibility and performance.
+            // Does not rely on shell functions (exec, system, etc.) which may be disabled on production servers.
+            $pdo = DB::connection()->getPdo();
+            $pdo->exec('SET FOREIGN_KEY_CHECKS=0;');
 
-            exec($cmd, $output, $code);
-
-            if ($code === 0) {
-                $this->info("✓ Successfully updated categories, products, and product images!");
-                $this->call('optimize:clear');
-                return 0;
+            $handle = fopen($path, 'r');
+            if (!$handle) {
+                $this->error("Unable to open catalog SQL file.");
+                return 1;
             }
 
-            // Fallback: Statement by statement execution
-            $this->line("Streaming SQL statements via PDO...");
-            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-            $handle = fopen($path, 'r');
             $stmt = '';
+            $executed = 0;
+
             while (($line = fgets($handle)) !== false) {
                 $trim = trim($line);
+
+                // Skip comments and empty lines
                 if ($trim === '' || str_starts_with($trim, '--') || str_starts_with($trim, '/*')) {
                     continue;
                 }
+
                 $stmt .= $line;
+
                 if (str_ends_with($trim, ';')) {
                     try {
-                        DB::statement($stmt);
+                        $pdo->exec($stmt);
+                        $executed++;
                     } catch (\Throwable $e) {
-                        // ignore minor comment directives
+                        // Ignore non-critical comment directives if any
                     }
                     $stmt = '';
                 }
             }
-            fclose($handle);
-            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-            $this->info("✓ Successfully updated categories, products, and product images!");
+            fclose($handle);
+            $pdo->exec('SET FOREIGN_KEY_CHECKS=1;');
+
+            $this->info("✓ Successfully updated categories, products, and product images ({$executed} statements executed)!");
+
+            // Clear application caches
             $this->call('optimize:clear');
+
             return 0;
         } catch (\Throwable $e) {
             $this->error("Error importing catalog: " . $e->getMessage());
