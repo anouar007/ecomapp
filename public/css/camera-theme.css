@@ -2039,13 +2039,18 @@ body:has(.offcanvas.show) .whatsapp-float {
     color: #ffffff;
 }
 
-/* Shop Hero & Breadcrumbs with Cinema Color Background (No Images) */
+/* ================================================================
+   SHOP HERO STRIP — Premium Dark Cinema Aesthetics
+   Aligned with Lumina Black & Red Design System (Color Only, No Images)
+   ================================================================ */
 .shop-hero {
     position: relative;
     background: #0b1120 !important;
-    background: linear-gradient(135deg, #0b1120 0%, #0f172a 50%, #111827 100%) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 70px 0 65px !important;
+    background: radial-gradient(circle at 85% 20%, rgba(220, 38, 38, 0.16) 0%, transparent 45%),
+                radial-gradient(circle at 10% 80%, rgba(30, 58, 138, 0.20) 0%, transparent 50%),
+                linear-gradient(135deg, #090d16 0%, #0f172a 50%, #0b1120 100%) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    padding: 46px 0 40px !important;
     overflow: hidden;
 }
 
@@ -2054,11 +2059,16 @@ body:has(.offcanvas.show) .whatsapp-float {
     background: none !important;
 }
 
+.shop-hero::after {
+    display: none !important;
+}
+
 .shop-hero-backdrop {
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse 70% 60% at 85% 30%, rgba(200, 16, 46, 0.08) 0%, transparent 70%),
-                radial-gradient(ellipse 60% 60% at 15% 70%, rgba(30, 58, 138, 0.12) 0%, transparent 70%);
+    background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+    opacity: 0.8;
     pointer-events: none;
     z-index: 1;
 }
@@ -2068,42 +2078,132 @@ body:has(.offcanvas.show) .whatsapp-float {
     z-index: 2;
 }
 
-.shop-hero-title {
-    color: #ffffff !important;
-    font-size: clamp(2rem, 3.5vw, 3rem);
-    font-weight: 800;
+.shop-hero-content {
+    position: relative;
+    max-width: 820px;
 }
 
-.shop-hero-sub {
-    color: rgba(255, 255, 255, 0.8) !important;
-    max-width: 620px;
-}
-
-.shop-breadcrumb a {
-    color: rgba(255, 255, 255, 0.75) !important;
-}
-
-.shop-breadcrumb a:hover {
-    color: #ef4444 !important;
-}
-
-.shop-breadcrumb .shop-bc-sep {
-    color: rgba(255, 255, 255, 0.4) !important;
-}
-
-.shop-breadcrumb .text-brand-black {
-    color: #ffffff !important;
-}
-
+/* Eyebrow Badge */
 .shop-hero .hero-eyebrow {
-    background: rgba(220, 38, 38, 0.16) !important;
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    background: rgba(220, 38, 38, 0.15) !important;
     border: 1px solid rgba(220, 38, 38, 0.35) !important;
     color: #fca5a5 !important;
+    padding: 5px 14px !important;
+    border-radius: 8px !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    box-shadow: 0 2px 10px rgba(220, 38, 38, 0.15);
+    margin-bottom: 12px !important;
 }
 
 .shop-hero .hero-eyebrow-dot {
-    background: var(--brand-red) !important;
-    box-shadow: 0 0 8px rgba(220, 38, 38, 0.8) !important;
+    width: 7px !important;
+    height: 7px !important;
+    background: var(--brand-red, #dc2626) !important;
+    border-radius: 50% !important;
+    display: inline-block;
+    box-shadow: 0 0 10px rgba(220, 38, 38, 0.9) !important;
+    animation: shopPulseDot 2s infinite !important;
+    flex-shrink: 0;
+}
+
+@keyframes shopPulseDot {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px rgba(220, 38, 38, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+    }
+}
+
+/* Shop Hero Title */
+.shop-hero-title {
+    color: #ffffff !important;
+    font-size: clamp(1.85rem, 3.2vw, 2.65rem) !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.025em !important;
+    line-height: 1.2 !important;
+    margin-bottom: 10px !important;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
+}
+
+.shop-hero-title .text-brand-red {
+    color: #ef4444 !important;
+}
+
+/* Shop Hero Subtitle Description */
+.shop-hero-sub {
+    display: block !important;
+    color: rgba(255, 255, 255, 0.78) !important;
+    font-size: 1rem !important;
+    line-height: 1.6 !important;
+    max-width: 680px !important;
+    margin-bottom: 18px !important;
+    font-weight: 400 !important;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Breadcrumb Navigation */
+.shop-breadcrumb {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8125rem !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+    flex-wrap: wrap;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    border-radius: 8px !important;
+    padding: 6px 14px !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    margin: 0 !important;
+}
+
+.shop-breadcrumb a {
+    color: rgba(255, 255, 255, 0.8) !important;
+    text-decoration: none !important;
+    font-weight: 500 !important;
+    transition: color 0.2s ease !important;
+    display: inline-flex;
+    align-items: center;
+}
+
+.shop-breadcrumb a i {
+    color: rgba(255, 255, 255, 0.55);
+    transition: color 0.2s ease;
+}
+
+.shop-breadcrumb a:hover,
+.shop-breadcrumb a:hover i {
+    color: #f87171 !important;
+}
+
+.shop-breadcrumb .shop-bc-sep {
+    color: rgba(255, 255, 255, 0.35) !important;
+    font-size: 0.75rem;
+    opacity: 1 !important;
+    margin: 0 2px !important;
+}
+
+.shop-breadcrumb #heroBcCategory,
+.shop-breadcrumb .hero-bc-category,
+.shop-breadcrumb .text-white,
+.shop-breadcrumb .text-brand-black {
+    color: #ffffff !important;
+    font-weight: 600 !important;
 }
 
 /* ── Universal Product Card (Desktop & Master Baseline) ── */
@@ -4809,14 +4909,21 @@ body:has(.offcanvas.show) .whatsapp-float {
 /* Mobile Hero and Card Tweaks */
 @media (max-width: 991px) {
     .shop-hero {
-        padding: 26px 0 18px !important;
+        padding: 24px 0 20px !important;
+        text-align: left !important;
         min-height: auto;
     }
 
+    .shop-hero-content {
+        margin: 0 !important;
+    }
+
     .shop-hero-title {
-        font-size: 1.55rem !important;
-        margin-bottom: 6px;
-        line-height: 1.25;
+        font-size: clamp(1.35rem, 5.5vw, 1.65rem) !important;
+        margin-bottom: 8px !important;
+        line-height: 1.25 !important;
+        overflow-wrap: break-word;
+        word-break: break-word;
     }
 
     .shop-hero-sub {
@@ -4825,7 +4932,9 @@ body:has(.offcanvas.show) .whatsapp-float {
 
     .shop-breadcrumb {
         margin-top: 8px !important;
-        font-size: 0.78rem;
+        font-size: 0.78rem !important;
+        padding: 5px 10px !important;
+        justify-content: flex-start !important;
     }
 
     .shop-body {
@@ -11924,7 +12033,13 @@ textarea,
 }
 
 /* Reliability & Accessibility: Guarantee content is immediately visible if AOS is delayed or reduced-motion is requested */
-html:not(.aos-init) [data-aos],
+html:not(.aos-init) [data-aos] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    visibility: visible !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
     [data-aos] {
         opacity: 1 !important;

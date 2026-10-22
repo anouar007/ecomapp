@@ -102,7 +102,7 @@
                 <a href="{{ route('shop.index') }}">{{ __('Boutique') }}</a>
                 @if(request('category'))
                     <span class="shop-bc-sep mx-2 opacity-50">/</span>
-                    <span class="text-white fw-bold" id="heroBcCategory">{{ $categories->where('slug', request('category'))->first()->name ?? __('Rayon') }}</span>
+                    <span class="fw-bold hero-bc-category" id="heroBcCategory">{{ $categories->where('slug', request('category'))->first()->name ?? __('Rayon') }}</span>
                 @endif
             </nav>
         </div>
