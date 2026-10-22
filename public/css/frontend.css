@@ -3499,15 +3499,8 @@ a {
 }
 
 .shop-hero::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('https://images.unsplash.com/photo-1562654501-a0ccc0fc3fb1?auto=format&fit=crop&q=80&w=2000') center/cover no-repeat;
-    opacity: 0.12;
-    mix-blend-mode: overlay;
+    display: none !important;
+    background: none !important;
 }
 
 .shop-hero::after {

@@ -2039,21 +2039,27 @@ body:has(.offcanvas.show) .whatsapp-float {
     color: #ffffff;
 }
 
-/* Shop Hero & Breadcrumbs with Cinematic Background */
+/* Shop Hero & Breadcrumbs with Cinema Color Background (No Images) */
 .shop-hero {
     position: relative;
     background: #0b1120 !important;
+    background: linear-gradient(135deg, #0b1120 0%, #0f172a 50%, #111827 100%) !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     padding: 70px 0 65px !important;
     overflow: hidden;
 }
 
+.shop-hero::before {
+    display: none !important;
+    background: none !important;
+}
+
 .shop-hero-backdrop {
     position: absolute;
     inset: 0;
-    background-image: linear-gradient(90deg, rgba(11, 17, 32, 0.94) 0%, rgba(11, 17, 32, 0.80) 45%, rgba(11, 17, 32, 0.40) 100%), url('../images/camera/shop_hero_banner.jpg');
-    background-size: cover;
-    background-position: center right;
+    background: radial-gradient(ellipse 70% 60% at 85% 30%, rgba(200, 16, 46, 0.08) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 60% at 15% 70%, rgba(30, 58, 138, 0.12) 0%, transparent 70%);
+    pointer-events: none;
     z-index: 1;
 }
 
