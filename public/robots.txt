@@ -106,5 +106,5 @@ Disallow: /analytics/
 Disallow: /reports/
 
 Sitemap: https://anouar.top/sitemap.xml
-LLMs-Txt: https://anouar.top/llms.txt
-LLMs-Full-Txt: https://anouar.top/llms-full.txt
+# LLMs-Txt: https://anouar.top/llms.txt
+# LLMs-Full-Txt: https://anouar.top/llms-full.txt

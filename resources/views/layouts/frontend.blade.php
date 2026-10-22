@@ -157,21 +157,53 @@
       }
     }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Cairo:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Optimized Typography System (Consolidated Google Fonts with display=swap) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Cairo:wght@400;500;600&family=Outfit:wght@500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Cairo:wght@400;500;600&family=Outfit:wght@500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Cairo:wght@400;500;600&family=Outfit:wght@500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+    </noscript>
+
+    <!-- Core Layout & Theme CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <link rel="stylesheet" href="{{ asset('css/frontend.min.css') }}?v={{ file_exists(public_path('css/frontend.min.css')) ? filemtime(public_path('css/frontend.min.css')) : time() }}">
+    <link rel="stylesheet" href="{{ asset('css/camera-theme.min.css') }}?v={{ file_exists(public_path('css/camera-theme.min.css')) ? filemtime(public_path('css/camera-theme.min.css')) : time() }}">
+
+    <!-- Non-Critical Deferred Plugins (FontAwesome, Swiper, AOS, SweetAlert, Flags) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" media="print" onload="this.media='all'"/>
     @if(file_exists(public_path('build/manifest.json')))
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @vite(['resources/js/app.js'])
     @endif
-    <link rel="stylesheet" href="{{ asset('css/frontend.css') }}?v={{ file_exists(public_path('css/frontend.css')) ? filemtime(public_path('css/frontend.css')) : time() }}">
-    <link rel="stylesheet" href="{{ asset('css/camera-theme.css') }}?v={{ file_exists(public_path('css/camera-theme.css')) ? filemtime(public_path('css/camera-theme.css')) : time() }}">
     
-    <!-- Global Roboto & Normal Weight Typography System -->
+    <!-- Global Roboto & Normal Weight Typography System with font-display: swap -->
     <style>
+        @font-face {
+            font-family: 'Font Awesome 6 Free';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-regular-400.woff2") format("woff2");
+        }
+        @font-face {
+            font-family: 'Font Awesome 6 Free';
+            font-style: normal;
+            font-weight: 900;
+            font-display: swap;
+            src: url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-solid-900.woff2") format("woff2");
+        }
+        @font-face {
+            font-family: 'Font Awesome 6 Brands';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-brands-400.woff2") format("woff2");
+        }
         /* Prevent automatic zoom on mobile when focusing inputs */
         @media screen and (max-width: 991.98px) {
             .header-search-input,
@@ -1201,7 +1233,7 @@
                                                         <div class="d-flex align-items-center gap-2 text-truncate me-2">
                                                             <span class="cat-slot-box">
                                                                 @if($catImg)
-                                                                    <img src="{{ $catImg }}" alt="{{ $cat->name }}" width="30" height="30" class="cat-slot-media" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                                                    <img src="{{ $catImg }}" alt="{{ $cat->name }}" width="30" height="30" loading="lazy" decoding="async" class="cat-slot-media" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
                                                                     <i class="fas fa-folder cat-slot-icon" style="display: none;"></i>
                                                                 @else
                                                                     <i class="{{ $catIconClass }} cat-slot-icon"></i>
@@ -1362,7 +1394,7 @@
                             <div class="d-flex align-items-center gap-2 text-truncate me-2">
                                 <span class="cat-slot-box">
                                     @if($catImg)
-                                        <img src="{{ $catImg }}" alt="{{ $cat->name }}" width="30" height="30" class="cat-slot-media" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                        <img src="{{ $catImg }}" alt="{{ $cat->name }}" width="30" height="30" loading="lazy" decoding="async" class="cat-slot-media" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
                                         <i class="fas fa-folder cat-slot-icon" style="display: none;"></i>
                                     @else
                                         <i class="{{ $catIconClass }} cat-slot-icon"></i>
@@ -1452,7 +1484,7 @@
                             <a href="{{ route('shop.index', ['category' => $cat->slug]) }}" class="pro-cat-card" aria-label="{{ $cat->name }} ({{ $cat->products_count }} {{ __('refs.') }})">
                                 <span class="pro-cat-card-icon" style="overflow: hidden; display: flex; align-items: center; justify-content: center;">
                                     @if($cat->image)
-                                        <img src="{{ $cat->thumbnail }}" alt="{{ $cat->name }}" width="36" height="36" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                                        <img src="{{ $cat->thumbnail }}" alt="{{ $cat->name }}" width="36" height="36" loading="lazy" decoding="async" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
                                         <i class="fas {{ $icon }}" style="display: none;"></i>
                                     @else
                                         <i class="fas {{ $icon }}"></i>

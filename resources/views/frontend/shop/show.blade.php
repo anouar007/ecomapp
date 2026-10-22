@@ -513,7 +513,7 @@
                 </div>
                 <div class="pdp-description pdp-description--clean entry-content">
                     @if(strip_tags($product->description) !== $product->description)
-                        {!! $product->description !!}
+                        {!! $product->lighthouse_safe_description_html !!}
                     @else
                         @foreach(explode("\n\n", $cleanDescription) as $para)
                             @if(trim($para))

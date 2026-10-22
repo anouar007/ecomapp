@@ -106,5 +106,5 @@ Disallow: /analytics/
 Disallow: /reports/
 
 Sitemap: {{ $sitemapUrl }}
-LLMs-Txt: {{ $llmsUrl ?? url('/llms.txt') }}
-LLMs-Full-Txt: {{ $llmsFullUrl ?? url('/llms-full.txt') }}
+# LLMs-Txt: {{ $llmsUrl ?? url('/llms.txt') }}
+# LLMs-Full-Txt: {{ $llmsFullUrl ?? url('/llms-full.txt') }}

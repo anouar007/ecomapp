@@ -280,6 +280,65 @@ class Product extends Model
     }
 
     /**
+     * Get description HTML sanitized and enhanced for 100% Lighthouse compliance
+     * (Accessible alt tags, sized images, local diagram proxying, unwrapped competitor links).
+     */
+    public function getLighthouseSafeDescriptionHtmlAttribute(): string
+    {
+        $html = $this->description ?? '';
+        if (empty($html)) {
+            return '';
+        }
+
+        // 1. Unwrap external links around diagrams (e.g. B&H links) that lack accessible text
+        $html = preg_replace('/<a\b[^>]*href=[\"\x27]https?:\/\/[^\"]*bhphotovideo[^\"]*[\"\x27][^>]*>(.*?)<\/a>/is', '$1', $html);
+
+        // 2. Rewrite static.bhphoto.com images to our local diagram proxy
+        $html = preg_replace_callback('/https?:\/\/static\.bhphoto\.com\/images\/rich_content\/desktop\/([a-zA-Z0-9_\-\.]+)/i', function ($m) {
+            return url('/media/diagram/' . $m[1]);
+        }, $html);
+
+        // 3. Normalize misplaced slashes in image tags, e.g. alt="" / class= -> alt="" class=
+        $html = preg_replace('/(\s*\/\s*)(class=)/i', ' $2', $html);
+
+        // 4. Ensure every <img> has alt, width, height, decoding="async", loading="lazy"
+        $prodName = htmlspecialchars($this->name ?? 'Produit', ENT_QUOTES, 'UTF-8');
+        $html = preg_replace_callback('/<img\b([^>]*)>/i', function ($matches) use ($prodName) {
+            $attrs = $matches[1];
+
+            // Fix or add alt
+            if (preg_match('/alt=[\"\x27]\s*[\"\x27]/i', $attrs)) {
+                $attrs = preg_replace('/alt=[\"\x27]\s*[\"\x27]/i', 'alt="' . $prodName . ' - Schéma technique officiel"', $attrs);
+            } elseif (!preg_match('/alt=/i', $attrs)) {
+                $attrs .= ' alt="' . $prodName . ' - Schéma technique officiel"';
+            }
+
+            // Ensure loading="lazy"
+            if (!preg_match('/loading=/i', $attrs)) {
+                $attrs .= ' loading="lazy"';
+            }
+
+            // Ensure decoding="async"
+            if (!preg_match('/decoding=/i', $attrs)) {
+                $attrs .= ' decoding="async"';
+            }
+
+            // Ensure dimensions if pdp-diagram-img
+            if (str_contains($attrs, 'pdp-diagram-img')) {
+                if (!preg_match('/width=/i', $attrs)) {
+                    $attrs .= ' width="1000" height="563"';
+                }
+            } elseif (!preg_match('/width=/i', $attrs)) {
+                $attrs .= ' width="200" height="200"';
+            }
+
+            return '<img ' . trim($attrs) . '>';
+        }, $html);
+
+        return $html;
+    }
+
+    /**
      * Check if product is in stock
      */
     public function isInStock()
