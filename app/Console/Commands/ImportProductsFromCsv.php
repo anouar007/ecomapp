@@ -385,6 +385,12 @@ class ImportProductsFromCsv extends Command
         $bar->finish();
         $this->newLine(2);
 
+        // 8b. Automatically enrich descriptions with official technical specs and rich media
+        $this->call('products:enrich-descriptions', [
+            '--json' => $jsonPath,
+            '--xml' => $xmlPath,
+        ]);
+
         // 9. Flush all frontend caches
         $this->info("Flushing application caches...");
         Cache::flush();

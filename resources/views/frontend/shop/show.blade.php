@@ -471,7 +471,7 @@
         @php
             $cleanDescription = $product->clean_description;
         @endphp
-        @if(!empty($cleanDescription))
+        @if(!empty($cleanDescription) || !empty(trim($product->description ?? '')))
         <div class="pdp-description-wrapper mt-4" id="pdp-full-description">
             <div class="pdp-section-card pdp-description-card">
                 <div class="pdp-description-header d-flex align-items-center justify-content-between pb-3 mb-4 border-bottom flex-wrap gap-2">

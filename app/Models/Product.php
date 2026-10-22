@@ -251,6 +251,9 @@ class Product extends Model
         $text = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $text);
         $text = preg_replace('/<style\b[^>]*>(.*?)<\/style>/is', '', $text);
 
+        // Convert block closings to newlines for clean plain-text separation
+        $text = preg_replace('/<\/(?:p|div|h[1-6]|li|tr|section|article)>/i', "\n", $text);
+
         // Strip all HTML tags
         $text = strip_tags($text);
 
