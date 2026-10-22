@@ -416,7 +416,7 @@
                                 </button>
                             </div>
                             <button type="submit" id="addToCartBtn" 
-                                    class="pdp-add-btn {{ $isInCart ? 'is-in-cart' : '' }} flex-grow-1 text-nowrap" 
+                                    class="pdp-add-btn {{ $isInCart ? 'is-in-cart' : '' }} flex-grow-1 text-nowrap shadow-none" 
                                     data-product-id="{{ $product->id }}" 
                                     title="{{ $isInCart ? $inCartLabel : $notInCartLabel }}">
                                 <i class="fas {{ $isInCart ? 'fa-check' : 'fa-cart-plus' }} me-2"></i>
@@ -426,7 +426,7 @@
                     </form>
                     @else
                     <div class="pdp-cart-row d-flex flex-row flex-nowrap align-items-stretch w-100">
-                        <button type="button" id="addToCartBtn" class="pdp-add-btn pdp-add-btn--out w-100 text-nowrap" disabled>
+                        <button type="button" id="addToCartBtn" class="pdp-add-btn pdp-add-btn--out w-100 text-nowrap shadow-none" disabled>
                             <i class="fas fa-ban me-2"></i>
                             <span id="addToCartText">{{ __('Out of stock') }}</span>
                         </button>
@@ -440,7 +440,7 @@
                         $commanderLabel = $currentLocale === 'ar' ? 'اشتري الآن' : ($currentLocale === 'en' ? 'Buy now' : 'Acheter maintenant');
                     @endphp
                     <div id="pdpCommanderWrap" class="pdp-commander-wrap mt-2">
-                        <button type="button" id="pdpCommanderBtn" class="pdp-commander-btn w-100" onclick="pdpCommanderAction(event)">
+                        <button type="button" id="pdpCommanderBtn" class="pdp-commander-btn w-100 shadow-none" onclick="pdpCommanderAction(event)">
                             <i class="fas fa-shopping-bag me-2"></i>
                             <span id="pdpCommanderText">{{ $commanderLabel }}</span>
                             <i class="fas {{ $currentLocale === 'ar' ? 'fa-arrow-left ms-2' : 'fa-arrow-right ms-2' }}"></i>
