@@ -168,15 +168,15 @@
 
     <!-- Core Layout & Theme CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
     <link rel="stylesheet" href="{{ asset('css/frontend.min.css') }}?v={{ file_exists(public_path('css/frontend.min.css')) ? filemtime(public_path('css/frontend.min.css')) : time() }}">
     <link rel="stylesheet" href="{{ asset('css/camera-theme.min.css') }}?v={{ file_exists(public_path('css/camera-theme.min.css')) ? filemtime(public_path('css/camera-theme.min.css')) : time() }}">
 
-    <!-- Non-Critical Deferred Plugins (FontAwesome, Swiper, AOS, SweetAlert, Flags) -->
+    <!-- Non-Critical Deferred Plugins (FontAwesome, AOS, SweetAlert, Flags) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" media="print" onload="this.media='all'">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" media="print" onload="this.media='all'"/>
     @if(file_exists(public_path('build/manifest.json')))
         @vite(['resources/js/app.js'])
     @endif
@@ -1124,8 +1124,9 @@
                 <!-- Left: Logo + Categories Button + Navigation Links on its right -->
                 <div class="d-flex align-items-center gap-2 gap-lg-3 gap-xl-4 flex-nowrap">
                     <!-- Brand Logo (Enlarged) -->
-                    <a class="navbar-brand m-0 p-0 d-flex align-items-center me-1 me-lg-2" href="{{ url('/') }}" style="flex-shrink: 0;" title="{{ setting('app_name', 'WINA SHOP') }}">
+                    <a class="navbar-brand m-0 p-0 d-flex align-items-center me-1 me-lg-2" href="{{ url('/') }}" style="flex-shrink: 0;" title="{{ setting('app_name', 'WINA SHOP') }}" aria-label="{{ setting('app_name', 'WINA SHOP') }} - {{ __('Accueil') }}">
                         <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="96" height="96" class="brand-logo-img" style="height: 96px; max-height: 105px; width: auto; max-width: 280px; object-fit: contain;">
+                        <span class="visually-hidden">{{ setting('app_name', 'WINA SHOP') }}</span>
                     </a>
 
                     @php
@@ -1341,8 +1342,9 @@
     <!-- Mobile Navigation Offcanvas Drawer -->
     <div class="offcanvas offcanvas-start border-0 shadow-lg d-lg-none" tabindex="-1" id="mobileNavDrawer" aria-labelledby="mobileNavDrawerLabel" style="width: 310px;">
         <div class="offcanvas-header border-bottom py-3">
-            <a href="{{ url('/') }}" class="navbar-brand m-0">
+            <a href="{{ url('/') }}" class="navbar-brand m-0" aria-label="{{ setting('app_name', 'WINA SHOP') }} - {{ __('Accueil') }}" title="{{ setting('app_name', 'WINA SHOP') }}">
                 <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="64" height="64" style="height: 64px; width: auto; object-fit: contain;">
+                <span class="visually-hidden">{{ setting('app_name', 'WINA SHOP') }}</span>
             </a>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
@@ -1481,10 +1483,10 @@
                     <div class="pro-cats-grid">
                         @foreach($navCategories as $cat)
                             @php $icon = $catIcons[$cat->slug] ?? 'fa-camera'; @endphp
-                            <a href="{{ route('shop.index', ['category' => $cat->slug]) }}" class="pro-cat-card" aria-label="{{ $cat->name }} ({{ $cat->products_count }} {{ __('refs.') }})">
+                            <a href="{{ route('shop.index', ['category' => $cat->slug]) }}" class="pro-cat-card">
                                 <span class="pro-cat-card-icon" style="overflow: hidden; display: flex; align-items: center; justify-content: center;">
                                     @if($cat->image)
-                                        <img src="{{ $cat->thumbnail }}" alt="{{ $cat->name }}" width="36" height="36" loading="lazy" decoding="async" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                                        <img src="{{ $cat->thumbnail }}" alt="" width="36" height="36" loading="lazy" decoding="async" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
                                         <i class="fas {{ $icon }}" style="display: none;"></i>
                                     @else
                                         <i class="fas {{ $icon }}"></i>
@@ -1746,16 +1748,16 @@
        class="whatsapp-float" 
        target="_blank" 
        rel="noopener noreferrer" 
-       aria-label="Contacter sur WhatsApp" 
-       title="Contacter sur WhatsApp">
+       aria-label="WhatsApp - Service Client Wina Shop" 
+       title="WhatsApp - Service Client Wina Shop">
         <span class="whatsapp-float-pulse"></span>
         <span class="whatsapp-online-dot"></span>
         <svg viewBox="0 0 32 32" class="whatsapp-float-svg" width="30" height="30" fill="currentColor" aria-hidden="true">
             <path d="M16.002 0.007C7.168 0.007 0 7.175 0 16.008c0 2.825 0.738 5.578 2.141 7.999L0.086 31.914l8.13-2.052c2.342 1.282 4.978 1.956 7.786 1.956 8.834 0 16.002-7.168 16.002-16.01S24.836 0.007 16.002 0.007zm0 29.317c-2.484 0-4.912-0.669-7.037-1.936l-0.505-0.3-5.234 1.321 1.398-5.093-0.33-0.526C3.003 20.672 2.302 18.384 2.302 16.008c0-7.555 6.145-13.7 13.7-13.7 7.555 0 13.7 6.145 13.7 13.7 0 7.555-6.145 13.7-13.7 13.7zm7.51-10.252c-0.412-0.206-2.438-1.203-2.816-1.34-0.378-0.137-0.653-0.206-0.927 0.206s-1.065 1.34-1.305 1.615c-0.24 0.275-0.481 0.309-0.893 0.103-0.412-0.206-1.741-0.642-3.316-2.046-1.226-1.093-2.054-2.443-2.294-2.855-0.24-0.412-0.026-0.635 0.18-0.84 0.186-0.185 0.412-0.481 0.618-0.721 0.206-0.24 0.275-0.412 0.412-0.687 0.137-0.275 0.069-0.515-0.034-0.721s-0.927-2.233-1.27-3.057c-0.335-0.803-0.675-0.694-0.927-0.707l-0.79-0.014c-0.275 0-0.721 0.103-1.099 0.515s-1.443 1.409-1.443 3.435 1.477 3.985 1.683 4.26c0.206 0.275 2.907 4.439 7.042 6.225 0.984 0.425 1.753 0.679 2.352 0.869 0.988 0.314 1.888 0.27 2.6 0.164 0.794-0.119 2.438-0.996 2.781-1.958 0.344-0.962 0.344-1.786 0.24-1.958-0.103-0.172-0.378-0.275-0.79-0.481z"/>
         </svg>
-        <span class="whatsapp-float-tooltip">
-            <span>WhatsApp</span>
-            <small>En ligne</small>
+        <span class="whatsapp-float-tooltip" aria-hidden="true" style="display: none;">
+            <span style="color: #ffffff;">WhatsApp</span>
+            <small style="color: #4ade80;">En ligne</small>
         </span>
     </a>
 

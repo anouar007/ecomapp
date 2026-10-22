@@ -8,7 +8,7 @@
 {{-- =========================================================================
      1. HERO SECTION (DJI Osmo 360 + Osmo Pocket 4 + Godox AD800Pro)
      ========================================================================= --}}
-<section class="hero-winashop-section py-3">
+<section class="hero-winashop-section py-3" style="min-height: 532px;">
     <div class="container">
         <h1 class="visually-hidden">{{ setting('app_name', 'WINA SHOP') }} — {{ __('Matériel Photo, Vidéo, Caméras & Drones au Maroc') }}</h1>
         <div class="row g-3">
@@ -18,38 +18,38 @@
                     <div class="swiper hero-main-swiper">
                         <div class="swiper-wrapper">
                             @forelse($heroSlides as $slide)
-                            <div class="swiper-slide hero-slide-item">
+                            <div class="swiper-slide hero-slide-item" style="background-color: #0b0f19;">
                                 <div class="hero-main-bg" style="background-image: url('{{ $slide->image_url }}');"></div>
                                 <div class="hero-main-overlay"></div>
                                 <a href="{{ $slide->link ?: route('shop.index') }}" class="stretched-link" aria-label="{{ $slide->title }}"></a>
                                 
                                 @if($slide->badge)
-                                <div class="hero-glass-badge">
+                                <div class="hero-glass-badge" style="color: #ffffff !important;">
                                     <span class="hero-live-dot"></span>
-                                    <span>{{ $slide->badge }}</span>
+                                    <span style="color: #ffffff !important;">{{ $slide->badge }}</span>
                                 </div>
                                 @endif
 
-                                <div class="hero-slide-content">
-                                    <h2 class="hero-slide-title">{{ $slide->title }}</h2>
+                                <div class="hero-slide-content" style="background-color: rgba(11, 15, 25, 0.15);">
+                                    <h2 class="hero-slide-title" style="color: #ffffff !important; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9);">{{ $slide->title }}</h2>
                                     @if($slide->description)
                                     <p class="hero-slide-desc d-none d-md-block">{{ $slide->description }}</p>
                                     @endif
                                 </div>
                             </div>
                             @empty
-                            <div class="swiper-slide hero-slide-item">
+                            <div class="swiper-slide hero-slide-item" style="background-color: #0b0f19;">
                                 <div class="hero-main-bg" style="background-image: url('{{ asset('images/camera/hero_winashop.jpg') }}');"></div>
                                 <div class="hero-main-overlay"></div>
                                 <a href="{{ route('shop.index', ['q' => 'DJI Osmo 360']) }}" class="stretched-link" aria-label="DJI Osmo 360 All in One"></a>
                                 
-                                <div class="hero-glass-badge">
+                                <div class="hero-glass-badge" style="color: #ffffff !important;">
                                     <span class="hero-live-dot"></span>
-                                    <span>NOUVEAUTÉ EXCLUSIVE • DJI OSMO 360</span>
+                                    <span style="color: #ffffff !important;">NOUVEAUTÉ EXCLUSIVE • DJI OSMO 360</span>
                                 </div>
 
-                                <div class="hero-slide-content">
-                                    <h2 class="hero-slide-title">DJI Osmo 360 All-In-One</h2>
+                                <div class="hero-slide-content" style="background-color: rgba(11, 15, 25, 0.15);">
+                                    <h2 class="hero-slide-title" style="color: #ffffff !important; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9);">DJI Osmo 360 All-In-One</h2>
                                     <p class="hero-slide-desc d-none d-md-block">Capteur 1 pouce, double optique 8K et stabilisation RockSteady 3.0.</p>
                                 </div>
                             </div>
@@ -401,7 +401,7 @@
                 <div class="max-w-xl">
                     <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill mb-2 about-hero-pill">
                         <span class="about-pulse-dot"></span>
-                        <span class="small fw-bold text-uppercase ls-1">
+                        <span class="small fw-bold text-uppercase ls-1" style="color: #991b1b;">
                             {{ __('Programmes État & Subventions') }} · {{ __('Fournisseur Agréé Maroc') }}
                         </span>
                     </div>
@@ -526,7 +526,7 @@
                         <div class="indh-card-top">
                             <div class="d-flex align-items-center justify-content-between mb-3">
                                 <div class="indh-step-badge-num">03</div>
-                                <span class="indh-step-phase-badge phase-danger">
+                                <span class="indh-step-phase-badge phase-danger" style="color: #991b1b; background-color: #fee2e2;">
                                     {{ __('ÉTAPE 3') }}
                                 </span>
                             </div>
@@ -547,7 +547,7 @@
                         <div class="indh-card-bottom">
                             <div class="indh-feature-pill highlight-proforma">
                                 <i class="fas fa-certificate text-danger"></i>
-                                <span>{{ __('Devis Cacheté · ICE & TVA 20%') }}</span>
+                                <span style="color: #991b1b;">{{ __('Devis Cacheté · ICE & TVA 20%') }}</span>
                             </div>
 
                             <div class="indh-step-meta text-muted small">
@@ -747,7 +747,7 @@
                                 <div class="d-inline-flex align-items-center gap-1 text-warning stars-row text-nowrap">
                                     <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
                                 </div>
-                                <span class="badge text-success px-2 py-1" style="background: #dcfce7; border-radius: 999px; font-size: 0.68rem; font-weight: 400;">
+                                <span class="badge px-2 py-1" style="background: #dcfce7; color: #166534; border-radius: 999px; font-size: 0.68rem; font-weight: 600;">
                                     <i class="fas fa-check-circle me-1"></i> Achat Vérifié
                                 </span>
                             </div>
@@ -756,7 +756,7 @@
                             </p>
                         </div>
                         <div class="d-flex align-items-center gap-3 mt-3 pt-3 border-top">
-                            <div class="client-avatar-initials">YB</div>
+                            <div class="client-avatar-initials text-white" style="background: #0f172a; color: #ffffff !important;">YB</div>
                             <div>
                                 <h3 class="fw-bold text-dark mb-0 fs-6">Youssef B.</h3>
                                 <span class="text-muted small" style="font-size: 0.74rem;">Réalisateur & Cadreur • Marrakech</span>
@@ -772,7 +772,7 @@
                                 <div class="d-inline-flex align-items-center gap-1 text-warning stars-row text-nowrap">
                                     <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
                                 </div>
-                                <span class="badge text-success px-2 py-1" style="background: #dcfce7; border-radius: 999px; font-size: 0.68rem; font-weight: 400;">
+                                <span class="badge px-2 py-1" style="background: #dcfce7; color: #166534; border-radius: 999px; font-size: 0.68rem; font-weight: 600;">
                                     <i class="fas fa-check-circle me-1"></i> Achat Vérifié
                                 </span>
                             </div>
@@ -781,7 +781,7 @@
                             </p>
                         </div>
                         <div class="d-flex align-items-center gap-3 mt-3 pt-3 border-top">
-                            <div class="client-avatar-initials" style="background: #c8102e;">SM</div>
+                            <div class="client-avatar-initials text-white" style="background: #991b1b; color: #ffffff !important;">SM</div>
                             <div>
                                 <h3 class="fw-bold text-dark mb-0 fs-6">Sara M.</h3>
                                 <span class="text-muted small" style="font-size: 0.74rem;">Créatrice de Contenu • Casablanca</span>
@@ -797,7 +797,7 @@
                                 <div class="d-inline-flex align-items-center gap-1 text-warning stars-row text-nowrap">
                                     <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
                                 </div>
-                                <span class="badge text-success px-2 py-1" style="background: #dcfce7; border-radius: 999px; font-size: 0.68rem; font-weight: 400;">
+                                <span class="badge px-2 py-1" style="background: #dcfce7; color: #166534; border-radius: 999px; font-size: 0.68rem; font-weight: 600;">
                                     <i class="fas fa-check-circle me-1"></i> Achat Vérifié
                                 </span>
                             </div>
@@ -806,7 +806,7 @@
                             </p>
                         </div>
                         <div class="d-flex align-items-center gap-3 mt-3 pt-3 border-top">
-                            <div class="client-avatar-initials" style="background: #0284c7;">KT</div>
+                            <div class="client-avatar-initials text-white" style="background: #0369a1; color: #ffffff !important;">KT</div>
                             <div>
                                 <h3 class="fw-bold text-dark mb-0 fs-6">Karim T.</h3>
                                 <span class="text-muted small" style="font-size: 0.74rem;">Photographe Studio • Rabat</span>

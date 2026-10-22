@@ -74,6 +74,22 @@ body {
     font-family: var(--font-body) !important;
 }
 
+.text-secondary {
+    color: #475569 !important;
+}
+
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
 h1,
 h2,
 h3,
@@ -8931,6 +8947,19 @@ button.cat-mega-item {
    ========================================================================= */
 .hero-winashop-section {
     position: relative;
+    min-height: 532px;
+}
+
+@media (max-width: 991px) {
+    .hero-winashop-section {
+        min-height: 412px;
+    }
+}
+
+@media (max-width: 575px) {
+    .hero-winashop-section {
+        min-height: 302px;
+    }
 }
 
 .hero-main-card {
@@ -8973,7 +9002,7 @@ button.cat-mega-item {
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.18);
-    color: #ffffff;
+    color: #ffffff !important;
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.6px;
@@ -8983,6 +9012,10 @@ button.cat-mega-item {
     align-items: center;
     gap: 8px;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.hero-glass-badge span {
+    color: #ffffff !important;
 }
 
 html[dir="rtl"] .hero-glass-badge {
@@ -9011,6 +9044,21 @@ html[dir="rtl"] .hero-glass-badge {
     width: 100%;
     height: 100%;
     overflow: hidden;
+    background-color: #0b0f19 !important;
+}
+
+.client-avatar-initials {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #ffffff !important;
+    background: #0f172a;
+    flex-shrink: 0;
 }
 
 .hero-slide-content {
@@ -10696,7 +10744,7 @@ html[dir="rtl"] .banner-light-overlay {
     transition: all 0.25s ease;
     pointer-events: none;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: flex-start;
     line-height: 1.25;
@@ -10719,7 +10767,9 @@ html[dir="rtl"] .banner-light-overlay {
     border-color: transparent transparent transparent #0f172a;
 }
 
-.whatsapp-float:hover .whatsapp-float-tooltip {
+.whatsapp-float:hover .whatsapp-float-tooltip,
+.whatsapp-float:focus-visible .whatsapp-float-tooltip {
+    display: flex !important;
     opacity: 1;
     visibility: visible;
     transform: translateX(0);
@@ -10744,7 +10794,11 @@ html[dir="rtl"] .whatsapp-float-tooltip::after {
     border-color: transparent #0f172a transparent transparent;
 }
 
-html[dir="rtl"] .whatsapp-float:hover .whatsapp-float-tooltip {
+html[dir="rtl"] .whatsapp-float:hover .whatsapp-float-tooltip,
+html[dir="rtl"] .whatsapp-float:focus-visible .whatsapp-float-tooltip {
+    display: flex !important;
+    opacity: 1;
+    visibility: visible;
     transform: translateX(0);
 }
 

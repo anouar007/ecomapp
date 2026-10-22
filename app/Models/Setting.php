@@ -52,7 +52,11 @@ class Setting extends Model
     {
         $all = static::getAllSettings();
         if (array_key_exists($key, $all)) {
-            return $all[$key];
+            $val = $all[$key];
+            if ($default !== null && ($val === null || (is_string($val) && trim($val) === ''))) {
+                return $default;
+            }
+            return $val;
         }
 
         return $default;
