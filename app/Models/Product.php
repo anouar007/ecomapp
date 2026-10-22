@@ -290,12 +290,22 @@ class Product extends Model
             return '';
         }
 
-        // 1. Unwrap external links around diagrams (e.g. B&H links) that lack accessible text
-        $html = preg_replace('/<a\b[^>]*href=[\"\x27]https?:\/\/[^\"]*bhphotovideo[^\"]*[\"\x27][^>]*>(.*?)<\/a>/is', '$1', $html);
+        // 1. Unwrap external links around images to prevent missing link text and competitor redirects
+        $html = preg_replace('/<a\b[^>]*href=[\"\x27](https?:\/\/(?!127\.0\.0\.1|localhost|winashop\.ma)[^\"]*)[\"\x27][^>]*>(\s*<img\b.*?<\/a>)/is', '$2', $html);
+        $html = preg_replace('/<a\b[^>]*href=[\"\x27](https?:\/\/(?!127\.0\.0\.1|localhost|winashop\.ma)[^\"]*)[\"\x27][^>]*>(.*?)<\/a>/is', '$2', $html);
 
-        // 2. Rewrite static.bhphoto.com images to our local diagram proxy
-        $html = preg_replace_callback('/https?:\/\/static\.bhphoto\.com\/images\/rich_content\/desktop\/([a-zA-Z0-9_\-\.]+)/i', function ($m) {
-            return url('/media/diagram/' . $m[1]);
+        // 2. Rewrite all external image URLs (any third-party host) through local /media/proxy to eliminate third-party cookies
+        $html = preg_replace_callback('/<img\b([^>]*?)src=[\"\x27](https?:\/\/[^\s\"\'\>]+)[\"\x27]([^>]*?)>/i', function ($m) {
+            $before = $m[1];
+            $src = $m[2];
+            $after = $m[3];
+
+            $host = strtolower(parse_url($src, PHP_URL_HOST) ?? '');
+            if ($host && !in_array($host, ['127.0.0.1', 'localhost', 'winashop.ma'])) {
+                $localSrc = url('/media/proxy') . '?u=' . urlencode($src);
+                return '<img ' . $before . 'src="' . $localSrc . '"' . $after . '>';
+            }
+            return $m[0];
         }, $html);
 
         // 3. Normalize misplaced slashes in image tags, e.g. alt="" / class= -> alt="" class=

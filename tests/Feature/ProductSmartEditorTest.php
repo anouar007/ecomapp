@@ -94,6 +94,6 @@ class ProductSmartEditorTest extends TestCase
         $frontendResponse->assertStatus(200);
         $frontendResponse->assertSee('entry-content');
         $frontendResponse->assertSee('⭐ Points Forts');
-        $frontendResponse->assertSee('<img src="https://example.com/camera.jpg"', false);
+        $frontendResponse->assertSee('example.com%2Fcamera.jpg', false);
     }
 }

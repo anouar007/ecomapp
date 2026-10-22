@@ -17,6 +17,7 @@ Route::get('/robots.txt', [\App\Http\Controllers\SitemapController::class, 'robo
 Route::get('/llms.txt', [\App\Http\Controllers\SitemapController::class, 'llmsTxt'])->name('llms.txt');
 Route::get('/llms-full.txt', [\App\Http\Controllers\SitemapController::class, 'llmsFullTxt'])->name('llms.full.txt');
 Route::get('/media/diagram/{filename}', [\App\Http\Controllers\DiagramMediaController::class, 'show'])->name('media.diagram');
+Route::get('/media/proxy', [\App\Http\Controllers\DiagramMediaController::class, 'proxy'])->name('media.proxy');
 
 // Home & Newsletter
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
