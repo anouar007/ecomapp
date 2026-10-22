@@ -8,7 +8,7 @@
 {{-- =========================================================================
      1. HERO SECTION (DJI Osmo 360 + Osmo Pocket 4 + Godox AD800Pro)
      ========================================================================= --}}
-<section class="hero-winashop-section py-3" style="min-height: 532px;">
+<section class="hero-winashop-section py-3">
     <div class="container">
         <h1 class="visually-hidden">{{ setting('app_name', 'WINA SHOP') }} — {{ __('Matériel Photo, Vidéo, Caméras & Drones au Maroc') }}</h1>
         <div class="row g-3">
@@ -30,7 +30,7 @@
                                 </div>
                                 @endif
 
-                                <div class="hero-slide-content" style="background-color: rgba(11, 15, 25, 0.15);">
+                                <div class="hero-slide-content">
                                     <h2 class="hero-slide-title" style="color: #ffffff !important; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9);">{{ $slide->title }}</h2>
                                     @if($slide->description)
                                     <p class="hero-slide-desc d-none d-md-block">{{ $slide->description }}</p>
@@ -48,7 +48,7 @@
                                     <span style="color: #ffffff !important;">NOUVEAUTÉ EXCLUSIVE • DJI OSMO 360</span>
                                 </div>
 
-                                <div class="hero-slide-content" style="background-color: rgba(11, 15, 25, 0.15);">
+                                <div class="hero-slide-content">
                                     <h2 class="hero-slide-title" style="color: #ffffff !important; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9);">DJI Osmo 360 All-In-One</h2>
                                     <p class="hero-slide-desc d-none d-md-block">Capteur 1 pouce, double optique 8K et stabilisation RockSteady 3.0.</p>
                                 </div>
