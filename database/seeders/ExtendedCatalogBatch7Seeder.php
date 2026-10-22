@@ -30,7 +30,7 @@ class ExtendedCatalogBatch7Seeder extends Seeder
 
         $categories = Category::all()->keyBy('slug');
         $imagePathMap = [
-            'matte-box' => 'images/camera/matte_box.jpg',
+            'matte-box' => 'images/camera/hero_cinema_rig.jpg',
             'accessoires-insta360' => 'images/camera/insta360_accessory.jpg',
         ];
 

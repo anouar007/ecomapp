@@ -7,6 +7,13 @@ use Tests\TestCase;
 
 class AdminAccountAccessTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'RolePermissionSeeder']);
+        \Illuminate\Support\Facades\Artisan::call('make:admin', ['email' => 'admin@speed.com', 'password' => 'password']);
+    }
+
     /**
      * Test login with the created super admin account and verify redirection to dashboard.
      */

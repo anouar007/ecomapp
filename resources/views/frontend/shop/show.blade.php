@@ -483,12 +483,16 @@
                         <i class="fas fa-check-double text-success me-1"></i>{{ __('Fiche technique officielle') }}
                     </span>
                 </div>
-                <div class="pdp-description pdp-description--clean">
-                    @foreach(explode("\n\n", $cleanDescription) as $para)
-                        @if(trim($para))
-                            <p class="pdp-clean-p">{!! nl2br(e(trim($para))) !!}</p>
-                        @endif
-                    @endforeach
+                <div class="pdp-description pdp-description--clean entry-content">
+                    @if(strip_tags($product->description) !== $product->description)
+                        {!! $product->description !!}
+                    @else
+                        @foreach(explode("\n\n", $cleanDescription) as $para)
+                            @if(trim($para))
+                                <p class="pdp-clean-p">{!! nl2br(e(trim($para))) !!}</p>
+                            @endif
+                        @endforeach
+                    @endif
                 </div>
             </div>
         </div>

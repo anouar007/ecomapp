@@ -4,13 +4,13 @@ namespace Tests\Unit;
 
 use App\Models\Product;
 use App\Models\Category;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class ProductTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     #[Test]
     public function product_can_be_created_with_attributes()
@@ -86,13 +86,18 @@ class ProductTest extends TestCase
     #[Test]
     public function active_scope_filters_inactive_products()
     {
-        Product::factory()->create(['status' => 'active']);
-        Product::factory()->create(['status' => 'active']);
-        Product::factory()->create(['status' => 'inactive']);
+        $initialActiveCount = Product::where('status', 'active')->count();
+
+        $active1 = Product::factory()->create(['status' => 'active']);
+        $active2 = Product::factory()->create(['status' => 'active']);
+        $inactive = Product::factory()->create(['status' => 'inactive']);
 
         $activeProducts = Product::where('status', 'active')->get();
 
-        $this->assertCount(2, $activeProducts);
+        $this->assertCount($initialActiveCount + 2, $activeProducts);
+        $this->assertTrue($activeProducts->contains($active1));
+        $this->assertTrue($activeProducts->contains($active2));
+        $this->assertFalse($activeProducts->contains($inactive));
     }
 
     #[Test]

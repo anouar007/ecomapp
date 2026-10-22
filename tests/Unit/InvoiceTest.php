@@ -6,13 +6,13 @@ use App\Models\Invoice;
 use App\Models\Customer;
 use App\Models\User;
 use App\Models\Payment;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class InvoiceTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     #[Test]
     public function invoice_can_be_created_with_attributes()

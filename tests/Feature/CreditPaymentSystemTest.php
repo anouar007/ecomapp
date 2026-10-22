@@ -7,7 +7,7 @@ use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Attributes\Test;
@@ -15,7 +15,7 @@ use Tests\TestCase;
 
 class CreditPaymentSystemTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     protected $user;
 
@@ -23,11 +23,13 @@ class CreditPaymentSystemTest extends TestCase
     {
         parent::setUp();
         
-        // Create permission directly
-        \Spatie\Permission\Models\Permission::create(['name' => 'manage_products']);
+        // Create permissions directly
+        foreach (['manage_products', 'manage_invoices', 'manage_customers', 'manage_orders'] as $perm) {
+            \Spatie\Permission\Models\Permission::firstOrCreate(['name' => $perm]);
+        }
         
         $this->user = User::factory()->create();
-        $this->user->givePermissionTo('manage_products');
+        $this->user->syncPermissions(['manage_products', 'manage_invoices', 'manage_customers', 'manage_orders']);
         $this->actingAs($this->user);
         
         Storage::fake('public');
@@ -69,6 +71,7 @@ class CreditPaymentSystemTest extends TestCase
             'customer_name' => $customer->name,
             'customer_email' => $customer->email,
             'customer_phone' => $customer->phone,
+            'type' => 'invoice',
             'payment_method' => 'cash',
             'payment_status' => 'unpaid',
             'items' => [

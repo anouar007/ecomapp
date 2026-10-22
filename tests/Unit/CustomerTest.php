@@ -4,13 +4,13 @@ namespace Tests\Unit;
 
 use App\Models\Customer;
 use App\Models\Invoice;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class CustomerTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     #[Test]
     public function customer_can_be_created_with_attributes()
