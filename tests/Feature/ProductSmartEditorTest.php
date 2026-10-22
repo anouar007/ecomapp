@@ -7,10 +7,13 @@ use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class ProductSmartEditorTest extends TestCase
 {
+    use DatabaseTransactions;
+
     protected $admin;
 
     protected function setUp(): void

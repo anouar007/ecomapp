@@ -39,8 +39,9 @@ class SitemapController extends Controller
     {
         $sitemapUrl = url('/sitemap.xml');
         $llmsUrl = url('/llms.txt');
+        $llmsFullUrl = url('/llms-full.txt');
 
-        $content = view('robots', compact('sitemapUrl', 'llmsUrl'))->render();
+        $content = view('robots', compact('sitemapUrl', 'llmsUrl', 'llmsFullUrl'))->render();
 
         return response($content, 200)
             ->header('Content-Type', 'text/plain');
@@ -51,15 +52,40 @@ class SitemapController extends Controller
      */
     public function llmsTxt(): Response
     {
-        $products = Product::where('status', 'active')
-            ->with(['category'])
-            ->orderBy('created_at', 'desc')
-            ->take(100)
+        $categories = Category::where('status', 'active')
+            ->withCount(['products' => function($q) {
+                $q->where('status', 'active');
+            }])
             ->get();
 
-        $categories = Category::where('status', 'active')->get();
+        $featuredProducts = Product::where('status', 'active')
+            ->with(['category'])
+            ->orderByDesc('id')
+            ->take(150)
+            ->get();
 
-        $content = view('llms', compact('products', 'categories'))->render();
+        $totalProducts = Product::where('status', 'active')->count();
+
+        $content = view('llms', compact('featuredProducts', 'categories', 'totalProducts'))->render();
+
+        return response($content, 200)
+            ->header('Content-Type', 'text/plain; charset=utf-8');
+    }
+
+    /**
+     * Generate and return the llms-full.txt file for complete inventory ingestion by AI models.
+     */
+    public function llmsFullTxt(): Response
+    {
+        $categories = Category::where('status', 'active')
+            ->with(['products' => function($q) {
+                $q->where('status', 'active')->orderBy('name');
+            }])
+            ->get();
+
+        $totalProducts = Product::where('status', 'active')->count();
+
+        $content = view('llms-full', compact('categories', 'totalProducts'))->render();
 
         return response($content, 200)
             ->header('Content-Type', 'text/plain; charset=utf-8');

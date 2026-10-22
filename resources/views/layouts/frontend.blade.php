@@ -25,6 +25,10 @@
     <link rel="alternate" hreflang="en-MA" href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}">
     <link rel="alternate" hreflang="x-default" href="{{ url()->current() }}">
 
+    <!-- AI Search & LLM Discovery Endpoints -->
+    <link rel="alternate" type="text/plain" href="{{ url('/llms.txt') }}" title="LLMs Context">
+    <link rel="alternate" type="text/plain" href="{{ url('/llms-full.txt') }}" title="Complete Product Catalog for AI">
+
     <!-- Geographic & Local Search Meta Tags (Morocco) -->
     <meta name="geo.region" content="MA-CAS">
     <meta name="geo.placename" content="Casablanca, Maroc">

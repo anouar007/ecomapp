@@ -12,6 +12,7 @@ Allow: /contact
 Allow: /images/
 Allow: /storage/
 Allow: /llms.txt
+Allow: /llms-full.txt
 Allow: /sitemap.xml
 Disallow: /dashboard
 Disallow: /admin
@@ -23,12 +24,14 @@ Disallow: /profile
 Disallow: /login
 Disallow: /register
 
-# OpenAI & ChatGPT Search
+# OpenAI, ChatGPT Search & ChatGPT User
 User-agent: GPTBot
+User-agent: ChatGPT-User
 User-agent: OAI-SearchBot
 Allow: /
 Allow: /shop
 Allow: /llms.txt
+Allow: /llms-full.txt
 Allow: /sitemap.xml
 Disallow: /dashboard
 Disallow: /admin
@@ -40,6 +43,7 @@ User-agent: PerplexityBot
 Allow: /
 Allow: /shop
 Allow: /llms.txt
+Allow: /llms-full.txt
 Allow: /sitemap.xml
 Disallow: /dashboard
 Disallow: /admin
@@ -52,15 +56,18 @@ User-agent: Applebot-Extended
 Allow: /
 Allow: /shop
 Allow: /llms.txt
+Allow: /llms-full.txt
 Allow: /sitemap.xml
 Disallow: /dashboard
 Disallow: /admin
 
 # Microsoft Bing & Copilot
 User-agent: Bingbot
+User-agent: msnbot
 Allow: /
 Allow: /shop
 Allow: /llms.txt
+Allow: /llms-full.txt
 Allow: /sitemap.xml
 Disallow: /dashboard
 Disallow: /admin
@@ -76,6 +83,7 @@ Allow: /contact
 Allow: /images/
 Allow: /storage/
 Allow: /llms.txt
+Allow: /llms-full.txt
 Disallow: /dashboard
 Disallow: /admin
 Disallow: /cart
@@ -98,4 +106,5 @@ Disallow: /analytics/
 Disallow: /reports/
 
 Sitemap: {{ $sitemapUrl }}
-# LLMs-Txt: {{ $llmsUrl ?? url('/llms.txt') }}
+LLMs-Txt: {{ $llmsUrl ?? url('/llms.txt') }}
+LLMs-Full-Txt: {{ $llmsFullUrl ?? url('/llms-full.txt') }}

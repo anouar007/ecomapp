@@ -26,8 +26,20 @@
     $isOccasion = str_contains($nameLower, 'occasion') || ($product->category && str_contains(strtolower($product->category->name), 'occasion'));
     $itemConditionUrl = $isOccasion ? 'https://schema.org/UsedCondition' : 'https://schema.org/NewCondition';
     
-    $cleanDesc = Str::limit(strip_tags($product->description), 140) ?: ($product->name . ' disponible au Maroc chez WINA SHOP Casablanca.');
+    $firstLineDesc = trim(explode("\n", $product->clean_description)[0] ?? '');
+    $cleanDesc = Str::limit($firstLineDesc, 140) ?: ($product->name . ' disponible au Maroc chez WINA SHOP Casablanca.');
     $cleanDesc .= ' Prix: ' . number_format($product->final_price, 2, '.', ' ') . ' MAD. Garantie officielle, devis proforma INDH, facture ICE, livraison 24h/48h partout au Maroc. شراء مع التوصيل والدفع عند الاستلام.';
+
+    $extractedSpecs = [];
+    if (preg_match_all('/<div class="pdp-spec-label"><i[^>]*><\/i>\s*([^<]+)<\/div>\s*<div class="pdp-spec-value">([^<]+)<\/div>/is', $product->description, $mSpecs)) {
+        foreach ($mSpecs[1] as $idx => $sName) {
+            $extractedSpecs[] = [
+                '@type' => 'PropertyValue',
+                'name' => html_entity_decode(trim($sName), ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+                'value' => html_entity_decode(trim($mSpecs[2][$idx]), ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+            ];
+        }
+    }
     
     $productKeywords = implode(', ', [
         $product->name,
@@ -149,6 +161,9 @@
     @if($product->category)
     "category": {!! json_encode($product->category->name) !!},
     @endif
+    @if(!empty($extractedSpecs))
+    "additionalProperty": {!! json_encode($extractedSpecs) !!},
+    @endif
     "offers": {
       "@type": "Offer",
       "url": "{{ url()->current() }}",
@@ -245,6 +260,19 @@
           "text": {!! json_encode('يمكنك شراء ' . $product->name . ' مباشرة عبر متجر WINA SHOP أو بالتواصل عبر الواتساب على الرقم ' . setting('company_phone', '+212 629-035777') . '. نوفر الدفع نقداً عند الاستلام بعد معاينة المنتج مع التوصيل السريع لكافة المدن المغربية.') !!}
         }
       }
+      @if(!empty($extractedSpecs))
+      @php
+          $specsAnswer = collect($extractedSpecs)->map(fn($s) => $s['name'] . ': ' . $s['value'])->implode(', ');
+      @endphp
+      ,{
+        "@type": "Question",
+        "name": {!! json_encode('Quelles sont les spécifications techniques officielles de ' . $product->name . ' ?') !!},
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": {!! json_encode('Spécifications officielles de ' . $product->name . ' disponibles chez WINA SHOP Maroc : ' . $specsAnswer . '.') !!}
+        }
+      }
+      @endif
     ]
   }
 ]

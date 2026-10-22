@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
 Route::get('/robots.txt', [\App\Http\Controllers\SitemapController::class, 'robots'])->name('robots');
 Route::get('/llms.txt', [\App\Http\Controllers\SitemapController::class, 'llmsTxt'])->name('llms.txt');
+Route::get('/llms-full.txt', [\App\Http\Controllers\SitemapController::class, 'llmsFullTxt'])->name('llms.full.txt');
 
 // Home & Newsletter
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');

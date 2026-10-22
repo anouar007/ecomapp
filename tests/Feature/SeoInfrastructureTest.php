@@ -94,4 +94,42 @@ class SeoInfrastructureTest extends TestCase
         $response->assertSee('MerchantReturnPolicy', false);
         $response->assertSee('pdpFaqAccordion', false);
     }
+
+    public function test_llms_full_txt_renders_complete_catalog_with_specs_for_ai_models(): void
+    {
+        $response = $this->get('/llms-full.txt');
+
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'text/plain; charset=utf-8');
+        $response->assertSee('WINA SHOP — Catalogue Intégral des Produits');
+        $response->assertSee('MAD');
+        $response->assertSee('Spécifications');
+        $response->assertSee('Casablanca, Maroc');
+        $response->assertSee('INDH');
+    }
+
+    public function test_product_page_includes_structured_additional_property_specs(): void
+    {
+        $response = $this->get('/shop/1');
+
+        $response->assertStatus(200);
+        $response->assertSee('additionalProperty', false);
+        $response->assertSee('PropertyValue', false);
+        $response->assertSee('Capteur', false);
+    }
+
+    public function test_all_catalog_products_have_enriched_descriptions(): void
+    {
+        $total = Product::count();
+        $this->assertGreaterThan(1000, $total);
+
+        $empty = Product::whereNull('description')->orWhere('description', '')->count();
+        $this->assertEquals(0, $empty, 'No products should have empty descriptions.');
+
+        $missingLead = Product::where('description', 'not like', '%pdp-enrich-lead%')->count();
+        $this->assertEquals(0, $missingLead, 'All products should have an enriched lead section.');
+
+        $missingGallery = Product::where('description', 'not like', '%pdp-visual-showcase%')->count();
+        $this->assertEquals(0, $missingGallery, 'All products should have an official visual showcase gallery.');
+    }
 }
