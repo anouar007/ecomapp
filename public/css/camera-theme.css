@@ -2140,10 +2140,6 @@ body:has(.offcanvas.show) .whatsapp-float {
     text-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
 }
 
-.shop-hero-title .text-brand-red {
-    color: #ef4444 !important;
-}
-
 /* Shop Hero Subtitle Description */
 .shop-hero-sub {
     display: block !important;
