@@ -1010,11 +1010,11 @@ dt {
 
 mark.search-highlight,
 .search-highlight {
-    background: rgba(22, 163, 74, 0.16) !important;
-    color: #16a34a !important;
+    background: #e11d481a !important;
+    color: #e11d48 !important;
     font-weight: 800 !important;
-    padding: 0 2px;
-    border-radius: 3px;
+    padding: 0 2px !important;
+    border-radius: 3px !important;
 }
 
 .search-dropdown-footer {
@@ -2045,10 +2045,10 @@ body:has(.offcanvas.show) .whatsapp-float {
    ================================================================ */
 .shop-hero {
     position: relative;
-    background: #0b1120 !important;
-    background: radial-gradient(circle at 85% 20%, rgba(220, 38, 38, 0.16) 0%, transparent 45%),
-                radial-gradient(circle at 10% 80%, rgba(30, 58, 138, 0.20) 0%, transparent 50%),
-                linear-gradient(135deg, #090d16 0%, #0f172a 50%, #0b1120 100%) !important;
+    background: #000000 !important;
+    background: radial-gradient(circle at 85% 20%, rgb(0 0 0 / 16%) 0%, transparent 45%),
+        radial-gradient(circle at 10% 80%, rgb(0 0 0 / 20%) 0%, transparent 50%),
+        linear-gradient(135deg, #000000, #000000, #464646) !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
     padding: 46px 0 40px !important;
     overflow: hidden;
@@ -2117,10 +2117,12 @@ body:has(.offcanvas.show) .whatsapp-float {
         transform: scale(0.95);
         box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
     }
+
     70% {
         transform: scale(1);
         box-shadow: 0 0 0 6px rgba(220, 38, 38, 0);
     }
+
     100% {
         transform: scale(0.95);
         box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
@@ -5470,6 +5472,7 @@ body:has(.offcanvas.show) .whatsapp-float {
         gap: 8px !important;
         padding: 10px 14px !important;
     }
+
     .pdp-thumb {
         border-radius: 10px !important;
     }
@@ -5480,6 +5483,7 @@ body:has(.offcanvas.show) .whatsapp-float {
         gap: 6px !important;
         padding: 8px 10px !important;
     }
+
     .pdp-thumb {
         border-radius: 8px !important;
     }
@@ -8581,7 +8585,7 @@ html[dir="rtl"] .floating-checkout-badge {
 
 .cat-label {
     font-size: 0.75rem;
-    font-weight: 700;
+    font-weight: bold !important;
     letter-spacing: 0.3px;
     line-height: 1.25;
     color: #0f172a !important;
@@ -11872,7 +11876,6 @@ dt,
 .badge,
 .product-price,
 .price-display,
-.nav-link-item,
 .brand-title,
 .page-title,
 .hero-title,
@@ -12235,10 +12238,12 @@ html:not(.aos-init) [data-aos] {
     .pdp-specs-grid {
         grid-template-columns: 1fr;
     }
+
     .pdp-showcase-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
     }
+
     .pdp-showcase-img-wrap {
         height: 140px;
     }

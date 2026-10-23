@@ -76,12 +76,6 @@
     <div class="shop-hero-backdrop"></div>
     <div class="container position-relative">
         <div class="shop-hero-content" data-aos="fade-up">
-            <div class="hero-eyebrow mb-2 mb-md-3">
-                <span class="hero-eyebrow-dot"></span>
-                <span id="heroEyebrowLabel">
-                    {{ request('q') ? __('Résultats de recherche') : (request('category') ? __('Rayon spécialisé') : __('Matériel audiovisuel pro')) }}
-                </span>
-            </div>
             <h1 class="shop-hero-title mb-2">
                 @if(request('q'))
                     {{ __('Résultats pour') }} <span class="text-brand-red">&laquo; {{ request('q') }} &raquo;</span>

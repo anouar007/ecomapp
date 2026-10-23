@@ -466,7 +466,7 @@
             font-size: 1.21rem !important;
             font-weight: 700 !important;
             line-height: 1.15 !important;
-            color: #0f172a !important;
+            color: #000000 !important;
             height: 24px !important;
             min-height: 24px !important;
             max-height: 24px !important;
@@ -900,8 +900,8 @@
 
         mark.search-highlight,
         .search-highlight {
-            background: rgba(22, 163, 74, 0.16) !important;
-            color: #16a34a !important;
+            background: #e11d481a !important;
+            color: #e11d48 !important;
             font-weight: 800 !important;
             padding: 0 2px !important;
             border-radius: 3px !important;
@@ -1016,6 +1016,7 @@
                 display: inline-flex !important;
                 align-items: center !important;
                 margin-bottom: 0px !important;
+                color: #000000 !important;
             }
 
             .featured-pro-card .pcard-price-old,
@@ -1301,10 +1302,37 @@
             opacity: 0.8;
         }
 
+        /* Current product price pure black on all product cards and product detail page */
+        .pcard-price-current,
+        .featured-pro-card .pcard-price-current,
+        .selection-card .pcard-price-current,
+        .pdp-price-main,
+        .pdp-price-row .pdp-price-main,
+        .pdp-price-group .pdp-price-main,
+        .pdp-price-main-line .pdp-price-main {
+            color: #000000 !important;
+        }
+
+        /* Navbar navigation links bold */
+        .nav-link-item,
+        nav .nav-link-item,
+        .navbar .nav-link-item,
+        #mobileNavDrawer .nav-link.fw-bold {
+            font-weight: 700 !important;
+        }
+
+        /* Shop page hero background */
+        .shop-hero {
+            background: #000000 !important;
+            background: radial-gradient(circle at 85% 20%, rgb(0 0 0 / 16%) 0%, transparent 45%),
+                radial-gradient(circle at 10% 80%, rgb(0 0 0 / 20%) 0%, transparent 50%),
+                linear-gradient(135deg, #000000, #000000, #464646) !important;
+        }
+
         @media (max-width: 768px) {
             .brand-logo-img {
-                height: 57.2px !important;
-                max-height: 58px !important;
+                height: 63px !important;
+                max-height: 64px !important;
                 width: auto !important;
                 object-fit: contain;
             }

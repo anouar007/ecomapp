@@ -181,7 +181,7 @@
 
                             {{-- Category Name OUTSIDE the Card --}}
                             <div class="cat-caption-outside text-center w-100 mt-2">
-                                <span class="cat-label text-uppercase fw-bold text-center d-block">
+                                <span class="cat-label text-uppercase text-center d-block">
                                     {{ $cat['title'] }}
                                 </span>
                             </div>
