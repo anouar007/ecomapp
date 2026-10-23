@@ -920,7 +920,8 @@ document.addEventListener('DOMContentLoaded', function() {
             spaceBetween: 8,
             watchSlidesProgress: true,
             grabCursor: true,
-            rewind: true,
+            loop: true,
+            loopAddBlankSlides: true,
             speed: 500,
             navigation: {
                 prevEl: '#catSwiperPrev',
