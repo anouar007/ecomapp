@@ -37,11 +37,11 @@
                     {{-- Stock Status Badge aligned with price (100% matches pdp-stock-badge) --}}
                     @if($product->isInStock())
                         <span class="featured-stock-pill featured-stock-badge-corner pdp-stock-badge pdp-stock-badge--in">
-                            <i class="fas fa-check-circle me-1"></i>{{ __('In stock') }}
+                            <i class="fas fa-check-circle" aria-hidden="true"></i><span class="featured-stock-label">{{ __('In stock') }}</span>
                         </span>
                     @else
                         <span class="featured-stock-pill featured-stock-pill--out featured-stock-badge-corner pdp-stock-badge pdp-stock-badge--out">
-                            <i class="fas fa-times-circle me-1"></i>{{ __('Out of stock') }}
+                            <i class="fas fa-times-circle" aria-hidden="true"></i><span class="featured-stock-label">{{ __('Out of stock') }}</span>
                         </span>
                     @endif
                 </div>

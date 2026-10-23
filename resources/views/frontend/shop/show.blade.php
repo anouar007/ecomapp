@@ -370,11 +370,11 @@
 
                                 @if($product->isInStock())
                                     <span class="pdp-stock-badge pdp-stock-badge--in">
-                                        <i class="fas fa-check-circle me-1"></i>{{ __('In stock') }}
+                                        <i class="fas fa-check-circle" aria-hidden="true"></i><span class="pdp-stock-label">{{ __('In stock') }}</span>
                                     </span>
                                 @else
                                     <span class="pdp-stock-badge pdp-stock-badge--out">
-                                        <i class="fas fa-times-circle me-1"></i>{{ __('Out of stock') }}
+                                        <i class="fas fa-times-circle" aria-hidden="true"></i><span class="pdp-stock-label">{{ __('Out of stock') }}</span>
                                     </span>
                                 @endif
                             </div>

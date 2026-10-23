@@ -418,6 +418,7 @@
         .selection-card .featured-pro-title a,
         .featured-pro-title,
         .featured-pro-title a {
+            color: #000000 !important;
             font-size: 0.84rem !important;
             font-weight: 450 !important;
             line-height: 1.35 !important;
@@ -563,9 +564,9 @@
         .selection-card .featured-stock-pill--out,
         .featured-pro-card .featured-stock-pill--out,
         .featured-stock-pill--out {
-            background: rgba(107, 114, 128, .12) !important;
-            border: 1px solid rgba(107, 114, 128, .22) !important;
-            color: #4b5563 !important;
+            background: rgba(220, 38, 38, 0.09) !important;
+            border: none !important;
+            color: #dc2626 !important;
             font-size: 0.78rem !important;
             font-weight: 700 !important;
             border-radius: 20px !important;
@@ -578,9 +579,9 @@
 
         .pdp-stock-badge--out,
         .pdp-price-main-line .pdp-stock-badge--out {
-            background: rgba(107, 114, 128, .12) !important;
-            border: 1px solid rgba(107, 114, 128, .22) !important;
-            color: #4b5563 !important;
+            background: rgba(220, 38, 38, 0.09) !important;
+            border: none !important;
+            color: #dc2626 !important;
             font-weight: 700 !important;
             border-radius: 20px !important;
             display: inline-flex !important;
@@ -593,12 +594,12 @@
         }
 
         .featured-stock-pill--out i {
-            color: #6b7280 !important;
+            color: #dc2626 !important;
             font-size: 0.67rem !important;
         }
 
         .pdp-stock-badge--out i {
-            color: #6b7280 !important;
+            color: #dc2626 !important;
             font-size: 0.72rem !important;
         }
 
@@ -972,6 +973,7 @@
             .selection-card .featured-pro-title a,
             .featured-pro-title,
             .featured-pro-title a {
+                color: #000000 !important;
                 font-size: 0.78rem !important;
                 font-weight: 450 !important;
                 line-height: 1.25 !important;
@@ -1078,6 +1080,225 @@
                 font-size: 0.74rem !important;
                 padding: 0 6px !important;
             }
+        }
+
+        /* ===== Proportional stock badge system: Card badge matches PDP scale and alignment ===== */
+        .featured-pro-card .pcard-price-main-line,
+        .selection-card .pcard-price-main-line {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+            gap: 5px !important;
+            line-height: 1 !important;
+        }
+
+        .featured-pro-card .pcard-price-main-line > .pcard-price-current,
+        .selection-card .pcard-price-main-line > .pcard-price-current {
+            line-height: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            align-self: center !important;
+        }
+
+        /* Card stock badge: delicately sized in exact proportion to card price (matching PDP ratio) */
+        .featured-pro-card .pcard-price-main-line > .featured-stock-pill,
+        .selection-card .pcard-price-main-line > .featured-stock-pill,
+        .pcard-price .featured-stock-pill {
+            position: static !important;
+            inset: auto !important;
+            transform: none !important;
+            align-self: center !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 2.5px !important;
+            height: 16px !important;
+            min-height: 16px !important;
+            max-height: 16px !important;
+            padding: 0 6px !important;
+            font-size: 0.54rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.02em !important;
+            line-height: 1 !important;
+            box-sizing: border-box !important;
+            border: none !important;
+            border-radius: 20px !important;
+            margin: 0 !important;
+            flex-shrink: 0 !important;
+        }
+
+        .featured-pro-card .pcard-price-main-line > .featured-stock-pill:not(.featured-stock-pill--out),
+        .selection-card .pcard-price-main-line > .featured-stock-pill:not(.featured-stock-pill--out) {
+            border: none !important;
+            background: rgba(21, 128, 61, 0.09) !important;
+            color: #15803d !important;
+        }
+
+        .featured-pro-card .pcard-price-main-line > .featured-stock-pill--out,
+        .selection-card .pcard-price-main-line > .featured-stock-pill--out {
+            border: none !important;
+            background: rgba(220, 38, 38, 0.09) !important;
+            color: #dc2626 !important;
+        }
+
+        .featured-pro-card .pcard-price-main-line > .featured-stock-pill i,
+        .selection-card .pcard-price-main-line > .featured-stock-pill i {
+            display: block !important;
+            font-size: 0.50rem !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+        }
+
+        .featured-pro-card .pcard-price-main-line > .featured-stock-pill--out i,
+        .selection-card .pcard-price-main-line > .featured-stock-pill--out i {
+            color: #dc2626 !important;
+        }
+
+        .featured-pro-card .featured-stock-label,
+        .selection-card .featured-stock-label {
+            display: block !important;
+            font-size: 0.54rem !important;
+            line-height: 1 !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.01em !important;
+        }
+
+        /* ===== Product page (PDP): stock badge and price alignment ===== */
+        .pdp-price-row .pdp-price-main-line,
+        .pdp-price-row .pdp-price-main-line.d-flex {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+            gap: 10px !important;
+            line-height: 1 !important;
+        }
+
+        .pdp-price-row .pdp-price-main-line > .pdp-price-main {
+            line-height: 1 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            align-self: center !important;
+        }
+
+        .pdp-price-row .pdp-price-main-line > .pdp-stock-badge {
+            position: static !important;
+            transform: none !important;
+            align-self: center !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 4px !important;
+            height: 22px !important;
+            min-height: 22px !important;
+            max-height: 22px !important;
+            padding: 0 10px !important;
+            font-size: 0.71rem !important;
+            font-weight: 700 !important;
+            line-height: 1 !important;
+            box-sizing: border-box !important;
+            border: none !important;
+            border-radius: 20px !important;
+            margin: 0 !important;
+            flex-shrink: 0 !important;
+        }
+
+        .pdp-price-row .pdp-price-main-line > .pdp-stock-badge--in {
+            border: none !important;
+            background: rgba(21, 128, 61, 0.09) !important;
+            color: #15803d !important;
+        }
+
+        .pdp-price-row .pdp-price-main-line > .pdp-stock-badge--out {
+            border: none !important;
+            background: rgba(220, 38, 38, 0.09) !important;
+            color: #dc2626 !important;
+        }
+
+        .pdp-price-row .pdp-stock-badge > i {
+            display: block !important;
+            font-size: 0.70rem !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+        }
+
+        .pdp-price-row .pdp-stock-badge--out > i {
+            color: #dc2626 !important;
+        }
+
+        .pdp-price-row .pdp-stock-label {
+            display: block !important;
+            font-size: 0.71rem !important;
+            line-height: 1 !important;
+            font-weight: 700 !important;
+        }
+
+        @media (max-width: 575px) {
+            .featured-pro-card .pcard-price-main-line > .featured-stock-pill,
+            .selection-card .pcard-price-main-line > .featured-stock-pill {
+                height: 15px !important;
+                min-height: 15px !important;
+                max-height: 15px !important;
+                padding: 0 5px !important;
+                font-size: 0.50rem !important;
+            }
+
+            .featured-pro-card .featured-stock-label,
+            .selection-card .featured-stock-label {
+                font-size: 0.50rem !important;
+            }
+
+            .featured-pro-card .pcard-price-main-line > .featured-stock-pill i,
+            .selection-card .pcard-price-main-line > .featured-stock-pill i {
+                font-size: 0.46rem !important;
+            }
+        }
+
+        /* ===== Product Name / Title: Black (#000000) on all places ===== */
+        .featured-pro-title,
+        .featured-pro-title a,
+        .featured-pro-card .featured-pro-title,
+        .featured-pro-card .featured-pro-title a,
+        .selection-card .featured-pro-title,
+        .selection-card .featured-pro-title a,
+        .pcard-name,
+        .pcard-name a,
+        .product-v2-name,
+        .product-v2-name a,
+        .popular-pro-title,
+        .popular-pro-title a,
+        .pdp-title,
+        .pdp-info-panel .pdp-title,
+        h1.pdp-title,
+        .pro-result-title,
+        .pro-result-title a,
+        .search-result-name,
+        .search-result-name a,
+        .search-result-title,
+        .search-result-title a,
+        .cart-mobile-title,
+        .cart-mobile-title a,
+        .cart-product-title,
+        .cart-product-title a,
+        .cart-table a.text-dark,
+        .mini-cart-item h6,
+        .mini-cart-item h6 a,
+        #miniCartItems h6,
+        #miniCartItems h6 a,
+        .checkout-product-title,
+        .checkout-product-name,
+        .checkout-item-title {
+            color: #000000 !important;
+        }
+
+        .featured-pro-title a:hover,
+        .pcard-name a:hover,
+        .product-v2-name a:hover,
+        .popular-pro-title a:hover,
+        .pro-result-title a:hover,
+        .cart-mobile-title a:hover,
+        #miniCartItems h6 a:hover {
+            color: #000000 !important;
+            opacity: 0.8;
         }
 
         @media (max-width: 768px) {
