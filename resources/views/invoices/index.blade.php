@@ -14,9 +14,16 @@
             </h1>
             <p class="brand-subtitle">Track billings, manage customer payments, and monitor revenue</p>
         </div>
-        <a href="{{ route('invoices.create') }}" class="btn-brand-primary">
-            <i class="fas fa-plus me-2"></i> Create Invoice
-        </a>
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <a href="{{ route('invoices.create', ['paste' => 1]) }}" 
+               style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 14px; background: #eef2ff; color: #4338ca; border: 1px solid #c7d2fe; text-decoration: none; transition: all 0.2s;"
+               onmouseover="this.style.background='#e0e7ff'" onmouseout="this.style.background='#eef2ff'">
+                <i class="fas fa-paste text-indigo"></i> {{ __('Créer depuis une liste (Texte/Excel)') }}
+            </a>
+            <a href="{{ route('invoices.create') }}" class="btn-brand-primary">
+                <i class="fas fa-plus me-2"></i> {{ __('Create Invoice') }}
+            </a>
+        </div>
     </div>
 
     <!-- Statistics Cards -->

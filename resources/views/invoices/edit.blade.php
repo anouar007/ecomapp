@@ -192,6 +192,12 @@
                 </div>
 
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button type="button" onclick="openPasteListModal()" 
+                            style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px; font-weight: 600; font-size: 13.5px; color: #4338ca; background: #eef2ff; border: 1px solid #c7d2fe; cursor: pointer; transition: all 0.15s;"
+                            onmouseover="this.style.background='#e0e7ff'" onmouseout="this.style.background='#eef2ff'">
+                        <i class="fas fa-paste text-indigo"></i>
+                        {{ __('Coller Liste (Texte/Excel)') }}
+                    </button>
                     <button type="button" onclick="addItem('catalog')" 
                             style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px; font-weight: 600; font-size: 13.5px; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; cursor: pointer;">
                         <i class="fas fa-plus-circle"></i>
@@ -233,7 +239,12 @@
                 </table>
 
                 <div style="margin-top: 16px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
-                    <div style="display: flex; gap: 10px;">
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button type="button" onclick="openPasteListModal()" 
+                                style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 6px; font-weight: 600; font-size: 13px; color: #4338ca; background: #eef2ff; border: 1px solid #c7d2fe; cursor: pointer; transition: all 0.15s;"
+                                onmouseover="this.style.background='#e0e7ff'" onmouseout="this.style.background='#eef2ff'">
+                            <i class="fas fa-paste text-indigo"></i> {{ __('Coller Liste (Texte/Excel)') }}
+                        </button>
                         <button type="button" onclick="addItem('catalog')" 
                                 style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 6px; font-weight: 600; font-size: 13px; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; cursor: pointer;">
                             <i class="fas fa-plus"></i> {{ __('Ajouter Produit') }}
@@ -352,6 +363,128 @@
             </button>
         </div>
     </form>
+</div>
+
+{{-- ═══════════════════════════════════════════════════════════
+     MODAL: IMPORT / PASTE PRODUCT LIST WITH HT PRICES
+═══════════════════════════════════════════════════════════ --}}
+<div id="pasteListModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); z-index: 99999; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: white; border-radius: 20px; width: 100%; max-width: 860px; max-height: 92vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); overflow: hidden;" onclick="event.stopPropagation()">
+        
+        {{-- Modal Header --}}
+        <div style="padding: 20px 26px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #f8fafc;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="width: 42px; height: 42px; border-radius: 12px; background: #eef2ff; color: #4f46e5; display: inline-flex; align-items: center; justify-content: center; font-size: 19px; box-shadow: 0 2px 4px rgba(79, 70, 229, 0.15);">
+                    <i class="fas fa-paste"></i>
+                </span>
+                <div>
+                    <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 0;">{{ __('Coller / Importer une liste de produits avec Prix HT') }}</h3>
+                    <p style="font-size: 13px; color: #64748b; margin: 2px 0 0 0;">{{ __('Générez instantanément votre facture ou devis à partir d\'une liste texte ou d\'un copier-coller Excel') }}</p>
+                </div>
+            </div>
+            <button type="button" onclick="closePasteListModal()" style="background: none; border: none; font-size: 20px; color: #94a3b8; cursor: pointer; padding: 6px; border-radius: 8px; line-height: 1;" onmouseover="this.style.color='#0f172a'" onmouseout="this.style.color='#94a3b8'">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        {{-- Modal Body --}}
+        <div style="padding: 22px 26px; overflow-y: auto; flex: 1;">
+            {{-- Quick Format Helper --}}
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 18px; margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #4338ca; text-transform: uppercase; letter-spacing: 0.5px;">
+                        <i class="fas fa-lightbulb me-1"></i> Formats acceptés automatiquement :
+                    </span>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" onclick="loadPasteExample()" style="background: white; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 600; color: #334155; cursor: pointer;">
+                            <i class="fas fa-magic text-indigo me-1"></i> Charger exemple
+                        </button>
+                        <button type="button" onclick="pasteFromClipboard()" style="background: white; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 600; color: #4f46e5; cursor: pointer;">
+                            <i class="fas fa-clipboard me-1"></i> Coller presse-papier
+                        </button>
+                        <button type="button" onclick="clearPasteText()" style="background: white; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 600; color: #ef4444; cursor: pointer;">
+                            <i class="fas fa-trash me-1"></i> Vider
+                        </button>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; font-size: 12px; color: #64748b;">
+                    <div>• <strong>Excel / Sheets :</strong> Copier-coller direct de colonnes</div>
+                    <div>• <strong>Tiret :</strong> <code>Nom Produit - 6500 DH</code></div>
+                    <div>• <strong>Avec Quantité :</strong> <code>2x Objectif 50mm - 1200</code></div>
+                    <div>• <strong>Deux-points :</strong> <code>Trépied Carbone : 850 MAD</code></div>
+                </div>
+            </div>
+
+            {{-- Textarea --}}
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13.5px; font-weight: 600; color: #334155; margin-bottom: 6px;">
+                    {{ __('Collez votre liste de produits avec leurs prix HT ci-dessous :') }}
+                </label>
+                <textarea id="pastedProductsText" rows="6" oninput="onPasteInputChanged()"
+                          placeholder="Exemple :&#10;Appareil Canon EOS R50	6500.00&#10;Objectif RF 50mm F1.8 STM	1450.00&#10;2x Carte Mémoire SanDisk 128GB - 320 DH&#10;Trépied Pro Carbone : 890 MAD"
+                          style="width: 100%; padding: 12px 14px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 13px; font-family: monospace, ui-monospace, sans-serif; line-height: 1.5; outline: none; background: #ffffff; resize: vertical; box-sizing: border-box;"></textarea>
+            </div>
+
+            {{-- Import Options & Live Detection Summary --}}
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; padding: 12px 16px; background: #f1f5f9; border-radius: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <span id="detectedCountBadge" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: #dbeafe; color: #1e40af; border-radius: 20px; font-size: 12.5px; font-weight: 700;">
+                        <i class="fas fa-boxes-stacked"></i> <span id="detectedCountText">0 article détecté</span>
+                    </span>
+                    <span id="detectedTotalBadge" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: #dcfce7; color: #166534; border-radius: 20px; font-size: 12.5px; font-weight: 700;">
+                        <i class="fas fa-calculator"></i> <span id="detectedTotalText">Total HT : 0.00 {{ setting('currency_symbol', 'MAD') }}</span>
+                    </span>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 16px; font-size: 13px; color: #334155;">
+                    <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; user-select: none;">
+                        <input type="checkbox" id="replaceExistingItems" checked style="accent-color: #4f46e5; width: 16px; height: 16px;">
+                        <span>{{ __('Remplacer les articles actuels') }}</span>
+                    </label>
+                    <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; user-select: none;">
+                        <input type="checkbox" id="matchCatalogOption" checked onchange="onPasteInputChanged()" style="accent-color: #4f46e5; width: 16px; height: 16px;">
+                        <span>{{ __('Lier au catalogue si correspondance') }}</span>
+                    </label>
+                </div>
+            </div>
+
+            {{-- Live Preview Table --}}
+            <div id="pastePreviewContainer" style="border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; max-height: 250px; overflow-y: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+                    <thead>
+                        <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; font-size: 11.5px; color: #64748b; text-transform: uppercase;">
+                            <th style="padding: 8px 12px; width: 40px; text-align: center;">#</th>
+                            <th style="padding: 8px 12px;">{{ __('Article / Désignation') }}</th>
+                            <th style="padding: 8px 12px; width: 110px;">{{ __('SKU / Réf') }}</th>
+                            <th style="padding: 8px 12px; width: 70px; text-align: center;">{{ __('Qté') }}</th>
+                            <th style="padding: 8px 12px; width: 120px; text-align: right;">{{ __('P.U. HT') }}</th>
+                            <th style="padding: 8px 12px; width: 120px; text-align: right;">{{ __('Total HT') }}</th>
+                            <th style="padding: 8px 12px; width: 50px; text-align: center;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="pastePreviewTbody">
+                        <tr>
+                            <td colspan="7" style="padding: 24px; text-align: center; color: #94a3b8; font-style: italic;">
+                                <i class="fas fa-paste me-1"></i> {{ __('Collez du texte ci-dessus pour prévisualiser les articles') }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {{-- Modal Footer --}}
+        <div style="padding: 16px 26px; border-top: 1px solid #e2e8f0; background: #f8fafc; display: flex; justify-content: space-between; align-items: center;">
+            <button type="button" onclick="closePasteListModal()" style="padding: 10px 18px; border-radius: 8px; font-weight: 600; font-size: 13.5px; color: #64748b; background: white; border: 1px solid #cbd5e1; cursor: pointer;">
+                {{ __('Annuler') }}
+            </button>
+            <button type="button" id="btnApplyImport" onclick="applyParsedItems()" disabled
+                    style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; border-radius: 8px; font-weight: 700; font-size: 14px; color: white; background: #4f46e5; border: none; cursor: pointer; opacity: 0.5; transition: all 0.15s; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.25);">
+                <i class="fas fa-check"></i>
+                <span id="btnApplyImportText">{{ __('Importer dans la Facture / Devis') }}</span>
+            </button>
+        </div>
+    </div>
 </div>
 
 @php
@@ -742,6 +875,395 @@
         document.getElementById('customer_if').value = opt.dataset.if || '';
         document.getElementById('customer_patente').value = opt.dataset.patente || '';
         document.getElementById('customer_address').value = opt.dataset.address || '';
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // PASTE / IMPORT PRODUCT LIST WITH HT PRICES
+    // ═══════════════════════════════════════════════════════════
+    let parsedImportItems = [];
+
+    function openPasteListModal() {
+        const modal = document.getElementById('pasteListModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            const txt = document.getElementById('pastedProductsText');
+            if (txt) {
+                setTimeout(() => txt.focus(), 100);
+            }
+        }
+    }
+
+    function closePasteListModal() {
+        const modal = document.getElementById('pasteListModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    // Close modal on Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('pasteListModal');
+            if (modal && modal.style.display === 'flex') {
+                closePasteListModal();
+            }
+        }
+    });
+
+    function clearPasteText() {
+        document.getElementById('pastedProductsText').value = '';
+        onPasteInputChanged();
+    }
+
+    async function pasteFromClipboard() {
+        try {
+            if (navigator.clipboard && navigator.clipboard.readText) {
+                const clipText = await navigator.clipboard.readText();
+                if (clipText) {
+                    const textarea = document.getElementById('pastedProductsText');
+                    textarea.value = clipText;
+                    onPasteInputChanged();
+                }
+            } else {
+                alert("Veuillez utiliser Ctrl+V / Cmd+V pour coller directement dans la zone de texte.");
+            }
+        } catch (err) {
+            alert("Accès presse-papier bloqué par le navigateur. Utilisez Ctrl+V / Cmd+V pour coller.");
+        }
+    }
+
+    function loadPasteExample() {
+        const example = 
+`Canon EOS R50 Appareil Photo\t6500.00
+Objectif Canon RF 50mm F1.8 STM\t1450.00
+2x Carte Mémoire SanDisk 128GB - 320 DH
+Trépied Professionnel Carbone : 890 MAD
+Batterie Rechargeable LP-E17\t2\t450.00`;
+        document.getElementById('pastedProductsText').value = example;
+        onPasteInputChanged();
+    }
+
+    function parsePriceString(str) {
+        if (!str) return null;
+        let s = String(str).trim();
+        s = s.replace(/(?:MAD|DHS?|EUR|€|\$|HT|TTC|DH)/gi, '').trim();
+        s = s.replace(/\s+/g, '');
+        if (!s) return null;
+
+        // European format: 1.500,50 -> 1500.50
+        if (/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) {
+            s = s.replace(/\./g, '').replace(',', '.');
+        }
+        // US format: 1,500.50 -> 1500.50
+        else if (/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) {
+            s = s.replace(/,/g, '');
+        }
+        // Comma decimal: 1500,50 -> 1500.50
+        else if (s.includes(',') && !s.includes('.')) {
+            s = s.replace(',', '.');
+        }
+
+        if (/^-?\d+(\.\d+)?$/.test(s)) {
+            const val = parseFloat(s);
+            return isNaN(val) ? null : val;
+        }
+        return null;
+    }
+
+    function parsePastedLine(line, catalog) {
+        line = line.trim();
+        if (!line) return null;
+
+        line = line.replace(/^[\s*\-•\d+[\.\)]\s*]+/, '').trim();
+        if (!line) return null;
+
+        let qty = 1;
+        let name = '';
+        let sku = '';
+        let price = null;
+        let productId = null;
+
+        // 1. Leading quantity: "2x ...", "3 * ..."
+        const leadingQtyMatch = line.match(/^(\d+)\s*(?:x|\*)\s+(.*)$/i);
+        if (leadingQtyMatch) {
+            qty = parseInt(leadingQtyMatch[1], 10) || 1;
+            line = leadingQtyMatch[2].trim();
+        }
+
+        // 2. Trailing quantity: "... (x2)", "... x 2", "... * 3"
+        const trailingQtyMatch = line.match(/(.*?)\s+(?:\(x|\(\*|x|\*)\s*(\d+)\)?$/i);
+        if (trailingQtyMatch) {
+            qty = parseInt(trailingQtyMatch[2], 10) || qty;
+            line = trailingQtyMatch[1].trim();
+        }
+
+        // 3. Tab-separated (Excel / Google Sheets)
+        if (line.includes('\t')) {
+            const parts = line.split('\t').map(p => p.trim()).filter(p => p.length > 0);
+            if (parts.length >= 2) {
+                const numCandidates = parts.map((p, idx) => ({ idx, val: parsePriceString(p) }));
+                const validNums = numCandidates.filter(c => c.val !== null);
+
+                if (validNums.length === 1) {
+                    price = validNums[0].val;
+                    name = parts.filter((_, idx) => idx !== validNums[0].idx).join(' ');
+                } else if (validNums.length >= 2) {
+                    const cand1 = validNums[0];
+                    const cand2 = validNums[1];
+                    if (Number.isInteger(cand1.val) && cand1.val <= 100 && cand1.val !== cand2.val) {
+                        qty = cand1.val;
+                        price = cand2.val;
+                    } else if (Number.isInteger(cand2.val) && cand2.val <= 100 && cand1.val !== cand2.val) {
+                        price = cand1.val;
+                        qty = cand2.val;
+                    } else {
+                        price = validNums[validNums.length - 1].val;
+                        if (parts.length >= 3) {
+                            const possibleQty = validNums[validNums.length - 2].val;
+                            if (Number.isInteger(possibleQty) && possibleQty > 0) qty = possibleQty;
+                        }
+                    }
+                    name = parts.filter((_, idx) => idx !== cand1.idx && idx !== cand2.idx).join(' ');
+                    if (!name && parts.length >= 2) name = parts[0];
+                } else {
+                    name = parts[0];
+                }
+            }
+        }
+        // 4. Semicolon or pipe separated
+        else if (line.includes(';') || line.includes('|')) {
+            const sep = line.includes(';') ? ';' : '|';
+            const parts = line.split(sep).map(p => p.trim()).filter(p => p.length > 0);
+            if (parts.length >= 2) {
+                price = parsePriceString(parts[parts.length - 1]);
+                if (parts.length >= 3) {
+                    const possibleQty = parsePriceString(parts[parts.length - 2]);
+                    if (possibleQty !== null && Number.isInteger(possibleQty) && possibleQty < 1000) {
+                        qty = possibleQty;
+                        name = parts.slice(0, parts.length - 2).join(' - ');
+                    } else {
+                        name = parts.slice(0, parts.length - 1).join(' - ');
+                    }
+                } else {
+                    name = parts[0];
+                }
+            }
+        }
+        // 5. Dash " - " or Colon ":"
+        else if (line.includes(' - ') || line.includes(':')) {
+            const sep = line.includes(' - ') ? ' - ' : ':';
+            const lastIdx = line.lastIndexOf(sep);
+            const left = line.substring(0, lastIdx).trim();
+            const right = line.substring(lastIdx + sep.length).trim();
+            const rightPrice = parsePriceString(right);
+
+            if (rightPrice !== null) {
+                price = rightPrice;
+                name = left;
+            } else {
+                const leftPrice = parsePriceString(left);
+                if (leftPrice !== null) {
+                    price = leftPrice;
+                    name = right;
+                } else {
+                    name = line;
+                }
+            }
+        }
+
+        // 6. Free-form text ending with price
+        if (price === null) {
+            const match = line.match(/^(.*?)(?:\s+[-:;]?\s+|\s+)(\d[\d\s\.,]*\d|\d+)\s*(?:MAD|DHS?|EUR|€|\$|HT)?\s*$/i);
+            if (match) {
+                const candidatePrice = parsePriceString(match[2]);
+                if (candidatePrice !== null && match[1].trim().length > 0) {
+                    name = match[1].trim();
+                    price = candidatePrice;
+                }
+            }
+        }
+
+        if (!name) name = line;
+        name = name.replace(/^[-:;,.\s]+|[-:;,.\s]+$/g, '').trim();
+
+        // 7. Catalog matching
+        if (catalog && Array.isArray(catalog) && catalog.length > 0) {
+            const lowerName = name.toLowerCase();
+            let matched = catalog.find(p => p.name.toLowerCase() === lowerName || (p.sku && p.sku.toLowerCase() === lowerName));
+            if (!matched) {
+                matched = catalog.find(p => {
+                    const cName = p.name.toLowerCase();
+                    return (cName.length >= 4 && lowerName.includes(cName)) || (lowerName.length >= 4 && cName.includes(lowerName));
+                });
+            }
+            if (matched) {
+                productId = matched.id;
+                sku = matched.sku || '';
+                if (price === null || price === 0) {
+                    price = matched.price;
+                }
+            }
+        }
+
+        return {
+            product_id: productId,
+            product_name: name || 'Article',
+            product_sku: sku || '',
+            quantity: Math.max(1, qty),
+            unit_price: price !== null ? price : 0,
+            raw_line: line,
+            is_matched: !!productId
+        };
+    }
+
+    function onPasteInputChanged() {
+        const raw = document.getElementById('pastedProductsText').value;
+        const matchCatalog = document.getElementById('matchCatalogOption').checked;
+        const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+
+        parsedImportItems = [];
+        lines.forEach(line => {
+            const parsed = parsePastedLine(line, matchCatalog ? catalogProducts : []);
+            if (parsed) {
+                parsedImportItems.push(parsed);
+            }
+        });
+
+        renderPastePreview();
+    }
+
+    function renderPastePreview() {
+        const tbody = document.getElementById('pastePreviewTbody');
+        const countBadge = document.getElementById('detectedCountText');
+        const totalBadge = document.getElementById('detectedTotalText');
+        const btn = document.getElementById('btnApplyImport');
+        const btnText = document.getElementById('btnApplyImportText');
+
+        if (parsedImportItems.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="padding: 24px; text-align: center; color: #94a3b8; font-style: italic;">
+                        <i class="fas fa-paste me-1"></i> Collez du texte ci-dessus pour prévisualiser les articles
+                    </td>
+                </tr>
+            `;
+            countBadge.innerText = '0 article détecté';
+            totalBadge.innerText = `Total HT : 0.00 ${currencySymbol}`;
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            btn.style.cursor = 'not-allowed';
+            btnText.innerText = "Importer dans la Facture / Devis";
+            return;
+        }
+
+        let grandTotal = 0;
+        let html = '';
+
+        parsedImportItems.forEach((item, i) => {
+            const itemTotal = (item.quantity || 1) * (item.unit_price || 0);
+            grandTotal += itemTotal;
+
+            const badgeHtml = item.is_matched 
+                ? `<span style="display: inline-flex; align-items: center; gap: 4px; padding: 1px 6px; border-radius: 4px; font-size: 10.5px; font-weight: 600; background: #eff6ff; color: #2563eb; margin-left: 6px;"><i class="fas fa-check" style="font-size: 9px;"></i> Catalogue</span>`
+                : `<span style="display: inline-flex; align-items: center; gap: 4px; padding: 1px 6px; border-radius: 4px; font-size: 10.5px; font-weight: 600; background: #f1f5f9; color: #64748b; margin-left: 6px;">Libre</span>`;
+
+            html += `
+                <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
+                    <td style="padding: 8px 12px; text-align: center; color: #94a3b8; font-size: 12px;">${i + 1}</td>
+                    <td style="padding: 8px 12px;">
+                        <div style="font-weight: 600; color: #0f172a; display: flex; align-items: center;">
+                            <span>${escapeHtml(item.product_name)}</span>
+                            ${badgeHtml}
+                        </div>
+                    </td>
+                    <td style="padding: 8px 12px; color: #64748b; font-family: monospace; font-size: 12px;">
+                        ${escapeHtml(item.product_sku || '-')}
+                    </td>
+                    <td style="padding: 8px 12px; text-align: center; font-weight: 600; color: #334155;">
+                        ${item.quantity}
+                    </td>
+                    <td style="padding: 8px 12px; text-align: right; font-weight: 600; color: #334155;">
+                        ${formatCurrency(item.unit_price)}
+                    </td>
+                    <td style="padding: 8px 12px; text-align: right; font-weight: 700; color: #2563eb;">
+                        ${formatCurrency(itemTotal)}
+                    </td>
+                    <td style="padding: 8px 12px; text-align: center;">
+                        <button type="button" onclick="removeParsedItem(${i})" title="Supprimer cet article"
+                                style="background: none; border: none; color: #94a3b8; cursor: pointer; padding: 4px;"
+                                onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#94a3b8'">
+                            <i class="fas fa-trash-alt" style="font-size: 13px;"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+        countBadge.innerText = `${parsedImportItems.length} article${parsedImportItems.length > 1 ? 's' : ''} détecté${parsedImportItems.length > 1 ? 's' : ''}`;
+        totalBadge.innerText = `Total HT : ${formatCurrency(grandTotal)}`;
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+        btnText.innerText = `✨ Importer ces ${parsedImportItems.length} article${parsedImportItems.length > 1 ? 's' : ''} (${formatCurrency(grandTotal)})`;
+    }
+
+    function removeParsedItem(index) {
+        if (index >= 0 && index < parsedImportItems.length) {
+            parsedImportItems.splice(index, 1);
+            renderPastePreview();
+        }
+    }
+
+    function applyParsedItems() {
+        if (!parsedImportItems || parsedImportItems.length === 0) return;
+
+        const replaceExisting = document.getElementById('replaceExistingItems').checked;
+        const tbody = document.getElementById('itemsTableBody');
+
+        if (replaceExisting) {
+            tbody.innerHTML = '';
+            itemIndex = 0;
+        }
+
+        parsedImportItems.forEach(item => {
+            addItem(item.product_id ? 'catalog' : 'manual', item);
+        });
+
+        closePasteListModal();
+        calculateAllTotals();
+        showToastNotification(`${parsedImportItems.length} articles importés avec succès !`);
+    }
+
+    function showToastNotification(msg) {
+        let toast = document.getElementById('invoiceToast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'invoiceToast';
+            toast.style.position = 'fixed';
+            toast.style.bottom = '24px';
+            toast.style.right = '24px';
+            toast.style.background = '#0f172a';
+            toast.style.color = '#ffffff';
+            toast.style.padding = '12px 20px';
+            toast.style.borderRadius = '10px';
+            toast.style.boxShadow = '0 10px 25px rgba(0,0,0,0.25)';
+            toast.style.fontSize = '14px';
+            toast.style.fontWeight = '600';
+            toast.style.zIndex = '999999';
+            toast.style.display = 'flex';
+            toast.style.alignItems = 'center';
+            toast.style.gap = '8px';
+            toast.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            document.body.appendChild(toast);
+        }
+        toast.innerHTML = `<i class="fas fa-check-circle" style="color: #22c55e;"></i> ${msg}`;
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0)';
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(10px)';
+        }, 3500);
     }
 
     function escapeHtml(text) {
