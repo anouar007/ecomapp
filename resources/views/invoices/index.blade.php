@@ -203,6 +203,9 @@
                                 <a href="{{ route('invoices.show', $invoice) }}" class="btn-action-icon" title="Détails de la facture">
                                     <i class="fas fa-external-link-alt"></i>
                                 </a>
+                                <a href="{{ route('invoices.edit', $invoice) }}" class="btn-action-icon text-dark" title="{{ $invoice->isQuote() ? __('Modifier le devis') : __('Modifier la facture') }}">
+                                    <i class="fas fa-edit"></i>
+                                </a>
 
                                 <!-- PDF Dropdown -->
                                 <div class="dropdown d-inline-block">
@@ -339,6 +342,31 @@
                                         </li>
                                     </ul>
                                 </div>
+
+                                <!-- Duplicate Invoice / Devis -->
+                                <form method="POST" 
+                                      action="{{ route('invoices.duplicate', $invoice) }}" 
+                                      style="display: inline;"
+                                      onsubmit="return confirm('{{ __('Voulez-vous dupliquer ce document (:num) ?', ['num' => $invoice->display_number ?? $invoice->invoice_number]) }}')">
+                                    @csrf
+                                    <button type="submit" class="btn-action-icon text-secondary" title="{{ $invoice->isQuote() ? __('Dupliquer le devis') : __('Dupliquer la facture') }}">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </form>
+
+                                <!-- Delete Invoice / Devis -->
+                                <form method="POST" 
+                                      action="{{ route('invoices.destroy', $invoice) }}" 
+                                      style="display: inline;"
+                                      data-confirm-delete="true"
+                                      data-item-type="{{ $invoice->isQuote() ? 'devis' : 'facture' }}"
+                                      data-item-name="{{ $invoice->isQuote() ? 'Devis #' : 'Facture #' }}{{ $invoice->display_number ?? $invoice->invoice_number }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn-action-icon danger" title="{{ $invoice->isQuote() ? __('Supprimer le devis') : __('Supprimer la facture') }}">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -358,6 +386,7 @@
                 </tbody>
             </table>
         </div>
+
         @if($invoices->hasPages())
         <div class="px-4 py-3 border-top">
             {{ $invoices->links() }}
@@ -381,8 +410,24 @@
                         </button>
                     </div>
                     <div class="d-flex align-items-center gap-2">
+                        <a href="#" id="previewEditLink" class="btn btn-sm btn-outline-light" title="Modifier ce document">
+                            <i class="fas fa-edit me-1"></i> Modifier
+                        </a>
                         <button type="button" class="btn btn-sm btn-light" onclick="printFromPreview()"><i class="fas fa-print me-1"></i> Imprimer</button>
                         <a href="#" id="previewDownloadLink" class="btn btn-sm btn-danger"><i class="fas fa-download me-1"></i> PDF</a>
+                        <form id="previewDuplicateForm" method="POST" action="" style="display: inline;" onsubmit="return confirm('Voulez-vous dupliquer ce document ?')">
+                            @csrf
+                            <button type="submit" class="btn btn-sm btn-outline-light" title="Dupliquer ce document">
+                                <i class="fas fa-copy me-1"></i> Dupliquer
+                            </button>
+                        </form>
+                        <form id="previewDeleteForm" method="POST" action="" style="display: inline;" data-confirm-delete="true" data-item-type="facture" data-item-name="">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-outline-danger text-white border-danger" title="Supprimer ce document">
+                                <i class="fas fa-trash-alt me-1"></i> Supprimer
+                            </button>
+                        </form>
                         <button type="button" class="btn-close btn-close-white ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                 </div>
@@ -395,14 +440,34 @@
 
     <script>
         let currentPreviewId = null;
+        let currentPreviewNumber = '';
         let currentPreviewType = 'facture';
         let currentPreviewStamp = true;
 
         function openInvoicePreview(id, number, type, withStamp) {
             currentPreviewId = id;
+            currentPreviewNumber = number;
             currentPreviewType = type || 'facture';
             currentPreviewStamp = withStamp !== false;
             document.getElementById('previewModalTitle').innerText = (currentPreviewType === 'devis' ? 'Devis #' : 'Facture #') + number;
+            
+            const editLink = document.getElementById('previewEditLink');
+            if (editLink) {
+                editLink.href = `/invoices/${id}/edit`;
+            }
+
+            const dupForm = document.getElementById('previewDuplicateForm');
+            if (dupForm) {
+                dupForm.action = `/invoices/${id}/duplicate`;
+            }
+
+            const delForm = document.getElementById('previewDeleteForm');
+            if (delForm) {
+                delForm.action = `/invoices/${id}`;
+                delForm.setAttribute('data-item-type', currentPreviewType === 'devis' ? 'devis' : 'facture');
+                delForm.setAttribute('data-item-name', (currentPreviewType === 'devis' ? 'Devis #' : 'Facture #') + number);
+            }
+
             updatePreviewUI();
             const modalEl = document.getElementById('invoicePreviewModal');
             const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
@@ -411,6 +476,11 @@
 
         function setPreviewDocType(type) {
             currentPreviewType = type;
+            const delForm = document.getElementById('previewDeleteForm');
+            if (delForm && currentPreviewId) {
+                delForm.setAttribute('data-item-type', currentPreviewType === 'devis' ? 'devis' : 'facture');
+                delForm.setAttribute('data-item-name', (currentPreviewType === 'devis' ? 'Devis #' : 'Facture #') + currentPreviewNumber);
+            }
             updatePreviewUI();
         }
 

@@ -270,12 +270,11 @@ class InvoiceController extends Controller
      */
     public function edit(Invoice $invoice)
     {
-        if (!$invoice->canEdit()) {
-            return redirect()->route('invoices.show', $invoice)
-                ->with('error', 'This invoice cannot be edited.');
-        }
+        $invoice->load(['items.product', 'creator', 'order']);
+        $products = Product::where('status', 'active')->orderBy('name')->get();
+        $customers = \App\Models\Customer::orderBy('name')->get();
 
-        return view('invoices.edit', compact('invoice'));
+        return view('invoices.edit', compact('invoice', 'products', 'customers'));
     }
 
     /**
@@ -283,11 +282,6 @@ class InvoiceController extends Controller
      */
     public function update(Request $request, Invoice $invoice)
     {
-        if (!$invoice->canEdit()) {
-            return redirect()->route('invoices.show', $invoice)
-                ->with('error', 'This invoice cannot be edited.');
-        }
-
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
             'customer_company' => 'nullable|string|max:255',
@@ -304,56 +298,138 @@ class InvoiceController extends Controller
             'with_stamp' => 'nullable',
             'notes' => 'nullable|string',
             'due_date' => 'nullable|date',
+            'shipping_cost' => 'nullable|numeric|min:0',
+            'discount_amount' => 'nullable|numeric|min:0',
+            'items' => 'required|array|min:1',
+            'items.*.product_id' => 'nullable',
+            'items.*.product_name' => 'required|string|max:255',
+            'items.*.product_sku' => 'nullable|string|max:100',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.unit_price' => 'required|numeric|min:0',
         ]);
 
-        $validated['with_stamp'] = $request->has('with_stamp') ? $request->boolean('with_stamp') : false;
-        
-        $originalStatus = $invoice->payment_status;
-        $invoice->update($validated);
+        $taxRate = floatval($invoice->tax_rate ?: setting('tax_rate', 20));
 
-        if ($invoice->type === 'invoice') {
-            // Determine if the stock was already deducted by a linked order
-            $orderStockDeducted = $invoice->order_id && $invoice->order && $invoice->order->stock_deducted;
+        DB::beginTransaction();
+        try {
+            // Restore previous stock if this invoice had previously deducted stock
+            if ($invoice->stock_deducted) {
+                foreach ($invoice->items as $oldItem) {
+                    if ($oldItem->product_id && $oldItem->product) {
+                        $oldItem->product->increment('stock', $oldItem->quantity);
+                    }
+                }
+                if ($invoice->order_id && $invoice->order) {
+                    $invoice->order->update(['stock_deducted' => false]);
+                }
+                $invoice->update(['stock_deducted' => false]);
+            }
 
-            // Handle stock deduction on payment
-            if ($validated['payment_status'] === 'paid' && !$invoice->stock_deducted && !$orderStockDeducted) {
+            // Calculate totals and prepare items
+            $subtotal = 0;
+            $itemsData = [];
+
+            foreach ($validated['items'] as $item) {
+                $productId = !empty($item['product_id']) ? $item['product_id'] : null;
+                $quantity = intval($item['quantity']);
+                $unitPrice = floatval($item['unit_price'] ?? 0);
+                $productName = trim($item['product_name']);
+                $productSku = !empty($item['product_sku']) ? trim($item['product_sku']) : null;
+
+                $totalPrice = round($unitPrice * $quantity, 2);
+                $subtotal += $totalPrice;
+
+                $itemsData[] = [
+                    'product_id' => $productId,
+                    'product_name' => $productName,
+                    'product_sku' => $productSku,
+                    'quantity' => $quantity,
+                    'unit_price' => $unitPrice,
+                    'total_price' => $totalPrice,
+                ];
+            }
+
+            $discountAmount = floatval($validated['discount_amount'] ?? 0);
+            $shippingCost = floatval($validated['shipping_cost'] ?? 0);
+            $subtotalHT = $subtotal;
+            $taxableHT = max(0, $subtotalHT - $discountAmount);
+            $taxAmount = round($taxableHT * ($taxRate / 100), 2);
+            $totalAmountTTC = round($taxableHT + $taxAmount + $shippingCost, 2);
+
+            // Update invoice fields
+            $invoice->update([
+                'customer_name' => $validated['customer_name'],
+                'customer_company' => $validated['customer_company'] ?? null,
+                'customer_email' => $validated['customer_email'] ?? null,
+                'customer_phone' => $validated['customer_phone'] ?? null,
+                'ice' => $validated['ice'] ?? null,
+                'customer_rc' => $validated['customer_rc'] ?? null,
+                'customer_if' => $validated['customer_if'] ?? null,
+                'customer_patente' => $validated['customer_patente'] ?? null,
+                'customer_address' => $validated['customer_address'] ?? null,
+                'type' => $validated['type'],
+                'payment_method' => $validated['payment_method'],
+                'payment_status' => $validated['payment_status'],
+                'with_stamp' => $request->has('with_stamp') ? $request->boolean('with_stamp') : false,
+                'notes' => $validated['notes'] ?? null,
+                'due_date' => $validated['due_date'] ?? null,
+                'subtotal' => $subtotalHT,
+                'tax_amount' => $taxAmount,
+                'tax_rate' => $taxRate,
+                'discount_amount' => $discountAmount,
+                'shipping_cost' => $shippingCost,
+                'total_amount' => $totalAmountTTC,
+            ]);
+
+            // Sync items: replace existing items with updated items
+            $invoice->items()->delete();
+            foreach ($itemsData as $itemData) {
+                $invoice->items()->create($itemData);
+            }
+
+            // Deduct stock if marked paid and invoice type
+            if ($invoice->type === 'invoice' && $validated['payment_status'] === 'paid') {
                 foreach ($invoice->items as $item) {
-                    if ($item->product) {
+                    if ($item->product_id && $item->product) {
                         $item->product->decrement('stock', $item->quantity);
                     }
                 }
                 $invoice->update(['stock_deducted' => true]);
-                // If it belongs to an order, mark the order as deducted to prevent double-deduction later
                 if ($invoice->order_id && $invoice->order) {
                     $invoice->order->update(['stock_deducted' => true]);
                 }
             }
-            
-            // Handle stock restoration if reverted from paid
-            if ($originalStatus === 'paid' && $validated['payment_status'] !== 'paid' && $invoice->stock_deducted) {
-                foreach ($invoice->items as $item) {
-                    if ($item->product) {
-                        $item->product->increment('stock', $item->quantity);
-                    }
-                }
-                $invoice->update(['stock_deducted' => false]);
-                // Also unmark the order if we were the ones tracking it
-                if ($invoice->order_id && $invoice->order) {
-                    $invoice->order->update(['stock_deducted' => false]);
+
+            // Update accounting journal entries if applicable
+            $journalEntries = JournalEntry::where('reference', $invoice->invoice_number)->get();
+            foreach ($journalEntries as $entry) {
+                $entry->lines()->delete();
+                $entry->delete();
+            }
+            if ($invoice->type === 'invoice') {
+                $this->createAccountingEntry($invoice);
+            }
+
+            // Update customer balance
+            if ($invoice->customer_email) {
+                $customer = \App\Models\Customer::where('email', $invoice->customer_email)->first();
+                if ($customer) {
+                    $customer->updateBalance();
                 }
             }
-        }
 
-        // Update customer balance
-        if ($invoice->customer_email) {
-            $customer = \App\Models\Customer::where('email', $invoice->customer_email)->first();
-            if ($customer) {
-                $customer->updateBalance();
-            }
-        }
+            DB::commit();
 
-        return redirect()->route('invoices.show', $invoice)
-            ->with('success', __('Invoice updated successfully!'));
+            $docLabel = $invoice->isQuote() ? __('Devis') : __('Facture');
+            return redirect()->route('invoices.show', $invoice)
+                ->with('success', __(':doc #:number mis à jour avec succès.', [
+                    'doc' => $docLabel,
+                    'number' => $invoice->display_number ?? $invoice->invoice_number
+                ]));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withInput()->with('error', __('Erreur lors de la mise à jour: :message', ['message' => $e->getMessage()]));
+        }
     }
 
     /**
@@ -361,36 +437,109 @@ class InvoiceController extends Controller
      */
     public function destroy(Invoice $invoice)
     {
-        if ($invoice->isPaid()) {
-            return back()->with('error', __('Paid invoices cannot be deleted.'));
-        }
-
+        $docLabel = $invoice->isQuote() ? __('Devis') : __('Facture');
         $customerEmail = $invoice->customer_email;
-        
-        // Restore stock if it was deducted by this invoice
-        if ($invoice->stock_deducted) {
-            foreach ($invoice->items as $item) {
-                if ($item->product) {
-                    $item->product->increment('stock', $item->quantity);
+        $invoiceNumber = $invoice->display_number ?? $invoice->invoice_number;
+
+        DB::beginTransaction();
+        try {
+            // Restore stock if it was deducted by this invoice
+            if ($invoice->stock_deducted) {
+                foreach ($invoice->items as $item) {
+                    if ($item->product_id && $item->product) {
+                        $item->product->increment('stock', $item->quantity);
+                    }
+                }
+                if ($invoice->order_id && $invoice->order) {
+                    $invoice->order->update(['stock_deducted' => false]);
                 }
             }
-            if ($invoice->order_id && $invoice->order) {
-                $invoice->order->update(['stock_deducted' => false]);
+
+            // Clean up related journal entries if any exist
+            $journalEntries = JournalEntry::where('reference', $invoice->invoice_number)->get();
+            foreach ($journalEntries as $entry) {
+                $entry->lines()->delete();
+                $entry->delete();
             }
-        }
 
-        $invoice->delete();
+            // Delete invoice (items and payments cascade via FK)
+            $invoice->delete();
 
-        // Update customer balance
-        if ($customerEmail) {
-            $customer = \App\Models\Customer::where('email', $customerEmail)->first();
-            if ($customer) {
-                $customer->updateBalance();
+            // Update customer balance if applicable
+            if ($customerEmail) {
+                $customer = \App\Models\Customer::where('email', $customerEmail)->first();
+                if ($customer) {
+                    $customer->updateBalance();
+                }
             }
-        }
 
-        return redirect()->route('invoices.index')
-            ->with('success', __('Invoice deleted successfully!'));
+            DB::commit();
+
+            return redirect()->route('invoices.index')
+                ->with('success', __(':doc #:number supprimé(e) avec succès.', ['doc' => $docLabel, 'number' => $invoiceNumber]));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', __('Erreur lors de la suppression: :message', ['message' => $e->getMessage()]));
+        }
+    }
+
+    /**
+     * Duplicate the specified invoice or quote.
+     */
+    public function duplicate(Invoice $invoice)
+    {
+        $docLabel = $invoice->isQuote() ? __('Devis') : __('Facture');
+        $oldNumber = $invoice->display_number ?? $invoice->invoice_number;
+
+        DB::beginTransaction();
+        try {
+            $newInvoice = $invoice->replicate([
+                'invoice_number',
+                'stock_deducted',
+                'created_at',
+                'updated_at',
+            ]);
+
+            $newInvoice->invoice_number = Invoice::generateInvoiceNumber();
+            $newInvoice->issued_at = now();
+            $newInvoice->due_date = now()->addDays(30);
+            $newInvoice->payment_status = 'unpaid';
+            $newInvoice->stock_deducted = false;
+            $newInvoice->created_by = Auth::id() ?? $invoice->created_by;
+            $newInvoice->save();
+
+            // Duplicate all items
+            foreach ($invoice->items as $item) {
+                $newItem = $item->replicate(['invoice_id', 'created_at', 'updated_at']);
+                $newItem->invoice_id = $newInvoice->id;
+                $newItem->save();
+            }
+
+            // Create accounting entry if invoice
+            if ($newInvoice->type === 'invoice') {
+                $this->createAccountingEntry($newInvoice);
+            }
+
+            // Update customer balance if applicable
+            if ($newInvoice->type === 'invoice' && $newInvoice->customer_email) {
+                $customer = \App\Models\Customer::where('email', $newInvoice->customer_email)->first();
+                if ($customer) {
+                    $customer->updateBalance();
+                }
+            }
+
+            DB::commit();
+
+            return redirect()->route('invoices.show', $newInvoice)
+                ->with('success', __(':doc dupliqué(e) avec succès ! Nouveau document : #:number (copié depuis #:old)', [
+                    'doc' => $docLabel,
+                    'number' => $newInvoice->display_number ?? $newInvoice->invoice_number,
+                    'old' => $oldNumber,
+                ]));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', __('Erreur lors de la duplication: :message', ['message' => $e->getMessage()]));
+        }
     }
 
     /**

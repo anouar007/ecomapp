@@ -478,11 +478,10 @@
             <thead>
                 <tr>
                     <th style="width:5%; text-align:center;">N°</th>
-                    <th style="width:47%; text-align:left;">Désignation / Description</th>
-                    <th style="width:8%; text-align:center;">Qté</th>
-                    <th style="width:13%; text-align:right;">P.U. HT</th>
-                    <th style="width:10%; text-align:center;">{{ $invoice->tax_label }} %</th>
-                    <th style="width:17%; text-align:right;">Total HT</th>
+                    <th style="width:52%; text-align:left;">Désignation / Description</th>
+                    <th style="width:15%; text-align:right;">P.U. HT</th>
+                    <th style="width:10%; text-align:center;">Qté</th>
+                    <th style="width:18%; text-align:right;">Total HT</th>
                 </tr>
             </thead>
             <tbody>
@@ -495,9 +494,8 @@
                         <div class="item-sku">Réf : {{ $item->product_sku }}</div>
                         @endif
                     </td>
-                    <td style="text-align:center; font-weight:bold;">{{ $item->quantity }}</td>
                     <td style="text-align:right;">{{ $item->formatted_unit_price_ht }}</td>
-                    <td style="text-align:center; color:#64748b;">{{ $invoice->formatted_tax_rate }}</td>
+                    <td style="text-align:center; font-weight:bold;">{{ $item->quantity }}</td>
                     <td style="text-align:right; font-weight:bold; color:#0f172a;">{{ $item->formatted_total_price_ht }}</td>
                 </tr>
                 @endforeach

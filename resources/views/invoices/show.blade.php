@@ -679,6 +679,29 @@
                     <i class="fas fa-money-bill-wave"></i> {{ __('Paiement') }}
                 </button>
                 @endif
+
+                <form method="POST" 
+                      action="{{ route('invoices.duplicate', $invoice) }}" 
+                      style="display: inline;"
+                      onsubmit="return confirm('{{ __('Voulez-vous dupliquer :doc :num ?', ['doc' => $invoice->isQuote() ? 'le devis' : 'la facture', 'num' => $invoice->display_number ?? $invoice->invoice_number]) }}')">
+                    @csrf
+                    <button type="submit" class="btn btn-action btn-outline-secondary" style="background: white; color: #475569; border-color: #cbd5e1;" title="{{ $invoice->isQuote() ? __('Dupliquer le devis') : __('Dupliquer la facture') }}">
+                        <i class="fas fa-copy"></i> {{ __('Dupliquer') }}
+                    </button>
+                </form>
+
+                <form method="POST" 
+                      action="{{ route('invoices.destroy', $invoice) }}" 
+                      style="display: inline;"
+                      data-confirm-delete="true"
+                      data-item-type="{{ $invoice->isQuote() ? 'devis' : 'facture' }}"
+                      data-item-name="{{ $invoice->isQuote() ? 'Devis #' : 'Facture #' }}{{ $invoice->display_number ?? $invoice->invoice_number }}">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-action btn-outline-danger" style="background: white; border-color: #fecaca; color: #dc2626;" title="{{ $invoice->isQuote() ? __('Supprimer le devis') : __('Supprimer la facture') }}">
+                        <i class="fas fa-trash-alt"></i> {{ __('Supprimer') }}
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -817,10 +840,9 @@
                 <thead>
                     <tr>
                         <th style="width:5%; text-align:center;">N°</th>
-                        <th style="width:45%;">Désignation / Description</th>
-                        <th style="width:8%; text-align:center;">Qté</th>
-                        <th style="width:14%; text-align:right;">P.U. HT</th>
-                        <th style="width:10%; text-align:center;">{{ $invoice->tax_label }} %</th>
+                        <th style="width:52%;">Désignation / Description</th>
+                        <th style="width:15%; text-align:right;">P.U. HT</th>
+                        <th style="width:10%; text-align:center;">Qté</th>
                         <th style="width:18%; text-align:right;">Total HT</th>
                     </tr>
                 </thead>
@@ -834,9 +856,8 @@
                             <div class="item-sku">Réf : {{ $item->product_sku }}</div>
                             @endif
                         </td>
-                        <td style="text-align:center; font-weight:700; font-size:13px;">{{ $item->quantity }}</td>
                         <td style="text-align:right; font-size:12.5px;">{{ $item->formatted_unit_price_ht }}</td>
-                        <td style="text-align:center; color:#64748b; font-size:12px;">{{ $invoice->formatted_tax_rate }}</td>
+                        <td style="text-align:center; font-weight:700; font-size:13px;">{{ $item->quantity }}</td>
                         <td style="text-align:right; font-weight:800; font-size:13px; color:#0f172a;">{{ $item->formatted_total_price_ht }}</td>
                     </tr>
                     @endforeach

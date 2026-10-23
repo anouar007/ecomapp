@@ -222,11 +222,11 @@
                             <th style="padding: 12px 14px; text-align: left; width: 140px; font-size: 12.5px; font-weight: 700; color: #475569; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; border-top: 1px solid #e2e8f0;">
                                 {{ __('SKU / Ref') }}
                             </th>
-                            <th style="padding: 12px 14px; text-align: center; width: 110px; font-size: 12.5px; font-weight: 700; color: #475569; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; border-top: 1px solid #e2e8f0;">
-                                {{ __('Qty') }} <span style="color:#ef4444;">*</span>
-                            </th>
                             <th style="padding: 12px 14px; text-align: right; width: 160px; font-size: 12.5px; font-weight: 700; color: #475569; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; border-top: 1px solid #e2e8f0;">
                                 {{ __('P.U. HT') }} <span style="font-size: 11px; font-weight: normal; color: #64748b;">({{ setting('currency_symbol', 'MAD') }})</span> <span style="color:#ef4444;">*</span>
+                            </th>
+                            <th style="padding: 12px 14px; text-align: center; width: 110px; font-size: 12.5px; font-weight: 700; color: #475569; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; border-top: 1px solid #e2e8f0;">
+                                {{ __('Qty') }} <span style="color:#ef4444;">*</span>
                             </th>
                             <th style="padding: 12px 14px; text-align: right; width: 150px; font-size: 12.5px; font-weight: 700; color: #475569; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; border-top: 1px solid #e2e8f0;">
                                 {{ __('Total HT') }}
@@ -432,15 +432,15 @@
                        style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; color: #475569;">
             </td>
             <td style="padding: 12px 14px; vertical-align: top;">
-                <input type="number" name="items[${idx}][quantity]" class="quantity-input" value="${quantity}" min="1" step="1" required
-                       oninput="calculateRow(${idx})"
-                       style="width: 100%; padding: 8px 10px; text-align: center; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13.5px; font-weight: 600; outline: none;">
-            </td>
-            <td style="padding: 12px 14px; vertical-align: top;">
                 <input type="number" name="items[${idx}][unit_price]" class="unit-price-input" value="${unitPrice !== null ? unitPrice.toFixed(2) : ''}" min="0" step="0.01" required
                        placeholder="0.00"
                        oninput="calculateRow(${idx})"
                        style="width: 100%; padding: 8px 10px; text-align: right; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13.5px; font-weight: 700; color: #0f172a; outline: none;">
+            </td>
+            <td style="padding: 12px 14px; vertical-align: top;">
+                <input type="number" name="items[${idx}][quantity]" class="quantity-input" value="${quantity}" min="1" step="1" required
+                       oninput="calculateRow(${idx})"
+                       style="width: 100%; padding: 8px 10px; text-align: center; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13.5px; font-weight: 600; outline: none;">
             </td>
             <td style="padding: 12px 14px; vertical-align: top; text-align: right;">
                 <span class="row-total-display" style="display: block; padding-top: 8px; font-size: 14px; font-weight: 700; color: #2563eb;">0.00</span>

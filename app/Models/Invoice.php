@@ -240,7 +240,7 @@ class Invoice extends Model
      */
     public function canEdit(): bool
     {
-        return !$this->isPaid() && !$this->isCancelled();
+        return true;
     }
 
     /**

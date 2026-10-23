@@ -75,6 +75,7 @@ Route::middleware('auth')->group(function () {
     // Invoices Management
     Route::middleware('permission:manage_invoices')->group(function () {
         Route::resource('invoices', \App\Http\Controllers\InvoiceController::class);
+        Route::post('invoices/{invoice}/duplicate', [\App\Http\Controllers\InvoiceController::class, 'duplicate'])->name('invoices.duplicate');
         Route::get('invoices/{invoice}/download', [\App\Http\Controllers\InvoiceController::class, 'download'])->name('invoices.download');
         Route::get('invoices/{invoice}/print', [\App\Http\Controllers\InvoiceController::class, 'print'])->name('invoices.print');
         Route::get('invoices/{invoice}/delivery-note', [\App\Http\Controllers\InvoiceController::class, 'deliveryNote'])->name('invoices.delivery_note');
