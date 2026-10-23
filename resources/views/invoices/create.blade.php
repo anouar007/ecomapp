@@ -357,23 +357,20 @@
     </form>
 </div>
 
-{{-- Hidden Template Select for Catalog Products --}}
-<div style="display: none;">
-    <select id="catalogProductsTemplate">
-        <option value="">-- {{ __('Select Product') }} --</option>
-        @foreach($products as $product)
-            <option value="{{ $product->id }}" 
-                    data-price="{{ $product->price }}" 
-                    data-sku="{{ $product->sku }}" 
-                    data-name="{{ $product->name }}">
-                {{ $product->name }} ({{ number_format($product->price, 2) }})
-            </option>
-        @endforeach
-        <option value="__custom__">✨ {{ __('[+ Custom / Manual Item]') }}</option>
-    </select>
-</div>
+@php
+    $catalogProducts = $products->map(function($p) {
+        return [
+            'id' => $p->id,
+            'name' => $p->name,
+            'sku' => $p->sku ?? '',
+            'price' => floatval($p->price),
+            'stock' => intval($p->stock),
+        ];
+    });
+@endphp
 
 <script>
+    const catalogProducts = {!! json_encode($catalogProducts) !!};
     const taxPercent = {{ floatval(setting('tax_rate', 20)) }};
     const currencySymbol = "{{ setting('currency_symbol', 'MAD') }}";
     const currencyPosition = "{{ setting('currency_position', 'after') }}";
@@ -384,6 +381,7 @@
     }
 
     let itemIndex = 0;
+    let activeSuggestionIndex = {};
 
     function addItem(type = 'catalog', data = null) {
         const tbody = document.getElementById('itemsTableBody');
@@ -398,32 +396,44 @@
             ? parseFloat(data.unit_price) 
             : null;
 
-        // Clone options from hidden template select
-        const templateSelect = document.getElementById('catalogProductsTemplate');
-        let optionsHtml = '';
-        Array.from(templateSelect.options).forEach(opt => {
-            const isSelected = (!isManual && selectedProdId && opt.value === selectedProdId) || (isManual && opt.value === '__custom__');
-            optionsHtml += `<option value="${opt.value}" data-price="${opt.dataset.price || ''}" data-sku="${opt.dataset.sku || ''}" data-name="${escapeHtml(opt.dataset.name || '')}" ${isSelected ? 'selected' : ''}>${opt.text}</option>`;
-        });
-
         const tr = document.createElement('tr');
         tr.className = 'item-row';
         tr.id = `row-${idx}`;
         tr.style.borderBottom = '1px solid #f1f5f9';
 
         tr.innerHTML = `
-            <td style="padding: 12px 14px; vertical-align: top;">
-                <div style="margin-bottom: 6px;">
-                    <select class="catalog-select" onchange="onCatalogSelectChange(this, ${idx})"
-                            style="width: 100%; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; background: #f8fafc; color: #334155;">
-                        ${optionsHtml}
-                    </select>
-                    <input type="hidden" name="items[${idx}][product_id]" class="product-id-input" value="${isManual ? '' : selectedProdId}">
-                </div>
-                <div>
-                    <input type="text" name="items[${idx}][product_name]" class="product-name-input" value="${escapeHtml(prodName)}" required
-                           placeholder="Item description or product name (e.g. Sony A7 IV or Installation Service)"
-                           style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13.5px; font-weight: 500; outline: none; color: #0f172a;">
+            <td style="padding: 12px 14px; vertical-align: top; position: relative;">
+                <input type="hidden" name="items[${idx}][product_id]" class="product-id-input" value="${isManual ? '' : selectedProdId}">
+                
+                <div class="product-search-container" style="position: relative;">
+                    <div style="position: relative;">
+                        <input type="text" 
+                               name="items[${idx}][product_name]" 
+                               class="product-name-input" 
+                               id="product-input-${idx}"
+                               value="${escapeHtml(prodName)}" 
+                               required
+                               autocomplete="off"
+                               placeholder="Rechercher par nom ou SKU..."
+                               oninput="onProductSearchInput(this, ${idx})"
+                               onfocus="onProductSearchFocus(this, ${idx})"
+                               onkeydown="onProductSearchKeydown(event, ${idx})"
+                               style="width: 100%; padding: 8px 30px 8px 32px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13.5px; font-weight: 500; outline: none; color: #0f172a; transition: all 0.15s; background: white;">
+                        
+                        <i class="fas fa-search" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 13px; pointer-events: none;"></i>
+                        
+                        <button type="button" 
+                                onclick="toggleCatalogDropdown(event, ${idx})" 
+                                title="Parcourir tous les produits du catalogue"
+                                style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer; padding: 2px 4px; font-size: 12px; border-radius: 4px;">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+
+                    {{-- Dropdown Container --}}
+                    <div class="product-suggestions" id="suggestions-${idx}" 
+                         style="display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; min-width: 380px; max-height: 280px; overflow-y: auto; background: white; border: 1px solid #cbd5e1; border-radius: 10px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15), 0 8px 10px -6px rgba(0,0,0,0.1); z-index: 10000; padding: 6px 0;">
+                    </div>
                 </div>
             </td>
             <td style="padding: 12px 14px; vertical-align: top;">
@@ -456,7 +466,11 @@
 
         tbody.appendChild(tr);
 
-        if (type === 'manual' && !data) {
+        if (type === 'catalog' && !data) {
+            const input = tr.querySelector('.product-name-input');
+            input.focus();
+            renderProductSuggestions(idx, '');
+        } else if (type === 'manual' && !data) {
             tr.querySelector('.product-name-input').focus();
         }
 
@@ -471,35 +485,216 @@
         }
     }
 
-    function onCatalogSelectChange(selectElem, idx) {
+    function onProductSearchInput(inputElem, idx) {
+        activeSuggestionIndex[idx] = -1;
+        renderProductSuggestions(idx, inputElem.value);
+    }
+
+    function onProductSearchFocus(inputElem, idx) {
+        renderProductSuggestions(idx, inputElem.value);
+    }
+
+    function toggleCatalogDropdown(e, idx) {
+        e.stopPropagation();
+        const box = document.getElementById(`suggestions-${idx}`);
+        if (!box) return;
+        if (box.style.display === 'block') {
+            box.style.display = 'none';
+        } else {
+            document.querySelectorAll('.product-suggestions').forEach(el => el.style.display = 'none');
+            const input = document.getElementById(`product-input-${idx}`);
+            if (input) input.focus();
+            renderProductSuggestions(idx, input ? input.value : '');
+        }
+    }
+
+    function onProductSearchKeydown(e, idx) {
+        const box = document.getElementById(`suggestions-${idx}`);
+        if (!box || box.style.display === 'none') {
+            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                renderProductSuggestions(idx, e.target.value);
+            }
+            return;
+        }
+
+        const items = box.querySelectorAll('.suggestion-item');
+        if (items.length === 0) return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            let cur = activeSuggestionIndex[idx] ?? -1;
+            cur = (cur + 1) % items.length;
+            activeSuggestionIndex[idx] = cur;
+            highlightSuggestionItem(idx, items, cur);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            let cur = activeSuggestionIndex[idx] ?? 0;
+            cur = (cur - 1 + items.length) % items.length;
+            activeSuggestionIndex[idx] = cur;
+            highlightSuggestionItem(idx, items, cur);
+        } else if (e.key === 'Enter') {
+            const cur = activeSuggestionIndex[idx];
+            if (typeof cur !== 'undefined' && cur >= 0 && cur < items.length) {
+                e.preventDefault();
+                items[cur].dispatchEvent(new MouseEvent('mousedown'));
+            }
+        } else if (e.key === 'Escape') {
+            box.style.display = 'none';
+        }
+    }
+
+    function highlightSuggestionItem(idx, items, activeIdx) {
+        items.forEach((item, i) => {
+            if (i === activeIdx) {
+                item.style.background = '#eff6ff';
+                item.scrollIntoView({ block: 'nearest' });
+            } else {
+                item.style.background = 'white';
+            }
+        });
+    }
+
+    function renderProductSuggestions(idx, query = '') {
+        const box = document.getElementById(`suggestions-${idx}`);
+        if (!box) return;
+
+        query = (query || '').trim().toLowerCase();
+        let filtered = catalogProducts;
+        if (query.length > 0) {
+            filtered = catalogProducts.filter(p => {
+                const nameMatch = p.name && p.name.toLowerCase().includes(query);
+                const skuMatch = p.sku && p.sku.toLowerCase().includes(query);
+                return nameMatch || skuMatch;
+            });
+        }
+
+        // Close other suggestion boxes
+        document.querySelectorAll('.product-suggestions').forEach(el => {
+            if (el.id !== `suggestions-${idx}`) el.style.display = 'none';
+        });
+
+        if (filtered.length === 0) {
+            box.innerHTML = `
+                <div style="padding: 12px 16px; font-size: 13px; color: #64748b; text-align: center;">
+                    <i class="fas fa-search me-1" style="color: #94a3b8;"></i> Aucun produit trouvé pour "<strong>${escapeHtml(query)}</strong>"
+                </div>
+                <div style="padding: 8px 16px; background: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 12px; color: #2563eb; cursor: pointer;"
+                     onmousedown="useCustomItem(${idx}, '${escapeHtml(query)}')">
+                    <i class="fas fa-plus-circle me-1"></i> Utiliser comme article libre: "<strong>${escapeHtml(query)}</strong>"
+                </div>
+            `;
+            box.style.display = 'block';
+            return;
+        }
+
+        const list = filtered.slice(0, 30);
+        let html = '';
+
+        html += `
+            <div style="padding: 6px 14px 4px 14px; font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9;">
+                <span>Catalogue (${filtered.length} produits)</span>
+                ${query ? `<span>Recherche "${escapeHtml(query)}"</span>` : ''}
+            </div>
+        `;
+
+        list.forEach((p, itemIdx) => {
+            const highlightedName = highlightMatch(p.name, query);
+            const highlightedSku = p.sku ? highlightMatch(p.sku, query) : '';
+            const stockBadge = p.stock > 0 
+                ? `<span style="font-size: 10.5px; color: #16a34a; background: #f0fdf4; padding: 1px 6px; border-radius: 4px; font-weight: 600;"><i class="fas fa-check me-1" style="font-size:8.5px;"></i>${p.stock} en stock</span>`
+                : `<span style="font-size: 10.5px; color: #dc2626; background: #fef2f2; padding: 1px 6px; border-radius: 4px; font-weight: 600;"><i class="fas fa-times me-1" style="font-size:8.5px;"></i>Rupture</span>`;
+
+            html += `
+                <div class="suggestion-item suggestion-item-${idx}" 
+                     data-item-index="${itemIdx}"
+                     onmousedown="selectProduct(${idx}, ${p.id})"
+                     style="padding: 9px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px; border-bottom: 1px solid #f8fafc; transition: background 0.15s;"
+                     onmouseover="this.style.background='#eff6ff'"
+                     onmouseout="this.style.background='white'">
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="font-size: 13px; font-weight: 600; color: #0f172a; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            ${highlightedName}
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #64748b;">
+                            ${p.sku ? `<span style="background: #f1f5f9; padding: 1px 5px; border-radius: 3px; font-family: monospace;">Réf: ${highlightedSku}</span>` : ''}
+                            ${stockBadge}
+                        </div>
+                    </div>
+                    <div style="text-align: right; flex-shrink: 0;">
+                        <span style="font-size: 13.5px; font-weight: 800; color: #2563eb;">
+                            ${formatCurrency(p.price)}
+                        </span>
+                    </div>
+                </div>
+            `;
+        });
+
+        if (query) {
+            html += `
+                <div style="padding: 8px 14px; background: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 12px; color: #0f766e; cursor: pointer; font-weight: 600;"
+                     onmousedown="useCustomItem(${idx}, '${escapeHtml(query)}')">
+                    <i class="fas fa-pen-to-square me-1"></i> Conserver comme article libre: "<strong>${escapeHtml(query)}</strong>"
+                </div>
+            `;
+        }
+
+        box.innerHTML = html;
+        box.style.display = 'block';
+    }
+
+    function selectProduct(idx, productId) {
         const row = document.getElementById(`row-${idx}`);
         if (!row) return;
 
-        const val = selectElem.value;
-        const opt = selectElem.selectedOptions[0];
-        const idInput = row.querySelector('.product-id-input');
-        const nameInput = row.querySelector('.product-name-input');
-        const skuInput = row.querySelector('.product-sku-input');
-        const priceInput = row.querySelector('.unit-price-input');
+        const prod = catalogProducts.find(p => String(p.id) === String(productId));
+        if (!prod) return;
 
-        if (!val || val === '__custom__') {
-            idInput.value = '';
-            if (val === '__custom__') {
-                nameInput.value = '';
-                skuInput.value = '';
-                priceInput.value = '';
-                nameInput.focus();
-            }
-        } else {
-            idInput.value = val;
-            nameInput.value = opt.dataset.name || '';
-            skuInput.value = opt.dataset.sku || '';
-            const price = parseFloat(opt.dataset.price) || 0;
-            priceInput.value = price.toFixed(2);
+        row.querySelector('.product-id-input').value = prod.id;
+        row.querySelector('.product-name-input').value = prod.name;
+        row.querySelector('.product-sku-input').value = prod.sku || '';
+        row.querySelector('.unit-price-input').value = parseFloat(prod.price).toFixed(2);
+
+        const qtyInput = row.querySelector('.quantity-input');
+        if (!qtyInput.value || parseFloat(qtyInput.value) <= 0) {
+            qtyInput.value = 1;
         }
 
+        const box = document.getElementById(`suggestions-${idx}`);
+        if (box) box.style.display = 'none';
+
         calculateRow(idx);
+        qtyInput.focus();
     }
+
+    function useCustomItem(idx, customName) {
+        const row = document.getElementById(`row-${idx}`);
+        if (!row) return;
+
+        row.querySelector('.product-id-input').value = '';
+        if (customName) {
+            row.querySelector('.product-name-input').value = customName;
+        }
+        const box = document.getElementById(`suggestions-${idx}`);
+        if (box) box.style.display = 'none';
+
+        row.querySelector('.unit-price-input').focus();
+    }
+
+    function highlightMatch(text, query) {
+        if (!query) return escapeHtml(text);
+        const escapedText = escapeHtml(text);
+        const escapedQuery = escapeHtml(query);
+        const regex = new RegExp(`(${escapedQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        return escapedText.replace(regex, '<mark style="background: #fef08a; padding: 0 2px; border-radius: 2px;">$1</mark>');
+    }
+
+    // Close suggestions on click outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.product-search-container')) {
+            document.querySelectorAll('.product-suggestions').forEach(el => el.style.display = 'none');
+        }
+    });
 
     function calculateRow(idx) {
         const row = document.getElementById(`row-${idx}`);
