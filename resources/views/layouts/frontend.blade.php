@@ -1331,8 +1331,8 @@
 
         @media (max-width: 768px) {
             .brand-logo-img {
-                height: 63px !important;
-                max-height: 64px !important;
+                height: 75px !important;
+                max-height: 75px !important;
                 width: auto !important;
                 object-fit: contain;
             }
