@@ -17,14 +17,14 @@ class ImportFullProductsJson extends Command
      *
      * @var string
      */
-    protected $signature = 'products:import-full {file=/Users/user/Downloads/products_full.json}';
+    protected $signature = 'products:import-full {file?}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Wipe existing products and import all products from products_full.json with correct category assignments';
+    protected $description = 'Wipe existing products and import all products from products_full.json with correct category assignments and images';
 
     /**
      * Execute the console command.
@@ -33,8 +33,24 @@ class ImportFullProductsJson extends Command
     {
         $filePath = $this->argument('file');
 
-        if (!file_exists($filePath)) {
-            $this->error("JSON file not found at: {$filePath}");
+        if (!$filePath) {
+            $candidates = [
+                database_path('data/products_full.json'),
+                base_path('database/data/products_full.json'),
+                '/Users/user/Downloads/products_full.json',
+                base_path('products_full.json'),
+            ];
+
+            foreach ($candidates as $cand) {
+                if (file_exists($cand)) {
+                    $filePath = $cand;
+                    break;
+                }
+            }
+        }
+
+        if (!$filePath || !file_exists($filePath)) {
+            $this->error("JSON file not found. Place products_full.json in database/data/ or pass the path as an argument.");
             return 1;
         }
 
