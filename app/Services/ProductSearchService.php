@@ -177,12 +177,12 @@ class ProductSearchService
             }
         }
 
-        // 2. Price Filter
+        // 2. Price Filter (matches the actual selling price: sale_price if on promo, otherwise regular price)
         if ($minPrice !== null && $minPrice !== '') {
-            $query->where('products.price', '>=', (float) $minPrice);
+            $query->whereRaw('COALESCE(NULLIF(products.sale_price, 0), products.price) >= ?', [(float) $minPrice]);
         }
         if ($maxPrice !== null && $maxPrice !== '') {
-            $query->where('products.price', '<=', (float) $maxPrice);
+            $query->whereRaw('COALESCE(NULLIF(products.sale_price, 0), products.price) <= ?', [(float) $maxPrice]);
         }
 
         // 3. Search Matching & Relevance Scoring
@@ -351,13 +351,13 @@ class ProductSearchService
                 });
             }
 
-            // Apply Sorting
+            // Apply Sorting (using effective selling price)
             switch ($sort) {
                 case 'price_asc':
-                    $query->orderBy('products.price', 'asc');
+                    $query->orderByRaw('COALESCE(NULLIF(products.sale_price, 0), products.price) ASC');
                     break;
                 case 'price_desc':
-                    $query->orderBy('products.price', 'desc');
+                    $query->orderByRaw('COALESCE(NULLIF(products.sale_price, 0), products.price) DESC');
                     break;
                 case 'newest':
                     $query->orderByDesc('products.created_at');
@@ -373,10 +373,10 @@ class ProductSearchService
             // No search query: standard sorting
             switch ($sort) {
                 case 'price_asc':
-                    $query->orderBy('products.price', 'asc');
+                    $query->orderByRaw('COALESCE(NULLIF(products.sale_price, 0), products.price) ASC');
                     break;
                 case 'price_desc':
-                    $query->orderBy('products.price', 'desc');
+                    $query->orderByRaw('COALESCE(NULLIF(products.sale_price, 0), products.price) DESC');
                     break;
                 case 'newest':
                 default:

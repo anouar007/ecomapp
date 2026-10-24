@@ -163,6 +163,14 @@ class Product extends Model
     }
 
     /**
+     * Get the final effective price attribute.
+     */
+    public function getFinalPriceAttribute()
+    {
+        return $this->active_price;
+    }
+
+    /**
      * Get the comparison/reference old price to display on cards (only if available).
      */
     public function getCardOldPriceAttribute()
