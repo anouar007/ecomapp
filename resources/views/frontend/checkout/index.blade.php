@@ -107,7 +107,7 @@
                                     </label>
                                     <div class="city-autocomplete-wrapper">
                                         <div class="input-group checkout-input-group">
-                                            <span class="input-group-text"><i class="fas fa-city text-danger"></i></span>
+                                            <span class="input-group-text"><i class="fas fa-city text-muted"></i></span>
                                             <input type="text" 
                                                    name="shipping_city" 
                                                    id="shipping_city_input" 
@@ -180,7 +180,7 @@
                         <hr class="my-4 opacity-10">
                         
                         <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted">{{ __('Articles (TTC)') }}</span>
+                            <span class="text-muted">{{ __('Articles') }}</span>
                             <span class="fw-bold" id="checkout-subtotal" 
                                   data-subtotal="{{ $total }}"
                                   data-currency-symbol="{{ setting('currency_symbol', 'DH') }}"
@@ -199,8 +199,7 @@
                         </div>
                         <div class="d-flex justify-content-between align-items-center py-3 border-top">
                             <div>
-                                <span class="h5 fw-bold mb-0 d-block">{{ __('Total TTC') }}</span>
-                                <span class="text-muted small" style="font-size: 0.75rem;"><i class="fas fa-check-circle text-success me-1"></i>TVA comprise</span>
+                                <span class="h5 fw-bold mb-0 d-block">{{ __('Total') }}</span>
                             </div>
                             <span class="h4 fw-bold text-danger mb-0 font-heading" id="checkout-total">{{ currency($total) }}</span>
                         </div>

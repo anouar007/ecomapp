@@ -460,7 +460,7 @@
 
                             <div class="indh-step-meta text-muted small">
                                 <i class="fas fa-tag text-danger me-1"></i>
-                                <span>{{ __('TVA 20% incluse (prix TTC)') }}</span>
+                                <span>{{ __('TVA 20% incluse') }}</span>
                             </div>
 
                             <div class="pt-2 border-top">

@@ -241,7 +241,7 @@
                     </tr>
                     @endif
                     <tr>
-                        <td style="border-top: 2px dashed #cbd5e1; padding-top: 10px; font-weight: 700; font-size: 16px; color: #0f172a;">Total TTC :</td>
+                        <td style="border-top: 2px dashed #cbd5e1; padding-top: 10px; font-weight: 700; font-size: 16px; color: #0f172a;">Total :</td>
                         <td style="border-top: 2px dashed #cbd5e1; padding-top: 10px; font-weight: 700; font-size: 16px; text-align: right; color: #0f172a;">{{ $invoice->formatted_total_amount }}</td>
                     </tr>
                 </table>

@@ -337,7 +337,7 @@
                                                         </span>
                                                         @endif
                                                         <span class="text-muted small" style="font-size: 0.72rem;">
-                                                            <i class="fas fa-shield-alt text-success me-0.5"></i>{{ __('Garantie 2 ans') }}
+                                                            <i class="fas fa-shield-alt text-success me-0.5"></i>{{ __('Garantie') }}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -387,7 +387,7 @@
                                             </span>
                                             @endif
                                             <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.68rem; padding: 2px 6px;">
-                                                <i class="fas fa-shield-alt me-0.5"></i>{{ __('Garantie 2 ans') }}
+                                                <i class="fas fa-shield-alt me-0.5"></i>{{ __('Garantie') }}
                                             </span>
                                         </div>
                                         <div class="d-flex align-items-center justify-content-between pt-1 border-top border-light">
@@ -530,14 +530,14 @@
                     </div>
 
                     <div class="card-body p-4">
+                        @php
+                            $itemsTotal = $order->items && $order->items->count() > 0 
+                                ? $order->items->sum(fn($i) => (float)$i->price * (int)$i->quantity) 
+                                : max(0, (float)$order->total - (float)$order->shipping_cost + (float)$order->discount);
+                        @endphp
                         <div class="d-flex justify-content-between mb-2.5 text-secondary small">
-                            <span>{{ __('Sous-total HT') }}</span>
-                            <span class="text-dark font-monospace" style="font-weight: 500;">{{ currency($order->subtotal) }}</span>
-                        </div>
-
-                        <div class="d-flex justify-content-between mb-2.5 text-secondary small">
-                            <span>{{ setting('tax_label', 'TVA') }} ({{ floatval(setting('tax_rate', 20)) }}%)</span>
-                            <span class="text-dark font-monospace" style="font-weight: 500;">{{ currency($order->tax) }}</span>
+                            <span>{{ __('Sous-total') }}</span>
+                            <span class="text-dark font-monospace" style="font-weight: 500;">{{ currency($itemsTotal) }}</span>
                         </div>
 
                         <div class="d-flex justify-content-between mb-3 text-secondary small">
@@ -560,7 +560,7 @@
 
                         <div class="pt-3 border-top d-flex justify-content-between align-items-center mb-4 gap-2">
                             <div class="flex-grow-1 min-w-0">
-                                <span class="fs-6 text-dark mb-0 d-block fw-bold">{{ __('Total TTC') }}</span>
+                                <span class="fs-6 text-dark mb-0 d-block fw-bold">{{ __('Total') }}</span>
                                 <span class="text-muted small" style="font-size: 0.74rem;">
                                     <i class="fas fa-check-double text-success me-1"></i>{{ __('Montant net à payer à réception') }}
                                 </span>
@@ -641,7 +641,7 @@
                         <div class="col-6">
                             <div class="p-2 bg-white rounded-3 border">
                                 <i class="fas fa-shield-halved text-success mb-1" style="font-size: 1.1rem;"></i>
-                                <span class="d-block text-dark small" style="font-size: 0.74rem; font-weight: 500;">{{ __('Garantie 2 ans') }}</span>
+                                <span class="d-block text-dark small" style="font-size: 0.74rem; font-weight: 500;">{{ __('Garantie') }}</span>
                             </div>
                         </div>
                         <div class="col-6">
@@ -1108,7 +1108,7 @@
             padding: 12px 10px !important;
         }
 
-        /* Total TTC */
+        /* Final Total */
         .order-final-total {
             font-size: 1.45rem !important;
             white-space: nowrap !important;

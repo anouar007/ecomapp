@@ -336,7 +336,7 @@
                             </span>
                         </div>
                         <div class="form-text text-muted small mt-1">
-                            Prix réel et effectif payé par le client (TVA comprise).
+                            Prix réel et effectif payé par le client.
                         </div>
                         @error('price')
                             <div class="invalid-feedback d-block">{{ $message }}</div>

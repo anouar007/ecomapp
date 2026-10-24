@@ -19,8 +19,8 @@ class EnrichProductDescriptions extends Command
                             {--product= : Enrich only a specific product ID}
                             {--limit= : Limit the number of products to process}
                             {--dry-run : Preview without updating the database}
-                            {--json=/Users/user/Downloads/products_full.json : Path to JSON metadata}
-                            {--xml=/Users/user/Downloads/winashop.WordPress.2026-10-06.xml : Path to WordPress XML export}';
+                            {--json= : Path to JSON metadata}
+                            {--xml= : Path to WordPress XML export}';
 
     /**
      * The console command description.
@@ -86,14 +86,41 @@ class EnrichProductDescriptions extends Command
         $this->info("   PRODUCT DESCRIPTION ENRICHMENT SYSTEM (OFFICIAL DATA & MEDIA)   ");
         $this->info("==================================================================");
 
-        // 1. Verify files
-        if (!file_exists($jsonPath)) {
-            $this->error("JSON metadata file not found at: {$jsonPath}");
+        // 1. Resolve JSON path
+        if (!$jsonPath || !file_exists($jsonPath)) {
+            $jsonCandidates = [
+                database_path('data/products_full.json'),
+                base_path('database/data/products_full.json'),
+                '/Users/user/Downloads/products_full.json',
+                base_path('products_full.json'),
+            ];
+            foreach ($jsonCandidates as $cand) {
+                if (file_exists($cand)) {
+                    $jsonPath = $cand;
+                    break;
+                }
+            }
+        }
+
+        if (!$jsonPath || !file_exists($jsonPath)) {
+            $this->error("JSON metadata file not found. Place products_full.json in database/data/ or pass --json=path");
             return 1;
         }
-        if (!file_exists($xmlPath)) {
-            $this->error("WordPress XML file not found at: {$xmlPath}");
-            return 1;
+
+        // 1b. Resolve XML path (optional)
+        if (!$xmlPath || !file_exists($xmlPath)) {
+            $xmlCandidates = [
+                database_path('data/winashop.WordPress.2026-10-06.xml'),
+                '/Users/user/Downloads/winashop.WordPress.2026-10-24.xml',
+                '/Users/user/Downloads/winashop.WordPress.2026-10-06.xml',
+                base_path('database/data/winashop.xml'),
+            ];
+            foreach ($xmlCandidates as $cand) {
+                if (file_exists($cand)) {
+                    $xmlPath = $cand;
+                    break;
+                }
+            }
         }
 
         // 2. Build local images index
@@ -112,10 +139,15 @@ class EnrichProductDescriptions extends Command
         $jsonBySku = $this->loadJsonMetadata($jsonPath);
         $this->info("Loaded metadata for " . count($jsonBySku) . " entries from JSON.");
 
-        // 4. Stream load XML rich content
-        $this->info("Stream parsing WordPress XML export from {$xmlPath}...");
-        $xmlData = $this->loadXmlProducts($xmlPath);
-        $this->info("Loaded rich content for " . count($xmlData['by_sku']) . " products from XML.");
+        // 4. Stream load XML rich content (if available)
+        $xmlData = ['by_sku' => [], 'by_name' => []];
+        if ($xmlPath && file_exists($xmlPath)) {
+            $this->info("Stream parsing WordPress XML export from {$xmlPath}...");
+            $xmlData = $this->loadXmlProducts($xmlPath);
+            $this->info("Loaded rich content for " . count($xmlData['by_sku']) . " products from XML.");
+        } else {
+            $this->warn("WordPress XML export not present. Using rich descriptions and specifications directly from JSON metadata.");
+        }
 
         // 5. Query DB products
         $query = Product::with(['images' => function($q) {

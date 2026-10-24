@@ -331,6 +331,12 @@ class ImportFullProductsJson extends Command
         }
         $this->table(['Category Name', 'Category ID', 'Products Count'], $tableData);
 
+        // Automatically enrich descriptions with official technical specifications, icons, and visual media
+        $this->info("Enriching product descriptions with official technical specifications...");
+        $this->call('products:enrich-descriptions', [
+            '--json' => $filePath,
+        ]);
+
         // Flush caches
         Cache::forget('frontend_home_data');
         Cache::forget('frontend_nav_categories');
