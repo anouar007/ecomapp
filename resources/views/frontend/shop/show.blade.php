@@ -424,16 +424,8 @@
                             </button>
                         </div>
                     </form>
-                    @else
-                    <div class="pdp-cart-row d-flex flex-row flex-nowrap align-items-stretch w-100">
-                        <button type="button" id="addToCartBtn" class="pdp-add-btn pdp-add-btn--out w-100 text-nowrap shadow-none" disabled>
-                            <i class="fas fa-ban me-2"></i>
-                            <span id="addToCartText">{{ __('Out of stock') }}</span>
-                        </button>
-                    </div>
-                    @endif
 
-                    {{-- Acheter maintenant / Buy Now Button (Always visible on product page) --}}
+                    {{-- Acheter maintenant / Buy Now Button (Only visible when product is in stock) --}}
                     @php
                         $cartTotalCount = array_sum(array_column(session('cart', []), 'quantity'));
                         $currentLocale = app()->getLocale();
@@ -446,6 +438,14 @@
                             <i class="fas {{ $currentLocale === 'ar' ? 'fa-arrow-left ms-2' : 'fa-arrow-right ms-2' }}"></i>
                         </button>
                     </div>
+                    @else
+                    <div class="pdp-cart-row d-flex flex-row flex-nowrap align-items-stretch w-100">
+                        <button type="button" id="addToCartBtn" class="pdp-add-btn pdp-add-btn--out w-100 text-nowrap shadow-none" disabled>
+                            <i class="fas fa-ban me-2"></i>
+                            <span id="addToCartText">{{ __('Out of stock') }}</span>
+                        </button>
+                    </div>
+                    @endif
 
                     @php
                         $cleanDescText = $product->clean_description;
@@ -768,13 +768,17 @@ function pdpCommanderAction(event) {
     const productId = {{ $product->id }};
     const addBtn = document.getElementById('addToCartBtn');
     const isProductInStock = {{ $product->isInStock() ? 'true' : 'false' }};
+    if (!isProductInStock) {
+        return;
+    }
+
     const isCurrentInCart = addBtn ? addBtn.classList.contains('is-in-cart') : false;
 
     const isAr = document.documentElement.lang === 'ar' || document.documentElement.dir === 'rtl';
     const redirectingText = isAr ? 'جاري التحويل...' : 'Redirection...';
 
-    // If product is ALREADY in cart, or out of stock -> go directly to checkout
-    if (isCurrentInCart || !isProductInStock) {
+    // If product is ALREADY in cart -> go directly to checkout
+    if (isCurrentInCart) {
         btn.disabled = true;
         btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span><span>${redirectingText}</span>`;
         window.location.href = "{{ route('checkout.index') }}";
