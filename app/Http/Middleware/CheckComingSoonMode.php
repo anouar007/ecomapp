@@ -88,9 +88,9 @@ class CheckComingSoonMode
 
         // 5. Render the high-end Coming Soon view for all regular visitors
         return response()->view('frontend.coming_soon', [
-            'appName' => setting('app_name', 'Full Frame House'),
+            'appName' => setting('app_name', 'Wina shop'),
             'companyPhone' => setting('company_phone', '+212 600-000000'),
-            'companyEmail' => setting('company_email', 'contact@fullframehouse.ma'),
+            'companyEmail' => setting('company_email', 'contact@Winashop.ma'),
             'companyAddress' => setting('company_address', 'Casablanca, Maroc'),
             'launchDate' => setting('coming_soon_launch_date', now()->addDays(7)->format('Y-m-d H:i:s')),
         ], 503, [
