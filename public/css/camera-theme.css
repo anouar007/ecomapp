@@ -12052,9 +12052,9 @@ html:not(.aos-init) [data-aos] {
    ENRICHED PRODUCT DESCRIPTION & TECHNICAL SPECS SHOWCASE
    ================================================================ */
 .pdp-enrich-lead {
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.04) 0%, #f8fafc 100%);
-    border: 1px solid rgba(226, 232, 240, 0.95);
-    border-left: 4px solid var(--brand-red, #dc2626);
+    background: linear-gradient(135deg, #0d6efd2e, #f8fafc);
+    border: 1px solid rgba(226, 232, 240, .95);
+    border-left: 4px solid #1964d6;
     border-radius: 14px;
     padding: 18px 22px;
     margin-bottom: 24px;
