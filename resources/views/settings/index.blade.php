@@ -241,6 +241,56 @@
                             </div>
                         </div>
 
+                        {{-- Mode Bientôt Disponible / Coming Soon --}}
+                        <div class="settings-section-card border-warning-subtle shadow-xs">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <h3 class="settings-section-title m-0">
+                                    <i class="fas fa-traffic-light text-warning"></i>
+                                    <span>Mode "Bientôt Disponible / Coming Soon"</span>
+                                </h3>
+                                <span class="badge {{ setting('coming_soon_enabled', false) ? 'bg-warning text-dark' : 'bg-success' }} rounded-pill px-3 py-1.5 fw-bold">
+                                    {{ setting('coming_soon_enabled', false) ? 'ACTIF (Site masqué au public)' : 'INACTIF (Site public en ligne)' }}
+                                </span>
+                            </div>
+                            <p class="settings-section-desc">
+                                Activez ce mode pour afficher une page d'attente soignée à vos clients pendant que vous finalisez le catalogue. L'administration et la connexion restent 100% accessibles.
+                            </p>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label fw-bold small text-dark">Statut d'accès public</label>
+                                    <select name="settings[coming_soon_enabled]" class="form-select rounded-3 fw-semibold">
+                                        <option value="0" {{ !setting('coming_soon_enabled', false) ? 'selected' : '' }}>🟢 Site Ouvert (En ligne public)</option>
+                                        <option value="1" {{ setting('coming_soon_enabled', false) ? 'selected' : '' }}>🔒 Mode Coming Soon (Page d'attente)</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label fw-bold small text-dark">Clé secrète d'accès équipe (Preview)</label>
+                                    <input type="text" name="settings[coming_soon_secret]" class="form-control rounded-3 font-monospace" 
+                                           value="{{ setting('coming_soon_secret', 'wina2026') }}" placeholder="wina2026">
+                                    <div class="form-text small">Permet de tester le site public via <code>?preview=wina2026</code></div>
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label fw-bold small text-dark">Date cible d'ouverture (Compte à rebours)</label>
+                                    <input type="datetime-local" name="settings[coming_soon_launch_date]" class="form-control rounded-3" 
+                                           value="{{ setting('coming_soon_launch_date') ? date('Y-m-d\TH:i', strtotime(setting('coming_soon_launch_date'))) : date('Y-m-d\TH:i', strtotime('+7 days')) }}">
+                                </div>
+                            </div>
+
+                            <div class="p-2.5 bg-light rounded-3 border small d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                <div>
+                                    <i class="fas fa-link text-primary me-1"></i>
+                                    <strong>Lien direct pour prévisualiser le site :</strong> 
+                                    <a href="{{ url('/?preview=' . setting('coming_soon_secret', 'wina2026')) }}" target="_blank" class="font-monospace text-decoration-none">
+                                        {{ url('/?preview=' . setting('coming_soon_secret', 'wina2026')) }}
+                                    </a>
+                                </div>
+                                <span class="text-muted"><i class="fas fa-terminal me-1"></i>Ou activez via le terminal : <code>php artisan coming-soon enable</code></span>
+                            </div>
+                        </div>
+
                         {{-- Logo Section --}}
                         <div class="settings-section-card">
                             <h3 class="settings-section-title">
