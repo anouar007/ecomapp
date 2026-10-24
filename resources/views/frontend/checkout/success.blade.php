@@ -1,6 +1,6 @@
 @extends('layouts.frontend')
 
-@section('meta_title', __('Order confirmed') . ' #' . $order->order_number . ' — ' . setting('app_name', 'WINA SHOP'))
+@section('meta_title', __('Commande confirmée') . ' #' . $order->order_number . ' — ' . setting('app_name', 'WINA SHOP'))
 
 @php
     $isAr = app()->getLocale() === 'ar';
@@ -66,8 +66,10 @@
             'badge' => __('Commande enregistrée avec succès'),
             'badge_class' => 'bg-success-subtle text-success border border-success-subtle',
             'badge_icon' => 'fas fa-circle-check',
-            'title' => __('Order confirmed!'),
-            'subtitle' => __('Thank you for your trust,') . ' ' . $order->customer_name . ' ! ' . __('We have received your order and are preparing it right away.'),
+            'title' => __('Commande confirmée !'),
+            'subtitle' => $isAr 
+                ? "شكراً لثقتكم، {$order->customer_name} ! لقد تم استلام طلبكم وجاري تحضيره فوراً." 
+                : "Merci pour votre confiance, {$order->customer_name} ! Nous avons bien reçu votre commande et nous la préparons dès maintenant.",
             'icon' => 'fas fa-check',
             'accent' => 'linear-gradient(90deg, #10b981 0%, #059669 50%, #dc2626 100%)',
             'icon_bg' => 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
@@ -173,26 +175,28 @@
                 </p>
 
                 {{-- Order Reference Pill & Live Tracker & WhatsApp Button --}}
-                <div class="d-flex flex-wrap align-items-center justify-content-center gap-2.5 mt-2">
-                    <div class="order-ref-pill d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill bg-light border">
-                        <span class="text-muted small">{{ __('Order:') }}</span>
-                        <span class="text-dark font-monospace order-ref-code" id="orderRefText">#{{ $order->order_number }}</span>
+                <div class="d-flex flex-wrap align-items-center justify-content-center gap-2 mt-2">
+                    <div class="order-ref-pill d-inline-flex align-items-center gap-1.5 px-3 py-1.5 rounded-pill bg-light border">
+                        <span class="text-muted small">{{ __('Commande :') }}</span>
+                        <span class="text-dark font-monospace fw-bold order-ref-code" id="orderRefText">#{{ $order->order_number }}</span>
                         <button type="button" class="btn btn-sm btn-link text-muted p-0 ms-1 copy-ref-btn" onclick="copyOrderReference('{{ $order->order_number }}')" title="{{ __('Copy') }}">
                             <i class="far fa-copy" id="copyIcon"></i>
                         </button>
                     </div>
 
                     {{-- LIVE TRACKING BADGE --}}
-                    <div class="order-live-tracker d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill bg-white border shadow-xs" id="liveTrackerBadge" title="{{ __('Mise à jour en direct automatique') }}">
+                    <div class="order-live-tracker d-inline-flex align-items-center gap-1.5 px-3 py-1.5 rounded-pill bg-white border shadow-xs" id="liveTrackerBadge" title="{{ __('Mise à jour en direct automatique') }}">
                         <span class="live-dot-pulse" id="liveDotPulse"></span>
-                        <span class="text-dark small" style="font-size: 0.82rem;" id="liveSyncStatus">{{ __('Suivi en direct actif') }}</span>
+                        <span class="text-dark small" style="font-size: 0.80rem;" id="liveSyncStatus">{{ __('Suivi en direct actif') }}</span>
                         <button type="button" class="btn btn-sm btn-link text-muted p-0 ms-1" id="manualRefreshBtn" onclick="refreshOrderStatus(true)" title="{{ __('Actualiser le statut maintenant') }}">
                             <i class="fas fa-arrows-rotate" id="refreshIcon"></i>
                         </button>
                     </div>
 
-                    <a href="{{ $waLink }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-success rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2 order-hero-wa-btn shadow-xs">
-                        <i class="fab fa-whatsapp" style="font-size: 1rem;"></i>
+                    <div class="w-100 d-sm-none"></div>
+
+                    <a href="{{ $waLink }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-success rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-2 order-hero-wa-btn shadow-xs">
+                        <i class="fab fa-whatsapp" style="font-size: 1.05rem;"></i>
                         <span>{{ __('Assistance WhatsApp rapide') }}</span>
                     </a>
                 </div>
@@ -297,7 +301,8 @@
                     </div>
 
                     <div class="card-body p-0">
-                        <div class="table-responsive">
+                        {{-- Desktop Table View (>= 768px) --}}
+                        <div class="table-responsive d-none d-md-block">
                             <table class="table align-middle mb-0 order-items-table">
                                 <thead class="bg-light small text-muted text-uppercase">
                                     <tr>
@@ -355,6 +360,50 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                        </div>
+
+                        {{-- Mobile Product List (< 768px) --}}
+                        <div class="d-md-none p-3">
+                            @foreach($order->items as $item)
+                            @php
+                                $prodImg = $item->product && $item->product->thumbnail ? $item->product->thumbnail : asset('images/camera/cat_cameras.jpg');
+                                $prodUrl = $item->product ? route('shop.show', $item->product->slug ?: $item->product->id) : '#';
+                            @endphp
+                            <div class="order-mobile-item {{ !$loop->last ? 'border-bottom pb-3 mb-3' : '' }}">
+                                <div class="d-flex align-items-start gap-3">
+                                    <a href="{{ $prodUrl }}" class="flex-shrink-0">
+                                        <div class="order-item-thumb-box" style="width: 60px; height: 60px; border-radius: 10px;">
+                                            <img src="{{ $prodImg }}" alt="{{ $item->product_name }}" width="60" height="60" class="order-item-thumb-img" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                                        </div>
+                                    </a>
+                                    <div class="flex-grow-1 min-w-0">
+                                        <a href="{{ $prodUrl }}" class="text-dark text-decoration-none d-block mb-1 fw-semibold" style="font-size: 0.92rem; line-height: 1.35;">
+                                            {{ $item->product_name }}
+                                        </a>
+                                        <div class="d-flex flex-wrap align-items-center gap-1.5 mb-2">
+                                            @if($item->product_sku)
+                                            <span class="badge bg-light text-muted border font-monospace" style="font-size: 0.68rem; padding: 2px 6px;">
+                                                {{ $item->product_sku }}
+                                            </span>
+                                            @endif
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.68rem; padding: 2px 6px;">
+                                                <i class="fas fa-shield-alt me-0.5"></i>{{ __('Garantie 2 ans') }}
+                                            </span>
+                                        </div>
+                                        <div class="d-flex align-items-center justify-content-between pt-1 border-top border-light">
+                                            <div class="text-muted small">
+                                                <span>{{ currency($item->price) }}</span>
+                                                <span class="mx-1">&times;</span>
+                                                <span class="badge bg-light text-dark border px-2 py-0.5 fw-bold" style="font-size: 0.76rem;">{{ $item->quantity }}</span>
+                                            </div>
+                                            <div class="text-danger font-heading fw-bold" style="font-size: 0.95rem;">
+                                                {{ currency($item->price * $item->quantity) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -509,16 +558,18 @@
                         </div>
                         @endif
 
-                        <div class="pt-3 border-top d-flex justify-content-between align-items-baseline mb-4">
-                            <div>
-                                <span class="fs-6 text-dark mb-0 d-block" style="font-weight: 500;">{{ __('Total TTC') }}</span>
+                        <div class="pt-3 border-top d-flex justify-content-between align-items-center mb-4 gap-2">
+                            <div class="flex-grow-1 min-w-0">
+                                <span class="fs-6 text-dark mb-0 d-block fw-bold">{{ __('Total TTC') }}</span>
                                 <span class="text-muted small" style="font-size: 0.74rem;">
                                     <i class="fas fa-check-double text-success me-1"></i>{{ __('Montant net à payer à réception') }}
                                 </span>
                             </div>
-                            <span class="order-final-total text-danger font-heading">
-                                {{ $order->formatted_total }}
-                            </span>
+                            <div class="text-end flex-shrink-0">
+                                <span class="order-final-total text-danger font-heading text-nowrap fw-bold">
+                                    {{ $order->formatted_total }}
+                                </span>
+                            </div>
                         </div>
 
                         {{-- ACTION BUTTONS --}}
@@ -735,8 +786,8 @@
     .order-stepper-line-track {
         position: absolute;
         top: 18px;
-        left: 45px;
-        right: 45px;
+        left: 12.5%;
+        right: 12.5%;
         height: 3px;
         background: #e2e8f0;
         z-index: 1;
@@ -911,8 +962,10 @@
     }
 
     .order-final-total {
-        font-size: 1.65rem;
+        font-size: 1.55rem;
         color: #dc2626 !important;
+        white-space: nowrap !important;
+        font-weight: 700 !important;
     }
 
     .order-primary-action-btn {
@@ -937,6 +990,169 @@
         background: #f1f5f9 !important;
         color: #0f172a !important;
         border-color: #94a3b8 !important;
+    }
+
+    /* ================================================================
+       MOBILE RESPONSIVE PERFECTION (< 768px & < 576px)
+       ================================================================ */
+    @media (max-width: 767.98px) {
+        .order-success-page {
+            padding-top: 12px !important;
+            padding-bottom: 24px !important;
+        }
+
+        .order-success-page > .container {
+            padding-left: 8px !important;
+            padding-right: 8px !important;
+        }
+
+        .order-success-page .row.g-4 {
+            --bs-gutter-x: 10px !important;
+            --bs-gutter-y: 12px !important;
+        }
+
+        /* Hero Card */
+        .order-success-hero {
+            border-radius: 14px !important;
+            margin-bottom: 12px !important;
+        }
+
+        .order-success-hero .card-body {
+            padding: 20px 12px 16px !important;
+        }
+
+        .order-hero-title {
+            font-size: 1.4rem !important;
+            margin-bottom: 6px !important;
+        }
+
+        .order-hero-subtitle {
+            font-size: 0.88rem !important;
+            line-height: 1.45 !important;
+            margin-bottom: 12px !important;
+        }
+
+        .order-success-icon-wrap {
+            width: 60px !important;
+            height: 60px !important;
+            margin-bottom: 10px !important;
+        }
+
+        .order-success-icon {
+            width: 44px !important;
+            height: 44px !important;
+            font-size: 1.25rem !important;
+        }
+
+        /* Hero Buttons & Pills */
+        .order-ref-pill {
+            padding: 5px 12px !important;
+            font-size: 0.82rem !important;
+        }
+
+        .order-live-tracker {
+            padding: 5px 12px !important;
+            font-size: 0.82rem !important;
+        }
+
+        .order-hero-wa-btn {
+            width: 100% !important;
+            justify-content: center !important;
+            padding: 9px 16px !important;
+            font-size: 0.88rem !important;
+            margin-top: 4px;
+        }
+
+        /* Stepper */
+        .order-stepper-wrap {
+            padding: 12px 6px !important;
+        }
+
+        .order-stepper-line-track {
+            top: 15px !important;
+            left: 12.5% !important;
+            right: 12.5% !important;
+            height: 2.5px !important;
+        }
+
+        .order-step-circle {
+            width: 30px !important;
+            height: 30px !important;
+            font-size: 0.72rem !important;
+            margin-bottom: 4px !important;
+            border-width: 1.5px !important;
+        }
+
+        .order-step-title {
+            font-size: 0.70rem !important;
+            font-weight: 600 !important;
+            letter-spacing: -0.2px !important;
+        }
+
+        /* Section Cards */
+        .order-success-page .card {
+            border-radius: 14px !important;
+            margin-bottom: 12px !important;
+        }
+
+        .order-success-page .card-header {
+            padding: 12px 14px !important;
+        }
+
+        .order-success-page .card-body {
+            padding: 14px 12px !important;
+        }
+
+        /* Sub-cards / info blocks */
+        .order-info-block {
+            padding: 12px 10px !important;
+        }
+
+        /* Total TTC */
+        .order-final-total {
+            font-size: 1.45rem !important;
+            white-space: nowrap !important;
+        }
+
+        /* Action Buttons */
+        .order-primary-action-btn,
+        .order-print-action-btn {
+            font-size: 0.90rem !important;
+            padding: 11px 14px !important;
+        }
+
+        /* WhatsApp floating button positioning on mobile */
+        .whatsapp-float {
+            bottom: calc(14px + env(safe-area-inset-bottom, 0px)) !important;
+            right: 12px !important;
+            width: 48px !important;
+            height: 48px !important;
+        }
+
+        .whatsapp-float-svg {
+            width: 26px !important;
+            height: 26px !important;
+        }
+    }
+
+    @media (max-width: 420px) {
+        .order-hero-title {
+            font-size: 1.25rem !important;
+        }
+
+        .order-ref-pill,
+        .order-live-tracker {
+            font-size: 0.78rem !important;
+            padding: 5px 10px !important;
+        }
+
+        .order-step-title {
+            font-size: 0.66rem !important;
+        }
+
+        .order-final-total {
+            font-size: 1.35rem !important;
+        }
     }
 
     /* PRINT SPECIFIC STYLES */

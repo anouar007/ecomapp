@@ -12244,3 +12244,238 @@ html:not(.aos-init) [data-aos] {
         height: 140px;
     }
 }
+
+/* ================================================================
+   CHECKOUT FORM INPUT CLARITY & MOBILE SPACING
+   ================================================================ */
+.checkout-input-group {
+    border-radius: 10px;
+    background: #ffffff;
+    transition: all 0.2s ease-in-out;
+    border: 1.5px solid #cbd5e1;
+    overflow: hidden;
+}
+
+.checkout-input-group:hover {
+    border-color: #94a3b8;
+}
+
+.checkout-input-group:focus-within {
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 3.5px rgba(220, 38, 38, 0.15) !important;
+}
+
+.checkout-input-group .input-group-text {
+    background-color: #f8fafc !important;
+    border: none !important;
+    color: #64748b !important;
+    padding-left: 14px;
+    padding-right: 12px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.checkout-input-group:focus-within .input-group-text {
+    background-color: #fef2f2 !important;
+    color: #dc2626 !important;
+}
+
+.checkout-input-group .form-control.checkout-input {
+    background-color: #ffffff !important;
+    border: none !important;
+    font-size: 0.95rem !important;
+    font-weight: 500 !important;
+    padding: 11px 14px !important;
+    color: #0f172a !important;
+    box-shadow: none !important;
+}
+
+.checkout-input-group .form-control.checkout-input:focus {
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.checkout-input::placeholder {
+    color: #94a3b8 !important;
+    letter-spacing: 2.5px !important;
+    font-weight: 400 !important;
+    opacity: 0.8 !important;
+}
+
+@media (max-width: 575.98px) {
+    .checkout-page-wrapper {
+        padding-top: 10px !important;
+        padding-bottom: 24px !important;
+    }
+
+    .checkout-page-wrapper .row {
+        --bs-gutter-x: 10px;
+    }
+
+    .checkout-container {
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+    }
+
+    .checkout-card {
+        border-radius: 12px !important;
+        margin-bottom: 12px !important;
+    }
+
+    .checkout-card .card-body {
+        padding: 14px 10px !important;
+    }
+
+    .checkout-card .card-header {
+        padding: 14px 10px 0 !important;
+    }
+
+    .checkout-title {
+        font-size: 1.25rem !important;
+        margin-bottom: 10px !important;
+        padding-left: 4px !important;
+    }
+
+    .checkout-section-title {
+        font-size: 1.05rem !important;
+        margin-bottom: 12px !important;
+    }
+
+    .checkout-input-group {
+        border-radius: 8px !important;
+    }
+
+    .checkout-input-group .input-group-text {
+        padding-left: 10px !important;
+        padding-right: 8px !important;
+        font-size: 0.88rem !important;
+    }
+
+    .checkout-input-group .form-control.checkout-input {
+        padding: 9px 10px !important;
+        font-size: 0.92rem !important;
+    }
+
+    .checkout-input::placeholder {
+        letter-spacing: 2px !important;
+    }
+}
+
+/* ================================================================
+   ORDER CONFIRMATION / SUCCESS MOBILE PERFECTION
+   ================================================================ */
+@media (max-width: 767.98px) {
+    .order-success-page {
+        padding-top: 12px !important;
+        padding-bottom: 24px !important;
+    }
+
+    .order-success-page > .container {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+
+    .order-success-page .row.g-4 {
+        --bs-gutter-x: 10px !important;
+        --bs-gutter-y: 12px !important;
+    }
+
+    .order-success-hero {
+        border-radius: 14px !important;
+        margin-bottom: 12px !important;
+    }
+
+    .order-success-hero .card-body {
+        padding: 20px 12px 16px !important;
+    }
+
+    .order-hero-title {
+        font-size: 1.4rem !important;
+        margin-bottom: 6px !important;
+    }
+
+    .order-hero-subtitle {
+        font-size: 0.88rem !important;
+        line-height: 1.45 !important;
+        margin-bottom: 12px !important;
+    }
+
+    .order-success-icon-wrap {
+        width: 60px !important;
+        height: 60px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .order-success-icon {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 1.25rem !important;
+    }
+
+    .order-ref-pill,
+    .order-live-tracker {
+        padding: 5px 12px !important;
+        font-size: 0.82rem !important;
+    }
+
+    .order-hero-wa-btn {
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 9px 16px !important;
+        font-size: 0.88rem !important;
+        margin-top: 4px;
+    }
+
+    .order-stepper-wrap {
+        padding: 12px 6px !important;
+    }
+
+    .order-stepper-line-track {
+        top: 15px !important;
+        left: 12.5% !important;
+        right: 12.5% !important;
+        height: 2.5px !important;
+    }
+
+    .order-step-circle {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 0.72rem !important;
+        margin-bottom: 4px !important;
+        border-width: 1.5px !important;
+    }
+
+    .order-step-title {
+        font-size: 0.70rem !important;
+        font-weight: 600 !important;
+        letter-spacing: -0.2px !important;
+    }
+
+    .order-success-page .card {
+        border-radius: 14px !important;
+        margin-bottom: 12px !important;
+    }
+
+    .order-success-page .card-header {
+        padding: 12px 14px !important;
+    }
+
+    .order-success-page .card-body {
+        padding: 14px 12px !important;
+    }
+
+    .order-info-block {
+        padding: 12px 10px !important;
+    }
+
+    .order-final-total {
+        font-size: 1.45rem !important;
+        white-space: nowrap !important;
+    }
+
+    .order-primary-action-btn,
+    .order-print-action-btn {
+        font-size: 0.90rem !important;
+        padding: 11px 14px !important;
+    }
+}

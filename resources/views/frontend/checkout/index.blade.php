@@ -4,14 +4,14 @@
 
 @section('content')
 <div id="checkout-progress-bar" class="checkout-progress-bar" style="display: none;"></div>
-<div class="bg-light py-5">
-    <div class="container">
-        <h1 class="h3 fw-bold mb-4 font-heading">{{ __('Finaliser votre commande') }}</h1>
-        <div class="row">
+<div class="bg-light checkout-page-wrapper py-3 py-md-5">
+    <div class="container checkout-container">
+        <h1 class="h3 fw-bold mb-3 mb-md-4 font-heading checkout-title">{{ __('Finaliser votre commande') }}</h1>
+        <div class="row g-3 g-md-4">
             <div class="col-lg-7">
-                <div class="card border-0 shadow-sm rounded-4 mb-4">
-                    <div class="card-body p-4">
-                        <h2 class="h4 fw-bold mb-4">{{ __('Shipping Information') }}</h2>
+                <div class="card checkout-card border-0 shadow-sm rounded-4 mb-3 mb-md-4">
+                    <div class="card-body p-3 p-sm-4">
+                        <h2 class="h4 fw-bold mb-3 mb-md-4 checkout-section-title">{{ __('Shipping Information') }}</h2>
 
                         @if(isset($errors) && $errors->any())
                             <div class="alert alert-danger border-0 rounded-4 shadow-sm mb-4">
@@ -39,46 +39,80 @@
                             @csrf
                             <div class="row g-3">
                                 <div class="col-12">
-                                    <label class="form-label small fw-bold text-muted">{{ __('FULL NAME') }} <span class="text-danger">*</span></label>
-                                    <input type="text" name="customer_name" class="form-control bg-light border-0 py-2" required value="{{ old('customer_name', auth()->user()->name ?? '') }}" placeholder="Ex: Mohamed Alami">
+                                    <label for="customer_name" class="form-label fw-semibold text-dark mb-1.5">
+                                        {{ __('FULL NAME') }} <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group checkout-input-group">
+                                        <span class="input-group-text"><i class="far fa-user text-muted"></i></span>
+                                        <input type="text" 
+                                               id="customer_name" 
+                                               name="customer_name" 
+                                               class="form-control checkout-input" 
+                                               required 
+                                               value="{{ old('customer_name', auth()->user()->name ?? '') }}" 
+                                               placeholder="....">
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">{{ __('EMAIL ADDRESS') }} <span class="text-muted fw-normal">({{ __('optional') }})</span></label>
-                                    <input type="email" name="customer_email" class="form-control bg-light border-0 py-2" placeholder="{{ __('For order confirmation') }}" value="{{ old('customer_email', auth()->user()->email ?? '') }}">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">{{ __('PHONE NUMBER') }} <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light border-0"><i class="fas fa-phone-alt text-muted small"></i></span>
-                                        <input type="tel" name="customer_phone" class="form-control bg-light border-0 py-2" 
-                                               placeholder="06 XX XX XX XX ou +212..." 
+
+                                <div class="col-12 col-md-6">
+                                    <label for="customer_phone" class="form-label fw-semibold text-dark mb-1.5">
+                                        {{ __('PHONE NUMBER') }} <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group checkout-input-group">
+                                        <span class="input-group-text"><i class="fas fa-phone-alt text-muted"></i></span>
+                                        <input type="tel" 
+                                               id="customer_phone" 
+                                               name="customer_phone" 
+                                               class="form-control checkout-input" 
+                                               placeholder="...." 
                                                required
                                                value="{{ old('customer_phone', auth()->user()->phone ?? '') }}">
                                     </div>
-                                    <div class="form-text text-muted small" style="font-size: 0.75rem;">
-                                        Ex: 0612345678, 0712345678 ou +212612345678
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label for="customer_email" class="form-label fw-semibold text-dark mb-1.5">
+                                        E-MAIL <span class="text-muted fw-normal small">({{ __('optional') }})</span>
+                                    </label>
+                                    <div class="input-group checkout-input-group">
+                                        <span class="input-group-text"><i class="far fa-envelope text-muted"></i></span>
+                                        <input type="email" 
+                                               id="customer_email" 
+                                               name="customer_email" 
+                                               class="form-control checkout-input" 
+                                               placeholder="...." 
+                                               value="{{ old('customer_email', auth()->user()->email ?? '') }}">
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">ICE <span class="text-muted fw-normal">({{ __('optional') }})</span></label>
-                                    <input type="text" name="ice" class="form-control bg-light border-0 py-2" placeholder="{{ __('Common Company Identifier') }}" value="{{ old('ice', auth()->user()->ice ?? '') }}">
-                                </div>
+
                                 <div class="col-12">
-                                    <label class="form-label small fw-bold text-muted">{{ __('ADDRESS') }} <span class="text-danger">*</span></label>
-                                    <input type="text" name="shipping_address" class="form-control bg-light border-0 py-2" required value="{{ old('shipping_address', auth()->user()->address ?? '') }}" placeholder="Ex: Boulevard d'Anfa, Quartier Racine, Résidence Al Amal, Étage 2">
+                                    <label for="shipping_address" class="form-label fw-semibold text-dark mb-1.5">
+                                        {{ __('ADDRESS') }} <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group checkout-input-group">
+                                        <span class="input-group-text"><i class="fas fa-map-marker-alt text-muted"></i></span>
+                                        <input type="text" 
+                                               id="shipping_address" 
+                                               name="shipping_address" 
+                                               class="form-control checkout-input" 
+                                               required 
+                                               value="{{ old('shipping_address', auth()->user()->address ?? '') }}" 
+                                               placeholder="....">
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">
+
+                                <div class="col-12">
+                                    <label for="shipping_city_input" class="form-label fw-semibold text-dark mb-1.5">
                                         {{ __('SHIPPING CITY') }} <span class="text-danger">*</span>
                                     </label>
                                     <div class="city-autocomplete-wrapper">
-                                        <div class="input-group">
-                                            <span class="input-group-text bg-light border-0"><i class="fas fa-map-marker-alt text-danger"></i></span>
+                                        <div class="input-group checkout-input-group">
+                                            <span class="input-group-text"><i class="fas fa-city text-danger"></i></span>
                                             <input type="text" 
                                                    name="shipping_city" 
                                                    id="shipping_city_input" 
-                                                   class="form-control bg-light border-0 py-2 fw-semibold" 
-                                                   placeholder="{{ __('Type your city (e.g. Casablanca, Agadir, فاس...)') }}" 
+                                                   class="form-control checkout-input fw-semibold" 
+                                                   placeholder="...." 
                                                    autocomplete="off" 
                                                    required
                                                    value="{{ old('shipping_city', auth()->user()->city ?? '') }}">
@@ -93,27 +127,25 @@
 
                                     {{-- Live status indicator --}}
                                     <div id="city-status-container" class="mt-2" style="display: none;"></div>
-
-
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-muted">{{ __('REGION') }} <span class="text-muted fw-normal">({{ __('optional') }})</span></label>
-                                    <input type="text" name="shipping_state" class="form-control bg-light border-0 py-2" placeholder="ex. Casablanca-Settat" value="{{ old('shipping_state', auth()->user()->state ?? '') }}">
-                                </div>
+
+                                {{-- Hidden fields: ICE and Région hidden per request --}}
+                                <input type="hidden" name="ice" value="{{ old('ice', auth()->user()->ice ?? '') }}">
+                                <input type="hidden" name="shipping_state" value="{{ old('shipping_state', auth()->user()->state ?? '') }}">
                             </div>
                         </form>
                     </div>
                 </div>
 
-                <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-body p-4">
-                        <h2 class="h4 fw-bold mb-4">{{ __('Payment') }}</h2>
-                        <div class="alert alert-info border-0 rounded-3">
+                <div class="card checkout-card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-3 p-sm-4">
+                        <h2 class="h4 fw-bold mb-3 mb-md-4 checkout-section-title">{{ __('Payment') }}</h2>
+                        <div class="alert alert-info border-0 rounded-3 mb-3">
                             <i class="fas fa-info-circle me-2"></i> {{ __('For this shop, you can pay with cash on delivery (cash upon receipt of parcel) or bank transfer.') }}
                         </div>
-                        <div class="form-check p-3 border rounded-3 bg-white mb-2">
+                        <div class="form-check p-3 border rounded-3 bg-white mb-0">
                             <input class="form-check-input ms-0 me-3" type="radio" name="payment_method" id="cod" checked>
-                            <label class="form-check-label fw-bold" for="cod">
+                            <label class="form-check-label fw-bold text-dark" for="cod">
                                 {{ __('Cash on delivery (Cash on Delivery)') }}
                             </label>
                         </div>
@@ -121,12 +153,12 @@
                 </div>
             </div>
 
-            <div class="col-lg-5 mt-3">
-                <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-header bg-white p-4 border-bottom-0">
+            <div class="col-lg-5">
+                <div class="card checkout-card border-0 shadow-sm rounded-4">
+                    <div class="card-header bg-white p-3 p-sm-4 border-bottom-0 pb-0">
                         <h2 class="h5 fw-bold m-0">{{ __('Order Summary') }}</h2>
                     </div>
-                    <div class="card-body p-4 pt-0">
+                    <div class="card-body p-3 p-sm-4 pt-0">
                         @foreach($cart as $id => $details)
                         <div class="d-flex align-items-center mb-3">
                             <div class="me-3 position-relative">
@@ -548,4 +580,132 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endpush
+
+<style>
+/* ================================================================
+   CHECKOUT FORM INPUT CLARITY & MODERN POLISH
+   ================================================================ */
+.checkout-input-group {
+    border-radius: 10px;
+    background: #ffffff;
+    transition: all 0.2s ease-in-out;
+    border: 1.5px solid #cbd5e1;
+    overflow: hidden;
+}
+
+.checkout-input-group:hover {
+    border-color: #94a3b8;
+}
+
+.checkout-input-group:focus-within {
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 3.5px rgba(220, 38, 38, 0.15) !important;
+}
+
+.checkout-input-group .input-group-text {
+    background-color: #f8fafc !important;
+    border: none !important;
+    color: #64748b !important;
+    padding-left: 14px;
+    padding-right: 12px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.checkout-input-group:focus-within .input-group-text {
+    background-color: #fef2f2 !important;
+    color: #dc2626 !important;
+}
+
+.checkout-input-group .form-control.checkout-input {
+    background-color: #ffffff !important;
+    border: none !important;
+    font-size: 0.95rem !important;
+    font-weight: 500 !important;
+    padding: 11px 14px !important;
+    color: #0f172a !important;
+    box-shadow: none !important;
+}
+
+.checkout-input-group .form-control.checkout-input:focus {
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.checkout-input::placeholder {
+    color: #94a3b8 !important;
+    letter-spacing: 2.5px !important;
+    font-weight: 400 !important;
+    opacity: 0.8 !important;
+}
+
+#city-clear-btn {
+    border: none !important;
+    background: transparent !important;
+    transition: color 0.15s ease;
+}
+
+#city-clear-btn:hover {
+    color: #ef4444 !important;
+}
+
+/* ================================================================
+   MOBILE VIEWPORT SPACING OPTIMIZATION
+   Reduces wasted left/right padding so inputs have maximum width
+   ================================================================ */
+@media (max-width: 575.98px) {
+    .checkout-page-wrapper {
+        padding-top: 12px !important;
+        padding-bottom: 24px !important;
+    }
+
+    .checkout-container {
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+    }
+
+    .checkout-card {
+        border-radius: 12px !important;
+        margin-bottom: 12px !important;
+    }
+
+    .checkout-card .card-body {
+        padding: 14px 10px !important;
+    }
+
+    .checkout-card .card-header {
+        padding: 14px 10px 0 !important;
+    }
+
+    .checkout-title {
+        font-size: 1.25rem !important;
+        margin-bottom: 10px !important;
+        padding-left: 4px !important;
+    }
+
+    .checkout-section-title {
+        font-size: 1.05rem !important;
+        margin-bottom: 12px !important;
+    }
+
+    .checkout-input-group {
+        border-radius: 8px !important;
+    }
+
+    .checkout-input-group .input-group-text {
+        padding-left: 10px !important;
+        padding-right: 8px !important;
+        font-size: 0.88rem !important;
+    }
+
+    .checkout-input-group .form-control.checkout-input {
+        padding: 9px 10px !important;
+        font-size: 0.92rem !important;
+    }
+
+    .checkout-input::placeholder {
+        letter-spacing: 2px !important;
+    }
+}
+</style>
 @endsection

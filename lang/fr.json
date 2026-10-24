@@ -427,7 +427,7 @@
     "Error updating cart": "Erreur lors de la mise à jour du panier",
     "Shipping Information": "Informations de livraison",
     "FULL NAME": "NOM COMPLET",
-    "EMAIL ADDRESS": "ADRESSE E-MAIL",
+    "EMAIL ADDRESS": "E-MAIL",
     "optional": "optionnel",
     "For order confirmation": "Pour la confirmation de commande",
     "PHONE NUMBER": "NUMÉRO DE TÉLÉPHONE",
@@ -527,5 +527,10 @@
     "to": "à",
     "of": "sur",
     "results": "résultats",
-    "Pagination": "Pagination"
+    "Pagination": "Pagination",
+    "Order number copied!": "Numéro de commande copié !",
+    "Order confirmed!": "Commande confirmée !",
+    "Thank you for your trust,": "Merci pour votre confiance,",
+    "We have received your order and are preparing it right away.": "Nous avons bien reçu votre commande et nous la préparons dès maintenant.",
+    "Order:": "Commande :"
 }
