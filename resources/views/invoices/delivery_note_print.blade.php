@@ -510,7 +510,7 @@
                                 {{ $item->product_sku ?: 'ART-' . str_pad($item->product_id ?? $item->id, 4, '0', STR_PAD_LEFT) }}
                             </td>
                             <td>
-                                <strong>{{ $item->product_name }}</strong>
+                                <strong>{{ $item->displayName }}</strong>
                             </td>
                             <td style="text-align: right; color: #334155; font-weight: 500;">{{ $item->formatted_unit_price_ht }}</td>
                             <td style="text-align: center; font-weight: 800; color: #0284c7;">{{ $item->quantity }}</td>

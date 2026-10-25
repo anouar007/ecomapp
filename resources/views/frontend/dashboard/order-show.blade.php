@@ -26,7 +26,12 @@
                                     </div>
                                     <div>
                                         <h6 class="fw-bold mb-0">{{ $item->product_name }}</h6>
-                                        <small class="text-muted">{{ __('Qty:') }} {{ $item->quantity }}</small>
+                                        @if($item->variant_name)
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.72rem;">
+                                                <i class="fas fa-layer-group me-1"></i>{{ $item->variant_name }}
+                                            </span>
+                                        @endif
+                                        <small class="text-muted d-block">{{ __('Qty:') }} {{ $item->quantity }}</small>
                                     </div>
                                 </div>
                             </td>

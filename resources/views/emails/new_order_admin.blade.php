@@ -95,7 +95,7 @@
                         @foreach($order->items as $item)
                         <tr>
                             <td>
-                                <div class="item-name">{{ $item->product_name }}</div>
+                                <div class="item-name">{{ $item->displayName }}</div>
                                 @if($item->product_sku && $item->product_sku !== 'N/A')
                                     <div class="item-sku">SKU: {{ $item->product_sku }}</div>
                                 @endif

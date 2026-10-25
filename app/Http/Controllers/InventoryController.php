@@ -22,8 +22,8 @@ class InventoryController extends Controller
     {
         $query = Product::query();
 
-        // Eager load category
-        $query->with('productCategory');
+        // Eager load category and variants
+        $query->with(['productCategory', 'variants']);
 
         // Filter by track inventory
         if ($request->filled('track_inventory')) {
@@ -177,7 +177,7 @@ class InventoryController extends Controller
      */
     public function movements(Request $request)
     {
-        $query = InventoryMovement::with(['product', 'creator']);
+        $query = InventoryMovement::with(['product', 'creator', 'variant']);
 
         // Filter by product ID
         if ($request->filled('product_id')) {
@@ -265,6 +265,7 @@ class InventoryController extends Controller
      */
     public function adjust(Product $product)
     {
+        $product->load('variants');
         return view('inventory.adjust', compact('product'));
     }
 
@@ -285,11 +286,16 @@ class InventoryController extends Controller
             'adjustment_type' => 'required|in:in,out,adjustment,transfer,return',
             'quantity' => "required|integer|min:{$minQty}",
             'reason' => 'required|string|max:500',
+            'variant_id' => 'nullable|exists:product_variants,id',
         ]);
 
         $options = [
             'reason' => $validated['reason'],
         ];
+
+        if (!empty($validated['variant_id'])) {
+            $options['variant_id'] = $validated['variant_id'];
+        }
 
         if ($request->filled('reference')) {
             $options['reference_id'] = $request->input('reference');
@@ -304,10 +310,14 @@ class InventoryController extends Controller
 
         if ($request->ajax() || $request->wantsJson()) {
             if ($success) {
+                $refreshed = $product->fresh();
+                $variant = !empty($validated['variant_id']) ? $product->variants()->find($validated['variant_id']) : null;
                 return response()->json([
                     'success' => true,
                     'message' => 'Stock ajusté avec succès.',
-                    'new_stock' => $product->fresh()->stock,
+                    'new_stock' => $refreshed->stock,
+                    'variant_id' => $variant ? $variant->id : null,
+                    'variant_stock' => $variant ? $variant->stock : null,
                 ]);
             }
             return response()->json([

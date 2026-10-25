@@ -347,7 +347,7 @@
                     {{ $item->product_sku ?: 'ART-' . str_pad($item->product_id ?? $item->id, 4, '0', STR_PAD_LEFT) }}
                 </td>
                 <td>
-                    <div class="item-name">{{ $item->product_name }}</div>
+                    <div class="item-name">{{ $item->displayName }}</div>
                 </td>
                 <td style="text-align: right;">{{ $item->formatted_unit_price_ht }}</td>
                 <td style="text-align: center; font-weight: bold; color: #0284c7;">{{ $item->quantity }}</td>

@@ -39,6 +39,11 @@
                     <a href="{{ route('products.edit', $product) }}" class="mobile-prod-title" title="{{ $product->name }}">
                         {{ $product->name }}
                     </a>
+                    @if($product->variants && $product->variants->isNotEmpty())
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace px-1.5 py-0.5 ms-1" style="font-size: 0.65rem;">
+                            <i class="fas fa-layer-group me-1"></i>{{ $product->variants->count() }} var.
+                        </span>
+                    @endif
                 </div>
 
                 <!-- Price Top-Right -->

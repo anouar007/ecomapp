@@ -352,6 +352,23 @@
                                             {{ $product->productCategory->name ?? ($product->category->name ?? 'Non classé') }}
                                         </span>
                                     </div>
+                                    @if($product->variants && $product->variants->isNotEmpty())
+                                    <div class="mt-1 d-flex flex-wrap gap-1 align-items-center">
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace px-1 py-0.5" style="font-size: 0.62rem;">
+                                            <i class="fas fa-layer-group me-1"></i>{{ $product->variants->count() }} variantes
+                                        </span>
+                                        @foreach($product->variants as $variant)
+                                            <button type="button" 
+                                                    class="btn btn-xs btn-outline-secondary py-0 px-1.5 d-inline-flex align-items-center gap-1 rounded" 
+                                                    style="font-size: 0.66rem; line-height: 1.4;"
+                                                    onclick="openAdjustModal('{{ $product->id }}', '{{ addslashes($product->name) }} ({{ addslashes($variant->name) }})', {{ $product->stock }}, {{ json_encode($product->variants) }}, '{{ $variant->id }}')"
+                                                    title="Ajuster la variante {{ $variant->name }}">
+                                                <span class="fw-semibold">{{ $variant->name }}:</span>
+                                                <span class="badge {{ $variant->stock <= 0 ? 'bg-danger text-white' : ($variant->stock <= ($variant->min_stock ?: 5) ? 'bg-warning text-dark' : 'bg-light text-dark border') }} px-1 py-0" style="font-size: 0.62rem;">{{ $variant->stock }}</span>
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                    @endif
                                 </div>
                             </div>
                         </td>
@@ -417,7 +434,7 @@
                                 @if($isTracked)
                                 <button type="button" 
                                         class="action-btn action-btn-primary" 
-                                        onclick="openAdjustModal('{{ $product->id }}', '{{ addslashes($product->name) }}', {{ $stock }})"
+                                        onclick="openAdjustModal('{{ $product->id }}', '{{ addslashes($product->name) }}', {{ $stock }}, {{ json_encode($product->variants) }})"
                                         title="Ajuster le stock">
                                     <i class="fas fa-sliders-h"></i>
                                 </button>
@@ -494,6 +511,15 @@
                                 <div class="text-muted small text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.04em;">Nouveau niveau</div>
                                 <div class="fw-extrabold fs-5 text-dark" id="modalProjectedStock">0</div>
                             </div>
+                        </div>
+
+                        <!-- Variant Selector (shown when product has variants) -->
+                        <div class="mb-3" id="modalVariantContainer" style="display: none;">
+                            <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.04em;">Déclinaison / Variante</label>
+                            <select name="variant_id" id="modalVariantSelect" class="form-select form-select-sm" onchange="onVariantSelectionChange()">
+                                <option value="">Ajustement global (Produit entier)</option>
+                            </select>
+                            <div class="form-text small" style="font-size: 0.7rem;">Sélectionnez une variante spécifique ou effectuez un ajustement global.</div>
                         </div>
 
                         <!-- Operation Type Selector (Visual Pills) -->
@@ -583,21 +609,67 @@
 @push('scripts')
 <script>
     let currentProductStock = 0;
+    let modalBaseStock = 0;
+    let modalVariantsList = [];
 
-    function openAdjustModal(productId, productName, currentStock) {
-        currentProductStock = parseInt(currentStock, 10) || 0;
+    function openAdjustModal(productId, productName, currentStock, variants = null, selectedVariantId = null) {
+        modalBaseStock = parseInt(currentStock, 10) || 0;
+        currentProductStock = modalBaseStock;
+        modalVariantsList = variants || [];
+
         document.getElementById('modalProductName').textContent = productName;
         document.getElementById('modalCurrentStock').textContent = currentProductStock;
         
         const form = document.getElementById('adjustStockForm');
         form.action = `/inventory/${productId}/adjust`;
         
+        // Handle variants dropdown
+        const variantContainer = document.getElementById('modalVariantContainer');
+        const variantSelect = document.getElementById('modalVariantSelect');
+        variantSelect.innerHTML = '<option value="">Ajustement global (Produit entier - ' + modalBaseStock + ' en stock)</option>';
+        
+        if (modalVariantsList && modalVariantsList.length > 0) {
+            variantContainer.style.display = 'block';
+            modalVariantsList.forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = v.id;
+                opt.textContent = `${v.name} (Stock actuel: ${v.stock ?? 0})`;
+                opt.dataset.stock = v.stock ?? 0;
+                if (selectedVariantId && String(v.id) === String(selectedVariantId)) {
+                    opt.selected = true;
+                }
+                variantSelect.appendChild(opt);
+            });
+            
+            if (selectedVariantId) {
+                const found = modalVariantsList.find(v => String(v.id) === String(selectedVariantId));
+                if (found) {
+                    currentProductStock = parseInt(found.stock, 10) || 0;
+                    document.getElementById('modalCurrentStock').textContent = currentProductStock;
+                }
+            }
+        } else {
+            variantContainer.style.display = 'none';
+        }
+
         selectOperation('in');
         document.getElementById('modalQuantityInput').value = 1;
         document.getElementById('modalReasonInput').value = '';
         recalculateProjected();
         
         new bootstrap.Modal(document.getElementById('adjustStockModal')).show();
+    }
+
+    function onVariantSelectionChange() {
+        const select = document.getElementById('modalVariantSelect');
+        const selectedOpt = select.options[select.selectedIndex];
+        if (selectedOpt && selectedOpt.value) {
+            currentProductStock = parseInt(selectedOpt.dataset.stock, 10) || 0;
+        } else {
+            currentProductStock = modalBaseStock;
+        }
+        document.getElementById('modalCurrentStock').textContent = currentProductStock;
+        recalculateProjected();
     }
 
     function selectOperation(op) {

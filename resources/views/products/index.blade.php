@@ -412,6 +412,11 @@
                                 <div class="prod-info-wrap">
                                     <div class="prod-name" title="{{ $product->name }}">
                                         {{ $product->name }}
+                                        @if($product->variants && $product->variants->isNotEmpty())
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace px-1.5 py-0.5 ms-1" style="font-size: 0.65rem;" title="{{ $product->variants->pluck('name')->implode(', ') }}">
+                                                <i class="fas fa-layer-group me-1"></i>{{ $product->variants->count() }} var.
+                                            </span>
+                                        @endif
                                     </div>
                                     <div class="d-flex align-items-center gap-1.5 flex-wrap mt-0.5">
                                         <span id="prod-badge-{{ $product->id }}">{!! $product->image_quality_badge !!}</span>

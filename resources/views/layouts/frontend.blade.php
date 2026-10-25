@@ -2334,7 +2334,7 @@
             });
         };
 
-        window.addToCart = addToCart = function(productId, quantity = 1, triggerEl = null, force = false) {
+        window.addToCart = addToCart = function(productId, quantity = 1, triggerEl = null, force = false, variantId = null) {
             let originalHtml = '';
             let btn = triggerEl;
             if (!btn && typeof event !== 'undefined' && event && event.currentTarget) {
@@ -2350,7 +2350,7 @@
             const isAlreadyInCart = (btn && btn.classList.contains('is-in-cart')) || 
                                     (document.querySelector(`button[data-product-id="${productId}"].is-in-cart`) !== null);
 
-            if (isAlreadyInCart && !force) {
+            if (isAlreadyInCart && !force && !variantId) {
                 const isAr = document.documentElement.lang === 'ar' || document.documentElement.dir === 'rtl';
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
@@ -2368,7 +2368,7 @@
                         reverseButtons: !isAr
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            window.addToCart(productId, quantity, btn, true);
+                            window.addToCart(productId, quantity, btn, true, variantId);
                         } else if (result.isDenied) {
                             const miniCartEl = document.getElementById('miniCart');
                             if (miniCartEl && typeof bootstrap !== 'undefined' && bootstrap.Offcanvas) {
@@ -2380,7 +2380,7 @@
                     });
                     return;
                 } else if (confirm('Ce produit est déjà dans votre panier. Souhaitez-vous en ajouter un exemplaire supplémentaire ?')) {
-                    window.addToCart(productId, quantity, btn, true);
+                    window.addToCart(productId, quantity, btn, true, variantId);
                     return;
                 } else {
                     return;
@@ -2397,6 +2397,11 @@
                 }
             }
 
+            const requestPayload = { quantity: parseInt(quantity) || 1 };
+            if (variantId) {
+                requestPayload.variant_id = variantId;
+            }
+
             return fetch(`{{ url('/cart/add') }}/${productId}`, {
                 method: 'POST',
                 headers: {
@@ -2405,7 +2410,7 @@
                     'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 },
-                body: JSON.stringify({ quantity: parseInt(quantity) || 1 })
+                body: JSON.stringify(requestPayload)
             })
             .then(async response => {
                 const data = await response.json();

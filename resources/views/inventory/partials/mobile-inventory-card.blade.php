@@ -83,6 +83,18 @@
                     {{ $product->productCategory->name ?? ($product->category->name ?? 'Non classé') }}
                 </span>
             </div>
+            @if($product->variants && $product->variants->isNotEmpty())
+            <div class="mt-1 d-flex flex-wrap gap-1 align-items-center">
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-1.5 py-0.5" style="font-size: 0.62rem;">
+                    <i class="fas fa-layer-group me-1"></i>{{ $product->variants->count() }} var.
+                </span>
+                @foreach($product->variants as $variant)
+                    <span class="badge {{ $variant->stock <= 0 ? 'bg-danger-subtle text-danger' : 'bg-light text-secondary border' }} px-1.5 py-0.5" style="font-size: 0.63rem;">
+                        {{ $variant->name }}: <strong class="text-dark">{{ $variant->stock }}</strong>
+                    </span>
+                @endforeach
+            </div>
+            @endif
         </div>
 
         <!-- Right: Stock Pill & Quantity -->
@@ -141,7 +153,7 @@
             @if($isTracked)
             <button type="button" 
                     class="mobile-act-btn mobile-act-adjust" 
-                    onclick="openAdjustModal('{{ $product->id }}', '{{ addslashes($product->name) }}', {{ $stock }})"
+                    onclick="openAdjustModal('{{ $product->id }}', '{{ addslashes($product->name) }}', {{ $stock }}, {{ json_encode($product->variants) }})"
                     title="Ajuster le stock">
                 <i class="fas fa-sliders-h"></i>
                 <span>Ajuster</span>

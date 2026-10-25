@@ -57,7 +57,7 @@ class OrderController extends Controller
     {
         $products = Product::where('status', 'active')
             ->where('stock', '>', 0)
-            ->with('images')
+            ->with(['images', 'variants'])
             ->orderBy('name')
             ->get();
 
@@ -90,6 +90,8 @@ class OrderController extends Controller
             'notes' => ['nullable', 'string'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'exists:products,id'],
+            'items.*.variant_id' => ['nullable'],
+            'items.*.variant_name' => ['nullable', 'string'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
         ]);
 
@@ -101,24 +103,38 @@ class OrderController extends Controller
 
             foreach ($validated['items'] as $itemData) {
                 $product = Product::findOrFail($itemData['product_id']);
+                $variantId = !empty($itemData['variant_id']) ? $itemData['variant_id'] : null;
+                $variant = $variantId ? $product->variants()->find($variantId) : null;
                 
                 // Check stock
-                if ($product->stock < $itemData['quantity']) {
-                    return back()->with('error', "Insufficient stock for {$product->name}.")->withInput();
+                $availableStock = $variant ? $variant->stock : $product->stock;
+                if ($availableStock < $itemData['quantity']) {
+                    $itemLabel = $variant ? "{$product->name} ({$variant->name})" : $product->name;
+                    return back()->with('error', "Stock insuffisant pour {$itemLabel} ({$availableStock} restant(s)).")->withInput();
                 }
 
-                $effectivePrice = $product->active_price;
+                $effectivePrice = $variant ? (float)$variant->price : $product->active_price;
                 $itemSubtotal = $effectivePrice * $itemData['quantity'];
                 $subtotal += $itemSubtotal;
 
                 $items[] = [
                     'product_id' => $product->id,
+                    'variant_id' => $variant ? $variant->id : null,
+                    'variant_name' => $variant ? $variant->name : ($itemData['variant_name'] ?? null),
                     'product_name' => $product->name,
-                    'product_sku' => $product->sku,
+                    'product_sku' => $variant ? ($variant->sku ?: $product->sku) : $product->sku,
                     'price' => $effectivePrice,
                     'quantity' => $itemData['quantity'],
                     'subtotal' => $itemSubtotal,
                 ];
+
+                // Decrement stock
+                if ($variant) {
+                    $variant->decrement('stock', $itemData['quantity']);
+                    $variant->syncParentProductStock();
+                } elseif ($product->track_inventory) {
+                    $product->decrement('stock', $itemData['quantity']);
+                }
             }
 
             $taxRate = floatval(setting('tax_rate', 20)) / 100;
@@ -165,7 +181,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        $order->load(['items.product', 'user']);
+        $order->load(['items.product', 'items.variant', 'user']);
         return view('orders.show', compact('order'));
     }
 

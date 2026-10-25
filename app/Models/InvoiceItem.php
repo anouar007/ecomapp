@@ -12,7 +12,9 @@ class InvoiceItem extends Model
     protected $fillable = [
         'invoice_id',
         'product_id',
+        'variant_id',
         'product_name',
+        'variant_name',
         'product_sku',
         'quantity',
         'unit_price',
@@ -38,6 +40,24 @@ class InvoiceItem extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * Get the variant associated with the item.
+     */
+    public function variant()
+    {
+        return $this->belongsTo(ProductVariant::class, 'variant_id');
+    }
+
+    /**
+     * Get display name with variant.
+     */
+    public function getDisplayNameAttribute(): string
+    {
+        return !empty($this->variant_name) 
+            ? "{$this->product_name} ({$this->variant_name})" 
+            : $this->product_name;
     }
 
     /**

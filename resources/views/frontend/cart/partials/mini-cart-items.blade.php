@@ -13,25 +13,32 @@
                 <span class="position-absolute top-0 {{ app()->getLocale() === 'ar' ? 'end-0' : 'start-0' }} translate-middle badge rounded-pill bg-light text-dark border shadow-sm" style="font-size: 0.7rem;">x{{ $details['quantity'] }}</span>
             </div>
             <div class="flex-grow-1 min-w-0">
-                <h6 class="fw-bold mb-1 text-truncate {{ app()->getLocale() === 'ar' ? 'ps-4' : 'pe-4' }}" title="{{ $details['name'] }}">{{ $details['name'] }}</h6>
+                <div class="d-flex align-items-center flex-wrap gap-1 mb-1">
+                    <h6 class="fw-bold mb-0 text-truncate {{ app()->getLocale() === 'ar' ? 'ps-4' : 'pe-4' }}" title="{{ $details['name'] }}">{{ $details['name'] }}</h6>
+                    @if(!empty($details['variant_name']))
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.68rem;">
+                            <i class="fas fa-layer-group me-1"></i>{{ $details['variant_name'] }}
+                        </span>
+                    @endif
+                </div>
                 <p class="mb-2 text-muted small">{{ $details['category_name'] ?? __('Product') }}</p>
                 
                 <div class="d-flex align-items-center justify-content-between mt-2">
                     <span class="text-primary fw-bold" style="font-size: 1.1rem;">{{ currency($details['price']) }}</span>
                     
                     <div class="quantity-control bg-light rounded-pill d-flex align-items-center px-1 border">
-                        <button class="btn btn-sm btn-link text-dark text-decoration-none p-1 border-0" onclick="updateQty({{ $id }}, {{ $details['quantity'] - 1 }})" aria-label="-">
+                        <button class="btn btn-sm btn-link text-dark text-decoration-none p-1 border-0" onclick="updateQty('{{ $id }}', {{ $details['quantity'] - 1 }})" aria-label="-">
                             <i class="fas fa-minus" style="font-size: 0.7rem;"></i>
                         </button>
                         <input type="text" class="form-control form-control-sm border-0 bg-transparent text-center fw-bold p-0" value="{{ $details['quantity'] }}" readonly style="width: 30px;">
-                        <button class="btn btn-sm btn-link text-dark text-decoration-none p-1 border-0" onclick="updateQty({{ $id }}, {{ $details['quantity'] + 1 }})" aria-label="+">
+                        <button class="btn btn-sm btn-link text-dark text-decoration-none p-1 border-0" onclick="updateQty('{{ $id }}', {{ $details['quantity'] + 1 }})" aria-label="+">
                             <i class="fas fa-plus" style="font-size: 0.7rem;"></i>
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-        <button type="button" class="mini-cart-item-remove position-absolute {{ app()->getLocale() === 'ar' ? 'start-0' : 'end-0' }}" onclick="removeItem({{ $id }})" title="{{ __('Delete') }}" aria-label="{{ __('Delete') }}">
+        <button type="button" class="mini-cart-item-remove position-absolute {{ app()->getLocale() === 'ar' ? 'start-0' : 'end-0' }}" onclick="removeItem('{{ $id }}')" title="{{ __('Delete') }}" aria-label="{{ __('Delete') }}">
             <i class="fas fa-trash-alt"></i>
         </button>
     </div>

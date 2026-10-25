@@ -238,6 +238,11 @@
                                         <span class="badge bg-light text-secondary border font-monospace mt-0.5" style="font-size: 0.65rem;">
                                             {{ $movement->product->sku ?? 'SANS-SKU' }}
                                         </span>
+                                        @if($movement->variant)
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle mt-0.5 ms-1" style="font-size: 0.65rem;">
+                                                <i class="fas fa-layer-group me-1"></i>{{ $movement->variant->name }}
+                                            </span>
+                                        @endif
                                     </div>
                                 </div>
                                 @else

@@ -43,7 +43,7 @@
             <tbody>
                 @foreach($order->items as $item)
                 <tr>
-                    <td>{{ $item->product_name }}</td>
+                    <td>{{ $item->displayName }}</td>
                     <td>{{ $item->quantity }}</td>
                     <td style="text-align: right;">{{ currency($item->subtotal ?: ($item->price * $item->quantity)) }}</td>
                 </tr>

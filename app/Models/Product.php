@@ -19,7 +19,9 @@ class Product extends Model
         'sale_price',
         'sale_end_date',
         'stock',
+        'stock_quantity',
         'min_stock',
+        'low_stock_threshold',
         'category_id',
         'status',
         'image',
@@ -547,10 +549,68 @@ class Product extends Model
     }
 
     /**
-     * Adjust stock quantity and record movement.
+     * Get all variants for this product.
+     */
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    /**
+     * Get only active variants.
+     */
+    public function activeVariants()
+    {
+        return $this->hasMany(ProductVariant::class)->where('status', 'active')->orderBy('sort_order')->orderBy('id');
+    }
+
+    /**
+     * Check if product has variations.
+     */
+    public function getHasVariantsAttribute(): bool
+    {
+        return $this->relationLoaded('variants') 
+            ? $this->variants->isNotEmpty() 
+            : $this->variants()->exists();
+    }
+
+    /**
+     * Get formatted price range for display.
+     */
+    public function getPriceRangeAttribute(): string
+    {
+        if (!$this->has_variants) {
+            return $this->formatted_price;
+        }
+
+        $variants = $this->relationLoaded('variants') ? $this->variants : $this->variants()->get();
+        if ($variants->isEmpty()) {
+            return $this->formatted_price;
+        }
+
+        $min = $variants->min('price');
+        $max = $variants->max('price');
+
+        if ((float)$min === (float)$max) {
+            return currency($min);
+        }
+
+        return currency($min) . ' – ' . currency($max);
+    }
+
+    /**
+     * Adjust stock quantity and record movement. Supports variant-level adjustment.
      */
     public function adjustStock(int $quantity, string $type, $userId, array $options = []): bool
     {
+        // If adjusting a specific variant
+        if (!empty($options['variant_id'])) {
+            $variant = $this->variants()->find($options['variant_id']);
+            if ($variant) {
+                return $variant->adjustStock($quantity, $type, $userId, $options);
+            }
+        }
+
         $stockBefore = $this->stock ?? 0;
         if ($type === 'adjustment') {
             $newStock = $quantity;
@@ -568,6 +628,7 @@ class Product extends Model
 
         // Record the movement
         $this->inventoryMovements()->create([
+            'variant_id' => $options['variant_id'] ?? null,
             'type' => $type,
             'quantity' => $movementQty,
             'stock_before' => $stockBefore,

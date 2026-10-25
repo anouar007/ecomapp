@@ -83,9 +83,20 @@ class CheckoutController extends Controller
 
         // Validate stock availability before processing
         foreach ($cart as $id => $details) {
-            $product = Product::find($id);
-            if ($product && $product->track_inventory && $product->stock < (int)$details['quantity']) {
-                return redirect()->route('cart.index')->with('error', "Le produit \"{$product->name}\" n'a que {$product->stock} unité(s) en stock.");
+            $productId = $details['product_id'] ?? explode('_', (string)$id)[0];
+            $variantId = $details['variant_id'] ?? null;
+            $qty = (int)$details['quantity'];
+
+            if ($variantId) {
+                $variant = \App\Models\ProductVariant::find($variantId);
+                if ($variant && $variant->stock < $qty) {
+                    return redirect()->route('cart.index')->with('error', "La variante \"{$variant->name}\" pour \"{$details['name']}\" n'a que {$variant->stock} unité(s) en stock.");
+                }
+            } else {
+                $product = Product::find($productId);
+                if ($product && $product->track_inventory && $product->stock < $qty) {
+                    return redirect()->route('cart.index')->with('error', "Le produit \"{$product->name}\" n'a que {$product->stock} unité(s) en stock.");
+                }
             }
         }
 
@@ -128,13 +139,18 @@ class CheckoutController extends Controller
 
                 // Create Order Items and Update Stock
                 foreach ($cart as $id => $details) {
-                    $product = Product::find($id);
+                    $productId = $details['product_id'] ?? explode('_', (string)$id)[0];
+                    $variantId = $details['variant_id'] ?? null;
+                    $variantName = $details['variant_name'] ?? null;
+                    $product = Product::find($productId);
                     $price = (float)$details['price'];
                     $qty = (int)$details['quantity'];
 
                     OrderItem::create([
                         'order_id' => $order->id,
-                        'product_id' => $id,
+                        'product_id' => $productId,
+                        'variant_id' => $variantId,
+                        'variant_name' => $variantName,
                         'product_sku' => $product && !empty($product->sku) ? $product->sku : 'N/A',
                         'product_name' => $details['name'],
                         'price' => $price,
@@ -143,7 +159,13 @@ class CheckoutController extends Controller
                     ]);
 
                     // Decrement Stock
-                    if ($product && $product->track_inventory) {
+                    if ($variantId) {
+                        $variant = \App\Models\ProductVariant::find($variantId);
+                        if ($variant) {
+                            $variant->decrement('stock', $qty);
+                            $variant->syncParentProductStock();
+                        }
+                    } elseif ($product && $product->track_inventory) {
                         $product->decrement('stock', $qty);
                     }
                 }

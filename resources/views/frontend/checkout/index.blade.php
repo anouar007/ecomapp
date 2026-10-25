@@ -171,7 +171,12 @@
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary tiny-badge">{{ $details['quantity'] }}</span>
                             </div>
                             <div class="flex-grow-1">
-                                <div class="fw-bold mb-0 text-truncate fs-6" style="max-width: 150px;">{{ $details['name'] }}</div>
+                                <div class="fw-bold mb-0 text-truncate fs-6" style="max-width: 170px;">{{ $details['name'] }}</div>
+                                @if(!empty($details['variant_name']))
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.68rem;">
+                                        <i class="fas fa-layer-group me-1"></i>{{ $details['variant_name'] }}
+                                    </span>
+                                @endif
                             </div>
                             <div class="fw-bold">{{ currency($details['price'] * $details['quantity']) }}</div>
                         </div>

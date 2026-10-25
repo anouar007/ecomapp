@@ -394,6 +394,44 @@
                         </div>
                     </div>
 
+                    @if($product->has_variants && $product->variants->isNotEmpty())
+                    {{-- VARIATIONS SELECTION PILLS (EX: SD CARD 512GB / 256GB / 128GB) --}}
+                    <div class="pdp-variants-wrapper my-3 p-3 rounded-3 bg-light border">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="text-uppercase fw-bold text-muted small" style="font-size: 0.72rem; letter-spacing: 0.05em;">
+                                <i class="fas fa-layer-group text-primary me-1"></i>Option / Variante : <strong class="text-dark" id="selectedVariantNameLabel">{{ $product->variants->first()->name }}</strong>
+                            </span>
+                            <span class="text-muted small" id="selectedVariantStockNotice" style="font-size: 0.72rem;"></span>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2" id="pdpVariantPills">
+                            @foreach($product->variants as $variant)
+                                @php
+                                    $isVarInStock = $variant->isInStock();
+                                @endphp
+                                <button type="button" 
+                                        class="pdp-variant-pill btn {{ $loop->first ? 'active' : '' }} {{ !$isVarInStock ? 'is-out-of-stock' : '' }}"
+                                        data-variant-id="{{ $variant->id }}"
+                                        data-variant-name="{{ $variant->name }}"
+                                        data-variant-price="{{ currency($variant->price) }}"
+                                        data-variant-raw-price="{{ (float)$variant->price }}"
+                                        data-variant-stock="{{ (int)$variant->stock }}"
+                                        data-variant-in-stock="{{ $isVarInStock ? '1' : '0' }}"
+                                        onclick="pdpSelectVariant(this)"
+                                        style="border-radius: 12px; padding: 7px 14px; font-size: 0.82rem; font-weight: 600; border: 1.5px solid #cbd5e1; background: #fff;">
+                                    <span>{{ $variant->name }}</span>
+                                    <span class="badge ms-1.5 {{ $isVarInStock ? 'bg-light text-dark border' : 'bg-danger text-white' }}" style="font-size: 0.72rem;">
+                                        {{ currency($variant->price) }}
+                                    </span>
+                                    @if(!$isVarInStock)
+                                        <span class="badge bg-danger text-white ms-1" style="font-size: 0.65rem;">Rupture</span>
+                                    @endif
+                                </button>
+                            @endforeach
+                        </div>
+                        <input type="hidden" name="selected_variant_id" id="selectedVariantId" value="{{ $product->variants->first()->id }}">
+                    </div>
+                    @endif
+
                     @if($product->isInStock())
                     @php
                         $isInCart = isset(session('cart', [])[$product->id]);
@@ -750,6 +788,81 @@ function pdpChangeImage(src, thumb) {
     thumb.classList.add('active');
 }
 
+let selectedVariantId = {{ ($product->has_variants && $product->variants->isNotEmpty()) ? $product->variants->first()->id : 'null' }};
+
+function pdpSelectVariant(button) {
+    document.querySelectorAll('.pdp-variant-pill').forEach(btn => {
+        btn.classList.remove('active');
+        btn.style.background = '#fff';
+        btn.style.color = '#334155';
+        btn.style.borderColor = '#cbd5e1';
+    });
+
+    button.classList.add('active');
+    button.style.background = '#0f172a';
+    button.style.color = '#fff';
+    button.style.borderColor = '#0f172a';
+
+    selectedVariantId = button.dataset.variantId;
+    const name = button.dataset.variantName;
+    const price = button.dataset.variantPrice;
+    const stock = parseInt(button.dataset.variantStock, 10) || 0;
+    const inStock = button.dataset.variantInStock === '1';
+
+    const hiddenInput = document.getElementById('selectedVariantId');
+    if (hiddenInput) hiddenInput.value = selectedVariantId;
+
+    const nameLabel = document.getElementById('selectedVariantNameLabel');
+    if (nameLabel) nameLabel.textContent = name;
+
+    const noticeEl = document.getElementById('selectedVariantStockNotice');
+    if (noticeEl) {
+        noticeEl.innerHTML = inStock 
+            ? `<span class="text-success"><i class="fas fa-check-circle me-1"></i>${stock} en stock</span>` 
+            : `<span class="text-danger"><i class="fas fa-times-circle me-1"></i>Rupture</span>`;
+    }
+
+    // Update main price display
+    const priceMain = document.querySelector('.pdp-price-main');
+    if (priceMain) priceMain.textContent = price;
+
+    // Update stock badge and buttons
+    const stockBadge = document.querySelector('.pdp-stock-badge');
+    const qtyInput = document.getElementById('pdpQty');
+    const addToCartBtn = document.getElementById('addToCartBtn');
+    const commanderBtn = document.getElementById('pdpCommanderBtn');
+    const commanderWrap = document.getElementById('pdpCommanderWrap');
+    const addToCartText = document.getElementById('addToCartText');
+
+    if (inStock && stock > 0) {
+        if (stockBadge) {
+            stockBadge.className = 'pdp-stock-badge pdp-stock-badge--in';
+            stockBadge.innerHTML = `<i class="fas fa-check-circle" aria-hidden="true"></i><span class="pdp-stock-label">{{ __('In stock') }} (${stock} restants)</span>`;
+        }
+        if (qtyInput) {
+            qtyInput.max = stock;
+            if (parseInt(qtyInput.value) > stock) qtyInput.value = stock;
+        }
+        if (addToCartBtn) {
+            addToCartBtn.disabled = false;
+            addToCartBtn.classList.remove('pdp-add-btn--out');
+            if (addToCartText) addToCartText.textContent = '{{ $notInCartLabel ?? "Ajouter au panier" }}';
+        }
+        if (commanderWrap) commanderWrap.style.display = 'block';
+    } else {
+        if (stockBadge) {
+            stockBadge.className = 'pdp-stock-badge pdp-stock-badge--out';
+            stockBadge.innerHTML = `<i class="fas fa-times-circle" aria-hidden="true"></i><span class="pdp-stock-label">{{ __('Out of stock') }}</span>`;
+        }
+        if (addToCartBtn) {
+            addToCartBtn.disabled = true;
+            addToCartBtn.classList.add('pdp-add-btn--out');
+            if (addToCartText) addToCartText.textContent = '{{ __('Out of stock') }}';
+        }
+        if (commanderWrap) commanderWrap.style.display = 'none';
+    }
+}
+
 function pdpChangeQty(delta) {
     const inp = document.getElementById('pdpQty');
     const max = parseInt(inp.max) || 9999;
@@ -765,7 +878,7 @@ function pdpAddToCart(event) {
     const productId = {{ $product->id }};
 
     if (typeof window.addToCart === 'function') {
-        window.addToCart(productId, quantity, btn);
+        window.addToCart(productId, quantity, btn, false, selectedVariantId);
     }
 }
 
@@ -786,20 +899,25 @@ function pdpCommanderAction(event) {
     const isAr = document.documentElement.lang === 'ar' || document.documentElement.dir === 'rtl';
     const redirectingText = isAr ? 'جاري التحويل...' : 'Redirection...';
 
-    // If product is ALREADY in cart -> go directly to checkout
-    if (isCurrentInCart) {
+    // If product is ALREADY in cart and no variant is specified -> go directly to checkout
+    if (isCurrentInCart && !selectedVariantId) {
         btn.disabled = true;
         btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span><span>${redirectingText}</span>`;
         window.location.href = "{{ route('checkout.index') }}";
         return;
     }
 
-    // Product is NOT in cart and IS in stock -> add it first with chosen quantity, then go to checkout!
+    // Product is NOT in cart or is a specific variant -> add it with chosen quantity, then go to checkout!
     const qtyInput = document.getElementById('pdpQty');
     const quantity = qtyInput ? (parseInt(qtyInput.value) || 1) : 1;
 
     btn.disabled = true;
     btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span><span>${redirectingText}</span>`;
+
+    const requestPayload = { quantity: quantity };
+    if (selectedVariantId) {
+        requestPayload.variant_id = selectedVariantId;
+    }
 
     fetch(`{{ url('/cart/add') }}/${productId}`, {
         method: 'POST',
@@ -809,7 +927,7 @@ function pdpCommanderAction(event) {
             'Accept': 'application/json',
             'X-Requested-With': 'XMLHttpRequest'
         },
-        body: JSON.stringify({ quantity: quantity })
+        body: JSON.stringify(requestPayload)
     })
     .then(async response => {
         const data = await response.json();

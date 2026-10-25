@@ -224,14 +224,31 @@
                                 <select id="product_picker" class="form-select">
                                     <option value="">-- Sélectionnez un produit --</option>
                                     @foreach($products as $prod)
-                                        <option value="{{ $prod->id }}" 
-                                                data-name="{{ $prod->name }}" 
-                                                data-price="{{ $prod->price }}" 
-                                                data-sku="{{ $prod->sku }}" 
-                                                data-stock="{{ $prod->stock }}"
-                                                data-thumb="{{ $prod->thumbnail }}">
-                                            {{ $prod->name }} &bull; {{ currency($prod->price) }} (Stock: {{ $prod->stock }})
-                                        </option>
+                                        @if($prod->variants && $prod->variants->isNotEmpty())
+                                            @foreach($prod->variants as $variant)
+                                                <option value="{{ $prod->id }}" 
+                                                        data-variant-id="{{ $variant->id }}"
+                                                        data-variant-name="{{ $variant->name }}"
+                                                        data-name="{{ $prod->name }} ({{ $variant->name }})" 
+                                                        data-price="{{ $variant->price }}" 
+                                                        data-sku="{{ $variant->sku ?: $prod->sku }}" 
+                                                        data-stock="{{ $variant->stock }}"
+                                                        data-thumb="{{ $variant->image ?: $prod->thumbnail }}">
+                                                    {{ $prod->name }} — {{ $variant->name }} &bull; {{ currency($variant->price) }} (Stock: {{ $variant->stock }})
+                                                </option>
+                                            @endforeach
+                                        @else
+                                            <option value="{{ $prod->id }}" 
+                                                    data-variant-id=""
+                                                    data-variant-name=""
+                                                    data-name="{{ $prod->name }}" 
+                                                    data-price="{{ $prod->price }}" 
+                                                    data-sku="{{ $prod->sku }}" 
+                                                    data-stock="{{ $prod->stock }}"
+                                                    data-thumb="{{ $prod->thumbnail }}">
+                                                {{ $prod->name }} &bull; {{ currency($prod->price) }} (Stock: {{ $prod->stock }})
+                                            </option>
+                                        @endif
                                     @endforeach
                                 </select>
                             </div>
@@ -399,14 +416,18 @@
         const sku = selectedOption.getAttribute('data-sku') || '';
         const thumb = selectedOption.getAttribute('data-thumb') || '';
         const maxStock = parseInt(selectedOption.getAttribute('data-stock')) || 999;
+        const variantId = selectedOption.getAttribute('data-variant-id') || null;
+        const variantName = selectedOption.getAttribute('data-variant-name') || null;
 
-        // Check if item already exists
-        const existing = orderItems.find(it => it.product_id === prodId);
+        // Check if item already exists with matching product_id and variant_id
+        const existing = orderItems.find(it => it.product_id === prodId && String(it.variant_id || '') === String(variantId || ''));
         if (existing) {
             existing.quantity += qty;
         } else {
             orderItems.push({
                 product_id: prodId,
+                variant_id: variantId,
+                variant_name: variantName,
                 name: name,
                 price: price,
                 sku: sku,
@@ -480,6 +501,8 @@
                         </div>
                     </div>
                     <input type="hidden" name="items[${idx}][product_id]" value="${item.product_id}">
+                    <input type="hidden" name="items[${idx}][variant_id]" value="${item.variant_id || ''}">
+                    <input type="hidden" name="items[${idx}][variant_name]" value="${item.variant_name || ''}">
                 </td>
                 <td class="text-center py-2.5 text-secondary">
                     ${formatCurrency(item.price)}

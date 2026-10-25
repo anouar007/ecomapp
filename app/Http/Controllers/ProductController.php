@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -15,7 +16,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::with(['images', 'productCategory', 'categories'])->latest();
+        $query = Product::with(['images', 'productCategory', 'categories', 'variants'])->latest();
 
         // Search
         if ($request->filled('search')) {
@@ -194,8 +195,40 @@ class ProductController extends Controller
 
         DB::beginTransaction();
         try {
+            // Process variations if submitted
+            $rawVariants = $request->input('variants', []);
+            $validVariants = [];
+            if ($request->boolean('has_variants') && is_array($rawVariants)) {
+                foreach ($rawVariants as $v) {
+                    if (!empty($v['name']) && isset($v['price']) && is_numeric($v['price'])) {
+                        $validVariants[] = $v;
+                    }
+                }
+            }
+
+            if (!empty($validVariants)) {
+                $validated['stock'] = (int) array_sum(array_column($validVariants, 'stock'));
+                $validated['price'] = floatval($validVariants[0]['price']);
+            }
+
             $product = Product::create($validated);
             $product->categories()->sync($categoryIds);
+
+            // Create product variants
+            if (!empty($validVariants)) {
+                foreach ($validVariants as $idx => $vData) {
+                    $product->variants()->create([
+                        'name' => trim($vData['name']),
+                        'sku' => !empty($vData['sku']) ? trim($vData['sku']) : ($product->sku ? "{$product->sku}-" . ($idx + 1) : null),
+                        'price' => floatval($vData['price']),
+                        'cost_price' => !empty($vData['cost_price']) && is_numeric($vData['cost_price']) ? floatval($vData['cost_price']) : null,
+                        'stock' => intval($vData['stock'] ?? 0),
+                        'min_stock' => intval($vData['min_stock'] ?? 5),
+                        'status' => $vData['status'] ?? 'active',
+                        'sort_order' => $idx,
+                    ]);
+                }
+            }
 
             // Handle multiple image uploads
             if ($request->hasFile('images')) {
@@ -232,7 +265,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $product->load('images', 'productCategory', 'categories');
+        $product->load('images', 'productCategory', 'categories', 'variants');
         $categories = \App\Models\Category::where('status', 'active')
             ->orderBy('name')
             ->get();
@@ -313,8 +346,65 @@ class ProductController extends Controller
 
         DB::beginTransaction();
         try {
+            // Process variations if submitted
+            $rawVariants = $request->input('variants', []);
+            $validVariants = [];
+            if ($request->boolean('has_variants') && is_array($rawVariants)) {
+                foreach ($rawVariants as $v) {
+                    if (!empty($v['name']) && isset($v['price']) && is_numeric($v['price'])) {
+                        $validVariants[] = $v;
+                    }
+                }
+            }
+
+            if (!empty($validVariants)) {
+                $validated['stock'] = (int) array_sum(array_column($validVariants, 'stock'));
+            }
+
             $product->update($validated);
             $product->categories()->sync($categoryIds);
+
+            // Synchronize product variants
+            if (!empty($validVariants)) {
+                $submittedIds = array_filter(array_column($validVariants, 'id'));
+                if (!empty($submittedIds)) {
+                    ProductVariant::where('product_id', $product->id)->whereNotIn('id', $submittedIds)->delete();
+                } else {
+                    ProductVariant::where('product_id', $product->id)->delete();
+                }
+
+                $keptIds = [];
+                foreach ($validVariants as $idx => $vData) {
+                    $vPayload = [
+                        'name' => trim($vData['name']),
+                        'sku' => !empty($vData['sku']) ? trim($vData['sku']) : ($product->sku ? "{$product->sku}-" . ($idx + 1) : null),
+                        'price' => floatval($vData['price']),
+                        'cost_price' => !empty($vData['cost_price']) && is_numeric($vData['cost_price']) ? floatval($vData['cost_price']) : null,
+                        'stock' => intval($vData['stock'] ?? 0),
+                        'min_stock' => intval($vData['min_stock'] ?? 5),
+                        'status' => $vData['status'] ?? 'active',
+                        'sort_order' => $idx,
+                    ];
+
+                    if (!empty($vData['id']) && ($existing = ProductVariant::where('product_id', $product->id)->find($vData['id']))) {
+                        $existing->update($vPayload);
+                        $keptIds[] = $existing->id;
+                    } else {
+                        $newV = $product->variants()->create($vPayload);
+                        $keptIds[] = $newV->id;
+                    }
+                }
+
+                // Recalculate parent product total stock and update DB directly
+                $totalStock = (int) ProductVariant::where('product_id', $product->id)->sum('stock');
+                DB::table('products')->where('id', $product->id)->update([
+                    'stock' => $totalStock,
+                    'stock_quantity' => $totalStock,
+                ]);
+            } elseif (!$request->boolean('has_variants')) {
+                // If user toggled off variations, remove existing variants
+                $product->variants()->delete();
+            }
 
             // Handle image removal
             if ($request->has('remove_images')) {

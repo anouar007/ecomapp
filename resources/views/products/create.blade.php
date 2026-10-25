@@ -265,6 +265,64 @@
                     </div>
                 </div>
 
+                <!-- Variations & Déclinaisons de Produit -->
+                <div class="product-form-card" id="productVariationsCard">
+                    <div class="product-form-card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div>
+                            <h2 class="product-form-card-title">
+                                <i class="fas fa-layer-group text-danger"></i> Variations & Déclinaisons
+                            </h2>
+                            <p class="product-form-card-subtitle">Ex: Carte SD (512GB, 256GB, 128GB), couleur, ou kit avec objectif</p>
+                        </div>
+                        <div class="form-check form-switch m-0">
+                            <input class="form-check-input" type="checkbox" name="has_variants" id="hasVariantsToggle" value="1" {{ old('has_variants') ? 'checked' : '' }} onchange="toggleVariationsSection(this.checked)" style="width: 2.75em; height: 1.4em; cursor: pointer;">
+                            <label class="form-check-label fw-bold text-dark ms-1 small" for="hasVariantsToggle" style="cursor: pointer;">
+                                Activer les variations
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="variationsContainer" style="{{ old('has_variants') ? '' : 'display: none;' }}">
+                        <div class="alert alert-light border rounded-3 p-3 mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div class="small text-muted">
+                                <i class="fas fa-info-circle text-primary me-1"></i>
+                                Chaque variation possède son propre <strong>prix</strong> et <strong>stock</strong>. Le stock total sera synchronisé automatiquement.
+                            </div>
+                            <button type="button" class="btn btn-sm btn-brand-primary" onclick="addVariantRow()">
+                                <i class="fas fa-plus me-1"></i> Ajouter une variante
+                            </button>
+                        </div>
+
+                        <div class="table-responsive border rounded-3 overflow-hidden bg-white mb-2">
+                            <table class="table table-hover align-middle mb-0" id="variantsTable">
+                                <thead class="bg-light small text-muted text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.03em;">
+                                    <tr>
+                                        <th style="min-width: 170px;">Nom de la variante <span class="text-danger">*</span></th>
+                                        <th style="min-width: 130px;">SKU spécifique</th>
+                                        <th style="min-width: 130px;">Prix TTC (DH) <span class="text-danger">*</span></th>
+                                        <th style="min-width: 120px;">Prix d'achat</th>
+                                        <th style="min-width: 110px;">Stock <span class="text-danger">*</span></th>
+                                        <th style="min-width: 100px;">Seuil alerte</th>
+                                        <th style="width: 50px;" class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="variantsTableBody">
+                                    <!-- Dynamic variant rows -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-2 px-1">
+                            <span class="badge bg-light text-secondary border px-2 py-1.5" id="variantSummaryBadge">
+                                <i class="fas fa-boxes text-danger me-1"></i> <span id="variantCount">0</span> variante(s) &bull; Stock total : <strong id="variantTotalStock">0</strong>
+                            </span>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addVariantRow()">
+                                <i class="fas fa-plus me-1"></i> + Variante supplémentaire
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Galerie & Photographies -->
                 <div class="product-form-card">
                     <div class="product-form-card-header">
@@ -554,9 +612,14 @@
                     <!-- Stock initial -->
                     <div class="row g-2">
                         <div class="col-6">
-                            <label for="stock" class="form-label fw-semibold text-dark">
-                                Stock <span class="text-danger">*</span>
-                            </label>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label for="stock" class="form-label fw-semibold text-dark mb-0">
+                                    Stock <span class="text-danger">*</span>
+                                </label>
+                                <span class="badge bg-primary-subtle text-primary border small" id="stockVariantNotice" style="display: none; font-size: 0.65rem;">
+                                    <i class="fas fa-layer-group me-1"></i> Variantes
+                                </span>
+                            </div>
                             <input type="number" 
                                    id="stock" 
                                    name="stock" 
@@ -922,6 +985,142 @@ document.addEventListener('DOMContentLoaded', function() {
 
         updateSelectedChips();
     })();
+});
+
+/* ==========================================================================
+   PRODUCT VARIATIONS MANAGEMENT
+   ========================================================================== */
+let variantIndex = 0;
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.innerText = text;
+    return div.innerHTML;
+}
+
+function toggleVariationsSection(enable) {
+    const container = document.getElementById('variationsContainer');
+    const notice = document.getElementById('stockVariantNotice');
+    const mainStock = document.getElementById('stock');
+    if (!container) return;
+    container.style.display = enable ? 'block' : 'none';
+    if (notice) notice.style.display = enable ? 'inline-block' : 'none';
+    if (mainStock) {
+        if (enable) {
+            mainStock.setAttribute('readonly', 'readonly');
+            mainStock.classList.add('bg-light');
+        } else {
+            mainStock.removeAttribute('readonly');
+            mainStock.classList.remove('bg-light');
+        }
+    }
+    if (enable) {
+        const tbody = document.getElementById('variantsTableBody');
+        if (tbody && tbody.children.length === 0) {
+            addVariantRow();
+        }
+    }
+    recalculateVariantSummary();
+}
+
+function addVariantRow(data = {}) {
+    const tbody = document.getElementById('variantsTableBody');
+    if (!tbody) return;
+
+    const rowId = 'variant_row_' + variantIndex;
+    const defaultPrice = (data.price !== undefined && data.price !== '') ? data.price : (document.getElementById('price') ? document.getElementById('price').value : '');
+    const defaultCost = (data.cost_price !== undefined && data.cost_price !== '') ? data.cost_price : (document.getElementById('cost_price') ? document.getElementById('cost_price').value : '');
+    const defaultStock = (data.stock !== undefined && data.stock !== '') ? data.stock : '10';
+    const defaultMinStock = (data.min_stock !== undefined && data.min_stock !== '') ? data.min_stock : '5';
+    const defaultName = data.name || '';
+    const defaultSku = data.sku || '';
+    const variantDbId = data.id || '';
+
+    const tr = document.createElement('tr');
+    tr.id = rowId;
+    tr.innerHTML = `
+        <td>
+            ${variantDbId ? `<input type="hidden" name="variants[${variantIndex}][id]" value="${variantDbId}">` : ''}
+            <input type="text" name="variants[${variantIndex}][name]" class="form-control form-control-sm fw-semibold" placeholder="ex: 512GB, 256GB, Noir..." value="${escapeHtml(defaultName)}" required oninput="recalculateVariantSummary()">
+        </td>
+        <td>
+            <input type="text" name="variants[${variantIndex}][sku]" class="form-control form-control-sm font-monospace text-uppercase" placeholder="Optionnel" value="${escapeHtml(defaultSku)}">
+        </td>
+        <td>
+            <div class="input-group input-group-sm">
+                <input type="number" step="0.01" min="0" name="variants[${variantIndex}][price]" class="form-control form-control-sm fw-bold variant-price-input" placeholder="0.00" value="${defaultPrice}" required oninput="recalculateVariantSummary()">
+                <span class="input-group-text bg-light" style="font-size: 0.72rem;">DH</span>
+            </div>
+        </td>
+        <td>
+            <div class="input-group input-group-sm">
+                <input type="number" step="0.01" min="0" name="variants[${variantIndex}][cost_price]" class="form-control form-control-sm" placeholder="0.00" value="${defaultCost}">
+                <span class="input-group-text bg-light" style="font-size: 0.72rem;">DH</span>
+            </div>
+        </td>
+        <td>
+            <input type="number" min="0" name="variants[${variantIndex}][stock]" class="form-control form-control-sm fw-bold variant-stock-input" placeholder="0" value="${defaultStock}" required oninput="recalculateVariantSummary()">
+        </td>
+        <td>
+            <input type="number" min="0" name="variants[${variantIndex}][min_stock]" class="form-control form-control-sm" placeholder="5" value="${defaultMinStock}">
+        </td>
+        <td class="text-center">
+            <button type="button" class="btn btn-outline-danger btn-sm p-1 px-2 rounded-circle" onclick="removeVariantRow('${rowId}')" title="Supprimer cette variante">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </td>
+    `;
+    tbody.appendChild(tr);
+    variantIndex++;
+    recalculateVariantSummary();
+}
+
+function removeVariantRow(rowId) {
+    const row = document.getElementById(rowId);
+    if (row) {
+        row.remove();
+        recalculateVariantSummary();
+    }
+}
+
+function recalculateVariantSummary() {
+    const toggle = document.getElementById('hasVariantsToggle');
+    if (!toggle || !toggle.checked) return;
+
+    const tbody = document.getElementById('variantsTableBody');
+    if (!tbody) return;
+
+    const rows = tbody.querySelectorAll('tr');
+    let totalStock = 0;
+    rows.forEach(r => {
+        const stockInput = r.querySelector('.variant-stock-input');
+        if (stockInput) {
+            totalStock += parseInt(stockInput.value, 10) || 0;
+        }
+    });
+
+    const countEl = document.getElementById('variantCount');
+    const totalStockEl = document.getElementById('variantTotalStock');
+    if (countEl) countEl.textContent = rows.length;
+    if (totalStockEl) totalStockEl.textContent = totalStock;
+
+    const mainStockInput = document.getElementById('stock');
+    if (mainStockInput) {
+        mainStockInput.value = totalStock;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const serverVariants = {!! json_encode(old('variants', [])) !!};
+    if (Array.isArray(serverVariants) && serverVariants.length > 0) {
+        serverVariants.forEach(v => addVariantRow(v));
+        const toggle = document.getElementById('hasVariantsToggle');
+        if (toggle) {
+            toggle.checked = true;
+            toggleVariationsSection(true);
+        }
+    }
 });
 </script>
 @endpush

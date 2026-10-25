@@ -1405,7 +1405,12 @@
                         <tr>
                             <td style="text-align:center; color:#94a3b8; font-size:11px;">{{ $i + 1 }}</td>
                             <td>
-                                <div class="item-name">{{ $item->product_name }}</div>
+                                <div class="item-name">
+                                    {{ $item->product_name }}
+                                    @if($item->variant_name)
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle ms-1" style="font-size: 11px; font-weight: normal; vertical-align: middle;">{{ $item->variant_name }}</span>
+                                    @endif
+                                </div>
                                 @if($item->product_sku)
                                 <div class="item-sku">Réf : {{ $item->product_sku }}</div>
                                 @endif

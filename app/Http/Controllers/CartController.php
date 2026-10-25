@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
@@ -23,48 +24,103 @@ class CartController extends Controller
     }
 
     /**
+     * Helper to get list of distinct product IDs present in cart.
+     */
+    private function getCartProductIds(array $cart): array
+    {
+        $ids = [];
+        foreach ($cart as $k => $item) {
+            if (isset($item['product_id'])) {
+                $ids[] = (int) $item['product_id'];
+            } else {
+                $parts = explode('_', (string) $k);
+                if (!empty($parts[0])) {
+                    $ids[] = (int) $parts[0];
+                }
+            }
+        }
+        return array_values(array_unique(array_filter($ids)));
+    }
+
+    /**
      * Add item to cart.
      */
     public function addToCart(Request $request, $id)
     {
         try {
-            $product = Product::with(['images', 'primaryImage', 'productCategory'])->findOrFail($id);
+            $product = Product::with(['images', 'primaryImage', 'productCategory', 'variants'])->findOrFail($id);
             $isAjax = $request->wantsJson() || $request->ajax();
             
-            // Check if product is in stock
-            if (!$product->isInStock()) {
-                if ($isAjax) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'This product is out of stock'
-                    ], 400);
+            $variant = null;
+            if ($request->filled('variant_id')) {
+                $variant = $product->variants()->find($request->variant_id);
+                if (!$variant) {
+                    if ($isAjax) {
+                        return response()->json(['success' => false, 'message' => 'Déclinaison introuvable'], 404);
+                    }
+                    return back()->with('error', 'Déclinaison introuvable');
                 }
-                return back()->with('error', 'This product is out of stock');
+            } elseif ($product->has_variants) {
+                // Auto-pick first active in-stock variant or first variant
+                $variant = $product->variants()->where('status', 'active')->where('stock', '>', 0)->first() 
+                    ?? $product->variants()->first();
+            }
+
+            // Check stock based on variant or base product
+            if ($variant) {
+                if (!$variant->isInStock()) {
+                    if ($isAjax) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => "La variante '{$variant->name}' est actuellement en rupture de stock"
+                        ], 400);
+                    }
+                    return back()->with('error', "La variante '{$variant->name}' est actuellement en rupture de stock");
+                }
+            } else {
+                if (!$product->isInStock()) {
+                    if ($isAjax) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Ce produit est actuellement en rupture de stock'
+                        ], 400);
+                    }
+                    return back()->with('error', 'Ce produit est actuellement en rupture de stock');
+                }
             }
             
             $cart = session()->get('cart', []);
             $quantity = $request->integer('quantity', 1);
+            $cartKey = $variant ? "{$product->id}_{$variant->id}" : (string)$product->id;
             
-            // Check if requested quantity exceeds available stock
-            $currentQty = isset($cart[$id]) ? $cart[$id]['quantity'] : 0;
-            if (($currentQty + $quantity) > $product->stock) {
+            $maxStock = $variant ? (int)$variant->stock : (int)$product->stock;
+            $currentQty = isset($cart[$cartKey]) ? $cart[$cartKey]['quantity'] : 0;
+            
+            if (($currentQty + $quantity) > $maxStock) {
+                $varLabel = $variant ? " pour la variante '{$variant->name}'" : "";
                 if ($isAjax) {
                     return response()->json([
                         'success' => false,
-                        'message' => "Only {$product->stock} items available in stock"
+                        'message' => "Seulement {$maxStock} article(s) disponible(s) en stock{$varLabel}"
                     ], 400);
                 }
-                return back()->with('error', "Only {$product->stock} items available in stock");
+                return back()->with('error', "Seulement {$maxStock} article(s) disponible(s) en stock{$varLabel}");
             }
 
-            if (isset($cart[$id])) {
-                $cart[$id]['quantity'] += $quantity;
+            $price = $variant ? (float)$variant->price : ($product->isOnSale() ? (float)$product->sale_price : (float)$product->price);
+            $image = ($variant && $variant->image) ? $variant->image : $product->thumbnail;
+
+            if (isset($cart[$cartKey])) {
+                $cart[$cartKey]['quantity'] += $quantity;
             } else {
-                $cart[$id] = [
+                $cart[$cartKey] = [
+                    'product_id' => $product->id,
+                    'variant_id' => $variant ? $variant->id : null,
+                    'variant_name' => $variant ? $variant->name : null,
                     'name' => $product->name,
                     'quantity' => $quantity,
-                    'price' => $product->isOnSale() ? (float)$product->sale_price : (float)$product->price,
-                    'image' => $product->thumbnail,
+                    'price' => $price,
+                    'image' => $image,
                     'category_name' => $product->category_name ?? 'Matériel Pro'
                 ];
             }
@@ -84,16 +140,17 @@ class CartController extends Controller
                     'cartTotal' => currency($total),
                     'rawTotal' => $total,
                     'productId' => (int) $id,
-                    'cartProductIds' => array_values(array_map('intval', array_keys($cart)))
+                    'cartKey' => $cartKey,
+                    'cartProductIds' => $this->getCartProductIds($cart)
                 ]);
             }
 
-            return redirect()->back()->with('success', 'Product added to cart!');
+            return redirect()->back()->with('success', 'Produit ajouté au panier !');
         } catch (\Exception $e) {
             if ($request->wantsJson() || $request->ajax()) {
                 return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
             }
-            return redirect()->back()->with('error', 'Error adding to cart: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Erreur lors de l\'ajout au panier : ' . $e->getMessage());
         }
     }
 
@@ -102,18 +159,30 @@ class CartController extends Controller
      */
     public function update(Request $request)
     {
-        $id = $request->id;
+        $id = (string) $request->id;
         $quantity = (int) $request->quantity;
 
         if ($id && $quantity > 0) {
             $cart = session()->get('cart', []);
             if (isset($cart[$id])) {
-                $product = Product::find($id);
-                if ($product && $product->stock < $quantity) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => "Seulement {$product->stock} article(s) disponible(s) en stock"
-                    ], 400);
+                // Check stock against variant or product
+                if (!empty($cart[$id]['variant_id'])) {
+                    $variant = ProductVariant::find($cart[$id]['variant_id']);
+                    if ($variant && $variant->stock < $quantity) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => "Seulement {$variant->stock} article(s) disponible(s) en stock pour '{$variant->name}'"
+                        ], 400);
+                    }
+                } else {
+                    $productId = $cart[$id]['product_id'] ?? $id;
+                    $product = Product::find($productId);
+                    if ($product && $product->stock < $quantity) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => "Seulement {$product->stock} article(s) disponible(s) en stock"
+                        ], 400);
+                    }
                 }
 
                 $cart[$id]['quantity'] = $quantity;
@@ -134,7 +203,7 @@ class CartController extends Controller
                     'cartTotal'      => currency($total),
                     'rawTotal'       => $total,
                     'isEmpty'        => count($cart) === 0,
-                    'cartProductIds' => array_values(array_map('intval', array_keys($cart))),
+                    'cartProductIds' => $this->getCartProductIds($cart),
                 ]);
             }
         }
@@ -147,7 +216,7 @@ class CartController extends Controller
      */
     public function remove(Request $request)
     {
-        $id = $request->id;
+        $id = (string) $request->id;
         if ($id) {
             $cart = session()->get('cart', []);
             if (isset($cart[$id])) {
@@ -166,8 +235,8 @@ class CartController extends Controller
                 'cartCount' => $cartCount,
                 'cartTotal' => currency($total),
                 'isEmpty' => count($cart) === 0,
-                'removedId' => (int) $id,
-                'cartProductIds' => array_values(array_map('intval', array_keys($cart)))
+                'removedId' => $id,
+                'cartProductIds' => $this->getCartProductIds($cart)
             ]);
         }
 

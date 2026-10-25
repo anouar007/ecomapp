@@ -683,7 +683,7 @@
                         <tr>
                             <td style="text-align: center; color: #64748b; font-weight: 600;">{{ $idx + 1 }}</td>
                             <td>
-                                <div class="item-name">{{ $item->product_name }}</div>
+                                <div class="item-name">{{ $item->displayName }}</div>
                                 @if($item->product_sku)
                                     <div class="item-sku">Réf : {{ $item->product_sku }}</div>
                                 @endif

@@ -40,7 +40,10 @@
                     <div class="cart-mobile-card cart-row-{{ $id }}" id="cart-row-mobile-{{ $id }}">
                         <div class="d-flex gap-3 align-items-center">
                             {{-- Thumbnail Image --}}
-                            <a href="{{ route('shop.show', $id) }}" class="cart-mobile-thumb-link flex-shrink-0 text-decoration-none">
+                            @php
+                                $baseProdId = $details['product_id'] ?? explode('_', (string)$id)[0];
+                            @endphp
+                            <a href="{{ route('shop.show', $baseProdId) }}" class="cart-mobile-thumb-link flex-shrink-0 text-decoration-none">
                                 <img src="{{ $cartImg }}" alt="{{ $details['name'] }}" width="78" height="78" class="cart-mobile-thumb rounded-3 object-fit-cover" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                             </a>
 
@@ -48,28 +51,35 @@
                             <div class="flex-grow-1 min-w-0">
                                 {{-- Row 1: Category Tag & Delete Button --}}
                                 <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
-                                    <span class="cart-cat-badge">
-                                        {{ !empty($details['category_name']) ? $details['category_name'] : __('Accessoires') }}
-                                    </span>
-                                    <button type="button" class="btn-cart-delete-mini" onclick="removeItem({{ $id }})" title="{{ __('Delete') }}" aria-label="{{ __('Delete') }}">
+                                    <div class="d-flex align-items-center flex-wrap gap-1">
+                                        <span class="cart-cat-badge">
+                                            {{ !empty($details['category_name']) ? $details['category_name'] : __('Accessoires') }}
+                                        </span>
+                                        @if(!empty($details['variant_name']))
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.68rem;">
+                                                <i class="fas fa-layer-group me-1"></i>{{ $details['variant_name'] }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <button type="button" class="btn-cart-delete-mini" onclick="removeItem('{{ $id }}')" title="{{ __('Delete') }}" aria-label="{{ __('Delete') }}">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </div>
 
                                 {{-- Row 2: Product Title --}}
                                 <h6 class="cart-mobile-title fw-bold mb-2">
-                                    <a href="{{ route('shop.show', $id) }}">{{ $details['name'] }}</a>
+                                    <a href="{{ route('shop.show', $baseProdId) }}">{{ $details['name'] }}</a>
                                 </h6>
 
                                 {{-- Row 3: Stepper on Left & Total Price on Right --}}
                                 <div class="d-flex align-items-center justify-content-between gap-2 pt-1">
                                     {{-- Quantity Stepper --}}
                                     <div class="cart-stepper-pill">
-                                        <button class="cart-stepper-btn" type="button" onclick="changeCartQty({{ $id }}, -1)" aria-label="-">
+                                        <button class="cart-stepper-btn" type="button" onclick="changeCartQty('{{ $id }}', -1)" aria-label="-">
                                             <i class="fas fa-minus"></i>
                                         </button>
                                         <input type="text" class="cart-stepper-val cart-item-qty-{{ $id }}" id="cart-item-qty-mobile-{{ $id }}" value="{{ $details['quantity'] }}" readonly>
-                                        <button class="cart-stepper-btn" type="button" onclick="changeCartQty({{ $id }}, 1)" aria-label="+">
+                                        <button class="cart-stepper-btn" type="button" onclick="changeCartQty('{{ $id }}', 1)" aria-label="+">
                                             <i class="fas fa-plus"></i>
                                         </button>
                                     </div>
@@ -112,6 +122,7 @@
                                         $cartImg = (isset($details['image']) && (str_starts_with($details['image'], 'http') || str_starts_with($details['image'], '/') || str_starts_with($details['image'], 'images/')))
                                             ? asset(ltrim($details['image'], '/'))
                                             : (isset($details['image']) ? Storage::url($details['image']) : asset('images/camera/cat_cameras.jpg'));
+                                        $baseProdId = $details['product_id'] ?? explode('_', (string)$id)[0];
                                     @endphp
                                     <tr class="border-bottom transition-all hover-bg-light cart-row-{{ $id }}" id="cart-row-{{ $id }}">
                                         <td class="py-4 px-4">
@@ -120,8 +131,13 @@
                                                     <img src="{{ $cartImg }}" alt="{{ $details['name'] }}" width="72" height="72" class="rounded-3 shadow-xs object-fit-cover border" style="width: 72px; height: 72px;" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                                                 </div>
                                                 <div class="min-w-0">
-                                                    <h6 class="fw-bold mb-1 lh-sm">
-                                                        <a href="{{ route('shop.show', $id) }}" class="text-decoration-none text-dark">{{ $details['name'] }}</a>
+                                                    <h6 class="fw-bold mb-1 lh-sm d-flex align-items-center flex-wrap gap-1.5">
+                                                        <a href="{{ route('shop.show', $baseProdId) }}" class="text-decoration-none text-dark">{{ $details['name'] }}</a>
+                                                        @if(!empty($details['variant_name']))
+                                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.72rem;">
+                                                                <i class="fas fa-layer-group me-1"></i>{{ $details['variant_name'] }}
+                                                            </span>
+                                                        @endif
                                                     </h6>
                                                     <p class="text-muted small mb-0">{{ $details['category_name'] ?? __('Product') }}</p>
                                                 </div>
@@ -130,18 +146,18 @@
                                         <td class="text-center py-4 px-4 fw-bold text-dark">{{ currency($details['price']) }}</td>
                                         <td class="text-center py-4 px-4">
                                             <div class="cart-stepper-pill mx-auto">
-                                                <button class="cart-stepper-btn" type="button" onclick="changeCartQty({{ $id }}, -1)" aria-label="-">
+                                                <button class="cart-stepper-btn" type="button" onclick="changeCartQty('{{ $id }}', -1)" aria-label="-">
                                                     <i class="fas fa-minus"></i>
                                                 </button>
                                                 <input type="text" class="cart-stepper-val cart-item-qty-{{ $id }}" id="cart-item-qty-{{ $id }}" value="{{ $details['quantity'] }}" readonly>
-                                                <button class="cart-stepper-btn" type="button" onclick="changeCartQty({{ $id }}, 1)" aria-label="+">
+                                                <button class="cart-stepper-btn" type="button" onclick="changeCartQty('{{ $id }}', 1)" aria-label="+">
                                                     <i class="fas fa-plus"></i>
                                                 </button>
                                             </div>
                                         </td>
                                         <td class="{{ app()->getLocale() === 'ar' ? 'text-start' : 'text-end' }} py-4 px-4 fw-bold text-danger fs-6 mb-0 cart-item-total-{{ $id }}" id="cart-item-total-{{ $id }}">{{ currency($details['price'] * $details['quantity']) }}</td>
                                         <td class="{{ app()->getLocale() === 'ar' ? 'text-start' : 'text-end' }} py-4 px-4">
-                                            <button type="button" class="btn-cart-delete" onclick="removeItem({{ $id }})" title="{{ __('Delete') }}" aria-label="{{ __('Delete') }}">
+                                            <button type="button" class="btn-cart-delete" onclick="removeItem('{{ $id }}')" title="{{ __('Delete') }}" aria-label="{{ __('Delete') }}">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </td>

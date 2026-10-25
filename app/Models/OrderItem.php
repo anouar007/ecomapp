@@ -12,7 +12,9 @@ class OrderItem extends Model
     protected $fillable = [
         'order_id',
         'product_id',
+        'variant_id',
         'product_name',
+        'variant_name',
         'product_sku',
         'price',
         'quantity',
@@ -39,6 +41,24 @@ class OrderItem extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * Get the product variant if item has a variation.
+     */
+    public function variant()
+    {
+        return $this->belongsTo(ProductVariant::class, 'variant_id');
+    }
+
+    /**
+     * Get full display name including variant name.
+     */
+    public function getDisplayNameAttribute(): string
+    {
+        return !empty($this->variant_name) 
+            ? "{$this->product_name} ({$this->variant_name})" 
+            : $this->product_name;
     }
 
     /**

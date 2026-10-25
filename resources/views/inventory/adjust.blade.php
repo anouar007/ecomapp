@@ -68,6 +68,26 @@
                 <form action="{{ route('inventory.process-adjustment', $product) }}" method="POST" id="mainAdjustmentForm">
                     @csrf
 
+                    @if($product->variants && $product->variants->isNotEmpty())
+                    <!-- Sélecteur de déclinaison / variante -->
+                    <div class="mb-3.5 p-3 rounded-3 bg-light border">
+                        <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.72rem; letter-spacing: 0.04em;">
+                            <i class="fas fa-layer-group text-primary me-1"></i>Déclinaison / Variante ciblée
+                        </label>
+                        <select name="variant_id" id="variantSelectAdjust" class="form-select" onchange="onAdjustVariantChange(this)">
+                            <option value="" data-stock="{{ $product->stock ?? 0 }}">Produit complet (Stock total : {{ $product->stock ?? 0 }})</option>
+                            @foreach($product->variants as $var)
+                                <option value="{{ $var->id }}" data-stock="{{ $var->stock ?? 0 }}" data-name="{{ $var->name }}">
+                                    Variante : {{ $var->name }} (Stock : {{ $var->stock ?? 0 }} | {{ currency($var->price) }})
+                                </option>
+                            @endforeach
+                        </select>
+                        <div class="form-text small" style="font-size: 0.72rem;">
+                            Sélectionnez une variante pour ajuster son stock spécifique, ou le produit complet.
+                        </div>
+                    </div>
+                    @endif
+
                     <!-- Sélecteur d'opération -->
                     <div class="mb-3.5">
                         <label class="form-label text-muted small fw-semibold text-uppercase mb-2" style="font-size: 0.72rem; letter-spacing: 0.04em;">
@@ -237,6 +257,27 @@
                         <span class="fw-bold text-success">{{ currency($stk * $product->cost_price) }}</span>
                     </div>
                     @endif
+                    @if($product->variants && $product->variants->isNotEmpty())
+                    <div class="list-group-item px-0 py-2.5">
+                        <div class="fw-semibold text-dark mb-1.5 d-flex align-items-center justify-content-between">
+                            <span><i class="fas fa-layer-group text-primary me-1"></i>Déclinaisons ({{ $product->variants->count() }}) :</span>
+                            <span class="badge bg-light text-secondary border">Total: {{ $product->stock }} u.</span>
+                        </div>
+                        <div class="d-flex flex-column gap-1">
+                            @foreach($product->variants as $v)
+                                <div class="d-flex align-items-center justify-content-between p-1.5 rounded bg-light border small">
+                                    <span class="fw-medium text-dark">{{ $v->name }}</span>
+                                    <div class="d-flex align-items-center gap-1.5">
+                                        <span class="text-muted" style="font-size: 0.72rem;">{{ currency($v->price) }}</span>
+                                        <span class="badge {{ $v->stock <= 0 ? 'bg-danger text-white' : ($v->stock <= ($v->min_stock ?: 5) ? 'bg-warning text-dark' : 'bg-primary text-white') }} px-1.5 py-0.5">
+                                            {{ $v->stock }} u.
+                                        </span>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
                 </div>
 
                 <div class="mt-3 text-center">
@@ -276,6 +317,11 @@
                                 <span class="badge bg-{{ $movColor }}-subtle text-{{ $movColor }} px-2 py-0.5" style="font-size: 0.68rem;">
                                     {{ $mov->type_label }}
                                 </span>
+                                @if($mov->variant)
+                                    <span class="badge bg-light text-primary border ms-1" style="font-size: 0.65rem;">
+                                        {{ $mov->variant->name }}
+                                    </span>
+                                @endif
                                 <div class="text-muted small mt-0.5" style="font-size: 0.72rem;">
                                     {{ $mov->created_at->format('d/m/Y H:i') }}
                                 </div>
@@ -309,7 +355,23 @@
 
 @push('scripts')
 <script>
-    const currentStock = {{ $product->stock ?? 0 }};
+    let currentStock = {{ $product->stock ?? 0 }};
+
+    function onAdjustVariantChange(select) {
+        const opt = select.options[select.selectedIndex];
+        if (opt) {
+            currentStock = parseInt(opt.dataset.stock, 10) || 0;
+            const liveStockEl = document.getElementById('liveCurrentStock');
+            if (liveStockEl) liveStockEl.textContent = currentStock;
+            
+            // If in inventory mode, reset default value
+            const op = document.getElementById('mainAdjustmentType').value;
+            if (op === 'adjustment') {
+                document.getElementById('mainQuantityInput').value = currentStock;
+            }
+            updateLiveCalc();
+        }
+    }
 
     function changeOp(op) {
         document.getElementById('mainAdjustmentType').value = op;

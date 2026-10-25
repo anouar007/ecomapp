@@ -127,6 +127,9 @@
             <div class="min-w-0 flex-grow-1">
                 <div class="mobile-order-item-name text-truncate">
                     {{ $firstItem->product_name }}
+                    @if($firstItem->variant_name)
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-normal ms-1" style="font-size: 0.65rem;">{{ $firstItem->variant_name }}</span>
+                    @endif
                 </div>
                 <div class="mobile-order-item-meta">
                     <span class="badge bg-light text-dark border px-1.5 py-0.5">x{{ $firstItem->quantity }}</span>

@@ -336,6 +336,11 @@
                                                             {{ $item->product_sku }}
                                                         </span>
                                                         @endif
+                                                        @if($item->variant_name)
+                                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.70rem; padding: 2px 6px;">
+                                                            <i class="fas fa-layer-group me-1"></i>{{ $item->variant_name }}
+                                                        </span>
+                                                        @endif
                                                         <span class="text-muted small" style="font-size: 0.72rem;">
                                                             <i class="fas fa-shield-alt text-success me-0.5"></i>{{ __('Garantie') }}
                                                         </span>
@@ -384,6 +389,11 @@
                                             @if($item->product_sku)
                                             <span class="badge bg-light text-muted border font-monospace" style="font-size: 0.68rem; padding: 2px 6px;">
                                                 {{ $item->product_sku }}
+                                            </span>
+                                            @endif
+                                            @if($item->variant_name)
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.68rem; padding: 2px 6px;">
+                                                <i class="fas fa-layer-group me-1"></i>{{ $item->variant_name }}
                                             </span>
                                             @endif
                                             <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.68rem; padding: 2px 6px;">
