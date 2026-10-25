@@ -410,8 +410,48 @@
 /* 6. Visual Showcase Gallery */
 .smart-visual-editor .pdp-visual-showcase {
     margin-top: 28px;
-    padding-top: 20px;
+    padding: 16px;
     border-top: 1px solid #f1f5f9;
+    position: relative;
+    border-radius: 12px;
+    border: 1.5px dashed transparent;
+    transition: all 0.2s ease;
+}
+
+.smart-visual-editor .pdp-visual-showcase:hover {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+}
+
+.smart-visual-editor .pdp-visual-showcase .showcase-section-remove-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    border: 1px solid #fecaca;
+    background: #fff1f2;
+    color: #e11d48;
+    border-radius: 8px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    display: none;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    z-index: 20;
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.12);
+    transition: all 0.15s;
+}
+
+.smart-visual-editor .pdp-visual-showcase:hover .showcase-section-remove-btn {
+    display: inline-flex;
+}
+
+.smart-visual-editor .pdp-visual-showcase .showcase-section-remove-btn:hover {
+    background: #e11d48;
+    color: #ffffff;
+    border-color: #e11d48;
+    transform: translateY(-1px);
 }
 
 .smart-visual-editor .pdp-showcase-grid {
@@ -429,6 +469,45 @@
     display: flex;
     flex-direction: column;
     box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+    position: relative;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.smart-visual-editor .pdp-showcase-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+}
+
+.smart-visual-editor .pdp-showcase-card .showcase-remove-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    border: none;
+    background: #fee2e2;
+    color: #dc2626;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 13px;
+    font-weight: 700;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    line-height: 1;
+    z-index: 10;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: all 0.2s;
+}
+
+.smart-visual-editor .pdp-showcase-card:hover .showcase-remove-btn {
+    display: inline-flex;
+}
+
+.smart-visual-editor .pdp-showcase-card .showcase-remove-btn:hover {
+    background: #dc2626;
+    color: #ffffff;
+    transform: scale(1.15);
 }
 
 .smart-visual-editor .pdp-showcase-img-wrap {
@@ -575,6 +654,9 @@
                 </button>
                 <button type="button" class="smart-action-btn" onclick="insertShowcaseBlock()" title="Ajouter une carte de showcase visuel">
                     <i class="fas fa-camera text-warning"></i> <span>+ Showcase</span>
+                </button>
+                <button type="button" class="smart-action-btn" id="btnDeleteShowcase" onclick="removeAllShowcases()" title="Supprimer toute la galerie Showcase de la description" style="display: none; color: #dc2626; border-color: #fecaca; background: #fff1f2;">
+                    <i class="fas fa-trash-alt text-danger"></i> <span>Supprimer Showcase</span>
                 </button>
             </div>
         </div>
@@ -835,20 +917,28 @@ function switchStudioMode(mode) {
 /* ==========================================================================
    SYNCHRONIZATION & WORD COUNT
    ========================================================================== */
+const REMOVE_BTNS_SELECTOR = '.spec-remove-btn, .showcase-remove-btn, .showcase-section-remove-btn';
+
 function syncContentFromVisual() {
     // Clone node to strip editor temporary UI like remove buttons before storing
     const clone = visualEditor.cloneNode(true);
-    clone.querySelectorAll('.spec-remove-btn').forEach(b => b.remove());
+    clone.querySelectorAll(REMOVE_BTNS_SELECTOR).forEach(b => b.remove());
     clone.querySelectorAll('.img-selected').forEach(img => img.classList.remove('img-selected'));
 
     const cleanHtml = clone.innerHTML;
     hiddenTextarea.value = cleanHtml;
     rawHtmlArea.value = cleanHtml;
     updateWordCount();
+
+    const btnDelShowcase = document.getElementById('btnDeleteShowcase');
+    if (btnDelShowcase) {
+        const hasShowcase = !!visualEditor.querySelector('.pdp-visual-showcase, .pdp-showcase-card');
+        btnDelShowcase.style.display = hasShowcase ? 'inline-flex' : 'none';
+    }
 }
 
 function cleanEditorArtifacts() {
-    visualEditor.querySelectorAll('.spec-remove-btn').forEach(b => b.remove());
+    visualEditor.querySelectorAll(REMOVE_BTNS_SELECTOR).forEach(b => b.remove());
     visualEditor.querySelectorAll('.img-selected').forEach(img => img.classList.remove('img-selected'));
 }
 
@@ -1065,7 +1155,12 @@ function attachInteractiveListeners() {
             btn.addEventListener('click', function (e) {
                 e.stopPropagation();
                 if (confirm('Supprimer cette spécification ?')) {
+                    const gridParent = card.closest('.pdp-specs-grid');
+                    const specsContainer = card.closest('.pdp-technical-specs');
                     card.remove();
+                    if (specsContainer && gridParent && !gridParent.querySelector('.pdp-spec-card')) {
+                        specsContainer.remove();
+                    }
                     syncContentFromVisual();
                 }
             });
@@ -1073,7 +1168,56 @@ function attachInteractiveListeners() {
         }
     });
 
-    // 2. Images: Click to select and float toolbar
+    // 2. Showcase Cards: add quick remove button on each card
+    visualEditor.querySelectorAll('.pdp-showcase-card').forEach(card => {
+        if (!card.querySelector('.showcase-remove-btn')) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'showcase-remove-btn';
+            btn.innerHTML = '&times;';
+            btn.title = 'Supprimer cette photo du showcase';
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                if (confirm('Supprimer cette image du showcase ?')) {
+                    const showcaseParent = card.closest('.pdp-visual-showcase');
+                    card.remove();
+                    if (showcaseParent && !showcaseParent.querySelector('.pdp-showcase-card')) {
+                        showcaseParent.remove();
+                    }
+                    syncContentFromVisual();
+                }
+            });
+            card.appendChild(btn);
+        }
+    });
+
+    // 3. Entire Showcase Gallery: add top section remove button
+    visualEditor.querySelectorAll('.pdp-visual-showcase').forEach(showcase => {
+        if (!showcase.querySelector('.showcase-section-remove-btn')) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'showcase-section-remove-btn';
+            btn.innerHTML = '<i class="fas fa-trash-alt me-1"></i> Supprimer la galerie Showcase';
+            btn.title = 'Supprimer toute la section Showcase et ses photos';
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                if (confirm('Supprimer toute la galerie Showcase et toutes ses photos ?')) {
+                    showcase.remove();
+                    syncContentFromVisual();
+                }
+            });
+            showcase.insertBefore(btn, showcase.firstChild);
+        }
+    });
+
+    // 4. Update toolbar "Supprimer Showcase" button visibility
+    const btnDelShowcase = document.getElementById('btnDeleteShowcase');
+    if (btnDelShowcase) {
+        const hasShowcase = !!visualEditor.querySelector('.pdp-visual-showcase, .pdp-showcase-card');
+        btnDelShowcase.style.display = hasShowcase ? 'inline-flex' : 'none';
+    }
+
+    // 5. Images: Click to select and float toolbar
     visualEditor.querySelectorAll('img').forEach(img => {
         if (!img.dataset.hasListener) {
             img.dataset.hasListener = 'true';
@@ -1083,6 +1227,25 @@ function attachInteractiveListeners() {
             });
         }
     });
+}
+
+function removeAllShowcases() {
+    if (confirm("Supprimer toute la galerie Showcase et toutes ses photos de la fiche produit ?")) {
+        visualEditor.querySelectorAll('.pdp-visual-showcase, .pdp-showcase-card').forEach(el => el.remove());
+        deselectImage();
+        syncContentFromVisual();
+        attachInteractiveListeners();
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: 'Showcase supprimé',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+    }
 }
 
 function selectImage(img) {
@@ -1149,14 +1312,24 @@ function setImgAlign(align) {
 function deleteSelectedImg() {
     if (!currentSelectedImg) return;
     if (confirm("Supprimer cette image de la description ?")) {
-        const parentWrapper = currentSelectedImg.closest('.pdp-diagram-wrapper') || currentSelectedImg.closest('.pdp-showcase-card');
-        if (parentWrapper) {
-            parentWrapper.remove();
+        const showcaseCard = currentSelectedImg.closest('.pdp-showcase-card');
+        const showcaseParent = currentSelectedImg.closest('.pdp-visual-showcase');
+        const diagramWrapper = currentSelectedImg.closest('.pdp-diagram-wrapper');
+
+        if (showcaseCard) {
+            showcaseCard.remove();
+            if (showcaseParent && !showcaseParent.querySelector('.pdp-showcase-card')) {
+                showcaseParent.remove();
+            }
+        } else if (diagramWrapper) {
+            diagramWrapper.remove();
         } else {
             currentSelectedImg.remove();
         }
+
         deselectImage();
         syncContentFromVisual();
+        attachInteractiveListeners();
     }
 }
 
