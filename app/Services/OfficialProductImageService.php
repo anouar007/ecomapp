@@ -920,7 +920,7 @@ class OfficialProductImageService
      * Search 4K / Ultra-HD studio master images for a product.
      * Evaluates SQLite catalog, multi-CDN search, filters watermarks, and ranks by studio quality.
      */
-    public function find4kCandidates(string $productName, ?string $brand = null, int $minWidth = 800, int $limit = 12): array
+    public function find4kCandidates(string $productName, ?string $brand = null, int $minWidth = 350, int $limit = 24, ?string $sku = null): array
     {
         $productName = trim($productName);
         if (empty($productName)) {
@@ -931,7 +931,13 @@ class OfficialProductImageService
         $detectedBrand = $this->detectBrand($cleanQuery ?: $productName);
         $actualBrand = ($brand && strtolower($brand) !== 'generic' && strtolower($brand) !== 'unknown') ? $brand : $detectedBrand;
 
-        $cacheKey = '4k_cands_v4_' . md5($cleanQuery . '_' . $actualBrand . '_' . $minWidth . '_' . $limit);
+        // Clean SKU
+        $skuClean = $sku ? trim($sku) : null;
+        if ($skuClean && (strtolower($skuClean) === 'n/a' || strlen($skuClean) < 2)) {
+            $skuClean = null;
+        }
+
+        $cacheKey = 'img_search_v7_' . md5($cleanQuery . '_' . $actualBrand . '_' . $skuClean . '_' . $minWidth . '_' . $limit);
         $cached = Cache::get($cacheKey);
         if (is_array($cached) && !empty($cached)) {
             return $cached;
@@ -940,72 +946,50 @@ class OfficialProductImageService
         $candidates = [];
         $seenFingerprints = [];
 
-        // Check if the query is for a camera body vs accessory
-        $isTargetCamera = $this->isCameraBody($cleanQuery) || $this->isCameraBody($productName);
-        $isTargetAccessory = $this->isAccessory($cleanQuery) || $this->isAccessory($productName);
-
-        // Extract key model identification tokens while preserving hyphenated codes (e.g. x-t4, a7-iv)
-        preg_match_all('/\b[a-z0-9]+(?:-[a-z0-9]+)*\b/i', $cleanQuery, $rawMatches);
-        $rawTokens = $rawMatches[0] ?? [];
-
-        $modelTokens = [];
-        foreach ($rawTokens as $t) {
-            $tLower = strtolower($t);
-            if ($actualBrand && $tLower === strtolower($actualBrand)) continue;
-            if (preg_match('/[0-9]/', $tLower) || str_contains($tLower, '-') || in_array($tLower, ['pro', 'max', 'air', 'mini', 'plus', 'ultra', 'pocket', 'action', 'mark', 'combo', 'powershot', 'ace', 'alpha', 'cinema'])) {
-                $modelTokens[] = $tLower;
-                if (str_contains($tLower, '-')) {
-                    $modelTokens[] = str_replace('-', '', $tLower);
-                }
-            }
-        }
-        $modelTokens = array_values(array_unique($modelTokens));
-
-        // 1. High-Resolution Multi-Source Web Search via Bing API parser (large images, Amazon, B&H, Best Buy, Brand CDNs)
+        // Build cascading queries from most specific (Brand + SKU) to general
         $searchQueries = [];
-        if ($isTargetCamera) {
-            $searchQueries[] = $cleanQuery . ' camera product';
-            $searchQueries[] = $cleanQuery . ' mirrorless camera';
-            $searchQueries[] = $cleanQuery . ' studio photo';
-        } elseif ($isTargetAccessory) {
-            $searchQueries[] = $cleanQuery . ' product';
-            $searchQueries[] = $cleanQuery . ' official';
-        } else {
-            $searchQueries[] = $cleanQuery . ' product';
-            $searchQueries[] = $cleanQuery . ' studio';
+
+        // 1. Brand + SKU (Highest accuracy in photography/accessories e.g. "SmallRig 4668", "Godox BD-04", "Tamron A071")
+        if ($skuClean) {
+            if ($actualBrand && !str_contains(strtolower($skuClean), strtolower($actualBrand))) {
+                $searchQueries[] = $actualBrand . ' ' . $skuClean;
+            }
+            $searchQueries[] = $skuClean;
+        }
+
+        // 2. Model + SKU (e.g. "Encore PT60 4668")
+        if ($skuClean && $cleanQuery && !str_contains(strtolower($cleanQuery), strtolower($skuClean))) {
+            $searchQueries[] = $cleanQuery . ' ' . $skuClean;
+        }
+
+        // 3. Clean Model Name
+        if (!in_array($cleanQuery, $searchQueries)) {
             $searchQueries[] = $cleanQuery;
         }
 
-        $badWords = [
-            // Review / test shot / sample gallery blacklist
-            'sample photo', 'sample image', 'sample pictures', 'sample shot', 'sample gallery', 'sample raw',
-            'samples gallery', 'test shot', 'field test', 'taken with', 'shot with', 'shot on', 'captured with',
-            'iso test', 'autofocus test', 'tracking test', 'review sample', 'af test', 'samples', 'dpreview sample',
-            'tear down', 'teardown', 'unboxing', 'wallpaper', 'louer', 'rent', 'location', 'vs.', ' vs ',
-            // Vehicle / motorsport blacklist (prevents cars photographed in camera AF tracking reviews)
-            'porsche', 'ferrari', 'lamborghini', 'mclaren', 'bugatti', 'race car', 'racing', 'motorsport',
-            'race track', 'racetrack', 'circuit', 'supercar', 'sports car', 'formula 1', 'f1', 'nascar',
-            'gt4', 'gt3', 'gt2', 'clubsport', 'bmw', 'audi', 'mercedes-benz', 'mercedes', 'volkswagen',
-            'honda', 'toyota', 'corvette', 'mustang', 'automobile', 'vehicule', 'voiture', 'car review',
-            // Apparel / accessories / toys
-            't-shirt', 'clothing', 'poster', 'skin sticker', 'skin wrap', 'decal', 'toy', 'lego'
-        ];
+        // 4. Original Product Name
+        if (!in_array($productName, $searchQueries)) {
+            $searchQueries[] = $productName;
+        }
+
         $badDomains = [
             'freepik', 'alamy', 'shutterstock', 'getty', 'dreamstime',
             '123rf', 'depositphotos', 'istock', 'vector', 'clipart', 'watermark',
-            'pinterest', 'facebook', 'instagram', 'tiktok', 'youtube', 'ebay', 'aliexpress', 'temu', 'redbubble', 'etsy'
+            'pinterest', 'facebook', 'instagram', 'tiktok', 'youtube', 'redbubble', 'etsy'
         ];
 
         foreach ($searchQueries as $q) {
             if (count($candidates) >= $limit) break;
 
-            $searchUrl = "https://www.bing.com/images/search?q=" . urlencode($q) . "&qft=+filterui:imagesize-large";
+            // Search without restrictive size filters so all valid e-commerce retailer images are discovered
+            $searchUrl = "https://www.bing.com/images/search?q=" . urlencode($q) . "&form=HDRSC2";
 
             try {
                 $res = Http::withHeaders([
-                    'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                    'Accept-Language' => 'en-US,en;q=0.9',
-                ])->timeout(5)->get($searchUrl);
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                    'Accept-Language' => 'en-US,en;q=0.9,fr;q=0.8',
+                    'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+                ])->timeout(6)->get($searchUrl);
 
                 if ($res->successful()) {
                     preg_match_all('/m="?({[^\"]*murl[^\"]*})"?/i', $res->body(), $matches);
@@ -1017,217 +1001,127 @@ class OfficialProductImageService
                         $itemData = json_decode(html_entity_decode($rawJson), true);
                         if (empty($itemData['murl']) || empty($itemData['turl'])) continue;
 
-                        $u = html_entity_decode($itemData['murl']);
+                        $murl = html_entity_decode($itemData['murl']);
                         $previewUrl = html_entity_decode($itemData['turl']);
-                        $title = html_entity_decode($itemData['t'] ?? '');
+                        $title = html_entity_decode($itemData['t'] ?? ($itemData['desc'] ?? ''));
+                        $purl = html_entity_decode($itemData['purl'] ?? '');
                         $titleLower = strtolower($title);
 
                         // Check domain blacklist
                         $isBad = false;
                         foreach ($badDomains as $bd) {
-                            if (stripos($u, $bd) !== false) {
+                            if (stripos($murl, $bd) !== false || stripos($purl, $bd) !== false) {
                                 $isBad = true;
                                 break;
                             }
                         }
                         if ($isBad) continue;
 
-                        // Reject review/comparison/vehicle/sample titles (unless query explicitly searches for it)
-                        $cleanLower = strtolower($cleanQuery);
-                        foreach ($badWords as $bw) {
-                            if (!str_contains($cleanLower, $bw) && str_contains($titleLower, $bw)) {
-                                $isBad = true;
-                                break;
-                            }
-                        }
-                        if ($isBad) continue;
+                        // Identify domain for display
+                        $host = parse_url($murl, PHP_URL_HOST) ?: (parse_url($purl, PHP_URL_HOST) ?: 'web');
+                        $host = preg_replace('/^www\./i', '', $host);
 
-                        // Reject accessories if target is not an accessory
-                        if (!$isTargetAccessory && $this->isAccessory($titleLower)) {
-                            continue;
-                        }
-
-                        // Check model token match with word boundaries
-                        if (!empty($modelTokens)) {
-                            $hasKeyToken = false;
-                            foreach ($modelTokens as $mt) {
-                                $pattern = '/\b' . preg_quote($mt, '/') . '\b/i';
-                                if (preg_match($pattern, $titleLower)) {
-                                    $hasKeyToken = true;
-                                    break;
-                                }
-                            }
-                            if (!$hasKeyToken) continue;
-                        }
-
-                        // Bing High-Res 4K URL
-                        $bing4kUrl = preg_replace('/(&w=\d+&h=\d+)|(\?w=\d+&h=\d+)/i', '', $previewUrl);
-                        $bing4kUrl .= (str_contains($bing4kUrl, '?') ? '&' : '?') . 'w=2000&h=2000';
-
-                        // Master URL conversions for high-res CDNs
-                        $source = 'Studio Haute Résolution (4K)';
-                        $sourceScore = 75;
-                        $finalUrl = $bing4kUrl;
-                        $w = 2000;
-                        $h = 2000;
-
-                        if (str_contains($u, 'm.media-amazon.com')) {
-                            $finalUrl = preg_replace('/\._[A-Z0-9_,]+_\./i', '.', $u);
-                            $source = 'Amazon Master (4K)';
-                            $sourceScore = 95;
-                            $w = 2500;
-                            $h = 2500;
-                        } elseif (str_contains($u, 'pisces.bbystatic.com')) {
-                            $finalUrl = preg_replace('/;maxHeight=\d+;maxWidth=\d+/i', '', $u);
-                            $source = 'Best Buy Master (4K)';
-                            $sourceScore = 93;
-                        } elseif (str_contains($u, 'cdn.shopify.com')) {
-                            $finalUrl = preg_replace('/_(?:small|compact|medium|large|grande|pico|icon|\d+x\d*)\./i', '.', $u);
-                            $finalUrl = preg_replace('/(\?|&)width=\d+/i', '', $finalUrl);
-                            $source = 'Shopify Store (4K)';
-                            $sourceScore = 90;
-                        } elseif (str_contains($u, 'i1.adis.ws') || str_contains($u, 'canon.')) {
-                            if (str_contains($u, 'w=')) {
-                                $finalUrl = preg_replace('/w=\d+/', 'w=2000', $u);
-                            }
-                            $source = 'Canon Studio Master';
-                            $sourceScore = 96;
-                        } elseif (str_contains($u, 'd1ncau8tqf99kp.cloudfront.net') || str_contains($u, 'sony.')) {
-                            $source = 'Sony Studio Master';
-                            $sourceScore = 96;
-                        } elseif (str_contains($u, 'res.insta360.com')) {
-                            $source = 'Insta360 Studio Master';
-                            $sourceScore = 96;
-                        } elseif (str_contains($u, 'dji.com') || str_contains($u, 'dji-retail')) {
-                            $source = 'DJI Studio Master';
-                            $sourceScore = 96;
-                        } elseif (str_contains($u, 'bhphotovideo.com') || str_contains($u, 'static.bhphoto.com')) {
-                            $finalUrl = $bing4kUrl;
-                            $source = 'B&H Photo Master (4K)';
-                            $sourceScore = 91;
-                        }
-
-                        // Deduplicate by thumbnail ID or URL
-                        preg_match('/id=([A-Za-z0-9_.-]+)/', $previewUrl, $idMatch);
-                        $fingerprint = $idMatch[1] ?? md5($finalUrl);
+                        // Deduplicate
+                        $fingerprint = md5($murl);
                         if (isset($seenFingerprints[$fingerprint])) continue;
                         $seenFingerprints[$fingerprint] = true;
 
-                        // Brand match bonus
-                        if ($actualBrand && str_contains($titleLower, strtolower($actualBrand))) {
-                            $sourceScore += 15;
+                        // Master URL enhancement where available
+                        $finalUrl = $murl;
+                        $w = 1200;
+                        $h = 1200;
+                        $source = $host;
+
+                        if (str_contains($murl, 'm.media-amazon.com')) {
+                            $finalUrl = preg_replace('/\._[A-Z0-9_,]+_\./i', '.', $murl);
+                            $source = 'Amazon';
+                            $w = 2000;
+                            $h = 2000;
+                        } elseif (str_contains($murl, 'pisces.bbystatic.com')) {
+                            $finalUrl = preg_replace('/;maxHeight=\d+;maxWidth=\d+/i', '', $murl);
+                            $source = 'Best Buy';
+                            $w = 2000;
+                            $h = 2000;
+                        } elseif (str_contains($murl, 'cdn.shopify.com')) {
+                            $finalUrl = preg_replace('/_(?:small|compact|medium|large|grande|pico|icon|\d+x\d*)\./i', '.', $murl);
+                            $finalUrl = preg_replace('/(\?|&)width=\d+/i', '', $finalUrl);
+                            $source = 'Shopify Store';
+                            $w = 1600;
+                            $h = 1600;
+                        } elseif (str_contains($murl, 'bhphotovideo.com') || str_contains($murl, 'static.bhphoto.com')) {
+                            $source = 'B&H Photo';
+                            $w = 2000;
+                            $h = 2000;
+                        } elseif (str_contains($murl, 'smallrig.com')) {
+                            $source = 'SmallRig Official';
+                            $w = 1600;
+                            $h = 1600;
+                        } elseif (str_contains($murl, 'godox.com')) {
+                            $source = 'Godox Official';
+                            $w = 1600;
+                            $h = 1600;
+                        } elseif (str_contains($murl, 'dji.com')) {
+                            $source = 'DJI Official';
+                            $w = 2000;
+                            $h = 2000;
                         }
 
-                        // Check model token completeness bonus
-                        if (!empty($modelTokens)) {
-                            $allMatched = true;
-                            foreach ($modelTokens as $mt) {
-                                $pattern = '/\b' . preg_quote($mt, '/') . '\b/i';
-                                if (!preg_match($pattern, $titleLower)) {
-                                    $allMatched = false;
-                                    break;
-                                }
-                            }
-                            if ($allMatched) {
-                                $sourceScore += 10;
+                        // Scoring: Priority on ACCURACY of product match
+                        $score = 50;
+
+                        // SKU match: highest weight (+60)
+                        if ($skuClean) {
+                            $pattern = '/\b' . preg_quote($skuClean, '/') . '\b/i';
+                            if (preg_match($pattern, $title) || preg_match($pattern, $murl) || preg_match($pattern, $purl)) {
+                                $score += 60;
                             }
                         }
+
+                        // Brand match (+30)
+                        if ($actualBrand && (stripos($title, $actualBrand) !== false || stripos($murl, $actualBrand) !== false || stripos($host, $actualBrand) !== false)) {
+                            $score += 30;
+                        }
+
+                        // Clean model words match (+10 per word)
+                        $modelWords = array_filter(explode(' ', strtolower($cleanQuery)), fn($w) => strlen($w) > 2);
+                        $matchedWords = 0;
+                        foreach ($modelWords as $mw) {
+                            if (str_contains($titleLower, $mw)) {
+                                $matchedWords++;
+                            }
+                        }
+                        $score += ($matchedWords * 10);
+
+                        // High-res bonus (+15)
+                        if ($w >= 1800) {
+                            $score += 15;
+                        }
+
+                        // Quality label
+                        $qualityLabel = $w >= 1800 ? "4K Ultra-HD ({$w}×{$h})" : ($w >= 1000 ? "Full HD ({$w}×{$h})" : "HD Standard");
 
                         $candidates[] = [
-                            'title' => $title,
+                            'title' => $title ?: $q,
                             'url' => $finalUrl,
                             'preview_url' => $previewUrl,
                             'width' => $w,
                             'height' => $h,
-                            'quality' => "4K Ultra-HD ({$w}×{$h})",
+                            'quality' => $qualityLabel,
                             'source' => $source,
+                            'domain' => $host,
                             'mime' => 'image/jpeg',
-                            'score' => $sourceScore,
+                            'score' => $score,
                         ];
-
-                        if (count($candidates) >= $limit) {
-                            break;
-                        }
                     }
                 }
             } catch (\Throwable $e) {
-                Log::info("4K Image Search query notice: " . $e->getMessage());
+                Log::info("Image Search query notice: " . $e->getMessage());
             }
         }
 
-        // 2. Search Local SQLite Official Catalog as an additional option
-        if ($this->sqlite && count($candidates) < $limit) {
-            try {
-                $sql = "SELECT brand, title, title_clean, image_url FROM official_catalog WHERE 1=1";
-                $params = [];
-                if ($actualBrand) {
-                    $sql .= " AND brand = ?";
-                    $params[] = $actualBrand;
-                }
-
-                if (!empty($modelTokens)) {
-                    foreach (array_slice($modelTokens, 0, 3) as $mt) {
-                        $sql .= " AND title_clean LIKE ?";
-                        $params[] = '%' . $mt . '%';
-                    }
-                } else {
-                    foreach (array_slice($rawTokens, 0, 2) as $ct) {
-                        if ($actualBrand && strtolower($ct) === strtolower($actualBrand)) continue;
-                        $sql .= " AND title_clean LIKE ?";
-                        $params[] = '%' . $ct . '%';
-                    }
-                }
-                $sql .= " LIMIT 10";
-
-                $stmt = $this->sqlite->prepare($sql);
-                $stmt->execute($params);
-                $catRows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                foreach ($catRows as $crow) {
-                    $cu = $crow['image_url'] ?? '';
-                    $tClean = strtolower($crow['title_clean'] ?? '');
-                    if (empty($cu) || isset($seenFingerprints[md5($cu)])) continue;
-
-                    // If target is not an accessory, reject accessories in catalog
-                    if (!$isTargetAccessory && $this->isAccessory($tClean)) {
-                        continue;
-                    }
-
-                    // Check that key model tokens match
-                    if (!empty($modelTokens)) {
-                        $matchesAll = true;
-                        foreach ($modelTokens as $mt) {
-                            if (!str_contains($tClean, $mt)) {
-                                $matchesAll = false;
-                                break;
-                            }
-                        }
-                        if (!$matchesAll) continue;
-                    }
-
-                    $seenFingerprints[md5($cu)] = true;
-                    $candidates[] = [
-                        'title' => $crow['title'],
-                        'url' => $cu,
-                        'preview_url' => $cu,
-                        'width' => 1200,
-                        'height' => 900,
-                        'quality' => 'Studio Pro (Fond Blanc)',
-                        'source' => 'Catalogue Officiel (' . ($crow['brand'] ?: 'Studio') . ')',
-                        'mime' => 'image/jpeg',
-                        'score' => 82,
-                    ];
-                    if (count($candidates) >= $limit) break;
-                }
-            } catch (\Throwable $e) {
-                Log::info("4K SQLite catalog search notice: " . $e->getMessage());
-            }
-        }
-
-        // Rank by score descending so the crispest 4K images appear first
+        // Rank by score descending so the exact product matches appear first
         usort($candidates, fn($a, $b) => ($b['score'] ?? 0) <=> ($a['score'] ?? 0));
 
-        // Cache results for 1 hour to ensure instant repeat searches
         if (!empty($candidates)) {
             Cache::put($cacheKey, $candidates, 3600);
         }
@@ -1236,11 +1130,19 @@ class OfficialProductImageService
     }
 
     /**
-     * Apply a specific 4K image directly to a product.
+     * Apply a specific image directly to a product, with automatic preview fallback if hotlinking is blocked.
      */
-    public function apply4kImage(Product $product, string $imageUrl): ?string
+    public function apply4kImage(Product $product, string $imageUrl, ?string $fallbackUrl = null): ?string
     {
-        return $this->downloadAndAttachImage($product, $imageUrl, $this->detectBrand($product->name));
+        $brand = $this->detectBrand($product->name);
+        $path = $this->downloadAndAttachImage($product, $imageUrl, $brand);
+
+        // If direct download from retailer failed (e.g. 403 hotlink protection), fallback to search engine thumbnail proxy
+        if (!$path && $fallbackUrl && $fallbackUrl !== $imageUrl) {
+            $path = $this->downloadAndAttachImage($product, $fallbackUrl, $brand);
+        }
+
+        return $path;
     }
 
     /**

@@ -509,11 +509,28 @@ class ProductController extends Controller
         $query = $request->input('q', $product->name);
         $service = app(\App\Services\OfficialProductImageService::class);
         $brand = $service->detectBrand($query ?: $product->name);
-        $candidates = $service->find4kCandidates($query, $brand, 800, 12);
+        $sku = $product->sku;
+        
+        $candidates = $service->find4kCandidates($query, $brand, 350, 24, $sku);
+
+        // Build helpful search suggestion chips for instant 1-click alternative searches
+        $suggestions = [];
+        if ($sku && strlen($sku) >= 2 && strtolower($sku) !== 'n/a') {
+            if ($brand && !str_contains(strtolower($sku), strtolower($brand))) {
+                $suggestions[] = $brand . ' ' . $sku;
+            }
+            $suggestions[] = $sku;
+        }
+        $cleanName = $service->cleanStudioSearchQuery($product->name);
+        if ($cleanName && !in_array($cleanName, $suggestions)) {
+            $suggestions[] = $cleanName;
+        }
 
         return response()->json([
             'success' => true,
             'query' => $query,
+            'sku' => $sku,
+            'suggestions' => array_values(array_unique($suggestions)),
             'count' => count($candidates),
             'candidates' => $candidates,
         ]);
@@ -525,16 +542,17 @@ class ProductController extends Controller
     public function apply4kImage(Request $request, Product $product)
     {
         $request->validate([
-            'image_url' => ['required', 'url'],
+            'image_url' => ['required', 'string'],
+            'fallback_url' => ['nullable', 'string'],
         ]);
 
         $service = app(\App\Services\OfficialProductImageService::class);
-        $path = $service->apply4kImage($product, $request->input('image_url'));
+        $path = $service->apply4kImage($product, $request->input('image_url'), $request->input('fallback_url'));
 
         if (!$path) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to download or apply 4K image. Please select another image.',
+                'message' => 'Impossible de télécharger cette photo. Veuillez en sélectionner une autre parmi les résultats.',
             ], 422);
         }
 
@@ -543,7 +561,7 @@ class ProductController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Image 4K Ultra-HD appliquée avec succès !',
+            'message' => 'Photo de produit appliquée avec succès !',
             'image_path' => $path,
             'image_url' => $fullUrl,
             'width' => $product->image_width,

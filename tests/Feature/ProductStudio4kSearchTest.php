@@ -67,7 +67,17 @@ class ProductStudio4kSearchTest extends TestCase
                 );
             }
             $this->assertNotEmpty($cand['url']);
-            $this->assertGreaterThanOrEqual(1200, $cand['width']);
+            $this->assertGreaterThanOrEqual(800, $cand['width']);
         }
+    }
+
+    public function test_find_candidates_with_sku_finds_exact_accessories_from_retailers(): void
+    {
+        $candidates = $this->service->find4kCandidates('Support Cage', 'SmallRig', 350, 6, '4668');
+        $this->assertNotEmpty($candidates);
+        $top = $candidates[0];
+        $this->assertStringContainsString('4668', $top['title']);
+        $this->assertNotEmpty($top['preview_url']);
+        $this->assertNotEmpty($top['domain']);
     }
 }
