@@ -1065,22 +1065,31 @@ function escapeHtml(text) {
 }
 
 function formatHtmlCode(html) {
-    // Pretty basic indent for readable HTML code mode
+    if (!html) return '';
     let tab = '  ';
     let result = '';
     let indent = 0;
 
     html.split(/>\s*</).forEach(function(element) {
-        if (element.match(/^\/\w/)) {
+        element = element.trim();
+        if (!element) return;
+
+        if (element.startsWith('/')) {
             indent = Math.max(0, indent - 1);
         }
         result += tab.repeat(indent) + '<' + element + '>\n';
-        if (element.match(/^<?\w[^>]*[^\/]$/) && !element.startsWith("input") && !element.startsWith("img") && !element.startsWith("br") && !element.startsWith("hr")) {
+        const isSelfClosing = element.endsWith('/') || 
+                              element.startsWith('img') || 
+                              element.startsWith('br') || 
+                              element.startsWith('hr') || 
+                              element.startsWith('input') || 
+                              element.startsWith('meta');
+        if (!element.startsWith('/') && !element.startsWith('!') && !isSelfClosing) {
             indent++;
         }
     });
 
-    return result.substring(1, result.length - 2);
+    return result.trim();
 }
 </script>
 @endpush
