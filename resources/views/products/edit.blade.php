@@ -174,7 +174,7 @@
             <a href="{{ route('products.index') }}" class="btn btn-sm btn-light border rounded-pill px-2.5 py-1.5 text-muted fw-semibold d-inline-flex align-items-center" title="Retour à la liste">
                 <i class="fas fa-arrow-left me-1"></i> <span>Retour</span>
             </a>
-            <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" 
+            <a href="{{ Route::has('shop.show') ? route('shop.show', $product->slug ?: $product->id) : url('/shop/' . ($product->slug ?: $product->id)) }}" 
                target="_blank" 
                class="btn btn-sm btn-outline-secondary rounded-pill px-2.5 py-1.5 fw-semibold d-inline-flex align-items-center justify-content-center gap-1 flex-grow-1 flex-md-grow-0 shadow-sm"
                title="Voir sur la boutique">
@@ -751,7 +751,8 @@ function trigger4kSearch() {
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Recherche...';
 
-    const url = "{{ route('products.search-4k-images', $product) }}?q=" + encodeURIComponent(query);
+    const searchRouteUrl = "{{ Route::has('products.search-4k-images') ? route('products.search-4k-images', $product) : url('/products/' . $product->id . '/search-4k-images') }}";
+    const url = searchRouteUrl + "?q=" + encodeURIComponent(query);
 
     fetch(url, {
         headers: {
@@ -823,7 +824,9 @@ function applySelected4kImage(imageUrl, button) {
 
     const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]')?.value;
 
-    fetch("{{ route('products.apply-4k-image', $product) }}", {
+    const applyRouteUrl = "{{ Route::has('products.apply-4k-image') ? route('products.apply-4k-image', $product) : url('/products/' . $product->id . '/apply-4k-image') }}";
+
+    fetch(applyRouteUrl, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

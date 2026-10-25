@@ -848,8 +848,9 @@ function handleStudioImageUpload(e) {
     const statusEl = document.getElementById('studioStatus');
     statusEl.innerHTML = '<i class="fas fa-spinner fa-spin text-primary me-1"></i> Téléversement de l\'image en cours...';
 
-    // Post to media upload endpoint
-    fetch('{{ route("media.store") }}', {
+    // Post to editor image upload endpoint
+    const uploadUrl = '{{ Route::has("products.upload-editor-image") ? route("products.upload-editor-image") : (Route::has("media.store") ? route("media.store") : url("/products/upload-editor-image")) }}';
+    fetch(uploadUrl, {
         method: 'POST',
         body: formData,
         headers: { 'Accept': 'application/json' }
