@@ -338,7 +338,36 @@ class EnrichProductDescriptions extends Command
             $sections[] = $galleryHtml;
         }
 
-        return implode("\n\n", $sections);
+        return $this->balanceHtmlTags(implode("\n\n", $sections));
+    }
+
+    /**
+     * Clean rogue chat artifacts and balance HTML tags via DOMDocument.
+     */
+    protected function balanceHtmlTags(string $html): string
+    {
+        if (empty(trim($html))) return $html;
+
+        // Clean rogue chat UI artifacts if present in source data
+        $html = preg_replace('/<div[^>]*data-test-render-count.*?<div class=\"contents\">/is', '', $html);
+        $html = preg_replace('/<div[^>]*font-claude-response.*?<div class=\"standard-markdown[^\"]*\">/is', '', $html);
+        $html = preg_replace('/<li class=\"font-claude-response-body[^\"]*\">/is', '<li>', $html);
+        $html = preg_replace('/<div[^>]*class=[\"\'][^\"]*(?:composer-parent|qMYqUG_|flex h-svh w-screen|group\/thread)[^\"]*[\"\'][^>]*>/is', '', $html);
+
+        $doc = new \DOMDocument();
+        libxml_use_internal_errors(true);
+        $doc->loadHTML('<?xml encoding="utf-8" ?><body>' . $html . '</body>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        libxml_clear_errors();
+
+        $body = $doc->getElementsByTagName('body')->item(0);
+        if (!$body) return $html;
+
+        $clean = '';
+        foreach ($body->childNodes as $node) {
+            $clean .= $doc->saveHTML($node);
+        }
+
+        return $clean ?: $html;
     }
 
     /**

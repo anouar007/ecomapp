@@ -169,6 +169,9 @@
     min-height: 480px;
     max-height: 800px;
     overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+    contain: layout style;
     padding: 24px 28px;
     outline: none;
     background: #ffffff;
@@ -176,6 +179,17 @@
     font-family: inherit;
     line-height: 1.7;
     font-size: 14.5px;
+}
+
+.smart-visual-editor .w-screen,
+.smart-visual-editor [class*="w-screen"] {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+.smart-visual-editor .h-svh,
+.smart-visual-editor [class*="h-svh"] {
+    height: auto !important;
+    min-height: 0 !important;
 }
 
 .smart-visual-editor:focus {
@@ -593,10 +607,8 @@
         {{-- Hidden Image Uploader Input --}}
         <input type="file" id="studioImageInput" accept="image/*" style="display: none;" onchange="handleStudioImageUpload(event)">
 
-        {{-- 1. Main Visual ContentEditable Studio --}}
-        <div id="smartVisualEditor" class="smart-visual-editor" contenteditable="true" spellcheck="false">
-            {!! $value ?? '' !!}
-        </div>
+        {{-- 1. Main Visual ContentEditable Studio (Loaded safely via JS from escaped textarea) --}}
+        <div id="smartVisualEditor" class="smart-visual-editor" contenteditable="true" spellcheck="false"></div>
 
         {{-- 2. Raw HTML Code Mode --}}
         <textarea id="smartRawHtmlArea" class="smart-raw-textarea" spellcheck="false">{{ $value ?? '' }}</textarea>
@@ -646,7 +658,8 @@ const imgFloatBar = document.getElementById('smartImgFloatBar');
 const wordCountBadge = document.getElementById('studioWordCount');
 
 document.addEventListener('DOMContentLoaded', function () {
-    // 1. Initial Content Setup
+    // 1. Initial Content Setup (safely parse into visual container)
+    visualEditor.innerHTML = hiddenTextarea.value;
     syncContentFromVisual();
     attachInteractiveListeners();
 
