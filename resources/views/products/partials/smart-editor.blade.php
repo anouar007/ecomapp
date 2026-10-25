@@ -456,12 +456,13 @@
 
 .smart-visual-editor .pdp-showcase-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    grid-template-columns: repeat(12, 1fr);
     gap: 16px;
     margin-top: 14px;
 }
 
 .smart-visual-editor .pdp-showcase-card {
+    grid-column: span 3;
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 14px;
@@ -471,6 +472,19 @@
     box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
     position: relative;
     transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.smart-visual-editor .pdp-showcase-card[data-size="25%"] {
+    grid-column: span 3;
+}
+.smart-visual-editor .pdp-showcase-card[data-size="50%"] {
+    grid-column: span 6;
+}
+.smart-visual-editor .pdp-showcase-card[data-size="75%"] {
+    grid-column: span 9;
+}
+.smart-visual-editor .pdp-showcase-card[data-size="100%"] {
+    grid-column: span 12;
 }
 
 .smart-visual-editor .pdp-showcase-card:hover {
@@ -510,9 +524,59 @@
     transform: scale(1.15);
 }
 
+.smart-visual-editor .pdp-showcase-card .showcase-upload-btn {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    border: none;
+    background: #e0f2fe;
+    color: #0284c7;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    line-height: 1;
+    z-index: 10;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: all 0.2s;
+}
+
+.smart-visual-editor .pdp-showcase-card:hover .showcase-upload-btn {
+    display: inline-flex;
+}
+
+.smart-visual-editor .pdp-showcase-card .showcase-upload-btn:hover {
+    background: #0284c7;
+    color: #ffffff;
+    transform: scale(1.15);
+}
+
+.smart-visual-editor .pdp-showcase-card .showcase-size-indicator {
+    position: absolute;
+    bottom: 34px;
+    right: 8px;
+    background: rgba(15, 23, 42, 0.75);
+    color: #ffffff;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    pointer-events: none;
+    display: none;
+    z-index: 5;
+}
+
+.smart-visual-editor .pdp-showcase-card:hover .showcase-size-indicator {
+    display: block;
+}
+
 .smart-visual-editor .pdp-showcase-img-wrap {
     width: 100%;
-    height: 180px;
+    min-height: 180px;
     background: #f8fafc;
     display: flex;
     align-items: center;
@@ -521,10 +585,23 @@
     padding: 10px;
 }
 
+.smart-visual-editor .pdp-showcase-card[data-size="50%"] .pdp-showcase-img-wrap {
+    min-height: 240px;
+}
+
+.smart-visual-editor .pdp-showcase-card[data-size="75%"] .pdp-showcase-img-wrap {
+    min-height: 290px;
+}
+
+.smart-visual-editor .pdp-showcase-card[data-size="100%"] .pdp-showcase-img-wrap {
+    min-height: 350px;
+}
+
 .smart-visual-editor .pdp-showcase-img-wrap img {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
+    cursor: pointer;
 }
 
 .smart-visual-editor .pdp-showcase-caption {
@@ -535,6 +612,34 @@
     text-align: center;
     background: #f8fafc;
     border-top: 1px solid #f1f5f9;
+}
+
+.smart-visual-editor .pdp-showcase-caption[contenteditable="true"]:hover {
+    background: #f1f5f9;
+    outline: 1px dashed #cbd5e1;
+    cursor: text;
+}
+
+@media (max-width: 991.98px) {
+    .smart-visual-editor .pdp-showcase-card,
+    .smart-visual-editor .pdp-showcase-card[data-size="25%"],
+    .smart-visual-editor .pdp-showcase-card[data-size="50%"] {
+        grid-column: span 6;
+    }
+    .smart-visual-editor .pdp-showcase-card[data-size="75%"],
+    .smart-visual-editor .pdp-showcase-card[data-size="100%"] {
+        grid-column: span 12;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .smart-visual-editor .pdp-showcase-card,
+    .smart-visual-editor .pdp-showcase-card[data-size="25%"],
+    .smart-visual-editor .pdp-showcase-card[data-size="50%"],
+    .smart-visual-editor .pdp-showcase-card[data-size="75%"],
+    .smart-visual-editor .pdp-showcase-card[data-size="100%"] {
+        grid-column: span 12 !important;
+    }
 }
 
 /* Raw HTML View */
@@ -593,6 +698,11 @@
     color: #ffffff;
 }
 
+.smart-img-float-btn.active {
+    background: #2563eb !important;
+    color: #ffffff !important;
+}
+
 .smart-img-float-btn.btn-del {
     color: #f87171;
 }
@@ -600,6 +710,21 @@
 .smart-img-float-btn.btn-del:hover {
     background: #ef4444;
     color: #ffffff;
+}
+
+/* Showcase Size Selection Tiles */
+.showcase-size-tile {
+    transition: all 0.15s ease;
+    border: 1.5px solid #e2e8f0;
+}
+.showcase-size-tile:hover {
+    border-color: #3b82f6;
+    background: #f8fafc;
+}
+.showcase-size-tile.active {
+    border-color: #2563eb !important;
+    background: #eff6ff !important;
+    box-shadow: 0 0 0 1px #2563eb;
 }
 
 /* Bottom Stats Bar */
@@ -728,8 +853,9 @@
             </button>
         </div>
 
-        {{-- Hidden Image Uploader Input --}}
+        {{-- Hidden Image Uploader Inputs --}}
         <input type="file" id="studioImageInput" accept="image/*" style="display: none;" onchange="handleStudioImageUpload(event)">
+        <input type="file" id="replaceImageFileInput" accept="image/*" style="display: none;" onchange="handleReplaceImageFileInput(event)">
 
         {{-- 1. Main Visual ContentEditable Studio (Loaded safely via JS from escaped textarea) --}}
         <div id="smartVisualEditor" class="smart-visual-editor" contenteditable="true" spellcheck="false"></div>
@@ -740,18 +866,115 @@
         {{-- 3. Live 1:1 Preview Mode --}}
         <div id="smartPreviewContainer" class="smart-preview-container"></div>
 
-        {{-- Floating Image Resizer Bar --}}
-        <div id="smartImgFloatBar" class="smart-img-float-bar">
-            <button type="button" class="smart-img-float-btn" onclick="setImgWidth('25%')">25%</button>
-            <button type="button" class="smart-img-float-btn" onclick="setImgWidth('50%')">50%</button>
-            <button type="button" class="smart-img-float-btn" onclick="setImgWidth('75%')">75%</button>
-            <button type="button" class="smart-img-float-btn" onclick="setImgWidth('100%')">100%</button>
-            <div style="width: 1px; height: 16px; background: rgba(255,255,255,0.2); margin: 0 2px;"></div>
-            <button type="button" class="smart-img-float-btn" onclick="setImgAlign('left')" title="Aligner à gauche"><i class="fas fa-align-left"></i></button>
-            <button type="button" class="smart-img-float-btn" onclick="setImgAlign('center')" title="Centrer"><i class="fas fa-align-center"></i></button>
-            <button type="button" class="smart-img-float-btn" onclick="setImgAlign('right')" title="Aligner à droite"><i class="fas fa-align-right"></i></button>
-            <div style="width: 1px; height: 16px; background: rgba(255,255,255,0.2); margin: 0 2px;"></div>
-            <button type="button" class="smart-img-float-btn btn-del" onclick="deleteSelectedImg()" title="Supprimer l'image"><i class="fas fa-trash-alt"></i></button>
+        {{-- Floating Image Resizer Bar (populated dynamically by selectImage) --}}
+        <div id="smartImgFloatBar" class="smart-img-float-bar"></div>
+
+        {{-- Modal pour ajouter/téléverser une image Showcase --}}
+        <div id="modalShowcaseInsert" style="display: none; position: fixed; inset: 0; z-index: 99999; background: rgba(15, 23, 42, 0.72); backdrop-filter: blur(6px); align-items: center; justify-content: center; padding: 20px;">
+            <div style="background: #ffffff; border-radius: 16px; max-width: 520px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); overflow: hidden;">
+                <div class="d-flex align-items-center justify-content-between p-3 border-bottom" style="background: #f8fafc;">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background: #fef2f2; color: #dc2626;">
+                            <i class="fas fa-camera"></i>
+                        </span>
+                        <div>
+                            <h6 class="mb-0 fw-bold text-dark">Ajouter au Showcase Visuel</h6>
+                            <small class="text-muted" style="font-size: 0.72rem;">Galerie de photos haute résolution de la description</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" onclick="closeShowcaseModal()" aria-label="Fermer"></button>
+                </div>
+
+                <div class="p-3">
+                    {{-- Onglets Source: Upload ou URL --}}
+                    <div class="d-flex gap-2 mb-3 p-1 rounded bg-light border">
+                        <button type="button" class="btn btn-sm flex-fill fw-semibold btn-primary" id="btnTabShowcaseUpload" onclick="switchShowcaseModalTab('upload')">
+                            <i class="fas fa-upload me-1"></i> Téléverser un fichier
+                        </button>
+                        <button type="button" class="btn btn-sm flex-fill fw-semibold btn-light text-secondary" id="btnTabShowcaseUrl" onclick="switchShowcaseModalTab('url')">
+                            <i class="fas fa-link me-1"></i> Par lien URL
+                        </button>
+                    </div>
+
+                    {{-- Section 1: Upload Fichier --}}
+                    <div id="sectionShowcaseUpload">
+                        <div id="showcaseDropzone" class="p-4 border border-2 border-dashed rounded-3 text-center bg-light" style="cursor: pointer; transition: all 0.2s;" onclick="document.getElementById('modalShowcaseFileInput').click()">
+                            <i class="fas fa-cloud-upload-alt fa-2x text-primary mb-2"></i>
+                            <div class="fw-semibold text-dark mb-1">Cliquez pour choisir une photo</div>
+                            <div class="text-muted small">ou glissez-déposez ici (JPG, PNG, WEBP — max 12 Mo)</div>
+                            <input type="file" id="modalShowcaseFileInput" accept="image/*" class="d-none" onchange="previewShowcaseFile(event)">
+                        </div>
+                    </div>
+
+                    {{-- Section 2: Lien URL --}}
+                    <div id="sectionShowcaseUrl" style="display: none;">
+                        <label class="form-label fw-semibold small text-dark">URL directe de l'image</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-light"><i class="fas fa-globe text-muted"></i></span>
+                            <input type="url" id="modalShowcaseUrlInput" class="form-control" placeholder="https://..." oninput="previewShowcaseUrl(this.value)">
+                        </div>
+                    </div>
+
+                    {{-- Preview Box --}}
+                    <div id="showcasePreviewBox" class="mt-3 p-2 rounded bg-light border text-center" style="display: none; position: relative;">
+                        <img id="showcasePreviewImg" src="" alt="Aperçu" style="max-height: 140px; max-width: 100%; object-fit: contain; border-radius: 8px;">
+                        <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 rounded-circle" style="width: 24px; height: 24px; padding: 0; line-height: 1;" onclick="clearShowcasePreview()" title="Supprimer la sélection">×</button>
+                    </div>
+
+                    {{-- Légende --}}
+                    <div class="mt-3">
+                        <label for="modalShowcaseCaptionInput" class="form-label fw-semibold small text-dark mb-1">
+                            Légende de la photo
+                        </label>
+                        <input type="text" id="modalShowcaseCaptionInput" class="form-control form-control-sm" placeholder="Ex: Capteur plein format 4K avec autofocus IA">
+                    </div>
+
+                    {{-- Sélection de la taille / largeur --}}
+                    <div class="mt-3">
+                        <label class="form-label fw-semibold small text-dark mb-1 d-flex justify-content-between">
+                            <span>Largeur de la carte</span>
+                            <span class="text-muted fw-normal" style="font-size: 0.72rem;">(Modifiable aussi en 1 clic dans l'éditeur)</span>
+                        </label>
+                        <div class="row g-2" id="showcaseSizeOptions">
+                            <div class="col-3">
+                                <label class="border rounded p-2 text-center w-100 showcase-size-tile active" data-size="25%" style="cursor: pointer;">
+                                    <input type="radio" name="showcaseCardSize" value="25%" class="d-none" checked>
+                                    <div class="fw-bold small text-dark">25%</div>
+                                    <div class="text-muted" style="font-size: 0.65rem;">1 col (standard)</div>
+                                </label>
+                            </div>
+                            <div class="col-3">
+                                <label class="border rounded p-2 text-center w-100 showcase-size-tile" data-size="50%" style="cursor: pointer;">
+                                    <input type="radio" name="showcaseCardSize" value="50%" class="d-none">
+                                    <div class="fw-bold small text-dark">50%</div>
+                                    <div class="text-muted" style="font-size: 0.65rem;">2 colonnes</div>
+                                </label>
+                            </div>
+                            <div class="col-3">
+                                <label class="border rounded p-2 text-center w-100 showcase-size-tile" data-size="75%" style="cursor: pointer;">
+                                    <input type="radio" name="showcaseCardSize" value="75%" class="d-none">
+                                    <div class="fw-bold small text-dark">75%</div>
+                                    <div class="text-muted" style="font-size: 0.65rem;">3 colonnes</div>
+                                </label>
+                            </div>
+                            <div class="col-3">
+                                <label class="border rounded p-2 text-center w-100 showcase-size-tile" data-size="100%" style="cursor: pointer;">
+                                    <input type="radio" name="showcaseCardSize" value="100%" class="d-none">
+                                    <div class="fw-bold small text-dark">100%</div>
+                                    <div class="text-muted" style="font-size: 0.65rem;">Pleine largeur</div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-end gap-2 p-3 border-top" style="background: #f8fafc;">
+                    <button type="button" class="btn btn-sm btn-outline-secondary px-3" onclick="closeShowcaseModal()">Annuler</button>
+                    <button type="button" class="btn btn-sm btn-primary px-3 fw-semibold" id="btnConfirmInsertShowcase" onclick="submitShowcaseModal()">
+                        <i class="fas fa-check me-1"></i> Ajouter au Showcase
+                    </button>
+                </div>
+            </div>
         </div>
 
         {{-- Hidden Form Input for Backend Submission --}}
@@ -917,7 +1140,7 @@ function switchStudioMode(mode) {
 /* ==========================================================================
    SYNCHRONIZATION & WORD COUNT
    ========================================================================== */
-const REMOVE_BTNS_SELECTOR = '.spec-remove-btn, .showcase-remove-btn, .showcase-section-remove-btn';
+const REMOVE_BTNS_SELECTOR = '.spec-remove-btn, .showcase-remove-btn, .showcase-section-remove-btn, .showcase-upload-btn, .showcase-size-indicator';
 
 function syncContentFromVisual() {
     // Clone node to strip editor temporary UI like remove buttons before storing
@@ -1105,11 +1328,177 @@ function insertCompatibilityBlock() {
     card.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-// 4. Add Showcase Card
+// 4. Add Showcase Card / Modal
+let currentReplaceTargetImg = null;
+let showcasePendingFile = null;
+
+function openShowcaseModal() {
+    const modal = document.getElementById('modalShowcaseInsert');
+    if (!modal) return;
+    
+    // Reset inputs
+    clearShowcasePreview();
+    const captionInput = document.getElementById('modalShowcaseCaptionInput');
+    if (captionInput) captionInput.value = '';
+    const urlInput = document.getElementById('modalShowcaseUrlInput');
+    if (urlInput) urlInput.value = '';
+    const fileInput = document.getElementById('modalShowcaseFileInput');
+    if (fileInput) fileInput.value = '';
+    
+    // Default to 25%
+    setShowcaseModalSizeRadio('25%');
+    switchShowcaseModalTab('upload');
+    
+    modal.style.display = 'flex';
+}
+
+function closeShowcaseModal() {
+    const modal = document.getElementById('modalShowcaseInsert');
+    if (modal) modal.style.display = 'none';
+    clearShowcasePreview();
+}
+
+function switchShowcaseModalTab(tab) {
+    const btnUpload = document.getElementById('btnTabShowcaseUpload');
+    const btnUrl = document.getElementById('btnTabShowcaseUrl');
+    const secUpload = document.getElementById('sectionShowcaseUpload');
+    const secUrl = document.getElementById('sectionShowcaseUrl');
+
+    if (tab === 'upload') {
+        if (btnUpload) btnUpload.className = 'btn btn-sm flex-fill fw-semibold btn-primary';
+        if (btnUrl) btnUrl.className = 'btn btn-sm flex-fill fw-semibold btn-light text-secondary';
+        if (secUpload) secUpload.style.display = 'block';
+        if (secUrl) secUrl.style.display = 'none';
+    } else {
+        if (btnUpload) btnUpload.className = 'btn btn-sm flex-fill fw-semibold btn-light text-secondary';
+        if (btnUrl) btnUrl.className = 'btn btn-sm flex-fill fw-semibold btn-primary';
+        if (secUpload) secUpload.style.display = 'none';
+        if (secUrl) secUrl.style.display = 'block';
+        const urlInput = document.getElementById('modalShowcaseUrlInput');
+        if (urlInput) urlInput.focus();
+    }
+}
+
+function previewShowcaseFile(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    showcasePendingFile = file;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        showPreviewImage(e.target.result);
+    };
+    reader.readAsDataURL(file);
+}
+
+function previewShowcaseUrl(url) {
+    showcasePendingFile = null;
+    if (url && url.trim().length > 5) {
+        showPreviewImage(url.trim());
+    } else {
+        clearShowcasePreview();
+    }
+}
+
+function showPreviewImage(src) {
+    const box = document.getElementById('showcasePreviewBox');
+    const img = document.getElementById('showcasePreviewImg');
+    if (box && img) {
+        img.src = src;
+        box.style.display = 'block';
+    }
+}
+
+function clearShowcasePreview() {
+    showcasePendingFile = null;
+    const box = document.getElementById('showcasePreviewBox');
+    const img = document.getElementById('showcasePreviewImg');
+    const fileInput = document.getElementById('modalShowcaseFileInput');
+    if (box) box.style.display = 'none';
+    if (img) img.src = '';
+    if (fileInput) fileInput.value = '';
+}
+
+function setShowcaseModalSizeRadio(size) {
+    document.querySelectorAll('#showcaseSizeOptions .showcase-size-tile').forEach(tile => {
+        const isMatch = tile.getAttribute('data-size') === size;
+        tile.classList.toggle('active', isMatch);
+        const radio = tile.querySelector('input[type="radio"]');
+        if (radio) radio.checked = isMatch;
+    });
+}
+
+function getSelectedShowcaseModalSize() {
+    const checked = document.querySelector('input[name="showcaseCardSize"]:checked');
+    return checked ? checked.value : '25%';
+}
+
+function submitShowcaseModal() {
+    const captionInput = document.getElementById('modalShowcaseCaptionInput');
+    const caption = captionInput ? captionInput.value.trim() : '';
+    const size = getSelectedShowcaseModalSize();
+    const btnSubmit = document.getElementById('btnConfirmInsertShowcase');
+
+    // Case 1: Pending File to upload
+    if (showcasePendingFile) {
+        const originalHtml = btnSubmit ? btnSubmit.innerHTML : '';
+        if (btnSubmit) {
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Téléversement...';
+        }
+
+        const formData = new FormData();
+        formData.append('image', showcasePendingFile);
+        formData.append('_token', '{{ csrf_token() }}');
+
+        const uploadUrl = '{{ Route::has("products.upload-editor-image") ? route("products.upload-editor-image") : (Route::has("media.store") ? route("media.store") : url("/products/upload-editor-image")) }}';
+        fetch(uploadUrl, {
+            method: 'POST',
+            body: formData,
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            const url = data.url || data.path || ('/storage/' + data.file);
+            insertShowcaseCardElement(url, caption, size);
+            closeShowcaseModal();
+        })
+        .catch(() => {
+            // Fallback: FileReader data URL
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                insertShowcaseCardElement(evt.target.result, caption, size);
+                closeShowcaseModal();
+            };
+            reader.readAsDataURL(showcasePendingFile);
+        })
+        .finally(() => {
+            if (btnSubmit) {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = originalHtml;
+            }
+        });
+        return;
+    }
+
+    // Case 2: Direct URL
+    const urlInput = document.getElementById('modalShowcaseUrlInput');
+    const url = urlInput ? urlInput.value.trim() : '';
+    if (url) {
+        insertShowcaseCardElement(url, caption, size);
+        closeShowcaseModal();
+        return;
+    }
+
+    alert("Veuillez sélectionner une image sur votre ordinateur ou renseigner une URL valide.");
+}
+
 function insertShowcaseBlock() {
-    const url = prompt("Entrez l'URL de l'image pour la galerie Showcase :", "https://");
+    openShowcaseModal();
+}
+
+function insertShowcaseCardElement(url, caption, size = '25%') {
     if (!url) return;
-    const caption = prompt("Légende de l'image :", "Vue détaillée de face");
 
     let showcase = visualEditor.querySelector('.pdp-visual-showcase');
     if (!showcase) {
@@ -1127,11 +1516,23 @@ function insertShowcaseBlock() {
     const grid = showcase.querySelector('.pdp-showcase-grid');
     const card = document.createElement('div');
     card.className = 'pdp-showcase-card';
+    card.setAttribute('data-size', size);
+
+    // Grid column span according to 12-column grid
+    let span = 'span 3';
+    let minH = '180px';
+    if (size === '50%') { span = 'span 6'; minH = '240px'; }
+    else if (size === '75%') { span = 'span 9'; minH = '280px'; }
+    else if (size === '100%') { span = 'span 12'; minH = '320px'; }
+
+    card.style.gridColumn = span;
+
+    const safeCaption = caption || 'Détail produit';
     card.innerHTML = `
-        <div class="pdp-showcase-img-wrap">
-            <img src="${url}" alt="${escapeHtml(caption)}">
+        <div class="pdp-showcase-img-wrap" style="min-height: ${minH};">
+            <img src="${url}" alt="${escapeHtml(safeCaption)}">
         </div>
-        <div class="pdp-showcase-caption">${escapeHtml(caption)}</div>
+        <div class="pdp-showcase-caption" contenteditable="true">${escapeHtml(safeCaption)}</div>
     `;
 
     grid.appendChild(card);
@@ -1139,6 +1540,48 @@ function insertShowcaseBlock() {
     syncContentFromVisual();
     card.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
+
+// Global modal tile listeners
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('#showcaseSizeOptions .showcase-size-tile').forEach(tile => {
+        tile.addEventListener('click', function() {
+            const size = this.getAttribute('data-size');
+            setShowcaseModalSizeRadio(size);
+        });
+    });
+
+    const dropzone = document.getElementById('showcaseDropzone');
+    if (dropzone) {
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                dropzone.style.borderColor = '#dc2626';
+                dropzone.style.background = '#fef2f2';
+            }, false);
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                dropzone.style.borderColor = '';
+                dropzone.style.background = '';
+            }, false);
+        });
+        dropzone.addEventListener('drop', function(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files && files.length > 0) {
+                showcasePendingFile = files[0];
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    showPreviewImage(evt.target.result);
+                };
+                reader.readAsDataURL(files[0]);
+            }
+        }, false);
+    }
+});
 
 /* ==========================================================================
    INTERACTIVE SPEC REMOVE BUTTONS & IMAGE HANDLERS
@@ -1168,8 +1611,9 @@ function attachInteractiveListeners() {
         }
     });
 
-    // 2. Showcase Cards: add quick remove button on each card
+    // 2. Showcase Cards: add quick remove button, upload button, and size indicator on each card
     visualEditor.querySelectorAll('.pdp-showcase-card').forEach(card => {
+        // Remove button
         if (!card.querySelector('.showcase-remove-btn')) {
             const btn = document.createElement('button');
             btn.type = 'button';
@@ -1188,6 +1632,54 @@ function attachInteractiveListeners() {
                 }
             });
             card.appendChild(btn);
+        }
+
+        // Upload / Replace button on card
+        if (!card.querySelector('.showcase-upload-btn')) {
+            const uploadBtn = document.createElement('button');
+            uploadBtn.type = 'button';
+            uploadBtn.className = 'showcase-upload-btn';
+            uploadBtn.innerHTML = '<i class="fas fa-camera"></i>';
+            uploadBtn.title = 'Remplacer / Téléverser une photo pour cette carte';
+            uploadBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const img = card.querySelector('img');
+                if (img) selectImage(img);
+                triggerReplaceImage();
+            });
+            card.appendChild(uploadBtn);
+        }
+
+        // Size indicator badge on card
+        const currentSize = card.getAttribute('data-size') || '25%';
+        let sizeBadge = card.querySelector('.showcase-size-indicator');
+        if (!sizeBadge) {
+            sizeBadge = document.createElement('span');
+            sizeBadge.className = 'showcase-size-indicator';
+            sizeBadge.title = 'Cliquer pour basculer la largeur (25% / 50% / 75% / 100%)';
+            sizeBadge.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const img = card.querySelector('img');
+                if (img) selectImage(img);
+                const sizes = ['25%', '50%', '75%', '100%'];
+                const cur = card.getAttribute('data-size') || '25%';
+                const next = sizes[(sizes.indexOf(cur) + 1) % sizes.length];
+                setShowcaseCardSize(next, card);
+            });
+            card.appendChild(sizeBadge);
+        }
+        sizeBadge.textContent = currentSize;
+
+        // Editable caption
+        const caption = card.querySelector('.pdp-showcase-caption');
+        if (caption) {
+            caption.setAttribute('contenteditable', 'true');
+            if (!caption.dataset.hasListener) {
+                caption.dataset.hasListener = 'true';
+                caption.addEventListener('input', function () {
+                    syncContentFromVisual();
+                });
+            }
         }
     });
 
@@ -1254,8 +1746,165 @@ function selectImage(img) {
     }
     currentSelectedImg = img;
     img.classList.add('img-selected');
+
+    const showcaseCard = img.closest('.pdp-showcase-card');
+    if (showcaseCard) {
+        const currentSize = showcaseCard.getAttribute('data-size') || '25%';
+        imgFloatBar.innerHTML = `
+            <span class="smart-img-float-label"><i class="fas fa-camera text-warning me-1"></i> Showcase</span>
+            <button type="button" class="smart-img-float-btn ${currentSize === '25%' ? 'active' : ''}" onclick="setShowcaseCardSize('25%')" title="Largeur 25% (1 col)">25%</button>
+            <button type="button" class="smart-img-float-btn ${currentSize === '50%' ? 'active' : ''}" onclick="setShowcaseCardSize('50%')" title="Largeur 50% (2 col)">50%</button>
+            <button type="button" class="smart-img-float-btn ${currentSize === '75%' ? 'active' : ''}" onclick="setShowcaseCardSize('75%')" title="Largeur 75% (3 col)">75%</button>
+            <button type="button" class="smart-img-float-btn ${currentSize === '100%' ? 'active' : ''}" onclick="setShowcaseCardSize('100%')" title="Largeur 100% (pleine largeur)">100%</button>
+            <span class="text-muted mx-1" style="opacity: 0.3;">|</span>
+            <button type="button" class="smart-img-float-btn" onclick="setShowcaseHeight('180px')" title="Hauteur compacte (180px)">H:180</button>
+            <button type="button" class="smart-img-float-btn" onclick="setShowcaseHeight('260px')" title="Hauteur standard (260px)">H:260</button>
+            <button type="button" class="smart-img-float-btn" onclick="setShowcaseHeight('360px')" title="Hauteur haute (360px)">H:360</button>
+            <span class="text-muted mx-1" style="opacity: 0.3;">|</span>
+            <button type="button" class="smart-img-float-btn" onclick="triggerReplaceImage()" title="Téléverser une nouvelle photo pour cette carte"><i class="fas fa-upload me-1"></i> Changer photo</button>
+            <button type="button" class="smart-img-float-btn" onclick="editShowcaseCaption()" title="Modifier la légende"><i class="fas fa-edit me-1"></i> Légende</button>
+            <button type="button" class="smart-img-float-btn delete" onclick="deleteSelectedImg()" title="Supprimer la carte"><i class="fas fa-trash-alt"></i></button>
+        `;
+    } else {
+        imgFloatBar.innerHTML = `
+            <button type="button" class="smart-img-float-btn" onclick="setImgWidth('25%')">25%</button>
+            <button type="button" class="smart-img-float-btn" onclick="setImgWidth('50%')">50%</button>
+            <button type="button" class="smart-img-float-btn" onclick="setImgWidth('75%')">75%</button>
+            <button type="button" class="smart-img-float-btn" onclick="setImgWidth('100%')">100%</button>
+            <span class="text-muted mx-1" style="opacity: 0.3;">|</span>
+            <button type="button" class="smart-img-float-btn" onclick="setImgAlign('left')" title="Aligner à gauche"><i class="fas fa-align-left"></i></button>
+            <button type="button" class="smart-img-float-btn" onclick="setImgAlign('center')" title="Centrer"><i class="fas fa-align-center"></i></button>
+            <button type="button" class="smart-img-float-btn" onclick="setImgAlign('right')" title="Aligner à droite"><i class="fas fa-align-right"></i></button>
+            <span class="text-muted mx-1" style="opacity: 0.3;">|</span>
+            <button type="button" class="smart-img-float-btn" onclick="triggerReplaceImage()" title="Téléverser une image de remplacement"><i class="fas fa-sync-alt me-1"></i> Remplacer</button>
+            <button type="button" class="smart-img-float-btn delete" onclick="deleteSelectedImg()" title="Supprimer"><i class="fas fa-trash-alt"></i></button>
+        `;
+    }
+
     updateFloatBarPosition();
     imgFloatBar.style.display = 'flex';
+}
+
+function setShowcaseCardSize(size, targetCard = null) {
+    const card = targetCard || (currentSelectedImg ? currentSelectedImg.closest('.pdp-showcase-card') : null);
+    if (!card) return;
+
+    card.setAttribute('data-size', size);
+    let span = 'span 3';
+    if (size === '50%') span = 'span 6';
+    else if (size === '75%') span = 'span 9';
+    else if (size === '100%') span = 'span 12';
+
+    card.style.gridColumn = span;
+
+    const badge = card.querySelector('.showcase-size-indicator');
+    if (badge) badge.textContent = size;
+
+    // Update active state in float bar buttons
+    imgFloatBar.querySelectorAll('.smart-img-float-btn').forEach(btn => {
+        if (['25%', '50%', '75%', '100%'].includes(btn.innerText.trim())) {
+            btn.classList.toggle('active', btn.innerText.trim() === size);
+        }
+    });
+
+    syncContentFromVisual();
+    updateFloatBarPosition();
+}
+
+function setShowcaseHeight(height, targetCard = null) {
+    const card = targetCard || (currentSelectedImg ? currentSelectedImg.closest('.pdp-showcase-card') : null);
+    if (!card) return;
+
+    const wrap = card.querySelector('.pdp-showcase-img-wrap');
+    if (wrap) {
+        wrap.style.height = height;
+        wrap.style.minHeight = height;
+    }
+
+    syncContentFromVisual();
+    updateFloatBarPosition();
+}
+
+function editShowcaseCaption() {
+    if (!currentSelectedImg) return;
+    const card = currentSelectedImg.closest('.pdp-showcase-card');
+    if (!card) return;
+    const captionEl = card.querySelector('.pdp-showcase-caption');
+    const oldCaption = captionEl ? captionEl.innerText.trim() : '';
+    const newCaption = prompt("Modifier la légende de l'image Showcase :", oldCaption);
+    if (newCaption !== null) {
+        if (captionEl) {
+            captionEl.innerText = newCaption;
+        } else {
+            const newCapEl = document.createElement('div');
+            newCapEl.className = 'pdp-showcase-caption';
+            newCapEl.contentEditable = 'true';
+            newCapEl.innerText = newCaption;
+            card.appendChild(newCapEl);
+        }
+        syncContentFromVisual();
+        attachInteractiveListeners();
+    }
+}
+
+function triggerReplaceImage() {
+    if (!currentSelectedImg) return;
+    currentReplaceTargetImg = currentSelectedImg;
+    const fileInput = document.getElementById('replaceImageFileInput');
+    if (fileInput) {
+        fileInput.value = '';
+        fileInput.click();
+    }
+}
+
+function handleReplaceImageFileInput(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file || !currentReplaceTargetImg) return;
+
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('_token', '{{ csrf_token() }}');
+
+    const statusEl = document.getElementById('studioStatus');
+    if (statusEl) {
+        statusEl.innerHTML = '<i class="fas fa-spinner fa-spin text-primary me-1"></i> Téléversement de la nouvelle photo...';
+    }
+
+    const uploadUrl = '{{ Route::has("products.upload-editor-image") ? route("products.upload-editor-image") : (Route::has("media.store") ? route("media.store") : url("/products/upload-editor-image")) }}';
+    fetch(uploadUrl, {
+        method: 'POST',
+        body: formData,
+        headers: { 'Accept': 'application/json' }
+    })
+    .then(res => res.json())
+    .then(data => {
+        const url = data.url || data.path || ('/storage/' + data.file);
+        if (currentReplaceTargetImg) {
+            currentReplaceTargetImg.src = url;
+            syncContentFromVisual();
+            updateFloatBarPosition();
+        }
+        if (statusEl) {
+            statusEl.innerHTML = '<i class="fas fa-check-circle text-success me-1"></i> Photo mise à jour avec succès !';
+        }
+    })
+    .catch(() => {
+        // Fallback local FileReader
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            if (currentReplaceTargetImg) {
+                currentReplaceTargetImg.src = evt.target.result;
+                syncContentFromVisual();
+                updateFloatBarPosition();
+            }
+            if (statusEl) {
+                statusEl.innerHTML = '<i class="fas fa-check-circle text-success me-1"></i> Photo locale chargée.';
+            }
+        };
+        reader.readAsDataURL(file);
+    });
+
+    event.target.value = '';
 }
 
 function deselectImage() {
@@ -1284,6 +1933,11 @@ function updateFloatBarPosition() {
 
 function setImgWidth(width) {
     if (!currentSelectedImg) return;
+    const showcaseCard = currentSelectedImg.closest('.pdp-showcase-card');
+    if (showcaseCard) {
+        setShowcaseCardSize(width, showcaseCard);
+        return;
+    }
     currentSelectedImg.style.width = width;
     currentSelectedImg.style.height = 'auto';
     syncContentFromVisual();

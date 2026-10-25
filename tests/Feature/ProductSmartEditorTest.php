@@ -37,16 +37,13 @@ class ProductSmartEditorTest extends TestCase
     {
         $response = $this->actingAs($this->admin)->get(route('products.create'));
         $response->assertStatus(200);
-        $response->assertSee('smart-editor-container');
-        $response->assertSee('smartQuillEditor');
-        $response->assertSee('quill.snow.css');
-        $response->assertSee('quill.js');
-        $response->assertSee('Insérer un Modèle');
-        $response->assertSee('Ajouter Image');
-        $response->assertSee('toggleHtmlMode');
-        $response->assertSee('smartImageOverlay');
-        $response->assertSee('smart-handle');
-        $response->assertSee('smartImageToolbar');
+        $response->assertSee('smartStudioWrapper');
+        $response->assertSee('smartVisualEditor');
+        $response->assertSee('smartRawHtmlArea');
+        $response->assertSee('modalShowcaseInsert');
+        $response->assertSee('modalShowcaseFileInput');
+        $response->assertSee('showcaseSizeOptions');
+        $response->assertSee('insertShowcaseBlock');
     }
 
     public function test_product_edit_page_contains_smart_editor(): void
@@ -56,10 +53,12 @@ class ProductSmartEditorTest extends TestCase
 
         $response = $this->actingAs($this->admin)->get(route('products.edit', $product));
         $response->assertStatus(200);
-        $response->assertSee('smart-editor-container');
-        $response->assertSee('smartQuillEditor');
-        $response->assertSee('smartImageOverlay');
-        $response->assertSee('smartImageToolbar');
+        $response->assertSee('smartStudioWrapper');
+        $response->assertSee('smartVisualEditor');
+        $response->assertSee('modalShowcaseInsert');
+        $response->assertSee('modalShowcaseFileInput');
+        $response->assertSee('showcaseSizeOptions');
+        $response->assertSee('setShowcaseCardSize');
         $response->assertSee('products/upload-editor-image');
     }
 
