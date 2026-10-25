@@ -8,6 +8,20 @@ use App\Models\Category;
 
 class ShopEnhancementVerificationTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        \App\Models\Setting::set('coming_soon_enabled', '0');
+    }
+
+    public function test_shop_index_paginates_20_products_per_page()
+    {
+        $response = $this->get(route('shop.index'));
+        $response->assertStatus(200);
+        $products = $response->viewData('products');
+        $this->assertEquals(20, $products->perPage());
+    }
+
     public function test_shop_index_page_renders_successfully()
     {
         $response = $this->get(route('shop.index'));

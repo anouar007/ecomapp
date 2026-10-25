@@ -34,7 +34,7 @@ class ShopController extends Controller
         $products = $query->with(['images', 'productCategory'])
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')
-            ->paginate(12)->withQueryString();
+            ->paginate(20)->withQueryString();
 
         $categories = Cache::remember('shop_catalog_categories', 3600, function () {
             return Category::withCount('products')->get();
