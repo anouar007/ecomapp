@@ -113,7 +113,7 @@
             <button type="button" class="cat-mega-item shop-cat-link w-100 {{ !request('category') ? 'active' : '' }}" data-slug="" data-name="{{ __('Tout le catalogue') }}">
                 <div class="d-flex align-items-center gap-2 me-1 flex-grow-1" style="min-width: 0;">
                     <span class="cat-slot-box">
-                        <i class="fas fa-th-large cat-slot-icon"></i>
+                        <i class="fas fa-th-large cat-slot-icon" style="font-size: 1.28em !important; margin: auto !important;"></i>
                     </span>
                     <span class="cat-mega-name">{{ __('Tout le catalogue') }}</span>
                 </div>

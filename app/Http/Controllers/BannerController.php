@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Banner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class BannerController extends Controller
 {
@@ -118,6 +119,8 @@ class BannerController extends Controller
             'image'       => $imagePath,
         ]);
 
+        Cache::forget('home_active_banners_v1');
+
         return redirect()->route('banners.index')
             ->with('success', 'Nouvelle diapositive ajoutée au slider héroïque avec succès !');
     }
@@ -164,6 +167,7 @@ class BannerController extends Controller
         }
 
         $banner->save();
+        Cache::forget('home_active_banners_v1');
 
         return redirect()->route('banners.index')
             ->with('success', 'Bannière mise à jour avec succès !');
@@ -179,6 +183,7 @@ class BannerController extends Controller
         }
 
         $banner->delete();
+        Cache::forget('home_active_banners_v1');
 
         return redirect()->route('banners.index')
             ->with('success', 'Diapositive supprimée avec succès.');
@@ -207,6 +212,12 @@ class BannerController extends Controller
             'image_preset' => 'nullable|string|max:255',
         ]);
 
+        $defaultImages = [
+            'side_top'    => 'images/camera/banner_osmo_pocket.jpg',
+            'side_bottom' => 'images/camera/banner_godox_ad800.jpg',
+            'wide_middle' => 'images/camera/banner_insta360_promo.jpg',
+        ];
+
         $banner = Banner::firstOrNew(['position' => $position]);
 
         if ($request->hasFile('image_file')) {
@@ -216,6 +227,8 @@ class BannerController extends Controller
             $banner->image = $request->file('image_file')->store('banners', 'public');
         } elseif (!empty($request->image_preset)) {
             $banner->image = $request->image_preset;
+        } elseif (empty($banner->image)) {
+            $banner->image = $defaultImages[$position] ?? 'images/camera/hero_winashop.jpg';
         }
 
         $banner->title       = $validated['title'] ?? $banner->title;
@@ -227,6 +240,8 @@ class BannerController extends Controller
         $banner->features    = $validated['features'] ?? $banner->features;
         $banner->status      = $validated['status'];
         $banner->save();
+
+        Cache::forget('home_active_banners_v1');
 
         $names = [
             'side_top'    => 'Encadré supérieur droit',

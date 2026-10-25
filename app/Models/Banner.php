@@ -22,6 +22,20 @@ class Banner extends Model
     ];
 
     /**
+     * Boot model events to automatically clear cache on changes.
+     */
+    protected static function booted()
+    {
+        static::saved(function () {
+            \Illuminate\Support\Facades\Cache::forget('home_active_banners_v1');
+        });
+
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget('home_active_banners_v1');
+        });
+    }
+
+    /**
      * Get image URL with support for storage, public path, or absolute URL.
      */
     public function getImageUrlAttribute(): string

@@ -269,6 +269,66 @@
         <div class="row g-4">
             <!-- Colonne Principale (Gauche) -->
             <div class="col-12 col-lg-8">
+                <!-- Photographies & Galerie -->
+                <div class="product-form-card">
+                    <div class="product-form-card-header">
+                        <div>
+                            <h2 class="product-form-card-title">
+                                <i class="fas fa-images text-primary"></i> Galerie & Photographies Studio 4K
+                            </h2>
+                            <p class="product-form-card-subtitle">Gérez les images de la vitrine ou recherchez des masters 4K Ultra-HD</p>
+                        </div>
+                        <button type="button" 
+                                class="btn btn-sm text-white rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm"
+                                style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); border: none; font-size: 0.8rem;"
+                                onclick="open4kImageModal()">
+                            <i class="fas fa-wand-magic-sparkles text-warning"></i> Trouver images 4K Studio
+                        </button>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="multi-image-upload" id="imagePreviewContainer">
+                            <!-- Images existantes -->
+                            @foreach($product->images as $image)
+                                <div class="image-upload-box" id="box-img-{{ $image->id }}">
+                                    <img src="{{ $image->url }}" alt="Image produit" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                                    @if($image->is_primary)
+                                        <span class="primary-badge-indicator">Principale</span>
+                                    @endif
+                                    <span class="image-remove-btn" onclick="markImageForRemoval({{ $image->id }}, this)" title="Supprimer cette image">&times;</span>
+                                </div>
+                            @endforeach
+
+                            <!-- Image principale de repli si la relation est vide -->
+                            @if($product->images->isEmpty() && ($product->image || $product->thumbnail))
+                                <div class="image-upload-box" id="box-img-current">
+                                    <img src="{{ $product->thumbnail }}" alt="Image produit" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                                    <span class="primary-badge-indicator">Actuelle</span>
+                                </div>
+                            @endif
+
+                            <!-- Bouton pour ajouter plus -->
+                            <div class="image-upload-box" onclick="document.getElementById('images').click()">
+                                <i class="fas fa-plus fs-4 text-muted mb-1"></i>
+                                <span class="small text-muted fw-semibold" style="font-size: 0.72rem;">Ajouter</span>
+                            </div>
+                        </div>
+
+                        <input type="file" 
+                               id="images" 
+                               name="images[]" 
+                               accept="image/*" 
+                               multiple 
+                               style="display: none;" 
+                               onchange="handleNewImages(event)">
+                    </div>
+
+                    <div class="alert alert-light border rounded-3 p-2.5 mb-0 small text-muted d-flex align-items-start gap-2">
+                        <i class="fas fa-info-circle text-primary mt-0.5"></i>
+                        <div>Touchez <strong>×</strong> pour retirer une photo. Utilisez <strong>Studio 4K</strong> pour importer des visuels officiels ultra-HD.</div>
+                    </div>
+                </div>
+
                 <!-- Informations Générales -->
                 <div class="product-form-card">
                     <div class="product-form-card-header">
@@ -371,66 +431,6 @@
                                 <i class="fas fa-plus me-1"></i> + Variante supplémentaire
                             </button>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Photographies & Galerie -->
-                <div class="product-form-card">
-                    <div class="product-form-card-header">
-                        <div>
-                            <h2 class="product-form-card-title">
-                                <i class="fas fa-images text-primary"></i> Galerie & Photographies Studio 4K
-                            </h2>
-                            <p class="product-form-card-subtitle">Gérez les images de la vitrine ou recherchez des masters 4K Ultra-HD</p>
-                        </div>
-                        <button type="button" 
-                                class="btn btn-sm text-white rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm"
-                                style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); border: none; font-size: 0.8rem;"
-                                onclick="open4kImageModal()">
-                            <i class="fas fa-wand-magic-sparkles text-warning"></i> Trouver images 4K Studio
-                        </button>
-                    </div>
-
-                    <div class="mb-3">
-                        <div class="multi-image-upload" id="imagePreviewContainer">
-                            <!-- Images existantes -->
-                            @foreach($product->images as $image)
-                                <div class="image-upload-box" id="box-img-{{ $image->id }}">
-                                    <img src="{{ $image->url }}" alt="Image produit" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
-                                    @if($image->is_primary)
-                                        <span class="primary-badge-indicator">Principale</span>
-                                    @endif
-                                    <span class="image-remove-btn" onclick="markImageForRemoval({{ $image->id }}, this)" title="Supprimer cette image">&times;</span>
-                                </div>
-                            @endforeach
-
-                            <!-- Image principale de repli si la relation est vide -->
-                            @if($product->images->isEmpty() && ($product->image || $product->thumbnail))
-                                <div class="image-upload-box" id="box-img-current">
-                                    <img src="{{ $product->thumbnail }}" alt="Image produit" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
-                                    <span class="primary-badge-indicator">Actuelle</span>
-                                </div>
-                            @endif
-
-                            <!-- Bouton pour ajouter plus -->
-                            <div class="image-upload-box" onclick="document.getElementById('images').click()">
-                                <i class="fas fa-plus fs-4 text-muted mb-1"></i>
-                                <span class="small text-muted fw-semibold" style="font-size: 0.72rem;">Ajouter</span>
-                            </div>
-                        </div>
-
-                        <input type="file" 
-                               id="images" 
-                               name="images[]" 
-                               accept="image/*" 
-                               multiple 
-                               style="display: none;" 
-                               onchange="handleNewImages(event)">
-                    </div>
-
-                    <div class="alert alert-light border rounded-3 p-2.5 mb-0 small text-muted d-flex align-items-start gap-2">
-                        <i class="fas fa-info-circle text-primary mt-0.5"></i>
-                        <div>Touchez <strong>×</strong> pour retirer une photo. Utilisez <strong>Studio 4K</strong> pour importer des visuels officiels ultra-HD.</div>
                     </div>
                 </div>
             </div>

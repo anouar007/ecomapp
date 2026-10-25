@@ -77,7 +77,7 @@
                 <div class="d-flex flex-wrap justify-content-center gap-2 gap-md-3 mb-4 mb-md-5">
                     <div class="about-feature-chip">
                         <i class="fas fa-shield-halved text-brand-red"></i>
-                        <span>{{ __('100% Neuf & Garanti 2 Ans') }}</span>
+                        <span>{{ __('100% Neuf & Garanti') }}</span>
                     </div>
                     <div class="about-feature-chip">
                         <i class="fas fa-store text-brand-red"></i>

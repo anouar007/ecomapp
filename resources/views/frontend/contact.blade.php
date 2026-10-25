@@ -78,7 +78,7 @@
                         سواء كنتم بحاجة لاختيار الكاميرات والعدسات الملائمة، ضبط إعدادات استوديو التصوير، أو طلب عرض أسعار رسمي للشركات مع الفاتورة القانونية (ICE)، نجيبكم خلال ساعتين ونرحب بكم في صالة العرض بالدار البيضاء.
                     @else
                         <strong>Une question de compatibilité, un projet de tournage ou un devis pro avec ICE ?</strong>
-                        Nos conseillers spécialisés vous répondent sous 2 heures ouvrées et vous accueillent au showroom pour tester et configurer vos setups de captation.
+                        Nos conseillers spécialisés vous répondent rapidement durant les jours ouvrables et vous accueillent dans notre showroom pour tester et configurer votre matériel de prise de vue.
                     @endif
                 </p>
 
@@ -87,10 +87,6 @@
                     <div class="about-feature-chip">
                         <i class="fas fa-store text-brand-red"></i>
                         <span>{{ __('Showroom Al Oulfa Casablanca') }}</span>
-                    </div>
-                    <div class="about-feature-chip">
-                        <i class="fas fa-clock text-brand-red"></i>
-                        <span>{{ __('Réponse Express sous 2h') }}</span>
                     </div>
                     <div class="about-feature-chip">
                         <i class="fas fa-file-invoice text-brand-red"></i>
@@ -135,7 +131,7 @@
                 <div class="d-flex flex-column gap-3.5">
 
                     {{-- Showroom Card --}}
-                    <div class="contact-info-card">
+                    <div class="contact-info-card my-2">
                         <div class="contact-icon-box bg-danger-subtle text-danger">
                             <i class="fas fa-location-dot"></i>
                         </div>
@@ -156,7 +152,7 @@
                     </div>
 
                     {{-- Phone Support Card --}}
-                    <div class="contact-info-card">
+                    <div class="contact-info-card my-2">
                         <div class="contact-icon-box bg-dark text-white">
                             <i class="fas fa-phone-volume"></i>
                         </div>
@@ -173,7 +169,7 @@
                     </div>
 
                     {{-- Email / Pro Quotes Card --}}
-                    <div class="contact-info-card">
+                    <div class="contact-info-card my-2">
                         <div class="contact-icon-box bg-danger-subtle text-danger">
                             <i class="fas fa-envelope-open-text"></i>
                         </div>
@@ -189,7 +185,7 @@
                     </div>
 
                     {{-- WhatsApp Studio Box --}}
-                    <div class="contact-wa-card">
+                    <div class="contact-wa-card my-2">
                         <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
                             <div class="d-flex align-items-center gap-3">
                                 <div class="wa-icon-circle">
@@ -211,7 +207,7 @@
                     </div>
 
                     {{-- Billing & ICE Notice Box --}}
-                    <div class="contact-legal-box">
+                    <div class="contact-legal-box my-2">
                         <div class="d-flex align-items-center gap-2 mb-2 text-dark fw-bold small text-uppercase ls-1">
                             <i class="fas fa-shield-halved text-brand-red"></i>
                             <span>{{ __('Facturation Officielle & Conformité Entreprise') }}</span>

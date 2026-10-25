@@ -396,39 +396,55 @@
 
                     @if($product->has_variants && $product->variants->isNotEmpty())
                     {{-- VARIATIONS SELECTION PILLS (EX: SD CARD 512GB / 256GB / 128GB) --}}
-                    <div class="pdp-variants-wrapper my-3 p-3 rounded-3 bg-light border">
-                        <div class="d-flex align-items-center justify-content-between mb-2">
+                    @php
+                        $defaultOptionName = app()->getLocale() === 'ar' ? 'الافتراضي' : (app()->getLocale() === 'en' ? 'Default' : 'Par défaut');
+                        $isBaseInStock = $product->isInStock();
+                        $baseDisplayPrice = $product->isOnSale() ? $product->formatted_sale_price : $product->formatted_price;
+                        $baseRawPrice = (float)($product->sale_price ?? $product->price);
+                    @endphp
+                    <div class="pdp-variants-wrapper my-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2.5">
                             <span class="text-uppercase fw-bold text-muted small" style="font-size: 0.72rem; letter-spacing: 0.05em;">
-                                <i class="fas fa-layer-group text-primary me-1"></i>Option / Variante : <strong class="text-dark" id="selectedVariantNameLabel">{{ $product->variants->first()->name }}</strong>
+                                <i class="fas fa-layer-group text-primary me-1"></i>Option / Variante : <strong class="text-dark" id="selectedVariantNameLabel">{{ $defaultOptionName }}</strong>
                             </span>
-                            <span class="text-muted small" id="selectedVariantStockNotice" style="font-size: 0.72rem;"></span>
+                            <span class="badge bg-white text-secondary border fw-medium px-2 py-1" style="font-size: 0.68rem; border-radius: 6px;">
+                                {{ $product->variants->count() + 1 }} {{ __('options') }}
+                            </span>
                         </div>
                         <div class="d-flex flex-wrap gap-2" id="pdpVariantPills">
+                            {{-- Option par défaut (Produit standard de base) --}}
+                            <button type="button" 
+                                    class="pdp-variant-pill btn active {{ !$isBaseInStock ? 'is-out-of-stock' : '' }}"
+                                    data-variant-id=""
+                                    data-variant-name="{{ $defaultOptionName }}"
+                                    data-variant-price="{{ $baseDisplayPrice }}"
+                                    data-variant-raw-price="{{ $baseRawPrice }}"
+                                    data-variant-stock="{{ (int)$product->stock }}"
+                                    data-variant-in-stock="{{ $isBaseInStock ? '1' : '0' }}"
+                                    data-is-default="1"
+                                    onclick="pdpSelectVariant(this)">
+                                <span>{{ $defaultOptionName }}</span>
+                            </button>
+
                             @foreach($product->variants as $variant)
                                 @php
                                     $isVarInStock = $variant->isInStock();
                                 @endphp
                                 <button type="button" 
-                                        class="pdp-variant-pill btn {{ $loop->first ? 'active' : '' }} {{ !$isVarInStock ? 'is-out-of-stock' : '' }}"
+                                        class="pdp-variant-pill btn {{ !$isVarInStock ? 'is-out-of-stock' : '' }}"
                                         data-variant-id="{{ $variant->id }}"
                                         data-variant-name="{{ $variant->name }}"
                                         data-variant-price="{{ currency($variant->price) }}"
                                         data-variant-raw-price="{{ (float)$variant->price }}"
                                         data-variant-stock="{{ (int)$variant->stock }}"
                                         data-variant-in-stock="{{ $isVarInStock ? '1' : '0' }}"
-                                        onclick="pdpSelectVariant(this)"
-                                        style="border-radius: 12px; padding: 7px 14px; font-size: 0.82rem; font-weight: 600; border: 1.5px solid #cbd5e1; background: #fff;">
+                                        data-is-default="0"
+                                        onclick="pdpSelectVariant(this)">
                                     <span>{{ $variant->name }}</span>
-                                    <span class="badge ms-1.5 {{ $isVarInStock ? 'bg-light text-dark border' : 'bg-danger text-white' }}" style="font-size: 0.72rem;">
-                                        {{ currency($variant->price) }}
-                                    </span>
-                                    @if(!$isVarInStock)
-                                        <span class="badge bg-danger text-white ms-1" style="font-size: 0.65rem;">Rupture</span>
-                                    @endif
                                 </button>
                             @endforeach
                         </div>
-                        <input type="hidden" name="selected_variant_id" id="selectedVariantId" value="{{ $product->variants->first()->id }}">
+                        <input type="hidden" name="selected_variant_id" id="selectedVariantId" value="">
                     </div>
                     @endif
 
@@ -788,29 +804,30 @@ function pdpChangeImage(src, thumb) {
     thumb.classList.add('active');
 }
 
-let selectedVariantId = {{ ($product->has_variants && $product->variants->isNotEmpty()) ? $product->variants->first()->id : 'null' }};
+let selectedVariantId = null;
 
 function pdpSelectVariant(button) {
+    if (!button) return;
+
     document.querySelectorAll('.pdp-variant-pill').forEach(btn => {
         btn.classList.remove('active');
-        btn.style.background = '#fff';
-        btn.style.color = '#334155';
-        btn.style.borderColor = '#cbd5e1';
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.style.borderColor = '';
     });
 
     button.classList.add('active');
-    button.style.background = '#0f172a';
-    button.style.color = '#fff';
-    button.style.borderColor = '#0f172a';
 
-    selectedVariantId = button.dataset.variantId;
+    const isDefault = button.dataset.isDefault === '1' || !button.dataset.variantId;
+    selectedVariantId = isDefault ? null : button.dataset.variantId;
+
     const name = button.dataset.variantName;
     const price = button.dataset.variantPrice;
     const stock = parseInt(button.dataset.variantStock, 10) || 0;
     const inStock = button.dataset.variantInStock === '1';
 
     const hiddenInput = document.getElementById('selectedVariantId');
-    if (hiddenInput) hiddenInput.value = selectedVariantId;
+    if (hiddenInput) hiddenInput.value = selectedVariantId || '';
 
     const nameLabel = document.getElementById('selectedVariantNameLabel');
     if (nameLabel) nameLabel.textContent = name;
@@ -826,6 +843,18 @@ function pdpSelectVariant(button) {
     const priceMain = document.querySelector('.pdp-price-main');
     if (priceMain) priceMain.textContent = price;
 
+    // Toggle old price & discount badge for base product vs variant
+    const oldPriceEl = document.querySelector('.pdp-price-old');
+    const discountBadgeEl = document.querySelector('.pdp-discount-badge');
+    const isBaseOnSale = {{ $product->isOnSale() ? 'true' : 'false' }};
+
+    if (oldPriceEl) {
+        oldPriceEl.style.display = (isDefault && isBaseOnSale) ? '' : 'none';
+    }
+    if (discountBadgeEl) {
+        discountBadgeEl.style.display = (isDefault && isBaseOnSale) ? '' : 'none';
+    }
+
     // Update stock badge and buttons
     const stockBadge = document.querySelector('.pdp-stock-badge');
     const qtyInput = document.getElementById('pdpQty');
@@ -837,7 +866,7 @@ function pdpSelectVariant(button) {
     if (inStock && stock > 0) {
         if (stockBadge) {
             stockBadge.className = 'pdp-stock-badge pdp-stock-badge--in';
-            stockBadge.innerHTML = `<i class="fas fa-check-circle" aria-hidden="true"></i><span class="pdp-stock-label">{{ __('In stock') }} (${stock} restants)</span>`;
+            stockBadge.innerHTML = `<i class="fas fa-check-circle" aria-hidden="true"></i><span class="pdp-stock-label">{{ __('In stock') }}</span>`;
         }
         if (qtyInput) {
             qtyInput.max = stock;

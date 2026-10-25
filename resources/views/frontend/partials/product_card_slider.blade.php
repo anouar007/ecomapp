@@ -34,13 +34,13 @@
                         <span class="pcard-price-current text-nowrap">{{ __('Sur devis') }}</span>
                     @endif
 
-                    {{-- Stock Status Badge aligned with price (100% matches pdp-stock-badge) --}}
+                    {{-- Stock Status Badge aligned with price --}}
                     @if($product->isInStock())
-                        <span class="featured-stock-pill featured-stock-badge-corner pdp-stock-badge pdp-stock-badge--in">
+                        <span class="featured-stock-pill featured-stock-badge-corner featured-stock-pill--in">
                             <i class="fas fa-check-circle" aria-hidden="true"></i><span class="featured-stock-label">{{ __('In stock') }}</span>
                         </span>
                     @else
-                        <span class="featured-stock-pill featured-stock-pill--out featured-stock-badge-corner pdp-stock-badge pdp-stock-badge--out">
+                        <span class="featured-stock-pill featured-stock-pill--out featured-stock-badge-corner">
                             <i class="fas fa-times-circle" aria-hidden="true"></i><span class="featured-stock-label">{{ __('Out of stock') }}</span>
                         </span>
                     @endif

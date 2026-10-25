@@ -248,6 +248,41 @@
         <div class="row g-4">
             <!-- Colonne Principale (Gauche) -->
             <div class="col-12 col-lg-8">
+                <!-- Galerie & Photographies -->
+                <div class="product-form-card">
+                    <div class="product-form-card-header">
+                        <div>
+                            <h2 class="product-form-card-title">
+                                <i class="fas fa-images text-primary"></i> Galerie & Photographies Studio 4K
+                            </h2>
+                            <p class="product-form-card-subtitle">Ajoutez des visuels haute résolution pour la vitrine client</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="multi-image-upload" id="imagePreviewContainer">
+                            <div class="image-upload-box" onclick="document.getElementById('images').click()">
+                                <i class="fas fa-cloud-upload-alt fs-3 text-muted mb-1"></i>
+                                <span class="small text-muted fw-semibold" style="font-size: 0.72rem;">Téléverser</span>
+                            </div>
+                        </div>
+                        <input type="file" 
+                               id="images" 
+                               name="images[]" 
+                               accept="image/*" 
+                               multiple 
+                               style="display: none;" 
+                               onchange="handleMultipleImages(event)">
+                    </div>
+
+                    <div class="alert alert-light border rounded-3 p-3 mb-0 small text-muted">
+                        <div class="d-flex align-items-center gap-2 mb-1 text-dark fw-semibold">
+                            <i class="fas fa-wand-magic-sparkles text-warning"></i> Téléchargement automatique officiel
+                        </div>
+                        Si vous ne téléversez aucune image, le système recherchera et appliquera automatiquement le master officiel 4K Ultra-HD à partir du nom du produit dès l'enregistrement.
+                    </div>
+                </div>
+
                 <!-- Informations Générales -->
                 <div class="product-form-card">
                     <div class="product-form-card-header">
@@ -358,41 +393,6 @@
                                 <i class="fas fa-plus me-1"></i> + Variante supplémentaire
                             </button>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Galerie & Photographies -->
-                <div class="product-form-card">
-                    <div class="product-form-card-header">
-                        <div>
-                            <h2 class="product-form-card-title">
-                                <i class="fas fa-images text-primary"></i> Photographies du Produit
-                            </h2>
-                            <p class="product-form-card-subtitle">Ajoutez des visuels haute résolution pour la vitrine client</p>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <div class="multi-image-upload" id="imagePreviewContainer">
-                            <div class="image-upload-box" onclick="document.getElementById('images').click()">
-                                <i class="fas fa-cloud-upload-alt fs-3 text-muted mb-1"></i>
-                                <span class="small text-muted fw-semibold" style="font-size: 0.72rem;">Téléverser</span>
-                            </div>
-                        </div>
-                        <input type="file" 
-                               id="images" 
-                               name="images[]" 
-                               accept="image/*" 
-                               multiple 
-                               style="display: none;" 
-                               onchange="handleMultipleImages(event)">
-                    </div>
-
-                    <div class="alert alert-light border rounded-3 p-3 mb-0 small text-muted">
-                        <div class="d-flex align-items-center gap-2 mb-1 text-dark fw-semibold">
-                            <i class="fas fa-wand-magic-sparkles text-warning"></i> Téléchargement automatique officiel
-                        </div>
-                        Si vous ne téléversez aucune image, le système recherchera et appliquera automatiquement le master officiel 4K Ultra-HD à partir du nom du produit dès l'enregistrement.
                     </div>
                 </div>
             </div>

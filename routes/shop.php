@@ -35,6 +35,20 @@ Route::get('/shop/search/live', [\App\Http\Controllers\ShopController::class, 'l
 Route::get('/shop/{id}', [\App\Http\Controllers\ShopController::class, 'show'])->name('shop.show');
 Route::get('/products/{id}/json', [\App\Http\Controllers\ShopController::class, 'json'])->name('product.json');
 
+// Legacy WooCommerce 301 Redirects (/produit/{slug}, /product/{slug}, /categorie-produit/{slug})
+Route::get('/produit/{slug?}', [\App\Http\Controllers\LegacyProductRedirectController::class, 'redirect'])
+    ->where('slug', '.*')
+    ->name('legacy.produit.redirect');
+Route::get('/product/{slug?}', [\App\Http\Controllers\LegacyProductRedirectController::class, 'redirect'])
+    ->where('slug', '.*')
+    ->name('legacy.product.redirect');
+Route::get('/categorie-produit/{slug?}', [\App\Http\Controllers\LegacyProductRedirectController::class, 'redirectCategory'])
+    ->where('slug', '.*')
+    ->name('legacy.category.redirect');
+Route::get('/product-category/{slug?}', [\App\Http\Controllers\LegacyProductRedirectController::class, 'redirectCategory'])
+    ->where('slug', '.*')
+    ->name('legacy.product_category.redirect');
+
 // Cart
 Route::get('/cart', [\App\Http\Controllers\CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add/{id}', [\App\Http\Controllers\CartController::class, 'addToCart'])->name('cart.add');

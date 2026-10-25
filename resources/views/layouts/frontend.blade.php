@@ -1103,22 +1103,22 @@
             align-self: center !important;
         }
 
-        /* Card stock badge: delicately sized in exact proportion to card price (matching PDP ratio) */
+        /* Card stock badge: delicately sized (10% smaller) and optically aligned with current price digits baseline */
         .featured-pro-card .pcard-price-main-line > .featured-stock-pill,
         .selection-card .pcard-price-main-line > .featured-stock-pill,
-        .pcard-price .featured-stock-pill {
+        .pcard-price .featured-stock-pill,
+        .pcard-price-main-line > .featured-stock-pill {
             position: static !important;
             inset: auto !important;
-            transform: none !important;
-            align-self: center !important;
             display: inline-flex !important;
             align-items: center !important;
+            align-self: center !important;
             gap: 2.5px !important;
             height: 16px !important;
             min-height: 16px !important;
             max-height: 16px !important;
             padding: 0 6px !important;
-            font-size: 0.54rem !important;
+            font-size: 0.585rem !important;
             font-weight: 700 !important;
             letter-spacing: 0.02em !important;
             line-height: 1 !important;
@@ -1126,43 +1126,67 @@
             border: none !important;
             border-radius: 20px !important;
             margin: 0 !important;
+            margin-left: 4px !important;
             flex-shrink: 0 !important;
+            transform: translateY(-1.5px) !important;
         }
 
         .featured-pro-card .pcard-price-main-line > .featured-stock-pill:not(.featured-stock-pill--out),
-        .selection-card .pcard-price-main-line > .featured-stock-pill:not(.featured-stock-pill--out) {
+        .selection-card .pcard-price-main-line > .featured-stock-pill:not(.featured-stock-pill--out),
+        .pcard-price .featured-stock-pill:not(.featured-stock-pill--out),
+        .pcard-price-main-line > .featured-stock-pill:not(.featured-stock-pill--out) {
             border: none !important;
             background: rgba(21, 128, 61, 0.09) !important;
             color: #15803d !important;
         }
 
         .featured-pro-card .pcard-price-main-line > .featured-stock-pill--out,
-        .selection-card .pcard-price-main-line > .featured-stock-pill--out {
+        .selection-card .pcard-price-main-line > .featured-stock-pill--out,
+        .pcard-price .featured-stock-pill--out,
+        .pcard-price-main-line > .featured-stock-pill--out {
             border: none !important;
             background: rgba(220, 38, 38, 0.09) !important;
             color: #dc2626 !important;
         }
 
         .featured-pro-card .pcard-price-main-line > .featured-stock-pill i,
-        .selection-card .pcard-price-main-line > .featured-stock-pill i {
+        .selection-card .pcard-price-main-line > .featured-stock-pill i,
+        .pcard-price .featured-stock-pill i,
+        .pcard-price-main-line > .featured-stock-pill i {
             display: block !important;
-            font-size: 0.50rem !important;
+            font-size: 0.52rem !important;
             line-height: 1 !important;
             margin: 0 !important;
         }
 
         .featured-pro-card .pcard-price-main-line > .featured-stock-pill--out i,
-        .selection-card .pcard-price-main-line > .featured-stock-pill--out i {
+        .selection-card .pcard-price-main-line > .featured-stock-pill--out i,
+        .pcard-price .featured-stock-pill--out i,
+        .pcard-price-main-line > .featured-stock-pill--out i {
             color: #dc2626 !important;
         }
 
         .featured-pro-card .featured-stock-label,
-        .selection-card .featured-stock-label {
+        .selection-card .featured-stock-label,
+        .pcard-price .featured-stock-label,
+        .pcard-price-main-line .featured-stock-label {
             display: block !important;
-            font-size: 0.54rem !important;
+            font-size: 0.585rem !important;
             line-height: 1 !important;
             font-weight: 700 !important;
             letter-spacing: 0.01em !important;
+        }
+
+        [dir="rtl"] .featured-pro-card .pcard-price-main-line > .featured-stock-pill,
+        [dir="rtl"] .selection-card .pcard-price-main-line > .featured-stock-pill,
+        [dir="rtl"] .pcard-price .featured-stock-pill,
+        [dir="rtl"] .pcard-price-main-line > .featured-stock-pill,
+        html[dir="rtl"] .featured-pro-card .pcard-price-main-line > .featured-stock-pill,
+        html[dir="rtl"] .selection-card .pcard-price-main-line > .featured-stock-pill,
+        html[dir="rtl"] .pcard-price .featured-stock-pill,
+        html[dir="rtl"] .pcard-price-main-line > .featured-stock-pill {
+            margin-left: 0 !important;
+            margin-right: 4px !important;
         }
 
         /* ===== Product page (PDP): stock badge and price alignment ===== */
@@ -1231,6 +1255,51 @@
             font-size: 0.71rem !important;
             line-height: 1 !important;
             font-weight: 700 !important;
+        }
+
+        /* PDP Variation Options Section */
+        .pdp-variants-wrapper {
+            background: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 12px !important;
+            padding: 14px 16px !important;
+            margin: 16px 0 !important;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+        }
+
+        .pdp-variant-pill {
+            border-radius: 10px !important;
+            padding: 7px 16px !important;
+            font-size: 0.82rem !important;
+            font-weight: 600 !important;
+            border: 1.5px solid #cbd5e1 !important;
+            background: #ffffff !important;
+            color: #1e293b !important;
+            transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+            line-height: 1.35 !important;
+            cursor: pointer !important;
+        }
+
+        .pdp-variant-pill:hover {
+            border-color: #94a3b8 !important;
+            color: #0f172a !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 3px 6px rgba(15, 23, 42, 0.08) !important;
+        }
+
+        .pdp-variant-pill.active {
+            background: #0f172a !important;
+            border-color: #0f172a !important;
+            color: #ffffff !important;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.22) !important;
+        }
+
+        .pdp-variant-pill.is-out-of-stock {
+            opacity: 0.55 !important;
+            background: #f1f5f9 !important;
+            border-color: #e2e8f0 !important;
+            color: #94a3b8 !important;
         }
 
         @media (max-width: 575px) {
@@ -1329,13 +1398,541 @@
                 linear-gradient(135deg, #000000, #000000, #464646) !important;
         }
 
-        @media (max-width: 768px) {
-            .brand-logo-img {
-                height: 75px !important;
-                max-height: 75px !important;
-                width: auto !important;
-                object-fit: contain;
+        /* ================================================================
+           INDH & PROJETS SOUTENUS - 100% REDESIGN
+           ================================================================ */
+        .state-funding-section {
+            background: #ffffff !important;
+            padding: 40px 0 !important;
+        }
+
+        .state-funding-wrapper {
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+        }
+
+        .indh-hero-badge {
+            background: rgba(220, 38, 38, 0.08);
+            border: 1px solid rgba(220, 38, 38, 0.16);
+            border-radius: 6px !important;
+            padding: 4px 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .indh-hero-badge-text {
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            color: #dc2626;
+        }
+
+        .indh-hero-title {
+            font-size: clamp(2rem, 3.6vw, 3rem) !important;
+            font-weight: 900 !important;
+            line-height: 1.12 !important;
+            letter-spacing: -0.03em !important;
+            color: #0f172a !important;
+        }
+
+        .indh-hero-sub {
+            font-size: clamp(0.95rem, 1.35vw, 1.05rem) !important;
+            line-height: 1.6 !important;
+            color: #4b5563 !important;
+            max-width: 520px;
+        }
+
+        .indh-hero-gear-img {
+            max-height: 250px;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 14px 28px rgba(15, 23, 42, 0.08));
+            transition: transform 0.35s ease;
+        }
+        .indh-hero-gear-img:hover {
+            transform: scale(1.02);
+        }
+
+        /* 3 Step Cards */
+        .indh-step-card-pro {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 18px !important;
+            padding: 0 !important;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.03) !important;
+            transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            height: 100% !important;
+            position: relative !important;
+            overflow: hidden !important;
+            display: block !important;
+        }
+        .indh-step-card-pro:hover {
+            transform: translateY(-4px) !important;
+            border-color: rgba(220, 38, 38, 0.35) !important;
+            box-shadow: 0 14px 32px rgba(15, 23, 42, 0.08) !important;
+        }
+
+        .indh-step-badge-num {
+            width: 32px !important;
+            height: 32px !important;
+            border-radius: 50% !important;
+            background: #dc2626 !important;
+            color: #ffffff !important;
+            font-weight: 800 !important;
+            font-size: 0.85rem !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3) !important;
+            flex-shrink: 0 !important;
+        }
+
+        .indh-step-corner-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px !important;
+            background: #dc2626;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .indh-step-title {
+            font-size: 1.12rem !important;
+            font-weight: 800 !important;
+            color: #0f172a !important;
+            line-height: 1.25 !important;
+            min-height: auto !important;
+            margin-bottom: 0.4rem !important;
+            display: block !important;
+        }
+
+        .indh-step-desc {
+            font-size: 0.80rem !important;
+            color: #64748b !important;
+            line-height: 1.48 !important;
+            min-height: auto !important;
+            margin-bottom: 0.5rem !important;
+        }
+
+        .indh-step-btn-pro {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            padding: 7px 16px !important;
+            border-radius: 999px !important;
+            font-size: 0.80rem !important;
+            font-weight: 750 !important;
+            text-decoration: none !important;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            background: rgba(220, 38, 38, 0.06) !important;
+            color: #dc2626 !important;
+            border: 1px solid rgba(220, 38, 38, 0.22) !important;
+            box-shadow: 0 2px 6px rgba(220, 38, 38, 0.06) !important;
+            cursor: pointer;
+        }
+        .indh-step-btn-pro .indh-btn-icon {
+            font-size: 0.78rem !important;
+            transition: transform 0.2s ease !important;
+        }
+        .indh-step-btn-pro .indh-btn-arrow {
+            font-size: 0.65rem !important;
+            transition: transform 0.2s ease !important;
+        }
+        .indh-step-btn-pro:hover {
+            background: #dc2626 !important;
+            color: #ffffff !important;
+            border-color: #dc2626 !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 18px rgba(220, 38, 38, 0.28) !important;
+        }
+        .indh-step-btn-pro:hover .indh-btn-icon {
+            transform: scale(1.1) !important;
+        }
+        .indh-step-btn-pro:hover .indh-btn-arrow {
+            transform: translateX(3px) !important;
+        }
+
+        /* Step 3 WhatsApp Pro Button */
+        .indh-step-btn-pro.btn-whatsapp-step {
+            background: rgba(34, 197, 94, 0.08) !important;
+            color: #15803d !important;
+            border: 1px solid rgba(34, 197, 94, 0.3) !important;
+            box-shadow: 0 2px 6px rgba(34, 197, 94, 0.08) !important;
+        }
+        .indh-step-btn-pro.btn-whatsapp-step:hover {
+            background: #16a34a !important;
+            color: #ffffff !important;
+            border-color: #16a34a !important;
+            box-shadow: 0 6px 18px rgba(22, 163, 74, 0.3) !important;
+        }
+
+        .indh-step-img-col {
+            position: relative;
+            overflow: hidden;
+        }
+        .indh-step-img-col::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 28px;
+            background: linear-gradient(to right, #ffffff, rgba(255, 255, 255, 0));
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .indh-step-card-img {
+            width: 100%;
+            height: 100%;
+            min-height: 165px;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+            transition: transform 0.35s ease;
+        }
+        .indh-step-card-pro:hover .indh-step-card-img {
+            transform: scale(1.05);
+        }
+
+        .indh-step-arrow {
+            position: absolute;
+            right: -13px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 26px;
+            height: 26px;
+            border-radius: 50% !important;
+            background: #ffffff;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+            box-shadow: 0 2px 6px rgba(220, 38, 38, 0.15);
+            z-index: 3;
+        }
+
+        /* Guarantees Strip */
+        .indh-guarantees-strip {
+            background: #ffffff !important;
+            border: 1px solid #eef2f6 !important;
+            border-radius: 16px !important;
+            padding: 14px 20px !important;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.02) !important;
+        }
+
+        .indh-guarantee-pill {
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            min-height: auto !important;
+            padding: 6px 12px !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+        }
+        .indh-guarantee-pill:hover {
+            transform: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+            border-color: transparent !important;
+        }
+
+        .indh-guarantee-icon-wrap {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px !important;
+            background: #fef2f2;
+            border: 1px solid #fee2e2;
+            color: #dc2626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .indh-guarantee-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #0f172a;
+            line-height: 1.25;
+        }
+
+        .indh-guarantee-desc {
+            font-size: 0.76rem;
+            color: #64748b;
+            line-height: 1.3;
+        }
+
+        .indh-guarantee-divider {
+            border-right: 1px solid #f1f5f9;
+        }
+        @media (max-width: 1199px) {
+            .indh-guarantee-divider {
+                border-right: none;
             }
+        }
+
+        /* Dark Bottom Banner */
+        .indh-banner-cta {
+            background: #0d131f !important;
+            background: radial-gradient(circle at 95% 15%, rgba(220, 38, 38, 0.22) 0%, transparent 45%),
+                        radial-gradient(circle at 10% 85%, rgba(34, 197, 94, 0.1) 0%, transparent 40%),
+                        linear-gradient(135deg, #090e17 0%, #0d131f 50%, #131b2e 100%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 18px !important;
+            padding: clamp(22px, 3.2vw, 32px) clamp(20px, 3.5vw, 38px) !important;
+            position: relative !important;
+            overflow: hidden !important;
+            box-shadow: 0 12px 36px rgba(15, 23, 42, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+            color: #ffffff !important;
+        }
+        .indh-banner-cta::before {
+            display: none !important;
+        }
+
+        .indh-banner-gear-img {
+            max-height: 95px;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.5));
+        }
+
+        .indh-banner-badge {
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%) !important;
+            color: #ffffff !important;
+            font-size: 0.68rem !important;
+            font-weight: 800 !important;
+            letter-spacing: 0.08em !important;
+            padding: 4px 12px !important;
+            border-radius: 50px !important;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4) !important;
+            text-transform: uppercase;
+        }
+
+        .indh-banner-title {
+            font-size: clamp(1.18rem, 2.1vw, 1.45rem) !important;
+            font-weight: 800 !important;
+            color: #ffffff !important;
+            line-height: 1.28 !important;
+            letter-spacing: -0.02em !important;
+        }
+
+        .indh-banner-desc {
+            font-size: clamp(0.82rem, 1.1vw, 0.88rem) !important;
+            color: rgba(255, 255, 255, 0.8) !important;
+            line-height: 1.55 !important;
+            max-width: 620px;
+        }
+
+        .indh-wa-banner-btn {
+            background: rgba(255, 255, 255, 0.06) !important;
+            border: 1px solid rgba(255, 255, 255, 0.16) !important;
+            border-radius: 14px !important;
+            padding: 9px 16px !important;
+            color: #ffffff !important;
+            text-decoration: none !important;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2) !important;
+            backdrop-filter: blur(10px);
+            width: 100%;
+        }
+        .indh-wa-banner-btn:hover {
+            background: rgba(34, 197, 94, 0.18) !important;
+            border-color: rgba(34, 197, 94, 0.5) !important;
+            color: #ffffff !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.28) !important;
+        }
+        .indh-wa-banner-btn:hover .indh-wa-btn-arrow {
+            transform: translateX(3px) scale(1.1) !important;
+            color: #22c55e !important;
+        }
+        .indh-wa-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50% !important;
+            background: #22c55e;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 10px rgba(34, 197, 94, 0.4);
+            flex-shrink: 0;
+            position: relative;
+        }
+        .indh-wa-pulse-ring {
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            border: 2px solid rgba(34, 197, 94, 0.7);
+            animation: indh-wa-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes indh-wa-pulse {
+            0% { transform: scale(0.95); opacity: 0.9; }
+            50% { transform: scale(1.28); opacity: 0; }
+            100% { transform: scale(0.95); opacity: 0; }
+        }
+        .indh-wa-btn-label {
+            font-size: 0.88rem !important;
+            font-weight: 750 !important;
+            line-height: 1.25 !important;
+            color: #ffffff !important;
+        }
+        .indh-wa-btn-status {
+            font-size: 0.72rem !important;
+            color: rgba(255, 255, 255, 0.75) !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+        }
+        .indh-wa-status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 8px #22c55e;
+            display: inline-block;
+        }
+        .indh-wa-btn-arrow {
+            font-size: 0.8rem !important;
+            color: rgba(255, 255, 255, 0.5) !important;
+            transition: transform 0.2s ease, color 0.2s ease !important;
+            flex-shrink: 0;
+        }
+
+        .indh-banner-cta-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        @media (min-width: 576px) {
+            .indh-banner-cta-actions {
+                flex-direction: row;
+                justify-content: flex-start;
+                gap: 12px;
+            }
+        }
+        @media (min-width: 992px) {
+            .indh-banner-cta-actions {
+                justify-content: flex-end;
+            }
+        }
+
+        .indh-btn-choose,
+        .indh-btn-devis {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 9px !important;
+            white-space: nowrap !important;
+            border-radius: 12px !important;
+            padding: 12px 22px !important;
+            font-weight: 750 !important;
+            font-size: 0.85rem !important;
+            text-decoration: none !important;
+            transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+
+        .indh-btn-choose {
+            background: #dc2626 !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35) !important;
+        }
+        .indh-btn-choose:hover {
+            background: #b91c1c !important;
+            color: #ffffff !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 22px rgba(220, 38, 38, 0.45) !important;
+        }
+        .indh-btn-choose:hover .fa-chevron-right,
+        .indh-btn-devis:hover .fa-chevron-right {
+            transform: translateX(3px) !important;
+        }
+        .indh-btn-choose .fa-chevron-right,
+        .indh-btn-devis .fa-chevron-right {
+            transition: transform 0.2s ease !important;
+        }
+
+        .indh-btn-devis {
+            background: #ffffff !important;
+            color: #0f172a !important;
+            border: 1px solid #ffffff !important;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+        }
+        .indh-btn-devis:hover {
+            background: #f8fafc !important;
+            color: #0f172a !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 22px rgba(255, 255, 255, 0.35) !important;
+        }
+
+        @media (max-width: 575px) {
+            .indh-step-img-col {
+                display: none !important;
+            }
+            .indh-step-card-pro .col-7 {
+                width: 100% !important;
+                max-width: 100% !important;
+                flex: 0 0 100% !important;
+            }
+            .indh-banner-cta {
+                padding: 20px 16px !important;
+            }
+            .indh-banner-cta .row {
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+            .indh-banner-cta [class*="col-"] {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+        }
+
+        /* RTL adjustments */
+        html[dir="rtl"] .indh-step-arrow {
+            right: auto;
+            left: -13px;
+            transform: translateY(-50%) rotate(180deg);
+        }
+        html[dir="rtl"] .indh-step-img-col::before {
+            left: auto;
+            right: 0;
+            background: linear-gradient(to left, #ffffff, rgba(255, 255, 255, 0));
+        }
+        html[dir="rtl"] .indh-guarantee-divider {
+            border-right: none;
+            border-left: 1px solid #f1f5f9;
+        }
+        @media (max-width: 1199px) {
+            html[dir="rtl"] .indh-guarantee-divider {
+                border-left: none;
+            }
+        }
+        html[dir="rtl"] .indh-step-btn-pro .indh-btn-arrow,
+        html[dir="rtl"] .indh-wa-banner-btn .indh-wa-btn-arrow,
+        html[dir="rtl"] .indh-btn-choose i.fa-chevron-right,
+        html[dir="rtl"] .indh-btn-devis i.fa-chevron-right {
+            transform: rotate(180deg);
         }
     </style>
     <!-- Custom Head & Body Codes (Cached) -->
@@ -1809,7 +2406,7 @@
                                 <img src="{{ $miniImg }}" alt="{{ $details['name'] }}" width="80" height="80" class="rounded-3 object-fit-cover" style="width: 80px; height: 80px;">
                                 <span class="position-absolute top-0 {{ app()->getLocale() === 'ar' ? 'end-0' : 'start-0' }} translate-middle badge rounded-pill bg-light text-dark border shadow-sm" style="font-size: 0.7rem;">x{{ $details['quantity'] }}</span>
                             </div>
-                            <div class="flex-grow-1 min-w-0">
+                            <div class="flex-grow-1 min-w-0 overflow-hidden">
                                 <div class="fw-bold mb-1 text-truncate h6 {{ app()->getLocale() === 'ar' ? 'ps-4' : 'pe-4' }}" title="{{ $details['name'] }}">{{ $details['name'] }}</div>
                                 <p class="mb-2 text-muted small">{{ $details['category_name'] ?? __('Product') }}</p>
                                 

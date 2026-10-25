@@ -393,264 +393,166 @@
 {{-- =========================================================================
      6. FINANCEMENTS PUBLICS & PROGRAMMES DE L'ÉTAT (INDH, FORSA, COOPÉRATIVES)
      ========================================================================= --}}
-<section class="state-funding-section py-4">
+<section class="state-funding-section">
     <div class="container">
         <div class="state-funding-wrapper">
-            {{-- Section Header --}}
-            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4 pb-3 border-bottom">
-                <div class="max-w-xl">
-                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill mb-2 about-hero-pill">
-                        <span class="about-pulse-dot"></span>
-                        <span class="small fw-bold text-uppercase ls-1" style="color: #991b1b;">
-                            {{ __('Programmes État & Subventions') }} · {{ __('Fournisseur Agréé Maroc') }}
-                        </span>
+
+            {{-- 1. Hero Block --}}
+            <div class="row align-items-center g-4 mb-4 mb-lg-5 pb-3 pb-lg-4 border-bottom">
+                <div class="col-12 col-lg-6">
+                    <div class="indh-hero-badge mb-3">
+                        <i class="fas fa-landmark text-danger" style="font-size: 0.75rem;"></i>
+                        <span class="indh-hero-badge-text">{{ __('INDH & PROJETS SOUTENUS') }}</span>
                     </div>
 
-                    <h2 class="fw-bold font-heading text-dark mb-2" style="font-size: clamp(1.25rem, 2.5vw, 1.65rem); letter-spacing: -0.02em;">
-                        {{ __('Bénéficiaires de Financements Publics (INDH & Projets Soutenus)') }}
+                    <h2 class="indh-hero-title mb-3">
+                        {{ __('Bénéficiaires de') }}<br>
+                        <span class="text-danger">{{ __('Financements Publics') }}</span>
                     </h2>
-                    <p class="text-secondary mb-0" style="font-size: clamp(0.85rem, 1.5vw, 0.94rem); line-height: 1.6;">
-                        {{ __('Obtenez votre devis proforma officiel conforme (avec cachet, ICE et TVA 20%) en 3 étapes simples — sans aucun paiement en ligne :') }}
+
+                    <p class="indh-hero-sub mb-0">
+                        {{ __('Composez votre panier de matériel photo/vidéo, validez sans paiement et recevez votre devis officiel cacheté avec ICE et TVA 20%.') }}
                     </p>
                 </div>
 
-                {{-- Direct WhatsApp Button in Header --}}
-                <div class="flex-shrink-0 w-100 w-sm-auto">
-                    <a href="https://wa.me/212629035777?text={{ urlencode('Bonjour, je suis bénéficiaire d\'un financement (INDH / Programme État) et je souhaite obtenir un devis proforma pour mon projet.') }}" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       class="btn btn-success rounded-pill px-4 py-2.5 fw-bold d-inline-flex align-items-center justify-content-center gap-2 w-100 w-sm-auto shadow-sm">
-                        <i class="fab fa-whatsapp fs-6"></i>
-                        <span>{{ __('Conseiller INDH WhatsApp') }}</span>
-                    </a>
+                <div class="col-12 col-lg-6 text-center text-lg-end">
+                    <img src="{{ asset('images/indh/hero_gear.jpg') }}" 
+                         alt="{{ __('Équipements photo vidéo cinéma pro subventionnés') }}" 
+                         class="indh-hero-gear-img img-fluid">
                 </div>
             </div>
 
-            {{-- 3-Step Connected Symmetrical Cards --}}
-            <div class="row row-cols-1 row-cols-md-3 g-3 mb-4">
-                {{-- Step 1 : Sélection du matériel --}}
-                <div class="col">
-                    <div class="indh-step-card-pro">
-                        <div class="indh-card-top">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <div class="indh-step-badge-num">01</div>
-                                <span class="indh-step-phase-badge">
-                                    {{ __('ÉTAPE 1') }}
-                                </span>
+            {{-- 2. Three Connected Step Cards --}}
+            <div class="row g-3 g-xl-4 mb-4 align-items-stretch position-relative">
+                {{-- Step 1 --}}
+                <div class="col-12 col-lg-4 position-relative">
+                    <div class="indh-step-card-pro p-0">
+                        <div class="row g-0 h-100">
+                            <div class="col-7 p-3 p-xl-3.5 d-flex flex-column justify-content-between">
+                                <div>
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <div class="indh-step-badge-num">01</div>
+                                    </div>
+                                    <h3 class="indh-step-title mb-1.5">
+                                        {{ __('Composez votre panier') }}
+                                    </h3>
+                                    <p class="indh-step-desc mb-2">
+                                        {{ __('Choisissez votre matériel photo/vidéo parmi notre large sélection de marques et d\'équipements professionnels.') }}
+                                    </p>
+                                </div>
+                                <div class="pt-2">
+                                    <a href="{{ route('shop.index') }}" class="indh-step-btn-pro text-decoration-none">
+                                        <i class="fas fa-cart-shopping indh-btn-icon"></i>
+                                        <span>{{ __('Découvrir le matériel') }}</span>
+                                        <i class="fas fa-chevron-right indh-btn-arrow"></i>
+                                    </a>
+                                </div>
                             </div>
-                            
-                            <div class="indh-step-icon-slot">
-                                <i class="fas fa-cart-shopping"></i>
-                            </div>
-                            
-                            <h3 class="indh-step-title fw-bold text-dark font-heading">
-                                {{ __('Composez Votre Panier') }}
-                            </h3>
-                            
-                            <p class="indh-step-desc text-secondary">
-                                {{ __('Ajoutez librement vos équipements photo/vidéo selon l\'enveloppe budgétaire allouée à votre subvention.') }}
-                            </p>
-                        </div>
-
-                        <div class="indh-card-bottom">
-                            <div class="indh-feature-pill">
-                                <i class="fas fa-circle-check text-danger"></i>
-                                <span>{{ __('Matériel Neuf & Garanti 2 Ans') }}</span>
-                            </div>
-
-                            <div class="indh-step-meta text-muted small">
-                                <i class="fas fa-tag text-danger me-1"></i>
-                                <span>{{ __('TVA 20% incluse') }}</span>
-                            </div>
-
-                            <div class="pt-2 border-top">
-                                <a href="{{ route('shop.index') }}" 
-                                   class="btn btn-outline-dark rounded-pill w-100 py-2.5 fw-bold d-inline-flex align-items-center justify-content-center gap-2 indh-step-btn">
-                                    <i class="fas fa-th-large text-danger"></i>
-                                    <span>{{ __('Choisir mon Matériel') }}</span>
-                                </a>
+                            <div class="col-5 indh-step-img-col">
+                                <img src="{{ asset('images/indh/step1_laptop.jpg') }}" alt="{{ __('Composez votre panier') }}" class="indh-step-card-img">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- Step 2 : Commande sans paiement --}}
-                <div class="col">
-                    <div class="indh-step-card-pro">
-                        <div class="indh-card-top">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <div class="indh-step-badge-num">02</div>
-                                <span class="indh-step-phase-badge phase-warning">
-                                    {{ __('ÉTAPE 2') }}
-                                </span>
+                {{-- Step 2 --}}
+                <div class="col-12 col-lg-4 position-relative">
+                    <div class="indh-step-card-pro p-0">
+                        <div class="row g-0 h-100">
+                            <div class="col-7 p-3 p-xl-3.5 d-flex flex-column justify-content-between">
+                                <div>
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <div class="indh-step-badge-num">02</div>
+                                    </div>
+                                    <h3 class="indh-step-title mb-1.5">
+                                        {{ __('Validez sans paiement') }}
+                                    </h3>
+                                    <p class="indh-step-desc mb-2">
+                                        {{ __('Passez votre commande sans effectuer de paiement en ligne. Simple et rapide.') }}
+                                    </p>
+                                </div>
+                                <div class="pt-2">
+                                    <a href="{{ route('cart.index') }}" class="indh-step-btn-pro text-decoration-none">
+                                        <i class="fas fa-file-invoice indh-btn-icon"></i>
+                                        <span>{{ __('Valider ma commande') }}</span>
+                                        <i class="fas fa-chevron-right indh-btn-arrow"></i>
+                                    </a>
+                                </div>
                             </div>
-                            
-                            <div class="indh-step-icon-slot icon-slot-amber">
-                                <i class="fas fa-file-invoice"></i>
-                            </div>
-                            
-                            <h3 class="indh-step-title fw-bold text-dark font-heading">
-                                {{ __('Validez sans Paiement') }}
-                            </h3>
-                            
-                            <p class="indh-step-desc text-secondary">
-                                {{ __('Validez votre commande sur le site : aucun paiement par carte requis pour réserver le stock et obtenir votre N°.') }}
-                            </p>
-                        </div>
-
-                        <div class="indh-card-bottom">
-                            <div class="indh-feature-pill highlight-zero">
-                                <i class="fas fa-shield-halved text-success"></i>
-                                <span>{{ __('0 DH en ligne · N° Immédiat') }}</span>
-                            </div>
-
-                            <div class="indh-step-meta text-muted small">
-                                <i class="fas fa-bolt text-warning me-1"></i>
-                                <span>{{ __('Réservation immédiate du matériel') }}</span>
-                            </div>
-
-                            <div class="pt-2 border-top">
-                                <a href="{{ route('cart.index') }}" 
-                                   class="btn btn-outline-dark rounded-pill w-100 py-2.5 fw-bold d-inline-flex align-items-center justify-content-center gap-2 indh-step-btn">
-                                    <i class="fas fa-clipboard-check text-warning"></i>
-                                    <span>{{ __('Valider sans Payer (0 DH)') }}</span>
-                                </a>
+                            <div class="col-5 indh-step-img-col">
+                                <img src="{{ asset('images/indh/step2_phone.jpg') }}" alt="{{ __('Validez sans paiement') }}" class="indh-step-card-img">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- Step 3 : Support & Devis proforma (Destination Step) --}}
-                <div class="col">
-                    <div class="indh-step-card-pro step-destination">
-                        <div class="indh-card-top">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <div class="indh-step-badge-num">03</div>
-                                <span class="indh-step-phase-badge phase-danger" style="color: #991b1b; background-color: #fee2e2;">
-                                    {{ __('ÉTAPE 3') }}
-                                </span>
+                {{-- Step 3 --}}
+                <div class="col-12 col-lg-4 position-relative">
+                    <div class="indh-step-card-pro p-0">
+                        <div class="row g-0 h-100">
+                            <div class="col-7 p-3 p-xl-3.5 d-flex flex-column justify-content-between">
+                                <div>
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <div class="indh-step-badge-num">03</div>
+                                    </div>
+                                    <h3 class="indh-step-title mb-1.5">
+                                        {{ __('Recevez votre devis cacheté') }}
+                                    </h3>
+                                    <p class="indh-step-desc mb-2">
+                                        {{ __('Recevez par WhatsApp votre devis officiel cacheté avec ICE et TVA 20%, sous 2h.') }}
+                                    </p>
+                                </div>
+                                <div class="pt-2">
+                                    <a href="https://wa.me/212629035777?text={{ urlencode('Bonjour, j\'ai sélectionné mon matériel pour mon projet INDH / Financement Public. Je souhaite recevoir mon devis officiel cacheté.') }}" 
+                                       target="_blank" 
+                                       rel="noopener noreferrer" 
+                                       class="indh-step-btn-pro btn-whatsapp-step text-decoration-none">
+                                        <i class="fab fa-whatsapp indh-btn-icon"></i>
+                                        <span>{{ __('Recevoir mon devis') }}</span>
+                                        <i class="fas fa-chevron-right indh-btn-arrow"></i>
+                                    </a>
+                                </div>
                             </div>
-                            
-                            <div class="indh-step-icon-slot icon-slot-crimson">
-                                <i class="fas fa-stamp"></i>
-                            </div>
-                            
-                            <h3 class="indh-step-title fw-bold text-dark font-heading">
-                                {{ __('Recevez Votre Devis Cacheté') }}
-                            </h3>
-                            
-                            <p class="indh-step-desc text-secondary">
-                                {{ __('Envoyez votre N° de dossier par WhatsApp : réception de votre devis officiel cacheté avec ICE et TVA 20% sous 2h.') }}
-                            </p>
-                        </div>
-
-                        <div class="indh-card-bottom">
-                            <div class="indh-feature-pill highlight-proforma">
-                                <i class="fas fa-certificate text-danger"></i>
-                                <span style="color: #991b1b;">{{ __('Devis Cacheté · ICE & TVA 20%') }}</span>
-                            </div>
-
-                            <div class="indh-step-meta text-muted small">
-                                <i class="fas fa-clock text-danger me-1"></i>
-                                <span>{{ __('Édition garantie sous 2 heures') }}</span>
-                            </div>
-
-                            <div class="pt-2 border-top">
-                                <a href="https://wa.me/212629035777?text={{ urlencode('Bonjour, j\'ai enregistré mon panier sur le site pour mon projet INDH / Financement Public. Voici mon numéro de dossier pour recevoir le devis proforma officiel cacheté.') }}" 
-                                   target="_blank" 
-                                   rel="noopener noreferrer" 
-                                   class="btn btn-success rounded-pill w-100 py-2.5 fw-bold d-inline-flex align-items-center justify-content-center gap-2 shadow-sm indh-step-btn">
-                                    <i class="fab fa-whatsapp"></i>
-                                    <span>{{ __('Demander mon Devis') }}</span>
-                                </a>
+                            <div class="col-5 indh-step-img-col">
+                                <img src="{{ asset('images/indh/step3_devis.jpg') }}" alt="{{ __('Recevez votre devis cacheté') }}" class="indh-step-card-img">
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- 4 Legal & Institutional Compliance Guarantees (2x2 on mobile/tablet, 4 in row on wide desktop) --}}
-            <div class="row row-cols-2 row-cols-xl-4 g-2 g-md-3 mb-4">
-                <div class="col">
-                    <div class="indh-guarantee-pill">
-                        <div class="indh-guarantee-icon icon-red">
-                            <i class="fas fa-file-invoice"></i>
-                        </div>
-                        <div class="indh-guarantee-content">
-                            <span class="d-block fw-bold text-dark mb-0 fs-6">{{ __('Mentions Légales 100%') }}</span>
-                            <span class="text-muted small">{{ __('ICE, RC, IF, Patente & TVA 20%') }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="indh-guarantee-pill">
-                        <div class="indh-guarantee-icon icon-blue">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="indh-guarantee-content">
-                            <span class="d-block fw-bold text-dark mb-0 fs-6">{{ __('Édition sous 2 Heures') }}</span>
-                            <span class="text-muted small">{{ __('Respect des délais de commission') }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="indh-guarantee-pill">
-                        <div class="indh-guarantee-icon icon-green">
-                            <i class="fas fa-shield-halved"></i>
-                        </div>
-                        <div class="indh-guarantee-content">
-                            <span class="d-block fw-bold text-dark mb-0 fs-6">{{ __('Matériel 100% Neuf') }}</span>
-                            <span class="text-muted small">{{ __('Garantie constructeur & SAV Maroc') }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="indh-guarantee-pill">
-                        <div class="indh-guarantee-icon icon-amber">
-                            <i class="fas fa-user-tie"></i>
-                        </div>
-                        <div class="indh-guarantee-content">
-                            <span class="d-block fw-bold text-dark mb-0 fs-6">{{ __('Conseiller Pro Dédié') }}</span>
-                            <span class="text-muted small">{{ __('Aide au calibrage de votre budget') }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Pro Action & Support Bar --}}
+            {{-- 4. Dark Bottom Banner --}}
             <div class="indh-banner-cta">
-                <div class="row align-items-center g-3 position-relative z-2">
-                    <div class="col-12 col-xl-7">
-                        <h3 class="fw-bold text-white mb-2" style="font-size: clamp(1.15rem, 2vw, 1.35rem); line-height: 1.35;">
+                <div class="row align-items-center g-3 g-lg-4">
+                    <div class="col-12 col-lg-7">
+                        <span class="indh-banner-badge d-inline-block mb-2">{{ __('DEMANDE URGENTE ?') }}</span>
+                        <h3 class="indh-banner-title mb-2">
                             {{ __('Besoin d\'un devis urgent pour votre dossier de subvention ?') }}
                         </h3>
-                        <p class="text-white-50 mb-0 small" style="line-height: 1.55;">
-                            {{ __('Cellule INDH & Projets publics : assistance directe par téléphone au') }} 
-                            <a href="tel:+212629035777" class="text-white fw-bold text-decoration-none border-bottom border-white-50 pb-0.5">06 29 03 57 77</a> 
-                            {{ __('ou par WhatsApp.') }}
+                        <p class="indh-banner-desc mb-0">
+                            {{ __('Notre équipe est à votre disposition pour vous accompagner et vous envoyer votre devis sous 2h.') }}
                         </p>
                     </div>
-                    <div class="col-12 col-xl-5">
-                        <div class="d-flex flex-column flex-sm-row justify-content-xl-end gap-2 flex-wrap">
-                            <a href="{{ route('shop.index') }}" 
-                               class="btn btn-light rounded-pill px-3.5 py-2.5 fw-bold text-nowrap d-inline-flex align-items-center justify-content-center gap-2 shadow-sm w-100 w-sm-auto">
-                                <i class="fas fa-th-large text-danger"></i>
+                    <div class="col-12 col-lg-5">
+                        <div class="indh-banner-cta-actions">
+                            <a href="{{ route('shop.index') }}" class="indh-btn-choose w-100 w-sm-auto">
+                                <i class="fas fa-camera" style="font-size: 0.85rem;"></i>
                                 <span>{{ __('Choisir mon matériel') }}</span>
+                                <i class="fas fa-chevron-right" style="font-size: 0.65rem;"></i>
                             </a>
                             <a href="https://wa.me/212629035777?text={{ urlencode('Bonjour, je suis bénéficiaire d\'un financement (INDH / Programme État) et je souhaite obtenir un devis proforma pour mon projet.') }}" 
                                target="_blank" 
-                               rel="noopener noreferrer"
-                               class="btn btn-success rounded-pill px-3.5 py-2.5 fw-bold text-nowrap d-inline-flex align-items-center justify-content-center gap-2 shadow-sm w-100 w-sm-auto">
-                                <i class="fab fa-whatsapp"></i>
+                               rel="noopener noreferrer" 
+                               class="indh-btn-devis w-100 w-sm-auto">
+                                <i class="fab fa-whatsapp text-success" style="font-size: 1.05rem;"></i>
                                 <span>{{ __('Demander mon devis') }}</span>
+                                <i class="fas fa-chevron-right" style="font-size: 0.65rem;"></i>
                             </a>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </section>
