@@ -243,6 +243,54 @@ class Product extends Model
     }
 
     /**
+     * Mutator to ensure description HTML is always clean, well-formed, and balanced.
+     */
+    public function setDescriptionAttribute($value)
+    {
+        $this->attributes['description'] = static::cleanAndBalanceHtml($value);
+    }
+
+    /**
+     * Clean and balance HTML to prevent broken tags or rogue code from breaking any UI.
+     */
+    public static function cleanAndBalanceHtml(?string $html): ?string
+    {
+        if ($html === null || trim($html) === '') {
+            return $html;
+        }
+
+        // 1. Strip script and style tags so they can never execute or alter global CSS
+        $clean = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $html);
+        $clean = preg_replace('/<style\b[^>]*>(.*?)<\/style>/is', '', $clean);
+
+        // 2. Strip dangerous inline event attributes (e.g. onerror, onload, onclick)
+        $clean = preg_replace('/\bon\w+\s*=\s*(?:["\'][^"\']*["\']|[^\s>]+)/i', '', $clean);
+
+        // 3. Strip rogue chat viewport artifacts
+        $clean = preg_replace('/<div[^>]*data-test-render-count.*?<div class=\"contents\">/is', '', $clean);
+        $clean = preg_replace('/<div[^>]*font-claude-response.*?<div class=\"standard-markdown[^\"]*\">/is', '', $clean);
+        $clean = preg_replace('/<li class=\"font-claude-response-body[^\"]*\">/is', '<li>', $clean);
+        $clean = preg_replace('/<div[^>]*class=[\"\'][^\"]*(?:composer-parent|qMYqUG_|flex h-svh w-screen|group\/thread)[^\"]*[\"\'][^>]*>/is', '', $clean);
+
+        // 4. Auto-balance all HTML tags using DOMDocument
+        $doc = new \DOMDocument();
+        libxml_use_internal_errors(true);
+        $doc->loadHTML('<?xml encoding="utf-8" ?><body>' . $clean . '</body>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        libxml_clear_errors();
+
+        $body = $doc->getElementsByTagName('body')->item(0);
+        if ($body) {
+            $balanced = '';
+            foreach ($body->childNodes as $node) {
+                $balanced .= $doc->saveHTML($node);
+            }
+            return !empty($balanced) ? $balanced : $clean;
+        }
+
+        return $clean;
+    }
+
+    /**
      * Get clean plain-text description free of all HTML tags, scripts, and escaped characters.
      */
     public function getCleanDescriptionAttribute(): string

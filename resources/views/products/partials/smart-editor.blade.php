@@ -168,10 +168,11 @@
 .smart-visual-editor {
     min-height: 480px;
     max-height: 800px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    position: relative;
-    contain: layout style;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    position: relative !important;
+    isolation: isolate;
+    contain: layout paint style;
     padding: 24px 28px;
     outline: none;
     background: #ffffff;
@@ -179,17 +180,58 @@
     font-family: inherit;
     line-height: 1.7;
     font-size: 14.5px;
+    box-sizing: border-box !important;
 }
 
+/* Bulletproof CSS Sandbox: Prevent ANY internal elements from escaping or breaking interface */
+.smart-visual-editor * {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Neutralize rogue fixed/absolute/modal styling */
+.smart-visual-editor [style*="position: fixed"],
+.smart-visual-editor [style*="position:fixed"],
+.smart-visual-editor .fixed {
+    position: relative !important;
+    inset: auto !important;
+}
+
+.smart-visual-editor [style*="position: absolute"],
+.smart-visual-editor [style*="position:absolute"],
+.smart-visual-editor .absolute {
+    position: relative !important;
+    inset: auto !important;
+}
+
+.smart-visual-editor [style*="z-index"],
+.smart-visual-editor [class*="z-"] {
+    z-index: 1 !important;
+}
+
+.smart-visual-editor [style*="100vw"],
 .smart-visual-editor .w-screen,
 .smart-visual-editor [class*="w-screen"] {
     width: 100% !important;
     max-width: 100% !important;
 }
+
+.smart-visual-editor [style*="100vh"],
+.smart-visual-editor [style*="100svh"],
 .smart-visual-editor .h-svh,
-.smart-visual-editor [class*="h-svh"] {
+.smart-visual-editor .h-screen,
+.smart-visual-editor [class*="h-svh"],
+.smart-visual-editor [class*="h-screen"] {
     height: auto !important;
     min-height: 0 !important;
+}
+
+.smart-visual-editor dialog {
+    display: block !important;
+    position: static !important;
+    border: 1px dashed #cbd5e1 !important;
+    padding: 10px !important;
+    background: transparent !important;
 }
 
 .smart-visual-editor:focus {
@@ -657,23 +699,73 @@ const formatToolbar = document.getElementById('smartFormatToolbar');
 const imgFloatBar = document.getElementById('smartImgFloatBar');
 const wordCountBadge = document.getElementById('studioWordCount');
 
+// Safe in-browser HTML sanitization to neutralize rogue scripts, styles and broken elements
+function safeSanitizeForEditor(rawHtml) {
+    if (!rawHtml || typeof rawHtml !== 'string') return '';
+    try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(rawHtml, 'text/html');
+
+        // 1. Remove dangerous script and style elements entirely
+        doc.querySelectorAll('script, style').forEach(el => el.remove());
+
+        // 2. Disarm any inline event handlers (onerror, onload, onclick, etc.)
+        doc.querySelectorAll('*').forEach(el => {
+            Array.from(el.attributes).forEach(attr => {
+                if (attr.name.toLowerCase().startsWith('on')) {
+                    el.removeAttribute(attr.name);
+                }
+            });
+
+            // 3. Reset any rogue fixed/absolute inline styles
+            if (el.style) {
+                if (el.style.position === 'fixed' || el.style.position === 'absolute') {
+                    el.style.position = 'relative';
+                }
+                if (el.style.zIndex && parseInt(el.style.zIndex) > 10) {
+                    el.style.zIndex = '1';
+                }
+            }
+        });
+
+        return doc.body.innerHTML;
+    } catch (err) {
+        console.warn('Sanitizer fallback:', err);
+        return rawHtml;
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
-    // 1. Initial Content Setup (safely parse into visual container)
-    visualEditor.innerHTML = hiddenTextarea.value;
-    syncContentFromVisual();
-    attachInteractiveListeners();
+    try {
+        // 1. Initial Content Setup: parse safely inside sandbox to protect entire page DOM
+        const initialHtml = hiddenTextarea.value || '';
+        visualEditor.innerHTML = safeSanitizeForEditor(initialHtml);
+        syncContentFromVisual();
+        attachInteractiveListeners();
+    } catch (e) {
+        console.error('Erreur chargement studio visuel :', e);
+        visualEditor.innerText = hiddenTextarea.value || '';
+    }
 
     // 2. Realtime sync on typing/pasting in visual editor
     visualEditor.addEventListener('input', function () {
-        syncContentFromVisual();
+        try {
+            syncContentFromVisual();
+        } catch (e) {
+            console.warn('Sync visual warning:', e);
+        }
     });
 
     // 3. Sync on editing raw HTML
     rawHtmlArea.addEventListener('input', function () {
-        hiddenTextarea.value = rawHtmlArea.value;
-        visualEditor.innerHTML = rawHtmlArea.value;
-        updateWordCount();
-        attachInteractiveListeners();
+        try {
+            hiddenTextarea.value = rawHtmlArea.value;
+            visualEditor.innerHTML = safeSanitizeForEditor(rawHtmlArea.value);
+            updateWordCount();
+            attachInteractiveListeners();
+        } catch (e) {
+            console.warn('Sync raw html warning:', e);
+        }
     });
 
     // 4. Ensure form submit always has fresh HTML
