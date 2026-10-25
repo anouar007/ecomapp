@@ -71,12 +71,12 @@ class ProductStudio4kSearchTest extends TestCase
         }
     }
 
-    public function test_find_candidates_with_sku_finds_exact_accessories_from_retailers(): void
+    public function test_find_candidates_with_product_name_finds_exact_accessories_from_retailers(): void
     {
-        $candidates = $this->service->find4kCandidates('Support Cage', 'SmallRig', 350, 6, '4668');
+        $candidates = $this->service->find4kCandidates('SmallRig Cage Sony FX3', 'SmallRig', 350, 6);
         $this->assertNotEmpty($candidates);
         $top = $candidates[0];
-        $this->assertStringContainsString('4668', $top['title']);
+        $this->assertStringContainsString('FX3', strtoupper($top['title']));
         $this->assertNotEmpty($top['preview_url']);
         $this->assertNotEmpty($top['domain']);
     }

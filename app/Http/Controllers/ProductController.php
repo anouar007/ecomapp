@@ -506,31 +506,16 @@ class ProductController extends Controller
      */
     public function search4kImages(Request $request, Product $product)
     {
-        $query = $request->input('q', $product->name);
+        $query = trim($request->input('q') ?: $product->name);
         $service = app(\App\Services\OfficialProductImageService::class);
         $brand = $service->detectBrand($query ?: $product->name);
-        $sku = $product->sku;
         
-        $candidates = $service->find4kCandidates($query, $brand, 350, 24, $sku);
-
-        // Build helpful search suggestion chips for instant 1-click alternative searches
-        $suggestions = [];
-        if ($sku && strlen($sku) >= 2 && strtolower($sku) !== 'n/a') {
-            if ($brand && !str_contains(strtolower($sku), strtolower($brand))) {
-                $suggestions[] = $brand . ' ' . $sku;
-            }
-            $suggestions[] = $sku;
-        }
-        $cleanName = $service->cleanStudioSearchQuery($product->name);
-        if ($cleanName && !in_array($cleanName, $suggestions)) {
-            $suggestions[] = $cleanName;
-        }
+        $candidates = $service->find4kCandidates($query, $brand, 300, 24);
 
         return response()->json([
             'success' => true,
             'query' => $query,
-            'sku' => $sku,
-            'suggestions' => array_values(array_unique($suggestions)),
+            'product_name' => $product->name,
             'count' => count($candidates),
             'candidates' => $candidates,
         ]);

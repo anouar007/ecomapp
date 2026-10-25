@@ -590,29 +590,23 @@
                 </button>
             </div>
 
-            <!-- Search Bar with Quick Chips -->
+            <!-- Search Bar with Product Name -->
             <div style="padding: 16px 24px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 10px;">
                 <div style="display: flex; gap: 10px; align-items: center;">
                     <div style="position: relative; flex: 1;">
                         <i class="fas fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 14px;"></i>
-                        <input type="text" id="query4k" value="{{ $product->sku ? ($product->sku . ' ' . app(\App\Services\OfficialProductImageService::class)->cleanStudioSearchQuery($product->name)) : app(\App\Services\OfficialProductImageService::class)->cleanStudioSearchQuery($product->name) }}" placeholder="Rechercher par référence, modèle ou SKU..." style="width: 100%; padding: 10px 14px 10px 38px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 14px; outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); trigger4kSearch();}">
+                        <input type="text" id="query4k" value="{{ $product->name }}" placeholder="Nom du produit..." style="width: 100%; padding: 10px 14px 10px 38px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 14px; outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); trigger4kSearch();}">
                     </div>
                     <button type="button" id="btnRun4kSearch" onclick="trigger4kSearch()" class="btn btn-primary" style="background: #4f46e5; border-color: #4f46e5; border-radius: 10px; padding: 10px 20px; font-weight: 600; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;">
                         <i class="fas fa-bolt me-1"></i> Rechercher
                     </button>
                 </div>
-                <div id="chips4k" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-                    <span style="font-size: 11px; color: #64748b; font-weight: 600;"><i class="fas fa-lightbulb text-warning me-1"></i>Suggestions rapides :</span>
-                    @if($product->sku && strlen($product->sku) >= 2)
-                        <button type="button" onclick="setQuery4k('{{ addslashes($product->sku) }}')" class="btn btn-sm btn-light border rounded-pill px-2.5 py-0.5" style="font-size: 11.5px; font-weight: 600; color: #4338ca; background: #eef2ff; border-color: #c7d2fe;">
-                            🎯 SKU: {{ $product->sku }}
-                        </button>
-                    @endif
-                    <button type="button" onclick="setQuery4k('{{ addslashes(app(\App\Services\OfficialProductImageService::class)->cleanStudioSearchQuery($product->name)) }}')" class="btn btn-sm btn-light border rounded-pill px-2.5 py-0.5" style="font-size: 11.5px; font-weight: 600; color: #334155;">
-                        📷 Modèle nettoyé
-                    </button>
-                    <button type="button" onclick="setQuery4k('{{ addslashes($product->name) }}')" class="btn btn-sm btn-light border rounded-pill px-2.5 py-0.5" style="font-size: 11.5px; font-weight: 600; color: #64748b;">
-                        🔍 Nom complet
+                <div id="chips4k" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+                    <span style="font-size: 12px; color: #475569; font-weight: 500;">
+                        <i class="fas fa-camera text-primary me-1"></i>Recherche par nom du produit : <strong style="color: #1e1b4b;">{{ $product->name }}</strong>
+                    </span>
+                    <button type="button" onclick="setQuery4k('{{ addslashes($product->name) }}')" class="btn btn-sm btn-light border rounded-pill px-2.5 py-0.5" style="font-size: 11.5px; font-weight: 600; color: #4338ca; background: #eef2ff; border-color: #c7d2fe;">
+                        <i class="fas fa-undo me-1"></i> Réinitialiser au nom du produit
                     </button>
                 </div>
             </div>

@@ -920,24 +920,14 @@ class OfficialProductImageService
      * Search 4K / Ultra-HD studio master images for a product.
      * Evaluates SQLite catalog, multi-CDN search, filters watermarks, and ranks by studio quality.
      */
-    public function find4kCandidates(string $productName, ?string $brand = null, int $minWidth = 350, int $limit = 24, ?string $sku = null): array
+    public function find4kCandidates(string $productName, ?string $brand = null, int $minWidth = 300, int $limit = 24, ?string $sku = null): array
     {
         $productName = trim($productName);
         if (empty($productName)) {
             return [];
         }
 
-        $cleanQuery = $this->cleanStudioSearchQuery($productName);
-        $detectedBrand = $this->detectBrand($cleanQuery ?: $productName);
-        $actualBrand = ($brand && strtolower($brand) !== 'generic' && strtolower($brand) !== 'unknown') ? $brand : $detectedBrand;
-
-        // Clean SKU
-        $skuClean = $sku ? trim($sku) : null;
-        if ($skuClean && (strtolower($skuClean) === 'n/a' || strlen($skuClean) < 2)) {
-            $skuClean = null;
-        }
-
-        $cacheKey = 'img_search_v7_' . md5($cleanQuery . '_' . $actualBrand . '_' . $skuClean . '_' . $minWidth . '_' . $limit);
+        $cacheKey = 'img_search_name_v2_' . md5($productName . '_' . $minWidth . '_' . $limit);
         $cached = Cache::get($cacheKey);
         if (is_array($cached) && !empty($cached)) {
             return $cached;
@@ -946,30 +936,13 @@ class OfficialProductImageService
         $candidates = [];
         $seenFingerprints = [];
 
-        // Build cascading queries from most specific (Brand + SKU) to general
-        $searchQueries = [];
+        // Search strictly with the product name
+        $searchQueries = [$productName];
 
-        // 1. Brand + SKU (Highest accuracy in photography/accessories e.g. "SmallRig 4668", "Godox BD-04", "Tamron A071")
-        if ($skuClean) {
-            if ($actualBrand && !str_contains(strtolower($skuClean), strtolower($actualBrand))) {
-                $searchQueries[] = $actualBrand . ' ' . $skuClean;
-            }
-            $searchQueries[] = $skuClean;
-        }
-
-        // 2. Model + SKU (e.g. "Encore PT60 4668")
-        if ($skuClean && $cleanQuery && !str_contains(strtolower($cleanQuery), strtolower($skuClean))) {
-            $searchQueries[] = $cleanQuery . ' ' . $skuClean;
-        }
-
-        // 3. Clean Model Name
-        if (!in_array($cleanQuery, $searchQueries)) {
-            $searchQueries[] = $cleanQuery;
-        }
-
-        // 4. Original Product Name
-        if (!in_array($productName, $searchQueries)) {
-            $searchQueries[] = $productName;
+        // Secondary fallback if product name has parentheses/condition tags and returns no results
+        $cleanName = trim(preg_replace('/\([^)]*\)|\[[^\]]*\]/', '', $productName));
+        if ($cleanName !== $productName && !empty($cleanName)) {
+            $searchQueries[] = $cleanName;
         }
 
         $badDomains = [
@@ -977,6 +950,12 @@ class OfficialProductImageService
             '123rf', 'depositphotos', 'istock', 'vector', 'clipart', 'watermark',
             'pinterest', 'facebook', 'instagram', 'tiktok', 'youtube', 'redbubble', 'etsy'
         ];
+
+        // Tokenize product name into meaningful keywords for scoring
+        $productWords = array_values(array_filter(
+            preg_split('/[\s,\-_–\/\+]+/', strtolower($productName)),
+            fn($w) => strlen($w) >= 2 && !in_array($w, ['le', 'la', 'les', 'de', 'du', 'des', 'pour', 'for', 'and', 'et', 'the', 'avec', 'with', 'sur', 'dans', 'en', 'au', 'aux'])
+        ));
 
         foreach ($searchQueries as $q) {
             if (count($candidates) >= $limit) break;
@@ -1069,30 +1048,21 @@ class OfficialProductImageService
                         // Scoring: Priority on ACCURACY of product match
                         $score = 50;
 
-                        // SKU match: highest weight (+60)
-                        if ($skuClean) {
-                            $pattern = '/\b' . preg_quote($skuClean, '/') . '\b/i';
-                            if (preg_match($pattern, $title) || preg_match($pattern, $murl) || preg_match($pattern, $purl)) {
-                                $score += 60;
-                            }
-                        }
+                        // Scoring: Priority on how closely the candidate matches the PRODUCT NAME
+                        $score = 50;
 
-                        // Brand match (+30)
-                        if ($actualBrand && (stripos($title, $actualBrand) !== false || stripos($murl, $actualBrand) !== false || stripos($host, $actualBrand) !== false)) {
-                            $score += 30;
-                        }
-
-                        // Clean model words match (+10 per word)
-                        $modelWords = array_filter(explode(' ', strtolower($cleanQuery)), fn($w) => strlen($w) > 2);
                         $matchedWords = 0;
-                        foreach ($modelWords as $mw) {
-                            if (str_contains($titleLower, $mw)) {
+                        foreach ($productWords as $pw) {
+                            if (str_contains($titleLower, $pw) || str_contains(strtolower($murl), $pw) || str_contains(strtolower($purl), $pw)) {
                                 $matchedWords++;
                             }
                         }
-                        $score += ($matchedWords * 10);
+                        $score += ($matchedWords * 15);
 
-                        // High-res bonus (+15)
+                        // High-res bonus
+                        if ($w >= 1000) {
+                            $score += 15;
+                        }
                         if ($w >= 1800) {
                             $score += 15;
                         }
