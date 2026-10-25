@@ -125,6 +125,58 @@
         transition: all 0.2s ease;
     }
 
+    /* Variation Cards 2-Row Layout */
+    .variant-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 16px 18px;
+        transition: all 0.2s ease;
+        position: relative;
+    }
+    .variant-card:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+    }
+    .variant-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 12px;
+        margin-bottom: 14px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .variant-card-badge {
+        font-size: 0.72rem;
+        font-weight: 700;
+        font-family: var(--bs-font-monospace, monospace);
+        padding: 4px 10px;
+        border-radius: 6px;
+        background: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #dbeafe;
+    }
+    .variant-card .form-label {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .variant-card .form-control {
+        font-size: 0.92rem;
+        border-radius: 8px;
+        padding: 8px 12px;
+    }
+    .variant-card .input-group-text {
+        font-size: 0.82rem;
+        border-radius: 8px;
+        background: #f8fafc;
+        color: #64748b;
+    }
+
     @media (max-width: 767.98px) {
         .product-form-card {
             padding: 16px 14px;
@@ -288,35 +340,21 @@
                                 <i class="fas fa-info-circle text-primary me-1"></i>
                                 Chaque variation possède son propre <strong>prix</strong> et <strong>stock</strong>. Le stock total sera synchronisé automatiquement.
                             </div>
-                            <button type="button" class="btn btn-sm btn-brand-primary" onclick="addVariantRow()">
+                            <button type="button" class="btn btn-sm btn-brand-primary rounded-pill px-3 py-1.5" onclick="addVariantRow()">
                                 <i class="fas fa-plus me-1"></i> Ajouter une variante
                             </button>
                         </div>
 
-                        <div class="table-responsive border rounded-3 overflow-hidden bg-white mb-2">
-                            <table class="table table-hover align-middle mb-0" id="variantsTable">
-                                <thead class="bg-light small text-muted text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.03em;">
-                                    <tr>
-                                        <th style="min-width: 170px;">Nom de la variante <span class="text-danger">*</span></th>
-                                        <th style="min-width: 130px;">SKU spécifique</th>
-                                        <th style="min-width: 130px;">Prix TTC (DH) <span class="text-danger">*</span></th>
-                                        <th style="min-width: 120px;">Prix d'achat</th>
-                                        <th style="min-width: 110px;">Stock <span class="text-danger">*</span></th>
-                                        <th style="min-width: 100px;">Seuil alerte</th>
-                                        <th style="width: 50px;" class="text-center">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="variantsTableBody">
-                                    <!-- Dynamic variant rows -->
-                                </tbody>
-                            </table>
+                        <!-- Dynamic 2-Row Variant Cards Container -->
+                        <div id="variantsCardsContainer" class="d-flex flex-column gap-3 mb-3">
+                            <!-- Populated dynamically via JS -->
                         </div>
 
-                        <div class="d-flex justify-content-between align-items-center mt-2 px-1">
-                            <span class="badge bg-light text-secondary border px-2 py-1.5" id="variantSummaryBadge">
-                                <i class="fas fa-boxes text-danger me-1"></i> <span id="variantCount">0</span> variante(s) &bull; Stock total : <strong id="variantTotalStock">0</strong>
+                        <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top px-1 flex-wrap gap-2">
+                            <span class="badge bg-light text-secondary border px-2.5 py-1.5" id="variantSummaryBadge" style="font-size: 0.8rem;">
+                                <i class="fas fa-boxes text-danger me-1"></i> <span id="variantCount">0</span> variante(s) &bull; Stock total : <strong id="variantTotalStock" class="text-dark">0</strong>
                             </span>
-                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addVariantRow()">
+                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1.5" onclick="addVariantRow()">
                                 <i class="fas fa-plus me-1"></i> + Variante supplémentaire
                             </button>
                         </div>
@@ -1016,19 +1054,28 @@ function toggleVariationsSection(enable) {
         }
     }
     if (enable) {
-        const tbody = document.getElementById('variantsTableBody');
-        if (tbody && tbody.children.length === 0) {
+        const cardsContainer = document.getElementById('variantsCardsContainer');
+        if (cardsContainer && cardsContainer.children.length === 0) {
             addVariantRow();
         }
     }
     recalculateVariantSummary();
 }
 
-function addVariantRow(data = {}) {
-    const tbody = document.getElementById('variantsTableBody');
-    if (!tbody) return;
+function updateVariantTitlePreview(input, cardId) {
+    const card = document.getElementById(cardId);
+    if (!card) return;
+    const preview = card.querySelector('.variant-title-preview');
+    if (preview) {
+        preview.textContent = input.value ? `— ${input.value}` : '';
+    }
+}
 
-    const rowId = 'variant_row_' + variantIndex;
+function addVariantRow(data = {}) {
+    const container = document.getElementById('variantsCardsContainer');
+    if (!container) return;
+
+    const rowId = 'variant_card_' + variantIndex;
     const defaultPrice = (data.price !== undefined && data.price !== '') ? data.price : (document.getElementById('price') ? document.getElementById('price').value : '');
     const defaultCost = (data.cost_price !== undefined && data.cost_price !== '') ? data.cost_price : (document.getElementById('cost_price') ? document.getElementById('cost_price').value : '');
     const defaultStock = (data.stock !== undefined && data.stock !== '') ? data.stock : '10';
@@ -1037,41 +1084,133 @@ function addVariantRow(data = {}) {
     const defaultSku = data.sku || '';
     const variantDbId = data.id || '';
 
-    const tr = document.createElement('tr');
-    tr.id = rowId;
-    tr.innerHTML = `
-        <td>
-            ${variantDbId ? `<input type="hidden" name="variants[${variantIndex}][id]" value="${variantDbId}">` : ''}
-            <input type="text" name="variants[${variantIndex}][name]" class="form-control form-control-sm fw-semibold" placeholder="ex: 512GB, 256GB, Noir..." value="${escapeHtml(defaultName)}" required oninput="recalculateVariantSummary()">
-        </td>
-        <td>
-            <input type="text" name="variants[${variantIndex}][sku]" class="form-control form-control-sm font-monospace text-uppercase" placeholder="Optionnel" value="${escapeHtml(defaultSku)}">
-        </td>
-        <td>
-            <div class="input-group input-group-sm">
-                <input type="number" step="0.01" min="0" name="variants[${variantIndex}][price]" class="form-control form-control-sm fw-bold variant-price-input" placeholder="0.00" value="${defaultPrice}" required oninput="recalculateVariantSummary()">
-                <span class="input-group-text bg-light" style="font-size: 0.72rem;">DH</span>
+    const card = document.createElement('div');
+    card.id = rowId;
+    card.className = 'variant-card shadow-2xs';
+    card.innerHTML = `
+        <div class="variant-card-header">
+            <div class="d-flex align-items-center gap-2">
+                <span class="variant-card-badge">
+                    <i class="fas fa-layer-group me-1"></i> Variante <span class="variant-num-label">#${container.children.length + 1}</span>
+                </span>
+                <span class="variant-title-preview fw-bold text-dark small">${escapeHtml(defaultName ? '— ' + defaultName : '')}</span>
             </div>
-        </td>
-        <td>
-            <div class="input-group input-group-sm">
-                <input type="number" step="0.01" min="0" name="variants[${variantIndex}][cost_price]" class="form-control form-control-sm" placeholder="0.00" value="${defaultCost}">
-                <span class="input-group-text bg-light" style="font-size: 0.72rem;">DH</span>
-            </div>
-        </td>
-        <td>
-            <input type="number" min="0" name="variants[${variantIndex}][stock]" class="form-control form-control-sm fw-bold variant-stock-input" placeholder="0" value="${defaultStock}" required oninput="recalculateVariantSummary()">
-        </td>
-        <td>
-            <input type="number" min="0" name="variants[${variantIndex}][min_stock]" class="form-control form-control-sm" placeholder="5" value="${defaultMinStock}">
-        </td>
-        <td class="text-center">
-            <button type="button" class="btn btn-outline-danger btn-sm p-1 px-2 rounded-circle" onclick="removeVariantRow('${rowId}')" title="Supprimer cette variante">
+            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-2.5 py-1 d-inline-flex align-items-center gap-1.5" onclick="removeVariantRow('${rowId}')" title="Supprimer cette variante">
                 <i class="fas fa-trash-alt"></i>
+                <span class="d-none d-sm-inline" style="font-size: 0.76rem;">Supprimer</span>
             </button>
-        </td>
+        </div>
+
+        ${variantDbId ? `<input type="hidden" name="variants[${variantIndex}][id]" value="${variantDbId}">` : ''}
+
+        <!-- Ligne 1 : Nom, SKU et Prix de vente -->
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-md-5">
+                <label class="form-label">
+                    <span>Nom de la déclinaison <span class="text-danger">*</span></span>
+                    <span class="text-muted fw-normal" style="font-size: 0.72rem;">(ex: 512GB, 256GB, Noir...)</span>
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                    <input type="text" 
+                           name="variants[${variantIndex}][name]" 
+                           class="form-control fw-bold text-dark variant-name-input" 
+                           placeholder="ex: 512GB" 
+                           value="${escapeHtml(defaultName)}" 
+                           required 
+                           oninput="updateVariantTitlePreview(this, '${rowId}'); recalculateVariantSummary()">
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-md-3">
+                <label class="form-label">
+                    <span>SKU spécifique</span>
+                    <span class="text-muted fw-normal" style="font-size: 0.72rem;">(optionnel)</span>
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-barcode"></i></span>
+                    <input type="text" 
+                           name="variants[${variantIndex}][sku]" 
+                           class="form-control font-monospace text-uppercase" 
+                           placeholder="ex: SDCARD-512" 
+                           value="${escapeHtml(defaultSku)}">
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-md-4">
+                <label class="form-label">
+                    <span>Prix de vente TTC <span class="text-danger">*</span></span>
+                </label>
+                <div class="input-group">
+                    <input type="number" 
+                           step="0.01" 
+                           min="0" 
+                           name="variants[${variantIndex}][price]" 
+                           class="form-control fw-bold text-primary variant-price-input" 
+                           placeholder="0.00" 
+                           value="${defaultPrice}" 
+                           required 
+                           oninput="recalculateVariantSummary()">
+                    <span class="input-group-text fw-bold text-dark">DH</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ligne 2 : Prix d'achat, Stock disponible et Seuil d'alerte -->
+        <div class="row g-3">
+            <div class="col-12 col-sm-4 col-md-4">
+                <label class="form-label">
+                    <span>Prix de revient / d'achat</span>
+                    <span class="text-muted fw-normal" style="font-size: 0.72rem;">(HT)</span>
+                </label>
+                <div class="input-group">
+                    <input type="number" 
+                           step="0.01" 
+                           min="0" 
+                           name="variants[${variantIndex}][cost_price]" 
+                           class="form-control" 
+                           placeholder="0.00" 
+                           value="${defaultCost}">
+                    <span class="input-group-text">DH</span>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-4 col-md-4">
+                <label class="form-label">
+                    <span>Stock disponible <span class="text-danger">*</span></span>
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text bg-success-subtle text-success border-success-subtle"><i class="fas fa-boxes"></i></span>
+                    <input type="number" 
+                           min="0" 
+                           name="variants[${variantIndex}][stock]" 
+                           class="form-control fw-bold variant-stock-input" 
+                           placeholder="0" 
+                           value="${defaultStock}" 
+                           required 
+                           oninput="recalculateVariantSummary()">
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-4 col-md-4">
+                <label class="form-label">
+                    <span>Seuil d'alerte stock</span>
+                    <span class="text-muted fw-normal" style="font-size: 0.72rem;">(min)</span>
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text bg-warning-subtle text-warning border-warning-subtle"><i class="fas fa-bell"></i></span>
+                    <input type="number" 
+                           min="0" 
+                           name="variants[${variantIndex}][min_stock]" 
+                           class="form-control" 
+                           placeholder="5" 
+                           value="${defaultMinStock}">
+                </div>
+            </div>
+        </div>
     `;
-    tbody.appendChild(tr);
+
+    container.appendChild(card);
     variantIndex++;
     recalculateVariantSummary();
 }
@@ -1088,13 +1227,17 @@ function recalculateVariantSummary() {
     const toggle = document.getElementById('hasVariantsToggle');
     if (!toggle || !toggle.checked) return;
 
-    const tbody = document.getElementById('variantsTableBody');
-    if (!tbody) return;
+    const container = document.getElementById('variantsCardsContainer');
+    if (!container) return;
 
-    const rows = tbody.querySelectorAll('tr');
+    const cards = container.querySelectorAll('.variant-card');
     let totalStock = 0;
-    rows.forEach(r => {
-        const stockInput = r.querySelector('.variant-stock-input');
+    cards.forEach((card, idx) => {
+        const numLabel = card.querySelector('.variant-num-label');
+        if (numLabel) {
+            numLabel.textContent = '#' + (idx + 1);
+        }
+        const stockInput = card.querySelector('.variant-stock-input');
         if (stockInput) {
             totalStock += parseInt(stockInput.value, 10) || 0;
         }
@@ -1102,7 +1245,7 @@ function recalculateVariantSummary() {
 
     const countEl = document.getElementById('variantCount');
     const totalStockEl = document.getElementById('variantTotalStock');
-    if (countEl) countEl.textContent = rows.length;
+    if (countEl) countEl.textContent = cards.length;
     if (totalStockEl) totalStockEl.textContent = totalStock;
 
     const mainStockInput = document.getElementById('stock');
