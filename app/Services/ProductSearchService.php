@@ -165,14 +165,20 @@ class ProductSearchService
         if (!empty($categorySlug)) {
             if ($categorySlug === 'occasion') {
                 $query->where(function ($q) {
-                    $q->whereHas('productCategory', function ($c) {
+                    $q->whereHas('categories', function ($c) {
+                        $c->where('slug', 'occasion');
+                    })->orWhereHas('productCategory', function ($c) {
                         $c->where('slug', 'occasion');
                     })->orWhere('products.name', 'like', '%(occasion)%')
                       ->orWhere('products.name', 'like', '%occasion%');
                 });
             } else {
-                $query->whereHas('productCategory', function ($q) use ($categorySlug) {
-                    $q->where('slug', $categorySlug);
+                $query->where(function ($q) use ($categorySlug) {
+                    $q->whereHas('categories', function ($sub) use ($categorySlug) {
+                        $sub->where('slug', $categorySlug);
+                    })->orWhereHas('productCategory', function ($sub) use ($categorySlug) {
+                        $sub->where('slug', $categorySlug);
+                    });
                 });
             }
         }

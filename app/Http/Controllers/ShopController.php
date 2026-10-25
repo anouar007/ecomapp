@@ -76,8 +76,8 @@ class ShopController extends Controller
     public function show($id)
     {
         $product = is_numeric($id)
-            ? Product::with(['images', 'productCategory', 'inventoryMovements'])->findOrFail($id)
-            : Product::with(['images', 'productCategory', 'inventoryMovements'])->where('slug', $id)->firstOrFail();
+            ? Product::with(['images', 'productCategory', 'categories', 'inventoryMovements'])->findOrFail($id)
+            : Product::with(['images', 'productCategory', 'categories', 'inventoryMovements'])->where('slug', $id)->firstOrFail();
         
         // Paginate approved reviews separately - 5 per page
         $reviews = ProductReview::where('product_id', $product->id)
@@ -85,11 +85,19 @@ class ShopController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(5);
         
-        // Related products — eager-load images so main_image accessor works in view
+        // Related products — find items sharing any assigned category
+        $categoryIds = $product->category_ids;
         $relatedProducts = Product::with('images')
             ->where('status', 'active')
-            ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
+            ->where(function($q) use ($categoryIds) {
+                if (!empty($categoryIds)) {
+                    $q->whereIn('category_id', $categoryIds)
+                      ->orWhereHas('categories', function($sub) use ($categoryIds) {
+                          $sub->whereIn('categories.id', $categoryIds);
+                      });
+                }
+            })
             ->take(4)
             ->get();
 

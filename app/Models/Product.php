@@ -89,11 +89,20 @@ class Product extends Model
             }
         });
 
-        static::saved(function () {
+        static::saved(function (Product $product) {
             \Illuminate\Support\Facades\Cache::forget('home_featured_products_v1');
             \Illuminate\Support\Facades\Cache::forget('home_new_arrival_products_v1');
             \Illuminate\Support\Facades\Cache::forget('home_occasion_products_v1');
             \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
+
+            if (!empty($product->category_id)) {
+                \Illuminate\Support\Facades\DB::table('category_product')->insertOrIgnore([
+                    'product_id' => $product->id,
+                    'category_id' => $product->category_id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
         });
 
         static::deleted(function () {
@@ -197,6 +206,32 @@ class Product extends Model
     public function category()
     {
         return $this->productCategory();
+    }
+
+    /**
+     * Get all categories assigned to the product (many-to-many).
+     */
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'category_product')->withTimestamps();
+    }
+
+    /**
+     * Get list of all category IDs assigned to this product (pivot + category_id).
+     */
+    public function getCategoryIdsAttribute(): array
+    {
+        if ($this->relationLoaded('categories')) {
+            $ids = $this->categories->pluck('id')->all();
+        } else {
+            $ids = $this->categories()->pluck('categories.id')->all();
+        }
+
+        if ($this->category_id && !in_array((int) $this->category_id, $ids)) {
+            $ids[] = (int) $this->category_id;
+        }
+
+        return array_values(array_unique(array_filter(array_map('intval', $ids))));
     }
 
     /**

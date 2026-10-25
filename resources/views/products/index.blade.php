@@ -430,7 +430,21 @@
                             </span>
                         </td>
                         <td class="col-category">
-                            @if($product->category_name)
+                            @php
+                                $allCats = $product->categories->isNotEmpty() ? $product->categories : collect(array_filter([$product->productCategory]));
+                            @endphp
+                            @if($allCats->isNotEmpty())
+                                @php
+                                    $firstCat = $product->productCategory ?? $allCats->first();
+                                    $extraCount = $allCats->where('id', '!=', $firstCat->id)->count();
+                                @endphp
+                                <span class="badge-category" title="{{ $allCats->pluck('name')->implode(', ') }}">
+                                    <i class="fas fa-folder me-1 opacity-60"></i>{{ Str::limit($firstCat->name, 18) }}
+                                    @if($extraCount > 0)
+                                        <span class="badge bg-primary text-white rounded-pill ms-1" style="font-size: 0.65rem;" title="{{ $extraCount }} autre(s) catégorie(s)">+{{ $extraCount }}</span>
+                                    @endif
+                                </span>
+                            @elseif($product->category_name)
                                 <span class="badge-category" title="{{ $product->category_name }}">
                                     <i class="fas fa-folder me-1 opacity-60"></i>{{ Str::limit($product->category_name, 20) }}
                                 </span>

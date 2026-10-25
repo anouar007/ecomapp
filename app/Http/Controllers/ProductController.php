@@ -15,7 +15,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::with(['images', 'productCategory'])->latest();
+        $query = Product::with(['images', 'productCategory', 'categories'])->latest();
 
         // Search
         if ($request->filled('search')) {
@@ -27,16 +27,20 @@ class ProductController extends Controller
             });
         }
 
-        // Category Filter (supports parent category with subcategories)
+        // Category Filter (supports parent category with subcategories & multiple categories)
         if ($request->filled('category')) {
             $catId = $request->category;
             $cat = \App\Models\Category::with('children')->find($catId);
-            if ($cat && $cat->children->isNotEmpty()) {
-                $categoryIds = $cat->children->pluck('id')->push($cat->id);
-                $query->whereIn('category_id', $categoryIds);
-            } else {
-                $query->where('category_id', $catId);
-            }
+            $targetCategoryIds = ($cat && $cat->children->isNotEmpty())
+                ? $cat->children->pluck('id')->push($cat->id)->all()
+                : [$catId];
+
+            $query->where(function($q) use ($targetCategoryIds) {
+                $q->whereIn('products.category_id', $targetCategoryIds)
+                  ->orWhereHas('categories', function($sub) use ($targetCategoryIds) {
+                      $sub->whereIn('categories.id', $targetCategoryIds);
+                  });
+            });
         }
 
         // Image Quality Filter
@@ -138,12 +142,25 @@ class ProductController extends Controller
             'stock' => ['required', 'integer', 'min:0'],
             'min_stock' => ['required', 'integer', 'min:0'],
             'category_id' => ['nullable', 'exists:categories,id'],
+            'category_ids' => ['nullable', 'array'],
+            'category_ids.*' => ['exists:categories,id'],
             'images.*' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
         ], [
             'old_price.numeric' => "L'ancien prix doit être un nombre valide.",
             'old_price.min' => "L'ancien prix ne peut pas être négatif.",
         ]);
+
+        $categoryIds = [];
+        if ($request->has('category_ids') && is_array($request->category_ids)) {
+            $categoryIds = array_values(array_unique(array_filter(array_map('intval', $request->category_ids))));
+        }
+        $primaryCategoryId = $request->filled('category_id') ? (int) $request->category_id : ($categoryIds[0] ?? null);
+        if ($primaryCategoryId && !in_array($primaryCategoryId, $categoryIds)) {
+            $categoryIds[] = $primaryCategoryId;
+        }
+        $validated['category_id'] = $primaryCategoryId;
+        unset($validated['category_ids']);
 
         $newPrice = floatval($validated['price']);
         $hasOldPrice = $request->filled('old_price') && is_numeric($request->old_price) && floatval($request->old_price) > 0;
@@ -178,6 +195,7 @@ class ProductController extends Controller
         DB::beginTransaction();
         try {
             $product = Product::create($validated);
+            $product->categories()->sync($categoryIds);
 
             // Handle multiple image uploads
             if ($request->hasFile('images')) {
@@ -214,7 +232,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $product->load('images', 'productCategory');
+        $product->load('images', 'productCategory', 'categories');
         $categories = \App\Models\Category::where('status', 'active')
             ->orderBy('name')
             ->get();
@@ -241,6 +259,8 @@ class ProductController extends Controller
             'stock' => ['required', 'integer', 'min:0'],
             'min_stock' => ['required', 'integer', 'min:0'],
             'category_id' => ['nullable', 'exists:categories,id'],
+            'category_ids' => ['nullable', 'array'],
+            'category_ids.*' => ['exists:categories,id'],
             'images.*' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
             'remove_images' => ['nullable', 'array'],
@@ -249,6 +269,17 @@ class ProductController extends Controller
             'old_price.numeric' => "L'ancien prix doit être un nombre valide.",
             'old_price.min' => "L'ancien prix ne peut pas être négatif.",
         ]);
+
+        $categoryIds = [];
+        if ($request->has('category_ids') && is_array($request->category_ids)) {
+            $categoryIds = array_values(array_unique(array_filter(array_map('intval', $request->category_ids))));
+        }
+        $primaryCategoryId = $request->filled('category_id') ? (int) $request->category_id : ($categoryIds[0] ?? null);
+        if ($primaryCategoryId && !in_array($primaryCategoryId, $categoryIds)) {
+            $categoryIds[] = $primaryCategoryId;
+        }
+        $validated['category_id'] = $primaryCategoryId;
+        unset($validated['category_ids']);
 
         $newPrice = floatval($validated['price']);
         $hasOldPrice = $request->filled('old_price') && is_numeric($request->old_price) && floatval($request->old_price) > 0;
@@ -283,6 +314,7 @@ class ProductController extends Controller
         DB::beginTransaction();
         try {
             $product->update($validated);
+            $product->categories()->sync($categoryIds);
 
             // Handle image removal
             if ($request->has('remove_images')) {

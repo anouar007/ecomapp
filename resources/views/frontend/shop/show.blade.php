@@ -341,7 +341,16 @@
 
                 {{-- INFO PANEL --}}
                 <div class="col-lg-6 pdp-info-panel">
-                    @if($product->category_name)
+                    @php
+                        $displayCats = $product->categories->isNotEmpty() ? $product->categories : collect(array_filter([$product->productCategory]));
+                    @endphp
+                    @if($displayCats->isNotEmpty())
+                        <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+                            @foreach($displayCats as $pCat)
+                                <a href="{{ route('shop.index', ['category' => $pCat->slug]) }}" class="pdp-cat-label d-inline-block text-decoration-none">{{ $pCat->name }}</a>
+                            @endforeach
+                        </div>
+                    @elseif($product->category_name)
                         <a href="{{ route('shop.index', ['category' => $product->category_slug ?? optional($product->category)->slug ?? optional($product->productCategory)->slug]) }}" class="pdp-cat-label d-inline-block text-decoration-none mb-2">{{ $product->category_name }}</a>
                     @endif
 

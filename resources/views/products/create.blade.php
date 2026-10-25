@@ -435,21 +435,105 @@
                         </h2>
                     </div>
 
-                    <!-- Catégorie -->
-                    <div class="mb-3">
-                        <label for="category_id" class="form-label fw-semibold text-dark">
-                            Catégorie
-                        </label>
-                        <select id="category_id" name="category_id" class="form-select @error('category_id') is-invalid @enderror">
-                            <option value="">-- Sans catégorie parente --</option>
+                    <!-- Catégories Multiples -->
+                    @php
+                        $selectedCategoryIds = old('category_ids', old('category_id') ? [(int)old('category_id')] : []);
+                        if (!is_array($selectedCategoryIds)) {
+                            $selectedCategoryIds = [$selectedCategoryIds];
+                        }
+                        $selectedCategoryIds = array_map('intval', $selectedCategoryIds);
+                        $primaryCatId = old('category_id', $selectedCategoryIds[0] ?? null);
+                    @endphp
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label fw-bold text-dark mb-0">
+                                <i class="fas fa-tags text-primary me-1"></i> Catégories assignées
+                            </label>
+                            <span class="badge bg-light text-primary border" id="categoryCountBadge">
+                                <span id="selectedCatCount">{{ count($selectedCategoryIds) }}</span> sélectionnée(s)
+                            </span>
+                        </div>
+                        <div class="form-text text-muted small mb-2">
+                            Sélectionnez une ou plusieurs catégories où apparaîtra ce produit.
+                        </div>
+
+                        <!-- Badges des catégories sélectionnées -->
+                        <div id="selectedCategoryChips" class="d-flex flex-wrap gap-1 mb-2 p-2 rounded bg-light border" style="min-height: 42px;">
+                            @forelse($categories->whereIn('id', $selectedCategoryIds) as $selCat)
+                                <span class="badge {{ (int)$primaryCatId === (int)$selCat->id ? 'bg-primary' : 'bg-secondary' }} d-inline-flex align-items-center gap-1 py-1 px-2 selected-chip" data-id="{{ $selCat->id }}">
+                                    @if((int)$primaryCatId === (int)$selCat->id)
+                                        <i class="fas fa-star text-warning" title="Catégorie Principale"></i>
+                                    @endif
+                                    <span class="text-truncate" style="max-width: 180px;">{{ $selCat->name }}</span>
+                                    <button type="button" class="btn-close btn-close-white btn-sm ms-1 uncheck-cat-btn" data-id="{{ $selCat->id }}" style="font-size: 0.65rem;" aria-label="Supprimer"></button>
+                                </span>
+                            @empty
+                                <span class="text-muted small fst-italic py-1 px-2 no-cat-placeholder">Aucune catégorie sélectionnée</span>
+                            @endforelse
+                        </div>
+
+                        <!-- Champ de recherche de catégorie -->
+                        <div class="input-group input-group-sm mb-2">
+                            <span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
+                            <input type="text" id="categoryFilterInput" class="form-control" placeholder="Rechercher une catégorie..." autocomplete="off">
+                            <button class="btn btn-outline-secondary" type="button" id="btnClearCatFilter" style="display: none;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+
+                        <!-- Liste scrollable des catégories avec checkboxes et bouton radio principale -->
+                        <div class="category-selection-box border rounded p-2 bg-white" style="max-height: 220px; overflow-y: auto;">
                             @foreach($categories as $category)
-                                <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                    {{ $category->breadcrumb }}
-                                </option>
+                                @php
+                                    $isCatChecked = in_array((int)$category->id, $selectedCategoryIds);
+                                    $isPrimary = (int)$primaryCatId === (int)$category->id;
+                                @endphp
+                                <div class="category-item d-flex align-items-center justify-content-between py-1 px-2 rounded" data-name="{{ strtolower($category->breadcrumb) }}" style="transition: background 0.15s ease;">
+                                    <div class="form-check mb-0 flex-grow-1 text-truncate">
+                                        <input class="form-check-input category-checkbox" 
+                                               type="checkbox" 
+                                               name="category_ids[]" 
+                                               value="{{ $category->id }}" 
+                                               id="cat_cb_{{ $category->id }}"
+                                               data-name="{{ $category->name }}"
+                                               data-breadcrumb="{{ $category->breadcrumb }}"
+                                               {{ $isCatChecked ? 'checked' : '' }}>
+                                        <label class="form-check-label small text-truncate d-inline-block w-100" for="cat_cb_{{ $category->id }}" style="cursor: pointer;" title="{{ $category->breadcrumb }}">
+                                            {{ $category->breadcrumb }}
+                                        </label>
+                                    </div>
+                                    <div class="cat-primary-selector ms-2">
+                                        <label class="badge {{ $isPrimary ? 'bg-primary text-white' : 'bg-light text-muted border' }} small py-1 px-2 radio-label" 
+                                               style="font-size: 0.72rem; cursor: pointer;" 
+                                               title="Définir comme catégorie principale">
+                                            <input type="radio" 
+                                                   name="category_id" 
+                                                   value="{{ $category->id }}" 
+                                                   class="d-none category-primary-radio" 
+                                                   id="cat_primary_{{ $category->id }}"
+                                                   {{ $isPrimary ? 'checked' : '' }}>
+                                            <i class="fas fa-star {{ $isPrimary ? 'text-warning' : 'text-muted' }} me-1"></i>
+                                            <span class="primary-text">{{ $isPrimary ? 'Principale' : 'Définir princ.' }}</span>
+                                        </label>
+                                    </div>
+                                </div>
                             @endforeach
-                        </select>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <small class="text-muted" style="font-size: 0.75rem;">
+                                <i class="fas fa-info-circle text-info"></i> L'étoile <i class="fas fa-star text-warning"></i> marque la catégorie principale.
+                            </small>
+                            <button type="button" class="btn btn-link btn-sm text-decoration-none text-danger p-0" id="btnDeselectAllCategories" style="font-size: 0.75rem;">
+                                Tout désélectionner
+                            </button>
+                        </div>
+
+                        @error('category_ids')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
                         @error('category_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="text-danger small mt-1">{{ $message }}</div>
                         @enderror
                     </div>
 
@@ -587,13 +671,14 @@ function updateFileInput() {
 
 // SKU Auto-Generation
 function generateSKU() {
-    const name = document.getElementById('name').value;
-    const categoryId = document.getElementById('category_id').value;
-    const categorySelect = document.getElementById('category_id');
+    const name = document.getElementById('name')?.value || '';
+    const checkedPrimary = document.querySelector('input[name="category_id"]:checked');
+    const primaryCatId = checkedPrimary ? checkedPrimary.value : (document.querySelector('input[name="category_ids[]"]:checked')?.value || null);
     let categoryPrefix = 'PROD';
     
-    if (categoryId && categorySelect.selectedIndex > 0) {
-        const categoryName = categorySelect.options[categorySelect.selectedIndex].text;
+    if (primaryCatId) {
+        const cb = document.getElementById('cat_cb_' + primaryCatId);
+        const categoryName = cb ? (cb.getAttribute('data-name') || cb.getAttribute('data-breadcrumb') || '') : '';
         const words = categoryName.split(/[\s\->]+/).filter(w => w.length > 0);
         if (words.length >= 2) {
             categoryPrefix = (words[0].substring(0, 2) + words[1].substring(0, 2)).toUpperCase();
@@ -614,11 +699,13 @@ function generateSKU() {
     const sku = `${categoryPrefix}-${timestamp}${randomNum}`.substring(0, 16);
     
     const skuInput = document.getElementById('sku');
-    skuInput.value = sku;
-    skuInput.style.backgroundColor = '#ecfdf5';
-    setTimeout(() => {
-        skuInput.style.backgroundColor = '';
-    }, 600);
+    if (skuInput) {
+        skuInput.value = sku;
+        skuInput.style.backgroundColor = '#ecfdf5';
+        setTimeout(() => {
+            skuInput.style.backgroundColor = '';
+        }, 600);
+    }
 }
 
 // Live Pricing & Profit Calculation
@@ -673,12 +760,6 @@ document.addEventListener('DOMContentLoaded', function() {
         generateSKU();
     }
     
-    document.getElementById('category_id').addEventListener('change', function() {
-        if (this.value) {
-            generateSKU();
-        }
-    });
-    
     let nameTimeout;
     document.getElementById('name').addEventListener('input', function() {
         clearTimeout(nameTimeout);
@@ -690,6 +771,157 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     updateProfitCalc();
+
+    // Multi-category selector management
+    (function() {
+        const filterInput = document.getElementById('categoryFilterInput');
+        const clearBtn = document.getElementById('btnClearCatFilter');
+        const items = document.querySelectorAll('.category-item');
+        const checkboxes = document.querySelectorAll('.category-checkbox');
+        const primaryRadios = document.querySelectorAll('.category-primary-radio');
+        const chipsContainer = document.getElementById('selectedCategoryChips');
+        const countSpan = document.getElementById('selectedCatCount');
+        const deselectAllBtn = document.getElementById('btnDeselectAllCategories');
+
+        // 1. Live Filter
+        if (filterInput) {
+            filterInput.addEventListener('input', function() {
+                const query = this.value.trim().toLowerCase();
+                if (clearBtn) clearBtn.style.display = query.length > 0 ? 'inline-block' : 'none';
+                items.forEach(item => {
+                    const name = item.getAttribute('data-name') || '';
+                    item.style.display = name.includes(query) ? 'flex' : 'none';
+                });
+            });
+
+            if (clearBtn) {
+                clearBtn.addEventListener('click', function() {
+                    filterInput.value = '';
+                    clearBtn.style.display = 'none';
+                    items.forEach(item => item.style.display = 'flex');
+                    filterInput.focus();
+                });
+            }
+        }
+
+        // 2. Render chips & sync state
+        function updateSelectedChips() {
+            const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
+            if (countSpan) countSpan.textContent = checkedBoxes.length;
+
+            let checkedRadio = Array.from(primaryRadios).find(r => r.checked);
+            if (checkedBoxes.length > 0 && (!checkedRadio || !document.getElementById('cat_cb_' + checkedRadio.value)?.checked)) {
+                const firstRadio = document.getElementById('cat_primary_' + checkedBoxes[0].value);
+                if (firstRadio) {
+                    firstRadio.checked = true;
+                    checkedRadio = firstRadio;
+                }
+            } else if (checkedBoxes.length === 0 && checkedRadio) {
+                checkedRadio.checked = false;
+                checkedRadio = null;
+            }
+
+            primaryRadios.forEach(r => {
+                const label = r.closest('.radio-label');
+                const star = label ? label.querySelector('.fa-star') : null;
+                const text = label ? label.querySelector('.primary-text') : null;
+                if (r.checked) {
+                    if (label) label.className = 'badge bg-primary text-white small cursor-pointer py-1 px-2 radio-label';
+                    if (star) star.className = 'fas fa-star text-warning me-1';
+                    if (text) text.textContent = 'Principale';
+                } else {
+                    if (label) label.className = 'badge bg-light text-muted border small cursor-pointer py-1 px-2 radio-label';
+                    if (star) star.className = 'fas fa-star text-muted me-1';
+                    if (text) text.textContent = 'Définir princ.';
+                }
+            });
+
+            if (!chipsContainer) return;
+
+            if (checkedBoxes.length === 0) {
+                chipsContainer.innerHTML = '<span class="text-muted small fst-italic py-1 px-2 no-cat-placeholder">Aucune catégorie sélectionnée</span>';
+                return;
+            }
+
+            const primaryVal = checkedRadio ? checkedRadio.value : (checkedBoxes[0] ? checkedBoxes[0].value : null);
+            let chipsHtml = '';
+            checkedBoxes.forEach(cb => {
+                const isPrim = cb.value === primaryVal;
+                const catName = cb.getAttribute('data-name') || cb.value;
+                const catBreadcrumb = cb.getAttribute('data-breadcrumb') || catName;
+                chipsHtml += `
+                    <span class="badge ${isPrim ? 'bg-primary' : 'bg-secondary'} d-inline-flex align-items-center gap-1 py-1 px-2 selected-chip" data-id="${cb.value}" title="${catBreadcrumb}">
+                        ${isPrim ? '<i class="fas fa-star text-warning" title="Catégorie Principale"></i>' : ''}
+                        <span class="text-truncate" style="max-width: 180px;">${catName}</span>
+                        <button type="button" class="btn-close btn-close-white btn-sm ms-1 uncheck-cat-btn" data-id="${cb.value}" style="font-size: 0.65rem;" aria-label="Supprimer"></button>
+                    </span>
+                `;
+            });
+            chipsContainer.innerHTML = chipsHtml;
+        }
+
+        // 3. Checkbox events
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', function() {
+                if (this.checked) {
+                    const currentlyChecked = Array.from(checkboxes).filter(c => c.checked);
+                    if (currentlyChecked.length === 1) {
+                        const r = document.getElementById('cat_primary_' + this.value);
+                        if (r) r.checked = true;
+                    }
+                } else {
+                    const r = document.getElementById('cat_primary_' + this.value);
+                    if (r && r.checked) {
+                        r.checked = false;
+                        const remaining = Array.from(checkboxes).filter(c => c.checked);
+                        if (remaining.length > 0) {
+                            const nextR = document.getElementById('cat_primary_' + remaining[0].value);
+                            if (nextR) nextR.checked = true;
+                        }
+                    }
+                }
+                updateSelectedChips();
+                generateSKU();
+            });
+        });
+
+        // 4. Primary radio changes
+        primaryRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                const cb = document.getElementById('cat_cb_' + this.value);
+                if (cb && !cb.checked) {
+                    cb.checked = true;
+                }
+                updateSelectedChips();
+                generateSKU();
+            });
+        });
+
+        // 5. Remove chip button
+        chipsContainer.addEventListener('click', function(e) {
+            const btn = e.target.closest('.uncheck-cat-btn');
+            if (btn) {
+                const catId = btn.getAttribute('data-id');
+                const cb = document.getElementById('cat_cb_' + catId);
+                if (cb) {
+                    cb.checked = false;
+                    cb.dispatchEvent(new Event('change'));
+                }
+            }
+        });
+
+        // 6. Deselect all
+        if (deselectAllBtn) {
+            deselectAllBtn.addEventListener('click', function() {
+                checkboxes.forEach(cb => cb.checked = false);
+                primaryRadios.forEach(r => r.checked = false);
+                updateSelectedChips();
+                generateSKU();
+            });
+        }
+
+        updateSelectedChips();
+    })();
 });
 </script>
 @endpush

@@ -127,12 +127,14 @@ class HomeController extends Controller
         $occasionProducts = Cache::remember('home_occasion_products_v1', 1800, function () {
             return Product::where('status', 'active')
                 ->where(function ($q) {
-                    $q->whereHas('productCategory', function ($c) {
+                    $q->whereHas('categories', function ($c) {
+                        $c->where('slug', 'occasion');
+                    })->orWhereHas('productCategory', function ($c) {
                         $c->where('slug', 'occasion');
                     })->orWhere('name', 'like', '%(occasion)%')
                       ->orWhere('name', 'like', '%occasion%');
                 })
-                ->with(['images', 'productCategory'])
+                ->with(['images', 'productCategory', 'categories'])
                 ->orderByRaw('FIELD(id, 71, 31, 9, 12, 84) DESC')
                 ->get();
         });
