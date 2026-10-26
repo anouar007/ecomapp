@@ -1442,11 +1442,16 @@
             color: #ffffff !important;
         }
 
-        .pdp-variant-pill.is-out-of-stock {
-            opacity: 0.55 !important;
+        .pdp-variant-pill.is-out-of-stock,
+        .pdp-variant-pill:disabled {
+            opacity: 0.45 !important;
             background: #f1f5f9 !important;
-            border-color: #e2e8f0 !important;
+            border: 1.5px dashed #cbd5e1 !important;
             color: #94a3b8 !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+            box-shadow: none !important;
+            transform: none !important;
         }
 
         @media (max-width: 575px) {

@@ -126,6 +126,18 @@
         box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
     }
 
+    .pdp-variant-pill.is-out-of-stock,
+    .pdp-variant-pill:disabled {
+        opacity: 0.45 !important;
+        background: #f1f5f9 !important;
+        border: 1.5px dashed #cbd5e1 !important;
+        color: #94a3b8 !important;
+        cursor: not-allowed !important;
+        pointer-events: none !important;
+        box-shadow: none !important;
+        transform: none !important;
+    }
+
     @media (max-width: 575px) {
         .pdp-commander-wrap {
             gap: 8px !important;
@@ -592,8 +604,13 @@
                                         data-variant-stock="{{ (int)$variant->stock }}"
                                         data-variant-in-stock="{{ $isVarInStock ? '1' : '0' }}"
                                         data-is-default="0"
-                                        onclick="pdpSelectVariant(this)">
+                                        {{ !$isVarInStock ? 'disabled aria-disabled=true tabindex=-1' : '' }}
+                                        onclick="{{ $isVarInStock ? 'pdpSelectVariant(this)' : 'return false;' }}"
+                                        title="{{ !$isVarInStock ? __('Rupture de stock') : $variant->name }}">
                                     <span>{{ $variant->name }}</span>
+                                    @if(!$isVarInStock)
+                                        <span class="ms-1 small opacity-75">({{ __('Rupture') }})</span>
+                                    @endif
                                 </button>
                             @endforeach
                         </div>
@@ -1063,7 +1080,7 @@ function pdpPromptSelectVariant() {
 }
 
 function pdpSelectVariant(button) {
-    if (!button) return;
+    if (!button || button.disabled || button.classList.contains('is-out-of-stock') || button.dataset.variantInStock === '0') return;
 
     // Clear validation feedback
     const wrapper = document.querySelector('.pdp-variants-wrapper');
