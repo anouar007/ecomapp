@@ -3076,13 +3076,14 @@ a {
 
 .pdp-stock-badge--in {
     background: rgba(2, 168, 38, .08);
-    border: none;
+    border: 0.1em solid rgb(23 128 61 / 43%) !important;
     color: #02a826;
 }
 
 .pdp-stock-badge--out {
-    background: rgba(107, 114, 128, .12);
-    color: #6b7280;
+    background: rgba(220, 38, 38, 0.09);
+    border: 0.1em solid rgb(200 16 47 / 43%) !important;
+    color: #dc2626;
 }
 
 /* Description — full display without scroll */

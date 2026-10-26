@@ -136,21 +136,6 @@
                         </form>
                     </div>
                 </div>
-
-                <div class="card checkout-card border-0 shadow-sm rounded-4 mb-4">
-                    <div class="card-body p-3 p-sm-4">
-                        <h2 class="h4 fw-bold mb-3 mb-md-4 checkout-section-title">{{ __('Payment') }}</h2>
-                        <div class="alert alert-info border-0 rounded-3 mb-3">
-                            <i class="fas fa-info-circle me-2"></i> {{ __('For this shop, you can pay with cash on delivery (cash upon receipt of parcel) or bank transfer.') }}
-                        </div>
-                        <div class="form-check p-3 border rounded-3 bg-white mb-0">
-                            <input class="form-check-input ms-0 me-3" type="radio" name="payment_method" id="cod" checked>
-                            <label class="form-check-label fw-bold text-dark" for="cod">
-                                {{ __('Cash on delivery (Cash on Delivery)') }}
-                            </label>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <div class="col-lg-5">

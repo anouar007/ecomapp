@@ -103,9 +103,16 @@ h6,
     color: var(--brand-black);
 }
 
-/* Don't use bold on text */
+/* Allow bold on rich descriptions & emphasis */
 b,
 strong,
+.pdp-description b,
+.pdp-description strong,
+.pdp-enrich-body b,
+.pdp-enrich-body strong {
+    font-weight: 700 !important;
+}
+
 .fw-bold,
 .fw-semibold,
 .fw-bolder,
@@ -285,6 +292,99 @@ dt {
     align-items: center;
     gap: 6px;
     font-weight: 700;
+}
+
+@-webkit-keyframes heartbeat {
+
+    from,
+    to,
+    100% {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+        -webkit-transform-origin: center center;
+        transform-origin: center center;
+        -webkit-animation-timing-function: ease-out;
+        animation-timing-function: ease-out;
+    }
+
+    10% {
+        -webkit-transform: scale(.91);
+        transform: scale(.91);
+        -webkit-animation-timing-function: ease-in;
+        animation-timing-function: ease-in;
+    }
+
+    17% {
+        -webkit-transform: scale(.98);
+        transform: scale(.98);
+        -webkit-animation-timing-function: ease-out;
+        animation-timing-function: ease-out;
+    }
+
+    33% {
+        -webkit-transform: scale(.87);
+        transform: scale(.87);
+        -webkit-animation-timing-function: ease-in;
+        animation-timing-function: ease-in;
+    }
+
+    45% {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+        -webkit-animation-timing-function: ease-out;
+        animation-timing-function: ease-out;
+    }
+}
+
+@keyframes heartbeat {
+
+    from,
+    to,
+    100% {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+        -webkit-transform-origin: center center;
+        transform-origin: center center;
+        -webkit-animation-timing-function: ease-out;
+        animation-timing-function: ease-out;
+    }
+
+    10% {
+        -webkit-transform: scale(.91);
+        transform: scale(.91);
+        -webkit-animation-timing-function: ease-in;
+        animation-timing-function: ease-in;
+    }
+
+    17% {
+        -webkit-transform: scale(.98);
+        transform: scale(.98);
+        -webkit-animation-timing-function: ease-out;
+        animation-timing-function: ease-out;
+    }
+
+    33% {
+        -webkit-transform: scale(.87);
+        transform: scale(.87);
+        -webkit-animation-timing-function: ease-in;
+        animation-timing-function: ease-in;
+    }
+
+    45% {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+        -webkit-animation-timing-function: ease-out;
+        animation-timing-function: ease-out;
+    }
+}
+
+#allCategoriesLinkNavbar {
+    -webkit-animation: heartbeat 1.5s ease-in-out infinite both !important;
+    animation: heartbeat 1.5s ease-in-out infinite both !important;
+    -webkit-transform-origin: center center !important;
+    transform-origin: center center !important;
+    will-change: transform;
+    background-color: #000000 !important;
 }
 
 /* Tally Pulse Dot in Red */
@@ -2167,7 +2267,6 @@ body:has(.offcanvas.show) .whatsapp-float {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    margin: 0 !important;
 }
 
 .shop-breadcrumb a {
@@ -5726,7 +5825,7 @@ body:has(.offcanvas.show) .whatsapp-float {
 
 .pdp-stock-badge--in {
     background: rgba(2, 168, 38, 0.08) !important;
-    border: none !important;
+    border: 0.1em solid rgb(23 128 61 / 43%) !important;
     color: #02a826 !important;
 }
 
@@ -5736,13 +5835,13 @@ body:has(.offcanvas.show) .whatsapp-float {
 }
 
 .pdp-stock-badge--out {
-    background: rgba(107, 114, 128, .12) !important;
-    border: 1px solid rgba(107, 114, 128, .22) !important;
-    color: #6b7280 !important;
+    background: rgba(220, 38, 38, 0.09) !important;
+    border: 0.1em solid rgb(200 16 47 / 43%) !important;
+    color: #dc2626 !important;
 }
 
 .pdp-stock-badge--out i {
-    color: #6b7280 !important;
+    color: #dc2626 !important;
     font-size: 0.72rem !important;
 }
 
@@ -7275,8 +7374,8 @@ body.pro-mobile-search-open {
 
     /* Navbar & Brand */
     .brand-logo-img {
-        max-height: 58px !important;
-        height: 57.2px !important;
+        max-height: 64px !important;
+        height: 63px !important;
         width: auto !important;
         object-fit: contain;
     }
@@ -9438,7 +9537,7 @@ html[dir="rtl"] .hero-side-tag {
 
 .featured-stock-pill {
     background: rgba(21, 128, 61, 0.08) !important;
-    border: 1px solid rgba(21, 128, 61, 0.22) !important;
+    border: 0.1em solid rgb(23 128 61 / 43%) !important;
     color: #15803d !important;
     font-size: 0.68rem !important;
     font-weight: 700 !important;
@@ -9578,7 +9677,7 @@ html[dir="rtl"] .hero-side-tag {
 
 .featured-stock-pill.featured-stock-pill--out {
     background: #fef2f2 !important;
-    border: 1px solid #fee2e2 !important;
+    border: 0.1em solid rgb(200 16 47 / 43%) !important;
     color: #dc2626 !important;
 }
 
@@ -9896,7 +9995,7 @@ html[dir="rtl"] .insta360-promo-overlay {
 .selection-card .featured-stock-pill,
 .featured-pro-card .featured-stock-pill {
     background: rgba(21, 128, 61, 0.08) !important;
-    border: none !important;
+    border: 0.1em solid rgb(23 128 61 / 43%) !important;
     color: #15803d !important;
     font-size: 0.78rem !important;
     font-weight: 700 !important;
@@ -9923,9 +10022,9 @@ html[dir="rtl"] .insta360-promo-overlay {
 
 .selection-card .featured-stock-pill--out,
 .featured-pro-card .featured-stock-pill--out {
-    background: rgba(107, 114, 128, .12) !important;
-    border: 1px solid rgba(107, 114, 128, .22) !important;
-    color: #4b5563 !important;
+    background: rgba(220, 38, 38, 0.09) !important;
+    border: 0.1em solid rgb(200 16 47 / 43%) !important;
+    color: #dc2626 !important;
     font-size: 0.78rem !important;
     font-weight: 700 !important;
     border-radius: 20px !important;
@@ -9938,8 +10037,20 @@ html[dir="rtl"] .insta360-promo-overlay {
 
 .selection-card .featured-stock-pill--out i,
 .featured-pro-card .featured-stock-pill--out i {
-    color: #4b5563 !important;
+    color: #dc2626 !important;
     font-size: 0.67rem !important;
+}
+
+.shop-body .featured-stock-pill,
+.shop-body .featured-stock-pill--in,
+.home-products-grid .featured-stock-pill--in,
+.featured-stock-pill--in {
+    border: 0.1em solid rgb(23 128 61 / 43%) !important;
+}
+
+.shop-body .featured-stock-pill--out,
+.home-products-grid .featured-stock-pill--out {
+    border: 0.1em solid rgb(200 16 47 / 43%) !important;
 }
 
 .featured-stock-badge-corner {
@@ -12260,11 +12371,13 @@ html:not(.aos-init) [data-aos] {
 }
 
 @media (max-width: 991.98px) {
+
     .pdp-showcase-card,
     .pdp-showcase-card[data-size="25%"],
     .pdp-showcase-card[data-size="50%"] {
         grid-column: span 6;
     }
+
     .pdp-showcase-card[data-size="75%"],
     .pdp-showcase-card[data-size="100%"] {
         grid-column: span 12;
@@ -12299,6 +12412,7 @@ html:not(.aos-init) [data-aos] {
 }
 
 @media (max-width: 575.98px) {
+
     .pdp-showcase-card,
     .pdp-showcase-card[data-size="25%"],
     .pdp-showcase-card[data-size="50%"],
@@ -12425,120 +12539,178 @@ html:not(.aos-init) [data-aos] {
 }
 
 /* ================================================================
-   ORDER CONFIRMATION / SUCCESS MOBILE PERFECTION
+   ORDER CONFIRMATION / SUCCESS STYLES & MOBILE PERFECTION
+   Aligned with WINA SHOP signature Black & Red identity
    ================================================================ */
+.order-success-hero {
+    background: #ffffff;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    border-top: 3.5px solid #dc2626 !important;
+    box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05);
+}
+
+.order-success-icon-wrap {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: #f0fdf4;
+    border: 1.5px solid #bbf7d0;
+    color: #16a34a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    margin: 0 auto 12px;
+}
+
+.order-stepper-wrap {
+    background: #ffffff;
+    border-top: 1px solid #f1f5f9;
+    padding: 18px 20px 14px;
+    position: relative;
+}
+
+.order-stepper-line-track {
+    position: absolute;
+    top: 16px;
+    left: 12.5%;
+    right: 12.5%;
+    height: 2px;
+    background: #e2e8f0;
+    z-index: 1;
+}
+
+.order-stepper-line-fill {
+    height: 100%;
+    background: #dc2626;
+    transition: width 0.4s ease;
+}
+
+.order-step {
+    flex: 1;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+.order-step-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 6px;
+    font-size: 0.8rem;
+    transition: all 0.25s ease;
+}
+
+.order-step.is-complete .order-step-circle {
+    background: #10b981;
+    border-color: #10b981;
+    color: #ffffff;
+}
+
+.order-step.is-active .order-step-circle {
+    background: #dc2626;
+    border-color: #dc2626;
+    color: #ffffff;
+    box-shadow: 0 0 0 3.5px rgba(220, 38, 38, 0.18);
+}
+
+.order-step.is-cancelled .order-step-circle {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: #ffffff;
+}
+
+.order-step-title {
+    font-size: 0.80rem;
+    font-weight: 600;
+    color: #0f172a;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.order-step-desc {
+    font-size: 0.70rem;
+    color: #64748b;
+    display: block;
+}
+
+.order-item-thumb-box {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 2px;
+}
+
+.order-item-thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
 @media (max-width: 767.98px) {
     .order-success-page {
         padding-top: 12px !important;
         padding-bottom: 24px !important;
     }
 
-    .order-success-page > .container {
+    .order-success-page>.container {
         padding-left: 8px !important;
         padding-right: 8px !important;
     }
 
+    .order-success-page .row.g-3,
     .order-success-page .row.g-4 {
         --bs-gutter-x: 10px !important;
         --bs-gutter-y: 12px !important;
     }
 
     .order-success-hero {
-        border-radius: 14px !important;
+        border-radius: 12px !important;
         margin-bottom: 12px !important;
     }
 
     .order-success-hero .card-body {
-        padding: 20px 12px 16px !important;
-    }
-
-    .order-hero-title {
-        font-size: 1.4rem !important;
-        margin-bottom: 6px !important;
-    }
-
-    .order-hero-subtitle {
-        font-size: 0.88rem !important;
-        line-height: 1.45 !important;
-        margin-bottom: 12px !important;
+        padding: 18px 12px 14px !important;
     }
 
     .order-success-icon-wrap {
-        width: 60px !important;
-        height: 60px !important;
+        width: 46px !important;
+        height: 46px !important;
+        font-size: 1.2rem !important;
         margin-bottom: 10px !important;
     }
 
-    .order-success-icon {
-        width: 44px !important;
-        height: 44px !important;
-        font-size: 1.25rem !important;
-    }
-
-    .order-ref-pill,
-    .order-live-tracker {
-        padding: 5px 12px !important;
-        font-size: 0.82rem !important;
-    }
-
-    .order-hero-wa-btn {
-        width: 100% !important;
-        justify-content: center !important;
-        padding: 9px 16px !important;
-        font-size: 0.88rem !important;
-        margin-top: 4px;
-    }
-
     .order-stepper-wrap {
-        padding: 12px 6px !important;
+        padding: 14px 6px 10px !important;
     }
 
     .order-stepper-line-track {
-        top: 15px !important;
-        left: 12.5% !important;
-        right: 12.5% !important;
-        height: 2.5px !important;
+        top: 14px !important;
+        height: 2px !important;
     }
 
     .order-step-circle {
-        width: 30px !important;
-        height: 30px !important;
+        width: 28px !important;
+        height: 28px !important;
         font-size: 0.72rem !important;
         margin-bottom: 4px !important;
-        border-width: 1.5px !important;
     }
 
     .order-step-title {
         font-size: 0.70rem !important;
-        font-weight: 600 !important;
-        letter-spacing: -0.2px !important;
-    }
-
-    .order-success-page .card {
-        border-radius: 14px !important;
-        margin-bottom: 12px !important;
-    }
-
-    .order-success-page .card-header {
-        padding: 12px 14px !important;
-    }
-
-    .order-success-page .card-body {
-        padding: 14px 12px !important;
-    }
-
-    .order-info-block {
-        padding: 12px 10px !important;
-    }
-
-    .order-final-total {
-        font-size: 1.45rem !important;
-        white-space: nowrap !important;
-    }
-
-    .order-primary-action-btn,
-    .order-print-action-btn {
-        font-size: 0.90rem !important;
-        padding: 11px 14px !important;
     }
 }

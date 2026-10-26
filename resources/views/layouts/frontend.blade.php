@@ -221,6 +221,12 @@
                 font-size: 16px !important;
                 touch-action: manipulation;
             }
+            .brand-logo-img {
+                height: 63px !important;
+                max-height: 64px !important;
+                width: auto !important;
+                object-fit: contain;
+            }
         }
         :root {
             --font-heading: "Roboto", sans-serif !important;
@@ -234,7 +240,10 @@
             font-family: "Roboto", sans-serif !important;
             font-weight: 500 !important;
         }
-        b, strong, .fw-bold, .fw-semibold, .fw-bolder, .fw-extrabold, th, dt, .product-price, .nav-link-item, .price-display, .badge, .btn {
+        b, strong, .pdp-description b, .pdp-description strong, .pdp-enrich-body b, .pdp-enrich-body strong, .entry-content b, .entry-content strong {
+            font-weight: 700 !important;
+        }
+        .fw-bolder, .fw-extrabold, th, dt, .product-price, .nav-link-item, .price-display, .badge, .btn {
             font-weight: 400 !important;
         }
         /* Protect FontAwesome icon font and solid weights */
@@ -249,6 +258,85 @@
         .fab, .fa-brands {
             font-family: "Font Awesome 6 Brands" !important;
             font-weight: 400 !important;
+        }
+
+        /* Category Button & Link Heartbeat Animation */
+        @-webkit-keyframes heartbeat {
+            from, to, 100% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+                -webkit-transform-origin: center center;
+                transform-origin: center center;
+                -webkit-animation-timing-function: ease-out;
+                animation-timing-function: ease-out;
+            }
+            10% {
+                -webkit-transform: scale(.91);
+                transform: scale(.91);
+                -webkit-animation-timing-function: ease-in;
+                animation-timing-function: ease-in;
+            }
+            17% {
+                -webkit-transform: scale(.98);
+                transform: scale(.98);
+                -webkit-animation-timing-function: ease-out;
+                animation-timing-function: ease-out;
+            }
+            33% {
+                -webkit-transform: scale(.87);
+                transform: scale(.87);
+                -webkit-animation-timing-function: ease-in;
+                animation-timing-function: ease-in;
+            }
+            45% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+                -webkit-animation-timing-function: ease-out;
+                animation-timing-function: ease-out;
+            }
+        }
+
+        @keyframes heartbeat {
+            from, to, 100% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+                -webkit-transform-origin: center center;
+                transform-origin: center center;
+                -webkit-animation-timing-function: ease-out;
+                animation-timing-function: ease-out;
+            }
+            10% {
+                -webkit-transform: scale(.91);
+                transform: scale(.91);
+                -webkit-animation-timing-function: ease-in;
+                animation-timing-function: ease-in;
+            }
+            17% {
+                -webkit-transform: scale(.98);
+                transform: scale(.98);
+                -webkit-animation-timing-function: ease-out;
+                animation-timing-function: ease-out;
+            }
+            33% {
+                -webkit-transform: scale(.87);
+                transform: scale(.87);
+                -webkit-animation-timing-function: ease-in;
+                animation-timing-function: ease-in;
+            }
+            45% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+                -webkit-animation-timing-function: ease-out;
+                animation-timing-function: ease-out;
+            }
+        }
+
+        #allCategoriesLinkNavbar {
+            -webkit-animation: heartbeat 1.5s ease-in-out infinite both !important;
+            animation: heartbeat 1.5s ease-in-out infinite both !important;
+            -webkit-transform-origin: center center !important;
+            transform-origin: center center !important;
+            will-change: transform;
         }
 
         /* ================================================================
@@ -519,7 +607,7 @@
         .selection-card .featured-stock-pill:not(.featured-stock-pill--out),
         .featured-pro-card .featured-stock-pill:not(.featured-stock-pill--out) {
             background: rgba(21, 128, 61, 0.08) !important;
-            border: none !important;
+            border: 0.1em solid rgb(23 128 61 / 43%) !important;
             color: #15803d !important;
             font-weight: 700 !important;
             border-radius: 20px !important;
@@ -565,7 +653,7 @@
         .featured-pro-card .featured-stock-pill--out,
         .featured-stock-pill--out {
             background: rgba(220, 38, 38, 0.09) !important;
-            border: none !important;
+            border: 0.1em solid rgb(200 16 47 / 43%) !important;
             color: #dc2626 !important;
             font-size: 0.78rem !important;
             font-weight: 700 !important;
@@ -580,7 +668,7 @@
         .pdp-stock-badge--out,
         .pdp-price-main-line .pdp-stock-badge--out {
             background: rgba(220, 38, 38, 0.09) !important;
-            border: none !important;
+            border: 0.1em solid rgb(200 16 47 / 43%) !important;
             color: #dc2626 !important;
             font-weight: 700 !important;
             border-radius: 20px !important;
@@ -1123,7 +1211,6 @@
             letter-spacing: 0.02em !important;
             line-height: 1 !important;
             box-sizing: border-box !important;
-            border: none !important;
             border-radius: 20px !important;
             margin: 0 !important;
             margin-left: 4px !important;
@@ -1134,8 +1221,12 @@
         .featured-pro-card .pcard-price-main-line > .featured-stock-pill:not(.featured-stock-pill--out),
         .selection-card .pcard-price-main-line > .featured-stock-pill:not(.featured-stock-pill--out),
         .pcard-price .featured-stock-pill:not(.featured-stock-pill--out),
-        .pcard-price-main-line > .featured-stock-pill:not(.featured-stock-pill--out) {
-            border: none !important;
+        .pcard-price-main-line > .featured-stock-pill:not(.featured-stock-pill--out),
+        .shop-body .featured-stock-pill:not(.featured-stock-pill--out),
+        .shop-body .featured-stock-pill--in,
+        .home-products-grid .featured-stock-pill--in,
+        .featured-stock-pill--in {
+            border: 0.1em solid rgb(23 128 61 / 43%) !important;
             background: rgba(21, 128, 61, 0.09) !important;
             color: #15803d !important;
         }
@@ -1143,8 +1234,11 @@
         .featured-pro-card .pcard-price-main-line > .featured-stock-pill--out,
         .selection-card .pcard-price-main-line > .featured-stock-pill--out,
         .pcard-price .featured-stock-pill--out,
-        .pcard-price-main-line > .featured-stock-pill--out {
-            border: none !important;
+        .pcard-price-main-line > .featured-stock-pill--out,
+        .shop-body .featured-stock-pill--out,
+        .home-products-grid .featured-stock-pill--out,
+        .featured-stock-pill--out {
+            border: 0.1em solid rgb(200 16 47 / 43%) !important;
             background: rgba(220, 38, 38, 0.09) !important;
             color: #dc2626 !important;
         }
@@ -1228,13 +1322,13 @@
         }
 
         .pdp-price-row .pdp-price-main-line > .pdp-stock-badge--in {
-            border: none !important;
+            border: 0.1em solid rgb(23 128 61 / 43%) !important;
             background: rgba(21, 128, 61, 0.09) !important;
             color: #15803d !important;
         }
 
         .pdp-price-row .pdp-price-main-line > .pdp-stock-badge--out {
-            border: none !important;
+            border: 0.1em solid rgb(200 16 47 / 43%) !important;
             background: rgba(220, 38, 38, 0.09) !important;
             color: #dc2626 !important;
         }
@@ -2028,12 +2122,8 @@
                         <div class="dropdown-menu categories-mega-menu shadow-lg border-0 p-0" aria-labelledby="headerCategoriesBtn">
                             <!-- Mega Menu Header -->
                             <div class="categories-menu-header d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
-                                <span class="d-flex align-items-center gap-2 text-dark fw-bold text-uppercase" style="font-size: 11.5px; letter-spacing: 0.8px;">
-                                    <i class="fas fa-layer-group text-danger"></i>
-                                    <span>{{ __('Rayons & Matériel Pro') }}</span>
-                                </span>
-                                <a href="{{ route('shop.index') }}" class="text-danger fw-bold text-decoration-none d-flex align-items-center gap-1 hover-underline" style="font-size: 12px;">
-                                    <span>{{ __('Tout le catalogue') }}</span>
+                                <a href="{{ route('shop.index') }}" class="btn btn-categories-red py-1 px-2 text-white fw-bold text-decoration-none d-flex align-items-center gap-1 hover-underline" style="font-size: 12px;" id="allCategoriesLinkNavbar">
+                                    <span>{{ __('Tout le produits') }}</span>
                                     <i class="fas fa-arrow-right" style="font-size: 10px;"></i>
                                 </a>
                             </div>

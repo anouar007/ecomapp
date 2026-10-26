@@ -38,5 +38,19 @@ class CheckoutSuccessPageTest extends TestCase
         // Action buttons
         $response->assertSee('order-primary-action-btn', false);
         $response->assertSee('order-print-action-btn', false);
+
+        // Verify products and images
+        foreach ($order->items as $item) {
+            $response->assertSee(e($item->product_name), false);
+            if (!empty($item->variant_name)) {
+                $response->assertSee(e($item->variant_name), false);
+            }
+            $response->assertSee($item->product_image, false);
+        }
+
+        // Test lookup by order number as well
+        $responseByNumber = $this->get(route('checkout.success', $order->order_number));
+        $responseByNumber->assertStatus(200);
+        $responseByNumber->assertSee('#' . $order->order_number, false);
     }
 }

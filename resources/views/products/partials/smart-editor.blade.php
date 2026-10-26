@@ -183,6 +183,40 @@
     box-sizing: border-box !important;
 }
 
+/* Explicit bold styling inside editor and preview to guarantee crisp bold rendering */
+.smart-visual-editor b,
+.smart-visual-editor strong,
+.smart-visual-editor [style*="font-weight: bold"],
+.smart-visual-editor [style*="font-weight:bold"],
+.smart-visual-editor [style*="font-weight: 700"],
+.smart-preview-container b,
+.smart-preview-container strong,
+.smart-preview-container [style*="font-weight: bold"],
+.smart-preview-container [style*="font-weight:bold"],
+.smart-preview-container [style*="font-weight: 700"] {
+    font-weight: 700 !important;
+    color: #0f172a !important;
+}
+
+.smart-visual-editor i,
+.smart-visual-editor em,
+.smart-preview-container i,
+.smart-preview-container em {
+    font-style: italic !important;
+}
+
+.smart-visual-editor u,
+.smart-preview-container u {
+    text-decoration: underline !important;
+}
+
+.smart-visual-editor s,
+.smart-visual-editor strike,
+.smart-preview-container s,
+.smart-preview-container strike {
+    text-decoration: line-through !important;
+}
+
 /* Bulletproof CSS Sandbox: Prevent ANY internal elements from escaping or breaking interface */
 .smart-visual-editor * {
     max-width: 100% !important;
@@ -788,7 +822,7 @@
 
         {{-- Visual Formatting Toolbar --}}
         <div class="smart-format-toolbar" id="smartFormatToolbar">
-            <select class="smart-format-select" onchange="applyFormatBlock(this.value)">
+            <select class="smart-format-select" id="selectFormatBlock" onchange="applyFormatBlock(this.value)">
                 <option value="p">Paragraphe</option>
                 <option value="h3">Titre Section (H3)</option>
                 <option value="h4">Sous-Titre (H4)</option>
@@ -797,58 +831,58 @@
 
             <div class="smart-format-divider"></div>
 
-            <button type="button" class="smart-format-btn" onclick="execCmd('bold')" title="Gras (Ctrl+B)">
+            <button type="button" id="btnFormatBold" class="smart-format-btn" onmousedown="event.preventDefault()" onclick="execCmd('bold')" title="Gras (Ctrl+B)">
                 <i class="fas fa-bold"></i>
             </button>
-            <button type="button" class="smart-format-btn" onclick="execCmd('italic')" title="Italique (Ctrl+I)">
+            <button type="button" id="btnFormatItalic" class="smart-format-btn" onmousedown="event.preventDefault()" onclick="execCmd('italic')" title="Italique (Ctrl+I)">
                 <i class="fas fa-italic"></i>
             </button>
-            <button type="button" class="smart-format-btn" onclick="execCmd('underline')" title="Souligné (Ctrl+U)">
+            <button type="button" id="btnFormatUnderline" class="smart-format-btn" onmousedown="event.preventDefault()" onclick="execCmd('underline')" title="Souligné (Ctrl+U)">
                 <i class="fas fa-underline"></i>
             </button>
-            <button type="button" class="smart-format-btn" onclick="execCmd('strikeThrough')" title="Barré">
+            <button type="button" id="btnFormatStrike" class="smart-format-btn" onmousedown="event.preventDefault()" onclick="execCmd('strikeThrough')" title="Barré">
                 <i class="fas fa-strikethrough"></i>
             </button>
 
             <div class="smart-format-divider"></div>
 
-            <button type="button" class="smart-format-btn" onclick="execCmd('insertUnorderedList')" title="Liste à puces">
+            <button type="button" id="btnFormatUl" class="smart-format-btn" onmousedown="event.preventDefault()" onclick="execCmd('insertUnorderedList')" title="Liste à puces">
                 <i class="fas fa-list-ul"></i>
             </button>
-            <button type="button" class="smart-format-btn" onclick="execCmd('insertOrderedList')" title="Liste numérotée">
+            <button type="button" id="btnFormatOl" class="smart-format-btn" onmousedown="event.preventDefault()" onclick="execCmd('insertOrderedList')" title="Liste numérotée">
                 <i class="fas fa-list-ol"></i>
             </button>
 
             <div class="smart-format-divider"></div>
 
-            <button type="button" class="smart-format-btn" onclick="execCmd('justifyLeft')" title="Aligner à gauche">
+            <button type="button" class="smart-format-btn" onmousedown="event.preventDefault()" onclick="execCmd('justifyLeft')" title="Aligner à gauche">
                 <i class="fas fa-align-left"></i>
             </button>
-            <button type="button" class="smart-format-btn" onclick="execCmd('justifyCenter')" title="Centrer">
+            <button type="button" class="smart-format-btn" onmousedown="event.preventDefault()" onclick="execCmd('justifyCenter')" title="Centrer">
                 <i class="fas fa-align-center"></i>
             </button>
-            <button type="button" class="smart-format-btn" onclick="execCmd('justifyRight')" title="Aligner à droite">
+            <button type="button" class="smart-format-btn" onmousedown="event.preventDefault()" onclick="execCmd('justifyRight')" title="Aligner à droite">
                 <i class="fas fa-align-right"></i>
             </button>
 
             <div class="smart-format-divider"></div>
 
-            <button type="button" class="smart-format-btn" onclick="promptInsertLink()" title="Insérer un lien">
+            <button type="button" class="smart-format-btn" onmousedown="event.preventDefault()" onclick="promptInsertLink()" title="Insérer un lien">
                 <i class="fas fa-link"></i>
             </button>
-            <button type="button" class="smart-format-btn" onclick="execCmd('unlink')" title="Supprimer le lien">
+            <button type="button" class="smart-format-btn" onmousedown="event.preventDefault()" onclick="execCmd('unlink')" title="Supprimer le lien">
                 <i class="fas fa-unlink"></i>
             </button>
-            <button type="button" class="smart-format-btn" onclick="execCmd('removeFormat')" title="Effacer le style">
+            <button type="button" class="smart-format-btn" onmousedown="event.preventDefault()" onclick="execCmd('removeFormat')" title="Effacer le style">
                 <i class="fas fa-eraser"></i>
             </button>
 
             <div class="smart-format-divider"></div>
 
-            <button type="button" class="smart-format-btn" onclick="execCmd('undo')" title="Annuler (Ctrl+Z)">
+            <button type="button" class="smart-format-btn" onmousedown="event.preventDefault()" onclick="execCmd('undo')" title="Annuler (Ctrl+Z)">
                 <i class="fas fa-undo"></i>
             </button>
-            <button type="button" class="smart-format-btn" onclick="execCmd('redo')" title="Rétablir (Ctrl+Y)">
+            <button type="button" class="smart-format-btn" onmousedown="event.preventDefault()" onclick="execCmd('redo')" title="Rétablir (Ctrl+Y)">
                 <i class="fas fa-redo"></i>
             </button>
         </div>
@@ -1098,6 +1132,32 @@ document.addEventListener('DOMContentLoaded', function () {
     visualEditor.addEventListener('scroll', function () {
         if (currentSelectedImg) updateFloatBarPosition();
     });
+
+    // Keyboard shortcuts for formatting (Ctrl/Cmd + B for bold, I for italic, U for underline)
+    visualEditor.addEventListener('keydown', function (e) {
+        if (e.ctrlKey || e.metaKey) {
+            const k = e.key.toLowerCase();
+            if (k === 'b') {
+                e.preventDefault();
+                execCmd('bold');
+            } else if (k === 'i') {
+                e.preventDefault();
+                execCmd('italic');
+            } else if (k === 'u') {
+                e.preventDefault();
+                execCmd('underline');
+            }
+        }
+    });
+
+    // Update active toolbar button states on cursor position or text selection
+    visualEditor.addEventListener('keyup', updateToolbarActiveStates);
+    visualEditor.addEventListener('mouseup', updateToolbarActiveStates);
+    document.addEventListener('selectionchange', function () {
+        if (document.activeElement === visualEditor || visualEditor.contains(document.activeElement)) {
+            updateToolbarActiveStates();
+        }
+    });
 });
 
 /* ==========================================================================
@@ -1177,9 +1237,52 @@ function updateWordCount() {
    VISUAL FORMATTING COMMANDS
    ========================================================================== */
 function execCmd(command, value = null) {
+    if (currentStudioMode !== 'visual') {
+        switchStudioMode('visual');
+    }
     visualEditor.focus();
     document.execCommand(command, false, value);
     syncContentFromVisual();
+    updateToolbarActiveStates();
+}
+
+function updateToolbarActiveStates() {
+    if (currentStudioMode !== 'visual') return;
+    try {
+        const isBold = document.queryCommandState('bold');
+        const isItalic = document.queryCommandState('italic');
+        const isUnderline = document.queryCommandState('underline');
+        const isStrike = document.queryCommandState('strikeThrough');
+        const isUl = document.queryCommandState('insertUnorderedList');
+        const isOl = document.queryCommandState('insertOrderedList');
+
+        const btnB = document.getElementById('btnFormatBold');
+        const btnI = document.getElementById('btnFormatItalic');
+        const btnU = document.getElementById('btnFormatUnderline');
+        const btnS = document.getElementById('btnFormatStrike');
+        const btnUl = document.getElementById('btnFormatUl');
+        const btnOl = document.getElementById('btnFormatOl');
+
+        if (btnB) btnB.classList.toggle('active', !!isBold);
+        if (btnI) btnI.classList.toggle('active', !!isItalic);
+        if (btnU) btnU.classList.toggle('active', !!isUnderline);
+        if (btnS) btnS.classList.toggle('active', !!isStrike);
+        if (btnUl) btnUl.classList.toggle('active', !!isUl);
+        if (btnOl) btnOl.classList.toggle('active', !!isOl);
+
+        const formatSelect = document.getElementById('selectFormatBlock');
+        if (formatSelect) {
+            const blockVal = document.queryCommandValue('formatBlock');
+            if (blockVal) {
+                const tag = blockVal.toLowerCase().replace(/<|>/g, '');
+                if (['p', 'h3', 'h4', 'blockquote'].includes(tag)) {
+                    formatSelect.value = tag;
+                }
+            }
+        }
+    } catch (e) {
+        // queryCommandState graceful catch
+    }
 }
 
 function applyFormatBlock(tag) {
@@ -1194,6 +1297,7 @@ function applyFormatBlock(tag) {
         document.execCommand('formatBlock', false, '<blockquote>');
     }
     syncContentFromVisual();
+    updateToolbarActiveStates();
 }
 
 function promptInsertLink() {

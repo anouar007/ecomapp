@@ -1,5 +1,20 @@
 @extends('layouts.frontend')
 
+@push('styles')
+<style>
+    /* Guarantee strong & bold tags render with crisp, clear bold weight */
+    .pdp-description b,
+    .pdp-description strong,
+    .pdp-enrich-body b,
+    .pdp-enrich-body strong,
+    .entry-content b,
+    .entry-content strong {
+        font-weight: 700 !important;
+        color: #0f172a;
+    }
+</style>
+@endpush
+
 @php
     $brandGuess = 'WINA SHOP';
     $nameLower = strtolower($product->name);

@@ -17,10 +17,15 @@
             @endif
 
             {{-- Pagination Elements --}}
+            @php
+                $prevMobilePage = null;
+                $justPrintedEllipsis = false;
+            @endphp
             @foreach ($elements as $element)
                 {{-- "Three Dots" Separator --}}
                 @if (is_string($element))
-                    <li class="page-item disabled d-none d-sm-inline-flex" aria-disabled="true"><span class="page-link">{{ $element }}</span></li>
+                    <li class="page-item disabled" aria-disabled="true"><span class="page-link">{{ $element }}</span></li>
+                    @php $justPrintedEllipsis = true; @endphp
                 @endif
 
                 {{-- Array Of Links --}}
@@ -30,10 +35,22 @@
                             $isCurrent = $page == $paginator->currentPage();
                             $isCloseToCurrent = abs($page - $paginator->currentPage()) <= 1;
                             $isFirstOrLast = $page == 1 || $page == $paginator->lastPage();
+                            $showOnMobile = $isCurrent || $isCloseToCurrent || $isFirstOrLast;
                         @endphp
+                        @if ($showOnMobile)
+                            @if ($prevMobilePage !== null && ($page - $prevMobilePage > 1) && !$justPrintedEllipsis)
+                                {{-- Gap separator on mobile when skipped pages were inside the array --}}
+                                <li class="page-item disabled d-md-none" aria-disabled="true"><span class="page-link">...</span></li>
+                            @endif
+                            @php
+                                $prevMobilePage = $page;
+                                $justPrintedEllipsis = false;
+                            @endphp
+                        @endif
+
                         @if ($isCurrent)
                             <li class="page-item active" aria-current="page"><span class="page-link">{{ $page }}</span></li>
-                        @elseif ($isCloseToCurrent || $isFirstOrLast)
+                        @elseif ($showOnMobile)
                             {{-- Always show current, immediate neighbors, and first/last page on mobile --}}
                             <li class="page-item"><a class="page-link" href="{{ $url }}">{{ $page }}</a></li>
                         @else

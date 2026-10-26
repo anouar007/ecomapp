@@ -156,4 +156,29 @@ class ProductVariant extends Model
 
         return true;
     }
+
+    /**
+     * Get resolved image URL for this variant, if present.
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        $img = $this->image;
+        if (empty($img)) {
+            return null;
+        }
+
+        if (str_starts_with($img, 'http://') || str_starts_with($img, 'https://')) {
+            return $img;
+        }
+
+        if (str_starts_with($img, 'images/') || str_starts_with($img, '/images/')) {
+            return asset(ltrim($img, '/'));
+        }
+
+        if (str_starts_with($img, 'storage/') || str_starts_with($img, '/storage/')) {
+            return asset(ltrim($img, '/'));
+        }
+
+        return asset('storage/' . ltrim($img, '/'));
+    }
 }

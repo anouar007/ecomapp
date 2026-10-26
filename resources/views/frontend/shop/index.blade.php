@@ -76,6 +76,17 @@
     <div class="shop-hero-backdrop"></div>
     <div class="container position-relative">
         <div class="shop-hero-content" data-aos="fade-up">
+            {{-- Breadcrumb --}}
+            <nav class="shop-breadcrumb mb-2 mb-md-3" aria-label="breadcrumb">
+                <a href="{{ url('/') }}"><i class="fas fa-home me-1"></i> {{ __('Accueil') }}</a>
+                <span class="shop-bc-sep mx-2 opacity-50">/</span>
+                <a href="{{ route('shop.index') }}">{{ __('Boutique') }}</a>
+                @if(request('category'))
+                    <span class="shop-bc-sep mx-2 opacity-50">/</span>
+                    <span class="fw-bold hero-bc-category" id="heroBcCategory">{{ $categories->where('slug', request('category'))->first()->name ?? __('Rayon') }}</span>
+                @endif
+            </nav>
+
             <h1 class="shop-hero-title mb-2">
                 @if(request('q'))
                     {{ __('Résultats pour') }} <span class="text-brand-red">&laquo; {{ request('q') }} &raquo;</span>
@@ -88,17 +99,6 @@
             <p class="shop-hero-sub d-none d-md-block">
                 {{ __('Explorez les caméras cinéma 4K/8K, objectifs pro, drones DJI, stabilisateurs et éclairage studio avec garantie constructeur au Maroc.') }}
             </p>
-
-            {{-- Breadcrumb --}}
-            <nav class="shop-breadcrumb mt-2 mt-md-3" aria-label="breadcrumb">
-                <a href="{{ url('/') }}"><i class="fas fa-home me-1"></i> {{ __('Accueil') }}</a>
-                <span class="shop-bc-sep mx-2 opacity-50">/</span>
-                <a href="{{ route('shop.index') }}">{{ __('Boutique') }}</a>
-                @if(request('category'))
-                    <span class="shop-bc-sep mx-2 opacity-50">/</span>
-                    <span class="fw-bold hero-bc-category" id="heroBcCategory">{{ $categories->where('slug', request('category'))->first()->name ?? __('Rayon') }}</span>
-                @endif
-            </nav>
         </div>
     </div>
 </section>

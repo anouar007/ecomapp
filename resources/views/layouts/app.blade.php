@@ -50,8 +50,13 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Don't use bold on text */
-        b, strong, .fw-bold, .fw-bolder, .fw-semibold, .fw-extrabold, h1, h2, h3, h4, h5, h6, .brand-title, .page-title, .navbar-brand, th, dt, .btn, .nav-link, .stat-value-pro, .order-ref-badge, .font-heading, .brand-subtitle strong, .stat-kpi-value, .stat-sub-text strong, .card-title, .stat-title, .badge {
+        /* Allow bold tags to be bold (descriptions, rich content, emphasis) */
+        b, strong, .smart-visual-editor b, .smart-visual-editor strong, .smart-preview-container b, .smart-preview-container strong {
+            font-weight: 700 !important;
+        }
+
+        /* Standardize headings, badges, and buttons to clean modern weight */
+        .fw-bolder, .fw-extrabold, h1, h2, h3, h4, h5, h6, .brand-title, .page-title, .navbar-brand, th, dt, .btn, .nav-link, .stat-value-pro, .order-ref-badge, .font-heading, .brand-subtitle strong, .stat-kpi-value, .stat-sub-text strong, .card-title, .stat-title, .badge {
             font-weight: 400 !important;
         }
 

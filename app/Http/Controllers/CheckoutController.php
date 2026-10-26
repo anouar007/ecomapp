@@ -222,7 +222,10 @@ class CheckoutController extends Controller
      */
     public function success($id)
     {
-        $order = Order::with('items.product')->findOrFail($id);
+        $order = Order::with(['items.product.images', 'items.product.primaryImage', 'items.variant'])
+            ->where('id', $id)
+            ->orWhere('order_number', $id)
+            ->firstOrFail();
         return view('frontend.checkout.success', compact('order'));
     }
 
@@ -231,7 +234,7 @@ class CheckoutController extends Controller
      */
     public function liveStatus($id)
     {
-        $order = Order::with('items.product')
+        $order = Order::with(['items.product.images', 'items.product.primaryImage', 'items.variant'])
             ->where('id', $id)
             ->orWhere('order_number', $id)
             ->firstOrFail();

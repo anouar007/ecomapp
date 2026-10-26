@@ -76,4 +76,38 @@ class OrderItem extends Model
     {
         return '$' . number_format($this->subtotal, 2);
     }
+
+    /**
+     * Get resolved image URL for this order item.
+     * Priority: Variant Image -> Product Thumbnail / Image -> Fallback image.
+     */
+    public function getProductImageAttribute(): string
+    {
+        if ($this->variant && !empty($this->variant->image_url)) {
+            return $this->variant->image_url;
+        }
+
+        if ($this->product) {
+            if (!empty($this->product->thumbnail)) {
+                return $this->product->thumbnail;
+            }
+            if (!empty($this->product->image_url)) {
+                return $this->product->image_url;
+            }
+        }
+
+        return asset('images/camera/cat_cameras.jpg');
+    }
+
+    /**
+     * Get the product URL for linking in checkout confirmation / invoices.
+     */
+    public function getProductUrlAttribute(): string
+    {
+        if ($this->product) {
+            return route('shop.show', $this->product->slug ?: $this->product->id);
+        }
+
+        return '#';
+    }
 }
