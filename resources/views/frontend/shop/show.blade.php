@@ -138,6 +138,35 @@
         transform: none !important;
     }
 
+    .pdp-enrich-lead {
+        background: #021962 !important;
+        border: 1px solid #021962 !important;
+        border-left: 4px solid #021962 !important;
+        border-radius: 14px !important;
+        padding: 18px 22px !important;
+        margin-bottom: 24px !important;
+        box-shadow: 0 4px 14px rgba(2, 25, 98, 0.12) !important;
+        color: #ffffff !important;
+    }
+
+    .pdp-enrich-lead p {
+        margin-bottom: 0 !important;
+        font-size: 1.02rem !important;
+        line-height: 1.75 !important;
+        color: #ffffff !important;
+        font-weight: 450 !important;
+    }
+
+    .pdp-enrich-lead strong,
+    .pdp-enrich-lead b,
+    .pdp-enrich-lead span {
+        color: #ffffff !important;
+    }
+
+    .pdp-enrich-lead a {
+        color: #93c5fd !important;
+    }
+
     @media (max-width: 575px) {
         .pdp-commander-wrap {
             gap: 8px !important;

@@ -274,18 +274,20 @@
 
 /* 1. Lead Intro Banner */
 .smart-visual-editor .pdp-enrich-lead {
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    border-left: 4px solid #dc2626;
+    background: #021962;
+    border: 1px solid #021962;
+    border-left: 4px solid #021962;
     border-radius: 12px;
     padding: 16px 20px;
     margin-bottom: 24px;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    box-shadow: 0 4px 14px rgba(2, 25, 98, 0.12);
+    color: #ffffff;
 }
 
 .smart-visual-editor .pdp-enrich-lead p {
     font-size: 1.05rem;
     line-height: 1.65;
-    color: #1e293b;
+    color: #ffffff;
     margin: 0;
 }
 
