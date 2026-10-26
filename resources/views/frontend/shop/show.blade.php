@@ -128,9 +128,9 @@
 
     .pdp-variant-pill.is-out-of-stock,
     .pdp-variant-pill:disabled {
-        opacity: 0.45 !important;
+        opacity: 0.70 !important;
         background: #f1f5f9 !important;
-        border: 1.5px dashed #cbd5e1 !important;
+        border: 1px solid #cbd5e1 !important;
         color: #94a3b8 !important;
         cursor: not-allowed !important;
         pointer-events: none !important;
@@ -608,9 +608,6 @@
                                         onclick="{{ $isVarInStock ? 'pdpSelectVariant(this)' : 'return false;' }}"
                                         title="{{ !$isVarInStock ? __('Rupture de stock') : $variant->name }}">
                                     <span>{{ $variant->name }}</span>
-                                    @if(!$isVarInStock)
-                                        <span class="ms-1 small opacity-75">({{ __('Rupture') }})</span>
-                                    @endif
                                 </button>
                             @endforeach
                         </div>
@@ -727,9 +724,7 @@
                     @endif
 
                     <div class="pdp-trust-row mt-3">
-                        <div class="pdp-trust-pill"><i class="fas fa-shield-halved"></i> {{ __('2-Year Warranty') }}</div>
                         <div class="pdp-trust-pill"><i class="fas fa-truck-fast"></i> {{ __('Secure Delivery 24/48h') }}</div>
-                        <div class="pdp-trust-pill"><i class="fas fa-file-invoice"></i> {{ __('ICE Invoicing') }}</div>
                         <div class="pdp-trust-pill"><i class="fas fa-video"></i> {{ __('Showroom Demo Casablanca') }}</div>
                     </div>
 

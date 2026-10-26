@@ -1424,12 +1424,12 @@
             padding: 7px 16px !important;
             font-size: 0.82rem !important;
             font-weight: 600 !important;
-            background: #dc2625 !important;
-            color: #ffffffff !important;
+            background: #ffffff !important;
+            color: #000000 !important;
             transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
             line-height: 1.35 !important;
             cursor: pointer !important;
+            border: 1px solid #e2e8f0;
         }
 
         .pdp-variant-pill:hover {
@@ -1438,15 +1438,15 @@
         }
 
         .pdp-variant-pill.active {
-            background: #16a34a !important;
+            background: #021962 !important;
             color: #ffffff !important;
         }
 
         .pdp-variant-pill.is-out-of-stock,
         .pdp-variant-pill:disabled {
-            opacity: 0.45 !important;
+            opacity: 0.7 !important;
             background: #f1f5f9 !important;
-            border: 1.5px dashed #cbd5e1 !important;
+            border: 1px solid #e2e8f0 !important;
             color: #94a3b8 !important;
             cursor: not-allowed !important;
             pointer-events: none !important;
