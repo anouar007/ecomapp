@@ -57,7 +57,7 @@
       {
         "@type": "ListItem",
         "position": {{ $i + 1 }},
-        "url": "{{ route('shop.show', $prod->id) }}",
+        "url": "{{ route('shop.show', $prod->slug ?: $prod->id) }}",
         "name": "{{ addslashes($prod->name) }}"
       }{{ !$loop->last ? ',' : '' }}
       @endforeach

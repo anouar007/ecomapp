@@ -3,6 +3,59 @@
 @section('meta_title', setting('app_name', 'WINA SHOP') . ' — ' . __('Matériel Photo, Vidéo & Caméras au Maroc'))
 @section('meta_description', __('Votre référence au Maroc pour le matériel photo & vidéo professionnel — Caméras Sony, Canon, drones & stabilisateurs DJI, optiques et éclairage studio.'))
 
+@section('json_ld')
+<script type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Où acheter du matériel photo, vidéo et caméras professionnelles au Maroc ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "WINA SHOP est le magasin de référence au Maroc pour l'équipement audiovisuel professionnel (Sony, Canon, Nikon, DJI, Godox, RØDE). Notre showroom est situé à Casablanca (Al Oulfa), avec livraison express 24h à 48h partout au Maroc et paiement à la livraison (Cash on Delivery)."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Comment obtenir un devis proforma INDH ou une facture avec ICE pour du matériel vidéo ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "WINA SHOP délivre immédiatement des devis proforma certifiés conformes pour les porteurs de projets INDH, coopératives et créateurs d'entreprises, ainsi que des factures officielles avec identifiant fiscal (ICE) pour toutes les sociétés et professionnels."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Les caméras, drones et objectifs vendus chez WINA SHOP sont-ils originaux et garantis ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "100% des produits neufs vendus chez WINA SHOP sont neufs sous emballage d'origine scellé, authentiques et accompagnés d'une garantie constructeur officielle avec SAV dédié."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Quels sont les délais et les frais de livraison au Maroc ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Nous livrons sous 24h à 48h dans toutes les villes du Maroc (Casablanca, Rabat, Marrakech, Tanger, Fès, Agadir, Oujda, Meknès, etc.). Le paiement s'effectue en espèces à la livraison après inspection de votre colis."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "أين يمكنني شراء كاميرات ومعدات تصوير احترافية في المغرب بالضمان والدفع عند الاستلام؟",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "متجر WINA SHOP بالدار البيضاء هو خيارك الأول لشراء كاميرات سوني، كانون، نيكون، درون دي جي اي، ومعدات إضاءة غودوكس بالمغرب. نوفر ضماناً رسمياً، فواتير قانونية مع ICE، وفواتير شكلية INDH، مع التوصيل السريع والدفع نقداً عند الاستلام بكافة مدن المملكة."
+        }
+      }
+    ]
+  }
+]
+</script>
+@endsection
+
 @section('content')
 
 {{-- =========================================================================

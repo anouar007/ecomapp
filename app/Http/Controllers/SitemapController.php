@@ -13,23 +13,30 @@ class SitemapController extends Controller
      */
     public function index(): Response
     {
-        $products = Product::where('status', 'active')
-            ->with(['primaryImage', 'images'])
-            ->latest('updated_at')
-            ->get();
+        @ini_set('memory_limit', '512M');
 
-        $categories = Category::where('status', 'active')
-            ->select(['id', 'slug', 'updated_at'])
-            ->get();
+        $content = cache()->store('file')->remember('seo_sitemap_xml', 3600, function () {
+            $products = Product::where('status', 'active')
+                ->select(['id', 'name', 'slug', 'image', 'updated_at'])
+                ->with(['images' => function($q) {
+                    $q->select(['id', 'product_id', 'image_path', 'is_primary']);
+                }])
+                ->latest('updated_at')
+                ->get();
 
-        $pages = class_exists(\App\Models\Page::class) 
-            ? \App\Models\Page::where('is_published', true)->select(['id', 'slug', 'updated_at'])->get()
-            : collect();
+            $categories = Category::where('status', 'active')
+                ->select(['id', 'slug', 'updated_at'])
+                ->get();
 
-        $content = view('sitemap', compact('products', 'categories', 'pages'))->render();
+            $pages = class_exists(\App\Models\Page::class) 
+                ? \App\Models\Page::where('is_published', true)->select(['id', 'slug', 'updated_at'])->get()
+                : collect();
+
+            return view('sitemap', compact('products', 'categories', 'pages'))->render();
+        });
 
         return response($content, 200)
-            ->header('Content-Type', 'application/xml');
+            ->header('Content-Type', 'application/xml; charset=utf-8');
     }
 
     /**
@@ -44,7 +51,7 @@ class SitemapController extends Controller
         $content = view('robots', compact('sitemapUrl', 'llmsUrl', 'llmsFullUrl'))->render();
 
         return response($content, 200)
-            ->header('Content-Type', 'text/plain');
+            ->header('Content-Type', 'text/plain; charset=utf-8');
     }
 
     /**
@@ -52,21 +59,23 @@ class SitemapController extends Controller
      */
     public function llmsTxt(): Response
     {
-        $categories = Category::where('status', 'active')
-            ->withCount(['products' => function($q) {
-                $q->where('status', 'active');
-            }])
-            ->get();
+        $content = cache()->store('file')->remember('seo_llms_txt', 3600, function () {
+            $categories = Category::where('status', 'active')
+                ->withCount(['products' => function($q) {
+                    $q->where('status', 'active');
+                }])
+                ->get();
 
-        $featuredProducts = Product::where('status', 'active')
-            ->with(['category'])
-            ->orderByDesc('id')
-            ->take(150)
-            ->get();
+            $featuredProducts = Product::where('status', 'active')
+                ->with(['category'])
+                ->orderByDesc('id')
+                ->take(150)
+                ->get();
 
-        $totalProducts = Product::where('status', 'active')->count();
+            $totalProducts = Product::where('status', 'active')->count();
 
-        $content = view('llms', compact('featuredProducts', 'categories', 'totalProducts'))->render();
+            return view('llms', compact('featuredProducts', 'categories', 'totalProducts'))->render();
+        });
 
         return response($content, 200)
             ->header('Content-Type', 'text/plain; charset=utf-8');
@@ -77,15 +86,19 @@ class SitemapController extends Controller
      */
     public function llmsFullTxt(): Response
     {
-        $categories = Category::where('status', 'active')
-            ->with(['products' => function($q) {
-                $q->where('status', 'active')->orderBy('name');
-            }])
-            ->get();
+        @ini_set('memory_limit', '512M');
 
-        $totalProducts = Product::where('status', 'active')->count();
+        $content = cache()->store('file')->remember('seo_llms_full_txt', 7200, function () {
+            $categories = Category::where('status', 'active')
+                ->with(['products' => function($q) {
+                    $q->where('status', 'active')->orderBy('name');
+                }])
+                ->get();
 
-        $content = view('llms-full', compact('categories', 'totalProducts'))->render();
+            $totalProducts = Product::where('status', 'active')->count();
+
+            return view('llms-full', compact('categories', 'totalProducts'))->render();
+        });
 
         return response($content, 200)
             ->header('Content-Type', 'text/plain; charset=utf-8');
