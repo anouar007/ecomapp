@@ -649,7 +649,7 @@
                         $cartTotalCount = array_sum(array_column(session('cart', []), 'quantity'));
                         $currentLocale = app()->getLocale();
                         $commanderLabel = $currentLocale === 'ar' ? 'اشتري الآن' : ($currentLocale === 'en' ? 'Buy now' : 'Acheter maintenant');
-                        $shareLabel = $currentLocale === 'ar' ? 'مشاركة' : ($currentLocale === 'en' ? 'Share' : 'Partager');
+                        $shareLabel = $currentLocale === 'ar' ? 'مشاركة' : ($currentLocale === 'en' ? 'Share' : 'Copié !');
                     @endphp
                     <div id="pdpCommanderWrap" class="pdp-commander-wrap mt-2">
                         <button type="button" 

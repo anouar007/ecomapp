@@ -1424,9 +1424,8 @@
             padding: 7px 16px !important;
             font-size: 0.82rem !important;
             font-weight: 600 !important;
-            border: 1.5px solid #cbd5e1 !important;
-            background: #ffffff !important;
-            color: #1e293b !important;
+            background: #dc2625 !important;
+            color: #ffffffff !important;
             transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
             box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
             line-height: 1.35 !important;
@@ -1434,17 +1433,13 @@
         }
 
         .pdp-variant-pill:hover {
-            border-color: #94a3b8 !important;
-            color: #0f172a !important;
             transform: translateY(-1px) !important;
             box-shadow: 0 3px 6px rgba(15, 23, 42, 0.08) !important;
         }
 
         .pdp-variant-pill.active {
-            background: #0f172a !important;
-            border-color: #0f172a !important;
+            background: #16a34a !important;
             color: #ffffff !important;
-            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.22) !important;
         }
 
         .pdp-variant-pill.is-out-of-stock {
