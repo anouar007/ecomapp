@@ -364,11 +364,9 @@
                     <table style="width:100%;">
                         <tr>
                             @php
-                                $logoPath = (setting('app_logo') && file_exists(public_path('storage/' . setting('app_logo'))))
-                                    ? public_path('storage/' . setting('app_logo'))
-                                    : (file_exists(public_path('images/camera/logo.png')) ? public_path('images/camera/logo.png') : null);
+                                $logoPath = app_logo_path();
                             @endphp
-                            @if($logoPath)
+                            @if($logoPath && file_exists($logoPath))
                                 <td style="width:75px; vertical-align:middle;">
                                     <img src="data:image/{{ pathinfo($logoPath, PATHINFO_EXTENSION) }};base64,{{ base64_encode(file_get_contents($logoPath)) }}"
                                          style="max-width:70px; max-height:50px; display:block;">

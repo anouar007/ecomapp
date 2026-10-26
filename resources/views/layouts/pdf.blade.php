@@ -78,10 +78,11 @@
 <body>
     <div class="header">
         @php
-            $pdfLogo = file_exists(public_path('images/camera/logo.png')) ? public_path('images/camera/logo.png') : null;
+            $pdfLogo = app_logo_path();
+            $logoExt = $pdfLogo ? pathinfo($pdfLogo, PATHINFO_EXTENSION) : 'png';
         @endphp
-        @if($pdfLogo)
-            <img src="data:image/png;base64,{{ base64_encode(file_get_contents($pdfLogo)) }}" style="max-height: 48px; margin-bottom: 6px;">
+        @if($pdfLogo && file_exists($pdfLogo))
+            <img src="data:image/{{ $logoExt }};base64,{{ base64_encode(file_get_contents($pdfLogo)) }}" style="max-height: 48px; margin-bottom: 6px;">
         @else
             <h1>{{ setting('app_name', 'WINA SHOP') }}</h1>
         @endif

@@ -80,3 +80,69 @@ if (!function_exists('formatDateTime')) {
         return $datetime->format($dateFormat . ' ' . $timeFormat);
     }
 }
+
+if (!function_exists('app_logo_url')) {
+    /**
+     * Get the resolved URL of the application logo.
+     * Always prioritizes the user-uploaded dashboard logo (setting('app_logo')),
+     * then company_logo, then fallback to default static logo.
+     *
+     * @return string
+     */
+    function app_logo_url()
+    {
+        $appLogo = setting('app_logo');
+        if ($appLogo) {
+            if (str_starts_with($appLogo, 'http://') || str_starts_with($appLogo, 'https://')) {
+                return $appLogo;
+            }
+            if (file_exists(public_path('storage/' . $appLogo))) {
+                return asset('storage/' . $appLogo);
+            }
+            if (file_exists(public_path($appLogo))) {
+                return asset($appLogo);
+            }
+            return asset('storage/' . $appLogo);
+        }
+
+        $companyLogo = setting('company_logo');
+        if ($companyLogo) {
+            if (file_exists(public_path('storage/' . $companyLogo))) {
+                return asset('storage/' . $companyLogo);
+            }
+            return asset('storage/' . $companyLogo);
+        }
+
+        if (file_exists(public_path('images/camera/logo.png'))) {
+            return asset('images/camera/logo.png');
+        }
+
+        return asset('images/camera/hero_cinema_rig.jpg');
+    }
+}
+
+if (!function_exists('app_logo_path')) {
+    /**
+     * Get the local absolute file path of the logo (for PDFs).
+     *
+     * @return string|null
+     */
+    function app_logo_path()
+    {
+        $appLogo = setting('app_logo');
+        if ($appLogo && file_exists(public_path('storage/' . $appLogo))) {
+            return public_path('storage/' . $appLogo);
+        }
+        if ($appLogo && file_exists(public_path($appLogo))) {
+            return public_path($appLogo);
+        }
+        $companyLogo = setting('company_logo');
+        if ($companyLogo && file_exists(public_path('storage/' . $companyLogo))) {
+            return public_path('storage/' . $companyLogo);
+        }
+        if (file_exists(public_path('images/camera/logo.png'))) {
+            return public_path('images/camera/logo.png');
+        }
+        return null;
+    }
+}

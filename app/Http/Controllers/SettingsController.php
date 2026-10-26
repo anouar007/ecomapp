@@ -265,6 +265,7 @@ class SettingsController extends Controller
 
         // Clear cache
         Cache::forget('setting_app_logo');
+        Cache::forget('all_settings_map');
 
         return back()->with('success', 'Logo uploaded successfully!');
     }
@@ -284,6 +285,7 @@ class SettingsController extends Controller
 
         Setting::where('key', 'app_logo')->delete();
         Cache::forget('setting_app_logo');
+        Cache::forget('all_settings_map');
 
         return back()->with('success', 'Logo removed successfully!');
     }

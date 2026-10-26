@@ -247,9 +247,7 @@
 </head>
 <body>
     @php
-        $logoPath = (setting('app_logo') && file_exists(public_path('storage/' . setting('app_logo'))))
-            ? public_path('storage/' . setting('app_logo'))
-            : (file_exists(public_path('images/camera/logo.png')) ? public_path('images/camera/logo.png') : null);
+        $logoPath = app_logo_path();
         $logoBase64 = null;
         if ($logoPath && file_exists($logoPath)) {
             $logoExt = pathinfo($logoPath, PATHINFO_EXTENSION);

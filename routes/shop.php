@@ -16,8 +16,12 @@ Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'ind
 Route::get('/robots.txt', [\App\Http\Controllers\SitemapController::class, 'robots'])->name('robots');
 Route::get('/llms.txt', [\App\Http\Controllers\SitemapController::class, 'llmsTxt'])->name('llms.txt');
 Route::get('/llms-full.txt', [\App\Http\Controllers\SitemapController::class, 'llmsFullTxt'])->name('llms.full.txt');
-Route::get('/media/diagram/{filename}', [\App\Http\Controllers\DiagramMediaController::class, 'show'])->name('media.diagram');
 Route::get('/media/proxy', [\App\Http\Controllers\DiagramMediaController::class, 'proxy'])->name('media.proxy');
+// Google Search Console Automated HTML File Verification
+Route::get('/google{code}.html', function ($code) {
+    return response("google-site-verification: google{$code}.html", 200)
+        ->header('Content-Type', 'text/html');
+})->where('code', '[a-zA-Z0-9_\-]+')->name('google.verify');
 
 // Home & Newsletter
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');

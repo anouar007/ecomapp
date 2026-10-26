@@ -601,8 +601,8 @@
             <div class="header-row">
                 {{-- Left: Brand & Logo --}}
                 <div class="header-brand">
-                    @if($companyLogo)
-                        <img src="{{ asset('storage/' . $companyLogo) }}" class="header-logo" alt="Logo">
+                    @if(app_logo_url())
+                        <img src="{{ app_logo_url() }}" class="header-logo" alt="Logo">
                     @else
                         <div class="brand-monogram">
                             {{ strtoupper(substr($companyName, 0, 1)) }}

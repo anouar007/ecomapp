@@ -355,8 +355,8 @@
             <div class="container">
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center gap-3">
-                        @if(setting('site_logo'))
-                            <img src="{{ asset('storage/' . setting('site_logo')) }}" alt="{{ $appName }}" height="42" class="img-fluid">
+                        @if(app_logo_url())
+                            <img src="{{ app_logo_url() }}" alt="{{ $appName }}" height="42" class="img-fluid">
                         @else
                             <div class="d-flex align-items-center gap-2 text-white text-decoration-none">
                                 <span class="d-inline-flex align-items-center justify-content-center bg-danger rounded-3 text-white" style="width: 38px; height: 38px;">

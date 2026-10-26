@@ -13,6 +13,24 @@
     <meta name="theme-color" content="#ffffff">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <!-- Google Search Console & Webmaster Verification -->
+    @if(setting('google_site_verification'))
+    <meta name="google-site-verification" content="{{ setting('google_site_verification') }}">
+    @endif
+    @if(setting('bing_site_verification'))
+    <meta name="msvalidate.01" content="{{ setting('bing_site_verification') }}">
+    @endif
+    @if(setting('google_analytics_id'))
+    <!-- Google Analytics (GA4) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ setting('google_analytics_id') }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '{{ setting('google_analytics_id') }}');
+    </script>
+    @endif
+
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ url()->current() }}">
 
@@ -42,18 +60,16 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
     <!-- Favicon -->
-    <link rel="icon" href="{{ asset('images/camera/logo.png') }}" type="image/png">
-    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
-    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" href="{{ app_logo_url() }}" type="image/png">
+    <link rel="icon" href="{{ app_logo_url() }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ app_logo_url() }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ app_logo_url() }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ app_logo_url() }}">
+    <link rel="shortcut icon" href="{{ app_logo_url() }}">
 
     @php
         $siteTitle = setting('app_name', 'WINA SHOP');
-        $defaultMetaImage = file_exists(public_path('images/camera/logo.png')) 
-            ? asset('images/camera/logo.png') 
-            : (setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/camera/hero_cinema_rig.jpg'));
+        $defaultMetaImage = app_logo_url();
         
         $metaImageRaw = trim($__env->yieldContent('meta_image'));
         $resolvedOgImage = !empty($metaImageRaw) ? $metaImageRaw : $defaultMetaImage;
@@ -129,7 +145,7 @@
       "name": "{{ setting('company_name', setting('app_name', 'WINA SHOP')) }}",
       "alternateName": ["Winashop", "Wina Shop Maroc", "وينا شوب"],
       "url": "{{ url('/') }}",
-      "logo": "{{ setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/camera/logo.png') }}",
+      "logo": "{{ app_logo_url() }}",
       "image": "{{ asset('images/camera/hero_winashop.jpg') }}",
       "description": "{{ addslashes(setting('app_description', 'Votre référence au Maroc pour le matériel photo & vidéo professionnel — Caméras Sony, Canon, drones DJI, stabilisateurs et éclairage studio.')) }}",
       "priceRange": "MAD 100 - MAD 150000",
@@ -2091,6 +2107,7 @@
             {!! $code->content !!}
         @endif
     @endforeach
+    @stack('styles')
 </head>
 <body class="{{ request()->routeIs('cart.*') ? 'cart-page' : '' }} {{ request()->routeIs('checkout.*') ? 'checkout-page' : '' }}">
     <!-- Custom Body Start Codes -->
@@ -2109,7 +2126,7 @@
                 <div class="d-flex align-items-center gap-2 gap-lg-3 gap-xl-4 flex-nowrap">
                     <!-- Brand Logo (Enlarged) -->
                     <a class="navbar-brand m-0 p-0 d-flex align-items-center me-1 me-lg-2" href="{{ url('/') }}" style="flex-shrink: 0;" title="{{ setting('app_name', 'WINA SHOP') }}" aria-label="{{ setting('app_name', 'WINA SHOP') }} - {{ __('Accueil') }}">
-                        <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="96" height="96" class="brand-logo-img" style="height: 96px; max-height: 105px; width: auto; max-width: 280px; object-fit: contain;">
+                        <img src="{{ app_logo_url() }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="96" height="96" class="brand-logo-img" style="height: 96px; max-height: 105px; width: auto; max-width: 280px; object-fit: contain;">
                         <span class="visually-hidden">{{ setting('app_name', 'WINA SHOP') }}</span>
                     </a>
 
@@ -2323,7 +2340,7 @@
     <div class="offcanvas offcanvas-start border-0 shadow-lg d-lg-none" tabindex="-1" id="mobileNavDrawer" aria-labelledby="mobileNavDrawerLabel" style="width: 310px;">
         <div class="offcanvas-header border-bottom py-3">
             <a href="{{ url('/') }}" class="navbar-brand m-0" aria-label="{{ setting('app_name', 'WINA SHOP') }} - {{ __('Accueil') }}" title="{{ setting('app_name', 'WINA SHOP') }}">
-                <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="70" height="70" style="height: 70px; width: auto; object-fit: contain;">
+                <img src="{{ app_logo_url() }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="70" height="70" style="height: 70px; width: auto; object-fit: contain;">
                 <span class="visually-hidden">{{ setting('app_name', 'WINA SHOP') }}</span>
             </a>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -2747,7 +2764,7 @@
                 <div class="col-lg-6">
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <a href="{{ url('/') }}" class="d-inline-block" title="{{ setting('app_name', 'WINA SHOP') }}" aria-label="{{ setting('app_name', 'WINA SHOP') }}">
-                            <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="56" height="56" style="height: 56px; width: auto; object-fit: contain;">
+                            <img src="{{ app_logo_url() }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="56" height="56" style="height: 56px; width: auto; object-fit: contain;">
                         </a>
                         <p class="fw-bold text-white mb-0 text-uppercase ls-1 d-flex align-items-center gap-2 h5">
                             <span class="tally-dot"></span> {{ setting('app_name', 'WINA SHOP') }}

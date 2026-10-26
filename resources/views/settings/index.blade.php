@@ -195,6 +195,12 @@
                         <span>Avancé</span>
                     </span>
                     <i class="fas fa-chevron-right tab-chevron small"></i>
+                <button type="button" class="settings-nav-btn" data-tab="seo" onclick="switchSettingsTab('seo')">
+                    <span class="d-inline-flex align-items-center gap-2">
+                        <i class="fab fa-google tab-icon text-danger"></i>
+                        <span>Google Console & SEO</span>
+                    </span>
+                    <i class="fas fa-chevron-right tab-chevron small"></i>
                 </button>
 
                 <div class="d-none d-lg-block border-top pt-3 mt-2 px-2">
@@ -1055,6 +1061,164 @@
                                         <i class="fas fa-vial me-1.5"></i> Tester l'envoi immédiat
                                     </button>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- 10. SEO & Google Search Console Tab --}}
+                    <div class="tab-pane d-none" id="seo-tab">
+                        {{-- Google Console Card --}}
+                        <div class="settings-section-card">
+                            <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+                                <h3 class="settings-section-title mb-0">
+                                    <i class="fab fa-google text-danger"></i>
+                                    <span>Google Search Console & Indexation</span>
+                                </h3>
+                                <a href="https://search.google.com/search-console" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5">
+                                    <i class="fas fa-external-link-alt"></i> Ouvrir Google Search Console
+                                </a>
+                            </div>
+                            <p class="settings-section-desc">
+                                Connectez votre boutique à <strong>Google Search Console</strong> pour indexer instantanément vos produits, surveiller vos positions de recherche et être le premier résultat sur Google.
+                            </p>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-12">
+                                    <label class="form-label fw-bold small text-dark">
+                                        <i class="fas fa-shield-alt text-primary me-1"></i> Code de Validation Google (Balise Meta)
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light text-muted font-monospace small">&lt;meta name="google-site-verification" content="</span>
+                                        <input type="text" name="settings[google_site_verification]" class="form-control font-monospace" 
+                                               value="{{ setting('google_site_verification', '') }}" 
+                                               placeholder="Ex: d1c6999fa_abc123XYZ456...">
+                                        <span class="input-group-text bg-light text-muted font-monospace small">"&gt;</span>
+                                    </div>
+                                    <div class="form-text small text-muted">
+                                        Dans Google Search Console, choisissez la méthode <strong>"Balise HTML"</strong>, copiez la valeur de <code>content="..."</code> et collez-la ici.
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">
+                                        <i class="fas fa-chart-line text-success me-1"></i> Google Analytics 4 (ID de Mesure GA4)
+                                    </label>
+                                    <input type="text" name="settings[google_analytics_id]" class="form-control rounded-3" 
+                                           value="{{ setting('google_analytics_id', '') }}" 
+                                           placeholder="G-XXXXXXXXXX">
+                                    <div class="form-text small text-muted">Exemple : <code>G-ABC1234567</code>. Permet de suivre les visiteurs et conversions depuis Google.</div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">
+                                        <i class="fab fa-microsoft text-info me-1"></i> Validation Bing Webmaster Tools
+                                    </label>
+                                    <input type="text" name="settings[bing_site_verification]" class="form-control rounded-3" 
+                                           value="{{ setting('bing_site_verification', '') }}" 
+                                           placeholder="Code de validation Bing (msvalidate.01)">
+                                    <div class="form-text small text-muted">Indexation sur Bing, Yahoo et les moteurs de recherche Microsoft.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Sitemaps & Crawler Endpoints Card --}}
+                        <div class="settings-section-card mt-4">
+                            <h3 class="settings-section-title">
+                                <i class="fas fa-sitemap text-danger"></i>
+                                <span>URLs du Sitemap & Directives d'Indexation pour Google</span>
+                            </h3>
+                            <p class="settings-section-desc">
+                                Transmettez ces adresses directement dans l'onglet <strong>"Sitemaps"</strong> de votre Google Search Console.
+                            </p>
+
+                            <div class="row g-3 mb-3">
+                                {{-- Sitemap XML --}}
+                                <div class="col-12">
+                                    <div class="p-3 bg-light rounded-3 border d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                        <div>
+                                            <div class="fw-bold text-dark d-flex align-items-center gap-2">
+                                                <i class="fas fa-file-code text-danger"></i>
+                                                <span>Sitemap Principal XML (Produits, Catégories, Images HD)</span>
+                                                <span class="badge bg-success-subtle text-success border border-success-subtle">Actif & Dynamique</span>
+                                            </div>
+                                            <div class="font-monospace text-muted small mt-1">
+                                                <a href="{{ url('/sitemap.xml') }}" target="_blank" class="text-decoration-none text-primary">{{ url('/sitemap.xml') }}</a>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <a href="{{ url('/sitemap.xml') }}" target="_blank" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                                                <i class="fas fa-eye me-1"></i> Voir
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="navigator.clipboard.writeText('{{ url('/sitemap.xml') }}'); alert('URL du sitemap copiée !');">
+                                                <i class="far fa-copy me-1"></i> Copier l'URL
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Robots TXT --}}
+                                <div class="col-12">
+                                    <div class="p-3 bg-light rounded-3 border d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                        <div>
+                                            <div class="fw-bold text-dark d-flex align-items-center gap-2">
+                                                <i class="fas fa-robot text-primary"></i>
+                                                <span>Fichier Robots.txt (Autorisations Googlebot & Google-Extended)</span>
+                                                <span class="badge bg-info-subtle text-info border border-info-subtle">Optimisé Google</span>
+                                            </div>
+                                            <div class="font-monospace text-muted small mt-1">
+                                                <a href="{{ url('/robots.txt') }}" target="_blank" class="text-decoration-none text-primary">{{ url('/robots.txt') }}</a>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <a href="{{ url('/robots.txt') }}" target="_blank" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                                                <i class="fas fa-eye me-1"></i> Voir
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="navigator.clipboard.writeText('{{ url('/robots.txt') }}'); alert('URL du robots.txt copiée !');">
+                                                <i class="far fa-copy me-1"></i> Copier l'URL
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- LLMs / AI Search Discovery --}}
+                                <div class="col-12">
+                                    <div class="p-3 bg-light rounded-3 border d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                        <div>
+                                            <div class="fw-bold text-dark d-flex align-items-center gap-2">
+                                                <i class="fas fa-brain text-primary"></i>
+                                                <span>Catalogue AI Search Engine (Google Gemini, Perplexity, ChatGPT)</span>
+                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">GEO IA Actif</span>
+                                            </div>
+                                            <div class="font-monospace text-muted small mt-1">
+                                                <a href="{{ url('/llms.txt') }}" target="_blank" class="text-decoration-none text-primary">{{ url('/llms.txt') }}</a>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <a href="{{ url('/llms.txt') }}" target="_blank" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                                                <i class="fas fa-eye me-1"></i> Voir
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="navigator.clipboard.writeText('{{ url('/llms.txt') }}'); alert('URL llms.txt copiée !');">
+                                                <i class="far fa-copy me-1"></i> Copier l'URL
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- SEO Ranking Strategy Guide --}}
+                        <div class="settings-section-card mt-4 p-3.5 bg-success-subtle bg-opacity-10 border border-success-subtle rounded-4">
+                            <h4 class="fw-bold text-success mb-2 d-flex align-items-center gap-2">
+                                <i class="fas fa-trophy"></i>
+                                <span>Comment être #1 sur Google pour vos produits ?</span>
+                            </h4>
+                            <div class="small text-dark lh-lg">
+                                <ul class="mb-0 ps-3">
+                                    <li><strong>Validation Google Search Console :</strong> Choisissez <em>Validation par balise HTML</em> ou <em>Fichier HTML</em> (le système valide automatiquement n'importe quel fichier <code>/google*.html</code>).</li>
+                                    <li><strong>Soumettez votre Sitemap :</strong> Dans Google Search Console &gt; Sitemaps, entrez simplement <code>sitemap.xml</code> et cliquez sur "Envoyer".</li>
+                                    <li><strong>Titres des Produits :</strong> Incluez toujours la marque et le modèle exact (ex: <em>"Sony Alpha 7 IV"</em> ou <em>"DJI Osmo Mobile 6"</em>). Le système génère automatiquement les métadonnées de localisation (Casablanca, Maroc, prix en MAD, disponibilité et garantie).</li>
+                                    <li><strong>Données Structurées Google Shopping :</strong> Vos fiches produits génèrent automatiquement les balises Schema.org <code>Product</code>, <code>Offer</code>, <code>BreadcrumbList</code> et <code>FAQPage</code> pour afficher les avis étoiles, le prix et le badge "En stock" directement dans les résultats Google !</li>
+                                </ul>
                             </div>
                         </div>
                     </div>

@@ -7,12 +7,12 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Tableau de bord') - {{ setting('app_name', 'E-commerce') }}</title>
     <!-- Favicon -->
-    <link rel="icon" href="{{ asset('images/camera/logo.png') }}" type="image/png">
-    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
-    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" href="{{ app_logo_url() }}" type="image/png">
+    <link rel="icon" href="{{ app_logo_url() }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ app_logo_url() }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ app_logo_url() }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ app_logo_url() }}">
+    <link rel="shortcut icon" href="{{ app_logo_url() }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -249,10 +249,10 @@
         </button>
         <a href="{{ route('dashboard') }}" class="navbar-brand">
             @php
-                $winaLogo = file_exists(public_path('images/camera/logo.png')) ? asset('images/camera/logo.png') : (setting('app_logo') ? asset('storage/' . setting('app_logo')) : null);
+                $winaLogo = app_logo_url();
             @endphp
             @if($winaLogo)
-                <img src="{{ $winaLogo }}" alt="WINA SHOP" width="110" height="48" style="height: 48px; max-width: 180px; object-fit: contain; margin-right: 10px;">
+                <img src="{{ $winaLogo }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="110" height="48" style="height: 48px; max-width: 180px; object-fit: contain; margin-right: 10px;">
             @else
                 <i class="fas fa-camera text-danger me-2"></i>
                 <span style="font-weight: 800; color: #0f172a;">WINA<span style="color: #dc2626;">SHOP</span></span>

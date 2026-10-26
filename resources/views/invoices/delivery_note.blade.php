@@ -570,8 +570,8 @@
             <!-- Header Row -->
             <div class="dn-header-row">
                 <div class="dn-brand">
-                    @if(setting('app_logo'))
-                        <img src="{{ asset('storage/' . setting('app_logo')) }}" class="dn-logo" alt="Logo">
+                    @if(app_logo_url())
+                        <img src="{{ app_logo_url() }}" class="dn-logo" alt="Logo">
                     @endif
                     <div>
                         <div class="dn-brand-name">{{ setting('company_name', setting('app_name', 'WINA SHOP')) }}</div>

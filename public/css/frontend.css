@@ -2873,7 +2873,7 @@ a {
     max-height: 560px;
     padding: 0px;
     position: relative;
-    cursor: zoom-in;
+    cursor: default;
     overflow: hidden;
     background: #f8f9fb;
 }
@@ -2888,7 +2888,7 @@ a {
 }
 
 .pdp-main-image-wrap:hover .pdp-main-image {
-    transform: scale(2);
+    transform: none;
 }
 
 .pdp-no-image {

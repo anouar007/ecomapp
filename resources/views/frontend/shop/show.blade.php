@@ -12,6 +12,14 @@
         font-weight: 700 !important;
         color: #0f172a;
     }
+
+    /* Disable zoom on product image */
+    .pdp-main-image-wrap {
+        cursor: default !important;
+    }
+    .pdp-main-image-wrap:hover .pdp-main-image {
+        transform: none !important;
+    }
 </style>
 @endpush
 
@@ -325,7 +333,7 @@
 
                 {{-- IMAGE PANEL --}}
                 <div class="col-lg-6 pdp-image-panel">
-                    <div class="pdp-main-image-wrap" id="zoomWrap" onmousemove="pdpZoom(event)">
+                    <div class="pdp-main-image-wrap" id="zoomWrap">
                         <img id="mainImage" src="{{ $product->thumbnail }}"
                              alt="{{ $product->name }}" width="600" height="600" class="pdp-main-image" fetchpriority="high" decoding="async">
 
@@ -866,12 +874,7 @@
 @push('scripts')
 <script>
 function pdpZoom(e) {
-    const wrap = document.getElementById('zoomWrap');
-    const img  = document.getElementById('mainImage');
-    if (!img) return;
-    const x = (e.offsetX / wrap.offsetWidth)  * 100;
-    const y = (e.offsetY / wrap.offsetHeight) * 100;
-    img.style.transformOrigin = `${x}% ${y}%`;
+    // Zoom disabled on product image
 }
 
 function pdpChangeImage(src, thumb) {
