@@ -363,14 +363,16 @@
                 <td style="width:58%; vertical-align:middle;">
                     <table style="width:100%;">
                         <tr>
-                            @if(setting('app_logo'))
-                                @php $logoPath = public_path('storage/' . setting('app_logo')); @endphp
-                                @if(file_exists($logoPath))
+                            @php
+                                $logoPath = (setting('app_logo') && file_exists(public_path('storage/' . setting('app_logo'))))
+                                    ? public_path('storage/' . setting('app_logo'))
+                                    : (file_exists(public_path('images/camera/logo.png')) ? public_path('images/camera/logo.png') : null);
+                            @endphp
+                            @if($logoPath)
                                 <td style="width:75px; vertical-align:middle;">
                                     <img src="data:image/{{ pathinfo($logoPath, PATHINFO_EXTENSION) }};base64,{{ base64_encode(file_get_contents($logoPath)) }}"
                                          style="max-width:70px; max-height:50px; display:block;">
                                 </td>
-                                @endif
                             @endif
                             <td style="vertical-align:middle;">
                                 <div class="company-name">{{ $companyName }}</div>

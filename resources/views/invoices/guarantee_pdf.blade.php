@@ -137,7 +137,9 @@
                 <td style="width: 55%; vertical-align: top;">
                     @php
                         $logoSetting = setting('company_logo') ?? setting('app_logo');
-                        $logoPath = $logoSetting ? public_path('storage/' . $logoSetting) : null;
+                        $logoPath = ($logoSetting && file_exists(public_path('storage/' . $logoSetting)))
+                            ? public_path('storage/' . $logoSetting)
+                            : (file_exists(public_path('images/camera/logo.png')) ? public_path('images/camera/logo.png') : null);
                     @endphp
                     @if($logoPath && file_exists($logoPath))
                         <img src="data:image/{{ pathinfo($logoPath, PATHINFO_EXTENSION) }};base64,{{ base64_encode(file_get_contents($logoPath)) }}" style="max-height: 45px; margin-bottom: 8px;">

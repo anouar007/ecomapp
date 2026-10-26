@@ -42,32 +42,76 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
     <!-- Favicon -->
-    @if(setting('app_logo') && file_exists(public_path('storage/' . setting('app_logo'))))
-        <link rel="icon" href="{{ asset('storage/' . setting('app_logo')) }}" type="image/x-icon">
-        <link rel="apple-touch-icon" href="{{ asset('storage/' . setting('app_logo')) }}">
-    @else
-        <link rel="icon" href="{{ asset('images/camera/logo.png') }}" type="image/png">
-    @endif
+    <link rel="icon" href="{{ asset('images/camera/logo.png') }}" type="image/png">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
 
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="@yield('meta_type', 'website')">
-    <meta property="og:site_name" content="{{ setting('app_name', 'WINA SHOP') }}">
-    <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('meta_title', setting('app_name', 'WINA SHOP') . ' — Matériel Photo, Vidéo & Caméras au Maroc')">
-    <meta property="og:description" content="@yield('meta_description', setting('app_description', 'Votre référence au Maroc pour le matériel photo & vidéo professionnel — Caméras Sony, Canon, drones & stabilisateurs DJI, optiques et éclairage studio.'))">
-    <meta property="og:image" content="@yield('meta_image', setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/camera/hero_cinema_rig.jpg'))">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
+    @php
+        $siteTitle = setting('app_name', 'WINA SHOP');
+        $defaultMetaImage = file_exists(public_path('images/camera/logo.png')) 
+            ? asset('images/camera/logo.png') 
+            : (setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/camera/hero_cinema_rig.jpg'));
+        
+        $metaImageRaw = trim($__env->yieldContent('meta_image'));
+        $resolvedOgImage = !empty($metaImageRaw) ? $metaImageRaw : $defaultMetaImage;
+        
+        // Ensure fully qualified URL
+        if (str_starts_with($resolvedOgImage, '//')) {
+            $resolvedOgImage = (request()->isSecure() ? 'https:' : 'http:') . $resolvedOgImage;
+        } elseif (str_starts_with($resolvedOgImage, '/')) {
+            $resolvedOgImage = url($resolvedOgImage);
+        } elseif (!str_starts_with($resolvedOgImage, 'http://') && !str_starts_with($resolvedOgImage, 'https://')) {
+            $resolvedOgImage = url($resolvedOgImage);
+        }
+        
+        $resolvedOgSecure = str_replace('http://', 'https://', $resolvedOgImage);
+        
+        // Detect MIME type
+        $imgExt = strtolower(pathinfo(parse_url($resolvedOgImage, PHP_URL_PATH) ?? '', PATHINFO_EXTENSION));
+        $ogMime = match($imgExt) {
+            'png' => 'image/png',
+            'webp' => 'image/webp',
+            'gif' => 'image/gif',
+            'svg' => 'image/svg+xml',
+            default => 'image/jpeg',
+        };
+        
+        $metaType = trim($__env->yieldContent('meta_type', 'website'));
+        $isProductType = $metaType === 'product';
+        $metaUrl = trim($__env->yieldContent('meta_url', url()->current()));
+        $metaTitle = trim($__env->yieldContent('meta_title', $siteTitle . ' — Matériel Photo, Vidéo & Caméras au Maroc'));
+        $metaDesc = trim($__env->yieldContent('meta_description', setting('app_description', 'Votre référence au Maroc pour le matériel photo & vidéo professionnel — Caméras Sony, Canon, drones & stabilisateurs DJI, optiques et éclairage studio.')));
+        $cleanMetaTitle = htmlspecialchars(strip_tags(html_entity_decode($metaTitle, ENT_QUOTES | ENT_HTML5, 'UTF-8')), ENT_QUOTES, 'UTF-8');
+        $cleanMetaDesc = htmlspecialchars(strip_tags(html_entity_decode($metaDesc, ENT_QUOTES | ENT_HTML5, 'UTF-8')), ENT_QUOTES, 'UTF-8');
+    @endphp
+
+    <!-- Open Graph / Facebook / WhatsApp / iMessage / Telegram Link Previews -->
+    <meta property="og:type" content="{{ $metaType }}">
+    <meta property="og:site_name" content="{{ $siteTitle }}">
+    <meta property="og:url" content="{{ $metaUrl }}">
+    <meta property="og:title" content="{!! $cleanMetaTitle !!}">
+    <meta property="og:description" content="{!! $cleanMetaDesc !!}">
+    <meta property="og:image" content="{{ $resolvedOgImage }}">
+    <meta property="og:image:secure_url" content="{{ $resolvedOgSecure }}">
+    <meta property="og:image:type" content="{{ $ogMime }}">
+    <meta property="og:image:width" content="{{ $isProductType ? '800' : '1200' }}">
+    <meta property="og:image:height" content="{{ $isProductType ? '800' : '630' }}">
+    <meta property="og:image:alt" content="{!! $cleanMetaTitle !!}">
+    <link rel="image_src" href="{{ $resolvedOgImage }}">
     <meta property="og:locale" content="{{ app()->getLocale() === 'ar' ? 'ar_MA' : 'fr_MA' }}">
     <meta property="og:locale:alternate" content="{{ app()->getLocale() === 'ar' ? 'fr_MA' : 'ar_MA' }}">
     <meta property="og:updated_time" content="{{ now()->toIso8601String() }}">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="{{ url()->current() }}">
-    <meta name="twitter:title" content="@yield('meta_title', setting('app_name', 'WINA SHOP') . ' — Matériel Photo, Vidéo & Caméras au Maroc')">
-    <meta name="twitter:description" content="@yield('meta_description', setting('app_description', 'Votre référence au Maroc pour le matériel photo & vidéo professionnel — Caméras Sony, Canon, drones & stabilisateurs DJI, optiques et éclairage studio.'))">
-    <meta name="twitter:image" content="@yield('meta_image', setting('app_logo') ? asset('storage/' . setting('app_logo')) : asset('images/camera/hero_cinema_rig.jpg'))">    
+    <meta name="twitter:url" content="{{ $metaUrl }}">
+    <meta name="twitter:title" content="{!! $cleanMetaTitle !!}">
+    <meta name="twitter:description" content="{!! $cleanMetaDesc !!}">
+    <meta name="twitter:image" content="{{ $resolvedOgImage }}">
+    <meta name="twitter:image:alt" content="{!! $cleanMetaTitle !!}">
     <meta name="twitter:site" content="@yield('twitter_site', '@winashop.ma')">
 
     <!-- Additional Page-Specific SEO Meta (e.g. product:price) -->
@@ -222,8 +266,8 @@
                 touch-action: manipulation;
             }
             .brand-logo-img {
-                height: 63px !important;
-                max-height: 64px !important;
+                height: 70px !important;
+                max-height: 71px !important;
                 width: auto !important;
                 object-fit: contain;
             }
@@ -2279,7 +2323,7 @@
     <div class="offcanvas offcanvas-start border-0 shadow-lg d-lg-none" tabindex="-1" id="mobileNavDrawer" aria-labelledby="mobileNavDrawerLabel" style="width: 310px;">
         <div class="offcanvas-header border-bottom py-3">
             <a href="{{ url('/') }}" class="navbar-brand m-0" aria-label="{{ setting('app_name', 'WINA SHOP') }} - {{ __('Accueil') }}" title="{{ setting('app_name', 'WINA SHOP') }}">
-                <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="64" height="64" style="height: 64px; width: auto; object-fit: contain;">
+                <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="70" height="70" style="height: 70px; width: auto; object-fit: contain;">
                 <span class="visually-hidden">{{ setting('app_name', 'WINA SHOP') }}</span>
             </a>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -2701,9 +2745,14 @@
         <div class="container">
             <div class="row g-5">
                 <div class="col-lg-6">
-                    <p class="fw-bold text-white mb-3 text-uppercase ls-1 d-flex align-items-center gap-2 h5">
-                        <span class="tally-dot"></span> {{ setting('app_name', 'WINA SHOP') }}
-                    </p>
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <a href="{{ url('/') }}" class="d-inline-block" title="{{ setting('app_name', 'WINA SHOP') }}" aria-label="{{ setting('app_name', 'WINA SHOP') }}">
+                            <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="56" height="56" style="height: 56px; width: auto; object-fit: contain;">
+                        </a>
+                        <p class="fw-bold text-white mb-0 text-uppercase ls-1 d-flex align-items-center gap-2 h5">
+                            <span class="tally-dot"></span> {{ setting('app_name', 'WINA SHOP') }}
+                        </p>
+                    </div>
                     <p class="small lh-lg mb-4 text-slate-400">
                         @if(app()->getLocale() === 'ar')
                             متجرك المرجعي في المغرب لمعدات التصوير الفوتوغرافي والفيديو الاحترافية: كاميرات، عدسات، طائرات درون ومثبتات DJI، إضاءة وصوتيات الاستوديو. مقرنا بالدار البيضاء وتوصيل سريع وموثوق في جميع أنحاء المغرب.

@@ -82,18 +82,30 @@
     if ($product->relationLoaded('images') && $product->images) {
         foreach ($product->images as $img) {
             if (!empty($img->image_path)) {
-                $allImages[] = str_starts_with($img->image_path, 'http') ? $img->image_path : asset('storage/' . $img->image_path);
+                $imgPath = $img->image_path;
+                if (str_starts_with($imgPath, 'http://') || str_starts_with($imgPath, 'https://')) {
+                    $allImages[] = $imgPath;
+                } elseif (str_starts_with($imgPath, 'images/') || str_starts_with($imgPath, '/images/')) {
+                    $allImages[] = asset(ltrim($imgPath, '/'));
+                } elseif (str_starts_with($imgPath, 'storage/') || str_starts_with($imgPath, '/storage/')) {
+                    $allImages[] = asset(ltrim($imgPath, '/'));
+                } else {
+                    $allImages[] = asset('storage/' . ltrim($imgPath, '/'));
+                }
             }
         }
     }
     $allImages = array_values(array_unique(array_filter($allImages)));
+    $productShareUrl = route('shop.show', $product->slug ?: $product->id);
+    $productMetaImage = !empty($allImages[0]) ? $allImages[0] : $product->thumbnail;
 @endphp
 
+@section('meta_url', $productShareUrl)
 @section('meta_title', $product->name . ' — Prix au Maroc, Achat & Garantie | ' . setting('app_name', 'WINA SHOP'))
 @section('meta_description', $cleanDesc)
 @section('meta_keywords', $productKeywords)
 @section('meta_type', 'product')
-@section('meta_image', $product->thumbnail)
+@section('meta_image', $productMetaImage)
 
 @section('extra_meta')
 <meta property="product:price:amount" content="{{ $product->isOnSale() ? $product->sale_price : $product->price }}">
@@ -102,8 +114,9 @@
 <meta property="product:condition" content="{{ $isOccasion ? 'used' : 'new' }}">
 <meta property="product:brand" content="{{ $brandGuess }}">
 <meta property="product:retailer_item_id" content="{{ $product->sku ?? ('PROD-' . $product->id) }}">
-@if(!empty($product->thumbnail))
-<link rel="preload" as="image" href="{{ $product->thumbnail }}" fetchpriority="high">
+<link rel="canonical" href="{{ $productShareUrl }}">
+@if(!empty($productMetaImage))
+<link rel="preload" as="image" href="{{ $productMetaImage }}" fetchpriority="high">
 @endif
 @endsection
 
@@ -568,6 +581,60 @@
                         </button>
                     </div>
                     @endif
+
+                    {{-- Share Product Bar (WhatsApp, Native Share, Copy Link) --}}
+                    @php
+                        $shareEncodedTitle = rawurlencode($product->name);
+                        $shareEncodedUrl = rawurlencode($productShareUrl);
+                        $sharePriceText = rawurlencode(' — ' . number_format($product->final_price, 2, '.', ' ') . ' MAD');
+                        $shareWhatsAppUrl = 'https://api.whatsapp.com/send?text=' . $shareEncodedTitle . $sharePriceText . '%0A' . $shareEncodedUrl;
+                    @endphp
+                    <div class="pdp-share-card mt-3 p-3 d-none">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-dark text-uppercase ls-1">
+                                <i class="fas fa-share-nodes text-danger me-1"></i> {{ __('Partager ce produit') }}
+                            </span>
+                            <span class="text-muted" style="font-size: 11px;">
+                                <i class="fas fa-image me-1 text-success"></i>{{ __('Image incluse') }}
+                            </span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            {{-- WhatsApp Share Button --}}
+                            <a href="{{ $shareWhatsAppUrl }}" target="_blank" rel="noopener noreferrer" 
+                               class="btn btn-sm btn-pdp-share-wa d-inline-flex align-items-center gap-2 text-decoration-none"
+                               title="{{ __('Partager avec image sur WhatsApp') }}">
+                                <i class="fab fa-whatsapp"></i>
+                                <span>WhatsApp</span>
+                            </a>
+
+                            {{-- Native Mobile Share Button --}}
+                            <button type="button" 
+                                    class="btn btn-sm btn-pdp-share-native d-inline-flex align-items-center gap-2"
+                                    onclick="pdpNativeShare('{{ addslashes($product->name) }}', '{{ addslashes($cleanDesc) }}', '{{ $productShareUrl }}')"
+                                    id="pdpNativeShareBtn"
+                                    title="{{ __('Partager le lien') }}">
+                                <i class="fas fa-share-from-square"></i>
+                                <span>{{ __('Partager') }}</span>
+                            </button>
+
+                            {{-- Copy Direct Link Button --}}
+                            <button type="button" 
+                                    class="btn btn-sm btn-pdp-share-copy d-inline-flex align-items-center gap-2"
+                                    onclick="copyPdpShareLink('{{ $productShareUrl }}', this)"
+                                    title="{{ __('Copier le lien avec aperçu') }}">
+                                <i class="far fa-copy"></i>
+                                <span class="share-copy-label">{{ __('Copier le lien') }}</span>
+                            </button>
+
+                            {{-- Facebook Share Button --}}
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ $shareEncodedUrl }}" 
+                               target="_blank" rel="noopener noreferrer"
+                               class="btn btn-sm btn-pdp-share-fb d-inline-flex align-items-center justify-content-center text-decoration-none"
+                               title="{{ __('Partager sur Facebook') }}">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -1037,6 +1104,42 @@ function fallbackCopy(text, cb) {
         if (cb) cb();
     } catch (e) {}
     document.body.removeChild(temp);
+}
+
+function copyPdpShareLink(url, btn) {
+    if (!url) return;
+    const onSuccess = () => {
+        if (!btn) return;
+        const origHtml = btn.innerHTML;
+        const isAr = document.documentElement.lang === 'ar';
+        btn.innerHTML = `<i class="fas fa-check text-success"></i> <span>${isAr ? 'تم النسخ !' : 'Lien copié !'}</span>`;
+        btn.classList.add('border-success');
+        setTimeout(() => {
+            btn.innerHTML = origHtml;
+            btn.classList.remove('border-success');
+        }, 2200);
+    };
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(url).then(onSuccess).catch(() => fallbackCopy(url, onSuccess));
+    } else {
+        fallbackCopy(url, onSuccess);
+    }
+}
+
+function pdpNativeShare(title, text, url) {
+    if (navigator.share) {
+        navigator.share({
+            title: title || document.title,
+            text: text || '',
+            url: url || window.location.href
+        }).catch(err => {
+            // User cancelled share
+        });
+    } else {
+        const btn = document.getElementById('pdpNativeShareBtn');
+        copyPdpShareLink(url, btn);
+    }
 }
 </script>
 @endpush

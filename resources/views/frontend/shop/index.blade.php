@@ -77,7 +77,7 @@
     <div class="container position-relative">
         <div class="shop-hero-content" data-aos="fade-up">
             {{-- Breadcrumb --}}
-            <nav class="shop-breadcrumb mb-2 mb-md-3" aria-label="breadcrumb">
+            <nav class="shop-breadcrumb mb-3" aria-label="breadcrumb">
                 <a href="{{ url('/') }}"><i class="fas fa-home me-1"></i> {{ __('Accueil') }}</a>
                 <span class="shop-bc-sep mx-2 opacity-50">/</span>
                 <a href="{{ route('shop.index') }}">{{ __('Boutique') }}</a>

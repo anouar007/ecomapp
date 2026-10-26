@@ -107,16 +107,24 @@ b, strong, h1, h2, h3, h4, h5, h6, .auth-title, .form-label, .btn-primary {
 }
 
 .auth-logo {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 24px;
-    background: var(--primary-gradient);
-    border-radius: 20px;
+    min-height: 72px;
+    margin: 0 auto 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: var(--shadow-md);
     animation: fadeInUp 0.4s ease-out;
+}
+
+.auth-logo img {
+    max-height: 72px;
+    max-width: 220px;
+    width: auto;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+}
+
+.auth-logo a:hover img {
+    transform: scale(1.04);
 }
 
 .auth-logo i {

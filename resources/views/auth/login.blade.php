@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{{ __('Sign In') }} - {{ setting('app_name', 'WINA SHOP') }}</title>
+    <!-- Favicon -->
+    <link rel="icon" href="{{ asset('images/camera/logo.png') }}" type="image/png">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,7 +41,9 @@
         <div class="auth-card">
             <div class="auth-header">
                 <div class="auth-logo">
-                    <i class="fas fa-shopping-cart"></i>
+                    <a href="{{ url('/') }}" title="{{ setting('app_name', 'WINA SHOP') }}">
+                        <img src="{{ asset('images/camera/logo.png') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" style="max-height: 72px; width: auto; object-fit: contain;">
+                    </a>
                 </div>
                 <h1 class="auth-title">{{ __('Welcome Back') }}</h1>
                 <p class="auth-subtitle">{{ __('Sign in to your account to continue') }}</p>

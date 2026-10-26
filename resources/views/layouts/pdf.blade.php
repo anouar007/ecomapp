@@ -77,7 +77,14 @@
 </head>
 <body>
     <div class="header">
-        <h1>{{ config('app.name', 'Speed') }}</h1>
+        @php
+            $pdfLogo = file_exists(public_path('images/camera/logo.png')) ? public_path('images/camera/logo.png') : null;
+        @endphp
+        @if($pdfLogo)
+            <img src="data:image/png;base64,{{ base64_encode(file_get_contents($pdfLogo)) }}" style="max-height: 48px; margin-bottom: 6px;">
+        @else
+            <h1>{{ setting('app_name', 'WINA SHOP') }}</h1>
+        @endif
         <p>@yield('subtitle')</p>
     </div>
 
