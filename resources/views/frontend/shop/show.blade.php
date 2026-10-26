@@ -20,6 +20,124 @@
     .pdp-main-image-wrap:hover .pdp-main-image {
         transform: none !important;
     }
+
+    /* Pixel-perfect alignment for Row 1 (Qty + AddToCart) & Row 2 (Partager + Acheter) */
+    .pdp-qty-wrap,
+    .pdp-share-btn {
+        flex: 0 0 124px !important;
+        width: 124px !important;
+        min-width: 124px !important;
+        max-width: 124px !important;
+        height: 48px !important;
+        box-sizing: border-box !important;
+        border-radius: 8px !important;
+    }
+
+    .pdp-commander-wrap {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-nowrap: nowrap !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+        width: 100% !important;
+        margin-top: 10px !important;
+    }
+
+    .pdp-commander-btn {
+        flex: 1 1 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+        height: 48px !important;
+        border-radius: 8px !important;
+    }
+
+    .pdp-share-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        background: #ffffff !important;
+        color: #0f172a !important;
+        border: 1.5px solid #0f172a !important;
+        border-radius: 8px !important;
+        font-size: 0.9rem !important;
+        font-family: var(--font-heading, "Roboto", sans-serif) !important;
+        font-weight: 600 !important;
+        cursor: pointer !important;
+        text-decoration: none !important;
+        user-select: none !important;
+        white-space: nowrap !important;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        box-shadow: none !important;
+        padding: 0 10px !important;
+    }
+
+    .pdp-share-btn i {
+        font-size: 0.88rem !important;
+        color: #0f172a !important;
+        transition: color 0.2s ease, transform 0.2s ease !important;
+    }
+
+    .pdp-share-btn:hover {
+        background: #f8fafc !important;
+        border-color: #011962 !important;
+        color: #011962 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08) !important;
+    }
+
+    .pdp-share-btn:hover i {
+        color: #011962 !important;
+        transform: rotate(-15deg);
+    }
+
+    .pdp-share-btn:active {
+        transform: translateY(0) !important;
+    }
+
+    .pdp-share-btn.is-copied {
+        background: #f0fdf4 !important;
+        border-color: #16a34a !important;
+        color: #15803d !important;
+        transform: none !important;
+    }
+
+    .pdp-share-btn.is-copied i {
+        color: #16a34a !important;
+        transform: none !important;
+    }
+
+    @media (max-width: 575px) {
+        .pdp-commander-wrap {
+            gap: 8px !important;
+            margin-top: 8px !important;
+        }
+
+        .pdp-qty-wrap,
+        .pdp-share-btn {
+            flex: 0 0 106px !important;
+            width: 106px !important;
+            min-width: 106px !important;
+            max-width: 106px !important;
+            height: 44px !important;
+        }
+
+        .pdp-share-btn {
+            font-size: 0.8rem !important;
+            gap: 5px !important;
+            padding: 0 6px !important;
+        }
+
+        .pdp-share-btn i {
+            font-size: 0.76rem !important;
+        }
+
+        .pdp-commander-btn {
+            height: 44px !important;
+            font-size: 0.88rem !important;
+            padding: 0 14px !important;
+        }
+    }
 </style>
 @endpush
 
@@ -524,14 +642,24 @@
                         </div>
                     </form>
 
-                    {{-- Acheter maintenant / Buy Now Button (Only visible when product is in stock) --}}
+                    {{-- Row 2: Partager Button (aligned with Qty) + Acheter maintenant (Buy Now, aligned with AddToCart) --}}
                     @php
                         $cartTotalCount = array_sum(array_column(session('cart', []), 'quantity'));
                         $currentLocale = app()->getLocale();
                         $commanderLabel = $currentLocale === 'ar' ? 'اشتري الآن' : ($currentLocale === 'en' ? 'Buy now' : 'Acheter maintenant');
+                        $shareLabel = $currentLocale === 'ar' ? 'مشاركة' : ($currentLocale === 'en' ? 'Share' : 'Partager');
                     @endphp
                     <div id="pdpCommanderWrap" class="pdp-commander-wrap mt-2">
-                        <button type="button" id="pdpCommanderBtn" class="pdp-commander-btn w-100 shadow-none" onclick="pdpCommanderAction(event)">
+                        <button type="button" 
+                                id="pdpShareBtn" 
+                                class="pdp-share-btn flex-shrink-0 shadow-none" 
+                                onclick="copyPdpShareLink('{{ $productShareUrl }}', this)" 
+                                title="{{ __('Copier le lien du produit') }}" 
+                                aria-label="{{ __('Partager le produit') }}">
+                            <i class="fas fa-link" id="pdpShareIcon"></i>
+                            <span id="pdpShareText">{{ $shareLabel }}</span>
+                        </button>
+                        <button type="button" id="pdpCommanderBtn" class="pdp-commander-btn flex-grow-1 shadow-none" onclick="pdpCommanderAction(event)">
                             <i class="fas fa-shopping-bag me-2"></i>
                             <span id="pdpCommanderText">{{ $commanderLabel }}</span>
                             <i class="fas {{ $currentLocale === 'ar' ? 'fa-arrow-left ms-2' : 'fa-arrow-right ms-2' }}"></i>
@@ -539,7 +667,20 @@
                     </div>
                     @else
                     <div class="pdp-cart-row d-flex flex-row flex-nowrap align-items-stretch w-100">
-                        <button type="button" id="addToCartBtn" class="pdp-add-btn pdp-add-btn--out w-100 text-nowrap shadow-none" disabled>
+                        @php
+                            $currentLocale = app()->getLocale();
+                            $shareLabel = $currentLocale === 'ar' ? 'مشاركة' : ($currentLocale === 'en' ? 'Share' : 'Partager');
+                        @endphp
+                        <button type="button" 
+                                id="pdpShareBtnOut" 
+                                class="pdp-share-btn flex-shrink-0 shadow-none" 
+                                onclick="copyPdpShareLink('{{ $productShareUrl }}', this)" 
+                                title="{{ __('Copier le lien du produit') }}" 
+                                aria-label="{{ __('Partager le produit') }}">
+                            <i class="fas fa-link"></i>
+                            <span>{{ $shareLabel }}</span>
+                        </button>
+                        <button type="button" id="addToCartBtn" class="pdp-add-btn pdp-add-btn--out flex-grow-1 text-nowrap shadow-none" disabled>
                             <i class="fas fa-ban me-2"></i>
                             <span id="addToCartText">{{ __('Out of stock') }}</span>
                         </button>
@@ -962,7 +1103,7 @@ function pdpSelectVariant(button) {
             addToCartBtn.classList.remove('pdp-add-btn--out');
             if (addToCartText) addToCartText.textContent = '{{ $notInCartLabel ?? "Ajouter au panier" }}';
         }
-        if (commanderWrap) commanderWrap.style.display = 'block';
+        if (commanderWrap) commanderWrap.style.display = '';
     } else {
         if (stockBadge) {
             stockBadge.className = 'pdp-stock-badge pdp-stock-badge--out';
@@ -1115,12 +1256,14 @@ function copyPdpShareLink(url, btn) {
         if (!btn) return;
         const origHtml = btn.innerHTML;
         const isAr = document.documentElement.lang === 'ar';
-        btn.innerHTML = `<i class="fas fa-check text-success"></i> <span>${isAr ? 'تم النسخ !' : 'Lien copié !'}</span>`;
-        btn.classList.add('border-success');
+        const isEn = document.documentElement.lang === 'en';
+        const copiedText = isAr ? 'تم النسخ !' : (isEn ? 'Copied !' : 'Copié !');
+        btn.innerHTML = `<i class="fas fa-check"></i> <span>${copiedText}</span>`;
+        btn.classList.add('is-copied');
         setTimeout(() => {
             btn.innerHTML = origHtml;
-            btn.classList.remove('border-success');
-        }, 2200);
+            btn.classList.remove('is-copied');
+        }, 2000);
     };
 
     if (navigator.clipboard && window.isSecureContext) {

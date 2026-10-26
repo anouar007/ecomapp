@@ -5994,17 +5994,86 @@ body:has(.offcanvas.show) .whatsapp-float {
 }
 
 .pdp-commander-wrap {
-    margin-top: 8px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-nowrap: nowrap !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    margin-top: 10px !important;
     width: 100% !important;
     transition: opacity .3s ease, transform .3s ease
 }
 
+.pdp-share-btn {
+    flex: 0 0 124px !important;
+    width: 124px !important;
+    min-width: 124px !important;
+    max-width: 124px !important;
+    height: 48px !important;
+    box-sizing: border-box !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    background: #fff !important;
+    color: #0f172a !important;
+    border: 1.5px solid #0f172a !important;
+    border-radius: 8px !important;
+    font-size: .9rem !important;
+    font-family: var(--font-heading, "Roboto", sans-serif) !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    user-select: none !important;
+    white-space: nowrap !important;
+    transition: all .25s cubic-bezier(.16, 1, .3, 1) !important;
+    box-shadow: none !important;
+    padding: 0 10px !important
+}
+
+.pdp-share-btn i {
+    font-size: .88rem !important;
+    color: #0f172a !important;
+    transition: color .2s ease, transform .2s ease !important
+}
+
+.pdp-share-btn:hover {
+    background: #f8fafc !important;
+    border-color: #011962 !important;
+    color: #011962 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, .08) !important
+}
+
+.pdp-share-btn:hover i {
+    color: #011962 !important;
+    transform: rotate(-15deg)
+}
+
+.pdp-share-btn:active {
+    transform: translateY(0) !important
+}
+
+.pdp-share-btn.is-copied {
+    background: #f0fdf4 !important;
+    border-color: #16a34a !important;
+    color: #15803d !important;
+    transform: none !important
+}
+
+.pdp-share-btn.is-copied i {
+    color: #16a34a !important;
+    transform: none !important
+}
+
 .pdp-commander-btn {
-    width: 100% !important;
+    flex: 1 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
     background: #011962 !important;
     color: #fff !important;
     border: 1.5px solid #011962 !important;
-    border-radius: 50px !important;
+    border-radius: 8px !important;
     height: 48px !important;
     font-size: .95rem !important;
     font-family: var(--font-heading, "Roboto", sans-serif) !important;
@@ -6040,6 +6109,26 @@ body:has(.offcanvas.show) .whatsapp-float {
 }
 
 @media(max-width:575px) {
+    .pdp-commander-wrap {
+        gap: 8px !important;
+        margin-top: 8px !important
+    }
+
+    .pdp-share-btn {
+        flex: 0 0 106px !important;
+        width: 106px !important;
+        min-width: 106px !important;
+        max-width: 106px !important;
+        height: 44px !important;
+        font-size: .8rem !important;
+        gap: 6px !important;
+        padding: 0 6px !important
+    }
+
+    .pdp-share-btn i {
+        font-size: .78rem !important
+    }
+
     .pdp-commander-btn {
         height: 44px !important;
         font-size: .88rem !important;

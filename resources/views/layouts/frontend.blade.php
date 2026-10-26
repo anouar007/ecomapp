@@ -14,9 +14,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Google Search Console & Webmaster Verification -->
-    @if(setting('google_site_verification'))
-    <meta name="google-site-verification" content="{{ setting('google_site_verification') }}">
-    @endif
+    <meta name="google-site-verification" content="{{ setting('google_site_verification', 'LZ-7Ol9-QmSxPdi2szEQX-uoiTOi-h_K7667yK7Y8Z0') }}">
     @if(setting('bing_site_verification'))
     <meta name="msvalidate.01" content="{{ setting('bing_site_verification') }}">
     @endif
