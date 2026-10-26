@@ -60,10 +60,16 @@ class CartController extends Controller
                     }
                     return back()->with('error', 'Déclinaison introuvable');
                 }
-            } elseif ($product->has_variants) {
-                // Auto-pick first active in-stock variant or first variant
-                $variant = $product->variants()->where('status', 'active')->where('stock', '>', 0)->first() 
-                    ?? $product->variants()->first();
+            } elseif ($product->has_variants && $product->variants()->exists()) {
+                $errorMsg = app()->getLocale() === 'ar' ? 'يرجى اختيار خيار / نوع قبل الإضافة إلى السلة' : (app()->getLocale() === 'en' ? 'Please select an option before adding to cart' : 'Veuillez sélectionner une option avant d\'ajouter au panier');
+                if ($isAjax) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $errorMsg,
+                        'requires_variant' => true
+                    ], 422);
+                }
+                return back()->with('error', $errorMsg);
             }
 
             // Check stock based on variant or base product

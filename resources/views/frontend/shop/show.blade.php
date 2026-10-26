@@ -107,6 +107,25 @@
         transform: none !important;
     }
 
+    @keyframes pdpShake {
+        0%, 100% { transform: translateX(0); }
+        20%, 60% { transform: translateX(-6px); }
+        40%, 80% { transform: translateX(6px); }
+    }
+
+    .pdp-variants-wrapper {
+        transition: all 0.25s ease;
+    }
+
+    .pdp-variants-wrapper.pdp-attention {
+        animation: pdpShake 0.45s ease-in-out;
+        border: 1.5px solid #dc2626 !important;
+        border-radius: 12px;
+        padding: 10px 12px;
+        background: #fff5f5;
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+    }
+
     @media (max-width: 575px) {
         .pdp-commander-wrap {
             gap: 8px !important;
@@ -550,36 +569,16 @@
 
                     @if($product->has_variants && $product->variants->isNotEmpty())
                     {{-- VARIATIONS SELECTION PILLS (EX: SD CARD 512GB / 256GB / 128GB) --}}
-                    @php
-                        $defaultOptionName = app()->getLocale() === 'ar' ? 'الافتراضي' : (app()->getLocale() === 'en' ? 'Default' : 'Par défaut');
-                        $isBaseInStock = $product->isInStock();
-                        $baseDisplayPrice = $product->isOnSale() ? $product->formatted_sale_price : $product->formatted_price;
-                        $baseRawPrice = (float)($product->sale_price ?? $product->price);
-                    @endphp
                     <div class="pdp-variants-wrapper my-3">
-                        <div class="d-flex align-items-center justify-content-between mb-2.5">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
                             <span class="text-uppercase fw-bold text-muted small" style="font-size: 0.72rem; letter-spacing: 0.05em;">
-                                <i class="fas fa-layer-group text-primary me-1"></i>Option / Variante : <strong class="text-dark" id="selectedVariantNameLabel">{{ $defaultOptionName }}</strong>
+                                <i class="fas fa-layer-group text-primary me-1"></i>{{ __('Option / Variante') }}
                             </span>
                             <span class="badge bg-white text-secondary border fw-medium px-2 py-1" style="font-size: 0.68rem; border-radius: 6px;">
-                                {{ $product->variants->count() + 1 }} {{ __('options') }}
+                                {{ $product->variants->count() }} {{ __('options') }}
                             </span>
                         </div>
-                        <div class="d-flex flex-wrap gap-2" id="pdpVariantPills">
-                            {{-- Option par défaut (Produit standard de base) --}}
-                            <button type="button" 
-                                    class="pdp-variant-pill btn active {{ !$isBaseInStock ? 'is-out-of-stock' : '' }}"
-                                    data-variant-id=""
-                                    data-variant-name="{{ $defaultOptionName }}"
-                                    data-variant-price="{{ $baseDisplayPrice }}"
-                                    data-variant-raw-price="{{ $baseRawPrice }}"
-                                    data-variant-stock="{{ (int)$product->stock }}"
-                                    data-variant-in-stock="{{ $isBaseInStock ? '1' : '0' }}"
-                                    data-is-default="1"
-                                    onclick="pdpSelectVariant(this)">
-                                <span>{{ $defaultOptionName }}</span>
-                            </button>
-
+                        <div class="d-flex flex-wrap gap-2" id="pdpVariantPills">                            
                             @foreach($product->variants as $variant)
                                 @php
                                     $isVarInStock = $variant->isInStock();
@@ -597,6 +596,9 @@
                                     <span>{{ $variant->name }}</span>
                                 </button>
                             @endforeach
+                        </div>
+                        <div id="pdpVariantRequiredNotice" class="text-danger small mt-2 d-none fw-semibold">
+                            <i class="fas fa-exclamation-circle me-1"></i>{{ __('Veuillez sélectionner une option avant d\'ajouter au panier ou de commander.') }}
                         </div>
                         <input type="hidden" name="selected_variant_id" id="selectedVariantId" value="">
                     </div>
@@ -1032,8 +1034,42 @@ function pdpChangeImage(src, thumb) {
 
 let selectedVariantId = null;
 
+function pdpPromptSelectVariant() {
+    const wrapper = document.querySelector('.pdp-variants-wrapper');
+    const notice = document.getElementById('pdpVariantRequiredNotice');
+    const isAr = document.documentElement.lang === 'ar' || document.documentElement.dir === 'rtl';
+    const isEn = document.documentElement.lang === 'en';
+
+    if (wrapper) {
+        wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        wrapper.classList.remove('pdp-attention');
+        void wrapper.offsetWidth;
+        wrapper.classList.add('pdp-attention');
+    }
+
+    if (notice) {
+        notice.classList.remove('d-none');
+    }
+
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            icon: 'warning',
+            title: isAr ? 'يرجى اختيار خيار' : (isEn ? 'Please choose an option' : 'Veuillez choisir une option'),
+            text: isAr ? 'يرجى تحديد أحد الخيارات المتاحة قبل المتابعة.' : (isEn ? 'Please select one of the available options before proceeding.' : 'Veuillez sélectionner l\'une des options disponibles avant d\'ajouter au panier ou de commander.'),
+            confirmButtonColor: '#011962',
+            confirmButtonText: isAr ? 'حسناً' : (isEn ? 'OK' : 'D\'accord')
+        });
+    }
+}
+
 function pdpSelectVariant(button) {
     if (!button) return;
+
+    // Clear validation feedback
+    const wrapper = document.querySelector('.pdp-variants-wrapper');
+    if (wrapper) wrapper.classList.remove('pdp-attention');
+    const notice = document.getElementById('pdpVariantRequiredNotice');
+    if (notice) notice.classList.add('d-none');
 
     document.querySelectorAll('.pdp-variant-pill').forEach(btn => {
         btn.classList.remove('active');
@@ -1044,8 +1080,7 @@ function pdpSelectVariant(button) {
 
     button.classList.add('active');
 
-    const isDefault = button.dataset.isDefault === '1' || !button.dataset.variantId;
-    selectedVariantId = isDefault ? null : button.dataset.variantId;
+    selectedVariantId = button.dataset.variantId || null;
 
     const name = button.dataset.variantName;
     const price = button.dataset.variantPrice;
@@ -1054,9 +1089,6 @@ function pdpSelectVariant(button) {
 
     const hiddenInput = document.getElementById('selectedVariantId');
     if (hiddenInput) hiddenInput.value = selectedVariantId || '';
-
-    const nameLabel = document.getElementById('selectedVariantNameLabel');
-    if (nameLabel) nameLabel.textContent = name;
 
     const noticeEl = document.getElementById('selectedVariantStockNotice');
     if (noticeEl) {
@@ -1069,17 +1101,11 @@ function pdpSelectVariant(button) {
     const priceMain = document.querySelector('.pdp-price-main');
     if (priceMain) priceMain.textContent = price;
 
-    // Toggle old price & discount badge for base product vs variant
+    // Hide old price & discount badge for specific variant
     const oldPriceEl = document.querySelector('.pdp-price-old');
     const discountBadgeEl = document.querySelector('.pdp-discount-badge');
-    const isBaseOnSale = {{ $product->isOnSale() ? 'true' : 'false' }};
-
-    if (oldPriceEl) {
-        oldPriceEl.style.display = (isDefault && isBaseOnSale) ? '' : 'none';
-    }
-    if (discountBadgeEl) {
-        discountBadgeEl.style.display = (isDefault && isBaseOnSale) ? '' : 'none';
-    }
+    if (oldPriceEl) oldPriceEl.style.display = 'none';
+    if (discountBadgeEl) discountBadgeEl.style.display = 'none';
 
     // Update stock badge and buttons
     const stockBadge = document.querySelector('.pdp-stock-badge');
@@ -1127,6 +1153,12 @@ function pdpChangeQty(delta) {
 
 function pdpAddToCart(event) {
     event.preventDefault();
+    const hasVariants = {{ ($product->has_variants && $product->variants->isNotEmpty()) ? 'true' : 'false' }};
+    if (hasVariants && !selectedVariantId) {
+        pdpPromptSelectVariant();
+        return;
+    }
+
     const btn      = document.getElementById('addToCartBtn');
     const qtyInput = document.getElementById('pdpQty');
     const quantity = qtyInput ? (parseInt(qtyInput.value) || 1) : 1;
@@ -1139,6 +1171,12 @@ function pdpAddToCart(event) {
 
 function pdpCommanderAction(event) {
     if (event) event.preventDefault();
+    const hasVariants = {{ ($product->has_variants && $product->variants->isNotEmpty()) ? 'true' : 'false' }};
+    if (hasVariants && !selectedVariantId) {
+        pdpPromptSelectVariant();
+        return;
+    }
+
     const btn = document.getElementById('pdpCommanderBtn');
     if (!btn || btn.disabled) return;
 
@@ -1154,8 +1192,8 @@ function pdpCommanderAction(event) {
     const isAr = document.documentElement.lang === 'ar' || document.documentElement.dir === 'rtl';
     const redirectingText = isAr ? 'جاري التحويل...' : 'Redirection...';
 
-    // If product is ALREADY in cart and no variant is specified -> go directly to checkout
-    if (isCurrentInCart && !selectedVariantId) {
+    // If product is ALREADY in cart with this specific variant -> go directly to checkout
+    if (isCurrentInCart && (!hasVariants || selectedVariantId)) {
         btn.disabled = true;
         btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span><span>${redirectingText}</span>`;
         window.location.href = "{{ route('checkout.index') }}";
