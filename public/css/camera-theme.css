@@ -1670,23 +1670,10 @@ mark.search-highlight {
     box-shadow: var(--brand-red-glow);
 }
 
-/* Hover Overlay Actions */
-.product-v2-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.5);
-    backdrop-filter: blur(4px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: 4;
-}
-
-.product-card-v2:hover .product-v2-overlay {
-    opacity: 1;
+/* Hover Overlay Actions - Disabled */
+.product-v2-overlay,
+.pcard-overlay {
+    display: none !important;
 }
 
 .btn-overlay {
@@ -3123,29 +3110,6 @@ mark.search-highlight {
         font-size: 0.78rem !important;
     }
 
-    .product-v2-overlay {
-        opacity: 1 !important;
-        background: transparent !important;
-        bottom: 8px !important;
-        top: auto !important;
-        right: 8px !important;
-        left: auto !important;
-        pointer-events: auto !important;
-        flex-direction: row !important;
-        gap: 6px !important;
-    }
-
-    .product-v2-overlay .btn-overlay {
-        padding: 6px 12px !important;
-        font-size: 0.78rem !important;
-        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4) !important;
-    }
-
-    .product-v2-overlay .btn-overlay-icon {
-        width: 34px !important;
-        height: 34px !important;
-        font-size: 0.85rem !important;
-    }
 }
 
 /* ================================================================

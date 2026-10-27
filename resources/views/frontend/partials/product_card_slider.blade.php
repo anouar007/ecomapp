@@ -18,21 +18,6 @@
             @endif
         </div>
 
-         <!-- Hover Actions (Bottom Slide Up) -->
-         <div class="position-absolute bottom-0 start-0 w-100 p-2 product-actions d-flex justify-content-center gap-2 pb-3 bg-white bg-opacity-90 transition-transform translate-y-full group-hover:translate-y-0" style="z-index: 2;">
-             @if($product->isInStock())
-             <button class="btn btn-sm btn-primary rounded-0 square-icon" onclick="addToCart({{ $product->id }})" title="{{ __('Add to cart') }}">
-                 <i class="fas fa-shopping-cart"></i>
-             </button>
-             @else
-             <button class="btn btn-sm btn-secondary rounded-0 square-icon" disabled title="{{ __('Out of stock') }}" style="cursor: not-allowed;">
-                 <i class="fas fa-shopping-cart"></i>
-             </button>
-             @endif
-             <button class="btn btn-sm btn-outline-dark rounded-0 square-icon" onclick="openQuickView({{ $product->id }})" title="{{ __('Quick View') }}">
-                 <i class="fas fa-eye"></i>
-             </button>
-         </div>
     </div>
     
     <div class="card-body p-3 pt-2 text-center border-top border-light">

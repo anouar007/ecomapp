@@ -314,11 +314,6 @@
                             @elseif($related->isOnSale())
                                 <div class="pcard-badges"><span class="pcard-badge pcard-badge--sale">−{{ $related->discount_percentage }}%</span></div>
                             @endif
-                            <div class="pcard-overlay">
-                                <a href="{{ route('shop.show', $related->id) }}" class="pcard-overlay-btn pcard-overlay-btn--ghost">
-                                    <i class="fas fa-eye"></i> {{ __('View') }}
-                                </a>
-                            </div>
                         </div>
                         <div class="pcard-body">
                             @if($related->category_name)

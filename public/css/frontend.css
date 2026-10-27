@@ -922,20 +922,10 @@ a { text-decoration: none; }
 .badge-new  { background: var(--text-dark); color: #fff; }
 .badge-sale { background: var(--accent);    color: #fff; }
 
-/* Overlay CTA */
+/* Overlay CTA - Disabled */
 .product-v2-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(17,24,39,.55);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    opacity: 0;
-    transition: opacity .3s;
-    backdrop-filter: blur(3px);
+    display: none !important;
 }
-.product-card-v2:hover .product-v2-overlay { opacity: 1; }
 
 .btn-overlay {
     display: inline-flex;
@@ -1898,15 +1888,10 @@ a { text-decoration: none; }
 .pcard-badge--sale { background: var(--accent); }
 .pcard-badge--oos  { background: #6b7280; }
 
-/* Hover overlay */
+/* Hover overlay - Disabled */
 .pcard-overlay {
-    position: absolute; inset: 0;
-    background: rgba(26,26,46,.82);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 10px;
-    opacity: 0; transition: opacity .25s;
+    display: none !important;
 }
-.pcard:hover .pcard-overlay { opacity: 1; }
 .pcard-overlay-btn {
     background: var(--accent); color: #fff; border: none;
     border-radius: 30px; padding: 10px 22px;

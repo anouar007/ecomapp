@@ -18,18 +18,6 @@
                         <span class="pcard-badge pcard-badge--sale">−{{ $product->discount_percentage }}%</span>
                     @endif
                 </div>
-
-                {{-- Desktop Hover overlay actions --}}
-                <div class="pcard-overlay d-none d-md-flex">
-                    @if($product->isInStock())
-                    <button class="pcard-overlay-btn" onclick="addToCart({{ $product->id }})" title="{{ __('Add to cart') }}">
-                        <i class="fas fa-cart-plus"></i> {{ __('Add') }}
-                    </button>
-                    @endif
-                    <a href="{{ route('shop.show', $product->id) }}" class="pcard-overlay-btn pcard-overlay-btn--ghost" title="{{ __('View Product') }}">
-                        <i class="fas fa-eye"></i> {{ __('Details') }}
-                    </a>
-                </div>
             </div>
 
             {{-- Info --}}

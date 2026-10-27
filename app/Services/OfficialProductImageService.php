@@ -750,7 +750,6 @@ class OfficialProductImageService
                 ]);
                 $curlBody = curl_exec($ch);
                 $curlCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                curl_close($ch);
                 if ($curlCode === 200 && is_string($curlBody) && strlen($curlBody) >= 3000) {
                     $body = $curlBody;
                 }
@@ -1265,6 +1264,9 @@ class OfficialProductImageService
         if (str_contains($currentUrl, 'bhphoto')) {
             return preg_replace('/images\d+x\d+/i', 'images2500x2500', $currentUrl);
         }
+        if (str_contains($currentUrl, 'media-amazon.com') || str_contains($currentUrl, 'images-amazon.com')) {
+            return preg_replace('/(?:\._AC_SL\d+_|\._SL\d+_|\._AC_)/i', '._AC_SL2500_', $currentUrl);
+        }
         if (str_contains($currentUrl, '/images/produits/')) {
             return str_replace('/images/produits/large/', '/images/produits/big/', $currentUrl);
         }
@@ -1277,9 +1279,9 @@ class OfficialProductImageService
 
     /**
      * Search 4K / Ultra-HD studio master images for a product.
-     * Guaranteed 100% verified official manufacturer assets.
+     * Searches official manufacturer databases AND open-web distributors / retailers.
      */
-    public function find4kCandidates(string $productName, ?string $brand = null, int $minWidth = 1000, int $limit = 8): array
+    public function find4kCandidates(string $productName, ?string $brand = null, int $minWidth = 1000, int $limit = 16): array
     {
         $brand = $brand ?: $this->detectBrand($productName);
         $candidates = [];
@@ -1290,41 +1292,264 @@ class OfficialProductImageService
         if ($officialUrl) {
             $upgradedCat = $this->findOfficial4kMaster($productName, $brand, $officialUrl);
             $info = @getimagesize($upgradedCat);
-            if ($info) {
-                $candidates[] = [
-                    'url' => $upgradedCat,
-                    'width' => $info[0],
-                    'height' => $info[1],
-                    'quality' => "Official Master ({$info[0]}×{$info[1]})",
-                    'source' => 'Official Manufacturer Packshot',
-                    'mime' => $info['mime'] ?? 'image/jpeg',
-                    'score' => 100,
-                ];
-                $seenUrls[$upgradedCat] = true;
-                $seenUrls[$officialUrl] = true;
-            }
+            $w = $info[0] ?? 2000;
+            $h = $info[1] ?? 2000;
+            $is4k = ($w >= 2000 || $h >= 2000);
+            $candidates[] = [
+                'url' => $upgradedCat,
+                'thumbnail' => $upgradedCat,
+                'width' => $w,
+                'height' => $h,
+                'title' => $productName,
+                'quality' => $is4k ? "4K Ultra-HD ({$w}×{$h})" : "Full HD ({$w}×{$h})",
+                'source' => 'Catalogue Officiel Fabricant',
+                'is_official' => true,
+                'is_4k' => $is4k,
+                'is_fhd' => ($w >= 1200 || $h >= 1200),
+                'score' => 100,
+            ];
+            $seenUrls[$upgradedCat] = true;
+            $seenUrls[$officialUrl] = true;
         }
 
         // 2. Wikimedia Commons high-res studio equipment asset
         $wikiUrl = $this->searchWikimediaCommons($productName, $brand);
         if ($wikiUrl && !isset($seenUrls[$wikiUrl])) {
             $info = @getimagesize($wikiUrl);
-            if ($info && $info[0] >= $minWidth) {
-                $candidates[] = [
-                    'url' => $wikiUrl,
-                    'width' => $info[0],
-                    'height' => $info[1],
-                    'quality' => "Ultra-HD Studio Master ({$info[0]}×{$info[1]})",
-                    'source' => 'Wikimedia Commons Studio Archive',
-                    'mime' => $info['mime'] ?? 'image/jpeg',
-                    'score' => 95,
-                ];
-                $seenUrls[$wikiUrl] = true;
+            $w = $info[0] ?? 2000;
+            $h = $info[1] ?? 2000;
+            $is4k = ($w >= 2000 || $h >= 2000);
+            $candidates[] = [
+                'url' => $wikiUrl,
+                'thumbnail' => $wikiUrl,
+                'width' => $w,
+                'height' => $h,
+                'title' => $productName,
+                'quality' => $is4k ? "4K Ultra-HD ({$w}×{$h})" : "Full HD ({$w}×{$h})",
+                'source' => 'Wikimedia Commons Studio Archive',
+                'is_official' => true,
+                'is_4k' => $is4k,
+                'is_fhd' => ($w >= 1200 || $h >= 1200),
+                'score' => 95,
+            ];
+            $seenUrls[$wikiUrl] = true;
+        }
+
+        // 3. Open Web, Retailers, Distributors & Camera Shops
+        $webLimit = $limit - count($candidates);
+        if ($webLimit > 0) {
+            $webCandidates = $this->searchWebCandidates($productName, $brand, $webLimit + 4);
+            foreach ($webCandidates as $wc) {
+                if (!isset($seenUrls[$wc['url']])) {
+                    $seenUrls[$wc['url']] = true;
+                    $candidates[] = $wc;
+                }
             }
         }
 
-        usort($candidates, fn($a, $b) => ($b['score'] ?? 0) <=> ($a['score'] ?? 0));
+        // Probe real dimensions for top candidates if estimated
+        $this->probeCandidateDimensions($candidates);
+
+        usort($candidates, function($a, $b) {
+            $scoreA = ($a['score'] ?? 0) + (($a['is_4k'] ?? false) ? 20 : 0) + (($a['is_fhd'] ?? false) ? 10 : 0);
+            $scoreB = ($b['score'] ?? 0) + (($b['is_4k'] ?? false) ? 20 : 0) + (($b['is_fhd'] ?? false) ? 10 : 0);
+            return $scoreB <=> $scoreA;
+        });
+
+        return array_slice($candidates, 0, $limit);
+    }
+
+    /**
+     * Search high-resolution product images across the open web (retailers, distributors, camera shops).
+     */
+    public function searchWebCandidates(string $productName, ?string $brand = null, int $limit = 12): array
+    {
+        $brand = $brand ?: $this->detectBrand($productName);
+        $cleanName = trim(preg_replace('/\([^)]*\)/', '', $productName));
+        $cleanName = trim(preg_replace('/\b\d+(\.\d+)?\s*(mm|cm|m|kg|g|w|v|mah|hz|khz|fps|bit|gb|tb|in|inch|pouces)\b/i', '', $cleanName));
+        $cleanName = preg_replace('/\s+/', ' ', $cleanName);
+
+        $queries = [
+            $cleanName . ' studio packshot white background',
+            $cleanName . ' official high resolution product',
+        ];
+
+        if ($brand && stripos($cleanName, $brand) === false) {
+            $queries[] = $brand . ' ' . $cleanName . ' camera';
+        }
+
+        $candidates = [];
+        $seenUrls = [];
+
+        foreach ($queries as $searchQuery) {
+            if (count($candidates) >= $limit) {
+                break;
+            }
+
+            try {
+                $searchUrl = "https://www.bing.com/images/search?q=" . urlencode($searchQuery) . "&qft=+filterui:imagesize-large&form=HDRSC2";
+
+                $ch = curl_init($searchUrl);
+                curl_setopt_array($ch, [
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_TIMEOUT => 5,
+                    CURLOPT_USERAGENT => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                    CURLOPT_HTTPHEADER => [
+                        'Accept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
+                    ],
+                ]);
+                $html = curl_exec($ch);
+
+                if (!$html || strlen($html) < 2000) {
+                    continue;
+                }
+
+                if (!preg_match_all('/class="iusc"[^\>]*m="([^"]+)"/i', $html, $matches)) {
+                    continue;
+                }
+
+                foreach ($matches[1] as $rawJson) {
+                    if (count($candidates) >= $limit) {
+                        break;
+                    }
+
+                    $decoded = html_entity_decode($rawJson, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                    $data = json_decode($decoded, true);
+                    if (!$data || empty($data['murl'])) {
+                        continue;
+                    }
+
+                    $rawUrl = $data['murl'];
+
+                    if (!preg_match('/\.(?:jpe?g|png|webp)(\?.*)?$/i', $rawUrl)) {
+                        continue;
+                    }
+                    if (str_contains($rawUrl, 'data:image') || str_contains($rawUrl, 'base64')) {
+                        continue;
+                    }
+                    foreach ($this->placeholderPatterns as $ph) {
+                        if (stripos($rawUrl, $ph) !== false) {
+                            continue 2;
+                        }
+                    }
+
+                    $upgradedUrl = $this->findOfficial4kMaster($productName, $brand, $rawUrl);
+
+                    if (isset($seenUrls[$upgradedUrl]) || isset($seenUrls[$rawUrl])) {
+                        continue;
+                    }
+                    $seenUrls[$upgradedUrl] = true;
+                    $seenUrls[$rawUrl] = true;
+
+                    $title = $data['t'] ?? $productName;
+                    $pageUrl = $data['purl'] ?? '';
+                    $pageHost = parse_url($pageUrl, PHP_URL_HOST) ?: parse_url($upgradedUrl, PHP_URL_HOST);
+
+                    $sourceName = 'Distributeur Web';
+                    if (str_contains($pageHost, 'amazon.')) {
+                        $sourceName = 'Amazon Studio Master';
+                    } elseif (str_contains($pageHost, 'bhphotovideo.com')) {
+                        $sourceName = 'B&H Photo Video';
+                    } elseif (str_contains($pageHost, 'adorama.com')) {
+                        $sourceName = 'Adorama Studio';
+                    } elseif (str_contains($pageHost, 'walmart.com')) {
+                        $sourceName = 'Walmart Retail';
+                    } elseif (str_contains($pageHost, 'cameralabs.com') || str_contains($pageHost, 'dpreview.com')) {
+                        $sourceName = 'Presse / Test Photo';
+                    } elseif ($brand && stripos($pageHost, str_replace([' ', '&', '-'], '', strtolower($brand))) !== false) {
+                        $sourceName = 'Site Marque ' . $brand;
+                    } elseif ($pageHost) {
+                        $sourceName = preg_replace('/^www\./i', '', $pageHost);
+                    }
+
+                    $estWidth = 2000;
+                    $estHeight = 2000;
+                    if (preg_match('/(?:_SL|_AC_SL)(\d+)_/i', $upgradedUrl, $mDim)) {
+                        $estWidth = (int)$mDim[1];
+                        $estHeight = (int)$mDim[1];
+                    } elseif (preg_match('/(\d{3,4})x(\d{3,4})/i', $upgradedUrl, $mDim)) {
+                        $estWidth = (int)$mDim[1];
+                        $estHeight = (int)$mDim[2];
+                    } elseif (str_contains($upgradedUrl, 'images2500x2500')) {
+                        $estWidth = 2500;
+                        $estHeight = 2500;
+                    }
+
+                    $is4k = ($estWidth >= 2000 || $estHeight >= 2000);
+                    $isFhd = ($estWidth >= 1200 || $estHeight >= 1200);
+
+                    $candidates[] = [
+                        'url' => $upgradedUrl,
+                        'thumbnail' => $data['turl'] ?? $upgradedUrl,
+                        'width' => $estWidth,
+                        'height' => $estHeight,
+                        'title' => html_entity_decode(strip_tags($title), ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+                        'source' => $sourceName,
+                        'page_url' => $pageUrl,
+                        'quality' => $is4k ? "4K Ultra-HD ({$estWidth}×{$estHeight})" : "Full HD ({$estWidth}×{$estHeight})",
+                        'is_official' => false,
+                        'is_4k' => $is4k,
+                        'is_fhd' => $isFhd,
+                        'score' => $is4k ? 90 : 80,
+                    ];
+                }
+            } catch (Throwable $e) {
+                Log::warning("Web image search failed for query '{$searchQuery}': " . $e->getMessage());
+            }
+        }
+
         return $candidates;
+    }
+
+    /**
+     * Fast parallel inspection of top candidate image dimensions.
+     */
+    protected function probeCandidateDimensions(array &$candidates): void
+    {
+        if (empty($candidates)) return;
+
+        $topCandidates = array_slice($candidates, 0, 6, true);
+        $mh = curl_multi_init();
+        $handles = [];
+
+        foreach ($topCandidates as $idx => $cand) {
+            $ch = curl_init($cand['url']);
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_TIMEOUT => 2,
+                CURLOPT_USERAGENT => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+                CURLOPT_RANGE => '0-65536', // first 64KB contains image header
+            ]);
+            curl_multi_add_handle($mh, $ch);
+            $handles[$idx] = $ch;
+        }
+
+        $running = null;
+        do {
+            curl_multi_exec($mh, $running);
+            curl_multi_select($mh, 0.2);
+        } while ($running > 0);
+
+        foreach ($handles as $idx => $ch) {
+            $data = curl_multi_getcontent($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            if ($httpCode >= 200 && $httpCode < 400 && !empty($data)) {
+                $info = @getimagesizefromstring($data);
+                if ($info && $info[0] > 0 && $info[1] > 0) {
+                    $candidates[$idx]['width'] = $info[0];
+                    $candidates[$idx]['height'] = $info[1];
+                    $is4k = ($info[0] >= 2000 || $info[1] >= 2000);
+                    $candidates[$idx]['is_4k'] = $is4k;
+                    $candidates[$idx]['is_fhd'] = ($info[0] >= 1200 || $info[1] >= 1200);
+                    $candidates[$idx]['quality'] = $is4k ? "4K Ultra-HD ({$info[0]}×{$info[1]})" : "Full HD ({$info[0]}×{$info[1]})";
+                }
+            }
+            curl_multi_remove_handle($mh, $ch);
+        }
+
+        curl_multi_close($mh);
     }
 
     /**

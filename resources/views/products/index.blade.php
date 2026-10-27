@@ -292,6 +292,10 @@
                     <i class="fas fa-wand-magic-sparkles me-1 text-warning"></i>Mettre à niveau 4K
                 </button>
 
+                <button type="button" class="btn btn-warning btn-sm rounded-pill px-3 text-dark fw-semibold shadow-sm" onclick="openBulkDescriptionModal()" title="Générer les meilleures descriptions e-commerce pour la sélection">
+                    <i class="fas fa-feather-pointed me-1 text-dark"></i>Descriptions Pro
+                </button>
+
                 <div class="btn-group btn-group-sm">
                     <button type="button" class="btn btn-outline-light btn-sm rounded-start-pill px-2" onclick="executeBulkAction('activate')" title="Activer les produits sélectionnés">
                         <i class="fas fa-check me-1"></i>Activer
@@ -466,6 +470,14 @@
                                     <i class="fas fa-wand-magic-sparkles"></i>
                                 </button>
 
+                                <!-- Bouton Description Pro -->
+                                <button type="button" 
+                                        class="table-action-icon action-desc" 
+                                        title="Générer la meilleure description e-commerce"
+                                        onclick="openSingleDescModal({{ $product->id }}, '{{ addslashes($product->name) }}')">
+                                    <i class="fas fa-feather-pointed"></i>
+                                </button>
+
                                 <!-- Bouton Modifier -->
                                 <a href="{{ route('products.edit', $product) }}" 
                                    class="table-action-icon action-edit" 
@@ -631,6 +643,191 @@
             <button type="button" onclick="close4kImageModal()" class="btn btn-secondary btn-sm rounded-pill px-4">
                 Fermer
             </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Single Product Description Generator & Preview -->
+<div id="modalSingleDesc" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); z-index: 9999; overflow-y: auto; padding: 20px; align-items: center; justify-content: center;">
+    <div style="background: #ffffff; width: 100%; max-width: 860px; border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); overflow: hidden; margin: auto; border: 1px solid rgba(255, 255, 255, 0.2);">
+        <!-- En-tête Modal -->
+        <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #312e81 100%); color: white; padding: 22px 28px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(255, 255, 255, 0.12); display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fbbf24; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <i class="fas fa-feather-pointed"></i>
+                </div>
+                <div>
+                    <h4 style="margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.01em;">Générateur de Description Pro</h4>
+                    <p style="margin: 3px 0 0; font-size: 13px; color: #c7d2fe;" id="modalSingleDescProductTitle">Chargement du produit...</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeSingleDescModal()" style="background: rgba(255,255,255,0.12); border: none; color: white; width: 36px; height: 36px; border-radius: 10px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Barre de configuration du style -->
+        <div style="padding: 16px 28px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <label for="singleDescStyle" style="font-size: 12px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.05em; margin: 0;">
+                    Style &amp; Tonalité :
+                </label>
+                <select id="singleDescStyle" class="form-select form-select-sm" style="width: auto; min-width: 250px; border-radius: 10px; font-size: 13px; font-weight: 500;">
+                    <option value="pro_ecommerce" selected>✨ E-commerce Pro (Points forts, specs &amp; garantie)</option>
+                    <option value="technical">📋 Technique Détaillé (Optique, capteur, specs)</option>
+                    <option value="storytelling">🎬 Storytelling Cinéma (Approche cinéastes)</option>
+                </select>
+            </div>
+            <div>
+                <button type="button" id="btnRunSingleDesc" onclick="runSingleDescGeneration()" class="btn btn-warning shadow-sm" style="border-radius: 10px; font-size: 13px; font-weight: 700; padding: 8px 20px; color: #1e1b4b;">
+                    <i class="fas fa-wand-magic-sparkles me-1 text-dark"></i> Générer la description
+                </button>
+            </div>
+        </div>
+
+        <!-- Zone de contenu / Prévisualisation -->
+        <div style="padding: 24px 28px;">
+            <div id="loadingSingleDesc" style="display: none; text-align: center; padding: 40px 20px;">
+                <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
+                <p style="margin-top: 16px; font-weight: 600; color: #1e293b; font-size: 15px;">Rédaction de la meilleure description...</p>
+                <p style="font-size: 13px; color: #64748b;">Extraction des spécifications techniques &amp; structuration e-commerce</p>
+            </div>
+
+            <div id="contentSingleDesc">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">
+                        Aperçu éditable de la fiche produit
+                    </span>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-light text-dark border" id="badgeSingleDescLength" style="font-size: 11px; font-weight: 600;">
+                            <span id="singleDescCharCount">0</span> caractères &bull; <span id="singleDescWordCount">0</span> mots
+                        </span>
+                    </div>
+                </div>
+                <textarea id="singleDescPreview" 
+                          class="form-control" 
+                          rows="13" 
+                          placeholder="Cliquez sur 'Générer la description' pour créer automatiquement la fiche parfaite..."
+                          style="font-size: 13px; line-height: 1.6; border-radius: 12px; background: #fafafa; border: 1.5px solid #e2e8f0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;"></textarea>
+                <div style="margin-top: 8px; font-size: 11px; color: #94a3b8; display: flex; align-items: center; justify-content: space-between;">
+                    <span><i class="fas fa-info-circle me-1"></i> Vous pouvez modifier directement le texte dans ce champ avant de l'appliquer.</span>
+                    <span class="text-success"><i class="fas fa-check-circle me-1"></i> Format optimisé pour le site web</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pied du modal -->
+        <div style="padding: 16px 28px; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" id="btnCopySingleDesc" onclick="copySingleDescToClipboard()" class="btn btn-outline-secondary btn-sm rounded-pill px-3" style="font-size: 12px;">
+                    <i class="fas fa-copy me-1"></i> Copier le texte
+                </button>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" onclick="closeSingleDescModal()" class="btn btn-secondary btn-sm rounded-pill px-4">
+                    Annuler
+                </button>
+                <button type="button" id="btnApplySingleDesc" onclick="applySingleDescToProduct()" class="btn btn-success btn-sm rounded-pill px-4 fw-semibold shadow-sm">
+                    <i class="fas fa-check me-1"></i> Appliquer à la fiche
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Bulk Product Description Generator -->
+<div id="modalBulkDesc" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); z-index: 9999; overflow-y: auto; padding: 20px; align-items: center; justify-content: center;">
+    <div style="background: #ffffff; width: 100%; max-width: 720px; border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); overflow: hidden; margin: auto; border: 1px solid rgba(255, 255, 255, 0.2);">
+        <!-- En-tête Modal Bulk -->
+        <div style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%); color: white; padding: 22px 28px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(255, 255, 255, 0.15); display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fbbf24; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div>
+                    <h4 style="margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.01em;">Génération Groupée de Descriptions</h4>
+                    <p style="margin: 3px 0 0; font-size: 13px; color: #c7d2fe;">
+                        <span id="bulkDescSelectedCountBadge" class="badge bg-warning text-dark fw-bold me-1">0</span> produit(s) sélectionné(s)
+                    </p>
+                </div>
+            </div>
+            <button type="button" onclick="closeBulkDescriptionModal()" style="background: rgba(255,255,255,0.12); border: none; color: white; width: 36px; height: 36px; border-radius: 10px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Options de génération groupée -->
+        <div style="padding: 24px 28px;">
+            <!-- Choix du mode d'écrasement -->
+            <label class="form-label fw-bold text-dark mb-2" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em;">
+                Mode d'application
+            </label>
+            <div class="d-flex flex-column gap-2 mb-4">
+                <label class="p-3 border rounded-3 d-flex align-items-start gap-3 cursor-pointer shadow-xs" style="background: #f8fafc; cursor: pointer;">
+                    <input type="radio" name="bulkOverwriteMode" value="empty_only" checked class="form-check-input mt-1" style="cursor: pointer;">
+                    <div>
+                        <div class="fw-bold text-dark" style="font-size: 13.5px;">
+                            🛡️ Sécurisé : Uniquement les produits sans description (ou description courte &lt; 100 car.)
+                        </div>
+                        <div class="text-muted small mt-1">
+                            Recommandé. Préserve vos fiches existantes et enrichit seulement celles qui sont incomplètes ou vides.
+                        </div>
+                    </div>
+                </label>
+
+                <label class="p-3 border rounded-3 d-flex align-items-start gap-3 cursor-pointer shadow-xs" style="background: #ffffff; cursor: pointer;">
+                    <input type="radio" name="bulkOverwriteMode" value="all" class="form-check-input mt-1" style="cursor: pointer;">
+                    <div>
+                        <div class="fw-bold text-dark" style="font-size: 13.5px;">
+                            ⚡ Intégral : Écraser et régénérer TOUS les produits sélectionnés
+                        </div>
+                        <div class="text-muted small mt-1">
+                            Remplace l'ensemble des descriptions des produits cochés par la nouvelle version optimisée.
+                        </div>
+                    </div>
+                </label>
+            </div>
+
+            <!-- Choix du style -->
+            <div class="mb-4">
+                <label for="bulkDescStyleSelect" class="form-label fw-bold text-dark mb-1" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em;">
+                    Style &amp; Tonalité rédactionnelle
+                </label>
+                <select id="bulkDescStyleSelect" class="form-select" style="border-radius: 10px; font-size: 13.5px; padding: 10px 14px;">
+                    <option value="pro_ecommerce" selected>✨ E-commerce Pro (Structure complète, points forts, caractéristiques &amp; garantie)</option>
+                    <option value="technical">📋 Technique Détaillé (Spécifications optiques, capteur, connectique &amp; vidéo)</option>
+                    <option value="storytelling">🎬 Storytelling Cinéma (Ton immersif axé créateurs et réalisateurs)</option>
+                </select>
+            </div>
+
+            <!-- Zone de progression (masquée au départ) -->
+            <div id="bulkDescProgressArea" style="display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; margin-top: 16px;">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="fw-bold text-dark" style="font-size: 13px;" id="bulkDescStatusText">Traitement en cours...</span>
+                    <span class="badge bg-primary rounded-pill px-3 py-1" id="bulkDescProgressPercent">0%</span>
+                </div>
+                <div class="progress" style="height: 10px; border-radius: 6px; background: #e2e8f0;">
+                    <div id="bulkDescProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" style="width: 0%;"></div>
+                </div>
+                <div id="bulkDescLogs" style="margin-top: 14px; max-height: 160px; overflow-y: auto; font-size: 12px; line-height: 1.5; color: #475569; font-family: ui-monospace, monospace; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px;">
+                    <!-- Logs dynamiques -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Pied du modal Bulk -->
+        <div style="padding: 16px 28px; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+            <div style="font-size: 12px; color: #64748b;">
+                <i class="fas fa-magic text-warning me-1"></i> Optimisation SEO &bull; Vue d'ensemble, points forts &amp; specs
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" onclick="closeBulkDescriptionModal()" class="btn btn-secondary btn-sm rounded-pill px-4">
+                    Annuler
+                </button>
+                <button type="button" id="btnRunBulkDesc" onclick="runBulkDescriptionGeneration()" class="btn btn-warning btn-sm rounded-pill px-4 fw-bold text-dark shadow-sm">
+                    <i class="fas fa-sparkles me-1 text-dark"></i> Lancer la génération
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -990,6 +1187,16 @@
         background: #8b5cf6;
         color: #ffffff;
         border-color: #8b5cf6;
+    }
+    .action-desc {
+        color: #d97706;
+        border-color: #fef3c7;
+        background: #fffbeb;
+    }
+    .action-desc:hover {
+        background: #d97706;
+        color: #ffffff;
+        border-color: #d97706;
     }
     .action-edit {
         color: #2563eb;
@@ -1453,6 +1660,311 @@
             button.disabled = false;
             button.innerHTML = origHtml;
             Swal.fire('Erreur', 'Erreur de téléchargement : ' + err.message, 'error');
+        });
+    }
+
+    /* ========================================================
+       GESTION DES DESCRIPTIONS PRO (SINGLE & BULK)
+       ======================================================== */
+    let currentSingleDescProductId = null;
+    let currentSingleDescProductName = '';
+
+    function openSingleDescModal(productId, productName) {
+        currentSingleDescProductId = productId;
+        currentSingleDescProductName = productName;
+
+        const titleEl = document.getElementById('modalSingleDescProductTitle');
+        if (titleEl) {
+            titleEl.innerText = productName;
+        }
+
+        const previewEl = document.getElementById('singleDescPreview');
+        if (previewEl) {
+            previewEl.value = '';
+            updateSingleDescCounts();
+            previewEl.oninput = updateSingleDescCounts;
+        }
+
+        document.getElementById('modalSingleDesc').style.display = 'flex';
+        runSingleDescGeneration();
+    }
+
+    function closeSingleDescModal() {
+        document.getElementById('modalSingleDesc').style.display = 'none';
+    }
+
+    function updateSingleDescCounts() {
+        const text = document.getElementById('singleDescPreview')?.value || '';
+        const charCount = text.length;
+        const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+
+        const charEl = document.getElementById('singleDescCharCount');
+        const wordEl = document.getElementById('singleDescWordCount');
+        if (charEl) charEl.innerText = charCount.toLocaleString();
+        if (wordEl) wordEl.innerText = words.toLocaleString();
+    }
+
+    function runSingleDescGeneration() {
+        if (!currentSingleDescProductId) return;
+
+        const btn = document.getElementById('btnRunSingleDesc');
+        const loading = document.getElementById('loadingSingleDesc');
+        const content = document.getElementById('contentSingleDesc');
+        const style = document.getElementById('singleDescStyle')?.value || 'pro_ecommerce';
+        const previewEl = document.getElementById('singleDescPreview');
+
+        const origHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin text-warning me-1"></i> Rédaction...';
+
+        loading.style.display = 'block';
+        content.style.opacity = '0.3';
+        content.style.pointerEvents = 'none';
+
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+
+        fetch(`/products/${currentSingleDescProductId}/generate-description`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': token,
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ style: style })
+        })
+        .then(res => res.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = origHtml;
+            loading.style.display = 'none';
+            content.style.opacity = '1';
+            content.style.pointerEvents = 'auto';
+
+            if (data.success && data.description) {
+                previewEl.value = data.description;
+                updateSingleDescCounts();
+
+                // Feedback visuel
+                previewEl.style.transition = 'all 0.3s';
+                previewEl.style.borderColor = '#10b981';
+                previewEl.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.2)';
+                setTimeout(() => {
+                    previewEl.style.borderColor = '#e2e8f0';
+                    previewEl.style.boxShadow = 'none';
+                }, 1500);
+            } else {
+                Swal.fire('Erreur', data.message || 'Impossible de générer la description', 'error');
+            }
+        })
+        .catch(err => {
+            btn.disabled = false;
+            btn.innerHTML = origHtml;
+            loading.style.display = 'none';
+            content.style.opacity = '1';
+            content.style.pointerEvents = 'auto';
+            Swal.fire('Erreur', 'Erreur de génération : ' + err.message, 'error');
+        });
+    }
+
+    function applySingleDescToProduct() {
+        if (!currentSingleDescProductId) return;
+
+        const previewEl = document.getElementById('singleDescPreview');
+        const description = previewEl?.value?.trim();
+
+        if (!description) {
+            Swal.fire('Description vide', 'Veuillez d\'abord générer ou saisir une description.', 'warning');
+            return;
+        }
+
+        const btn = document.getElementById('btnApplySingleDesc');
+        const origHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Enregistrement...';
+
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+
+        fetch(`/products/${currentSingleDescProductId}/apply-description`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': token,
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ description: description })
+        })
+        .then(res => res.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = origHtml;
+
+            if (data.success) {
+                closeSingleDescModal();
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Fiche mise à jour !',
+                    text: `La nouvelle description a été appliquée avec succès.`,
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            } else {
+                Swal.fire('Erreur', data.message || 'Impossible d\'enregistrer la description', 'error');
+            }
+        })
+        .catch(err => {
+            btn.disabled = false;
+            btn.innerHTML = origHtml;
+            Swal.fire('Erreur', 'Erreur de mise à jour : ' + err.message, 'error');
+        });
+    }
+
+    function copySingleDescToClipboard() {
+        const text = document.getElementById('singleDescPreview')?.value;
+        if (!text) {
+            Swal.fire('Aucun texte', 'Il n\'y a pas encore de texte à copier.', 'info');
+            return;
+        }
+
+        navigator.clipboard.writeText(text).then(() => {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: 'Copié dans le presse-papiers !',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }).catch(err => {
+            Swal.fire('Erreur', 'Impossible de copier : ' + err.message, 'error');
+        });
+    }
+
+    /* Modal Bulk Description Generation */
+    function openBulkDescriptionModal() {
+        if (selectedProducts.length === 0) {
+            Swal.fire('Aucune sélection', 'Veuillez cocher au moins un produit dans le tableau.', 'warning');
+            return;
+        }
+
+        const badge = document.getElementById('bulkDescSelectedCountBadge');
+        if (badge) {
+            badge.innerText = selectedProducts.length;
+        }
+
+        // Réinitialiser la zone de progression
+        const progressArea = document.getElementById('bulkDescProgressArea');
+        if (progressArea) progressArea.style.display = 'none';
+
+        const logs = document.getElementById('bulkDescLogs');
+        if (logs) logs.innerHTML = '';
+
+        const btnRun = document.getElementById('btnRunBulkDesc');
+        if (btnRun) {
+            btnRun.disabled = false;
+            btnRun.innerHTML = '<i class="fas fa-sparkles me-1 text-dark"></i> Lancer la génération';
+        }
+
+        document.getElementById('modalBulkDesc').style.display = 'flex';
+    }
+
+    function closeBulkDescriptionModal() {
+        document.getElementById('modalBulkDesc').style.display = 'none';
+    }
+
+    function runBulkDescriptionGeneration() {
+        if (selectedProducts.length === 0) {
+            closeBulkDescriptionModal();
+            return;
+        }
+
+        const modeRadio = document.querySelector('input[name="bulkOverwriteMode"]:checked');
+        const overwriteMode = modeRadio ? modeRadio.value : 'empty_only';
+        const style = document.getElementById('bulkDescStyleSelect')?.value || 'pro_ecommerce';
+
+        const progressArea = document.getElementById('bulkDescProgressArea');
+        const progressBar = document.getElementById('bulkDescProgressBar');
+        const progressPercent = document.getElementById('bulkDescProgressPercent');
+        const statusText = document.getElementById('bulkDescStatusText');
+        const logs = document.getElementById('bulkDescLogs');
+        const btnRun = document.getElementById('btnRunBulkDesc');
+
+        progressArea.style.display = 'block';
+        progressBar.style.width = '30%';
+        progressPercent.innerText = '30%';
+        statusText.innerText = `Analyse et génération pour ${selectedProducts.length} produit(s)...`;
+        logs.innerHTML = `<div class="text-primary fw-semibold"><i class="fas fa-satellite-dish me-1"></i> Extraction des données techniques & rédaction des fiches...</div>`;
+
+        btnRun.disabled = true;
+        btnRun.innerHTML = '<i class="fas fa-spinner fa-spin me-1 text-dark"></i> Traitement en cours...';
+
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+
+        fetch("{{ route('products.bulk-generate-descriptions') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': token,
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                product_ids: selectedProducts,
+                overwrite_mode: overwriteMode,
+                style: style
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            progressBar.style.width = '100%';
+            progressPercent.innerText = '100%';
+            btnRun.disabled = false;
+            btnRun.innerHTML = '<i class="fas fa-check me-1 text-dark"></i> Terminé';
+
+            if (data.success && data.data) {
+                const res = data.data;
+                statusText.innerText = `Succès : ${res.updated} enrichi(s), ${res.skipped} ignoré(s).`;
+
+                let logHtml = '';
+                if (res.details && res.details.length > 0) {
+                    res.details.forEach(item => {
+                        if (item.status === 'updated' || item.status === 'success') {
+                            const chars = item.chars || (item.preview ? item.preview.length : 0);
+                            logHtml += `<div class="text-success"><i class="fas fa-check-circle me-1"></i> <strong>${item.name}</strong> : Description générée (${chars} car.)</div>`;
+                        } else if (item.status === 'skipped') {
+                            logHtml += `<div class="text-muted"><i class="fas fa-forward me-1"></i> <strong>${item.name}</strong> : Description déjà complète (ignoré)</div>`;
+                        } else {
+                            logHtml += `<div class="text-danger"><i class="fas fa-times-circle me-1"></i> <strong>${item.name}</strong> : ${item.error || 'Erreur'}</div>`;
+                        }
+                    });
+                }
+                logs.innerHTML = logHtml || `<div class="text-success">${data.message}</div>`;
+
+                Swal.fire({
+                    title: 'Descriptions Générées !',
+                    html: `<b>${res.updated} produit(s)</b> ont reçu une nouvelle description optimisée.<br><small class="text-muted">${res.skipped} produit(s) ont été conservés intacts.</small>`,
+                    icon: 'success',
+                    confirmButtonText: 'Fermer',
+                    confirmButtonColor: '#4f46e5'
+                }).then(() => {
+                    closeBulkDescriptionModal();
+                });
+            } else {
+                statusText.innerText = 'Erreur lors du traitement.';
+                Swal.fire('Erreur', data.message || 'Impossible de générer les descriptions groupées', 'error');
+            }
+        })
+        .catch(err => {
+            btnRun.disabled = false;
+            btnRun.innerHTML = '<i class="fas fa-redo me-1 text-dark"></i> Réessayer';
+            progressBar.style.width = '0%';
+            progressPercent.innerText = '0%';
+            statusText.innerText = 'Erreur réseau ou serveur.';
+            logs.innerHTML += `<div class="text-danger"><i class="fas fa-exclamation-triangle me-1"></i> ${err.message}</div>`;
+            Swal.fire('Erreur', 'Erreur de communication : ' + err.message, 'error');
         });
     }
 </script>

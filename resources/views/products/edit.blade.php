@@ -175,12 +175,30 @@
             </div>
 
             <div class="form-group">
-                <label for="description" class="form-label">Description</label>
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                    <label for="description" class="form-label mb-0 fw-bold">Description</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <select id="descStyleSelect" class="form-select form-select-sm rounded-pill w-auto py-1 shadow-xs" style="font-size: 11px; border-color: #cbd5e1;">
+                            <option value="pro_ecommerce">✨ E-commerce Pro (Points forts &amp; Fiche)</option>
+                            <option value="technical">📋 Technique Détaillé</option>
+                            <option value="storytelling">🎬 Storytelling &amp; Créateurs</option>
+                        </select>
+                        <button type="button" 
+                                onclick="generateBestDescriptionForEdit()" 
+                                id="btnGenDescEdit" 
+                                class="btn btn-sm rounded-pill px-3 fw-semibold text-white d-flex align-items-center gap-1 shadow-sm" 
+                                style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); border: none; font-size: 12px; transition: all 0.2s;">
+                            <i class="fas fa-sparkles text-warning"></i>
+                            <span>Générer la meilleure description</span>
+                        </button>
+                    </div>
+                </div>
                 <textarea id="description" 
                           name="description" 
                           class="form-control" 
-                          rows="4" 
-                          placeholder="Product description...">{{ old('description', $product->description) }}</textarea>
+                          rows="8" 
+                          placeholder="Description détaillée du produit...">{{ old('description', $product->description) }}</textarea>
+                <small class="form-help text-muted">Formaté avec sections claires, spécifications techniques et points forts du matériel.</small>
             </div>
 
             <div class="form-row">
@@ -485,7 +503,67 @@ function applySelected4kImage(imageUrl, button) {
     .catch(err => {
         button.disabled = false;
         button.innerHTML = origHtml;
-        alert('Error: ' + err.message);
+        alert('Erreur: ' + err.message);
+    });
+}
+
+function generateBestDescriptionForEdit() {
+    const btn = document.getElementById('btnGenDescEdit');
+    const textarea = document.getElementById('description');
+    const style = document.getElementById('descStyleSelect')?.value || 'pro_ecommerce';
+    const origHtml = btn.innerHTML;
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin text-warning"></i> Génération en cours...';
+
+    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]')?.value;
+
+    fetch("{{ route('products.generate-description', $product) }}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token,
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ style: style })
+    })
+    .then(r => r.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerHTML = origHtml;
+
+        if (data.success && data.description) {
+            textarea.value = data.description;
+            textarea.style.transition = 'all 0.3s';
+            textarea.style.borderColor = '#10b981';
+            textarea.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.2)';
+            setTimeout(() => {
+                textarea.style.borderColor = '';
+                textarea.style.boxShadow = '';
+            }, 2000);
+
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Meilleure description générée !',
+                    text: `${data.length} caractères insérés avec succès.`,
+                    showConfirmButton: false,
+                    timer: 2500
+                });
+            } else {
+                alert('Meilleure description générée et insérée avec succès !');
+            }
+        } else {
+            alert(data.message || 'Impossible de générer la description.');
+        }
+    })
+    .catch(err => {
+        btn.disabled = false;
+        btn.innerHTML = origHtml;
+        alert('Erreur: ' + err.message);
     });
 }
 </script>

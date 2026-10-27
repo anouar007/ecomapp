@@ -238,20 +238,6 @@
                                 <span class="badge-v2 badge-sale">-{{ $product->discount_percentage }}%</span>
                             @endif
                         </div>
-                        <div class="product-v2-overlay">
-                            @if($product->isInStock())
-                            <button class="btn-overlay" onclick="addToCart({{ $product->id }})" title="{{ __('Add to Cart') }}">
-                                <i class="fas fa-cart-plus"></i> <span>{{ __('Add to Cart') }}</span>
-                            </button>
-                            @else
-                            <span class="btn-overlay" style="background: rgba(255,255,255,0.2) !important; color:#fff !important; cursor:not-allowed;">
-                                <i class="fas fa-clock"></i> {{ __('On Order') }}
-                            </span>
-                            @endif
-                            <a href="{{ route('shop.show', $product->id) }}" class="btn-overlay-icon" title="{{ __('View') }}">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                        </div>
                     </div>
                     <div class="product-v2-body">
                         @if($product->productCategory)

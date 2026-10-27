@@ -340,7 +340,7 @@ class ProductController extends Controller
     public function bulkAction(Request $request)
     {
         $request->validate([
-            'action' => 'required|string|in:delete,duplicate,increase_stock,decrease_stock,activate,deactivate',
+            'action' => 'required|string|in:delete,duplicate,increase_stock,decrease_stock,activate,deactivate,generate_descriptions',
             'product_ids' => 'required|array|min:1',
             'product_ids.*' => 'exists:products,id',
             'stock_amount' => 'nullable|integer|min:1',
@@ -415,6 +415,18 @@ class ProductController extends Controller
                         'message' => "{$count} product(s) deactivated successfully."
                     ]);
 
+                case 'generate_descriptions':
+                    $service = app(\App\Services\ProductDescriptionService::class);
+                    $result = $service->bulkGenerateDescriptions($productIds, [
+                        'overwrite_mode' => $request->overwrite_mode ?? 'empty_only',
+                        'style' => $request->style ?? 'pro_ecommerce',
+                    ]);
+                    return response()->json([
+                        'success' => true,
+                        'message' => "Descriptions générées avec succès : {$result['updated']} produit(s) enrichi(s), {$result['skipped']} ignoré(s).",
+                        'data' => $result,
+                    ]);
+
                 default:
                     return response()->json([
                         'success' => false,
@@ -476,6 +488,67 @@ class ProductController extends Controller
             'width' => $product->image_width,
             'height' => $product->image_height,
             'quality' => $product->image_quality,
+            'badge_html' => $product->image_quality_badge,
+        ]);
+    }
+
+    /**
+     * Upload and apply a high-resolution image directly from user computer.
+     */
+    public function upload4kImage(Request $request, Product $product)
+    {
+        $request->validate([
+            'image_file' => ['required', 'image', 'max:25600'], // up to 25MB high-res
+        ]);
+
+        $file = $request->file('image_file');
+        $ext = $file->getClientOriginalExtension() ?: 'jpg';
+        $filename = $product->id . '_' . \Illuminate\Support\Str::slug(substr($product->name, 0, 40)) . '_' . time() . '.' . $ext;
+        $relativeDir = 'products/official';
+        $fullStorageDir = storage_path('app/public/' . $relativeDir);
+
+        if (!file_exists($fullStorageDir)) {
+            mkdir($fullStorageDir, 0755, true);
+        }
+
+        $file->move($fullStorageDir, $filename);
+        $relativePath = $relativeDir . '/' . $filename;
+        $fullSavedPath = storage_path('app/public/' . $relativePath);
+
+        $info = @getimagesize($fullSavedPath);
+        $width = $info[0] ?? null;
+        $height = $info[1] ?? null;
+        $quality = 'sd';
+        if ($width >= 2000 || $height >= 2000) {
+            $quality = '4k';
+        } elseif ($width >= 1200 || $height >= 1200) {
+            $quality = 'fhd';
+        }
+
+        $product->update([
+            'image' => $relativePath,
+            'image_width' => $width,
+            'image_height' => $height,
+            'image_quality' => $quality,
+        ]);
+
+        \App\Models\ProductImage::updateOrCreate(
+            ['product_id' => $product->id, 'is_primary' => true],
+            ['image_path' => $relativePath, 'sort_order' => 0]
+        );
+
+        \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
+        \Illuminate\Support\Facades\Cache::forget('frontend_nav_categories');
+        \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Image 4K téléversée et appliquée avec succès !',
+            'image_path' => $relativePath,
+            'image_url' => asset('storage/' . $relativePath),
+            'width' => $width,
+            'height' => $height,
+            'quality' => $quality,
             'badge_html' => $product->image_quality_badge,
         ]);
     }
@@ -567,6 +640,76 @@ class ProductController extends Controller
             'status' => $newStatus,
             'status_label' => $newStatus === 'active' ? 'Actif' : 'Inactif',
             'message' => "Le statut du produit '{$product->name}' a été mis à jour en " . ($newStatus === 'active' ? 'Actif' : 'Inactif'),
+        ]);
+    }
+
+    /**
+     * Generate the best description for a single product.
+     */
+    public function generateDescription(Request $request, Product $product)
+    {
+        $style = $request->input('style', 'pro_ecommerce');
+        $service = app(\App\Services\ProductDescriptionService::class);
+        $description = $service->generateBestDescription($product, ['style' => $style]);
+
+        return response()->json([
+            'success' => true,
+            'product_id' => $product->id,
+            'product_name' => $product->name,
+            'description' => $description,
+            'length' => mb_strlen($description),
+        ]);
+    }
+
+    /**
+     * Apply generated description to a product.
+     */
+    public function applyDescription(Request $request, Product $product)
+    {
+        $request->validate([
+            'description' => 'required|string',
+        ]);
+
+        $product->update([
+            'description' => $request->description,
+        ]);
+
+        \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
+        \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
+
+        return response()->json([
+            'success' => true,
+            'message' => "Description mise à jour avec succès pour '{$product->name}' !",
+            'description' => $product->description,
+        ]);
+    }
+
+    /**
+     * Bulk generate descriptions for multiple products.
+     */
+    public function bulkGenerateDescriptions(Request $request)
+    {
+        $productIds = $request->input('product_ids', []);
+        if (empty($productIds)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Veuillez sélectionner au moins un produit.',
+            ], 422);
+        }
+
+        $overwriteMode = $request->input('overwrite_mode', 'empty_only');
+        $style = $request->input('style', 'pro_ecommerce');
+
+        $service = app(\App\Services\ProductDescriptionService::class);
+        $result = $service->bulkGenerateDescriptions($productIds, [
+            'overwrite_mode' => $overwriteMode,
+            'style' => $style,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Génération terminée : {$result['updated']} produit(s) mis à jour, {$result['skipped']} ignoré(s).",
+            'data' => $result,
         ]);
     }
 }
