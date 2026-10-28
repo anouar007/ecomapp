@@ -139,21 +139,21 @@
     }
 
     .pdp-enrich-lead {
-        background: #021962 !important;
-        border: 1px solid #021962 !important;
-        border-left: 4px solid #021962 !important;
+        background: linear-gradient(135deg, #0031c845, #00196900) !important;
+        border: 0 solid black !important;
+        border-left: 4px solid #03154d !important;
         border-radius: 14px !important;
         padding: 18px 22px !important;
         margin-bottom: 24px !important;
         box-shadow: 0 4px 14px rgba(2, 25, 98, 0.12) !important;
-        color: #ffffff !important;
+        color: #020202 !important;
     }
 
     .pdp-enrich-lead p {
         margin-bottom: 0 !important;
         font-size: 1.02rem !important;
         line-height: 1.75 !important;
-        color: #ffffff !important;
+        color: #000000 !important;
         font-weight: 450 !important;
     }
 
