@@ -29,6 +29,10 @@ class Brand extends Model
         'sort_order' => 'integer',
     ];
 
+    protected $appends = [
+        'logo_url',
+    ];
+
     protected static function booted(): void
     {
         static::creating(function (Brand $brand) {
@@ -83,7 +87,11 @@ class Brand extends Model
             return $this->logo;
         }
 
-        if (str_starts_with($this->logo, 'brands/') || str_starts_with($this->logo, 'storage/')) {
+        if (str_starts_with($this->logo, 'images/') || str_starts_with($this->logo, '/images/')) {
+            return asset(ltrim($this->logo, '/'));
+        }
+
+        if (str_starts_with($this->logo, 'storage/') || str_starts_with($this->logo, '/storage/')) {
             return asset(ltrim($this->logo, '/'));
         }
 

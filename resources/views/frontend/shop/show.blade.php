@@ -557,16 +557,31 @@
                 <div class="col-lg-6 pdp-info-panel">
                     @php
                         $displayCats = $product->categories->isNotEmpty() ? $product->categories : collect(array_filter([$product->productCategory]));
+                        $productBrand = $product->brand;
                     @endphp
-                    @if($displayCats->isNotEmpty())
-                        <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+                    <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+                        @if($productBrand)
+                            <a href="{{ route('shop.index', ['brand' => $productBrand->slug]) }}" 
+                               class="d-inline-flex align-items-center gap-1.5 py-1 px-2.5 rounded-pill border bg-white text-dark text-decoration-none shadow-xs" 
+                               style="font-size: 0.8rem; font-weight: 600;" 
+                               title="{{ __('Filtrer par la marque :brand', ['brand' => $productBrand->name]) }}">
+                                @if($productBrand->logo)
+                                    <img src="{{ $productBrand->logo_url }}" alt="{{ $productBrand->name }}" width="20" height="20" style="object-fit: contain; max-height: 20px; max-width: 20px;" loading="lazy">
+                                @else
+                                    <i class="fas fa-tag text-danger" style="font-size: 0.72rem;"></i>
+                                @endif
+                                <span>{{ $productBrand->name }}</span>
+                            </a>
+                        @endif
+
+                        @if($displayCats->isNotEmpty())
                             @foreach($displayCats as $pCat)
                                 <a href="{{ route('shop.index', ['category' => $pCat->slug]) }}" class="pdp-cat-label d-inline-block text-decoration-none">{{ $pCat->name }}</a>
                             @endforeach
-                        </div>
-                    @elseif($product->category_name)
-                        <a href="{{ route('shop.index', ['category' => $product->category_slug ?? optional($product->category)->slug ?? optional($product->productCategory)->slug]) }}" class="pdp-cat-label d-inline-block text-decoration-none mb-2">{{ $product->category_name }}</a>
-                    @endif
+                        @elseif($product->category_name)
+                            <a href="{{ route('shop.index', ['category' => $product->category_slug ?? optional($product->category)->slug ?? optional($product->productCategory)->slug]) }}" class="pdp-cat-label d-inline-block text-decoration-none">{{ $product->category_name }}</a>
+                        @endif
+                    </div>
 
                     <h1 class="pdp-title">{{ $product->name }}</h1>
 

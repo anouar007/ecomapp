@@ -97,8 +97,8 @@ class ShopController extends Controller
     public function show($id)
     {
         $product = is_numeric($id)
-            ? Product::with(['images', 'productCategory', 'categories', 'inventoryMovements', 'variants'])->findOrFail($id)
-            : Product::with(['images', 'productCategory', 'categories', 'inventoryMovements', 'variants'])->where('slug', $id)->firstOrFail();
+            ? Product::with(['images', 'productCategory', 'categories', 'inventoryMovements', 'variants', 'brand'])->findOrFail($id)
+            : Product::with(['images', 'productCategory', 'categories', 'inventoryMovements', 'variants', 'brand'])->where('slug', $id)->firstOrFail();
         
         // Paginate approved reviews separately - 5 per page
         $reviews = ProductReview::where('product_id', $product->id)
