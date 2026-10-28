@@ -2472,48 +2472,60 @@ a {
     background: #fff;
     transition: all .2s ease;
 }
+
 .shop-brand-dropdown-btn:hover {
     border-color: var(--accent);
 }
+
 .shop-brand-dropdown-btn.has-brand {
     border-color: #dc3545 !important;
     background-color: #fff5f5 !important;
     color: #dc3545 !important;
 }
+
 .toolbar-brand-list-wrap::-webkit-scrollbar {
     width: 5px;
 }
+
 .toolbar-brand-list-wrap::-webkit-scrollbar-track {
     background: #f1f1f1;
     border-radius: 4px;
 }
+
 .toolbar-brand-list-wrap::-webkit-scrollbar-thumb {
     background: #ccc;
     border-radius: 4px;
 }
+
 .toolbar-brand-list-wrap::-webkit-scrollbar-thumb:hover {
     background: #999;
 }
+
 .toolbar-brand-list-wrap .dropdown-item {
     font-size: 0.84rem;
     transition: background .15s ease, color .15s ease;
 }
+
 .toolbar-brand-list-wrap .dropdown-item:hover {
     background: var(--bg-surface);
     color: var(--text-dark);
 }
+
 .toolbar-brand-list-wrap .dropdown-item.active {
     background: #dc3545 !important;
     color: #fff !important;
 }
+
 .toolbar-brand-list-wrap .dropdown-item.active .cat-item-check {
     display: inline-block !important;
     color: #fff !important;
 }
+
 .toolbar-brand-list-wrap .dropdown-item.active .badge {
     background: rgba(255, 255, 255, 0.25) !important;
     color: #fff !important;
 }
+
 .toolbar-brand-list-wrap .dropdown-item .cat-item-check {
     display: none;
 }
@@ -2525,11 +2537,13 @@ a {
     gap: 6px;
     width: 100%;
 }
-.shop-mobile-toolbar-row > button,
-.shop-mobile-toolbar-row > .dropdown {
+
+.shop-mobile-toolbar-row>button,
+.shop-mobile-toolbar-row>.dropdown {
     flex: 1 1 0;
     min-width: 0;
 }
+
 .shop-mobile-toolbar .btn-mobile-tool {
     padding: 8px 8px;
     font-size: 0.8rem;
@@ -2537,27 +2551,33 @@ a {
     min-height: 42px;
     width: 100%;
 }
+
 .shop-mobile-toolbar .btn-mobile-tool.has-brand {
     border-color: #dc3545 !important;
     background-color: #fff5f5 !important;
     color: #dc3545 !important;
 }
+
 .shop-mobile-toolbar .btn-mobile-tool.has-brand i.fa-tags {
     color: #dc3545 !important;
 }
+
 .shop-mobile-toolbar .btn-mobile-tool.has-brand .text-truncate {
     color: #dc3545 !important;
     font-weight: 700;
 }
+
 .btn-mobile-view-toggle,
 #mobileViewToggle,
 #viewToggleIcon {
     display: none !important;
 }
+
 @media (max-width: 380px) {
     .shop-mobile-toolbar-row {
         gap: 4px;
     }
+
     .shop-mobile-toolbar .btn-mobile-tool {
         padding: 8px 5px;
         font-size: 0.75rem;

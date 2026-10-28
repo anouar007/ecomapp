@@ -173,16 +173,16 @@
             $activeBrandName = isset($activeBrand) && $activeBrand ? $activeBrand->name : '';
         @endphp
         <div class="shop-mobile-toolbar d-lg-none">
-            <div class="shop-mobile-toolbar-row">
+            <div class="shop-mobile-toolbar-row d-flex">
                 {{-- 1. Filter trigger button --}}
-                <button type="button" class="btn-mobile-tool" data-bs-toggle="offcanvas" data-bs-target="#shopFilterSheet" id="mobileFilterTrigger">
+                <button type="button" class="btn-mobile-tool m-auto" data-bs-toggle="offcanvas" data-bs-target="#shopFilterSheet" id="mobileFilterTrigger">
                     <i class="fas fa-sliders-h text-danger flex-shrink-0"></i>
                     <span class="text-truncate">{{ __('Filtres') }}</span>
                     <span class="badge rounded-pill bg-danger d-none ms-0.5" id="mobileFilterBadge">0</span>
                 </button>
 
                 {{-- 2. Brand Dropdown --}}
-                <div class="dropdown" id="mobileBrandDropdownContainer" style="{{ $toolbarBrands->isEmpty() ? 'display: none;' : '' }}">
+                <div class="dropdown m-auto" id="mobileBrandDropdownContainer" style="{{ $toolbarBrands->isEmpty() ? 'display: none;' : '' }}">
                     <button class="btn-mobile-tool justify-content-between {{ $activeBrandName ? 'has-brand' : '' }}" 
                             type="button" 
                             id="mobileBrandDropdownBtn" 
@@ -252,7 +252,7 @@
                 </div>
 
                 {{-- 3. Sort Dropdown --}}
-                <div class="dropdown">
+                <div class="dropdown m-auto">
                     <button class="btn-mobile-tool justify-content-between" type="button" id="mobileSortDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
                         <span class="d-flex align-items-center gap-1 text-truncate">
                             <i class="fas fa-sort-amount-down text-muted flex-shrink-0" style="font-size: 0.8rem;"></i>

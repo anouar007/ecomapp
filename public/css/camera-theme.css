@@ -2146,9 +2146,7 @@ body:has(.offcanvas.show) .whatsapp-float {
 .shop-hero {
     position: relative;
     background: #000000 !important;
-    background: radial-gradient(circle at 85% 20%, rgb(0 0 0 / 16%) 0%, transparent 45%),
-        radial-gradient(circle at 10% 80%, rgb(0 0 0 / 20%) 0%, transparent 50%),
-        linear-gradient(135deg, #000000, #000000, #464646) !important;
+    background: linear-gradient(91deg, #000000, #9a0000) !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
     padding: 24px 0 32px !important;
     overflow: hidden;
