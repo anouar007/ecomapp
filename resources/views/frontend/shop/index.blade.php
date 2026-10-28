@@ -226,22 +226,7 @@
                             </div>
                         </div>
 
-                        {{-- Instant Live Search Box --}}
-                        <div class="px-1 pb-2" id="mobileBrandSearchBox" style="{{ $toolbarBrands->count() <= 5 ? 'display: none;' : '' }}">
-                            <div class="position-relative">
-                                <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-2.5 text-muted opacity-60" style="font-size: 0.78rem;"></i>
-                                <input type="text" class="form-control form-control-sm ps-4 pe-4 py-1.5 border-0 bg-light rounded-pill" 
-                                       id="mobileBrandSearchInput" 
-                                       placeholder="{{ __('Rechercher une marque...') }}" 
-                                       autocomplete="off" 
-                                       style="font-size: 0.82rem; height: 36px; box-shadow: none;">
-                                <button type="button" class="btn btn-sm position-absolute top-50 end-0 translate-middle-y me-1 text-muted p-0 border-0 bg-transparent d-none" 
-                                        id="mobileBrandSearchClear" 
-                                        style="width: 24px; height: 24px;">
-                                    <i class="fas fa-times-circle" style="font-size: 0.85rem;"></i>
-                                </button>
-                            </div>
-                        </div>
+                        
 
                         {{-- Scrollable List of Brands --}}
                         <div class="mobile-brand-list-wrap" id="mobileBrandListWrap">
