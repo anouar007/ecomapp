@@ -2844,7 +2844,7 @@
             
             <div class="row align-items-center">
                 <div class="col-md-12 text-center text-md-start mb-3 mb-md-0">
-                    <p class="small text-center mb-0">&copy; {{ date('Y') }} {{ setting('app_name', 'WINA SHOP') }}. {{ __('All rights reserved') }}. {{ app()->getLocale() === 'ar' ? 'تطوير' : 'Développé par' }} <a href="https://elegantboost.com/" target="_blank" rel="noopener noreferrer" class="text-white text-decoration-underline fw-bold hover-primary transition-all">Elegant Boost</a>.</p>
+                    <p class="small text-center mb-0">&copy; {{ date('Y') }} {{ setting('app_name', 'WINA SHOP') }}. {{ __('All rights reserved') }}.</p>
                 </div>
             </div>
         </div>
