@@ -1545,9 +1545,8 @@
         /* Shop page hero background */
         .shop-hero {
             background: #000000 !important;
-            background: radial-gradient(circle at 85% 20%, rgb(0 0 0 / 16%) 0%, transparent 45%),
-                radial-gradient(circle at 10% 80%, rgb(0 0 0 / 20%) 0%, transparent 50%),
-                linear-gradient(135deg, #000000, #000000, #464646) !important;
+            background: linear-gradient(135deg, #000000, #910000) !important;
+
         }
 
         /* ================================================================
