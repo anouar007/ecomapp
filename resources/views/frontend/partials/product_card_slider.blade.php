@@ -5,12 +5,7 @@
 @endphp
 <div class="featured-pro-card selection-card h-100 d-flex flex-column justify-content-between position-relative">
     {{-- Product Image with clean white background --}}
-    <div class="featured-pro-img-box mb-2 position-relative">
-        @if($product->brand && $product->brand->logo)
-            <div class="position-absolute top-0 start-0 m-1.5 z-2 bg-white rounded-pill px-2 py-0.5 border shadow-xs d-inline-flex align-items-center" style="pointer-events: none; opacity: 0.95;">
-                <img src="{{ $product->brand->logo_url }}" alt="{{ $product->brand->name }}" width="16" height="16" style="object-fit: contain; max-height: 14px; max-width: 28px;" loading="lazy">
-            </div>
-        @endif
+    <div class="featured-pro-img-box mb-2">
         <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" class="w-100 h-100 d-flex align-items-center justify-content-center" aria-label="{{ $product->name }}">
             <img src="{{ $product->thumbnail }}" alt="{{ $product->name }}" width="220" height="220" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
         </a>
