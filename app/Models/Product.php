@@ -23,6 +23,7 @@ class Product extends Model
         'min_stock',
         'low_stock_threshold',
         'category_id',
+        'brand_id',
         'status',
         'image',
         'image_width',
@@ -208,6 +209,22 @@ class Product extends Model
     public function category()
     {
         return $this->productCategory();
+    }
+
+    /**
+     * Get the brand of the product.
+     */
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class, 'brand_id');
+    }
+
+    /**
+     * Accessor for brand name.
+     */
+    public function getBrandNameAttribute(): ?string
+    {
+        return $this->brand?->name;
     }
 
     /**

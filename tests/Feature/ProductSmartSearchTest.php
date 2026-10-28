@@ -47,18 +47,47 @@ class ProductSmartSearchTest extends TestCase
     }
 
     /**
-     * Test multi-word technical search sony 4k finds 4K Sony cameras.
+     * Test multi-word search sony fx3 finds Sony FX3 products.
      */
-    public function test_sony_4k_multi_word_search_succeeds()
+    public function test_sony_fx3_multi_word_search_succeeds()
     {
-        $response = $this->get('/shop?q=sony+4k');
+        $response = $this->get('/shop?q=sony+fx3');
         $response->assertStatus(200);
-        $response->assertSee('Sony');
+        $response->assertSee('Sony FX3');
 
-        $liveResponse = $this->get('/shop/search/live?q=sony+4k');
+        $liveResponse = $this->get('/shop/search/live?q=sony+fx3');
         $liveResponse->assertStatus(200);
         $liveData = $liveResponse->json();
         $this->assertGreaterThan(0, $liveData['count']);
+        foreach ($liveData['products'] as $p) {
+            $this->assertStringContainsStringIgnoringCase('fx3', $p['name']);
+        }
+    }
+
+    /**
+     * Test search is strictly based on product name and ignores description-only matches.
+     */
+    public function test_search_only_matches_product_name_not_description()
+    {
+        $response = $this->get('/shop/search/live?q=microphone');
+        $response->assertStatus(200);
+        $data = $response->json();
+        $this->assertGreaterThan(0, $data['count']);
+        foreach ($data['products'] as $p) {
+            $this->assertStringContainsStringIgnoringCase('microphone', $p['name']);
+        }
+    }
+
+    /**
+     * Test search requires 80% or more match on name.
+     */
+    public function test_search_requires_80_percent_or_more_match()
+    {
+        // 7 words with only 2 matching = 28% match (< 80%)
+        $response = $this->get('/shop/search/live?q=sony+fx3+cinema+camera+tripod+bag+light+battery');
+        $response->assertStatus(200);
+        $data = $response->json();
+        $this->assertEquals(0, $data['count']);
     }
 
     /**

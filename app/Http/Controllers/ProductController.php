@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\ProductImage;
+use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -120,8 +121,11 @@ class ProductController extends Controller
         $categories = \App\Models\Category::where('status', 'active')
             ->orderBy('name')
             ->get();
+        $brands = Brand::where('status', 'active')
+            ->orderBy('name')
+            ->get();
         
-        return view('products.create', compact('categories'));
+        return view('products.create', compact('categories', 'brands'));
     }
 
     /**
@@ -131,6 +135,9 @@ class ProductController extends Controller
     {
         if ($request->has('category_id') && empty($request->category_id)) {
             $request->merge(['category_id' => null]);
+        }
+        if ($request->has('brand_id') && empty($request->brand_id)) {
+            $request->merge(['brand_id' => null]);
         }
 
         $validated = $request->validate([
@@ -145,6 +152,7 @@ class ProductController extends Controller
             'category_id' => ['nullable', 'exists:categories,id'],
             'category_ids' => ['nullable', 'array'],
             'category_ids.*' => ['exists:categories,id'],
+            'brand_id' => ['nullable', 'exists:brands,id'],
             'images.*' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
         ], [
@@ -265,12 +273,15 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $product->load('images', 'productCategory', 'categories', 'variants');
+        $product->load('images', 'productCategory', 'categories', 'variants', 'brand');
         $categories = \App\Models\Category::where('status', 'active')
             ->orderBy('name')
             ->get();
+        $brands = Brand::where('status', 'active')
+            ->orderBy('name')
+            ->get();
         
-        return view('products.edit', compact('product', 'categories'));
+        return view('products.edit', compact('product', 'categories', 'brands'));
     }
 
     /**
@@ -280,6 +291,9 @@ class ProductController extends Controller
     {
         if ($request->has('category_id') && empty($request->category_id)) {
             $request->merge(['category_id' => null]);
+        }
+        if ($request->has('brand_id') && empty($request->brand_id)) {
+            $request->merge(['brand_id' => null]);
         }
 
         $validated = $request->validate([
@@ -294,6 +308,7 @@ class ProductController extends Controller
             'category_id' => ['nullable', 'exists:categories,id'],
             'category_ids' => ['nullable', 'array'],
             'category_ids.*' => ['exists:categories,id'],
+            'brand_id' => ['nullable', 'exists:brands,id'],
             'images.*' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
             'remove_images' => ['nullable', 'array'],

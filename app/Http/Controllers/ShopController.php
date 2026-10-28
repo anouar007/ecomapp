@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Brand;
 use App\Models\ProductReview;
 use App\Services\ProductSearchService;
 use Illuminate\Http\Request;
@@ -18,6 +19,7 @@ class ShopController extends Controller
     {
         $search = $request->get('q', '');
         $categorySlug = $request->get('category');
+        $brandSlug = $request->get('brand');
         $minPrice = $request->filled('min_price') ? (float) $request->min_price : null;
         $maxPrice = $request->filled('max_price') ? (float) $request->max_price : null;
         $sort = $request->get('sort');
@@ -26,12 +28,13 @@ class ShopController extends Controller
         $query = ProductSearchService::buildQuery(
             search: $search,
             categorySlug: $categorySlug,
+            brandSlug: $brandSlug,
             minPrice: $minPrice,
             maxPrice: $maxPrice,
             sort: $sort
         );
 
-        $products = $query->with(['images', 'productCategory'])
+        $products = $query->with(['images', 'productCategory', 'brand'])
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')
             ->paginate(20)->withQueryString();
@@ -39,6 +42,10 @@ class ShopController extends Controller
         $categories = Cache::remember('shop_catalog_categories', 3600, function () {
             return Category::withCount('products')->get();
         });
+
+        // Smart brands contextually calculated based on active category & search
+        $smartBrands = ProductSearchService::getSmartBrands($categorySlug, $search);
+        $activeBrand = !empty($brandSlug) ? Brand::where('slug', $brandSlug)->first() : null;
 
         // Get matching categories for search chips if searching
         $matchingCategories = $request->filled('q')
@@ -52,22 +59,36 @@ class ShopController extends Controller
             ? $activeCategory->name 
             : ($request->filled('q') ? __('Résultats pour ":q"', ['q' => $request->q]) : __('Tout le matériel'));
 
+        $viewData = compact(
+            'products',
+            'categories',
+            'activeCategory',
+            'activeCategoryTitle',
+            'matchingCategories',
+            'popularSearches',
+            'smartBrands',
+            'activeBrand',
+            'brandSlug'
+        );
+
         if ($request->ajax() || $request->wantsJson()) {
             if ($request->header('Accept') === 'application/json' || $request->get('format') === 'json') {
                 return response()->json([
-                    'html' => view('frontend.shop.partials.product-grid', compact('products', 'categories', 'activeCategory', 'activeCategoryTitle', 'matchingCategories', 'popularSearches'))->render(),
+                    'html' => view('frontend.shop.partials.product-grid', $viewData)->render(),
                     'total' => $products->total(),
                     'category_title' => $activeCategoryTitle,
                     'current_page' => $products->currentPage(),
                     'last_page' => $products->lastPage(),
                     'matching_categories' => $matchingCategories,
+                    'brands' => $smartBrands,
+                    'active_brand' => $activeBrand ? ['id' => $activeBrand->id, 'name' => $activeBrand->name, 'slug' => $activeBrand->slug] : null,
                 ]);
             }
 
-            return view('frontend.shop.partials.product-grid', compact('products', 'categories', 'activeCategory', 'activeCategoryTitle', 'matchingCategories', 'popularSearches'))->render();
+            return view('frontend.shop.partials.product-grid', $viewData)->render();
         }
 
-        return view('frontend.shop.index', compact('products', 'categories', 'activeCategory', 'activeCategoryTitle', 'matchingCategories', 'popularSearches'));
+        return view('frontend.shop.index', $viewData);
     }
 
     /**

@@ -343,6 +343,12 @@
                     <span>Produits</span>
                 </a>
             </li>
+            <li class="sidebar-menu-item">
+                <a href="{{ route('brands.index') }}" class="sidebar-menu-link {{ request()->routeIs('brands.*') ? 'active' : '' }}">
+                    <i class="fas fa-tags"></i>
+                    <span>Marques</span>
+                </a>
+            </li>
             @endcan
             @can('manage_orders')
             <li class="sidebar-menu-item">

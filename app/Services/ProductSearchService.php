@@ -4,8 +4,11 @@ namespace App\Services;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Brand;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class ProductSearchService
 {
@@ -150,11 +153,168 @@ class ProductSearchService
     }
 
     /**
-     * Build an intelligent search query for products with relevance scoring.
+     * Calculate match score (0.0 to 1.0) strictly between search query and product name.
+     * Only matches against the product name and requires >= 0.80 (80%) match.
+     */
+    public static function calculateNameMatchScore(string $query, string $productName): float
+    {
+        $qLower = mb_strtolower(trim($query));
+        $nLower = mb_strtolower(trim($productName));
+        if ($qLower === '' || $nLower === '') {
+            return 0.0;
+        }
+
+        // Clean punctuation to spaces while preserving unicode letters and digits
+        $qClean = preg_replace('/[^\p{L}\p{N}]+/u', ' ', $qLower);
+        $qClean = preg_replace('/\s+/u', ' ', trim($qClean));
+        $nClean = preg_replace('/[^\p{L}\p{N}]+/u', ' ', $nLower);
+        $nClean = preg_replace('/\s+/u', ' ', trim($nClean));
+
+        if ($qClean === $nClean) {
+            return 1.0;
+        }
+
+        // Direct Unicode phrase match with word boundaries
+        if (preg_match('/(?:\b|^)' . preg_quote($qClean, '/') . '(?:\b|$)/iu', $nClean)) {
+            return 1.0;
+        }
+
+        // Accent-insensitive transliteration for Latin scripts (e.g. é -> e, à -> a)
+        $qAscii = Str::ascii($qClean);
+        $nAscii = Str::ascii($nClean);
+
+        if ($qAscii === $nAscii) {
+            return 1.0;
+        }
+
+        if (preg_match('/(?:\b|^)' . preg_quote($qAscii, '/') . '(?:\b|$)/i', $nAscii)) {
+            return 1.0;
+        }
+
+        // Compact matching without spaces with digit boundaries (e.g. "fx 3" -> "fx3", "pocket 3" -> "pocket3")
+        $qNoSpace = preg_replace('/[^a-z0-9]/', '', $qAscii);
+        $nNoSpace = preg_replace('/[^a-z0-9]/', '', $nAscii);
+        if (mb_strlen($qNoSpace) >= 3) {
+            $hasStartDigit = (bool) preg_match('/^\d/', $qNoSpace);
+            $hasEndDigit = (bool) preg_match('/\d$/', $qNoSpace);
+            $pattern = '/' . ($hasStartDigit ? '(?<![0-9])' : '') . preg_quote($qNoSpace, '/') . ($hasEndDigit ? '(?![0-9])' : '') . '/i';
+            if (preg_match($pattern, $nNoSpace)) {
+                return 1.0;
+            }
+        }
+
+        // Tokenize query
+        $rawTokens = array_values(array_filter(explode(' ', $qAscii), fn($t) => strlen($t) > 0));
+        if (empty($rawTokens)) {
+            return 0.0;
+        }
+
+        // Split concatenated camera model suffixes (e.g. 'a7iv' -> ['a7', 'iv'], 'pocket3' -> ['pocket', '3'])
+        $tokens = [];
+        foreach ($rawTokens as $rt) {
+            if (preg_match('/^([a-z]+\d+)(iv|vi|v|iii|ii)$/i', $rt, $m)) {
+                $tokens[] = $m[1];
+                $tokens[] = $m[2];
+            } elseif (preg_match('/^([a-z]{3,})(\d+)$/i', $rt, $m)) {
+                $tokens[] = $m[1];
+                $tokens[] = $m[2];
+            } elseif (preg_match('/^([a-z]+\d+)([a-z])$/i', $rt, $m)) {
+                $tokens[] = $m[1];
+                $tokens[] = $m[2];
+            } else {
+                $tokens[] = $rt;
+            }
+        }
+
+        $nWords = array_values(array_filter(explode(' ', $nAscii), fn($w) => strlen($w) > 0));
+        if (empty($nWords)) {
+            return 0.0;
+        }
+
+        $totalScore = 0.0;
+        foreach ($tokens as $token) {
+            $tokenScore = 0.0;
+            $hasDigits = (bool) preg_match('/\d/', $token);
+            $romanEquiv = self::$romanMap[$token] ?? null;
+
+            // Direct word match
+            if (in_array($token, $nWords, true)) {
+                $tokenScore = 1.0;
+            } elseif ($romanEquiv && in_array($romanEquiv, $nWords, true)) {
+                $tokenScore = 1.0;
+            } elseif ($token === 'a7' && in_array('alpha', $nWords, true) && in_array('7', $nWords, true)) {
+                $tokenScore = 1.0;
+            } elseif ($token === '7' && (in_array('a7', $nWords, true) || in_array('7', $nWords, true))) {
+                $tokenScore = 1.0;
+            } else {
+                // Check against each word in product name
+                foreach ($nWords as $word) {
+                    if ($hasDigits) {
+                        // Tokens with digits require exact match or roman equivalent (e.g. fx3 != fx30)
+                        if ($word === $token || ($romanEquiv && $word === $romanEquiv)) {
+                            $tokenScore = 1.0;
+                            break;
+                        }
+                    } else {
+                        // Text words (min 3 chars for fuzzy matching)
+                        if (strlen($token) >= 3 && strlen($word) >= 3) {
+                            similar_text($token, $word, $pct);
+                            if ($pct >= 80.0) {
+                                $sim = $pct / 100.0;
+                                if ($sim > $tokenScore) {
+                                    $tokenScore = $sim;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            $totalScore += $tokenScore;
+        }
+
+        return $totalScore / count($tokens);
+    }
+
+    /**
+     * Get IDs of products matching the query strictly on product name with >= 80% match.
+     * Returns an associative array of [product_id => match_score] sorted descending.
+     */
+    public static function getMatchingProductScores(string $search): array
+    {
+        $raw = trim($search);
+        if (mb_strlen($raw) === 0) {
+            return [];
+        }
+
+        $cacheKey = 'prod_search_name_v5_' . md5(mb_strtolower($raw));
+        return Cache::remember($cacheKey, 120, function () use ($raw) {
+            $products = Product::where('status', 'active')
+                ->select(['id', 'name'])
+                ->get();
+
+            $matched = [];
+            foreach ($products as $prod) {
+                $score = self::calculateNameMatchScore($raw, $prod->name);
+                if ($score >= 0.80) {
+                    $matched[$prod->id] = $score;
+                }
+            }
+
+            // Sort descending by match score (highest % match first)
+            arsort($matched);
+
+            return $matched;
+        });
+    }
+
+    /**
+     * Build search query for products strictly based on product name (>= 80% match).
      */
     public static function buildQuery(
         string $search = '',
         ?string $categorySlug = null,
+        ?string $brandSlug = null,
         ?float $minPrice = null,
         ?float $maxPrice = null,
         ?string $sort = null
@@ -183,7 +343,14 @@ class ProductSearchService
             }
         }
 
-        // 2. Price Filter (matches the actual selling price: sale_price if on promo, otherwise regular price)
+        // 2. Brand Filter
+        if (!empty($brandSlug)) {
+            $query->whereHas('brand', function ($b) use ($brandSlug) {
+                $b->where('slug', $brandSlug);
+            });
+        }
+
+        // 3. Price Filter (matches actual selling price: sale_price if on promo, otherwise regular price)
         if ($minPrice !== null && $minPrice !== '') {
             $query->whereRaw('COALESCE(NULLIF(products.sale_price, 0), products.price) >= ?', [(float) $minPrice]);
         }
@@ -191,173 +358,22 @@ class ProductSearchService
             $query->whereRaw('COALESCE(NULLIF(products.sale_price, 0), products.price) <= ?', [(float) $maxPrice]);
         }
 
-        // 3. Search Matching & Relevance Scoring
-        if (mb_strlen(trim($search)) > 0) {
-            $norm = self::normalizeQuery($search);
-            $clean = $norm['clean'];
-            $normalized = $norm['normalized'];
-            $tokens = $norm['tokens'];
-            $romanVariants = $norm['roman_variants'];
-            $synonyms = $norm['synonyms'];
+        // 4. Search Matching ONLY ON PRODUCT NAME WITH >= 80% MATCH
+        $cleanSearch = trim($search);
+        if (mb_strlen($cleanSearch) > 0) {
+            $matchedScores = self::getMatchingProductScores($cleanSearch);
+            $matchedIds = array_keys($matchedScores);
 
-            // Escape wildcards for LIKE matching
-            $cleanEsc = str_replace(['%', '_'], ['\\%', '\\_'], $clean);
-            $normEsc = str_replace(['%', '_'], ['\\%', '\\_'], $normalized);
-
-            // Construct Relevance Score Expression
-            // Exact title match = 1000
-            // Title prefix = 500
-            // Title contains full clean = 350
-            // Title contains full normalized = 350
-            // Category is Camera (ID 1) boost = 300
-            // Exact SKU match = 400
-            // SKU prefix = 200
-            // Stock > 0 = +40
-            $scoreSql = "
-                (CASE WHEN LOWER(products.name) = ? THEN 1000 ELSE 0 END) +
-                (CASE WHEN LOWER(products.name) LIKE ? THEN 500 ELSE 0 END) +
-                (CASE WHEN LOWER(products.name) LIKE ? THEN 350 ELSE 0 END) +
-                (CASE WHEN LOWER(products.name) LIKE ? THEN 350 ELSE 0 END) +
-                (CASE WHEN products.category_id = 1 THEN 300 ELSE 0 END) +
-                (CASE WHEN LOWER(products.sku) = ? THEN 400 ELSE 0 END) +
-                (CASE WHEN LOWER(products.sku) LIKE ? THEN 200 ELSE 0 END) +
-                (CASE WHEN products.stock > 0 THEN 40 ELSE 0 END)
-            ";
-
-            $scoreBindings = [
-                mb_strtolower($clean),
-                mb_strtolower($cleanEsc) . '%',
-                '%' . mb_strtolower($cleanEsc) . '%',
-                '%' . mb_strtolower($normEsc) . '%',
-                mb_strtolower($clean),
-                '%' . mb_strtolower($cleanEsc) . '%',
-            ];
-
-            // Add keyword presence points in title (120 per multi-char token, 80 for single char word-boundary)
-            foreach ($tokens as $t) {
-                $tEsc = str_replace(['%', '_'], ['\\%', '\\_'], $t);
-                $len = mb_strlen($t);
-                if ($len >= 2) {
-                    $scoreSql .= " + (CASE WHEN LOWER(products.name) LIKE ? THEN 120 ELSE 0 END)";
-                    $scoreBindings[] = '%' . mb_strtolower($tEsc) . '%';
-                    $scoreSql .= " + (CASE WHEN LOWER(products.sku) LIKE ? THEN 60 ELSE 0 END)";
-                    $scoreBindings[] = '%' . mb_strtolower($tEsc) . '%';
-                } elseif ($len === 1) {
-                    $scoreSql .= " + (CASE WHEN LOWER(products.name) LIKE ? OR LOWER(products.name) LIKE ? OR LOWER(products.name) LIKE ? THEN 80 ELSE 0 END)";
-                    $scoreBindings[] = '% ' . mb_strtolower($tEsc) . ' %';
-                    $scoreBindings[] = '% ' . mb_strtolower($tEsc);
-                    $scoreBindings[] = mb_strtolower($tEsc) . ' %';
-                }
+            if (empty($matchedIds)) {
+                // Return zero results if no product reaches >= 80% match on name
+                $query->whereRaw('1 = 0');
+                return $query;
             }
 
-            // Category name match bonus
-            $scoreSql .= " + (CASE WHEN LOWER(categories.name) LIKE ? THEN 150 ELSE 0 END)";
-            $scoreBindings[] = '%' . mb_strtolower($cleanEsc) . '%';
+            $idList = implode(',', $matchedIds);
+            $query->whereIn('products.id', $matchedIds);
 
-            // Description match score (15 pts - low weight so accessories don't displace main cameras)
-            if (mb_strlen($clean) >= 4) {
-                $scoreSql .= " + (CASE WHEN LOWER(products.description) LIKE ? THEN 15 ELSE 0 END)";
-                $scoreBindings[] = '%' . mb_strtolower($cleanEsc) . '%';
-            }
-
-            // Join categories for scoring if not already joined
-            $query->leftJoin('categories', 'products.category_id', '=', 'categories.id')
-                  ->selectRaw("products.*, ({$scoreSql}) as search_relevance", $scoreBindings);
-
-            // Filter conditions:
-            // Primary Query: Strict multi-word matching & phrase matching
-            $primaryQuery = clone $query;
-            $primaryQuery->where(function ($builder) use ($clean, $normalized, $tokens, $romanVariants, $synonyms) {
-                // Direct match on full phrase
-                $builder->where('products.name', 'like', "%{$clean}%")
-                    ->orWhere('products.name', 'like', "%{$normalized}%")
-                    ->orWhere('products.sku', 'like', "%{$clean}%")
-                    ->orWhere('categories.name', 'like', "%{$clean}%");
-
-                if (mb_strlen($clean) >= 4) {
-                    $builder->orWhere('products.description', 'like', "%{$clean}%");
-                }
-
-                // Multi-word AND matching
-                if (count($tokens) > 1) {
-                    $builder->orWhere(function ($sub) use ($tokens, $romanVariants) {
-                        foreach ($tokens as $token) {
-                            $len = mb_strlen($token);
-                            $variant = $romanVariants[$token] ?? null;
-
-                            $sub->where(function ($tokenSub) use ($token, $len, $variant) {
-                                if ($len === 1) {
-                                    // Single letter token: match only as word boundary in title or sku
-                                    $tokenSub->where('products.name', 'like', "% {$token} %")
-                                             ->orWhere('products.name', 'like', "% {$token}")
-                                             ->orWhere('products.name', 'like', "{$token} %")
-                                             ->orWhere('products.name', 'like', "%-{$token}%")
-                                             ->orWhere('products.sku', 'like', "%{$token}%");
-                                } elseif ($len === 2) {
-                                    // 2-char token: match title, sku, category, or description if spec token (4k, 8k, hd, sd)
-                                    $tokenSub->where('products.name', 'like', "%{$token}%")
-                                             ->orWhere('products.sku', 'like', "%{$token}%")
-                                             ->orWhere('categories.name', 'like', "%{$token}%");
-
-                                    if (in_array($token, ['4k', '8k', 'hd', 'sd', 'ai', 'vr', 'rs', 'fx', 'zv', 'r5', 'r6', 'a7', 'g7'], true)) {
-                                        $tokenSub->orWhere('products.description', 'like', "%{$token}%");
-                                    }
-
-                                    if ($variant) {
-                                        $tokenSub->orWhere('products.name', 'like', "% {$variant} %")
-                                                 ->orWhere('products.name', 'like', "% {$variant}")
-                                                 ->orWhere('products.sku', 'like', "%{$variant}%");
-                                    }
-                                } else {
-                                    // 3+ char token: match title, sku, category, or description
-                                    $tokenSub->where('products.name', 'like', "%{$token}%")
-                                             ->orWhere('products.sku', 'like', "%{$token}%")
-                                             ->orWhere('categories.name', 'like', "%{$token}%")
-                                             ->orWhere('products.description', 'like', "%{$token}%");
-
-                                    if ($variant) {
-                                        $tokenSub->orWhere('products.name', 'like', "% {$variant} %")
-                                                 ->orWhere('products.name', 'like', "% {$variant}")
-                                                 ->orWhere('products.sku', 'like', "%{$variant}%");
-                                    }
-                                }
-                            });
-                        }
-                    });
-                }
-
-                // Synonym matches
-                if (!empty($synonyms)) {
-                    $builder->orWhere(function ($synSub) use ($synonyms) {
-                        foreach ($synonyms as $syn) {
-                            $synSub->orWhere('categories.name', 'like', "%{$syn}%")
-                                   ->orWhere('products.name', 'like', "%{$syn}%");
-                        }
-                    });
-                }
-            });
-
-            // If primary query matches results, use it!
-            if ($primaryQuery->count() > 0) {
-                $query = $primaryQuery;
-            } else {
-                // Fallback: Match ANY of the tokens (len >= 2) so user gets partial close matches instead of 0 results
-                $query->where(function ($builder) use ($tokens, $synonyms) {
-                    foreach ($tokens as $token) {
-                        if (mb_strlen($token) >= 2) {
-                            $builder->orWhere('products.name', 'like', "%{$token}%")
-                                    ->orWhere('products.sku', 'like', "%{$token}%")
-                                    ->orWhere('categories.name', 'like', "%{$token}%");
-                        }
-                    }
-                    foreach ($synonyms as $syn) {
-                        $builder->orWhere('categories.name', 'like', "%{$syn}%")
-                                ->orWhere('products.name', 'like', "%{$syn}%");
-                    }
-                });
-            }
-
-            // Apply Sorting (using effective selling price)
+            // Sorting
             switch ($sort) {
                 case 'price_asc':
                     $query->orderByRaw('COALESCE(NULLIF(products.sale_price, 0), products.price) ASC');
@@ -369,58 +385,54 @@ class ProductSearchService
                     $query->orderByDesc('products.created_at');
                     break;
                 default:
-                    // Primary: relevance score, Secondary: in stock first, Tertiary: newest
-                    $query->orderByDesc('search_relevance')
-                          ->orderByDesc('products.stock')
-                          ->orderByDesc('products.created_at');
+                    // Primary: Highest name match score first, Secondary: in stock first
+                    $query->orderByRaw("FIELD(products.id, {$idList})")
+                          ->orderByDesc('products.stock');
                     break;
             }
-        } else {
-            // No search query: standard sorting
-            switch ($sort) {
-                case 'price_asc':
-                    $query->orderByRaw('COALESCE(NULLIF(products.sale_price, 0), products.price) ASC');
-                    break;
-                case 'price_desc':
-                    $query->orderByRaw('COALESCE(NULLIF(products.sale_price, 0), products.price) DESC');
-                    break;
-                case 'newest':
-                default:
-                    $query->orderBy('products.created_at', 'desc');
-                    break;
-            }
+
+            return $query;
+        }
+
+        // No search query: standard sorting
+        switch ($sort) {
+            case 'price_asc':
+                $query->orderByRaw('COALESCE(NULLIF(products.sale_price, 0), products.price) ASC');
+                break;
+            case 'price_desc':
+                $query->orderByRaw('COALESCE(NULLIF(products.sale_price, 0), products.price) DESC');
+                break;
+            case 'newest':
+            default:
+                $query->orderBy('products.created_at', 'desc');
+                break;
         }
 
         return $query;
     }
 
     /**
-     * Get matching categories for a search query.
+     * Get matching categories for a search query (based on category name/slug).
      */
     public static function getMatchingCategories(string $rawQuery, int $limit = 4)
     {
         $norm = self::normalizeQuery($rawQuery);
         $clean = $norm['clean'];
         $tokens = $norm['tokens'];
-        $synonyms = $norm['synonyms'];
 
         if (mb_strlen($clean) === 0) {
             return collect();
         }
 
         return Category::where('status', 'active')
-            ->where(function ($q) use ($clean, $tokens, $synonyms) {
+            ->where(function ($q) use ($clean, $tokens) {
                 $q->where('name', 'like', "%{$clean}%")
                   ->orWhere('slug', 'like', "%{$clean}%");
 
                 foreach ($tokens as $token) {
-                    if (mb_strlen($token) >= 2) {
+                    if (mb_strlen($token) >= 3) {
                         $q->orWhere('name', 'like', "%{$token}%");
                     }
-                }
-
-                foreach ($synonyms as $syn) {
-                    $q->orWhere('name', 'like', "%{$syn}%");
                 }
             })
             ->withCount(['products' => function ($pq) {
@@ -501,5 +513,79 @@ class ProductSearchService
     public static function getPopularSearches(): array
     {
         return self::$popularSearches;
+    }
+
+    /**
+     * Get brands that have active products matching the current category filter and/or search query.
+     * Returns active brands with dynamic product counts, sorted by products_count descending.
+     *
+     * @param string|null $categorySlug
+     * @param string $search
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getSmartBrands(?string $categorySlug = null, string $search = ''): Collection
+    {
+        $productQuery = Product::where('products.status', 'active')
+            ->whereNotNull('products.brand_id');
+
+        // Apply category filter if provided
+        if (!empty($categorySlug)) {
+            if ($categorySlug === 'occasion') {
+                $productQuery->where(function ($q) {
+                    $q->whereHas('categories', function ($c) {
+                        $c->where('slug', 'occasion');
+                    })->orWhereHas('productCategory', function ($c) {
+                        $c->where('slug', 'occasion');
+                    })->orWhere('products.name', 'like', '%(occasion)%')
+                      ->orWhere('products.name', 'like', '%occasion%');
+                });
+            } else {
+                $productQuery->where(function ($q) use ($categorySlug) {
+                    $q->whereHas('categories', function ($sub) use ($categorySlug) {
+                        $sub->where('slug', $categorySlug);
+                    })->orWhereHas('productCategory', function ($sub) use ($categorySlug) {
+                        $sub->where('slug', $categorySlug);
+                    });
+                });
+            }
+        }
+
+        // Apply search filter if provided (strictly >= 80% match on product name)
+        $cleanSearch = trim($search);
+        if (mb_strlen($cleanSearch) > 0) {
+            $matchedScores = self::getMatchingProductScores($cleanSearch);
+            $matchedIds = array_keys($matchedScores);
+
+            if (empty($matchedIds)) {
+                return collect();
+            }
+
+            $productQuery->whereIn('products.id', $matchedIds);
+        }
+
+        // Count products per brand
+        $brandCounts = $productQuery->select('products.brand_id')
+            ->selectRaw('COUNT(*) as count')
+            ->groupBy('products.brand_id')
+            ->pluck('count', 'products.brand_id');
+
+        if ($brandCounts->isEmpty()) {
+            return collect();
+        }
+
+        $brands = Brand::where('status', 'active')
+            ->whereIn('id', $brandCounts->keys())
+            ->get()
+            ->map(function ($brand) use ($brandCounts) {
+                $brand->products_count = (int) ($brandCounts[$brand->id] ?? 0);
+                return $brand;
+            });
+
+        return $brands->sort(function ($a, $b) {
+            if ($a->products_count === $b->products_count) {
+                return strcasecmp($a->name, $b->name);
+            }
+            return $b->products_count <=> $a->products_count;
+        })->values();
     }
 }

@@ -167,35 +167,109 @@
             </div>
         </div>
 
-        {{-- ── MOBILE STICKY CONTROL TOOLBAR (Filters, Sort, View Toggle) ── --}}
+        {{-- ── MOBILE STICKY CONTROL TOOLBAR (Filters, Brands Dropdown, Sort) ── --}}
+        @php
+            $toolbarBrands = $smartBrands ?? collect();
+            $activeBrandName = isset($activeBrand) && $activeBrand ? $activeBrand->name : '';
+        @endphp
         <div class="shop-mobile-toolbar d-lg-none">
-            <div class="d-flex align-items-center justify-content-between gap-2">
-                {{-- Filter trigger button --}}
-                <button type="button" class="btn-mobile-tool flex-grow-1" data-bs-toggle="offcanvas" data-bs-target="#shopFilterSheet" id="mobileFilterTrigger">
-                    <i class="fas fa-sliders-h text-danger"></i>
-                    <span>{{ __('Filtres') }}</span>
-                    <span class="badge rounded-pill bg-danger d-none" id="mobileFilterBadge">0</span>
+            <div class="shop-mobile-toolbar-row">
+                {{-- 1. Filter trigger button --}}
+                <button type="button" class="btn-mobile-tool" data-bs-toggle="offcanvas" data-bs-target="#shopFilterSheet" id="mobileFilterTrigger">
+                    <i class="fas fa-sliders-h text-danger flex-shrink-0"></i>
+                    <span class="text-truncate">{{ __('Filtres') }}</span>
+                    <span class="badge rounded-pill bg-danger d-none ms-0.5" id="mobileFilterBadge">0</span>
                 </button>
 
-                {{-- Sort Dropdown --}}
-                <div class="dropdown flex-grow-1">
-                    <button class="btn-mobile-tool w-100 justify-content-between" type="button" id="mobileSortDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                {{-- 2. Brand Dropdown --}}
+                <div class="dropdown" id="mobileBrandDropdownContainer" style="{{ $toolbarBrands->isEmpty() ? 'display: none;' : '' }}">
+                    <button class="btn-mobile-tool justify-content-between {{ $activeBrandName ? 'has-brand' : '' }}" 
+                            type="button" 
+                            id="mobileBrandDropdownBtn" 
+                            data-bs-toggle="dropdown" 
+                            data-bs-auto-close="outside"
+                            aria-expanded="false">
                         <span class="d-flex align-items-center gap-1 text-truncate">
-                            <i class="fas fa-sort-amount-down text-muted"></i>
-                            <span id="mobileSortLabel">{{ __('Nouveautés') }}</span>
+                            <i class="fas fa-tags text-danger flex-shrink-0" style="font-size: 0.8rem;"></i>
+                            <span class="text-truncate" id="mobileBrandLabel">{{ $activeBrandName ? $activeBrandName : __('Marque') }}</span>
                         </span>
-                        <i class="fas fa-chevron-down opacity-50 ms-1" style="font-size: 0.65rem;"></i>
+                        <i class="fas fa-chevron-down opacity-50 ms-0.5 flex-shrink-0" style="font-size: 0.6rem;"></i>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2 w-100" aria-labelledby="mobileSortDropdownBtn" style="z-index: 1095;">
+                    <div class="dropdown-menu dropdown-menu-start shadow-lg border-0 rounded-4 p-2 mt-2" 
+                         aria-labelledby="mobileBrandDropdownBtn" 
+                         id="mobileBrandDropdownMenu"
+                         style="min-width: 230px; max-width: 290px; z-index: 1095;">
+                        <div class="d-flex align-items-center justify-content-between px-2 py-1 mb-1.5 border-bottom">
+                            <span class="fw-bold text-dark text-uppercase" style="letter-spacing: 0.5px; font-size: 0.72rem;">
+                                <i class="fas fa-tags text-danger me-1"></i>{{ __('Marques') }}
+                            </span>
+                            <button type="button" class="btn btn-link btn-sm text-decoration-none text-danger p-0 shop-brand-link" 
+                                    id="mobileBrandResetLink" 
+                                    data-slug="" 
+                                    data-name="{{ __('Toutes les marques') }}" 
+                                    style="font-size: 0.72rem; {{ !request('brand') ? 'display: none;' : '' }}">
+                                <i class="fas fa-times me-0.5"></i>{{ __('Effacer') }}
+                            </button>
+                        </div>
+                        <div class="toolbar-brand-list-wrap" style="max-height: 250px; overflow-y: auto;">
+                            {{-- Option: Toutes les marques --}}
+                            <button type="button" class="dropdown-item rounded-3 py-1.5 px-2 d-flex align-items-center justify-content-between shop-brand-link mb-1 {{ !request('brand') ? 'active' : '' }}" 
+                                    data-slug="" 
+                                    data-name="{{ __('Toutes les marques') }}">
+                                <span class="d-flex align-items-center gap-2">
+                                    <span class="cat-slot-box" style="width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; background: #f3f4f6; border-radius: 6px;">
+                                        <i class="fas fa-th-large text-muted" style="font-size: 0.7rem;"></i>
+                                    </span>
+                                    <span class="fw-medium" style="font-size: 0.82rem;">{{ __('Toutes les marques') }}</span>
+                                </span>
+                            </button>
+
+                            {{-- Individual Brands --}}
+                            <div id="mobileBrandItemsContainer">
+                                @foreach($toolbarBrands as $b)
+                                <button type="button" class="dropdown-item rounded-3 py-1.5 px-2 d-flex align-items-center justify-content-between shop-brand-link mb-0.5 {{ request('brand') == $b->slug ? 'active' : '' }}" 
+                                        data-slug="{{ $b->slug }}" 
+                                        data-name="{{ $b->name }}">
+                                    <span class="d-flex align-items-center gap-2 text-truncate me-2">
+                                        <span class="cat-slot-box" style="width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; background: #f3f4f6; border-radius: 6px; flex-shrink: 0;">
+                                            @if($b->logo)
+                                                <img src="{{ $b->logo_url }}" alt="{{ $b->name }}" width="16" height="16" class="cat-slot-media" style="object-fit: contain;" loading="lazy" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-flex';">
+                                                <i class="fas fa-tag text-muted" style="display: none; font-size: 0.7rem;"></i>
+                                            @else
+                                                <i class="fas fa-tag text-muted" style="font-size: 0.7rem;"></i>
+                                            @endif
+                                        </span>
+                                        <span class="fw-medium text-truncate" style="font-size: 0.82rem;">{{ $b->name }}</span>
+                                    </span>
+                                    <div class="d-flex align-items-center gap-1 flex-shrink-0">
+                                        <span class="badge cat-mega-count rounded-pill" style="font-size: 0.68rem;">{{ $b->products_count }}</span>
+                                    </div>
+                                </button>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- 3. Sort Dropdown --}}
+                <div class="dropdown">
+                    <button class="btn-mobile-tool justify-content-between" type="button" id="mobileSortDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="d-flex align-items-center gap-1 text-truncate">
+                            <i class="fas fa-sort-amount-down text-muted flex-shrink-0" style="font-size: 0.8rem;"></i>
+                            <span class="text-truncate" id="mobileSortLabel">{{ __('Nouveautés') }}</span>
+                        </span>
+                        <i class="fas fa-chevron-down opacity-50 ms-0.5 flex-shrink-0" style="font-size: 0.6rem;"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2" aria-labelledby="mobileSortDropdownBtn" style="min-width: 190px; z-index: 1095;">
                         <li><button class="dropdown-item rounded-3 py-2 mobile-sort-item {{ request('sort') == 'newest' || !request('sort') ? 'active' : '' }}" type="button" data-sort="newest"><i class="fas fa-clock me-2"></i>{{ __('Nouveautés') }}</button></li>
                         <li><button class="dropdown-item rounded-3 py-2 mobile-sort-item {{ request('sort') == 'price_asc' ? 'active' : '' }}" type="button" data-sort="price_asc"><i class="fas fa-arrow-up-1-9 me-2"></i>{{ __('Prix : Croissant') }}</button></li>
                         <li><button class="dropdown-item rounded-3 py-2 mobile-sort-item {{ request('sort') == 'price_desc' ? 'active' : '' }}" type="button" data-sort="price_desc"><i class="fas fa-arrow-down-9-1 me-2"></i>{{ __('Prix : Décroissant') }}</button></li>
                     </ul>
                 </div>
 
-                {{-- View Mode Toggle (2-cols vs 1-col) --}}
-                <button type="button" class="btn-mobile-tool btn-mobile-view-toggle px-2 flex-shrink-0" id="mobileViewToggle" title="{{ __('Changer la disposition') }}" aria-label="{{ __('Changer la disposition') }}">
-                    <i class="fas fa-th-large" id="viewToggleIcon"></i>
+                {{-- View Mode Toggle (hidden on mobile as requested) --}}
+                <button type="button" class="btn-mobile-tool btn-mobile-view-toggle d-none" id="mobileViewToggle" title="{{ __('Changer la disposition') }}" aria-label="{{ __('Changer la disposition') }}" style="display: none !important;">
+                    <i class="fas fa-th-large d-none" id="viewToggleIcon"></i>
                 </button>
             </div>
 
@@ -244,6 +318,109 @@
                             </div>
                         </form>
 
+                        {{-- Brand Dropdown in Toolbar --}}
+                        @php
+                            $toolbarBrands = $smartBrands ?? collect();
+                            $activeBrandName = isset($activeBrand) && $activeBrand ? $activeBrand->name : '';
+                        @endphp
+                        <div class="shop-toolbar-brand position-relative flex-shrink-0" id="toolbarBrandDropdownContainer" style="{{ $toolbarBrands->isEmpty() ? 'display: none;' : '' }}">
+                            <div class="dropdown">
+                                <button class="shop-brand-dropdown-btn d-flex align-items-center gap-2 border bg-white rounded-3 px-3 py-1.5 shadow-none {{ $activeBrandName ? 'has-brand' : '' }}" 
+                                        type="button" 
+                                        id="toolbarBrandDropdownBtn" 
+                                        data-bs-toggle="dropdown" 
+                                        data-bs-auto-close="outside"
+                                        aria-expanded="false" 
+                                        style="height: 38px; cursor: pointer; border-color: #e5e7eb !important; transition: all 0.2s ease;">
+                                    <i class="fas fa-tags text-danger" style="font-size: 0.85rem;"></i>
+                                    <span class="fw-semibold text-dark text-truncate" id="toolbarBrandLabel" style="max-width: 130px; font-size: 0.84rem;">
+                                        {{ $activeBrandName ? $activeBrandName : __('Marque') }}
+                                    </span>
+                                    <span class="badge rounded-pill bg-light text-muted border font-monospace px-1.5 py-0.5" id="toolbarBrandCountBadge" style="font-size: 0.7rem;">
+                                        {{ $toolbarBrands->count() }}
+                                    </span>
+                                    <i class="fas fa-chevron-down text-muted ms-0.5" style="font-size: 0.65rem;"></i>
+                                </button>
+
+                                <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2.5 mt-2" 
+                                     aria-labelledby="toolbarBrandDropdownBtn" 
+                                     id="toolbarBrandDropdownMenu"
+                                     style="min-width: 260px; max-width: 300px; z-index: 1050;">
+                                    
+                                    {{-- Header inside dropdown --}}
+                                    <div class="d-flex align-items-center justify-content-between px-2 py-1 mb-2 border-bottom">
+                                        <span class="fw-bold text-dark text-uppercase fs-xs" style="letter-spacing: 0.5px; font-size: 0.75rem;">
+                                            <i class="fas fa-tags text-danger me-1"></i>{{ __('Marques') }}
+                                        </span>
+                                        <button type="button" class="btn btn-link btn-sm text-decoration-none text-danger p-0 shop-brand-link" 
+                                                id="toolbarBrandResetLink" 
+                                                data-slug="" 
+                                                data-name="{{ __('Toutes les marques') }}" 
+                                                style="font-size: 0.75rem; {{ !request('brand') ? 'display: none;' : '' }}">
+                                            <i class="fas fa-times me-0.5"></i>{{ __('Effacer') }}
+                                        </button>
+                                    </div>
+
+                                    {{-- Live Search box if more than 5 brands --}}
+                                    <!--div class="cat-pro-search-box mb-2 px-1 d-none" id="toolbarBrandSearchBox" style="{{ $toolbarBrands->count() <= 5 ? 'display: none;' : '' }}">
+                                        <div class="position-relative">
+                                            <i class="fas fa-search position-absolute text-muted" style="left: 10px; top: 50%; transform: translateY(-50%); font-size: 0.75rem; pointer-events: none;"></i>
+                                            <input type="text" 
+                                                   class="form-control form-control-sm border rounded-pill" 
+                                                   id="toolbarBrandSearchInput" 
+                                                   placeholder="{{ __('Filtrer les marques...') }}" 
+                                                   autocomplete="off" 
+                                                   style="padding-left: 28px; font-size: 0.8rem;">
+                                        </div>
+                                    </div-->
+
+                                    {{-- Brand Items Scrollable List --}}
+                                    <div class="toolbar-brand-list-wrap" id="toolbarBrandListWrap" style="max-height: 250px; overflow-y: auto;">
+                                        {{-- Option: Toutes les marques --}}
+                                        <button type="button" class="dropdown-item rounded-3 py-1.5 px-2.5 d-flex align-items-center justify-content-between shop-brand-link mb-1 {{ !request('brand') ? 'active' : '' }}" 
+                                                data-slug="" 
+                                                data-name="{{ __('Toutes les marques') }}">
+                                            <span class="d-flex align-items-center gap-2">
+                                                <span class="cat-slot-box" style="width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; background: #f3f4f6; border-radius: 6px;">
+                                                    <i class="fas fa-th-large text-muted" style="font-size: 0.75rem;"></i>
+                                                </span>
+                                                <span class="fw-medium" style="font-size: 0.84rem;">{{ __('Toutes les marques') }}</span>
+                                            </span>
+                                            <i class="fas fa-check cat-item-check" style="font-size: 0.75rem;"></i>
+                                        </button>
+
+                                        {{-- Individual Brands --}}
+                                        <div id="toolbarBrandItemsContainer">
+                                            @foreach($toolbarBrands as $b)
+                                            <button type="button" class="dropdown-item rounded-3 py-1.5 px-2.5 d-flex align-items-center justify-content-between shop-brand-link mb-0.5 {{ request('brand') == $b->slug ? 'active' : '' }}" 
+                                                    data-slug="{{ $b->slug }}" 
+                                                    data-name="{{ $b->name }}">
+                                                <span class="d-flex align-items-center gap-2 text-truncate me-2">
+                                                    <span class="cat-slot-box" style="width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; background: #f3f4f6; border-radius: 6px; flex-shrink: 0;">
+                                                        @if($b->logo)
+                                                            <img src="{{ $b->logo_url }}" alt="{{ $b->name }}" width="18" height="18" class="cat-slot-media" style="object-fit: contain;" loading="lazy" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-flex';">
+                                                            <i class="fas fa-tag text-muted" style="display: none; font-size: 0.75rem;"></i>
+                                                        @else
+                                                            <i class="fas fa-tag text-muted" style="font-size: 0.75rem;"></i>
+                                                        @endif
+                                                    </span>
+                                                    <span class="fw-medium text-truncate" style="font-size: 0.84rem;">{{ $b->name }}</span>
+                                                </span>
+                                                <div class="d-flex align-items-center gap-1 flex-shrink-0">
+                                                    <span class="badge cat-mega-count rounded-pill" style="font-size: 0.7rem;">{{ $b->products_count }}</span>
+                                                </div>
+                                            </button>
+                                            @endforeach
+                                        </div>
+
+                                        <div class="text-center py-2 text-muted small" id="toolbarBrandNoResults" style="display: none; font-size: 0.78rem;">
+                                            <i class="fas fa-search me-1 opacity-50"></i>{{ __('Aucune marque trouvée') }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         {{-- Sort Dropdown in Toolbar --}}
                         <div class="shop-toolbar-sort d-flex align-items-center gap-2 flex-shrink-0">
                             <label class="shop-sort-label"><i class="fas fa-sort-amount-down text-danger me-1"></i>{{ __('Trier par :') }}</label>
@@ -257,7 +434,7 @@
                 </div>
 
                 {{-- Active Filters (Desktop) --}}
-                <div class="shop-active-filters mb-4 d-none d-lg-flex {{ (request('q') || request('category') || request('min_price') || request('max_price')) ? '' : 'd-none' }}" id="desktopActiveFilters">
+                <div class="shop-active-filters mb-4 d-none d-lg-flex {{ (request('q') || request('category') || request('brand') || request('min_price') || request('max_price')) ? '' : 'd-none' }}" id="desktopActiveFilters">
                     <span class="shop-active-label">{{ __('Filtres actifs :') }}</span>
                     <span id="desktopActiveFilterChips">
                         @if(request('q'))
@@ -265,6 +442,9 @@
                         @endif
                         @if(request('category'))
                             <span class="shop-filter-tag cursor-pointer" onclick="removeFilter('category')">{{ __('Rayon :') }} {{ $categories->where('slug', request('category'))->first()->name ?? request('category') }} <i class="fas fa-times ms-1 small"></i></span>
+                        @endif
+                        @if(request('brand'))
+                            <span class="shop-filter-tag cursor-pointer" onclick="removeFilter('brand')">{{ __('Marque :') }} {{ $activeBrand->name ?? request('brand') }} <i class="fas fa-times ms-1 small"></i></span>
                         @endif
                         @if(request('min_price') || request('max_price'))
                             <span class="shop-filter-tag cursor-pointer" onclick="removeFilter('price')">{{ __('Budget :') }} {{ request('min_price', '0') }} — {{ request('max_price', '∞') }} DH <i class="fas fa-times ms-1 small"></i></span>
@@ -430,6 +610,54 @@
                 </div>
             </div>
         </div>
+
+        {{-- Section 4: Marques (Smart Brand Filter) --}}
+        @php
+            $sheetBrands = $smartBrands ?? collect();
+            $activeBrandSlug = request('brand') ?? ($brandSlug ?? '');
+        @endphp
+        <div class="filter-section mt-3" id="sheetBrandFilterSection" style="{{ $sheetBrands->isEmpty() ? 'display: none;' : '' }}">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <label class="filter-section-title mb-0">
+                    <span class="filter-title-icon"><i class="fas fa-tags"></i></span>
+                    <span>{{ __('Marques') }}</span>
+                </label>
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="sheet-clear-text-btn {{ $activeBrandSlug ? '' : 'd-none' }}" id="sheetBrandResetBtn">
+                        <i class="fas fa-undo-alt me-1"></i>{{ __('Effacer') }}
+                    </button>
+                    <span class="sheet-section-badge" id="sheetBrandCountBadge">{{ $sheetBrands->count() }} {{ __('marques') }}</span>
+                </div>
+            </div>
+
+            {{-- Live Search for Brands in Sheet --}}
+            <div class="sheet-cat-search-box mb-2" id="sheetBrandSearchBox" style="{{ $sheetBrands->count() <= 6 ? 'display: none;' : '' }}">
+                <i class="fas fa-search sheet-cat-search-icon"></i>
+                <input type="text" class="sheet-cat-search-input" id="sheetBrandSearchInput" placeholder="{{ __('Filtrer les marques...') }}" autocomplete="off">
+            </div>
+
+            <div class="sheet-cat-scroll-box" id="sheetBrandScrollBox">
+                <div class="sheet-cat-grid" id="sheetBrandChips">
+                    @foreach($sheetBrands as $b)
+                    <button type="button" class="sheet-cat-card sheet-brand-chip {{ $activeBrandSlug == $b->slug ? 'active' : '' }}" data-slug="{{ $b->slug }}" data-name="{{ $b->name }}">
+                        <span class="sheet-cat-card-icon" style="width: 28px; height: 28px;">
+                            @if($b->logo)
+                                <img src="{{ $b->logo_url }}" alt="{{ $b->name }}" width="22" height="22" class="sheet-cat-card-img" style="object-fit: contain;" loading="lazy" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-flex';">
+                                <i class="fas fa-tag" style="display: none; font-size: 0.85rem;"></i>
+                            @else
+                                <i class="fas fa-tag" style="font-size: 0.85rem;"></i>
+                            @endif
+                        </span>
+                        <span class="sheet-cat-card-name">{{ $b->name }}</span>
+                        <span class="sheet-chip-count sheet-cat-card-count">{{ $b->products_count }}</span>
+                    </button>
+                    @endforeach
+                </div>
+                <div class="sheet-cat-no-results text-center py-2 text-muted small d-none" id="sheetBrandNoResults">
+                    <i class="fas fa-info-circle me-1"></i>{{ __('Aucune marque correspondante') }}
+                </div>
+            </div>
+        </div>
     </div>
     <div class="offcanvas-footer p-2.5 px-sm-4 bg-white border-top">
         <button class="btn btn-danger w-100 py-2.5 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-between px-3.5 sheet-apply-btn" id="sheetApplyBtn">
@@ -451,11 +679,24 @@
 // Shop State Manager
 const shopState = {
     category: "{{ request('category', '') }}",
+    brand: "{{ request('brand', '') }}",
     sort: "{{ request('sort', 'newest') }}",
     q: "{{ request('q', '') }}",
     min_price: "{{ request('min_price', '') }}",
     max_price: "{{ request('max_price', '') }}",
     viewMode: localStorage.getItem('camera_shop_view') || (window.innerWidth < 768 ? 'grid-2' : 'grid-2')
+};
+
+// Brand Names Map
+let brandNamesMap = {
+    @if(isset($smartBrands))
+        @foreach($smartBrands as $b)
+            '{{ $b->slug }}': '{{ addslashes($b->name) }}',
+        @endforeach
+    @endif
+    @if(isset($activeBrand) && $activeBrand)
+        '{{ $activeBrand->slug }}': '{{ addslashes($activeBrand->name) }}',
+    @endif
 };
 
 // Category Titles Map
@@ -503,6 +744,7 @@ const sortLabelsMap = {
 function getParams() {
     const p = new URLSearchParams();
     if (shopState.category) p.append('category', shopState.category);
+    if (shopState.brand) p.append('brand', shopState.brand);
     if (shopState.sort && shopState.sort !== 'newest') p.append('sort', shopState.sort);
     if (shopState.q) p.append('q', shopState.q);
     if (shopState.min_price) p.append('min_price', shopState.min_price);
@@ -513,6 +755,7 @@ function getParams() {
 function parseUrlIntoState() {
     const p = new URLSearchParams(window.location.search);
     shopState.category = p.get('category') || '';
+    shopState.brand = p.get('brand') || '';
     shopState.sort = p.get('sort') || 'newest';
     shopState.q = p.get('q') || '';
     shopState.min_price = p.get('min_price') || '';
@@ -621,9 +864,53 @@ function updateUIState() {
         }
     });
 
+    // 3b. Brand active highlights
+    document.querySelectorAll('.shop-brand-link, .sheet-brand-chip').forEach(el => {
+        const slug = el.getAttribute('data-slug');
+        if (slug === shopState.brand) {
+            el.classList.add('active');
+        } else {
+            el.classList.remove('active');
+        }
+    });
+
+    const toolbarBrandBtn = document.getElementById('toolbarBrandDropdownBtn');
+    const toolbarBrandLabel = document.getElementById('toolbarBrandLabel');
+    const toolbarBrandResetLink = document.getElementById('toolbarBrandResetLink');
+
+    const mobileBrandBtn = document.getElementById('mobileBrandDropdownBtn');
+    const mobileBrandLabel = document.getElementById('mobileBrandLabel');
+    const mobileBrandResetLink = document.getElementById('mobileBrandResetLink');
+
+    const activeBrandDisplay = shopState.brand ? (brandNamesMap[shopState.brand] || shopState.brand) : '';
+
+    if (toolbarBrandLabel) {
+        toolbarBrandLabel.textContent = activeBrandDisplay || "{{ __('Marque') }}";
+    }
+    if (toolbarBrandBtn) {
+        toolbarBrandBtn.classList.toggle('has-brand', Boolean(shopState.brand));
+    }
+    if (toolbarBrandResetLink) {
+        toolbarBrandResetLink.style.display = shopState.brand ? 'inline-flex' : 'none';
+    }
+
+    if (mobileBrandLabel) {
+        mobileBrandLabel.textContent = activeBrandDisplay || "{{ __('Marque') }}";
+    }
+    if (mobileBrandBtn) {
+        mobileBrandBtn.classList.toggle('has-brand', Boolean(shopState.brand));
+    }
+    if (mobileBrandResetLink) {
+        mobileBrandResetLink.style.display = shopState.brand ? 'inline-flex' : 'none';
+    }
+
+    const sheetBrandReset = document.getElementById('sheetBrandResetBtn');
+    if (sheetBrandReset) sheetBrandReset.classList.toggle('d-none', !shopState.brand);
+
     // 4. Active filters count badge on mobile & drawer subtitle
     let activeFilterCount = 0;
     if (shopState.category) activeFilterCount++;
+    if (shopState.brand) activeFilterCount++;
     if (shopState.q) activeFilterCount++;
     if (shopState.min_price || shopState.max_price) activeFilterCount++;
 
@@ -682,6 +969,11 @@ function renderActiveFilterChips() {
         chipsHtml += `<span class="mobile-chip" onclick="removeFilter('category')">${catName} <i class="fas fa-times ms-1"></i></span>`;
         desktopHtml += `<span class="shop-filter-tag cursor-pointer" onclick="removeFilter('category')">{{ __('Rayon :') }} ${catName} <i class="fas fa-times ms-1 small"></i></span>`;
     }
+    if (shopState.brand) {
+        const brandName = brandNamesMap[shopState.brand] || shopState.brand;
+        chipsHtml += `<span class="mobile-chip" onclick="removeFilter('brand')">{{ __('Marque :') }} ${brandName} <i class="fas fa-times ms-1"></i></span>`;
+        desktopHtml += `<span class="shop-filter-tag cursor-pointer" onclick="removeFilter('brand')">{{ __('Marque :') }} ${brandName} <i class="fas fa-times ms-1 small"></i></span>`;
+    }
     if (shopState.q) {
         chipsHtml += `<span class="mobile-chip" onclick="removeFilter('q')">« ${shopState.q} » <i class="fas fa-times ms-1"></i></span>`;
         desktopHtml += `<span class="shop-filter-tag cursor-pointer" onclick="removeFilter('q')">{{ __('Recherche :') }} « ${shopState.q} » <i class="fas fa-times ms-1 small"></i></span>`;
@@ -710,6 +1002,7 @@ function renderActiveFilterChips() {
 
 window.removeFilter = function(type) {
     if (type === 'category') shopState.category = '';
+    if (type === 'brand') shopState.brand = '';
     if (type === 'q') shopState.q = '';
     if (type === 'price') { 
         shopState.min_price = ''; 
@@ -729,6 +1022,7 @@ window.removeFilter = function(type) {
 
 window.resetAllFilters = function() {
     shopState.category = '';
+    shopState.brand = '';
     shopState.q = '';
     shopState.min_price = '';
     shopState.max_price = '';
@@ -738,6 +1032,15 @@ window.resetAllFilters = function() {
 
 window.applyCategoryFilter = function(slug) {
     shopState.category = slug || '';
+    fetchProducts();
+};
+
+window.applyBrandFilter = function(slug) {
+    if (shopState.brand === slug) {
+        shopState.brand = '';
+    } else {
+        shopState.brand = slug || '';
+    }
     fetchProducts();
 };
 
@@ -818,6 +1121,17 @@ function fetchProducts(url = "{{ route('shop.index') }}", pushHistory = true) {
 
             const categoryTitleEl = document.getElementById('categoryTitle');
             if (categoryTitleEl && catTitle) categoryTitleEl.textContent = catTitle;
+
+            // Extract smart brands payload
+            const brandsPayloadEl = grid.querySelector('#shopMetaBrandsPayload');
+            if (brandsPayloadEl) {
+                try {
+                    const brandsData = JSON.parse(brandsPayloadEl.textContent);
+                    updateSmartBrandsUI(brandsData);
+                } catch(e) {
+                    console.error('Brands parse error:', e);
+                }
+            }
         }
 
         // Re-apply view mode on new content
@@ -838,6 +1152,117 @@ function fetchProducts(url = "{{ route('shop.index') }}", pushHistory = true) {
         if (skeleton) skeleton.classList.add('d-none');
         if (loader) loader.classList.add('d-none');
     });
+}
+
+function updateSmartBrandsUI(brandsData) {
+    if (!Array.isArray(brandsData)) return;
+
+    brandsData.forEach(b => {
+        brandNamesMap[b.slug] = b.name;
+    });
+
+    const toolbarContainer = document.getElementById('toolbarBrandDropdownContainer');
+    const toolbarItemsContainer = document.getElementById('toolbarBrandItemsContainer');
+    const toolbarBadge = document.getElementById('toolbarBrandCountBadge');
+    const toolbarSearchBox = document.getElementById('toolbarBrandSearchBox');
+
+    const mobileContainer = document.getElementById('mobileBrandDropdownContainer');
+    const mobileItemsContainer = document.getElementById('mobileBrandItemsContainer');
+
+    const sheetSection = document.getElementById('sheetBrandFilterSection');
+    const sheetContainer = document.getElementById('sheetBrandChips');
+    const sheetBadge = document.getElementById('sheetBrandCountBadge');
+    const sheetSearchBox = document.getElementById('sheetBrandSearchBox');
+
+    if (brandsData.length === 0) {
+        if (toolbarContainer) toolbarContainer.style.display = 'none';
+        if (mobileContainer) mobileContainer.style.display = 'none';
+        if (sheetSection) sheetSection.style.display = 'none';
+        return;
+    }
+
+    if (toolbarContainer) toolbarContainer.style.display = '';
+    if (mobileContainer) mobileContainer.style.display = '';
+    if (sheetSection) sheetSection.style.display = '';
+
+    if (toolbarBadge) toolbarBadge.textContent = brandsData.length;
+    if (sheetBadge) sheetBadge.textContent = `${brandsData.length} {{ __('marques') }}`;
+
+    if (toolbarSearchBox) toolbarSearchBox.style.display = brandsData.length <= 5 ? 'none' : '';
+    if (sheetSearchBox) sheetSearchBox.style.display = brandsData.length <= 6 ? 'none' : '';
+
+    if (toolbarItemsContainer) {
+        let toolbarHtml = '';
+        brandsData.forEach(b => {
+            const isActive = (shopState.brand === b.slug);
+            const mediaHtml = b.logo_url
+                ? `<img src="${b.logo_url}" alt="${b.name}" width="18" height="18" class="cat-slot-media" style="object-fit: contain;" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-flex';"><i class="fas fa-tag text-muted" style="display: none; font-size: 0.75rem;"></i>`
+                : `<i class="fas fa-tag text-muted" style="font-size: 0.75rem;"></i>`;
+
+            toolbarHtml += `
+            <button type="button" class="dropdown-item rounded-3 py-1.5 px-2.5 d-flex align-items-center justify-content-between shop-brand-link mb-0.5 ${isActive ? 'active' : ''}" 
+                    data-slug="${b.slug}" 
+                    data-name="${b.name}">
+                <span class="d-flex align-items-center gap-2 text-truncate me-2">
+                    <span class="cat-slot-box" style="width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; background: #f3f4f6; border-radius: 6px; flex-shrink: 0;">
+                        ${mediaHtml}
+                    </span>
+                    <span class="fw-medium text-truncate" style="font-size: 0.84rem;">${b.name}</span>
+                </span>
+                <div class="d-flex align-items-center gap-1 flex-shrink-0">
+                    <span class="badge cat-mega-count rounded-pill" style="font-size: 0.7rem;">${b.count}</span>
+                    <i class="fas fa-check cat-item-check" style="font-size: 0.75rem;"></i>
+                </div>
+            </button>`;
+        });
+        toolbarItemsContainer.innerHTML = toolbarHtml;
+    }
+
+    if (mobileItemsContainer) {
+        let mobileHtml = '';
+        brandsData.forEach(b => {
+            const isActive = (shopState.brand === b.slug);
+            const mediaHtml = b.logo_url
+                ? `<img src="${b.logo_url}" alt="${b.name}" width="16" height="16" class="cat-slot-media" style="object-fit: contain;" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-flex';"><i class="fas fa-tag text-muted" style="display: none; font-size: 0.7rem;"></i>`
+                : `<i class="fas fa-tag text-muted" style="font-size: 0.7rem;"></i>`;
+
+            mobileHtml += `
+            <button type="button" class="dropdown-item rounded-3 py-1.5 px-2 d-flex align-items-center justify-content-between shop-brand-link mb-0.5 ${isActive ? 'active' : ''}" 
+                    data-slug="${b.slug}" 
+                    data-name="${b.name}">
+                <span class="d-flex align-items-center gap-2 text-truncate me-2">
+                    <span class="cat-slot-box" style="width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; background: #f3f4f6; border-radius: 6px; flex-shrink: 0;">
+                        ${mediaHtml}
+                    </span>
+                    <span class="fw-medium text-truncate" style="font-size: 0.82rem;">${b.name}</span>
+                </span>
+                <div class="d-flex align-items-center gap-1 flex-shrink-0">
+                    <span class="badge cat-mega-count rounded-pill" style="font-size: 0.68rem;">${b.count}</span>
+                </div>
+            </button>`;
+        });
+        mobileItemsContainer.innerHTML = mobileHtml;
+    }
+
+    if (sheetContainer) {
+        let sheetHtml = '';
+        brandsData.forEach(b => {
+            const isActive = (shopState.brand === b.slug);
+            const mediaHtml = b.logo_url
+                ? `<img src="${b.logo_url}" alt="${b.name}" width="22" height="22" class="sheet-cat-card-img" style="object-fit: contain;" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-flex';"><i class="fas fa-tag" style="display: none; font-size: 0.85rem;"></i>`
+                : `<i class="fas fa-tag" style="font-size: 0.85rem;"></i>`;
+
+            sheetHtml += `
+            <button type="button" class="sheet-cat-card sheet-brand-chip ${isActive ? 'active' : ''}" data-slug="${b.slug}" data-name="${b.name}">
+                <span class="sheet-cat-card-icon" style="width: 28px; height: 28px;">
+                    ${mediaHtml}
+                </span>
+                <span class="sheet-cat-card-name">${b.name}</span>
+                <span class="sheet-chip-count sheet-cat-card-count">${b.count}</span>
+            </button>`;
+        });
+        sheetContainer.innerHTML = sheetHtml;
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -880,6 +1305,67 @@ document.addEventListener('DOMContentLoaded', function() {
             if (catBtn.classList.contains('mobile-cat-pill')) {
                 catBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
             }
+        }
+    });
+
+    // Consolidated Brand Clicks (Toolbar, Sidebar & Sheet)
+    document.addEventListener('click', function(e) {
+        const brandBtn = e.target.closest('.shop-brand-link');
+        if (brandBtn) {
+            e.preventDefault();
+            const slug = brandBtn.getAttribute('data-slug') || '';
+            window.applyBrandFilter(slug);
+
+            // Close toolbar & mobile dropdowns if open
+            ['toolbarBrandDropdownBtn', 'mobileBrandDropdownBtn'].forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                if (btn) {
+                    const bsDropdown = bootstrap.Dropdown.getInstance(btn);
+                    if (bsDropdown) bsDropdown.hide();
+                }
+            });
+        }
+
+        const sheetBrandChip = e.target.closest('.sheet-brand-chip');
+        if (sheetBrandChip) {
+            e.preventDefault();
+            const slug = sheetBrandChip.getAttribute('data-slug') || '';
+            window.applyBrandFilter(slug);
+        }
+    });
+
+    const sheetBrandReset = document.getElementById('sheetBrandResetBtn');
+    if (sheetBrandReset) {
+        sheetBrandReset.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.removeFilter('brand');
+        });
+    }
+
+    // Live brand search filters (Toolbar & Sheet)
+    ['toolbarBrandSearchInput', 'sheetBrandSearchInput'].forEach(inputId => {
+        const inputEl = document.getElementById(inputId);
+        if (inputEl) {
+            inputEl.addEventListener('input', function() {
+                const query = this.value.toLowerCase().trim();
+                const targetBox = (inputId === 'toolbarBrandSearchInput')
+                    ? document.getElementById('toolbarBrandItemsContainer')
+                    : document.getElementById('sheetBrandChips');
+                const noRes = (inputId === 'toolbarBrandSearchInput')
+                    ? document.getElementById('toolbarBrandNoResults')
+                    : document.getElementById('sheetBrandNoResults');
+
+                if (targetBox) {
+                    let matchCount = 0;
+                    targetBox.querySelectorAll('.shop-brand-link, .sheet-brand-chip').forEach(item => {
+                        const name = (item.getAttribute('data-name') || item.textContent).toLowerCase();
+                        const match = name.includes(query);
+                        item.style.display = match ? '' : 'none';
+                        if (match) matchCount++;
+                    });
+                    if (noRes) noRes.style.display = matchCount === 0 ? 'block' : 'none';
+                }
+            });
         }
     });
 
@@ -1118,10 +1604,12 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('sheetMinPrice').value = '';
             document.getElementById('sheetMaxPrice').value = '';
             shopState.category = '';
+            shopState.brand = '';
             document.querySelectorAll('.sheet-cat-chip').forEach(c => {
                 if (c.getAttribute('data-slug') === '') c.classList.add('active');
                 else c.classList.remove('active');
             });
+            document.querySelectorAll('.sheet-brand-chip').forEach(c => c.classList.remove('active'));
             resetAllFilters();
             const sheetEl = document.getElementById('shopFilterSheet');
             const bsOffcanvas = bootstrap.Offcanvas.getInstance(sheetEl);

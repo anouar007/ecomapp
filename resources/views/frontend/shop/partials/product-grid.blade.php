@@ -3,9 +3,23 @@
      data-total="{{ $products->total() }}" 
      data-category-title="{{ $activeCategoryTitle ?? ($categories->where('slug', request('category'))->first()->name ?? ($products->total() . ' ' . __('produits'))) }}"
      data-category-slug="{{ request('category', '') }}"
+     data-brand-slug="{{ request('brand', '') }}"
+     data-brand-name="{{ isset($activeBrand) && $activeBrand ? $activeBrand->name : '' }}"
      data-current-page="{{ $products->currentPage() }}"
      data-last-page="{{ $products->lastPage() }}"
-     data-has-pages="{{ $products->hasPages() ? '1' : '0' }}"></div>
+     data-has-pages="{{ $products->hasPages() ? '1' : '0' }}">
+    <script type="application/json" id="shopMetaBrandsPayload">
+        {!! json_encode(($smartBrands ?? collect())->map(function($b) {
+            return [
+                'id' => $b->id,
+                'name' => $b->name,
+                'slug' => $b->slug,
+                'logo_url' => $b->logo_url,
+                'count' => $b->products_count,
+            ];
+        })->values()) !!}
+    </script>
+</div>
 
 @if(request('q') && isset($matchingCategories) && $matchingCategories->isNotEmpty())
 <div class="shop-matching-categories mb-3 p-2 rounded-3 bg-light border d-flex align-items-center flex-wrap gap-2">

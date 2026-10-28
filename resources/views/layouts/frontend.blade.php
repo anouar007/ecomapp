@@ -2738,8 +2738,31 @@
         } elseif (!str_starts_with($waCleanPhone, '212')) {
             $waCleanPhone = '212' . $waCleanPhone;
         }
+
+        $appName = setting('app_name', 'WINA SHOP');
+        $currentLocale = app()->getLocale();
+        $isProductPage = (request()->routeIs('shop.show') || trim($__env->yieldContent('meta_type')) === 'product') && isset($product) && $product instanceof \App\Models\Product;
+
+        if ($isProductPage) {
+            $productUrl = route('shop.show', $product->slug ?: $product->id);
+            if ($currentLocale === 'ar') {
+                $waMessage = "مرحبا {$appName}، أود الاستفسار عن هذا المنتج:\n{$product->name}\n{$productUrl}";
+            } elseif ($currentLocale === 'en') {
+                $waMessage = "Hello {$appName}, I would like more information about this product:\n{$product->name}\n{$productUrl}";
+            } else {
+                $waMessage = "Bonjour {$appName}, je souhaite me renseigner sur ce produit :\n{$product->name}\n{$productUrl}";
+            }
+        } else {
+            if ($currentLocale === 'ar') {
+                $waMessage = "مرحبا {$appName}، أود الاستفسار عن منتجاتكم.";
+            } elseif ($currentLocale === 'en') {
+                $waMessage = "Hello {$appName}, I would like to inquire about your products.";
+            } else {
+                $waMessage = 'Bonjour Wina Shop, je souhaite me renseigner sur vos produits.';
+            }
+        }
     @endphp
-    <a href="https://wa.me/{{ $waCleanPhone }}?text={{ urlencode('Bonjour Wina Shop, je souhaite me renseigner sur vos produits.') }}" 
+    <a href="https://wa.me/{{ $waCleanPhone }}?text={{ rawurlencode($waMessage) }}" 
        class="whatsapp-float" 
        target="_blank" 
        rel="noopener noreferrer" 

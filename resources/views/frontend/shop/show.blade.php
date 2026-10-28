@@ -1148,6 +1148,30 @@ function pdpSelectVariant(button) {
     if (oldPriceEl) oldPriceEl.style.display = 'none';
     if (discountBadgeEl) discountBadgeEl.style.display = 'none';
 
+    // Update floating WhatsApp button to include selected variant and product link
+    const waFloat = document.querySelector('.whatsapp-float');
+    if (waFloat && waFloat.href) {
+        try {
+            const waUrl = new URL(waFloat.href);
+            const appName = @json(setting('app_name', 'Wina Shop'));
+            const prodName = @json($product->name);
+            const prodUrl = @json($productShareUrl);
+            const locale = '{{ app()->getLocale() }}';
+            let msg = '';
+            if (locale === 'ar') {
+                msg = `مرحبا ${appName}، أود الاستفسار عن هذا المنتج:\n${prodName} (${name})\n${prodUrl}`;
+            } else if (locale === 'en') {
+                msg = `Hello ${appName}, I would like more information about this product:\n${prodName} (${name})\n${prodUrl}`;
+            } else {
+                msg = `Bonjour ${appName}, je souhaite me renseigner sur ce produit :\n${prodName} (${name})\n${prodUrl}`;
+            }
+            waUrl.searchParams.set('text', msg);
+            waFloat.href = waUrl.toString();
+        } catch (e) {
+            console.error('Failed to update WhatsApp link', e);
+        }
+    }
+
     // Update stock badge and buttons
     const stockBadge = document.querySelector('.pdp-stock-badge');
     const qtyInput = document.getElementById('pdpQty');

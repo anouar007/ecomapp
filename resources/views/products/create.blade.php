@@ -633,6 +633,32 @@
                         @enderror
                     </div>
 
+                    <!-- Marque du Produit -->
+                    <div class="mb-4">
+                        <label for="brand_id" class="form-label fw-bold text-dark d-flex align-items-center justify-content-between">
+                            <span><i class="fas fa-tag text-primary me-1"></i> Marque</span>
+                            @can('manage_products')
+                                <a href="{{ route('brands.create') }}" target="_blank" class="small text-decoration-none text-primary" style="font-size: 0.78rem;">
+                                    <i class="fas fa-plus-circle me-1"></i>Nouvelle marque
+                                </a>
+                            @endcan
+                        </label>
+                        <select name="brand_id" id="brand_id" class="form-select @error('brand_id') is-invalid @enderror">
+                            <option value="">-- Sans marque / Autre --</option>
+                            @foreach($brands ?? [] as $b)
+                                <option value="{{ $b->id }}" {{ old('brand_id') == $b->id ? 'selected' : '' }}>
+                                    {{ $b->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <div class="form-text text-muted small">
+                            Associez ce produit à sa marque pour le filtre intelligent du shop.
+                        </div>
+                        @error('brand_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
                     <!-- Statut -->
                     <div class="mb-3">
                         <label for="status" class="form-label fw-semibold text-dark">
