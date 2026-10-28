@@ -4357,16 +4357,16 @@ body:has(.offcanvas.show) .whatsapp-float {
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background: #f1f5f9;
-    border: 1.5px solid #e2e8f0;
+    background: #e11d48;
+    border: 1.5px solid #dc2626;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: #64748b;
-    font-size: .78rem;
+    color: #ffffff;
+    font-size: 0.78rem;
     cursor: pointer;
-    transition: all .2s;
-    padding: 0
+    transition: all 0.2s;
+    padding: 0;
 }
 
 .btn-sheet-close:hover {
@@ -12533,18 +12533,22 @@ html:not(.aos-init) [data-aos] {
         font-size: .70rem !important
     }
 }
+
 @media (max-width: 991.98px) {
     .shop-mobile-toolbar {
         position: sticky !important;
         position: -webkit-sticky !important;
         z-index: 1050 !important;
     }
+
     .shop-mobile-toolbar-row {
         position: relative !important;
     }
+
     #mobileBrandDropdownContainer {
         position: static !important;
     }
+
     #mobileBrandDropdownMenu {
         position: absolute !important;
         left: 8px !important;
@@ -12561,16 +12565,19 @@ html:not(.aos-init) [data-aos] {
         padding: 12px 14px 14px !important;
         animation: mobileDropdownSlideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
+
     @keyframes mobileDropdownSlideIn {
         from {
             opacity: 0;
             transform: translateY(-8px) scale(0.98);
         }
+
         to {
             opacity: 1;
             transform: translateY(0) scale(1);
         }
     }
+
     .mobile-brand-list-wrap {
         max-height: 50vh;
         overflow-y: auto;
@@ -12578,47 +12585,55 @@ html:not(.aos-init) [data-aos] {
         overscroll-behavior: contain;
         padding-right: 2px;
     }
+
     .mobile-brand-list-wrap::-webkit-scrollbar {
         width: 4px;
     }
+
     .mobile-brand-list-wrap::-webkit-scrollbar-thumb {
         background: rgba(0, 0, 0, 0.15);
         border-radius: 4px;
     }
+
     #mobileBrandDropdownMenu .dropdown-item {
         border-radius: 12px !important;
         transition: all 0.15s ease !important;
         border: 1px solid transparent !important;
         min-height: 44px;
     }
+
     #mobileBrandDropdownMenu .dropdown-item:active,
     #mobileBrandDropdownMenu .dropdown-item:hover {
         background-color: #f8fafc !important;
         color: #111827 !important;
     }
+
     #mobileBrandDropdownMenu .dropdown-item.active {
         background-color: #fff5f5 !important;
         border-color: rgba(220, 38, 38, 0.2) !important;
         color: #dc2626 !important;
     }
+
     #mobileBrandDropdownMenu .dropdown-item.active .brand-item-name,
     #mobileBrandDropdownMenu .dropdown-item.active span.fw-medium {
         color: #dc2626 !important;
         font-weight: 700 !important;
     }
+
     #mobileBrandDropdownMenu .dropdown-item.active .brand-count-badge {
         background: #fee2e2 !important;
         color: #dc2626 !important;
-}
-.mobile-brand-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(15, 23, 42, 0.35);
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
-    z-index: 1045;
-    transition: opacity 0.2s ease;
-}
+    }
+
+    .mobile-brand-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(15, 23, 42, 0.35);
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+        z-index: 1045;
+        transition: opacity 0.2s ease;
+    }

@@ -4487,12 +4487,12 @@ body:has(.offcanvas.show) .whatsapp-float {
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background: #f1f5f9;
-    border: 1.5px solid #e2e8f0;
+    background: #e11d48;
+    border: 1.5px solid #dc2626;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: #64748b;
+    color: #ffffff;
     font-size: 0.78rem;
     cursor: pointer;
     transition: all 0.2s;
@@ -12940,6 +12940,7 @@ html:not(.aos-init) [data-aos] {
             opacity: 0;
             transform: translateY(-8px) scale(0.98);
         }
+
         to {
             opacity: 1;
             transform: translateY(0) scale(1);
@@ -12957,6 +12958,7 @@ html:not(.aos-init) [data-aos] {
     .mobile-brand-list-wrap::-webkit-scrollbar {
         width: 4px;
     }
+
     .mobile-brand-list-wrap::-webkit-scrollbar-thumb {
         background: rgba(0, 0, 0, 0.15);
         border-radius: 4px;
