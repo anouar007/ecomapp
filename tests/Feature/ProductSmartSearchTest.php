@@ -111,4 +111,23 @@ class ProductSmartSearchTest extends TestCase
         $response->assertSee('Recherches populaires');
         $response->assertSee('Sony A7 IV');
     }
+
+    /**
+     * Test out of stock products do not appear before in stock products on shop page.
+     */
+    public function test_in_stock_products_appear_before_out_of_stock_products()
+    {
+        $products = ProductSearchService::buildQuery()->get();
+        $this->assertNotEmpty($products);
+
+        $foundOutOfStock = false;
+        foreach ($products as $p) {
+            if ($p->stock <= 0) {
+                $foundOutOfStock = true;
+            } elseif ($foundOutOfStock) {
+                $this->fail("Found in-stock product [{$p->name}] (stock: {$p->stock}) after an out-of-stock product.");
+            }
+        }
+        $this->assertTrue(true);
+    }
 }

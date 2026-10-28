@@ -358,6 +358,9 @@ class ProductSearchService
             $query->whereRaw('COALESCE(NULLIF(products.sale_price, 0), products.price) <= ?', [(float) $maxPrice]);
         }
 
+        // Primary Sort: In-stock products (stock > 0) always appear first, out-of-stock products appear last
+        $query->orderByRaw('CASE WHEN products.stock > 0 THEN 1 ELSE 0 END DESC');
+
         // 4. Search Matching ONLY ON PRODUCT NAME WITH >= 80% MATCH
         $cleanSearch = trim($search);
         if (mb_strlen($cleanSearch) > 0) {
@@ -385,7 +388,7 @@ class ProductSearchService
                     $query->orderByDesc('products.created_at');
                     break;
                 default:
-                    // Primary: Highest name match score first, Secondary: in stock first
+                    // Primary: Highest name match score first, Secondary: stock quantity descending
                     $query->orderByRaw("FIELD(products.id, {$idList})")
                           ->orderByDesc('products.stock');
                     break;
