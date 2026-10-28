@@ -280,8 +280,8 @@
                 touch-action: manipulation;
             }
             .brand-logo-img {
-                height: 70px !important;
-                max-height: 71px !important;
+                height: 80px !important;
+                max-height: 80px !important;
                 width: auto !important;
                 object-fit: contain;
             }
@@ -2258,6 +2258,12 @@
 
                 <!-- Right: Search Bar + Cart Icon -->
                 <div class="d-flex align-items-center gap-2 gap-md-3 gap-xl-4 flex-grow-1 justify-content-end header-actions-wrap" style="max-width: 580px;">
+                    
+                    <!-- Mobile Menu Toggler -->
+                    <button class="navbar-toggler border-0 p-1 d-lg-none text-dark ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNavDrawer" aria-controls="mobileNavDrawer" aria-label="Menu">
+                        <i class="fas fa-bars" style="font-size: 20px;"></i>
+                    </button>    
+                
                     <!-- Search Input (Pill shape #f1f3f5) -->
                     <form action="{{ route('shop.index') }}" method="GET" class="header-search-wrap w-100 position-relative" style="max-width: 380px;" id="headerSearchForm" autocomplete="off">
                         <div class="position-relative d-flex align-items-center header-search-box" style="background: #f1f3f5; border-radius: 9999px; padding: 0 14px; height: 42px;">
@@ -2323,11 +2329,6 @@
                             {{ $headerInitialCartCount }}
                         </span>
                     </div>
-
-                    <!-- Mobile Menu Toggler -->
-                    <button class="navbar-toggler border-0 p-1 d-lg-none text-dark ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNavDrawer" aria-controls="mobileNavDrawer" aria-label="Menu">
-                        <i class="fas fa-bars" style="font-size: 20px;"></i>
-                    </button>
                 </div>
             </div>
         </div>
