@@ -673,6 +673,27 @@
                         @enderror
                     </div>
 
+                    <!-- Ordre d'affichage / Priorité -->
+                    <div class="mb-3">
+                        <label for="sort_order" class="form-label fw-semibold text-dark d-flex align-items-center justify-content-between">
+                            <span><i class="fas fa-sort-numeric-down text-primary me-1"></i> Ordre d'affichage / Priorité</span>
+                            <span class="badge bg-light text-muted border font-monospace" style="font-size: 0.7rem;">0 = standard</span>
+                        </label>
+                        <input type="number" 
+                               id="sort_order" 
+                               name="sort_order" 
+                               class="form-control @error('sort_order') is-invalid @enderror" 
+                               value="{{ old('sort_order', 0) }}" 
+                               min="0" 
+                               placeholder="0">
+                        <div class="form-text text-muted small">
+                            Les produits avec un ordre prioritaire (ex: 1, 2, 3...) apparaissent en premier sur la boutique. Laissez 0 pour le classement automatique standard.
+                        </div>
+                        @error('sort_order')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
                     <!-- Stock initial -->
                     <div class="row g-2">
                         <div class="col-6">

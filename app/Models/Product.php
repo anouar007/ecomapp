@@ -25,6 +25,7 @@ class Product extends Model
         'category_id',
         'brand_id',
         'status',
+        'sort_order',
         'image',
         'image_width',
         'image_height',
@@ -37,6 +38,7 @@ class Product extends Model
         'sale_price' => 'decimal:2',
         'stock' => 'integer',
         'min_stock' => 'integer',
+        'sort_order' => 'integer',
         'sale_end_date' => 'datetime',
     ];
 

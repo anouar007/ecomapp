@@ -17,7 +17,10 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::with(['images', 'productCategory', 'categories', 'variants'])->latest();
+        $query = Product::with(['images', 'productCategory', 'categories', 'variants'])
+            ->orderByRaw('CASE WHEN products.sort_order > 0 THEN 0 ELSE 1 END ASC')
+            ->orderBy('products.sort_order', 'asc')
+            ->latest();
 
         // Search
         if ($request->filled('search')) {
@@ -155,10 +158,13 @@ class ProductController extends Controller
             'brand_id' => ['nullable', 'exists:brands,id'],
             'images.*' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
+            'sort_order' => ['nullable', 'integer', 'min:0', 'max:999999'],
         ], [
             'old_price.numeric' => "L'ancien prix doit être un nombre valide.",
             'old_price.min' => "L'ancien prix ne peut pas être négatif.",
         ]);
+
+        $validated['sort_order'] = isset($validated['sort_order']) && $validated['sort_order'] !== '' ? (int) $validated['sort_order'] : 0;
 
         $categoryIds = [];
         if ($request->has('category_ids') && is_array($request->category_ids)) {
@@ -311,12 +317,17 @@ class ProductController extends Controller
             'brand_id' => ['nullable', 'exists:brands,id'],
             'images.*' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
+            'sort_order' => ['nullable', 'integer', 'min:0', 'max:999999'],
             'remove_images' => ['nullable', 'array'],
             'remove_images.*' => ['exists:product_images,id'],
         ], [
             'old_price.numeric' => "L'ancien prix doit être un nombre valide.",
             'old_price.min' => "L'ancien prix ne peut pas être négatif.",
         ]);
+
+        if (array_key_exists('sort_order', $validated)) {
+            $validated['sort_order'] = isset($validated['sort_order']) && $validated['sort_order'] !== '' ? (int) $validated['sort_order'] : 0;
+        }
 
         $categoryIds = [];
         if ($request->has('category_ids') && is_array($request->category_ids)) {
@@ -790,6 +801,34 @@ class ProductController extends Controller
             'success' => false,
             'message' => 'No image provided',
         ], 422);
+    }
+
+    /**
+     * Update the display order / priority of a product.
+     */
+    public function updateOrder(Request $request, Product $product)
+    {
+        $validated = $request->validate([
+            'sort_order' => ['required', 'integer', 'min:0', 'max:999999'],
+        ]);
+
+        $product->update([
+            'sort_order' => (int) $validated['sort_order'],
+        ]);
+
+        \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
+        \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Ordre mis à jour avec succès.',
+                'product_id' => $product->id,
+                'sort_order' => $product->sort_order,
+            ]);
+        }
+
+        return back()->with('success', 'Ordre mis à jour avec succès.');
     }
 }
 

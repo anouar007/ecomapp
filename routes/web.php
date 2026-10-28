@@ -59,6 +59,7 @@ Route::middleware('auth')->group(function () {
         Route::get('products/{product}/search-4k-images', [\App\Http\Controllers\ProductController::class, 'search4kImages'])->name('products.search-4k-images');
         Route::post('products/{product}/apply-4k-image', [\App\Http\Controllers\ProductController::class, 'apply4kImage'])->name('products.apply-4k-image');
         Route::post('products/upload-editor-image', [\App\Http\Controllers\ProductController::class, 'uploadEditorImage'])->name('products.upload-editor-image');
+        Route::post('products/{product}/update-order', [\App\Http\Controllers\ProductController::class, 'updateOrder'])->name('products.update-order');
         Route::resource('products', \App\Http\Controllers\ProductController::class);
 
         // Brands Management

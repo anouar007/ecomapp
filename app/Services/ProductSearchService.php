@@ -407,7 +407,11 @@ class ProductSearchService
                 break;
             case 'newest':
             default:
-                $query->orderBy('products.created_at', 'desc');
+                // Custom product order: products with sort_order > 0 appear first (1, 2, 3...)
+                // followed by items with sort_order = 0 sorted by newest created_at desc
+                $query->orderByRaw('CASE WHEN products.sort_order > 0 THEN 0 ELSE 1 END ASC')
+                      ->orderBy('products.sort_order', 'asc')
+                      ->orderBy('products.created_at', 'desc');
                 break;
         }
 

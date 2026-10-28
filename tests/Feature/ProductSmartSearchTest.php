@@ -130,4 +130,83 @@ class ProductSmartSearchTest extends TestCase
         }
         $this->assertTrue(true);
     }
+
+    /**
+     * Test products with custom sort_order appear first on shop catalog in order.
+     */
+    public function test_custom_sort_order_products_appear_first_on_shop()
+    {
+        $unique = uniqid();
+        $prodA = Product::create([
+            'name' => "Ordre Test Second {$unique}",
+            'sku' => "SKU-ORD-B-{$unique}",
+            'slug' => "ordre-test-second-{$unique}",
+            'price' => 200,
+            'stock' => 10,
+            'min_stock' => 2,
+            'status' => 'active',
+            'sort_order' => 2,
+        ]);
+
+        $prodB = Product::create([
+            'name' => "Ordre Test First {$unique}",
+            'sku' => "SKU-ORD-A-{$unique}",
+            'slug' => "ordre-test-first-{$unique}",
+            'price' => 300,
+            'stock' => 10,
+            'min_stock' => 2,
+            'status' => 'active',
+            'sort_order' => 1,
+        ]);
+
+        $products = ProductSearchService::buildQuery()->get();
+
+        // Product B (sort_order = 1) must appear before Product A (sort_order = 2)
+        $posB = $products->search(fn($p) => $p->id === $prodB->id);
+        $posA = $products->search(fn($p) => $p->id === $prodA->id);
+
+        $this->assertNotFalse($posB);
+        $this->assertNotFalse($posA);
+        $this->assertLessThan($posA, $posB, 'Product with sort_order 1 should appear before sort_order 2');
+
+        // Cleanup
+        $prodA->delete();
+        $prodB->delete();
+    }
+
+    /**
+     * Test admin can update product order via quick endpoint.
+     */
+    public function test_admin_can_update_product_order()
+    {
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'RolePermissionSeeder']);
+        \Illuminate\Support\Facades\Artisan::call('make:admin', ['email' => 'admin@speed.com', 'password' => 'password']);
+        $admin = \App\Models\User::where('email', 'admin@speed.com')->first();
+
+        $unique = uniqid();
+        $prod = Product::create([
+            'name' => "Ordre Quick Test {$unique}",
+            'sku' => "SKU-ORD-Q-{$unique}",
+            'slug' => "ordre-quick-test-{$unique}",
+            'price' => 150,
+            'stock' => 5,
+            'min_stock' => 1,
+            'status' => 'active',
+            'sort_order' => 0,
+        ]);
+
+        $response = $this->actingAs($admin)->postJson(route('products.update-order', $prod), [
+            'sort_order' => 7,
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'sort_order' => 7,
+        ]);
+
+        $this->assertEquals(7, $prod->fresh()->sort_order);
+
+        $prod->delete();
+    }
 }

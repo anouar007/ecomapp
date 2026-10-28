@@ -106,6 +106,19 @@
                 <span class="status-dot {{ $isActive ? 'dot-green' : 'dot-gray' }}"></span>
                 {{ $isActive ? 'Actif' : 'Inactif' }}
             </span>
+            <div class="prod-order-quick-wrap d-inline-flex align-items-center gap-1 bg-light rounded-pill px-2 py-0.5 border" title="Ordre d'affichage sur la boutique (1 = premier)">
+                <span class="text-muted fw-bold" style="font-size: 0.65rem;">Ordre</span>
+                <input type="number" 
+                       min="0" 
+                       class="form-control form-control-sm text-center p-0 prod-sort-order-input" 
+                       value="{{ $product->sort_order ?? 0 }}" 
+                       data-product-id="{{ $product->id }}"
+                       data-original-value="{{ $product->sort_order ?? 0 }}"
+                       style="width: 38px; height: 22px; font-size: 0.75rem; font-weight: 700; border-radius: 4px; {{ ($product->sort_order ?? 0) > 0 ? 'background-color: #eff6ff; color: #1d4ed8;' : 'background-color: transparent; color: #64748b;' }}; border: 1px solid #cbd5e1;">
+                <span class="order-saved-indicator" style="display:none; font-size: 0.72rem; color: #16a34a;">
+                    <i class="fas fa-check-circle"></i>
+                </span>
+            </div>
             @if($product->cost_price)
                 <span class="mobile-cost-badge" title="Prix de revient">
                     Coût: {{ currency($product->cost_price) }}

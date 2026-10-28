@@ -379,6 +379,7 @@
                         <th class="col-category">Catégorie</th>
                         <th class="col-price">Prix TTC</th>
                         <th class="col-stock">Stock</th>
+                        <th class="col-order text-center" title="Ordre d'affichage sur la boutique (1 = premier)">Ordre</th>
                         <th class="col-status">Statut</th>
                         <th class="col-actions text-end">Actions</th>
                     </tr>
@@ -489,6 +490,21 @@
                             <span class="badge-stock badge-stock-{{ $badgeType }}">
                                 <span class="status-dot dot-{{ $dotColor }}"></span>{{ $badgeText }}
                             </span>
+                        </td>
+                        <td class="col-order text-center">
+                            <div class="prod-order-quick-wrap position-relative d-inline-flex align-items-center justify-content-center">
+                                <input type="number" 
+                                       min="0" 
+                                       class="form-control form-control-sm text-center prod-sort-order-input px-1" 
+                                       value="{{ $product->sort_order ?? 0 }}" 
+                                       data-product-id="{{ $product->id }}"
+                                       data-original-value="{{ $product->sort_order ?? 0 }}"
+                                       title="Ordre d'affichage (Entrée ou clic ailleurs pour enregistrer)"
+                                       style="width: 52px; height: 29px; font-weight: 700; font-size: 0.8rem; border-radius: 7px; {{ ($product->sort_order ?? 0) > 0 ? 'background-color: #eff6ff; border-color: #93c5fd; color: #1d4ed8;' : 'background-color: #f8fafc; border-color: #e2e8f0; color: #64748b;' }}">
+                                <span class="order-saved-indicator position-absolute" style="display:none; right: -16px; font-size: 0.75rem; color: #16a34a;">
+                                    <i class="fas fa-check-circle"></i>
+                                </span>
+                            </div>
                         </td>
                         <td class="col-status">
                             @php
@@ -705,6 +721,12 @@
     .brand-table-products .col-stock {
         width: 120px;
         white-space: nowrap;
+    }
+
+    .brand-table-products .col-order {
+        width: 80px;
+        white-space: nowrap;
+        text-align: center;
     }
 
     .brand-table-products .col-status {
@@ -1000,7 +1022,95 @@
     
     document.addEventListener('DOMContentLoaded', function() {
         initTooltips();
+        initSortOrderInputs();
     });
+
+    function initSortOrderInputs() {
+        document.querySelectorAll('.prod-sort-order-input').forEach(input => {
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.blur();
+                }
+            });
+
+            input.addEventListener('change', function() {
+                saveProductSortOrder(this);
+            });
+        });
+    }
+
+    function saveProductSortOrder(input) {
+        const productId = input.getAttribute('data-product-id');
+        const origVal = input.getAttribute('data-original-value');
+        let newVal = parseInt(input.value);
+
+        if (isNaN(newVal) || newVal < 0) {
+            newVal = 0;
+            input.value = 0;
+        }
+
+        if (String(newVal) === String(origVal)) {
+            return;
+        }
+
+        const wrap = input.closest('.prod-order-quick-wrap') || input.parentElement;
+        const indicator = wrap ? wrap.querySelector('.order-saved-indicator') : null;
+        
+        input.disabled = true;
+        input.style.opacity = '0.6';
+
+        const tokenEl = document.querySelector('meta[name="csrf-token"]');
+        const csrfToken = tokenEl ? tokenEl.getAttribute('content') : '';
+
+        fetch(`/products/${productId}/update-order`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ sort_order: newVal })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Erreur réseau');
+            return response.json();
+        })
+        .then(data => {
+            input.disabled = false;
+            input.style.opacity = '1';
+            input.setAttribute('data-original-value', newVal);
+            
+            // Sync counterpart inputs for same product (desktop and mobile)
+            document.querySelectorAll(`.prod-sort-order-input[data-product-id="${productId}"]`).forEach(inp => {
+                inp.value = newVal;
+                inp.setAttribute('data-original-value', newVal);
+                if (newVal > 0) {
+                    inp.style.backgroundColor = '#eff6ff';
+                    inp.style.borderColor = '#93c5fd';
+                    inp.style.color = '#1d4ed8';
+                } else {
+                    inp.style.backgroundColor = '#f8fafc';
+                    inp.style.borderColor = '#e2e8f0';
+                    inp.style.color = '#64748b';
+                }
+            });
+
+            if (indicator) {
+                indicator.style.display = 'inline-block';
+                setTimeout(() => {
+                    indicator.style.display = 'none';
+                }, 2000);
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            input.disabled = false;
+            input.style.opacity = '1';
+            input.value = origVal;
+            alert('Impossible de mettre à jour l\'ordre d\'affichage.');
+        });
+    }
 
     function initTooltips() {
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
