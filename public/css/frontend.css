@@ -2516,18 +2516,9 @@ a {
     color: #fff !important;
 }
 
-.toolbar-brand-list-wrap .dropdown-item.active .cat-item-check {
-    display: inline-block !important;
-    color: #fff !important;
-}
-
 .toolbar-brand-list-wrap .dropdown-item.active .badge {
     background: rgba(255, 255, 255, 0.25) !important;
     color: #fff !important;
-}
-
-.toolbar-brand-list-wrap .dropdown-item .cat-item-check {
-    display: none;
 }
 
 /* ── Mobile Toolbar 3-Button Row Layout ── */
@@ -2675,14 +2666,6 @@ a {
     #mobileBrandDropdownMenu .dropdown-item.active .brand-count-badge {
         background: #fee2e2 !important;
         color: #dc2626 !important;
-    }
-
-    #mobileBrandDropdownMenu .dropdown-item .cat-item-check {
-        display: none !important;
-    }
-
-    #mobileBrandDropdownMenu .dropdown-item.active .cat-item-check {
-        display: inline-block !important;
     }
 }
 

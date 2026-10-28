@@ -256,7 +256,6 @@
                                     </span>
                                     <span class="fw-medium text-truncate" style="font-size: 0.86rem;">{{ __('Toutes les marques') }}</span>
                                 </span>
-                                <i class="fas fa-check cat-item-check text-danger ms-auto" style="font-size: 0.8rem;"></i>
                             </button>
 
                             {{-- Individual Brands --}}
@@ -278,7 +277,6 @@
                                     </span>
                                     <div class="d-flex align-items-center gap-2 flex-shrink-0">
                                         <span class="badge rounded-pill brand-count-badge" style="font-size: 0.7rem; font-weight: 600; padding: 3px 8px; background: #f1f5f9; color: #64748b;">{{ $b->products_count }}</span>
-                                        <i class="fas fa-check cat-item-check text-danger" style="font-size: 0.8rem;"></i>
                                     </div>
                                 </button>
                                 @endforeach
@@ -429,7 +427,6 @@
                                                 </span>
                                                 <span class="fw-medium" style="font-size: 0.84rem;">{{ __('Toutes les marques') }}</span>
                                             </span>
-                                            <i class="fas fa-check cat-item-check" style="font-size: 0.75rem;"></i>
                                         </button>
 
                                         {{-- Individual Brands --}}
@@ -1254,7 +1251,6 @@ function updateSmartBrandsUI(brandsData) {
                 </span>
                 <div class="d-flex align-items-center gap-1 flex-shrink-0">
                     <span class="badge cat-mega-count rounded-pill" style="font-size: 0.7rem;">${b.count}</span>
-                    <i class="fas fa-check cat-item-check" style="font-size: 0.75rem;"></i>
                 </div>
             </button>`;
         });
@@ -1286,7 +1282,6 @@ function updateSmartBrandsUI(brandsData) {
                 </span>
                 <div class="d-flex align-items-center gap-2 flex-shrink-0">
                     <span class="badge rounded-pill brand-count-badge" style="font-size: 0.7rem; font-weight: 600; padding: 3px 8px; background: #f1f5f9; color: #64748b;">${b.count}</span>
-                    <i class="fas fa-check cat-item-check text-danger" style="font-size: 0.8rem;"></i>
                 </div>
             </button>`;
         });

@@ -12609,13 +12609,6 @@ html:not(.aos-init) [data-aos] {
     #mobileBrandDropdownMenu .dropdown-item.active .brand-count-badge {
         background: #fee2e2 !important;
         color: #dc2626 !important;
-    }
-    #mobileBrandDropdownMenu .dropdown-item .cat-item-check {
-        display: none !important;
-    }
-    #mobileBrandDropdownMenu .dropdown-item.active .cat-item-check {
-        display: inline-block !important;
-    }
 }
 .mobile-brand-backdrop {
     position: fixed;
