@@ -183,27 +183,8 @@
     <div class="container position-relative">
         <div class="d-flex align-items-center justify-content-between mb-3 mb-md-4">
             <div>
-                
                 <h2 class="fw-bold text-dark mb-0 mb-md-1" style="font-size: clamp(1.25rem, 3.5vw, 1.65rem); letter-spacing: -0.4px;">Catégories Populaires</h2>
                 <p class="text-secondary small mb-0 d-none d-md-block" style="font-size: 0.88rem;">Explorez nos rayons phares et équipements audiovisuels certifiés au Maroc</p>
-            </div>
-
-            {{-- Slider Controls --}}
-            <div class="cat-slider-nav-wrap d-flex align-items-center gap-1 gap-md-2">
-                <button type="button" 
-                        class="btn btn-cat-swiper-arrow d-flex align-items-center justify-content-center" 
-                        id="catSwiperPrev" 
-                        aria-label="Précédent" 
-                        title="Catégories précédentes">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button type="button" 
-                        class="btn btn-cat-swiper-arrow d-flex align-items-center justify-content-center" 
-                        id="catSwiperNext" 
-                        aria-label="Suivant" 
-                        title="Catégories suivantes">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
             </div>
         </div>
         
@@ -246,6 +227,24 @@
 
         {{-- Dots pagination below categories --}}
         <div class="popular-cats-pagination text-center mt-2 mt-md-3 d-flex justify-content-center align-items-center gap-2"></div>
+
+        {{-- Slider Controls under pagination dots --}}
+        <div class="cat-slider-nav-wrap d-flex align-items-center justify-content-center gap-2 mt-2">
+            <button type="button" 
+                    class="btn btn-cat-swiper-arrow d-flex align-items-center justify-content-center" 
+                    id="catSwiperPrev" 
+                    aria-label="Précédent" 
+                    title="Catégories précédentes">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button type="button" 
+                    class="btn btn-cat-swiper-arrow d-flex align-items-center justify-content-center" 
+                    id="catSwiperNext" 
+                    aria-label="Suivant" 
+                    title="Catégories suivantes">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
     </div>
 </section>
 

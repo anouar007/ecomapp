@@ -659,6 +659,38 @@
                         @enderror
                     </div>
 
+                    <!-- Tags & Badges Produit -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark d-flex align-items-center justify-content-between">
+                            <span><i class="fas fa-bolt text-danger me-1"></i> Tags & Badges</span>
+                            @can('manage_products')
+                                <a href="{{ route('product-tags.index') }}" target="_blank" class="small text-decoration-none text-danger" style="font-size: 0.78rem;">
+                                    <i class="fas fa-sliders-h me-1"></i>Gérer les tags
+                                </a>
+                            @endcan
+                        </label>
+                        @php $oldTagIds = array_map('intval', old('tag_ids', [])); @endphp
+                        <div class="border rounded p-2.5 bg-light d-flex flex-wrap gap-2 product-card-tag-container" style="min-height: 48px;">
+                            @forelse($productTags ?? [] as $pTag)
+                                @php $isTagSelected = in_array((int) $pTag->id, $oldTagIds); @endphp
+                                <label class="d-inline-flex align-items-center gap-1.5 border rounded px-2 py-1 bg-white shadow-2xs" style="cursor: pointer; border-color: {{ $isTagSelected ? '#dc2626' : '#e5e7eb' }} !important;">
+                                    <input type="checkbox" name="tag_ids[]" value="{{ $pTag->id }}" class="form-check-input mt-0" {{ $isTagSelected ? 'checked' : '' }}>
+                                    <span class="product-card-tag-badge" style="{{ $pTag->inline_style }} font-size: 0.68rem !important; padding: 2px 7px !important;">
+                                        @if(!empty($pTag->icon))
+                                            <i class="{{ $pTag->icon }}"></i>
+                                        @endif
+                                        <span>{{ $pTag->name }}</span>
+                                    </span>
+                                </label>
+                            @empty
+                                <span class="text-muted small">Aucun tag actif. <a href="{{ route('product-tags.create') }}" target="_blank">Créer un tag</a></span>
+                            @endforelse
+                        </div>
+                        <div class="form-text text-muted small">
+                            Les badges sélectionnés s'afficheront et s'adapteront automatiquement à la taille de la carte produit.
+                        </div>
+                    </div>
+
                     <!-- Statut -->
                     <div class="mb-3">
                         <label for="status" class="form-label fw-semibold text-dark">

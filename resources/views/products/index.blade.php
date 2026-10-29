@@ -421,6 +421,16 @@
                                     </div>
                                     <div class="d-flex align-items-center gap-1.5 flex-wrap mt-0.5">
                                         <span id="prod-badge-{{ $product->id }}">{!! $product->image_quality_badge !!}</span>
+                                        @if($product->tags && $product->tags->isNotEmpty())
+                                            @foreach($product->tags as $pTag)
+                                                <span class="product-card-tag-badge" style="{{ $pTag->inline_style }} font-size: 0.62rem !important; padding: 1px 6px !important;">
+                                                    @if(!empty($pTag->icon))
+                                                        <i class="{{ $pTag->icon }}"></i>
+                                                    @endif
+                                                    <span>{{ $pTag->name }}</span>
+                                                </span>
+                                            @endforeach
+                                        @endif
                                         @if($product->description)
                                             <span class="prod-desc-text" title="{{ strip_tags($product->description) }}">
                                                 {{ Str::limit(strip_tags($product->description), 35) }}

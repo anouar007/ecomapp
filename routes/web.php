@@ -65,6 +65,9 @@ Route::middleware('auth')->group(function () {
         // Brands Management
         Route::post('brands/auto-detect', [\App\Http\Controllers\BrandController::class, 'autoDetect'])->name('brands.auto-detect');
         Route::resource('brands', \App\Http\Controllers\BrandController::class);
+
+        // Product Tags & Badges Management
+        Route::resource('product-tags', \App\Http\Controllers\ProductTagController::class);
     });
     
     // Categories Management

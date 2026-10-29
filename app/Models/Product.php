@@ -230,6 +230,30 @@ class Product extends Model
     }
 
     /**
+     * Get all product tags/badges assigned to the product.
+     */
+    public function tags()
+    {
+        return $this->belongsToMany(ProductTag::class, 'product_product_tag', 'product_id', 'product_tag_id')
+            ->withPivot('sort_order')
+            ->orderBy('product_tags.sort_order', 'asc')
+            ->orderBy('product_tags.id', 'asc')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get only active product tags assigned to the product.
+     */
+    public function activeTags()
+    {
+        return $this->belongsToMany(ProductTag::class, 'product_product_tag', 'product_id', 'product_tag_id')
+            ->where('product_tags.status', 'active')
+            ->orderBy('product_tags.sort_order', 'asc')
+            ->orderBy('product_tags.id', 'asc')
+            ->withTimestamps();
+    }
+
+    /**
      * Get all categories assigned to the product (many-to-many).
      */
     public function categories()

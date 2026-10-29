@@ -118,6 +118,44 @@
             border-radius: 50% !important;
         }
 
+        /* Custom Product Tag Badge System (Proportional to Card Size via cqw) */
+        .product-card-tag-container {
+            container-type: inline-size;
+        }
+        .product-card-tag-badge {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: calc(clamp(2.5px, 1.3cqw, 5px) * var(--tag-scale, 1)) !important;
+            padding: calc(clamp(2.5px, 1.4cqw, 5.5px) * var(--tag-scale, 1)) calc(clamp(6px, 3.2cqw, 11px) * var(--tag-scale, 1)) !important;
+            font-size: calc(clamp(0.54rem, 3.9cqw, 0.78rem) * var(--tag-scale, 1)) !important;
+            font-weight: var(--tag-weight, 800) !important;
+            text-transform: var(--tag-transform, uppercase) !important;
+            letter-spacing: 0.04em !important;
+            line-height: 1.15 !important;
+            background: var(--tag-bg, #dc2626) !important;
+            color: var(--tag-color, #ffffff) !important;
+            border: var(--tag-border, none) !important;
+            border-radius: var(--tag-radius, 6px) !important;
+            box-shadow: var(--tag-shadow, none) !important;
+            backdrop-filter: var(--tag-backdrop, none) !important;
+            -webkit-backdrop-filter: var(--tag-backdrop, none) !important;
+            white-space: nowrap !important;
+            user-select: none !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+        }
+        .product-card-tag-badge i {
+            font-size: 0.92em !important;
+            line-height: 1 !important;
+        }
+        .product-card-tag-badge.tag-pulse {
+            animation: productTagPulse 2.2s infinite ease-in-out;
+        }
+        @keyframes productTagPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
         /* ── High-Priority Navbar Action Buttons (Top Bar) ── */
         .navbar-user {
             margin-left: auto !important;
@@ -347,6 +385,12 @@
                 <a href="{{ route('brands.index') }}" class="sidebar-menu-link {{ request()->routeIs('brands.*') ? 'active' : '' }}">
                     <i class="fas fa-tags"></i>
                     <span>Marques</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="{{ route('product-tags.index') }}" class="sidebar-menu-link {{ request()->routeIs('product-tags.*') ? 'active' : '' }}">
+                    <i class="fas fa-bolt"></i>
+                    <span>Tags & Badges</span>
                 </a>
             </li>
             @endcan

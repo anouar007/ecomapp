@@ -17,7 +17,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::with(['images', 'productCategory', 'categories', 'variants'])
+        $query = Product::with(['images', 'productCategory', 'categories', 'variants', 'tags'])
             ->orderByRaw('CASE WHEN products.sort_order > 0 THEN 0 ELSE 1 END ASC')
             ->orderBy('products.sort_order', 'asc')
             ->latest();
@@ -128,8 +128,12 @@ class ProductController extends Controller
             ->orderBy('sort_order')
             ->orderBy('name')
             ->get();
+        $productTags = \App\Models\ProductTag::where('status', 'active')
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
         
-        return view('products.create', compact('categories', 'brands'));
+        return view('products.create', compact('categories', 'brands', 'productTags'));
     }
 
     /**
@@ -228,6 +232,9 @@ class ProductController extends Controller
 
             $product = Product::create($validated);
             $product->categories()->sync($categoryIds);
+            if ($request->has('tag_ids') && is_array($request->tag_ids)) {
+                $product->tags()->sync(array_values(array_unique(array_filter(array_map('intval', $request->tag_ids)))));
+            }
 
             // Create product variants
             if (!empty($validVariants)) {
@@ -280,7 +287,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $product->load('images', 'productCategory', 'categories', 'variants', 'brand');
+        $product->load('images', 'productCategory', 'categories', 'variants', 'brand', 'tags');
         $categories = \App\Models\Category::where('status', 'active')
             ->orderBy('name')
             ->get();
@@ -288,8 +295,12 @@ class ProductController extends Controller
             ->orderBy('sort_order')
             ->orderBy('name')
             ->get();
+        $productTags = \App\Models\ProductTag::where('status', 'active')
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
         
-        return view('products.edit', compact('product', 'categories', 'brands'));
+        return view('products.edit', compact('product', 'categories', 'brands', 'productTags'));
     }
 
     /**
@@ -391,6 +402,10 @@ class ProductController extends Controller
 
             $product->update($validated);
             $product->categories()->sync($categoryIds);
+            $tagIds = ($request->has('tag_ids') && is_array($request->tag_ids))
+                ? array_values(array_unique(array_filter(array_map('intval', $request->tag_ids))))
+                : [];
+            $product->tags()->sync($tagIds);
 
             // Synchronize product variants
             if (!empty($validVariants)) {

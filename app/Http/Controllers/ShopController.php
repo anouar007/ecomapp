@@ -34,7 +34,7 @@ class ShopController extends Controller
             sort: $sort
         );
 
-        $products = $query->with(['images', 'productCategory', 'brand'])
+        $products = $query->with(['images', 'productCategory', 'brand', 'activeTags'])
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')
             ->paginate(20)->withQueryString();
@@ -97,8 +97,8 @@ class ShopController extends Controller
     public function show($id)
     {
         $product = is_numeric($id)
-            ? Product::with(['images', 'productCategory', 'categories', 'inventoryMovements', 'variants', 'brand'])->findOrFail($id)
-            : Product::with(['images', 'productCategory', 'categories', 'inventoryMovements', 'variants', 'brand'])->where('slug', $id)->firstOrFail();
+            ? Product::with(['images', 'productCategory', 'categories', 'inventoryMovements', 'variants', 'brand', 'activeTags'])->findOrFail($id)
+            : Product::with(['images', 'productCategory', 'categories', 'inventoryMovements', 'variants', 'brand', 'activeTags'])->where('slug', $id)->firstOrFail();
         
         // Paginate approved reviews separately - 5 per page
         $reviews = ProductReview::where('product_id', $product->id)
@@ -108,7 +108,7 @@ class ShopController extends Controller
         
         // Related products — find items sharing any assigned category
         $categoryIds = $product->category_ids;
-        $relatedProducts = Product::with('images')
+        $relatedProducts = Product::with(['images', 'activeTags'])
             ->where('status', 'active')
             ->where('id', '!=', $product->id)
             ->where(function($q) use ($categoryIds) {

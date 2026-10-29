@@ -296,12 +296,15 @@
                 </button>
             </div>
 
-            {{-- Result Count & Removable Filter Chips --}}
-            <div class="mobile-active-strip d-flex align-items-center justify-content-between pt-2">
-                <div class="mobile-results-count text-muted">
-                    <span id="mobileProductTotal" class="fw-bold text-dark">{{ $products->total() }}</span> {{ __('produits') }}
-                </div>
+            {{-- Removable Filter Chips (Left) & Result Count + Clear All (Right) --}}
+            <div class="mobile-active-strip d-flex align-items-center justify-content-between gap-2 pt-2">
                 <div class="mobile-chips-scroll" id="mobileActiveChipsContainer"></div>
+                <div class="d-flex align-items-center gap-2 ms-auto flex-shrink-0">
+                    <div class="mobile-results-count text-muted text-nowrap">
+                        <span id="mobileProductTotal" class="fw-bold text-dark">{{ $products->total() }}</span> {{ __('produits') }}
+                    </div>
+                    <span class="mobile-chip-clear d-none" id="mobileClearAllBtn" onclick="resetAllFilters()">{{ __('Effacer tout') }}</span>
+                </div>
             </div>
         </div>
 
@@ -1010,8 +1013,9 @@ function renderActiveFilterChips() {
         desktopHtml += `<span class="shop-filter-tag cursor-pointer" onclick="removeFilter('price')">{{ __('Budget :') }} ${min} — ${max} DH <i class="fas fa-times ms-1 small"></i></span>`;
     }
 
-    if (chipsHtml) {
-        chipsHtml += `<span class="mobile-chip-clear" onclick="resetAllFilters()">{{ __('Effacer tout') }}</span>`;
+    const mobileClearAllBtn = document.getElementById('mobileClearAllBtn');
+    if (mobileClearAllBtn) {
+        mobileClearAllBtn.classList.toggle('d-none', !chipsHtml);
     }
 
     if (mobileContainer) mobileContainer.innerHTML = chipsHtml;

@@ -85,7 +85,7 @@ class HomeController extends Controller
         $featuredProducts = Cache::remember('home_featured_products_v1', 1800, function () use ($featuredIds) {
             $prods = Product::where('status', 'active')
                 ->whereIn('id', $featuredIds)
-                ->with(['images', 'productCategory'])
+                ->with(['images', 'productCategory', 'activeTags'])
                 ->orderByRaw('FIELD(id, 594, 45, 374, 36, 18, 2, 7, 14)')
                 ->get();
 
@@ -94,7 +94,7 @@ class HomeController extends Controller
                     ->whereNotNull('price')
                     ->where('price', '>', 0)
                     ->whereNotIn('id', $prods->pluck('id'))
-                    ->with(['images', 'productCategory'])
+                    ->with(['images', 'productCategory', 'activeTags'])
                     ->take(8 - $prods->count())
                     ->get();
                 $prods = $prods->merge($extra);
@@ -107,14 +107,14 @@ class HomeController extends Controller
         $newArrivalProducts = Cache::remember('home_new_arrival_products_v1', 1800, function () use ($newArrivalIds) {
             $prods = Product::where('status', 'active')
                 ->whereIn('id', $newArrivalIds)
-                ->with(['images', 'productCategory'])
+                ->with(['images', 'productCategory', 'activeTags'])
                 ->orderByRaw('FIELD(id, 251, 239, 129, 130, 126, 127)')
                 ->get();
 
             if ($prods->count() < 6) {
                 $extraNew = Product::where('status', 'active')
                     ->whereNotIn('id', $prods->pluck('id'))
-                    ->with(['images', 'productCategory'])
+                    ->with(['images', 'productCategory', 'activeTags'])
                     ->latest()
                     ->take(6 - $prods->count())
                     ->get();
@@ -134,7 +134,7 @@ class HomeController extends Controller
                     })->orWhere('name', 'like', '%(occasion)%')
                       ->orWhere('name', 'like', '%occasion%');
                 })
-                ->with(['images', 'productCategory', 'categories'])
+                ->with(['images', 'productCategory', 'categories', 'activeTags'])
                 ->orderByRaw('FIELD(id, 71, 31, 9, 12, 84) DESC')
                 ->get();
         });

@@ -4193,9 +4193,12 @@ body:has(.offcanvas.hiding) .whatsapp-float {
 
 .mobile-chips-scroll {
     display: flex;
+    align-items: center;
+    justify-content: flex-start;
     gap: 6px;
     overflow-x: auto;
-    scrollbar-width: none
+    scrollbar-width: none;
+    min-width: 0
 }
 
 .mobile-chips-scroll::-webkit-scrollbar {
@@ -8668,16 +8671,16 @@ html[dir=rtl] .floating-checkout-badge {
 }
 
 .cat-swiper-dot {
-    width: 12px;
-    height: 12px;
+    width: 9px;
+    height: 9px;
     background: #cbd5e1;
-    border-radius: 50%;
+    border-radius: 3px !important;
     display: inline-block;
     cursor: pointer;
     transition: all .25s cubic-bezier(.16, 1, .3, 1);
     border: none;
     padding: 0;
-    margin: 0 5px;
+    margin: 0 3px;
     opacity: .85
 }
 
@@ -8688,10 +8691,10 @@ html[dir=rtl] .floating-checkout-badge {
 }
 
 .cat-swiper-dot-active {
-    width: 12px !important;
-    height: 12px !important;
+    width: 9px !important;
+    height: 9px !important;
     background: #c8102e !important;
-    border-radius: 50% !important;
+    border-radius: 3px !important;
     opacity: 1 !important;
     box-shadow: 0 2px 8px #c8102e59
 }
@@ -8755,14 +8758,16 @@ html[dir=rtl] .floating-checkout-badge {
     }
 
     .cat-swiper-dot {
-        width: 10px !important;
-        height: 10px !important;
-        margin: 0 3px !important
+        width: 8px !important;
+        height: 8px !important;
+        border-radius: 2.5px !important;
+        margin: 0 2.5px !important
     }
 
     .cat-swiper-dot-active {
-        width: 10px !important;
-        height: 10px !important
+        width: 8px !important;
+        height: 8px !important;
+        border-radius: 2.5px !important
     }
 }
 
@@ -12547,9 +12552,9 @@ html:not(.aos-init) [data-aos] {
 
 @media (max-width: 991.98px) {
     .shop-mobile-toolbar {
-        position: sticky !important;
-        position: -webkit-sticky !important;
-        z-index: 1050 !important;
+        position: relative !important;
+        top: auto !important;
+        z-index: 1020 !important;
     }
 
     .shop-mobile-toolbar-row {
@@ -12645,6 +12650,6 @@ html:not(.aos-init) [data-aos] {
         background: rgba(15, 23, 42, 0.35);
         backdrop-filter: blur(2px);
         -webkit-backdrop-filter: blur(2px);
-        z-index: 1045;
+        z-index: 1015;
         transition: opacity 0.2s ease;
     }

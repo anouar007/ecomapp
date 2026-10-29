@@ -510,20 +510,29 @@
             <div class="row g-0">
 
                 {{-- IMAGE PANEL --}}
+                @php
+                    $pdpTags = $product->relationLoaded('activeTags') ? $product->activeTags : $product->activeTags()->get();
+                    $pdpTagsByPos = $pdpTags->groupBy(fn($t) => $t->position ?: 'top-left');
+                @endphp
                 <div class="col-lg-6 pdp-image-panel">
-                    <div class="pdp-main-image-wrap" id="zoomWrap">
+                    <div class="pdp-main-image-wrap product-card-tag-container" id="zoomWrap">
+                        @foreach(['top-left', 'top-right', 'bottom-left', 'bottom-right'] as $cornerPos)
+                            @if($pdpTagsByPos->has($cornerPos) && $pdpTagsByPos->get($cornerPos)->isNotEmpty())
+                                <div class="product-card-tags-slot pdp-image-tags-slot pos-{{ $cornerPos }}">
+                                    @foreach($pdpTagsByPos->get($cornerPos) as $pTag)
+                                        <span class="product-card-tag-badge pdp-image-tag-badge {{ $pTag->pulse_animation ? 'tag-pulse' : '' }}" style="{{ $pTag->inline_style }}">
+                                            @if(!empty($pTag->icon))
+                                                <i class="{{ $pTag->icon }}" aria-hidden="true"></i>
+                                            @endif
+                                            <span>{{ $pTag->name }}</span>
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @endif
+                        @endforeach
+
                         <img id="mainImage" src="{{ $product->thumbnail }}"
                              alt="{{ $product->name }}" width="600" height="600" class="pdp-main-image" fetchpriority="high" decoding="async">
-
-                        <div class="pdp-badges">
-                            @if(!$product->isInStock())
-                                <span class="pdp-badge pdp-badge--oos">{{ __('Out of stock') }}</span>
-                            @elseif($product->created_at->diffInDays(now()) < 14)
-                                <span class="pdp-badge pdp-badge--new">{{ __('New') }}</span>
-                            @elseif($product->isOnSale())
-                                <span class="pdp-badge pdp-badge--sale">−{{ $product->discount_percentage }}%</span>
-                            @endif
-                        </div>
                     </div>
 
                     @php
@@ -584,10 +593,6 @@
 
                     <div class="pdp-price-row">
                         <div class="pdp-price-group">
-                            @if($product->isOnSale())
-                                <span class="pdp-discount-badge">−{{ $product->discount_percentage }}%</span>
-                            @endif
-
                             <div class="pdp-price-main-line d-flex align-items-center">
                                 <span class="pdp-price-main">{{ $product->isOnSale() ? $product->formatted_sale_price : $product->formatted_price }}</span>
 

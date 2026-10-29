@@ -1,11 +1,27 @@
 @php
     $isInCart = isset(session('cart', [])[$product->id]);
     $isAr = app()->getLocale() === 'ar';
-    $brand = $product->brand_name ?? ($product->productCategory->name ?? 'CAMERA');
+    $cardTags = $product->relationLoaded('activeTags') ? $product->activeTags : $product->activeTags()->get();
+    $tagsByPosition = $cardTags->groupBy(fn($t) => $t->position ?: 'top-left');
 @endphp
-<div class="featured-pro-card selection-card h-100 d-flex flex-column justify-content-between position-relative">
+<div class="featured-pro-card selection-card product-card-tag-container h-100 d-flex flex-column justify-content-between position-relative">
     {{-- Product Image with clean white background --}}
-    <div class="featured-pro-img-box mb-2">
+    <div class="featured-pro-img-box mb-2 position-relative">
+        @foreach(['top-left', 'top-right', 'bottom-left', 'bottom-right'] as $cornerPos)
+            @if($tagsByPosition->has($cornerPos) && $tagsByPosition->get($cornerPos)->isNotEmpty())
+                <div class="product-card-tags-slot pos-{{ $cornerPos }}">
+                    @foreach($tagsByPosition->get($cornerPos) as $cTag)
+                        <span class="product-card-tag-badge {{ $cTag->pulse_animation ? 'tag-pulse' : '' }}" style="{{ $cTag->inline_style }}">
+                            @if(!empty($cTag->icon))
+                                <i class="{{ $cTag->icon }}" aria-hidden="true"></i>
+                            @endif
+                            <span>{{ $cTag->name }}</span>
+                        </span>
+                    @endforeach
+                </div>
+            @endif
+        @endforeach
+
         <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" class="w-100 h-100 d-flex align-items-center justify-content-center" aria-label="{{ $product->name }}">
             <img src="{{ $product->thumbnail }}" alt="{{ $product->name }}" width="220" height="220" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
         </a>
@@ -14,7 +30,6 @@
     {{-- Product Info --}}
     <div class="featured-pro-body mb-1 flex-grow-1 d-flex flex-column justify-content-between">
         <div>
-            <span class="featured-brand-chip d-none">{{ $brand }}</span>
             <h3 class="featured-pro-title">
                 <a href="{{ route('shop.show', $product->slug ?: $product->id) }}">
                     {{ $product->name }}

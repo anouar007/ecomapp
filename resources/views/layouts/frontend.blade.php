@@ -286,7 +286,8 @@
                 object-fit: contain;
             }
         }
-        /* Keep header search results above the shop sticky filter bar (z-index 1050) */
+        /* Keep header navbar and search results above the shop sticky filter bar */
+        .header-main,
         body.header-search-open .header-main,
         .header-main:has(#headerSearchDropdown:not(.d-none)) {
             z-index: 1065 !important;
@@ -523,6 +524,112 @@
         .nav-live-pulse,
         .badge-dot {
             border-radius: 50% !important;
+        }
+
+        /* ================================================================
+           PROPORTIONAL PRODUCT CARD TAGS & BADGES (Scales with Card Size)
+           ================================================================ */
+        .featured-pro-card.selection-card,
+        .product-card-tag-container {
+            container-type: inline-size;
+        }
+
+        .product-card-tags-slot {
+            position: absolute !important;
+            z-index: 6 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: clamp(3px, 1.4cqw, 6px) !important;
+            pointer-events: none !important;
+            max-width: 86% !important;
+        }
+
+        .product-card-tags-slot.pos-top-left {
+            top: clamp(5px, 3.2cqw, 10px) !important;
+            left: clamp(5px, 3.2cqw, 10px) !important;
+            align-items: flex-start !important;
+        }
+
+        .product-card-tags-slot.pos-top-right {
+            top: clamp(5px, 3.2cqw, 10px) !important;
+            right: clamp(5px, 3.2cqw, 10px) !important;
+            align-items: flex-end !important;
+        }
+
+        .product-card-tags-slot.pos-bottom-left {
+            bottom: clamp(5px, 3.2cqw, 10px) !important;
+            left: clamp(5px, 3.2cqw, 10px) !important;
+            align-items: flex-start !important;
+        }
+
+        .product-card-tags-slot.pos-bottom-right {
+            bottom: clamp(5px, 3.2cqw, 10px) !important;
+            right: clamp(5px, 3.2cqw, 10px) !important;
+            align-items: flex-end !important;
+        }
+
+        .product-card-tag-badge {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: calc(clamp(2.5px, 1.3cqw, 5px) * var(--tag-scale, 1)) !important;
+            padding: calc(clamp(2.5px, 1.4cqw, 5.5px) * var(--tag-scale, 1)) calc(clamp(6px, 3.2cqw, 11px) * var(--tag-scale, 1)) !important;
+            font-size: calc(clamp(0.52rem, 3.8cqw, 0.76rem) * var(--tag-scale, 1)) !important;
+            font-weight: var(--tag-weight, 800) !important;
+            text-transform: var(--tag-transform, uppercase) !important;
+            letter-spacing: 0.04em !important;
+            line-height: 1.15 !important;
+            background: var(--tag-bg, #dc2626) !important;
+            color: var(--tag-color, #ffffff) !important;
+            border: var(--tag-border, none) !important;
+            border-radius: var(--tag-radius, 6px) !important;
+            box-shadow: var(--tag-shadow, none) !important;
+            backdrop-filter: var(--tag-backdrop, none) !important;
+            -webkit-backdrop-filter: var(--tag-backdrop, none) !important;
+            white-space: nowrap !important;
+            user-select: none !important;
+        }
+
+        .product-card-tag-badge i {
+            font-size: 0.92em !important;
+            line-height: 1 !important;
+        }
+
+        .product-card-tag-badge.tag-pulse {
+            animation: productTagPulseFront 2.2s infinite ease-in-out;
+        }
+
+        /* Product Detail Page (PDP) Proportional Tag Scaling */
+        .pdp-main-image-wrap .pdp-image-tags-slot.pos-top-left {
+            top: clamp(10px, 2.8cqw, 16px) !important;
+            left: clamp(10px, 2.8cqw, 16px) !important;
+        }
+        .pdp-main-image-wrap .pdp-image-tags-slot.pos-top-right {
+            top: clamp(10px, 2.8cqw, 16px) !important;
+            right: clamp(10px, 2.8cqw, 16px) !important;
+        }
+        .pdp-main-image-wrap .pdp-image-tags-slot.pos-bottom-left {
+            bottom: clamp(10px, 2.8cqw, 16px) !important;
+            left: clamp(10px, 2.8cqw, 16px) !important;
+        }
+        .pdp-main-image-wrap .pdp-image-tags-slot.pos-bottom-right {
+            bottom: clamp(10px, 2.8cqw, 16px) !important;
+            right: clamp(10px, 2.8cqw, 16px) !important;
+        }
+        .pdp-main-image-wrap .pdp-image-tag-badge {
+            font-size: calc(clamp(0.66rem, 2.4cqw, 0.88rem) * var(--tag-scale, 1)) !important;
+            padding: calc(clamp(4px, 1.1cqw, 7px) * var(--tag-scale, 1)) calc(clamp(9px, 2.3cqw, 14px) * var(--tag-scale, 1)) !important;
+            gap: calc(clamp(3.5px, 1cqw, 6px) * var(--tag-scale, 1)) !important;
+        }
+        .pdp-inline-tags-row .pdp-info-tag-badge {
+            font-size: calc(0.72rem * var(--tag-scale, 1)) !important;
+            padding: calc(3.5px * var(--tag-scale, 1)) calc(10px * var(--tag-scale, 1)) !important;
+            gap: calc(4px * var(--tag-scale, 1)) !important;
+        }
+
+        @keyframes productTagPulseFront {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         /* ================================================================
@@ -2120,7 +2227,7 @@
 
 
     <!-- Main Header / Navbar (Single Clean Row) -->
-    <div class="header-main sticky-top bg-white shadow-sm w-100" style="position: sticky !important; top: 0 !important; z-index: 1040; border-bottom: 1px solid #f1f3f5;">
+    <div class="header-main sticky-top bg-white shadow-sm w-100" style="position: sticky !important; top: 0 !important; z-index: 1065; border-bottom: 1px solid #f1f3f5;">
         <div class="container py-0 py-lg-0">
             <div class="d-flex align-items-center justify-content-between gap-3 gap-xl-4">
                 
