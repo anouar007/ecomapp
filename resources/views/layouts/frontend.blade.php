@@ -286,6 +286,11 @@
                 object-fit: contain;
             }
         }
+        /* Keep header search results above the shop sticky filter bar (z-index 1050) */
+        body.header-search-open .header-main,
+        .header-main:has(#headerSearchDropdown:not(.d-none)) {
+            z-index: 1065 !important;
+        }
         :root {
             --font-heading: "Roboto", sans-serif !important;
             --font-body: "Roboto", sans-serif !important;
@@ -3576,10 +3581,12 @@
 
             function openDropdown() {
                 dropdown.classList.remove('d-none');
+                document.body.classList.add('header-search-open');
             }
 
             function closeDropdown() {
                 dropdown.classList.add('d-none');
+                document.body.classList.remove('header-search-open');
                 selectedIndex = -1;
             }
 
