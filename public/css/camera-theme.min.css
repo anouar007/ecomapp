@@ -5933,7 +5933,7 @@ body:has(.offcanvas.hiding) .whatsapp-float {
 
 .pdp-add-btn {
     flex: 1 1 auto !important;
-    background: var(--brand-red) !important;
+    background: linear-gradient(45deg, #e50027, #92000e) !important;
     color: #fff !important;
     border: none;
     border-radius: 50px;
@@ -9534,7 +9534,7 @@ html[dir=rtl] .hero-side-tag {
 }
 
 .featured-pro-btn {
-    background: linear-gradient(135deg, #c8102e, #a80c26);
+    background: linear-gradient(45deg, #e50027, #92000e) !important;
     color: #fff !important;
     border: none;
     border-radius: 10px;
