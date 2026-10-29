@@ -137,7 +137,7 @@
             color: var(--tag-color, #ffffff) !important;
             border: var(--tag-border, none) !important;
             border-radius: var(--tag-radius, 6px) !important;
-            box-shadow: var(--tag-shadow, none) !important;
+            box-shadow: none !important;
             backdrop-filter: var(--tag-backdrop, none) !important;
             -webkit-backdrop-filter: var(--tag-backdrop, none) !important;
             white-space: nowrap !important;

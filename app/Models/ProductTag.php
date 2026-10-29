@@ -14,6 +14,7 @@ class ProductTag extends Model
     protected $fillable = [
         'name',
         'slug',
+        'is_discount_tag',
         'icon',
         'style_type',
         'bg_color',
@@ -32,6 +33,7 @@ class ProductTag extends Model
     ];
 
     protected $casts = [
+        'is_discount_tag' => 'boolean',
         'size_scale' => 'integer',
         'uppercase' => 'boolean',
         'pulse_animation' => 'boolean',
@@ -42,7 +44,9 @@ class ProductTag extends Model
     protected static function booted()
     {
         static::saving(function ($tag) {
-            if (empty($tag->slug) || $tag->isDirty('name')) {
+            if ($tag->is_discount_tag) {
+                $tag->slug = 'auto-discount-percentage';
+            } elseif (empty($tag->slug) || $tag->isDirty('name')) {
                 $baseSlug = Str::slug($tag->name) ?: 'tag';
                 $slug = $baseSlug;
                 $counter = 1;
@@ -63,10 +67,63 @@ class ProductTag extends Model
             Cache::forget('home_new_arrival_products_v1');
             Cache::forget('home_occasion_products_v1');
             Cache::forget('active_product_tags_v1');
+            Cache::forget('auto_discount_product_tag_v1');
         };
 
         static::saved($clearCaches);
         static::deleted($clearCaches);
+    }
+
+    /**
+     * Retrieve (or create) the singleton Auto-Discount Percentage Tag configuration.
+     */
+    public static function discountTag(): self
+    {
+        return Cache::remember('auto_discount_product_tag_v1', 3600, function () {
+            $tag = static::where('is_discount_tag', true)->first();
+            if (!$tag) {
+                $tag = static::create([
+                    'name' => '-{percent}%',
+                    'slug' => 'auto-discount-percentage',
+                    'is_discount_tag' => true,
+                    'icon' => null,
+                    'style_type' => 'gradient',
+                    'bg_color' => '#dc2626',
+                    'bg_gradient' => '#991b1b',
+                    'text_color' => '#ffffff',
+                    'border_color' => null,
+                    'shape' => 'rounded',
+                    'position' => 'top-left',
+                    'size_scale' => 100,
+                    'font_weight' => '800',
+                    'uppercase' => true,
+                    'pulse_animation' => false,
+                    'has_shadow' => false,
+                    'status' => 'active',
+                    'sort_order' => 0,
+                ]);
+            }
+            return $tag;
+        });
+    }
+
+    /**
+     * Format the auto-calculated discount percentage using this tag's customizable template.
+     */
+    public function formatDiscountLabel(int|float $percent): string
+    {
+        $p = (int) round($percent);
+        $tpl = trim($this->name ?: '-{percent}%');
+        if (str_contains($tpl, '{percent}')) {
+            return str_replace('{percent}', (string) $p, $tpl);
+        }
+        if (preg_match('/\d+\s*%/', $tpl)) {
+            return preg_replace('/\d+\s*%/', $p . '%', $tpl);
+        }
+        if ($tpl === '%' || $tpl === '-%' || $tpl === '−%') {
+            return "−{$p}%";
+        }
+        return "{$tpl} −{$p}%";
     }
 
     /**
@@ -186,9 +243,7 @@ class ProductTag extends Model
                 break;
         }
 
-        $shadowCss = $this->has_shadow
-            ? '0 3px 10px ' . self::hexToRgba($bg1, 0.28) . ', 0 1px 3px rgba(0,0,0,0.12)'
-            : 'none';
+        $shadowCss = 'none';
 
         return implode('; ', [
             "--tag-scale: {$scale}",

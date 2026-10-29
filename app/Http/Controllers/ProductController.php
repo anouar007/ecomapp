@@ -129,6 +129,7 @@ class ProductController extends Controller
             ->orderBy('name')
             ->get();
         $productTags = \App\Models\ProductTag::where('status', 'active')
+            ->where('is_discount_tag', false)
             ->orderBy('sort_order')
             ->orderBy('name')
             ->get();
@@ -296,6 +297,7 @@ class ProductController extends Controller
             ->orderBy('name')
             ->get();
         $productTags = \App\Models\ProductTag::where('status', 'active')
+            ->where('is_discount_tag', false)
             ->orderBy('sort_order')
             ->orderBy('name')
             ->get();

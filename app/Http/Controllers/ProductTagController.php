@@ -16,6 +16,7 @@ class ProductTagController extends Controller
      */
     public function index(Request $request)
     {
+        $discountTag = ProductTag::discountTag();
         $query = ProductTag::withCount('products');
 
         if ($request->filled('search')) {
@@ -34,7 +35,8 @@ class ProductTagController extends Controller
             $query->where('position', $request->position);
         }
 
-        $tags = $query->orderBy('sort_order', 'asc')
+        $tags = $query->orderByDesc('is_discount_tag')
+            ->orderBy('sort_order', 'asc')
             ->orderBy('id', 'asc')
             ->paginate(20)
             ->withQueryString();
@@ -44,14 +46,21 @@ class ProductTagController extends Controller
         $inactiveTags = max(0, $totalTags - $activeTags);
         $tagsWithProducts = ProductTag::has('products')->count();
         $taggedProductsCount = DB::table('product_product_tag')->distinct('product_id')->count('product_id');
+        $onSaleProductsCount = Product::where('status', 'active')
+            ->whereNotNull('sale_price')
+            ->where('sale_price', '>', 0)
+            ->whereColumn('sale_price', '!=', 'price')
+            ->count();
 
         return view('product-tags.index', compact(
             'tags',
+            'discountTag',
             'totalTags',
             'activeTags',
             'inactiveTags',
             'tagsWithProducts',
-            'taggedProductsCount'
+            'taggedProductsCount',
+            'onSaleProductsCount'
         ));
     }
 
@@ -175,6 +184,11 @@ class ProductTagController extends Controller
      */
     public function destroy(ProductTag $productTag)
     {
+        if ($productTag->is_discount_tag) {
+            return redirect()->route('product-tags.index')
+                ->with('error', "Le badge de réduction automatique (−%) est un badge système : vous pouvez le personnaliser ou le désactiver, mais pas le supprimer.");
+        }
+
         $name = $productTag->name;
         $productTag->products()->detach();
         $productTag->delete();
@@ -195,6 +209,7 @@ class ProductTagController extends Controller
         Cache::forget('home_new_arrival_products_v1');
         Cache::forget('home_occasion_products_v1');
         Cache::forget('active_product_tags_v1');
+        Cache::forget('auto_discount_product_tag_v1');
     }
 }
 

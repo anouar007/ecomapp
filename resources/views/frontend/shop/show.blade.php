@@ -513,13 +513,21 @@
                 @php
                     $pdpTags = $product->relationLoaded('activeTags') ? $product->activeTags : $product->activeTags()->get();
                     $pdpTagsByPos = $pdpTags->groupBy(fn($t) => $t->position ?: 'top-left');
+                    $pdpAutoDiscountTag = \App\Models\ProductTag::discountTag();
+                    $pdpHasDiscount = $product->isOnSale() && $product->discount_percentage > 0 && $pdpAutoDiscountTag->status === 'active';
+                    $pdpPrefDiscountPos = $pdpAutoDiscountTag->position ?: 'top-left';
+                    $pdpDiscountCorner = $pdpTagsByPos->has($pdpPrefDiscountPos) ? $pdpPrefDiscountPos : ($pdpTagsByPos->keys()->first() ?? $pdpPrefDiscountPos);
                 @endphp
                 <div class="col-lg-6 pdp-image-panel">
                     <div class="pdp-main-image-wrap product-card-tag-container" id="zoomWrap">
                         @foreach(['top-left', 'top-right', 'bottom-left', 'bottom-right'] as $cornerPos)
-                            @if($pdpTagsByPos->has($cornerPos) && $pdpTagsByPos->get($cornerPos)->isNotEmpty())
+                            @php
+                                $pdpCornerTags = $pdpTagsByPos->get($cornerPos, collect());
+                                $showPdpDiscountHere = $pdpHasDiscount && $pdpDiscountCorner === $cornerPos;
+                            @endphp
+                            @if($pdpCornerTags->isNotEmpty() || $showPdpDiscountHere)
                                 <div class="product-card-tags-slot pdp-image-tags-slot pos-{{ $cornerPos }}">
-                                    @foreach($pdpTagsByPos->get($cornerPos) as $pTag)
+                                    @foreach($pdpCornerTags as $pTag)
                                         <span class="product-card-tag-badge pdp-image-tag-badge {{ $pTag->pulse_animation ? 'tag-pulse' : '' }}" style="{{ $pTag->inline_style }}">
                                             @if(!empty($pTag->icon))
                                                 <i class="{{ $pTag->icon }}" aria-hidden="true"></i>
@@ -527,6 +535,14 @@
                                             <span>{{ $pTag->name }}</span>
                                         </span>
                                     @endforeach
+                                    @if($showPdpDiscountHere)
+                                        <span class="product-card-tag-badge pdp-image-tag-badge product-discount-auto-badge pdp-discount-badge {{ $pdpAutoDiscountTag->pulse_animation ? 'tag-pulse' : '' }}" style="{{ $pdpAutoDiscountTag->inline_style }}">
+                                            @if(!empty($pdpAutoDiscountTag->icon))
+                                                <i class="{{ $pdpAutoDiscountTag->icon }}" aria-hidden="true"></i>
+                                            @endif
+                                            <span>{{ $pdpAutoDiscountTag->formatDiscountLabel($product->discount_percentage) }}</span>
+                                        </span>
+                                    @endif
                                 </div>
                             @endif
                         @endforeach

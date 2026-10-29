@@ -53,10 +53,12 @@
                 <p class="brand-subtitle">Créez et personnalisez vos badges (« NEW », « TOP SELLER », « PROMO »...) avec taille proportionnelle à la carte produit</p>
             </div>
         </div>
-        <div class="brand-header-actions d-flex align-items-center gap-2">
-            <a href="{{ route('products.index') }}" class="btn-brand-outline">
-                <i class="fas fa-box me-1"></i> <span class="d-none d-sm-inline">Voir les produits</span>
-            </a>
+        <div class="brand-header-actions d-flex align-items-center gap-2 flex-wrap">
+            @if(isset($discountTag))
+                <a href="{{ route('product-tags.edit', $discountTag) }}" class="btn-brand-outline" title="Personnaliser le style et la taille du badge de réduction automatique (−%)">
+                    <i class="fas fa-percent text-danger me-1"></i> <span>Style du Badge −% (Auto)</span>
+                </a>
+            @endif
             <a href="{{ route('product-tags.create') }}" class="btn-brand-primary">
                 <i class="fas fa-plus"></i> <span>Nouveau Tag / Badge</span>
             </a>
@@ -255,7 +257,7 @@
                     </thead>
                     <tbody class="border-top-0">
                         @foreach($tags as $tag)
-                        <tr class="brand-row hover-bg-light">
+                        <tr class="brand-row hover-bg-light" style="{{ $tag->is_discount_tag ? 'background: rgba(254, 242, 242, 0.45);' : '' }}">
                             <!-- Live Scaled Badge Preview -->
                             <td class="ps-3">
                                 <div class="tag-preview-stage" title="Aperçu proportionnel calculé pour une carte de 195px">
@@ -263,23 +265,28 @@
                                         @if(!empty($tag->icon))
                                             <i class="{{ $tag->icon }}"></i>
                                         @endif
-                                        <span>{{ $tag->name }}</span>
+                                        <span>{{ $tag->is_discount_tag ? $tag->formatDiscountLabel(25) : $tag->name }}</span>
                                     </span>
                                 </div>
                             </td>
 
                             <!-- Name & Slug -->
                             <td>
-                                <div class="fw-bold text-dark d-flex align-items-center gap-1.5">
-                                    <span>{{ $tag->name }}</span>
+                                <div class="fw-bold text-dark d-flex align-items-center gap-1.5 flex-wrap">
+                                    <span>{{ $tag->is_discount_tag ? 'Badge Réduction Auto (' . $tag->name . ')' : $tag->name }}</span>
+                                    @if($tag->is_discount_tag)
+                                        <span class="badge bg-danger text-white small py-0.5 px-2" style="font-size: 0.65rem;">
+                                            <i class="fas fa-calculator me-1"></i>Auto-calculé (−%)
+                                        </span>
+                                    @endif
                                     @if($tag->pulse_animation)
                                         <span class="badge bg-danger-subtle text-danger border border-danger-subtle small py-0.5 px-1.5" style="font-size: 0.65rem;" title="Animation pulsation activée">
                                             <i class="fas fa-wave-square"></i> Animé
                                         </span>
                                     @endif
                                 </div>
-                                <div class="text-muted small font-monospace" style="font-size: 0.78rem;">
-                                    {{ $tag->slug }}
+                                <div class="text-muted small font-monospace" style="font-size: 0.76rem;">
+                                    {{ $tag->is_discount_tag ? 'Sous les tags • Calculé selon Ancien/Nouveau prix' : $tag->slug }}
                                 </div>
                             </td>
 
@@ -315,7 +322,11 @@
 
                             <!-- Linked Products -->
                             <td class="text-center">
-                                @if($tag->products_count > 0)
+                                @if($tag->is_discount_tag)
+                                    <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1" title="Appliqué automatiquement à tous les produits en promotion">
+                                        <i class="fas fa-bolt me-1"></i> Auto ({{ $onSaleProductsCount ?? 0 }})
+                                    </span>
+                                @elseif($tag->products_count > 0)
                                     <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-2.5 py-1">
                                         <i class="fas fa-box me-1"></i> {{ $tag->products_count }}
                                     </span>
@@ -326,7 +337,7 @@
 
                             <!-- Sort Order -->
                             <td class="text-center text-muted small font-monospace">
-                                {{ $tag->sort_order }}
+                                {{ $tag->is_discount_tag ? 'Auto' : $tag->sort_order }}
                             </td>
 
                             <!-- Status -->
@@ -345,16 +356,18 @@
                             <!-- Actions -->
                             <td class="pe-3 text-end">
                                 <div class="btn-group btn-group-sm">
-                                    <a href="{{ route('product-tags.edit', $tag) }}" class="btn btn-outline-secondary" title="Personnaliser le tag">
+                                    <a href="{{ route('product-tags.edit', $tag) }}" class="btn btn-outline-secondary" title="Personnaliser le style et la taille">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <form action="{{ route('product-tags.destroy', $tag) }}" method="POST" class="d-inline" onsubmit="return confirm('Supprimer définitivement le tag « {{ addslashes($tag->name) }} » ? Il sera retiré des produits associés.');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-outline-danger" title="Supprimer le tag">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </form>
+                                    @if(!$tag->is_discount_tag)
+                                        <form action="{{ route('product-tags.destroy', $tag) }}" method="POST" class="d-inline" onsubmit="return confirm('Supprimer définitivement le tag « {{ addslashes($tag->name) }} » ? Il sera retiré des produits associés.');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-outline-danger" title="Supprimer le tag">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -374,7 +387,7 @@
                             @if(!empty($tag->icon))
                                 <i class="{{ $tag->icon }}"></i>
                             @endif
-                            <span>{{ $tag->name }}</span>
+                            <span>{{ $tag->is_discount_tag ? $tag->formatDiscountLabel(25) : $tag->name }}</span>
                         </span>
                     </div>
 

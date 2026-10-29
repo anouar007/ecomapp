@@ -3,14 +3,22 @@
     $isAr = app()->getLocale() === 'ar';
     $cardTags = $product->relationLoaded('activeTags') ? $product->activeTags : $product->activeTags()->get();
     $tagsByPosition = $cardTags->groupBy(fn($t) => $t->position ?: 'top-left');
+    $autoDiscountTag = \App\Models\ProductTag::discountTag();
+    $hasAutoDiscount = $product->isOnSale() && $product->discount_percentage > 0 && $autoDiscountTag->status === 'active';
+    $prefDiscountPos = $autoDiscountTag->position ?: 'top-left';
+    $discountCorner = $tagsByPosition->has($prefDiscountPos) ? $prefDiscountPos : ($tagsByPosition->keys()->first() ?? $prefDiscountPos);
 @endphp
 <div class="featured-pro-card selection-card product-card-tag-container h-100 d-flex flex-column justify-content-between position-relative">
     {{-- Product Image with clean white background --}}
     <div class="featured-pro-img-box mb-2 position-relative">
         @foreach(['top-left', 'top-right', 'bottom-left', 'bottom-right'] as $cornerPos)
-            @if($tagsByPosition->has($cornerPos) && $tagsByPosition->get($cornerPos)->isNotEmpty())
+            @php
+                $cornerTags = $tagsByPosition->get($cornerPos, collect());
+                $showDiscountHere = $hasAutoDiscount && $discountCorner === $cornerPos;
+            @endphp
+            @if($cornerTags->isNotEmpty() || $showDiscountHere)
                 <div class="product-card-tags-slot pos-{{ $cornerPos }}">
-                    @foreach($tagsByPosition->get($cornerPos) as $cTag)
+                    @foreach($cornerTags as $cTag)
                         <span class="product-card-tag-badge {{ $cTag->pulse_animation ? 'tag-pulse' : '' }}" style="{{ $cTag->inline_style }}">
                             @if(!empty($cTag->icon))
                                 <i class="{{ $cTag->icon }}" aria-hidden="true"></i>
@@ -18,6 +26,14 @@
                             <span>{{ $cTag->name }}</span>
                         </span>
                     @endforeach
+                    @if($showDiscountHere)
+                        <span class="product-card-tag-badge product-discount-auto-badge {{ $autoDiscountTag->pulse_animation ? 'tag-pulse' : '' }}" style="{{ $autoDiscountTag->inline_style }}">
+                            @if(!empty($autoDiscountTag->icon))
+                                <i class="{{ $autoDiscountTag->icon }}" aria-hidden="true"></i>
+                            @endif
+                            <span>{{ $autoDiscountTag->formatDiscountLabel($product->discount_percentage) }}</span>
+                        </span>
+                    @endif
                 </div>
             @endif
         @endforeach

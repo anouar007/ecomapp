@@ -248,6 +248,7 @@ class Product extends Model
     {
         return $this->belongsToMany(ProductTag::class, 'product_product_tag', 'product_id', 'product_tag_id')
             ->where('product_tags.status', 'active')
+            ->where('product_tags.is_discount_tag', false)
             ->orderBy('product_tags.sort_order', 'asc')
             ->orderBy('product_tags.id', 'asc')
             ->withTimestamps();

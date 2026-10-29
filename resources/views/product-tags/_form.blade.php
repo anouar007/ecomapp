@@ -1,5 +1,6 @@
 @php
     $isEdit = isset($productTag) && $productTag->exists;
+    $isDiscountTag = isset($productTag) && (bool) ($productTag->is_discount_tag ?? false);
     $name = old('name', $productTag->name ?? 'NEW');
     $icon = old('icon', $productTag->icon ?? 'fas fa-bolt');
     $styleType = old('style_type', $productTag->style_type ?? 'gradient');
@@ -767,7 +768,7 @@
             <div class="row g-3">
                 <div class="col-12 col-md-7">
                     <label class="studio-label" for="tagNameInput">
-                        <span>Libellé du Badge <span class="text-danger">*</span></span>
+                        <span>{{ $isDiscountTag ? 'Format du Pourcentage Auto' : 'Libellé du Badge' }} <span class="text-danger">*</span></span>
                         <span class="text-muted fw-normal" style="font-size: 0.72rem;" id="charCountLabel">{{ strlen($name) }}/60</span>
                     </label>
                     <input type="text"
@@ -776,18 +777,27 @@
                            class="form-control @error('name') is-invalid @enderror"
                            value="{{ $name }}"
                            maxlength="60"
-                           placeholder="Ex: NEW, TOP SELLER, PROMO -20%..."
+                           placeholder="{{ $isDiscountTag ? 'Ex: -{percent}% ou PROMO -{percent}%' : 'Ex: NEW, TOP SELLER, PROMO -20%...' }}"
                            required>
                     @error('name')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
 
-                    <div class="d-flex align-items-center gap-1.5 flex-wrap mt-2">
-                        <span class="text-muted" style="font-size: 0.7rem;">Suggestions :</span>
-                        @foreach(['NEW', 'NOUVEAU', 'TOP SELLER', 'PROMO', 'BEST SELLER', 'EXCLUSIF', 'STOCK LIMITÉ'] as $sug)
-                            <button type="button" class="quick-text-chip" onclick="setTagText('{{ $sug }}')">{{ $sug }}</button>
-                        @endforeach
-                    </div>
+                    @if($isDiscountTag)
+                        <div class="d-flex align-items-center gap-1.5 flex-wrap mt-2">
+                            <span class="text-muted" style="font-size: 0.7rem;">Formats dynamiques (<code>{percent}</code> = % calculé auto) :</span>
+                            @foreach(['-{percent}%', '−{percent}%', 'PROMO -{percent}%', '-{percent}% OFF', 'REMISE -{percent}%'] as $sug)
+                                <button type="button" class="quick-text-chip" onclick="setTagText('{{ $sug }}')">{{ $sug }}</button>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="d-flex align-items-center gap-1.5 flex-wrap mt-2">
+                            <span class="text-muted" style="font-size: 0.7rem;">Suggestions :</span>
+                            @foreach(['NEW', 'NOUVEAU', 'TOP SELLER', 'PROMO', 'BEST SELLER', 'EXCLUSIF', 'STOCK LIMITÉ'] as $sug)
+                                <button type="button" class="quick-text-chip" onclick="setTagText('{{ $sug }}')">{{ $sug }}</button>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
 
                 <div class="col-12 col-md-5">
@@ -1041,10 +1051,7 @@
                         <input class="form-check-input m-0" type="checkbox" name="uppercase" id="tagUppercase" value="1" {{ $uppercase ? 'checked' : '' }}>
                     </label>
 
-                    <label class="toggle-feature-row" for="tagHasShadow">
-                        <span class="small fw-semibold text-dark"><i class="fas fa-clone text-muted me-1.5"></i>Ombre portée 3D</span>
-                        <input class="form-check-input m-0" type="checkbox" name="has_shadow" id="tagHasShadow" value="1" {{ $hasShadow ? 'checked' : '' }}>
-                    </label>
+                    <input type="hidden" name="has_shadow" id="tagHasShadow" value="0">
 
                     <label class="toggle-feature-row" for="tagPulseAnimation">
                         <span class="small fw-semibold text-dark"><i class="fas fa-wave-square text-danger me-1.5"></i>Pulsation animée</span>
@@ -1062,66 +1069,72 @@
                         4
                     </span>
                     <div>
-                        <h2 class="studio-card-title">Attribution aux Produits & Publication</h2>
-                        <p class="studio-card-subtitle">Sélectionnez les produits qui afficheront immédiatement ce badge</p>
+                        <h2 class="studio-card-title">{{ $isDiscountTag ? 'Activation du Badge Réduction Auto (−%)' : 'Attribution aux Produits & Publication' }}</h2>
+                        <p class="studio-card-subtitle">{{ $isDiscountTag ? 'Ce badge s\'affiche automatiquement sous les tags dès qu\'un produit a un ancien prix supérieur au prix actuel' : 'Sélectionnez les produits qui afficheront immédiatement ce badge' }}</p>
                     </div>
                 </div>
-                <span class="badge bg-primary-subtle text-primary px-2.5 py-1.5" id="selectedProductsCounter">{{ count($selectedIds) }} produit(s) lié(s)</span>
+                @if(!$isDiscountTag)
+                    <span class="badge bg-primary-subtle text-primary px-2.5 py-1.5" id="selectedProductsCounter">{{ count($selectedIds) }} produit(s) lié(s)</span>
+                @else
+                    <span class="badge bg-danger text-white px-2.5 py-1.5"><i class="fas fa-calculator me-1"></i>Calcul Automatique</span>
+                @endif
             </div>
 
-            <input type="hidden" name="sync_products" value="1">
+            @if(!$isDiscountTag)
+                <input type="hidden" name="sync_products" value="1">
 
-            <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-2">
-                <div class="input-group input-group-sm" style="max-width: 340px;">
-                    <span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
-                    <input type="text" id="tagProductSearchInput" class="form-control" placeholder="Rechercher par nom ou SKU...">
+                <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-2">
+                    <div class="input-group input-group-sm" style="max-width: 340px;">
+                        <span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
+                        <input type="text" id="tagProductSearchInput" class="form-control" placeholder="Rechercher par nom ou SKU...">
+                    </div>
+
+                    <div class="d-flex gap-1.5">
+                        <button type="button" class="btn btn-sm btn-light border py-1 px-2" style="font-size: 0.74rem;" id="btnFilterSelectedOnly" onclick="toggleFilterSelectedProducts()">
+                            <i class="fas fa-check-double text-danger me-1"></i>Sélectionnés uniquement
+                        </button>
+                        <button type="button" class="btn btn-sm btn-light border py-1 px-2" style="font-size: 0.74rem;" onclick="bulkToggleVisibleProducts(true)">
+                            Tout cocher
+                        </button>
+                        <button type="button" class="btn btn-sm btn-light border py-1 px-2 text-danger" style="font-size: 0.74rem;" onclick="bulkToggleVisibleProducts(false)">
+                            Tout décocher
+                        </button>
+                    </div>
                 </div>
 
-                <div class="d-flex gap-1.5">
-                    <button type="button" class="btn btn-sm btn-light border py-1 px-2" style="font-size: 0.74rem;" id="btnFilterSelectedOnly" onclick="toggleFilterSelectedProducts()">
-                        <i class="fas fa-check-double text-danger me-1"></i>Sélectionnés uniquement
-                    </button>
-                    <button type="button" class="btn btn-sm btn-light border py-1 px-2" style="font-size: 0.74rem;" onclick="bulkToggleVisibleProducts(true)">
-                        Tout cocher
-                    </button>
-                    <button type="button" class="btn btn-sm btn-light border py-1 px-2 text-danger" style="font-size: 0.74rem;" onclick="bulkToggleVisibleProducts(false)">
-                        Tout décocher
-                    </button>
-                </div>
-            </div>
-
-            <div class="product-assign-list mb-3" id="tagProductsListContainer">
-                @foreach($products ?? [] as $prod)
-                    @php $isChecked = in_array((int) $prod->id, $selectedIds); @endphp
-                    <label class="product-assign-item {{ $isChecked ? 'is-selected' : '' }}"
-                           data-search="{{ strtolower($prod->name . ' ' . $prod->sku) }}"
-                           for="tag_prod_{{ $prod->id }}">
-                        <input class="form-check-input tag-product-checkbox m-0 flex-shrink-0"
-                               type="checkbox"
-                               name="product_ids[]"
-                               value="{{ $prod->id }}"
-                               id="tag_prod_{{ $prod->id }}"
-                               {{ $isChecked ? 'checked' : '' }}>
-                        <img src="{{ $prod->thumbnail }}"
-                             alt="{{ $prod->name }}"
-                             class="product-assign-thumb"
-                             loading="lazy"
-                             onerror="this.onerror=null;this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
-                        <div class="flex-grow-1 text-truncate">
-                            <div class="text-dark fw-semibold text-truncate" style="font-size: 0.8rem;">{{ $prod->name }}</div>
-                            <div class="text-muted" style="font-size: 0.68rem;">
-                                SKU: <code>{{ $prod->sku }}</code>
-                                @if($prod->productCategory)
-                                    • {{ $prod->productCategory->name }}
-                                @endif
+                <div class="product-assign-list mb-3" id="tagProductsListContainer">
+                    @foreach($products ?? [] as $prod)
+                        @php $isChecked = in_array((int) $prod->id, $selectedIds); @endphp
+                        <label class="product-assign-item {{ $isChecked ? 'is-selected' : '' }}"
+                               data-search="{{ strtolower($prod->name . ' ' . $prod->sku) }}"
+                               for="tag_prod_{{ $prod->id }}">
+                            <input class="form-check-input tag-product-checkbox m-0 flex-shrink-0"
+                                   type="checkbox"
+                                   name="product_ids[]"
+                                   value="{{ $prod->id }}"
+                                   id="tag_prod_{{ $prod->id }}"
+                                   {{ $isChecked ? 'checked' : '' }}>
+                            <img src="{{ $prod->thumbnail }}"
+                                 alt="{{ $prod->name }}"
+                                 class="product-assign-thumb"
+                                 loading="lazy"
+                                 onerror="this.onerror=null;this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                            <div class="flex-grow-1 text-truncate">
+                                <div class="text-dark fw-semibold text-truncate" style="font-size: 0.8rem;">{{ $prod->name }}</div>
+                                <div class="text-muted" style="font-size: 0.68rem;">
+                                    SKU: <code>{{ $prod->sku }}</code>
+                                    @if($prod->productCategory)
+                                        • {{ $prod->productCategory->name }}
+                                    @endif
+                                </div>
                             </div>
-                        </div>
-                        <span class="text-danger fw-bold flex-shrink-0" style="font-size: 0.76rem;">
-                            {{ currency($prod->price) }}
-                        </span>
-                    </label>
-                @endforeach
-            </div>
+                            <span class="text-danger fw-bold flex-shrink-0" style="font-size: 0.76rem;">
+                                {{ currency($prod->price) }}
+                            </span>
+                        </label>
+                    @endforeach
+                </div>
+            @endif
 
             <div class="row g-3 pt-2 border-top">
                 <div class="col-12 col-md-6">
@@ -1285,7 +1298,8 @@ function hexToRgbaJs(hex, alpha) {
 
 function updateLiveTagPreview() {
     const nameInput = document.getElementById('tagNameInput');
-    const name = nameInput.value || 'BADGE';
+    const rawName = nameInput.value || 'BADGE';
+    const name = rawName.replace('{percent}', '25');
     document.getElementById('charCountLabel').textContent = `${nameInput.value.length}/60`;
 
     const icon = document.getElementById('tagIconInput').value.trim();
@@ -1344,9 +1358,7 @@ function updateLiveTagPreview() {
         backdropCss = 'blur(8px)';
     }
 
-    const shadowCss = hasShadow
-        ? `0 3px 10px ${hexToRgbaJs(bg1, 0.28)}, 0 1px 3px rgba(0,0,0,0.12)`
-        : 'none';
+    const shadowCss = 'none';
 
     const currentIconPreview = document.getElementById('currentIconPreview');
     currentIconPreview.className = icon ? icon : 'fas fa-ban text-muted';
