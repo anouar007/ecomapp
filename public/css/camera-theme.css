@@ -2063,12 +2063,19 @@ mark.search-highlight,
     z-index: 1000000 !important;
 }
 
-.offcanvas.show {
+.offcanvas,
+#mobileNavDrawer,
+#miniCart.offcanvas,
+.offcanvas.showing,
+.offcanvas.show,
+.offcanvas.hiding {
     z-index: 1000000 !important;
 }
 
 .offcanvas-backdrop,
-.offcanvas-backdrop.show {
+.offcanvas-backdrop.showing,
+.offcanvas-backdrop.show,
+.offcanvas-backdrop.fade {
     z-index: 999995 !important;
 }
 
@@ -2084,8 +2091,12 @@ body:has(#miniCart.show) .floating-checkout-wrap,
 body:has(#miniCart.show) .whatsapp-float,
 body:has(#miniCart.showing) .floating-checkout-wrap,
 body:has(#miniCart.showing) .whatsapp-float,
+body:has(.offcanvas.showing) .floating-checkout-wrap,
+body:has(.offcanvas.showing) .whatsapp-float,
 body:has(.offcanvas.show) .floating-checkout-wrap,
-body:has(.offcanvas.show) .whatsapp-float {
+body:has(.offcanvas.show) .whatsapp-float,
+body:has(.offcanvas.hiding) .floating-checkout-wrap,
+body:has(.offcanvas.hiding) .whatsapp-float {
     opacity: 0 !important;
     visibility: hidden !important;
     pointer-events: none !important;

@@ -2340,7 +2340,7 @@
     </div>
 
     <!-- Mobile Navigation Offcanvas Drawer -->
-    <div class="offcanvas offcanvas-start border-0 shadow-lg d-lg-none" tabindex="-1" id="mobileNavDrawer" aria-labelledby="mobileNavDrawerLabel" style="width: 310px;">
+    <div class="offcanvas offcanvas-start border-0 shadow-lg d-lg-none" tabindex="-1" id="mobileNavDrawer" aria-labelledby="mobileNavDrawerLabel" style="width: 310px; z-index: 1000000;">
         <div class="offcanvas-header border-bottom py-3">
             <a href="{{ url('/') }}" class="navbar-brand m-0" aria-label="{{ setting('app_name', 'WINA SHOP') }} - {{ __('Accueil') }}" title="{{ setting('app_name', 'WINA SHOP') }}">
                 <img src="{{ app_logo_url() }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="70" height="70" style="height: 70px; width: auto; object-fit: contain;">
@@ -2615,6 +2615,49 @@
         </div>
     </div>
 
+    <style>
+        /* Elevate all offcanvas drawers (#mobileNavDrawer, #miniCart, #shopFilterSheet) during opening (.showing), open (.show), and closing (.hiding) */
+        .offcanvas,
+        #mobileNavDrawer,
+        #miniCart.offcanvas,
+        .offcanvas.showing,
+        .offcanvas.show,
+        .offcanvas.hiding {
+            z-index: 1000000 !important;
+        }
+        .offcanvas-backdrop,
+        .offcanvas-backdrop.showing,
+        .offcanvas-backdrop.show,
+        .offcanvas-backdrop.fade {
+            z-index: 999995 !important;
+        }
+
+        /* Ensure SweetAlert2 confirmation modals and popups render above #miniCart & offcanvas */
+        .swal2-container {
+            z-index: 2000000 !important;
+        }
+
+        /* Completely hide floating checkout and WhatsApp when miniCart or any offcanvas is opening, open, or closing */
+        body.mini-cart-open .floating-checkout-wrap,
+        body.mini-cart-open .whatsapp-float,
+        body:has(#miniCart.show) .floating-checkout-wrap,
+        body:has(#miniCart.show) .whatsapp-float,
+        body:has(#miniCart.showing) .floating-checkout-wrap,
+        body:has(#miniCart.showing) .whatsapp-float,
+        body:has(.offcanvas.showing) .floating-checkout-wrap,
+        body:has(.offcanvas.showing) .whatsapp-float,
+        body:has(.offcanvas.show) .floating-checkout-wrap,
+        body:has(.offcanvas.show) .whatsapp-float,
+        body:has(.offcanvas.hiding) .floating-checkout-wrap,
+        body:has(.offcanvas.hiding) .whatsapp-float {
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            display: none !important;
+            transform: translateY(20px) scale(0.85) !important;
+        }
+    </style>
+
     {{-- Floating Checkout Button (appears on cart addition and stays on screen) --}}
     @if(!request()->routeIs('checkout.*') && !request()->routeIs('cart.*'))
     @php
@@ -2633,30 +2676,6 @@
             pointer-events: none !important;
         }
 
-        /* Elevate #miniCart above all floating buttons */
-        #miniCart.offcanvas,
-        .offcanvas.show {
-            z-index: 1000000 !important;
-        }
-        .offcanvas-backdrop,
-        .offcanvas-backdrop.show {
-            z-index: 999995 !important;
-        }
-
-        /* Ensure SweetAlert2 confirmation modals and popups render above #miniCart & offcanvas */
-        .swal2-container {
-            z-index: 2000000 !important;
-        }
-
-        /* Completely hide floating checkout and WhatsApp when miniCart or offcanvas is open */
-        body.mini-cart-open .floating-checkout-wrap,
-        body.mini-cart-open .whatsapp-float,
-        body:has(#miniCart.show) .floating-checkout-wrap,
-        body:has(#miniCart.show) .whatsapp-float,
-        body:has(#miniCart.showing) .floating-checkout-wrap,
-        body:has(#miniCart.showing) .whatsapp-float,
-        body:has(.offcanvas.show) .floating-checkout-wrap,
-        body:has(.offcanvas.show) .whatsapp-float,
         body.cart-page .floating-checkout-wrap,
         body.checkout-page .floating-checkout-wrap,
         body:has(.cart-page) .floating-checkout-wrap {
