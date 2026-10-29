@@ -154,9 +154,9 @@ class ProductSearchService
 
     /**
      * Calculate match score (0.0 to 1.0) strictly between search query and product name.
-     * Only matches against the product name and requires >= 0.80 (80%) match.
+     * Matches strictly against the product name and supports fuzzy matching (>= 70% similarity).
      */
-    public static function calculateNameMatchScore(string $query, string $productName): float
+    public static function calculateNameMatchScore(string $query, string $productName, float $minWordSimilarity = 70.0): float
     {
         $qLower = mb_strtolower(trim($query));
         $nLower = mb_strtolower(trim($productName));
@@ -174,9 +174,12 @@ class ProductSearchService
             return 1.0;
         }
 
-        // Direct Unicode phrase match with word boundaries
+        // Direct Unicode phrase or substring match
         if (preg_match('/(?:\b|^)' . preg_quote($qClean, '/') . '(?:\b|$)/iu', $nClean)) {
             return 1.0;
+        }
+        if (mb_strlen($qClean) >= 3 && mb_strpos($nClean, $qClean) !== false) {
+            return 0.96;
         }
 
         // Accent-insensitive transliteration for Latin scripts (e.g. é -> e, à -> a)
@@ -189,6 +192,9 @@ class ProductSearchService
 
         if (preg_match('/(?:\b|^)' . preg_quote($qAscii, '/') . '(?:\b|$)/i', $nAscii)) {
             return 1.0;
+        }
+        if (strlen($qAscii) >= 3 && stripos($nAscii, $qAscii) !== false) {
+            return 0.95;
         }
 
         // Compact matching without spaces with digit boundaries (e.g. "fx 3" -> "fx3", "pocket 3" -> "pocket3")
@@ -249,17 +255,33 @@ class ProductSearchService
             } else {
                 // Check against each word in product name
                 foreach ($nWords as $word) {
-                    if ($hasDigits) {
-                        // Tokens with digits require exact match or roman equivalent (e.g. fx3 != fx30)
-                        if ($word === $token || ($romanEquiv && $word === $romanEquiv)) {
-                            $tokenScore = 1.0;
-                            break;
+                    if ($word === $token || ($romanEquiv && $word === $romanEquiv)) {
+                        $tokenScore = 1.0;
+                        break;
+                    }
+
+                    // Prefix / substring match on text words
+                    if (!$hasDigits && strlen($token) >= 3 && str_contains($word, $token)) {
+                        $subScore = max(0.82, strlen($token) / max(1, strlen($word)));
+                        if ($subScore > $tokenScore) {
+                            $tokenScore = $subScore;
                         }
-                    } else {
-                        // Text words (min 3 chars for fuzzy matching)
-                        if (strlen($token) >= 3 && strlen($word) >= 3) {
+                    }
+
+                    // Fuzzy similarity check (>= 70% default)
+                    if (strlen($token) >= 2 && strlen($word) >= 2) {
+                        if ($hasDigits) {
+                            // Ensure digits aren't completely mismatched unless very close typo (e.g. insta36 vs insta360)
                             similar_text($token, $word, $pct);
-                            if ($pct >= 80.0) {
+                            if ($pct >= max(75.0, $minWordSimilarity)) {
+                                $sim = $pct / 100.0;
+                                if ($sim > $tokenScore) {
+                                    $tokenScore = $sim;
+                                }
+                            }
+                        } else {
+                            similar_text($token, $word, $pct);
+                            if ($pct >= $minWordSimilarity) {
                                 $sim = $pct / 100.0;
                                 if ($sim > $tokenScore) {
                                     $tokenScore = $sim;
@@ -273,30 +295,48 @@ class ProductSearchService
             $totalScore += $tokenScore;
         }
 
-        return $totalScore / count($tokens);
+        $avgTokenScore = $totalScore / count($tokens);
+
+        // Also check sliding window of contiguous words in product name for concatenated or slightly misspelled phrases
+        $windowSize = min(count($nWords), max(1, count($rawTokens)));
+        $maxWindowScore = 0.0;
+        if (strlen($qNoSpace) >= 3) {
+            for ($i = 0; $i <= count($nWords) - $windowSize; $i++) {
+                $windowSlice = implode('', array_slice($nWords, $i, $windowSize));
+                similar_text($qNoSpace, $windowSlice, $winPct);
+                if ($winPct >= $minWordSimilarity) {
+                    $maxWindowScore = max($maxWindowScore, $winPct / 100.0);
+                }
+            }
+        }
+
+        return max($avgTokenScore, $maxWindowScore);
     }
 
     /**
-     * Get IDs of products matching the query strictly on product name with >= 80% match.
+     * Get IDs of products matching the query strictly on product name with >= $threshold match (default 0.70 = 70%).
      * Returns an associative array of [product_id => match_score] sorted descending.
      */
-    public static function getMatchingProductScores(string $search): array
+    public static function getMatchingProductScores(string $search, float $threshold = 0.70, bool $activeOnly = true): array
     {
         $raw = trim($search);
         if (mb_strlen($raw) === 0) {
             return [];
         }
 
-        $cacheKey = 'prod_search_name_v5_' . md5(mb_strtolower($raw));
-        return Cache::remember($cacheKey, 120, function () use ($raw) {
-            $products = Product::where('status', 'active')
-                ->select(['id', 'name'])
-                ->get();
+        $minSim = round($threshold * 100, 1);
+        $cacheKey = 'prod_search_name_v6_' . ($activeOnly ? 'act_' : 'all_') . $minSim . '_' . md5(mb_strtolower($raw));
+        return Cache::remember($cacheKey, 60, function () use ($raw, $threshold, $minSim, $activeOnly) {
+            $q = Product::select(['id', 'name']);
+            if ($activeOnly) {
+                $q->where('status', 'active');
+            }
+            $products = $q->get();
 
             $matched = [];
             foreach ($products as $prod) {
-                $score = self::calculateNameMatchScore($raw, $prod->name);
-                if ($score >= 0.80) {
+                $score = self::calculateNameMatchScore($raw, (string) $prod->name, $minSim);
+                if ($score >= $threshold) {
                     $matched[$prod->id] = $score;
                 }
             }

@@ -22,14 +22,22 @@ class ProductController extends Controller
             ->orderBy('products.sort_order', 'asc')
             ->latest();
 
-        // Search
+        // Search strictly on product name (>= 70% fuzzy match)
         if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('sku', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
-            });
+            $matchedScores = \App\Services\ProductSearchService::getMatchingProductScores(
+                search: (string) $request->search,
+                threshold: 0.70,
+                activeOnly: false
+            );
+            $matchedIds = array_keys($matchedScores);
+            if (empty($matchedIds)) {
+                $query->whereRaw('1 = 0');
+            } else {
+                $idList = implode(',', array_map('intval', $matchedIds));
+                $query->whereIn('products.id', $matchedIds)
+                      ->reorder()
+                      ->orderByRaw("FIELD(products.id, {$idList})");
+            }
         }
 
         // Category Filter (supports parent category with subcategories & multiple categories)
@@ -731,11 +739,20 @@ class ProductController extends Controller
         $query = Product::with(['productCategory'])->latest();
 
         if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('sku', 'like', "%{$search}%");
-            });
+            $matchedScores = \App\Services\ProductSearchService::getMatchingProductScores(
+                search: (string) $request->search,
+                threshold: 0.70,
+                activeOnly: false
+            );
+            $matchedIds = array_keys($matchedScores);
+            if (empty($matchedIds)) {
+                $query->whereRaw('1 = 0');
+            } else {
+                $idList = implode(',', array_map('intval', $matchedIds));
+                $query->whereIn('products.id', $matchedIds)
+                      ->reorder()
+                      ->orderByRaw("FIELD(products.id, {$idList})");
+            }
         }
 
         if ($request->filled('quality')) {

@@ -1086,7 +1086,7 @@
                 <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-2">
                     <div class="input-group input-group-sm" style="max-width: 340px;">
                         <span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
-                        <input type="text" id="tagProductSearchInput" class="form-control" placeholder="Rechercher par nom ou SKU...">
+                        <input type="text" id="tagProductSearchInput" class="form-control" placeholder="Rechercher par nom de produit (tolérance 70%)...">
                     </div>
 
                     <div class="d-flex gap-1.5">
@@ -1106,7 +1106,7 @@
                     @foreach($products ?? [] as $prod)
                         @php $isChecked = in_array((int) $prod->id, $selectedIds); @endphp
                         <label class="product-assign-item {{ $isChecked ? 'is-selected' : '' }}"
-                               data-search="{{ strtolower($prod->name . ' ' . $prod->sku) }}"
+                               data-search="{{ strtolower($prod->name) }}"
                                for="tag_prod_{{ $prod->id }}">
                             <input class="form-check-input tag-product-checkbox m-0 flex-shrink-0"
                                    type="checkbox"
@@ -1520,11 +1520,69 @@ function applyTagTemplate(tileEl, name, icon, styleType, bg1, bg2, text, border,
     setScaleValue(scale);
 }
 
+function normalizeSearchStr(str) {
+    return (str || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[-_/+.,:;()\[\]'"]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function diceSimilarity(a, b) {
+    if (a === b) return 1.0;
+    if (a.length < 2 || b.length < 2) return 0.0;
+    const bigrams = new Map();
+    for (let i = 0; i < a.length - 1; i++) {
+        const bg = a.slice(i, i + 2);
+        bigrams.set(bg, (bigrams.get(bg) || 0) + 1);
+    }
+    let intersection = 0;
+    for (let i = 0; i < b.length - 1; i++) {
+        const bg = b.slice(i, i + 2);
+        const count = bigrams.get(bg) || 0;
+        if (count > 0) {
+            bigrams.set(bg, count - 1);
+            intersection++;
+        }
+    }
+    return (2.0 * intersection) / (a.length + b.length - 2);
+}
+
+function isFuzzyProductNameMatch(query, productName) {
+    const q = normalizeSearchStr(query);
+    if (!q) return true;
+    const p = normalizeSearchStr(productName);
+    if (!p) return false;
+    if (p.includes(q) || p.replace(/\s+/g, '').includes(q.replace(/\s+/g, ''))) {
+        return true;
+    }
+    const qWords = q.split(' ').filter(Boolean);
+    const pWords = p.split(' ').filter(Boolean);
+    if (!qWords.length || !pWords.length) return false;
+
+    let totalScore = 0;
+    for (const qw of qWords) {
+        let bestWordScore = 0;
+        for (const pw of pWords) {
+            if (pw === qw || pw.includes(qw) || (qw.length >= 3 && qw.includes(pw) && pw.length >= 3)) {
+                bestWordScore = Math.max(bestWordScore, 0.92);
+                continue;
+            }
+            const sim = diceSimilarity(qw, pw);
+            if (sim > bestWordScore) bestWordScore = sim;
+        }
+        totalScore += bestWordScore;
+    }
+    return (totalScore / qWords.length) >= 0.70;
+}
+
 function filterProductAssignRows() {
-    const q = (document.getElementById('tagProductSearchInput')?.value || '').toLowerCase().trim();
+    const q = (document.getElementById('tagProductSearchInput')?.value || '').trim();
     document.querySelectorAll('.product-assign-item').forEach(row => {
         const cb = row.querySelector('.tag-product-checkbox');
-        const matchesSearch = !q || row.dataset.search.includes(q);
+        const matchesSearch = !q || isFuzzyProductNameMatch(q, row.dataset.search || '');
         const matchesSelected = !filterSelectedOnly || (cb && cb.checked);
         row.style.display = (matchesSearch && matchesSelected) ? '' : 'none';
     });
