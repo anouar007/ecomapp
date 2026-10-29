@@ -589,10 +589,12 @@ class ProductSearchService
             });
 
         return $brands->sort(function ($a, $b) {
-            if ($a->products_count === $b->products_count) {
-                return strcasecmp($a->name, $b->name);
+            $orderA = (int) ($a->sort_order ?? 0);
+            $orderB = (int) ($b->sort_order ?? 0);
+            if ($orderA !== $orderB) {
+                return $orderA <=> $orderB;
             }
-            return $b->products_count <=> $a->products_count;
+            return strcasecmp($a->name, $b->name);
         })->values();
     }
 }

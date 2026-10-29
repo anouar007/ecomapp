@@ -125,6 +125,7 @@ class ProductController extends Controller
             ->orderBy('name')
             ->get();
         $brands = Brand::where('status', 'active')
+            ->orderBy('sort_order')
             ->orderBy('name')
             ->get();
         
@@ -284,6 +285,7 @@ class ProductController extends Controller
             ->orderBy('name')
             ->get();
         $brands = Brand::where('status', 'active')
+            ->orderBy('sort_order')
             ->orderBy('name')
             ->get();
         

@@ -146,6 +146,22 @@ class BrandFilterAndManagementTest extends TestCase
     }
 
     /**
+     * Test smart brands service respects sort_order for dropdown.
+     */
+    public function test_smart_brands_are_ordered_by_sort_order(): void
+    {
+        $brands = ProductSearchService::getSmartBrands();
+        $this->assertTrue($brands->isNotEmpty());
+
+        $previousOrder = -1;
+        foreach ($brands as $b) {
+            $currentOrder = (int) ($b->sort_order ?? 0);
+            $this->assertGreaterThanOrEqual($previousOrder, $currentOrder, "Brand {$b->name} sort_order ({$currentOrder}) should be >= previous ({$previousOrder})");
+            $previousOrder = $currentOrder;
+        }
+    }
+
+    /**
      * Test frontend shop page with brand filter query parameter.
      */
     public function test_shop_filters_products_by_brand_slug(): void
