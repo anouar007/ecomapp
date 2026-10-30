@@ -38,7 +38,7 @@
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <div class="stat-kpi-label">Total Produits</div>
-                        <div class="stat-kpi-value text-dark">{{ number_format($stats['total'] ?? $products->total(), 0, ',', ' ') }}</div>
+                        <div class="stat-kpi-value text-dark" id="kpiTotalProducts">{{ number_format($stats['total'] ?? $products->total(), 0, ',', ' ') }}</div>
                         <div class="stat-kpi-sub text-muted"><span class="badge bg-light text-secondary border">{{ $stats['active'] ?? 0 }} actifs</span></div>
                     </div>
                     <div class="stat-kpi-icon bg-primary-subtle text-primary">
@@ -126,8 +126,8 @@
                 <!-- Actions Desktop (Compteur + Import/Export) (d-none d-md-flex) -->
                 <div class="ms-md-auto d-none d-md-flex align-items-center gap-2">
                     @if(request('search') || $hasActiveFilters)
-                        <span class="badge bg-light text-secondary border px-2.5 py-2">
-                            {{ $products->total() }} résultat(s)
+                        <span class="badge bg-light text-secondary border px-2.5 py-2" id="filteredCountBadge">
+                            <span id="filteredCountNumber">{{ $products->total() }}</span> résultat(s)
                         </span>
                     @endif
                     <button type="button" class="btn-brand-outline" data-bs-toggle="modal" data-bs-target="#importModal">
@@ -384,7 +384,7 @@
                         <th class="col-actions text-end">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="productsTableBody">
                     @forelse($products as $product)
                     <tr data-product-id="{{ $product->id }}" id="product-row-{{ $product->id }}">
                         <td class="col-check">
@@ -547,15 +547,18 @@
                                     <i class="fas fa-wand-magic-sparkles"></i>
                                 </button>
                                 <a href="{{ route('products.edit', $product) }}" 
-                                   class="action-btn action-btn-edit" 
-                                   title="Modifier le produit" 
-                                   data-bs-toggle="tooltip">
+                                    target="_blank"
+                                    class="action-btn action-btn-edit" 
+                                    title="Modifier le produit" 
+                                    data-bs-toggle="tooltip">
                                     <i class="fas fa-pencil-alt"></i>
                                 </a>
                                 <form method="POST" 
                                       action="{{ route('products.destroy', $product->id) }}" 
                                       class="d-inline m-0 p-0"
                                       data-confirm-delete="true"
+                                      data-ajax-delete="true"
+                                      data-product-id="{{ $product->id }}"
                                       data-item-type="product"
                                       data-item-name="{{ $product->name }}">
                                     @csrf
@@ -571,7 +574,7 @@
                         </td>
                     </tr>
                     @empty
-                    <tr>
+                    <tr id="emptyProductsRow">
                         <td colspan="8">
                             <div class="text-center py-5">
                                 <div class="brand-avatar mx-auto mb-3" style="width: 64px; height: 64px; font-size: 24px;">
@@ -595,7 +598,7 @@
         <div class="products-table-footer px-4 py-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
             <div class="text-muted small">
                 <i class="fas fa-list-ul me-1 opacity-50"></i>
-                Affichage de <span class="fw-semibold text-dark">{{ $products->firstItem() ?? 0 }}</span> à <span class="fw-semibold text-dark">{{ $products->lastItem() ?? 0 }}</span> sur <span class="fw-semibold text-dark">{{ $products->total() }}</span> produits
+                Affichage de <span class="fw-semibold text-dark" id="desktopFirstItem">{{ $products->firstItem() ?? 0 }}</span> à <span class="fw-semibold text-dark" id="desktopLastItem">{{ $products->lastItem() ?? 0 }}</span> sur <span class="fw-semibold text-dark" id="desktopTotalCount">{{ $products->total() }}</span> produits
             </div>
             @if($products->hasPages())
             <div>
@@ -606,21 +609,21 @@
     </div>
 
     <!-- Mobile Products Container (Touch First) -->
-    <div class="mobile-products-container d-block d-md-none">
+    <div class="mobile-products-container d-block d-md-none" id="mobileProductsContainer">
         <div class="d-flex align-items-center justify-content-between p-2.5 mb-2 bg-white rounded-3 border shadow-sm">
             <div class="form-check m-0 d-flex align-items-center gap-2">
                 <input type="checkbox" class="form-check-input" id="selectAllMobile" onchange="toggleSelectAll(this)" style="width: 19px; height: 19px;">
                 <label class="form-check-label small fw-semibold text-muted" for="selectAllMobile">Tout sélectionner</label>
             </div>
-            <span class="badge bg-light text-secondary border small">
-                {{ $products->total() }} produit{{ $products->total() > 1 ? 's' : '' }}
+            <span class="badge bg-light text-secondary border small" id="mobileTotalBadge">
+                <span id="mobileTotalCountText">{{ $products->total() }}</span> produit{{ $products->total() > 1 ? 's' : '' }}
             </span>
         </div>
 
         @forelse($products as $product)
             @include('products.partials.mobile-product-card', ['product' => $product])
         @empty
-            <div class="text-center py-5 bg-white rounded-4 border p-4 shadow-sm">
+            <div class="text-center py-5 bg-white rounded-4 border p-4 shadow-sm" id="emptyMobileProductsCard">
                 <div class="brand-avatar mx-auto mb-3" style="width: 56px; height: 56px; font-size: 20px;">
                     <i class="fas fa-search"></i>
                 </div>
@@ -637,7 +640,7 @@
         <!-- Mobile Pagination Footer -->
         <div class="bg-white p-3 rounded-4 border shadow-sm mt-3 mb-4">
             <div class="text-muted small text-center mb-2">
-                Affichage de <span class="fw-semibold text-dark">{{ $products->firstItem() ?? 0 }}</span> à <span class="fw-semibold text-dark">{{ $products->lastItem() ?? 0 }}</span> sur <span class="fw-semibold text-dark">{{ $products->total() }}</span>
+                Affichage de <span class="fw-semibold text-dark" id="mobileFirstItem">{{ $products->firstItem() ?? 0 }}</span> à <span class="fw-semibold text-dark" id="mobileLastItem">{{ $products->lastItem() ?? 0 }}</span> sur <span class="fw-semibold text-dark" id="mobileTotalCount">{{ $products->total() }}</span>
             </div>
             @if($products->hasPages())
             <div class="d-flex justify-content-center">
@@ -1268,16 +1271,35 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                Swal.fire({
-                    title: 'Success!',
-                    text: data.message,
-                    icon: 'success',
-                    timer: 2000,
-                    showConfirmButton: false
-                }).then(() => {
-                    // Reload the page to reflect changes
-                    window.location.reload();
-                });
+                if (action === 'delete') {
+                    // Seamlessly remove selected products from DOM without refresh
+                    const countDeleted = selectedProducts.length;
+                    selectedProducts.forEach(id => {
+                        removeProductElementFromUI(id);
+                    });
+                    selectedProducts = [];
+                    updateSelection();
+                    decrementCounters(countDeleted);
+                    checkEmptyStates();
+                    Swal.fire({
+                        title: 'Supprimé !',
+                        text: data.message,
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: data.message,
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        // Reload the page to reflect changes
+                        window.location.reload();
+                    });
+                }
             } else {
                 Swal.fire('Error', data.message || 'An error occurred.', 'error');
             }
@@ -1287,6 +1309,129 @@
             Swal.fire('Error', 'An unexpected error occurred.', 'error');
         });
     }
+
+    // Helper functions for seamless AJAX product deletion without page reload
+    function removeProductElementFromUI(productId) {
+        productId = parseInt(productId);
+        const row = document.getElementById(`product-row-${productId}`);
+        const card = document.getElementById(`mobile-product-card-${productId}`);
+        [row, card].forEach(el => {
+            if (el) {
+                if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+                    el.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(btn => {
+                        const inst = bootstrap.Tooltip.getInstance(btn);
+                        if (inst) inst.dispose();
+                    });
+                }
+                el.style.transition = 'all 0.35s ease';
+                el.style.opacity = '0';
+                el.style.transform = 'scale(0.96)';
+                setTimeout(() => {
+                    el.remove();
+                    checkEmptyStates();
+                }, 350);
+            }
+        });
+    }
+
+    function decrementCounters(count = 1) {
+        const kpiEl = document.getElementById('kpiTotalProducts');
+        if (kpiEl) {
+            let val = parseInt(kpiEl.textContent.replace(/\s+/g, '')) || 0;
+            kpiEl.textContent = Math.max(0, val - count);
+        }
+        const desktopTotal = document.getElementById('desktopTotalCount');
+        if (desktopTotal) {
+            let val = parseInt(desktopTotal.textContent) || 0;
+            desktopTotal.textContent = Math.max(0, val - count);
+        }
+        const mobileTotalText = document.getElementById('mobileTotalCountText');
+        if (mobileTotalText) {
+            let val = parseInt(mobileTotalText.textContent) || 0;
+            mobileTotalText.textContent = Math.max(0, val - count);
+        }
+        const mobileTotalBadge = document.getElementById('mobileTotalBadge');
+        if (mobileTotalBadge) {
+            let val = parseInt(mobileTotalBadge.textContent) || 0;
+            const newTotal = Math.max(0, val - count);
+            mobileTotalBadge.textContent = `${newTotal} produit${newTotal > 1 ? 's' : ''}`;
+        }
+        const filterBadge = document.getElementById('filteredCountBadge');
+        if (filterBadge) {
+            const numEl = document.getElementById('filteredCountNumber');
+            if (numEl) {
+                let val = parseInt(numEl.textContent) || 0;
+                numEl.textContent = Math.max(0, val - count);
+            }
+        }
+        const desktopLast = document.getElementById('desktopLastItem');
+        if (desktopLast) {
+            let val = parseInt(desktopLast.textContent) || 0;
+            desktopLast.textContent = Math.max(0, val - count);
+        }
+        const mobileLast = document.getElementById('mobileLastItem');
+        if (mobileLast) {
+            let val = parseInt(mobileLast.textContent) || 0;
+            mobileLast.textContent = Math.max(0, val - count);
+        }
+    }
+
+    function checkEmptyStates() {
+        const tbody = document.getElementById('productsTableBody');
+        if (tbody) {
+            const remainingRows = tbody.querySelectorAll('tr[id^="product-row-"]');
+            if (remainingRows.length === 0 && !document.getElementById('emptyProductsRow')) {
+                const emptyTr = document.createElement('tr');
+                emptyTr.id = 'emptyProductsRow';
+                emptyTr.innerHTML = `
+                    <td colspan="8">
+                        <div class="text-center py-5">
+                            <div class="brand-avatar mx-auto mb-3" style="width: 64px; height: 64px; font-size: 24px;">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <h5 class="fw-bold text-dark">Aucun produit trouvé</h5>
+                            <p class="text-muted">Tous les produits ont été supprimés.</p>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(emptyTr);
+            }
+        }
+
+        const mobileContainer = document.getElementById('mobileProductsContainer');
+        if (mobileContainer) {
+            const remainingCards = mobileContainer.querySelectorAll('.mobile-product-card');
+            if (remainingCards.length === 0 && !document.getElementById('emptyMobileProductsCard')) {
+                const emptyDiv = document.createElement('div');
+                emptyDiv.id = 'emptyMobileProductsCard';
+                emptyDiv.className = 'text-center py-5 bg-white rounded-4 border p-4 shadow-sm';
+                emptyDiv.innerHTML = `
+                    <div class="brand-avatar mx-auto mb-3" style="width: 56px; height: 56px; font-size: 20px;">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h6 class="fw-bold text-dark">Aucun produit trouvé</h6>
+                    <p class="text-muted small mb-0">Tous les produits ont été supprimés.</p>
+                `;
+                mobileContainer.appendChild(emptyDiv);
+            }
+        }
+    }
+
+    // Listen to global delete events from delete-confirmation.js
+    document.addEventListener('item:deleted', function(e) {
+        if (e.detail && (e.detail.itemType === 'product' || !e.detail.itemType) && e.detail.productId) {
+            const pId = parseInt(e.detail.productId);
+            if (selectedProducts.includes(pId)) {
+                selectedProducts = selectedProducts.filter(id => id !== pId);
+                updateSelection();
+            }
+            decrementCounters(1);
+        }
+    });
+
+    document.addEventListener('item:removed-from-dom', function(e) {
+        checkEmptyStates();
+    });
 
     // 4K Finder Modal State
     let current4kProductId = null;

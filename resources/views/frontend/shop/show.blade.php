@@ -548,30 +548,26 @@
                         @endforeach
 
                         <img id="mainImage" src="{{ $product->thumbnail }}"
-                             alt="{{ $product->name }}" width="600" height="600" class="pdp-main-image" fetchpriority="high" decoding="async" @if($product->image_padding_style) style="padding: {{ $product->image_padding_style }} !important;" @endif>
+                             alt="{{ $product->name }}" width="600" height="600" class="pdp-main-image" fetchpriority="high" decoding="async" @if($product->primary_image_padding_style) style="padding: {{ $product->primary_image_padding_style }} !important;" @endif>
                     </div>
 
                     @php
-                        $galleryImages = collect();
-                        if (!empty($product->thumbnail)) {
-                            $galleryImages->push($product->thumbnail);
-                        }
+                        $galleryItems = collect();
                         if ($product->images && $product->images->count() > 0) {
-                            foreach ($product->images as $img) {
-                                if (!empty($img->url) && !$galleryImages->contains($img->url)) {
-                                    $galleryImages->push($img->url);
-                                }
-                            }
+                            $galleryItems = $product->images->take(6);
+                        } else {
+                            $galleryItems->push((object)[
+                                'url' => $product->thumbnail,
+                                'image_padding_style' => $product->primary_image_padding_style,
+                            ]);
                         }
-                        // Enforce max 4 images
-                        $galleryImages = $galleryImages->take(4);
                     @endphp
 
-                    @if($galleryImages->count() > 1)
+                    @if($galleryItems->count() > 1)
                     <div class="pdp-thumbs" id="pdpThumbs">
-                        @foreach($galleryImages as $imgUrl)
-                        <div class="pdp-thumb {{ $loop->first ? 'active' : '' }}" onclick="pdpChangeImage('{{ $imgUrl }}', this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')pdpChangeImage('{{ $imgUrl }}', this)" aria-label="{{ $product->name }} {{ $loop->iteration }}">
-                            <img src="{{ $imgUrl }}" alt="{{ $product->name }} {{ $loop->iteration }}" width="76" height="76" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';" @if($product->image_padding_style) style="padding: {{ $product->image_padding_style }} !important;" @endif>
+                        @foreach($galleryItems as $gImg)
+                        <div class="pdp-thumb {{ $loop->first ? 'active' : '' }}" onclick="pdpChangeImage('{{ $gImg->url }}', this)" data-padding="{{ $gImg->image_padding_style }}" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')pdpChangeImage('{{ $gImg->url }}', this)" aria-label="{{ $product->name }} {{ $loop->iteration }}">
+                            <img src="{{ $gImg->url }}" alt="{{ $product->name }} {{ $loop->iteration }}" width="76" height="76" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';" @if($gImg->image_padding_style) style="padding: {{ $gImg->image_padding_style }} !important;" @endif>
                         </div>
                         @endforeach
                     </div>
@@ -1089,13 +1085,19 @@ function pdpZoom(e) {
 function pdpChangeImage(src, thumb) {
     const mainImg = document.getElementById('mainImage');
     if (!mainImg) return;
+    const padding = thumb ? thumb.getAttribute('data-padding') : '';
     mainImg.style.opacity = '0';
     setTimeout(() => {
         mainImg.src = src;
+        if (padding) {
+            mainImg.style.setProperty('padding', padding, 'important');
+        } else {
+            mainImg.style.removeProperty('padding');
+        }
         mainImg.style.opacity = '1';
     }, 120);
     document.querySelectorAll('.pdp-thumb').forEach(t => t.classList.remove('active'));
-    thumb.classList.add('active');
+    if (thumb) thumb.classList.add('active');
 }
 
 let selectedVariantId = null;

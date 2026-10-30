@@ -41,78 +41,223 @@
     }
 
     /* Multi Image Upload Grid */
+    /* Multi Image Upload Grid */
     .multi-image-upload {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-        gap: 12px;
+        grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+        gap: 14px;
         margin-top: 10px;
     }
 
     .image-upload-box {
         width: 100%;
-        aspect-ratio: 1 / 1;
-        border: 2px dashed #cbd5e1;
+        min-height: 160px;
+        border: 2px solid #e2e8f0;
         border-radius: 12px;
         display: flex;
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        background: #f8fafc;
+        justify-content: space-between;
+        background: #ffffff;
         position: relative;
         overflow: hidden;
+        transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        user-select: none;
+        -webkit-user-select: none;
     }
 
-    .image-upload-box:hover {
-        border-color: #dc2626;
-        background: #fef2f2;
+    .image-upload-box.sortable-ghost {
+        opacity: 0.35 !important;
+        border: 2px dashed #3b82f6 !important;
+        background: #eff6ff !important;
+        transform: scale(0.96);
     }
 
-    .image-upload-box img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+    .image-upload-box.sortable-chosen {
+        box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.35) !important;
+        border-color: #3b82f6 !important;
+        cursor: grabbing !important;
+    }
+
+    .image-upload-box.sortable-drag {
+        opacity: 0.95 !important;
+        transform: rotate(2deg) scale(1.04);
+        z-index: 9999 !important;
+    }
+
+    .image-upload-box.is-primary-card {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25), 0 4px 12px rgba(59, 130, 246, 0.12) !important;
+    }
+
+    .image-box-top-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 8px;
+        background: rgba(248, 250, 252, 0.95);
+        border-bottom: 1px solid #f1f5f9;
+        z-index: 3;
+    }
+
+    .image-drag-handle {
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+        cursor: grab;
+        touch-action: none !important; /* Critical for mobile touch dragging */
+        transition: all 0.15s ease;
+        background: #f1f5f9;
+    }
+    .image-drag-handle:hover,
+    .image-drag-handle:active {
+        color: #1e293b;
+        background: #e2e8f0;
+    }
+    .image-drag-handle:active {
+        cursor: grabbing;
+    }
+
+    .image-order-pill {
+        font-size: 0.7rem;
+        font-weight: 700;
+        font-family: monospace;
+        color: #475569;
+        background: #e2e8f0;
+        padding: 2px 7px;
+        border-radius: 999px;
     }
 
     .image-remove-btn {
-        position: absolute;
-        top: 6px;
-        right: 6px;
-        background: rgba(220, 38, 38, 0.9);
-        color: #ffffff;
-        width: 22px;
-        height: 22px;
-        border-radius: 50%;
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        font-size: 12px;
-        border: 2px solid #ffffff;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-        z-index: 10;
-        transition: transform 0.15s ease;
+        font-size: 14px;
+        border: none;
+        transition: all 0.15s ease;
+        line-height: 1;
+        padding: 0;
+    }
+    .image-remove-btn:hover {
+        background: #dc2626;
+        color: #ffffff;
+        transform: scale(1.1);
     }
 
-    .image-remove-btn:hover {
-        transform: scale(1.15);
-        background: #dc2626;
+    .image-box-img-wrap {
+        width: 100%;
+        height: 95px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px;
+        background: #ffffff;
+        cursor: grab;
+        touch-action: pan-y;
+    }
+    .image-box-img-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .image-box-bottom-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 5px 6px;
+        background: #f8fafc;
+        border-top: 1px solid #f1f5f9;
+        gap: 4px;
+        z-index: 3;
+    }
+
+    .btn-make-primary {
+        flex: 1;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: #475569;
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 3px 6px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+    .btn-make-primary:hover {
+        background: #eff6ff;
+        border-color: #3b82f6;
+        color: #2563eb;
+    }
+    .btn-make-primary.active {
+        background: #eff6ff;
+        border-color: #3b82f6;
+        color: #1d4ed8;
+        font-weight: 700;
+        box-shadow: 0 1px 2px rgba(59, 130, 246, 0.15);
+    }
+
+    .image-reorder-arrows {
+        display: inline-flex;
+        gap: 2px;
+    }
+    .btn-arrow-move {
+        width: 24px;
+        height: 24px;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        color: #64748b;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.68rem;
+        cursor: pointer;
+        padding: 0;
+        transition: all 0.15s ease;
+    }
+    .btn-arrow-move:hover,
+    .btn-arrow-move:active {
+        background: #e2e8f0;
+        color: #0f172a;
+    }
+
+    /* Add button box */
+    .image-upload-box-add {
+        border: 2px dashed #cbd5e1 !important;
+        background: #f8fafc !important;
+        cursor: pointer !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-height: 160px;
+        transition: all 0.2s ease;
+    }
+    .image-upload-box-add:hover {
+        border-color: #3b82f6 !important;
+        background: #eff6ff !important;
     }
 
     .primary-badge-indicator {
-        position: absolute;
-        top: 6px;
-        left: 6px;
-        background: #10b981;
-        color: #ffffff;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 9px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        z-index: 5;
+        display: none;
     }
 
     /* Live Profit Box */
@@ -188,8 +333,8 @@
             margin-bottom: 14px;
         }
         .multi-image-upload {
-            grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
-            gap: 8px;
+            grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+            gap: 10px;
         }
         .product-form-card-title {
             font-size: 1rem;
@@ -259,13 +404,27 @@
                         </div>
                     </div>
 
+                    <input type="hidden" name="primary_image_index" id="primary_image_index" value="0">
+
                     <div class="mb-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+                            <span class="small text-muted d-flex align-items-center gap-1.5" style="font-size: 0.78rem;">
+                                <i class="fas fa-hand-pointer text-primary"></i>
+                                <span>Glissez-déposez pour réordonner les photos. Touchez <strong>★ Choisir</strong> pour désigner l'image principale.</span>
+                            </span>
+                            <span class="badge bg-light text-secondary border font-monospace" id="createImageCountBadge" style="font-size: 0.72rem;">
+                                0 photo(s)
+                            </span>
+                        </div>
+
                         <div class="multi-image-upload" id="imagePreviewContainer">
-                            <div class="image-upload-box" onclick="document.getElementById('images').click()">
-                                <i class="fas fa-cloud-upload-alt fs-3 text-muted mb-1"></i>
-                                <span class="small text-muted fw-semibold" style="font-size: 0.72rem;">Téléverser</span>
+                            <div class="image-upload-box image-upload-box-add" id="box-add-image" onclick="document.getElementById('images').click()" title="Ajouter des photos">
+                                <i class="fas fa-cloud-upload-alt fs-3 text-muted mb-1.5"></i>
+                                <span class="small text-muted fw-semibold" style="font-size: 0.74rem;">Téléverser des photos</span>
+                                <span class="text-muted" style="font-size: 0.65rem;">JPEG, PNG, WEBP</span>
                             </div>
                         </div>
+
                         <input type="file" 
                                id="images" 
                                name="images[]" 
@@ -886,6 +1045,8 @@ document.getElementById('btn-create-product-top')?.addEventListener('click', fun
 });
 
 let selectedFiles = [];
+let primaryImageIndex = 0;
+let createSortableInstance = null;
 
 function handleMultipleImages(event) {
     const files = Array.from(event.target.files);
@@ -895,49 +1056,163 @@ function handleMultipleImages(event) {
 
 function displayImages() {
     const container = document.getElementById('imagePreviewContainer');
+    if (!container) return;
+
+    if (selectedFiles.length === 0) {
+        container.innerHTML = `
+            <div class="image-upload-box image-upload-box-add" id="box-add-image" onclick="document.getElementById('images').click()" title="Ajouter des photos">
+                <i class="fas fa-cloud-upload-alt fs-3 text-muted mb-1.5"></i>
+                <span class="small text-muted fw-semibold" style="font-size: 0.74rem;">Téléverser des photos</span>
+                <span class="text-muted" style="font-size: 0.65rem;">JPEG, PNG, WEBP</span>
+            </div>
+        `;
+        const countBadge = document.getElementById('createImageCountBadge');
+        if (countBadge) countBadge.textContent = '0 photo(s)';
+        updateFileInput();
+        return;
+    }
+
     container.innerHTML = '';
     
     selectedFiles.forEach((file, index) => {
+        const isPrimary = (index === primaryImageIndex);
         const reader = new FileReader();
         reader.onload = function(e) {
             const box = document.createElement('div');
-            box.className = 'image-upload-box';
+            box.className = 'image-upload-box ' + (isPrimary ? 'is-primary-card' : '');
+            box.id = 'create-box-img-' + index;
+            box.setAttribute('data-file-index', index);
             box.innerHTML = `
-                <img src="${e.target.result}" alt="Preview ${index + 1}">
-                ${index === 0 ? '<span class="primary-badge-indicator">Principale</span>' : ''}
-                <span class="image-remove-btn" onclick="removeImage(${index})" title="Supprimer">&times;</span>
+                <div class="image-box-top-bar">
+                    <div class="image-drag-handle" title="Glisser pour déplacer"><i class="fas fa-grip-vertical"></i></div>
+                    <span class="image-order-pill">#${index + 1}</span>
+                    <button type="button" class="image-remove-btn" onclick="removeImage(${index})" title="Supprimer">&times;</button>
+                </div>
+                <div class="image-box-img-wrap" title="Glisser pour réordonner">
+                    <img src="${e.target.result}" alt="Photo ${index + 1}">
+                </div>
+                <div class="image-box-bottom-bar">
+                    <button type="button" class="btn-make-primary ${isPrimary ? 'active' : ''}" onclick="selectCreatePrimary(${index})" title="${isPrimary ? 'Image principale' : 'Définir comme principale'}">
+                        <i class="${isPrimary ? 'fas fa-star text-warning' : 'far fa-star'}"></i>
+                        <span class="btn-primary-text">${isPrimary ? 'Principale' : 'Choisir'}</span>
+                    </button>
+                    <div class="image-reorder-arrows d-flex d-md-none">
+                        <button type="button" class="btn-arrow-move" onclick="moveCreateImage(${index}, -1)" title="Gauche"><i class="fas fa-chevron-left"></i></button>
+                        <button type="button" class="btn-arrow-move" onclick="moveCreateImage(${index}, 1)" title="Droite"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
             `;
-            container.appendChild(box);
-            if (index === 0) {
+            const addBox = document.getElementById('box-add-image');
+            if (addBox) {
+                container.insertBefore(box, addBox);
+            } else {
+                container.appendChild(box);
+            }
+
+            if (isPrimary) {
                 const livePrev = document.getElementById('imagePaddingLivePreview');
                 if (livePrev) livePrev.src = e.target.result;
             }
-        }
+        };
         reader.readAsDataURL(file);
     });
     
     // Add upload button at the end
     const uploadBox = document.createElement('div');
-    uploadBox.className = 'image-upload-box';
+    uploadBox.className = 'image-upload-box image-upload-box-add';
+    uploadBox.id = 'box-add-image';
     uploadBox.onclick = () => document.getElementById('images').click();
     uploadBox.innerHTML = `
-        <i class="fas fa-plus fs-4 text-muted mb-1"></i>
-        <span class="small text-muted fw-semibold" style="font-size: 0.72rem;">Ajouter</span>
+        <i class="fas fa-plus fs-3 text-muted mb-1.5"></i>
+        <span class="small text-muted fw-semibold" style="font-size: 0.74rem;">Ajouter</span>
     `;
     container.appendChild(uploadBox);
     
+    const countBadge = document.getElementById('createImageCountBadge');
+    if (countBadge) countBadge.textContent = selectedFiles.length + ' photo(s)';
+
     updateFileInput();
+    initCreateSortable();
+}
+
+function selectCreatePrimary(index) {
+    if (index < 0 || index >= selectedFiles.length) return;
+    primaryImageIndex = index;
+    const input = document.getElementById('primary_image_index');
+    if (input) input.value = primaryImageIndex;
+    displayImages();
+}
+
+function moveCreateImage(fromIndex, dir) {
+    const toIndex = fromIndex + dir;
+    if (toIndex < 0 || toIndex >= selectedFiles.length) return;
+
+    const tmp = selectedFiles[fromIndex];
+    selectedFiles[fromIndex] = selectedFiles[toIndex];
+    selectedFiles[toIndex] = tmp;
+
+    if (primaryImageIndex === fromIndex) {
+        primaryImageIndex = toIndex;
+    } else if (primaryImageIndex === toIndex) {
+        primaryImageIndex = fromIndex;
+    }
+
+    displayImages();
+}
+
+function initCreateSortable() {
+    const container = document.getElementById('imagePreviewContainer');
+    if (!container || selectedFiles.length <= 1) return;
+
+    if (typeof Sortable === 'undefined') return;
+
+    if (createSortableInstance) {
+        createSortableInstance.destroy();
+    }
+
+    createSortableInstance = new Sortable(container, {
+        animation: 200,
+        handle: '.image-drag-handle, .image-box-img-wrap',
+        draggable: '.image-upload-box:not(.image-upload-box-add)',
+        ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen',
+        dragClass: 'sortable-drag',
+        touchStartThreshold: 3,
+        onEnd: function() {
+            const newOrderFiles = [];
+            const boxes = container.querySelectorAll('.image-upload-box:not(.image-upload-box-add)');
+            let newPrimary = 0;
+            boxes.forEach((box, newIdx) => {
+                const oldIdx = parseInt(box.getAttribute('data-file-index'), 10);
+                if (!isNaN(oldIdx) && selectedFiles[oldIdx]) {
+                    newOrderFiles.push(selectedFiles[oldIdx]);
+                    if (oldIdx === primaryImageIndex) {
+                        newPrimary = newIdx;
+                    }
+                }
+            });
+            selectedFiles = newOrderFiles;
+            primaryImageIndex = newPrimary;
+            displayImages();
+        }
+    });
 }
 
 function removeImage(index) {
     selectedFiles.splice(index, 1);
+    if (primaryImageIndex >= selectedFiles.length) {
+        primaryImageIndex = Math.max(0, selectedFiles.length - 1);
+    }
     displayImages();
 }
 
 function updateFileInput() {
     const dataTransfer = new DataTransfer();
     selectedFiles.forEach(file => dataTransfer.items.add(file));
-    document.getElementById('images').files = dataTransfer.files;
+    const input = document.getElementById('images');
+    if (input) input.files = dataTransfer.files;
+    const primInput = document.getElementById('primary_image_index');
+    if (primInput) primInput.value = primaryImageIndex;
 }
 
 // SKU Auto-Generation

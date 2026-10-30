@@ -14,6 +14,7 @@ class ProductImage extends Model
         'image_path',
         'sort_order',
         'is_primary',
+        'image_padding',
     ];
 
     protected $casts = [
@@ -47,5 +48,37 @@ class ProductImage extends Model
             return asset(ltrim($path, '/'));
         }
         return asset('storage/' . ltrim($path, '/'));
+    }
+
+    /**
+     * Get CSS padding value formatted for this specific product image.
+     * Supports percentage (e.g. "10%"), pixels ("20px"), rem, or plain numbers (converted to %).
+     * Falls back to product level padding if this image doesn't have custom padding.
+     */
+    public function getImagePaddingStyleAttribute(): string
+    {
+        $val = trim((string) ($this->image_padding ?? ''));
+        if ($val === '' || $val === '0' || $val === '0%' || $val === '0px') {
+            return $this->product?->image_padding_style ?? '';
+        }
+        if (is_numeric($val)) {
+            return $val . '%';
+        }
+        return $val;
+    }
+
+    /**
+     * Get numeric percentage for UI slider/inputs (e.g. "15%" -> 15).
+     */
+    public function getImagePaddingPercentAttribute(): int
+    {
+        $val = trim((string) ($this->image_padding ?? ''));
+        if ($val === '' || $val === '0' || $val === '0%' || $val === '0px') {
+            return $this->product?->image_padding_percent ?? 0;
+        }
+        if (preg_match('/^(\d+)/', $val, $matches)) {
+            return min(100, max(0, (int) $matches[1]));
+        }
+        return 0;
     }
 }

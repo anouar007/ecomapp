@@ -484,6 +484,8 @@
     <!-- Delete Confirmation Handler -->
     <script src="{{ asset('js/delete-confirmation.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SortableJS for Touch & Mobile Drag & Drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/driver.js') }}"></script>
     <script src="{{ asset('js/tour.js') }}"></script>

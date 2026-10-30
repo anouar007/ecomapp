@@ -60,6 +60,10 @@ Route::middleware('auth')->group(function () {
         Route::post('products/{product}/apply-4k-image', [\App\Http\Controllers\ProductController::class, 'apply4kImage'])->name('products.apply-4k-image');
         Route::post('products/upload-editor-image', [\App\Http\Controllers\ProductController::class, 'uploadEditorImage'])->name('products.upload-editor-image');
         Route::post('products/{product}/update-order', [\App\Http\Controllers\ProductController::class, 'updateOrder'])->name('products.update-order');
+        Route::post('products/{product}/images/reorder', [\App\Http\Controllers\ProductController::class, 'reorderImages'])->name('products.images.reorder');
+        Route::post('products/{product}/images/{image}/make-primary', [\App\Http\Controllers\ProductController::class, 'makePrimaryImage'])->name('products.images.make-primary');
+        Route::post('products/{product}/images/{image}/padding', [\App\Http\Controllers\ProductController::class, 'updateSingleImagePadding'])->name('products.images.padding');
+        Route::post('products/{product}/images/apply-padding-all', [\App\Http\Controllers\ProductController::class, 'applyPaddingToAllImages'])->name('products.images.apply-padding-all');
         Route::resource('products', \App\Http\Controllers\ProductController::class);
 
         // Brands Management

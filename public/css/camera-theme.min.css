@@ -6083,7 +6083,7 @@ body:has(.offcanvas.hiding) .whatsapp-float {
     flex: 1 1 auto !important;
     width: auto !important;
     min-width: 0 !important;
-    background: #011962 !important;
+    background: linear-gradient(45deg, #012390, #001046) !important;
     color: #fff !important;
     border: 1.5px solid #011962 !important;
     border-radius: 8px !important;
@@ -8649,7 +8649,6 @@ html[dir=rtl] .floating-checkout-badge {
 .btn-cat-swiper-arrow:hover {
     background: #c8102e;
     color: #fff;
-    transform: translateY(-2px) scale(1.05);
     box-shadow: 0 6px 18px #c8102e59
 }
 

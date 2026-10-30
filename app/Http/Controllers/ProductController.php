@@ -269,14 +269,20 @@ class ProductController extends Controller
 
             // Handle multiple image uploads
             if ($request->hasFile('images')) {
+                $primaryIndex = (int) $request->input('primary_image_index', 0);
                 foreach ($request->file('images') as $index => $image) {
                     $path = $image->store('products', 'public');
+                    $isPrimary = ($index === $primaryIndex) || ($index === 0 && !$request->has('primary_image_index'));
                     ProductImage::create([
                         'product_id' => $product->id,
                         'image_path' => $path,
                         'sort_order' => $index,
-                        'is_primary' => $index === 0, // First image is primary
+                        'is_primary' => $isPrimary,
                     ]);
+                    if ($isPrimary) {
+                        $product->image = $path;
+                        $product->save();
+                    }
                 }
             } else {
                 // Automatically search & download official product image from brand website
@@ -302,6 +308,16 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
+        // Ensure legacy single image is represented as a ProductImage record if relation is empty
+        if ($product->images->isEmpty() && !empty($product->image)) {
+            $product->images()->create([
+                'image_path' => $product->image,
+                'sort_order' => 0,
+                'is_primary' => true,
+            ]);
+            $product->load('images');
+        }
+
         $product->load('images', 'productCategory', 'categories', 'variants', 'brand', 'tags');
         $categories = \App\Models\Category::where('status', 'active')
             ->orderBy('name')
@@ -478,10 +494,37 @@ class ProductController extends Controller
                     Storage::disk('public')->delete($img->image_path);
                     $img->delete();
                 }
+            }
 
-                // If primary was removed, promote the first remaining image
-                if ($product->images()->count() > 0 && !$product->images()->where('is_primary', true)->exists()) {
-                    $product->images()->first()->update(['is_primary' => true]);
+            // Handle primary image selection
+            if ($request->filled('primary_image_id')) {
+                $primaryId = (int) $request->primary_image_id;
+                $targetPrimary = ProductImage::where('product_id', $product->id)->where('id', $primaryId)->first();
+                if ($targetPrimary) {
+                    ProductImage::where('product_id', $product->id)->update(['is_primary' => false]);
+                    $targetPrimary->update(['is_primary' => true]);
+                    $product->image = $targetPrimary->image_path;
+                    $product->save();
+                }
+            }
+
+            // Handle image reordering
+            if ($request->has('image_order') && is_array($request->image_order)) {
+                foreach ($request->image_order as $idx => $imgId) {
+                    ProductImage::where('product_id', $product->id)
+                        ->where('id', (int) $imgId)
+                        ->update(['sort_order' => (int) $idx]);
+                }
+            }
+
+            // Handle individual image paddings
+            if ($request->has('image_paddings') && is_array($request->image_paddings)) {
+                foreach ($request->image_paddings as $imgId => $padVal) {
+                    $raw = trim((string) $padVal);
+                    $clean = ($raw === '' || $raw === '0' || $raw === '0%' || $raw === '0px') ? null : $raw;
+                    ProductImage::where('product_id', $product->id)
+                        ->where('id', (int) $imgId)
+                        ->update(['image_padding' => $clean]);
                 }
             }
 
@@ -490,12 +533,27 @@ class ProductController extends Controller
                 $currentMaxOrder = $product->images()->max('sort_order') ?? -1;
                 foreach ($request->file('images') as $index => $image) {
                     $path = $image->store('products', 'public');
+                    $isFirstEver = $product->images()->count() === 0 && $index === 0;
                     ProductImage::create([
                         'product_id' => $product->id,
                         'image_path' => $path,
                         'sort_order' => $currentMaxOrder + $index + 1,
-                        'is_primary' => $product->images()->count() === 0 && $index === 0,
+                        'is_primary' => $isFirstEver,
                     ]);
+                    if ($isFirstEver) {
+                        $product->image = $path;
+                        $product->save();
+                    }
+                }
+            }
+
+            // Ensure at least one image is primary if images exist
+            if ($product->images()->count() > 0 && !$product->images()->where('is_primary', true)->exists()) {
+                $firstRemaining = $product->images()->orderBy('sort_order')->first();
+                if ($firstRemaining) {
+                    $firstRemaining->update(['is_primary' => true]);
+                    $product->image = $firstRemaining->image_path;
+                    $product->save();
                 }
             }
 
@@ -512,7 +570,7 @@ class ProductController extends Controller
     /**
      * Remove the specified product.
      */
-    public function destroy(Product $product)
+    public function destroy(Request $request, Product $product)
     {
         DB::beginTransaction();
         try {
@@ -527,14 +585,35 @@ class ProductController extends Controller
                 Storage::disk('public')->delete($product->image);
             }
 
+            $productId = $product->id;
+            $productName = $product->name;
             $product->delete();
 
+            \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
+            \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
+
             DB::commit();
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Produit "' . $productName . '" supprimé avec succès.',
+                    'product_id' => $productId,
+                ]);
+            }
             
             return redirect()->route('products.index')
                 ->with('success', 'Product deleted successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erreur lors de la suppression du produit: ' . $e->getMessage()
+                ], 500);
+            }
+
             return back()->with('error', 'Failed to delete product: ' . $e->getMessage());
         }
     }
@@ -613,10 +692,23 @@ class ProductController extends Controller
         try {
             switch ($action) {
                 case 'delete':
-                    Product::whereIn('id', $productIds)->delete();
+                    $prods = Product::whereIn('id', $productIds)->with('images')->get();
+                    foreach ($prods as $p) {
+                        foreach ($p->images as $img) {
+                            Storage::disk('public')->delete($img->image_path);
+                            $img->delete();
+                        }
+                        if ($p->image) {
+                            Storage::disk('public')->delete($p->image);
+                        }
+                        $p->delete();
+                    }
+                    \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
+                    \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
                     return response()->json([
                         'success' => true,
-                        'message' => "{$count} product(s) deleted successfully."
+                        'message' => "{$count} produit(s) supprimé(s) avec succès.",
+                        'deleted_ids' => $productIds
                     ]);
 
                 case 'duplicate':
@@ -745,6 +837,7 @@ class ProductController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Photo de produit appliquée avec succès !',
+            'image_id' => optional($product->primaryImage)->id,
             'image_path' => $path,
             'image_url' => $fullUrl,
             'width' => $product->image_width,
@@ -888,6 +981,122 @@ class ProductController extends Controller
         }
 
         return back()->with('success', 'Ordre mis à jour avec succès.');
+    }
+
+    /**
+     * Reorder images for a product via drag and drop or touch controls (AJAX).
+     */
+    public function reorderImages(Request $request, Product $product)
+    {
+        $request->validate([
+            'order' => 'required|array|min:1',
+            'order.*' => 'integer|exists:product_images,id',
+        ]);
+
+        foreach ($request->order as $index => $imageId) {
+            ProductImage::where('product_id', $product->id)
+                ->where('id', (int) $imageId)
+                ->update(['sort_order' => (int) $index]);
+        }
+
+        \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ordre des photos enregistré avec succès.',
+        ]);
+    }
+
+    /**
+     * Set a specific product image as the primary / main image (AJAX).
+     */
+    public function makePrimaryImage(Request $request, Product $product, ProductImage $image)
+    {
+        if ($image->product_id !== $product->id) {
+            return response()->json([
+                'success' => false,
+                'message' => "Cette image n'appartient pas à ce produit.",
+            ], 403);
+        }
+
+        ProductImage::where('product_id', $product->id)->update(['is_primary' => false]);
+        $image->update(['is_primary' => true]);
+
+        // Keep product.image in sync
+        $product->image = $image->image_path;
+        $product->save();
+
+        \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
+        \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
+
+        return response()->json([
+            'success' => true,
+            'image_id' => $image->id,
+            'thumbnail' => $product->thumbnail,
+            'message' => 'Image principale sélectionnée avec succès.',
+        ]);
+    }
+
+    /**
+     * Update padding for a single product image (AJAX).
+     */
+    public function updateSingleImagePadding(Request $request, Product $product, ProductImage $image)
+    {
+        if ($image->product_id !== $product->id) {
+            return response()->json([
+                'success' => false,
+                'message' => "Cette image n'appartient pas à ce produit.",
+            ], 403);
+        }
+
+        $validated = $request->validate([
+            'image_padding' => ['nullable', 'string', 'max:50'],
+        ]);
+
+        $raw = trim((string) ($validated['image_padding'] ?? ''));
+        $padding = ($raw === '' || $raw === '0' || $raw === '0%' || $raw === '0px') ? null : $raw;
+
+        $image->update(['image_padding' => $padding]);
+
+        if ($image->is_primary) {
+            $product->update(['image_padding' => $padding]);
+        }
+
+        \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
+        \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
+
+        return response()->json([
+            'success' => true,
+            'image_id' => $image->id,
+            'image_padding' => $image->image_padding,
+            'image_padding_style' => $image->image_padding_style,
+            'message' => 'Marge de l\'image enregistrée.',
+        ]);
+    }
+
+    /**
+     * Apply a padding value to all images of this product at once (AJAX).
+     */
+    public function applyPaddingToAllImages(Request $request, Product $product)
+    {
+        $validated = $request->validate([
+            'image_padding' => ['nullable', 'string', 'max:50'],
+        ]);
+
+        $raw = trim((string) ($validated['image_padding'] ?? ''));
+        $padding = ($raw === '' || $raw === '0' || $raw === '0%' || $raw === '0px') ? null : $raw;
+
+        $product->images()->update(['image_padding' => $padding]);
+        $product->update(['image_padding' => $padding]);
+
+        \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
+        \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
+
+        return response()->json([
+            'success' => true,
+            'image_padding' => $padding,
+            'message' => 'Marge appliquée à toutes les photos du produit.',
+        ]);
     }
 }
 

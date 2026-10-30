@@ -162,6 +162,8 @@
                   action="{{ route('products.destroy', $product->id) }}" 
                   class="m-0 p-0 d-inline"
                   data-confirm-delete="true"
+                  data-ajax-delete="true"
+                  data-product-id="{{ $product->id }}"
                   data-item-type="product"
                   data-item-name="{{ $product->name }}">
                 @csrf

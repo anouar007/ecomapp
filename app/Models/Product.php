@@ -868,6 +868,27 @@ class Product extends Model
     }
 
     /**
+     * Get CSS padding specifically for the primary / main image shown on cards.
+     */
+    public function getPrimaryImagePaddingStyleAttribute(): string
+    {
+        $primary = null;
+        if ($this->relationLoaded('images')) {
+            $primary = $this->images->firstWhere('is_primary', 1) ?? $this->images->first();
+        } elseif ($this->relationLoaded('primaryImage')) {
+            $primary = $this->primaryImage;
+        } else {
+            $primary = $this->primaryImage;
+        }
+
+        if ($primary && !empty($primary->image_padding)) {
+            return $primary->image_padding_style;
+        }
+
+        return $this->image_padding_style;
+    }
+
+    /**
      * Get CSS padding value formatted for product images.
      * Supports percentage (e.g. "10%"), pixels ("20px"), rem, or plain numbers (converted to %).
      */

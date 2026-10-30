@@ -4,14 +4,21 @@
 
 @push('styles')
 <style>
-    /* Product Form Styles */
+    /* Product Form Layout & Global Tokens */
+    :root {
+        --form-card-radius: 16px;
+        --form-card-border: #e2e8f0;
+        --form-card-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    }
+
     .product-form-card {
         background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 16px;
+        border: 1px solid var(--form-card-border);
+        border-radius: var(--form-card-radius);
         padding: 24px;
         margin-bottom: 24px;
-        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+        box-shadow: var(--form-card-shadow);
+        transition: box-shadow 0.2s ease, border-color 0.2s ease;
     }
 
     .product-form-card-header {
@@ -22,99 +29,352 @@
         margin-bottom: 20px;
         border-bottom: 1px solid #f1f5f9;
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 12px;
     }
 
     .product-form-card-title {
         font-family: var(--font-heading, 'Outfit', sans-serif);
-        font-size: 1.1rem;
+        font-size: 1.08rem;
         font-weight: 700;
         color: #0f172a;
         margin: 0;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
     }
 
     .product-form-card-subtitle {
         font-size: 0.8rem;
         color: #64748b;
-        margin-top: 4px;
+        margin: 3px 0 0 0;
+    }
+
+    /* Icon Badges for Card Headers */
+    .card-icon-badge {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.05rem;
+        flex-shrink: 0;
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+    }
+    .badge-blue { background: #eff6ff; color: #2563eb; }
+    .badge-indigo { background: #e0e7ff; color: #4338ca; }
+    .badge-purple { background: #f5f3ff; color: #7c3aed; }
+    .badge-emerald { background: #ecfdf5; color: #059669; }
+    .badge-amber { background: #fffbeb; color: #d97706; }
+    .badge-rose { background: #fff1f2; color: #e11d48; }
+
+    /* Form Labels & Inputs Harmony */
+    .product-form-card .form-label {
+        font-size: 0.83rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 6px;
+    }
+    .product-form-card .form-control,
+    .product-form-card .form-select {
+        font-size: 0.88rem;
+        border-color: #cbd5e1;
+        border-radius: 10px;
+        padding: 9px 12px;
+        color: #0f172a;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .product-form-card .form-control:focus,
+    .product-form-card .form-select:focus {
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    }
+    .product-form-card .input-group-text {
+        border-color: #cbd5e1;
+        border-radius: 10px;
+        background-color: #f8fafc;
+        color: #64748b;
+        font-size: 0.85rem;
+    }
+    .product-form-card .form-text {
+        font-size: 0.74rem;
+        color: #64748b;
+        margin-top: 5px;
     }
 
     /* Multi Image Upload Grid */
     .multi-image-upload {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-        gap: 12px;
+        grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+        gap: 14px;
         margin-top: 10px;
     }
 
     .image-upload-box {
         width: 100%;
-        aspect-ratio: 1 / 1;
-        border: 2px dashed #cbd5e1;
+        min-height: 165px;
+        border: 2px solid #e2e8f0;
         border-radius: 12px;
         display: flex;
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        background: #f8fafc;
+        justify-content: space-between;
+        background: #ffffff;
         position: relative;
         overflow: hidden;
+        transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        user-select: none;
+        -webkit-user-select: none;
     }
 
-    .image-upload-box:hover {
-        border-color: #dc2626;
-        background: #fef2f2;
+    .image-upload-box.sortable-ghost {
+        opacity: 0.35 !important;
+        border: 2px dashed #3b82f6 !important;
+        background: #eff6ff !important;
+        transform: scale(0.96);
     }
 
-    .image-upload-box img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+    .image-upload-box.sortable-chosen {
+        box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.35) !important;
+        border-color: #3b82f6 !important;
+        cursor: grabbing !important;
+    }
+
+    .image-upload-box.sortable-drag {
+        opacity: 0.95 !important;
+        transform: rotate(2deg) scale(1.04);
+        z-index: 9999 !important;
+    }
+
+    .image-upload-box.is-primary-card {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25), 0 4px 12px rgba(59, 130, 246, 0.12) !important;
+    }
+
+    .image-upload-box.selected-for-padding {
+        border-color: #6366f1 !important;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35), 0 4px 14px rgba(99, 102, 241, 0.18) !important;
+    }
+
+    .image-pad-pill {
+        font-size: 0.65rem;
+        font-weight: 700;
+        font-family: monospace;
+        color: #4338ca;
+        background: #e0e7ff;
+        border: 1px solid #c7d2fe;
+        padding: 1px 6px;
+        border-radius: 999px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        white-space: nowrap;
+    }
+    .image-pad-pill:hover,
+    .image-upload-box.selected-for-padding .image-pad-pill {
+        background: #4f46e5;
+        color: #ffffff;
+        border-color: #4f46e5;
+    }
+
+    .image-box-top-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 8px;
+        background: rgba(248, 250, 252, 0.95);
+        border-bottom: 1px solid #f1f5f9;
+        z-index: 3;
+    }
+
+    .image-drag-handle {
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+        cursor: grab;
+        touch-action: none !important;
+        transition: all 0.15s ease;
+        background: #f1f5f9;
+    }
+    .image-drag-handle:hover,
+    .image-drag-handle:active {
+        color: #1e293b;
+        background: #e2e8f0;
+    }
+    .image-drag-handle:active {
+        cursor: grabbing;
+    }
+
+    .image-order-pill {
+        font-size: 0.7rem;
+        font-weight: 700;
+        font-family: monospace;
+        color: #475569;
+        background: #e2e8f0;
+        padding: 2px 7px;
+        border-radius: 999px;
     }
 
     .image-remove-btn {
-        position: absolute;
-        top: 6px;
-        right: 6px;
-        background: rgba(220, 38, 38, 0.9);
-        color: #ffffff;
-        width: 22px;
-        height: 22px;
-        border-radius: 50%;
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        font-size: 13px;
-        border: 2px solid #ffffff;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-        z-index: 10;
-        transition: transform 0.15s ease;
+        font-size: 14px;
+        border: none;
+        transition: all 0.15s ease;
+        line-height: 1;
+        padding: 0;
     }
-
     .image-remove-btn:hover {
-        transform: scale(1.15);
         background: #dc2626;
+        color: #ffffff;
+        transform: scale(1.1);
     }
 
-    .primary-badge-indicator {
-        position: absolute;
-        top: 6px;
-        left: 6px;
-        background: #10b981;
-        color: #ffffff;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 9px;
+    .image-box-img-wrap {
+        width: 100%;
+        height: 98px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px;
+        background: #ffffff;
+        cursor: pointer;
+        touch-action: pan-y;
+    }
+    .image-box-img-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .image-box-bottom-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 5px 6px;
+        background: #f8fafc;
+        border-top: 1px solid #f1f5f9;
+        gap: 4px;
+        z-index: 3;
+    }
+
+    .btn-make-primary {
+        flex: 1;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: #475569;
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 3px 6px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+    .btn-make-primary:hover {
+        background: #eff6ff;
+        border-color: #3b82f6;
+        color: #2563eb;
+    }
+    .btn-make-primary.active {
+        background: #eff6ff;
+        border-color: #3b82f6;
+        color: #1d4ed8;
         font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        z-index: 5;
+        box-shadow: 0 1px 2px rgba(59, 130, 246, 0.15);
+    }
+
+    .image-reorder-arrows {
+        display: inline-flex;
+        gap: 2px;
+    }
+    .btn-arrow-move {
+        width: 24px;
+        height: 24px;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        color: #64748b;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.68rem;
+        cursor: pointer;
+        padding: 0;
+        transition: all 0.15s ease;
+    }
+    .btn-arrow-move:hover,
+    .btn-arrow-move:active {
+        background: #e2e8f0;
+        color: #0f172a;
+    }
+
+    /* Add button box */
+    .image-upload-box-add {
+        border: 2px dashed #cbd5e1 !important;
+        background: #f8fafc !important;
+        cursor: pointer !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-height: 165px;
+        transition: all 0.2s ease;
+    }
+    .image-upload-box-add:hover {
+        border-color: #3b82f6 !important;
+        background: #eff6ff !important;
+        transform: translateY(-2px);
+    }
+
+    /* Padding Controls Styling */
+    .padding-preview-box {
+        width: 105px;
+        height: 105px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        background-color: #ffffff;
+        background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+        background-size: 8px 8px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        margin: 0 auto;
+    }
+    .img-pad-preset {
+        min-height: 32px;
+        padding: 4px 10px;
+        font-size: 0.74rem;
+        font-weight: 500;
+        border-radius: 999px;
+        transition: all 0.15s ease;
+    }
+    .img-pad-preset.is-active {
+        background: #4f46e5 !important;
+        border-color: #4f46e5 !important;
+        color: #ffffff !important;
+        font-weight: 700;
+        box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
     }
 
     /* Live Profit Box */
@@ -127,7 +387,7 @@
         transition: all 0.2s ease;
     }
 
-    /* Variation Cards 2-Row Layout */
+    /* Variation Cards */
     .variant-card {
         background: #ffffff;
         border: 1px solid #e2e8f0;
@@ -158,28 +418,97 @@
         color: #2563eb;
         border: 1px solid #dbeafe;
     }
-    .variant-card .form-label {
-        font-size: 0.82rem;
-        font-weight: 600;
-        color: #334155;
-        margin-bottom: 6px;
-        display: flex;
+
+    /* Sticky Sidebar on Desktop */
+    @media (min-width: 992px) {
+        .sticky-actions-card {
+            position: sticky;
+            top: 85px;
+            z-index: 20;
+        }
+    }
+
+    /* Mobile Sticky Save Bar */
+    .mobile-sticky-save-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 1040;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-top: 1px solid #e2e8f0;
+        padding: 10px 16px;
+        box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.08);
+        display: none;
+    }
+
+    /* 4K Modal Styling */
+    .modal-4k-wrap {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
         align-items: center;
-        justify-content: space-between;
+        justify-content: center;
+        padding: 16px;
     }
-    .variant-card .form-control {
-        font-size: 0.92rem;
-        border-radius: 8px;
-        padding: 8px 12px;
+    .modal-4k-dialog {
+        background: #ffffff;
+        border-radius: 18px;
+        max-width: 950px;
+        width: 100%;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
-    .variant-card .input-group-text {
-        font-size: 0.82rem;
-        border-radius: 8px;
-        background: #f8fafc;
-        color: #64748b;
+    .grid-4k-results {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 14px;
+    }
+
+    /* Responsive Breakpoints & Mobile Enhancements */
+    @media (max-width: 991.98px) {
+        .mobile-sticky-save-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        body {
+            padding-bottom: 74px !important;
+        }
     }
 
     @media (max-width: 767.98px) {
+        .brand-header {
+            flex-direction: column;
+            align-items: stretch !important;
+            gap: 12px;
+        }
+        .brand-header-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            width: 100%;
+        }
+        .brand-header-actions .btn {
+            font-size: 0.78rem;
+            padding: 8px 10px;
+            text-align: center;
+            justify-content: center;
+        }
+        .brand-header-actions #btn-save-product-top {
+            grid-column: span 2;
+        }
         .product-form-card {
             padding: 16px 14px;
             margin-bottom: 16px;
@@ -190,11 +519,40 @@
             margin-bottom: 14px;
         }
         .multi-image-upload {
-            grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
-            gap: 8px;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 10px;
         }
         .product-form-card-title {
-            font-size: 1rem;
+            font-size: 0.98rem;
+        }
+        .card-icon-badge {
+            width: 32px;
+            height: 32px;
+            font-size: 0.9rem;
+        }
+        .variant-card {
+            padding: 12px 14px;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .padding-control-row {
+            flex-direction: column !important;
+        }
+        .padding-preview-col {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .modal-4k-wrap {
+            padding: 8px;
+        }
+        .modal-4k-dialog {
+            max-height: 94vh;
+            border-radius: 14px;
+        }
+        .grid-4k-results {
+            grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+            gap: 10px;
         }
     }
 </style>
@@ -272,11 +630,14 @@
                 <!-- Photographies & Galerie -->
                 <div class="product-form-card">
                     <div class="product-form-card-header">
-                        <div>
-                            <h2 class="product-form-card-title">
-                                <i class="fas fa-images text-primary"></i> Galerie & Photographies Studio 4K
-                            </h2>
-                            <p class="product-form-card-subtitle">Gérez les images de la vitrine ou recherchez des masters 4K Ultra-HD</p>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="card-icon-badge badge-blue">
+                                <i class="fas fa-images"></i>
+                            </div>
+                            <div>
+                                <h2 class="product-form-card-title">Galerie & Photographies</h2>
+                                <p class="product-form-card-subtitle">Réorganisez par glisser-déposer, choisissez la photo principale et les marges</p>
+                            </div>
                         </div>
                         <button type="button" 
                                 class="btn btn-sm text-white rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm"
@@ -286,31 +647,90 @@
                         </button>
                     </div>
 
+                    <!-- Hidden inputs for selected primary image and gallery order -->
+                    <input type="hidden" name="primary_image_id" id="primary_image_id" value="{{ optional($product->primaryImage)->id ?? optional($product->images->first())->id }}">
+                    <div id="imageOrderInputsContainer">
+                        @foreach($product->images as $image)
+                            <input type="hidden" name="image_order[]" value="{{ $image->id }}" id="order-input-{{ $image->id }}">
+                        @endforeach
+                    </div>
+
                     <div class="mb-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+                            <span class="small text-muted d-flex align-items-center gap-1.5" style="font-size: 0.78rem;">
+                                <i class="fas fa-hand-pointer text-primary"></i>
+                                <span>Glissez-déposez pour réordonner la galerie. Touchez <strong>★ Choisir</strong> pour désigner l'image principale.</span>
+                            </span>
+                            <span class="badge bg-light text-secondary border font-monospace" id="imageCountBadge" style="font-size: 0.72rem;">
+                                {{ $product->images->count() }} photo(s)
+                            </span>
+                        </div>
+
                         <div class="multi-image-upload" id="imagePreviewContainer">
                             <!-- Images existantes -->
                             @foreach($product->images as $image)
-                                <div class="image-upload-box" id="box-img-{{ $image->id }}">
-                                    <img src="{{ $image->url }}" alt="Image produit" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
-                                    @if($image->is_primary)
-                                        <span class="primary-badge-indicator">Principale</span>
-                                    @endif
-                                    <span class="image-remove-btn" onclick="markImageForRemoval({{ $image->id }}, this)" title="Supprimer cette image">&times;</span>
+                                <div class="image-upload-box {{ $image->is_primary ? 'is-primary-card' : '' }}" 
+                                     id="box-img-{{ $image->id }}" 
+                                     data-image-id="{{ $image->id }}"
+                                     data-image-url="{{ $image->url }}"
+                                     data-image-padding="{{ $image->image_padding ?? '' }}"
+                                     data-image-padding-percent="{{ $image->image_padding_percent }}"
+                                     data-is-primary="{{ $image->is_primary ? '1' : '0' }}"
+                                     onclick="selectImageForPadding({{ $image->id }}, event)">
+                                    
+                                    <!-- Top Toolbar: Drag Handle + Order Pill + Padding Badge + Delete Button -->
+                                    <div class="image-box-top-bar">
+                                        <div class="image-drag-handle" title="Glisser pour déplacer (ou touchez pour réordonner)">
+                                            <i class="fas fa-grip-vertical"></i>
+                                        </div>
+                                        <span class="image-order-pill">#{{ $loop->iteration }}</span>
+                                        <span class="image-pad-pill" id="pad-pill-{{ $image->id }}" title="Marge de cette photo (cliquez pour régler)">
+                                            <i class="fas fa-expand-alt" style="font-size: 8px;"></i>
+                                            <span class="pad-pill-val">{{ $image->image_padding ?: '0%' }}</span>
+                                        </span>
+                                        <button type="button" class="image-remove-btn" onclick="markImageForRemoval({{ $image->id }}, this); event.stopPropagation();" title="Supprimer cette image">&times;</button>
+                                    </div>
+
+                                    <!-- Image Preview Wrap -->
+                                    <div class="image-box-img-wrap" title="Cliquer pour ajuster la marge / Glisser pour réordonner">
+                                        <img id="card-img-{{ $image->id }}" 
+                                             src="{{ $image->url }}" 
+                                             alt="Image produit" 
+                                             style="padding: {{ $image->image_padding_style }}; box-sizing: border-box !important; transition: padding 0.15s ease;"
+                                             onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                                    </div>
+
+                                    <!-- Hidden input for standard form submit -->
+                                    <input type="hidden" name="image_paddings[{{ $image->id }}]" id="pad-input-{{ $image->id }}" value="{{ $image->image_padding }}">
+
+                                    <!-- Bottom Action Bar: Set Primary Button + Mobile Left/Right Tap Arrows -->
+                                    <div class="image-box-bottom-bar">
+                                        <button type="button" 
+                                                class="btn-make-primary {{ $image->is_primary ? 'active' : '' }}" 
+                                                onclick="selectPrimaryImage({{ $image->id }}, this); event.stopPropagation();" 
+                                                title="{{ $image->is_primary ? 'Image principale actuelle' : 'Définir comme image principale' }}">
+                                            <i class="{{ $image->is_primary ? 'fas fa-star text-warning' : 'far fa-star' }}"></i>
+                                            <span class="btn-primary-text">{{ $image->is_primary ? 'Principale' : 'Choisir' }}</span>
+                                        </button>
+
+                                        <!-- Mobile-friendly tap arrows to reorder without dragging on small screens -->
+                                        <div class="image-reorder-arrows d-flex d-md-none">
+                                            <button type="button" class="btn-arrow-move" onclick="moveImageBox('box-img-{{ $image->id }}', -1); event.stopPropagation();" title="Déplacer vers la gauche">
+                                                <i class="fas fa-chevron-left"></i>
+                                            </button>
+                                            <button type="button" class="btn-arrow-move" onclick="moveImageBox('box-img-{{ $image->id }}', 1); event.stopPropagation();" title="Déplacer vers la droite">
+                                                <i class="fas fa-chevron-right"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             @endforeach
 
-                            <!-- Image principale de repli si la relation est vide -->
-                            @if($product->images->isEmpty() && ($product->image || $product->thumbnail))
-                                <div class="image-upload-box" id="box-img-current">
-                                    <img src="{{ $product->thumbnail }}" alt="Image produit" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
-                                    <span class="primary-badge-indicator">Actuelle</span>
-                                </div>
-                            @endif
-
                             <!-- Bouton pour ajouter plus -->
-                            <div class="image-upload-box" onclick="document.getElementById('images').click()">
-                                <i class="fas fa-plus fs-4 text-muted mb-1"></i>
-                                <span class="small text-muted fw-semibold" style="font-size: 0.72rem;">Ajouter</span>
+                            <div class="image-upload-box image-upload-box-add" id="box-add-image" onclick="document.getElementById('images').click()" title="Ajouter des images">
+                                <i class="fas fa-cloud-upload-alt fs-3 text-muted mb-1.5"></i>
+                                <span class="small text-muted fw-semibold" style="font-size: 0.74rem;">Ajouter des photos</span>
+                                <span class="text-muted" style="font-size: 0.65rem;">JPEG, PNG, WEBP</span>
                             </div>
                         </div>
 
@@ -323,50 +743,87 @@
                                onchange="handleNewImages(event)">
                     </div>
 
-                    <div class="alert alert-light border rounded-3 p-2.5 mb-0 small text-muted d-flex align-items-start gap-2">
-                        <i class="fas fa-info-circle text-primary mt-0.5"></i>
-                        <div>Touchez <strong>×</strong> pour retirer une photo. Utilisez <strong>Studio 4K</strong> pour importer des visuels officiels ultra-HD.</div>
+                    <div class="alert alert-light border rounded-3 p-2.5 mb-0 small text-muted d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-mobile-alt text-primary"></i>
+                            <span>Sur mobile & tactile, maintenez la poignée <i class="fas fa-grip-vertical text-muted"></i> ou utilisez les flèches <i class="fas fa-chevron-left text-muted"></i> <i class="fas fa-chevron-right text-muted"></i> pour réordonner sans effort.</span>
+                        </div>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5" style="font-size: 0.72rem;">
+                            <i class="fas fa-check-circle me-1"></i> Sauvegarde automatique instantanée
+                        </span>
                     </div>
 
                     <!-- Marge interne & Espace vide de l'image (Padding) -->
                     <div class="mt-3 pt-3 border-top">
                         <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
-                            <label class="form-label fw-bold text-dark small mb-0 d-flex align-items-center gap-2">
-                                <i class="fas fa-expand-alt text-primary"></i>
-                                <span>Espace vide autour de l'image (Marge / Padding)</span>
-                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace px-2 py-0.5" id="imagePaddingBadge">{{ $product->image_padding ?: '0%' }}</span>
-                            </label>
-                            <span class="small text-muted" style="font-size: 0.78rem;">
-                                S'applique automatiquement sur les <strong>cartes de produits</strong> et la <strong>page produit</strong>
+                            <div>
+                                <label class="form-label fw-bold text-dark small mb-0 d-flex align-items-center gap-2">
+                                    <i class="fas fa-expand-alt text-primary"></i>
+                                    <span>Espace vide autour de l'image (Marge / Padding)</span>
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace px-2 py-0.5" id="imagePaddingBadge">{{ optional($product->primaryImage)->image_padding ?: ($product->image_padding ?: '0%') }}</span>
+                                </label>
+                                <div class="small text-muted mt-0.5" style="font-size: 0.76rem;">
+                                    Gérez la marge <strong>individuellement</strong> pour chaque image. Touchez une photo ci-dessus pour la sélectionner.
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <button type="button" 
+                                        class="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-1 text-nowrap d-inline-flex align-items-center gap-1.5 shadow-2xs"
+                                        id="btnApplyAllPadding"
+                                        onclick="applyCurrentPaddingToAll()"
+                                        title="Appliquer cette valeur de marge à TOUTES les photos du produit">
+                                    <i class="fas fa-layer-group"></i>
+                                    <span style="font-size: 0.76rem; font-weight: 600;">Appliquer à toutes les photos</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Status bar : Image en cours d'édition -->
+                        <div class="alert alert-light border rounded-3 py-1.5 px-3 mb-2.5 d-flex align-items-center justify-content-between flex-wrap gap-2" style="background: #f8fafc;">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge rounded-pill px-2 py-0.5 font-monospace text-white" style="font-size: 0.72rem; background: #6366f1;">
+                                    <i class="fas fa-crosshairs me-1"></i> Photo sélectionnée
+                                </span>
+                                <span class="small fw-bold text-dark" id="activeEditingImageTitle" style="font-size: 0.8rem;">
+                                    @php
+                                        $initPrimary = $product->primaryImage ?: $product->images->first();
+                                        $initIdx = $initPrimary ? ($product->images->search(fn($img) => $img->id === $initPrimary->id) + 1) : 1;
+                                    @endphp
+                                    {{ $initPrimary ? 'Photo #' . $initIdx . ($initPrimary->is_primary ? ' (Principale)' : '') : 'Photo #1' }}
+                                </span>
+                            </div>
+                            <span class="small text-muted" style="font-size: 0.72rem;">
+                                <i class="fas fa-hand-pointer me-1 text-primary"></i>Cliquez sur une photo dans la grille ci-dessus pour la choisir.
                             </span>
                         </div>
 
                         <div class="p-3 bg-light rounded-3 border">
-                            <div class="row g-3 align-items-center">
+                            <div class="row g-3 align-items-center padding-control-row">
                                 <!-- Aperçu interactif en direct -->
-                                <div class="col-auto">
-                                    <div class="position-relative text-center bg-white rounded-3 border shadow-xs" style="width: 105px; height: 105px; display: flex; align-items: center; justify-content: center; overflow: hidden; background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 8px 8px;">
+                                <div class="col-12 col-md-auto padding-preview-col">
+                                    <div class="padding-preview-box position-relative shadow-xs">
                                         <img id="imagePaddingLivePreview" 
-                                             src="{{ $product->thumbnail }}" 
+                                             src="{{ optional($product->primaryImage)->url ?: $product->thumbnail }}" 
                                              alt="Aperçu marge" 
-                                             style="width: 100%; height: 100%; object-fit: contain; box-sizing: border-box !important; transition: padding 0.15s ease; padding: {{ $product->image_padding_style ?: '0%' }};"
+                                             style="width: 100%; height: 100%; object-fit: contain; box-sizing: border-box !important; transition: padding 0.15s ease; padding: {{ optional($product->primaryImage)->image_padding_style ?: ($product->image_padding_style ?: '0%') }};"
                                              onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                                         <span class="position-absolute bottom-0 end-0 bg-dark text-white font-monospace px-1 rounded-top-start" style="font-size: 0.6rem; opacity: 0.85;" id="previewPaddingLabel">
-                                            {{ $product->image_padding ?: '0%' }}
+                                            {{ optional($product->primaryImage)->image_padding ?: ($product->image_padding ?: '0%') }}
                                         </span>
                                     </div>
                                     <div class="text-center mt-1">
-                                        <span class="text-muted font-monospace" style="font-size: 0.68rem;">Aperçu direct</span>
+                                        <span class="text-muted font-monospace" style="font-size: 0.68rem;" id="previewImageNumber">{{ $initPrimary ? 'Photo #' . $initIdx : 'Aperçu direct' }}</span>
                                     </div>
                                 </div>
 
                                 <!-- Contrôles : Curseur, Préréglages & Unités -->
-                                <div class="col">
+                                <div class="col-12 col-md">
                                     <!-- Curseur pourcentage -->
                                     <div class="mb-2">
                                         <div class="d-flex justify-content-between align-items-center mb-1">
                                             <span class="small fw-semibold text-secondary" style="font-size: 0.75rem;">Ajustement par curseur :</span>
-                                            <span class="small fw-bold text-primary font-monospace" id="sliderValueText" style="font-size: 0.78rem;">{{ $product->image_padding_percent }}%</span>
+                                            <span class="small fw-bold text-primary font-monospace" id="sliderValueText" style="font-size: 0.78rem;">{{ optional($product->primaryImage)->image_padding_percent ?? $product->image_padding_percent }}%</span>
                                         </div>
                                         <div class="d-flex align-items-center gap-2">
                                             <span class="small text-muted font-monospace" style="font-size: 0.72rem;">0%</span>
@@ -376,7 +833,7 @@
                                                    min="0" 
                                                    max="35" 
                                                    step="1" 
-                                                   value="{{ $product->image_padding_percent }}">
+                                                   value="{{ optional($product->primaryImage)->image_padding_percent ?? $product->image_padding_percent }}">
                                             <span class="small text-muted font-monospace" style="font-size: 0.72rem;">35%</span>
                                         </div>
                                     </div>
@@ -401,7 +858,7 @@
                                                    id="image_padding_input" 
                                                    name="image_padding" 
                                                    class="form-control font-monospace" 
-                                                   value="{{ old('image_padding', $product->image_padding) }}" 
+                                                   value="{{ old('image_padding', optional($product->primaryImage)->image_padding ?: $product->image_padding) }}" 
                                                    placeholder="Ex: 12%, 15px, 1.2rem">
                                             <button type="button" class="btn btn-white border text-danger" onclick="resetImagePadding()" title="Réinitialiser à 0%">
                                                 <i class="fas fa-undo"></i>
@@ -420,24 +877,27 @@
                 <!-- Informations Générales -->
                 <div class="product-form-card">
                     <div class="product-form-card-header">
-                        <div>
-                            <h2 class="product-form-card-title">
-                                <i class="fas fa-box text-danger"></i> Informations Générales
-                            </h2>
-                            <p class="product-form-card-subtitle">Nom, référence SKU et description de votre produit</p>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="card-icon-badge badge-rose">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div>
+                                <h2 class="product-form-card-title">Informations Générales</h2>
+                                <p class="product-form-card-subtitle">Nom, référence SKU et description complète</p>
+                            </div>
                         </div>
                     </div>
 
                     <div class="row g-3">
                         <!-- Nom du produit -->
-                        <div class="col-12">
-                            <label for="name" class="form-label fw-semibold text-dark">
+                        <div class="col-12 col-md-8">
+                            <label for="name" class="form-label">
                                 Nom du produit <span class="text-danger">*</span>
                             </label>
                             <input type="text" 
                                    id="name" 
                                    name="name" 
-                                   class="form-control form-control-lg @error('name') is-invalid @enderror" 
+                                   class="form-control form-control-lg fw-semibold @error('name') is-invalid @enderror" 
                                    value="{{ old('name', $product->name) }}" 
                                    placeholder="Nom du produit" 
                                    required>
@@ -447,8 +907,8 @@
                         </div>
 
                         <!-- SKU -->
-                        <div class="col-12">
-                            <label for="sku" class="form-label fw-semibold text-dark">
+                        <div class="col-12 col-md-4">
+                            <label for="sku" class="form-label">
                                 Référence SKU <span class="text-danger">*</span>
                             </label>
                             <div class="input-group">
@@ -458,14 +918,12 @@
                                 <input type="text" 
                                        id="sku" 
                                        name="sku" 
-                                       class="form-control font-monospace @error('sku') is-invalid @enderror" 
+                                       class="form-control font-monospace text-uppercase @error('sku') is-invalid @enderror" 
                                        value="{{ old('sku', $product->sku) }}" 
                                        placeholder="ex: PROD-001" 
                                        required>
                             </div>
-                            <div class="form-text small text-muted">
-                                Identifiant unique utilisé pour le code-barres et la gestion des stocks.
-                            </div>
+                            <div class="form-text">Code unique de gestion & inventaire.</div>
                             @error('sku')
                                 <div class="text-danger small mt-1">{{ $message }}</div>
                             @enderror
@@ -481,11 +939,14 @@
                 <!-- Variations & Déclinaisons de Produit -->
                 <div class="product-form-card" id="productVariationsCard">
                     <div class="product-form-card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
-                        <div>
-                            <h2 class="product-form-card-title">
-                                <i class="fas fa-layer-group text-danger"></i> Variations & Déclinaisons
-                            </h2>
-                            <p class="product-form-card-subtitle">Ex: Carte SD (512GB, 256GB, 128GB), couleur, ou kit avec objectif</p>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="card-icon-badge badge-purple">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                            <div>
+                                <h2 class="product-form-card-title">Variations & Déclinaisons</h2>
+                                <p class="product-form-card-subtitle">Capacité (ex: 512GB, 256GB), couleur, ou kit personnalisé</p>
+                            </div>
                         </div>
                         <div class="form-check form-switch m-0">
                             <input class="form-check-input" type="checkbox" name="has_variants" id="hasVariantsToggle" value="1" {{ old('has_variants', $product->has_variants) ? 'checked' : '' }} onchange="toggleVariationsSection(this.checked)" style="width: 2.75em; height: 1.4em; cursor: pointer;">
@@ -528,9 +989,15 @@
                 <!-- Tarification & Rentabilité -->
                 <div class="product-form-card">
                     <div class="product-form-card-header">
-                        <h2 class="product-form-card-title">
-                            <i class="fas fa-tag text-success"></i> Tarifs & Rentabilité
-                        </h2>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="card-icon-badge badge-emerald">
+                                <i class="fas fa-tag"></i>
+                            </div>
+                            <div>
+                                <h2 class="product-form-card-title">Tarifs & Rentabilité</h2>
+                                <p class="product-form-card-subtitle">Prix de vente TTC, promotion et calcul de marge</p>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Nouveau prix de vente -->
@@ -656,9 +1123,15 @@
                 <!-- Organisation & Stock -->
                 <div class="product-form-card">
                     <div class="product-form-card-header">
-                        <h2 class="product-form-card-title">
-                            <i class="fas fa-warehouse text-warning"></i> Organisation & Stock
-                        </h2>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="card-icon-badge badge-amber">
+                                <i class="fas fa-warehouse"></i>
+                            </div>
+                            <div>
+                                <h2 class="product-form-card-title">Organisation & Stock</h2>
+                                <p class="product-form-card-subtitle">Catégories, marque, tags et inventaire</p>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Catégories Multiples -->
@@ -916,65 +1389,89 @@
                     @endif
                 </div>
 
-                <!-- Boutons d'Action -->
-                <div class="product-form-card">
-                    <button type="submit" class="btn-brand-primary w-100 py-2.5 justify-content-center shadow-sm">
+                <!-- Boutons d'Action (Sticky sur Desktop) -->
+                <div class="product-form-card sticky-actions-card shadow-sm border-2">
+                    <button type="submit" form="productForm" class="btn btn-brand-primary w-100 py-2.5 justify-content-center shadow-sm fw-bold">
                         <i class="fas fa-save me-2"></i> Enregistrer les modifications
                     </button>
                     <a href="{{ route('products.index') }}" class="btn btn-outline-secondary w-100 py-2 mt-2 rounded-pill text-center d-block text-decoration-none">
                         Annuler
                     </a>
+                    <div class="text-center text-muted small mt-2.5" style="font-size: 0.72rem;">
+                        <i class="fas fa-clock me-1"></i> Dernière mise à jour : {{ $product->updated_at ? $product->updated_at->diffForHumans() : 'Récemment' }}
+                    </div>
                 </div>
+            </div> <!-- .col-12 .col-lg-4 -->
+        </div> <!-- .row -->
+    </form>
+
+    <!-- Floating Sticky Save Bar on Mobile & Tablet -->
+    <div class="mobile-sticky-save-bar d-lg-none">
+        <div class="d-flex align-items-center gap-2 overflow-hidden flex-shrink-1">
+            <span class="badge {{ strtolower($product->status) === 'active' ? 'bg-success' : 'bg-secondary' }} rounded-circle p-1.5" title="Statut {{ $product->status }}"></span>
+            <div class="text-truncate">
+                <span class="fw-bold text-dark d-block text-truncate small" style="max-width: 140px;">{{ $product->name }}</span>
+                <span class="text-muted font-monospace" style="font-size: 0.68rem;">{{ $product->sku }}</span>
             </div>
         </div>
+        <div class="d-flex align-items-center gap-2 flex-shrink-0">
+            <a href="{{ route('products.index') }}" class="btn btn-sm btn-light border rounded-pill px-2.5 py-1.5 text-muted small" title="Annuler">
+                Annuler
+            </a>
+            <button type="submit" form="productForm" class="btn btn-sm btn-brand-primary rounded-pill px-3 py-1.5 shadow-sm fw-bold d-inline-flex align-items-center gap-1.5">
+                <i class="fas fa-save"></i> <span>Enregistrer</span>
+            </button>
+        </div>
+    </div>
+
     <!-- 4K Image Finder Modal -->
-    <div id="modal4k" style="display: none; position: fixed; inset: 0; z-index: 99999; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 20px;">
-        <div style="background: #ffffff; border-radius: 16px; max-width: 900px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.2);">
+    <div id="modal4k" class="modal-4k-wrap">
+        <div class="modal-4k-dialog">
             <!-- Header -->
-            <div style="padding: 20px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%); color: white;">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(255, 255, 255, 0.15); display: flex; align-items: center; justify-content: center; color: #fbbf24; font-size: 18px; border: 1px solid rgba(255, 255, 255, 0.2);">
+            <div style="padding: 18px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%); color: white;">
+                <div class="d-flex align-items-center gap-2.5">
+                    <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(255, 255, 255, 0.15); display: flex; align-items: center; justify-content: center; color: #fbbf24; font-size: 17px; border: 1px solid rgba(255, 255, 255, 0.2);">
                         <i class="fas fa-wand-magic-sparkles"></i>
                     </div>
                     <div>
-                        <h3 style="margin: 0; font-size: 18px; font-weight: 700;">Studio Recherche d'Images & 4K</h3>
-                        <p style="margin: 2px 0 0; font-size: 12px; color: #c7d2fe;">Trouvez la photo officielle ou e-commerce exacte pour votre fiche produit</p>
+                        <h3 class="m-0 fs-6 fw-bold">Studio Recherche d'Images & 4K</h3>
+                        <p class="m-0 text-white-50" style="font-size: 0.75rem;">Trouvez la photo officielle ou e-commerce exacte pour votre fiche produit</p>
                     </div>
                 </div>
-                <button type="button" onclick="close4kImageModal()" style="background: rgba(255,255,255,0.1); border: none; font-size: 18px; color: white; cursor: pointer; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                <button type="button" onclick="close4kImageModal()" style="background: rgba(255,255,255,0.12); border: none; font-size: 16px; color: white; cursor: pointer; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center;" title="Fermer">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
 
             <!-- Search Bar with Product Name -->
-            <div style="padding: 16px 24px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 10px;">
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <div style="position: relative; flex: 1;">
-                        <i class="fas fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 14px;"></i>
-                        <input type="text" id="query4k" value="{{ $product->name }}" placeholder="Nom du produit..." style="width: 100%; padding: 10px 14px 10px 38px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 14px; outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); trigger4kSearch();}">
+            <div class="p-3 bg-light border-bottom d-flex flex-column gap-2">
+                <div class="d-flex gap-2 align-items-center flex-wrap flex-sm-nowrap">
+                    <div class="position-relative flex-grow-1 w-100">
+                        <i class="fas fa-search position-absolute text-muted" style="left: 14px; top: 50%; transform: translateY(-50%); font-size: 14px;"></i>
+                        <input type="text" id="query4k" value="{{ $product->name }}" placeholder="Nom du produit..." class="form-control ps-5" style="border-radius: 10px;" onkeydown="if(event.key==='Enter'){event.preventDefault(); trigger4kSearch();}">
                     </div>
-                    <button type="button" id="btnRun4kSearch" onclick="trigger4kSearch()" class="btn btn-primary" style="background: #4f46e5; border-color: #4f46e5; border-radius: 10px; padding: 10px 20px; font-weight: 600; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;">
+                    <button type="button" id="btnRun4kSearch" onclick="trigger4kSearch()" class="btn btn-primary rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1 text-nowrap flex-shrink-0 w-100 w-sm-auto justify-content-center" style="background: #4f46e5; border-color: #4f46e5;">
                         <i class="fas fa-bolt me-1"></i> Rechercher
                     </button>
                 </div>
-                <div id="chips4k" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
-                    <span style="font-size: 12px; color: #475569; font-weight: 500;">
-                        <i class="fas fa-camera text-primary me-1"></i>Recherche par nom du produit : <strong style="color: #1e1b4b;">{{ $product->name }}</strong>
+                <div id="chips4k" class="d-flex gap-2 flex-wrap align-items-center justify-content-between">
+                    <span class="small text-muted fw-medium text-truncate" style="font-size: 0.78rem; max-width: 350px;">
+                        <i class="fas fa-camera text-primary me-1"></i>Recherche : <strong class="text-dark">{{ $product->name }}</strong>
                     </span>
-                    <button type="button" onclick="setQuery4k('{{ addslashes($product->name) }}')" class="btn btn-sm btn-light border rounded-pill px-2.5 py-0.5" style="font-size: 11.5px; font-weight: 600; color: #4338ca; background: #eef2ff; border-color: #c7d2fe;">
-                        <i class="fas fa-undo me-1"></i> Réinitialiser au nom du produit
+                    <button type="button" onclick="setQuery4k('{{ addslashes($product->name) }}')" class="btn btn-sm btn-light border rounded-pill px-2.5 py-0.5" style="font-size: 0.72rem; font-weight: 600; color: #4338ca; background: #eef2ff; border-color: #c7d2fe;">
+                        <i class="fas fa-undo me-1"></i> Réinitialiser au nom
                     </button>
                 </div>
             </div>
 
             <!-- Content Area -->
-            <div id="results4kContainer" style="padding: 24px; overflow-y: auto; flex: 1; min-height: 350px;">
+            <div id="results4kContainer" style="padding: 20px; overflow-y: auto; flex: 1; min-height: 350px;">
                 <div id="loading4k" style="display: none; text-align: center; padding: 60px 20px;">
                     <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
                     <p style="margin-top: 16px; font-weight: 600; color: #475569;">Recherche multi-sources des photos du produit...</p>
                     <p style="font-size: 12px; color: #94a3b8;">Exploration des distributeurs, catalogues officiels et e-commerce</p>
                 </div>
-                <div id="grid4k" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;"></div>
+                <div id="grid4k" class="grid-4k-results"></div>
             </div>
         </div>
     </div>
@@ -994,15 +1491,214 @@ document.getElementById('btn-save-product-top')?.addEventListener('click', funct
     }
 });
 
+const currentProductId = {{ $product->id }};
 let imagesToRemove = [];
-let newFiles = [];
+let imageSortableInstance = null;
+
+function initImageSortable() {
+    const container = document.getElementById('imagePreviewContainer');
+    if (!container) return;
+
+    if (typeof Sortable === 'undefined') {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js';
+        script.onload = () => initImageSortable();
+        document.head.appendChild(script);
+        return;
+    }
+
+    if (imageSortableInstance) {
+        imageSortableInstance.destroy();
+    }
+
+    imageSortableInstance = new Sortable(container, {
+        animation: 200,
+        handle: '.image-drag-handle, .image-box-img-wrap',
+        draggable: '.image-upload-box:not(.image-upload-box-add)',
+        ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen',
+        dragClass: 'sortable-drag',
+        touchStartThreshold: 3,
+        forceFallback: false,
+        onEnd: function() {
+            // Keep the add button at the very end
+            const addBox = document.getElementById('box-add-image');
+            if (addBox && container.lastElementChild !== addBox) {
+                container.appendChild(addBox);
+            }
+            updateImageOrdersAndInputs(true);
+        }
+    });
+
+    updateImageOrdersAndInputs(false);
+}
+
+function updateImageOrdersAndInputs(triggerAjax = false) {
+    const container = document.getElementById('imagePreviewContainer');
+    if (!container) return;
+
+    const boxes = container.querySelectorAll('.image-upload-box:not(.image-upload-box-add)');
+    const orderInputsContainer = document.getElementById('imageOrderInputsContainer');
+    if (orderInputsContainer) orderInputsContainer.innerHTML = '';
+
+    const orderArray = [];
+
+    boxes.forEach((box, index) => {
+        // Update order pill #1, #2, etc.
+        const pill = box.querySelector('.image-order-pill');
+        if (pill) pill.textContent = '#' + (index + 1);
+
+        const imgId = box.getAttribute('data-image-id');
+        if (imgId) {
+            orderArray.push(parseInt(imgId, 10));
+
+            // Append hidden input for standard form submission
+            if (orderInputsContainer) {
+                const inp = document.createElement('input');
+                inp.type = 'hidden';
+                inp.name = 'image_order[]';
+                inp.value = imgId;
+                inp.id = 'order-input-' + imgId;
+                orderInputsContainer.appendChild(inp);
+            }
+        }
+    });
+
+    const badge = document.getElementById('imageCountBadge');
+    if (badge) badge.textContent = boxes.length + ' photo(s)';
+
+    // Trigger background AJAX save if editing an existing product
+    if (triggerAjax && orderArray.length > 0 && typeof currentProductId !== 'undefined') {
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]')?.value;
+        fetch(`/products/${currentProductId}/images/reorder`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': token,
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ order: orderArray })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success && typeof Toast !== 'undefined') {
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Ordre de la galerie sauvegardé',
+                    timer: 1500
+                });
+            }
+        })
+        .catch(err => console.error('Error saving image order:', err));
+    }
+}
+
+function selectPrimaryImage(imageId, buttonEl) {
+    const container = document.getElementById('imagePreviewContainer');
+    if (!container) return;
+
+    const targetBox = document.getElementById('box-img-' + imageId);
+    if (!targetBox) return;
+
+    // Reset all boxes and buttons
+    container.querySelectorAll('.image-upload-box').forEach(box => {
+        box.classList.remove('is-primary-card');
+        box.setAttribute('data-is-primary', '0');
+        const btn = box.querySelector('.btn-make-primary');
+        if (btn) {
+            btn.classList.remove('active');
+            btn.title = 'Définir comme image principale';
+            const icon = btn.querySelector('i');
+            if (icon) icon.className = 'far fa-star';
+            const txt = btn.querySelector('.btn-primary-text');
+            if (txt) txt.textContent = 'Choisir';
+        }
+    });
+
+    // Mark clicked box as primary
+    targetBox.classList.add('is-primary-card');
+    targetBox.setAttribute('data-is-primary', '1');
+    if (buttonEl) {
+        buttonEl.classList.add('active');
+        buttonEl.title = 'Image principale actuelle';
+        const icon = buttonEl.querySelector('i');
+        if (icon) icon.className = 'fas fa-star text-warning';
+        const txt = buttonEl.querySelector('.btn-primary-text');
+        if (txt) txt.textContent = 'Principale';
+    }
+
+    // Update hidden form input
+    const primaryInput = document.getElementById('primary_image_id');
+    if (primaryInput) primaryInput.value = imageId;
+
+    // Update live padding preview image
+    const imgEl = targetBox.querySelector('img');
+    const livePreview = document.getElementById('imagePaddingLivePreview');
+    if (livePreview && imgEl) {
+        livePreview.src = imgEl.src;
+    }
+
+    // Also select this image for padding adjustment
+    selectImageForPadding(imageId);
+
+    // Trigger instant AJAX save
+    if (typeof currentProductId !== 'undefined') {
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]')?.value;
+        fetch(`/products/${currentProductId}/images/${imageId}/make-primary`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': token,
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success && typeof Toast !== 'undefined') {
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Image principale mise à jour !',
+                    timer: 2000
+                });
+            }
+        })
+        .catch(err => console.error('Error setting primary image:', err));
+    }
+}
+
+function moveImageBox(boxId, direction) {
+    const box = document.getElementById(boxId);
+    const container = document.getElementById('imagePreviewContainer');
+    if (!box || !container) return;
+
+    if (direction === -1) {
+        // Move left / previous
+        const prev = box.previousElementSibling;
+        if (prev && !prev.classList.contains('image-upload-box-add')) {
+            container.insertBefore(box, prev);
+            updateImageOrdersAndInputs(true);
+        }
+    } else if (direction === 1) {
+        // Move right / next
+        const next = box.nextElementSibling;
+        if (next && !next.classList.contains('image-upload-box-add')) {
+            container.insertBefore(next, box);
+            updateImageOrdersAndInputs(true);
+        }
+    }
+}
 
 function markImageForRemoval(imageId, button) {
+    const box = button.closest('.image-upload-box');
     if (!imagesToRemove.includes(imageId)) {
         imagesToRemove.push(imageId);
-        button.parentElement.style.opacity = '0.3';
+        if (box) box.style.opacity = '0.35';
         button.innerHTML = '↺';
         button.title = 'Restaurer cette image';
+        button.style.background = '#0284c7';
+        button.style.color = '#fff';
         
         // Add hidden input
         const input = document.createElement('input');
@@ -1014,9 +1710,11 @@ function markImageForRemoval(imageId, button) {
     } else {
         // Undo removal
         imagesToRemove = imagesToRemove.filter(id => id !== imageId);
-        button.parentElement.style.opacity = '1';
+        if (box) box.style.opacity = '1';
         button.innerHTML = '&times;';
         button.title = 'Supprimer cette image';
+        button.style.background = '';
+        button.style.color = '';
         const el = document.getElementById('remove_' + imageId);
         if (el) el.remove();
     }
@@ -1024,19 +1722,40 @@ function markImageForRemoval(imageId, button) {
 
 function handleNewImages(event) {
     const container = document.getElementById('imagePreviewContainer');
+    const addBox = document.getElementById('box-add-image');
     const files = Array.from(event.target.files);
     
     files.forEach((file, index) => {
         const reader = new FileReader();
+        const tempId = 'new-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
         reader.onload = function(e) {
             const box = document.createElement('div');
             box.className = 'image-upload-box';
+            box.id = 'box-img-' + tempId;
             box.innerHTML = `
-                <img src="${e.target.result}" alt="Nouvelle image">
-                <span class="image-remove-btn" onclick="this.parentElement.remove()" title="Supprimer">&times;</span>
+                <div class="image-box-top-bar">
+                    <div class="image-drag-handle" title="Glisser pour déplacer"><i class="fas fa-grip-vertical"></i></div>
+                    <span class="image-order-pill">#..</span>
+                    <button type="button" class="image-remove-btn" onclick="this.closest('.image-upload-box').remove(); updateImageOrdersAndInputs(false);" title="Supprimer">&times;</button>
+                </div>
+                <div class="image-box-img-wrap">
+                    <img src="${e.target.result}" alt="Nouvelle image">
+                </div>
+                <div class="image-box-bottom-bar">
+                    <span class="badge bg-primary-subtle text-primary border" style="font-size: 0.65rem;">Nouvelle photo</span>
+                    <div class="image-reorder-arrows d-flex d-md-none">
+                        <button type="button" class="btn-arrow-move" onclick="moveImageBox('box-img-${tempId}', -1)"><i class="fas fa-chevron-left"></i></button>
+                        <button type="button" class="btn-arrow-move" onclick="moveImageBox('box-img-${tempId}', 1)"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
             `;
-            container.insertBefore(box, container.lastElementChild);
-            if (index === 0) {
+            if (addBox) {
+                container.insertBefore(box, addBox);
+            } else {
+                container.appendChild(box);
+            }
+            updateImageOrdersAndInputs(false);
+            if (index === 0 && !document.querySelector('.image-upload-box.is-primary-card')) {
                 const livePrev = document.getElementById('imagePaddingLivePreview');
                 if (livePrev) livePrev.src = e.target.result;
             }
@@ -1268,11 +1987,13 @@ function applySelected4kImage(imageUrl, fallbackUrl, button) {
                 title: 'Photo Appliquée !',
                 text: `Résolution : ${data.width}×${data.height} pixels (${data.quality || 'HD'})`,
                 icon: 'success',
-                timer: 2500,
+                timer: 1500,
                 showConfirmButton: false,
                 toast: true,
                 position: 'top-end'
             });
+
+            setTimeout(() => window.location.reload(), 800);
         } else {
             Swal.fire('Erreur', data.message || 'Impossible d\'appliquer l\'image', 'error');
         }
@@ -1665,6 +2386,183 @@ function recalculateVariantSummary() {
     }
 }
 
+let currentActivePaddingImageId = {{ optional($product->primaryImage)->id ?? optional($product->images->first())->id ?? 'null' }};
+let imagePaddingSaveTimeout = null;
+
+function selectImageForPadding(imageId, event) {
+    if (event) {
+        if (event.target.closest('.image-drag-handle') || 
+            event.target.closest('.image-remove-btn') || 
+            event.target.closest('.btn-arrow-move') ||
+            event.target.closest('.btn-make-primary')) {
+            return;
+        }
+    }
+
+    const container = document.getElementById('imagePreviewContainer');
+    if (!container) return;
+
+    const targetBox = document.getElementById('box-img-' + imageId);
+    if (!targetBox) return;
+
+    currentActivePaddingImageId = imageId;
+
+    // Highlight selected box
+    container.querySelectorAll('.image-upload-box').forEach(b => b.classList.remove('selected-for-padding'));
+    targetBox.classList.add('selected-for-padding');
+
+    // Get order pill & primary status
+    const orderPill = targetBox.querySelector('.image-order-pill')?.textContent || '#1';
+    const isPrimary = targetBox.getAttribute('data-is-primary') === '1';
+    const titleEl = document.getElementById('activeEditingImageTitle');
+    if (titleEl) {
+        titleEl.textContent = `Photo ${orderPill} ${isPrimary ? '(Principale)' : ''}`;
+    }
+
+    const previewNum = document.getElementById('previewImageNumber');
+    if (previewNum) {
+        previewNum.textContent = `Photo ${orderPill}`;
+    }
+
+    // Update live preview image src
+    const imgEl = targetBox.querySelector('img');
+    const livePreview = document.getElementById('imagePaddingLivePreview');
+    if (livePreview && imgEl) {
+        livePreview.src = imgEl.src;
+    }
+
+    // Read current padding of this image
+    const padInput = document.getElementById('pad-input-' + imageId);
+    const currentVal = padInput ? padInput.value : (targetBox.getAttribute('data-image-padding') || '');
+
+    const input = document.getElementById('image_padding_input');
+    const range = document.getElementById('image_padding_range');
+    const badge = document.getElementById('imagePaddingBadge');
+    const label = document.getElementById('previewPaddingLabel');
+    const sliderText = document.getElementById('sliderValueText');
+
+    let cssVal = (currentVal || '').trim();
+    if (cssVal && !isNaN(cssVal)) cssVal += '%';
+    if (!cssVal || cssVal === '0' || cssVal === '0%' || cssVal === '0px') cssVal = '';
+
+    if (input) input.value = currentVal || '';
+    if (badge) badge.textContent = currentVal || '0%';
+    if (label) label.textContent = currentVal || '0%';
+    if (livePreview) livePreview.style.padding = cssVal || '0';
+
+    const num = parseInt(currentVal, 10);
+    if (range) {
+        if (!isNaN(num) && (currentVal || '').includes('%')) {
+            range.value = Math.min(35, Math.max(0, num));
+        } else if (!currentVal) {
+            range.value = 0;
+        } else if (!isNaN(num)) {
+            range.value = Math.min(35, Math.max(0, num));
+        }
+        if (sliderText) sliderText.textContent = range.value + '%';
+    }
+
+    highlightActivePreset(currentVal);
+}
+
+function highlightActivePreset(val) {
+    const clean = (val || '').trim();
+    document.querySelectorAll('.img-pad-preset').forEach(btn => {
+        const btnVal = btn.getAttribute('data-val');
+        if (clean === btnVal || (!clean && btnVal === '0%')) {
+            btn.classList.add('is-active');
+        } else {
+            btn.classList.remove('is-active');
+        }
+    });
+}
+
+function saveSingleImagePaddingAjax(imageId, paddingVal) {
+    if (!currentProductId || !imageId) return;
+    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]')?.value;
+
+    fetch(`/products/${currentProductId}/images/${imageId}/padding`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token,
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ image_padding: paddingVal })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success && typeof Toast !== 'undefined') {
+            const box = document.getElementById('box-img-' + imageId);
+            const num = box ? box.querySelector('.image-order-pill')?.textContent : '';
+            Toast.fire({
+                icon: 'success',
+                title: 'Marge ' + (num ? num + ' ' : '') + 'mise à jour (' + (paddingVal || '0%') + ')',
+                timer: 1500
+            });
+        }
+    })
+    .catch(err => console.error('Error saving image padding:', err));
+}
+
+function applyCurrentPaddingToAll() {
+    const input = document.getElementById('image_padding_input');
+    const val = input ? input.value : '';
+    let cssVal = (val || '').trim();
+    if (cssVal && !isNaN(cssVal)) cssVal += '%';
+    if (!cssVal || cssVal === '0' || cssVal === '0%' || cssVal === '0px') cssVal = '';
+
+    const container = document.getElementById('imagePreviewContainer');
+    if (!container) return;
+
+    const boxes = container.querySelectorAll('.image-upload-box:not(.image-upload-box-add)');
+    boxes.forEach(box => {
+        const id = box.getAttribute('data-image-id');
+        if (id) {
+            const padInput = document.getElementById('pad-input-' + id);
+            if (padInput) padInput.value = val;
+
+            const cardImg = document.getElementById('card-img-' + id);
+            if (cardImg) cardImg.style.padding = cssVal || '0';
+
+            const padPill = document.getElementById('pad-pill-' + id);
+            if (padPill) {
+                const pillVal = padPill.querySelector('.pad-pill-val');
+                if (pillVal) pillVal.textContent = val || '0%';
+            }
+
+            box.setAttribute('data-image-padding', val);
+        }
+    });
+
+    if (typeof currentProductId !== 'undefined') {
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]')?.value;
+
+        fetch(`/products/${currentProductId}/images/apply-padding-all`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': token,
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ image_padding: val })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success && typeof Toast !== 'undefined') {
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Marge (' + (val || '0%') + ') appliquée à toutes les photos !',
+                    timer: 2000
+                });
+            }
+        })
+        .catch(err => console.error('Error applying padding to all:', err));
+    }
+}
+
 function initImagePaddingControl() {
     const range = document.getElementById('image_padding_range');
     const input = document.getElementById('image_padding_input');
@@ -1674,7 +2572,7 @@ function initImagePaddingControl() {
     const sliderText = document.getElementById('sliderValueText');
     if (!range || !input) return;
 
-    function applyPadding(val, fromRange = false) {
+    function applyPadding(val, fromRange = false, triggerAjax = true) {
         val = (val || '').trim();
         let cssVal = val;
         if (cssVal && !isNaN(cssVal)) {
@@ -1710,6 +2608,38 @@ function initImagePaddingControl() {
                 if (sliderText) sliderText.textContent = range.value + '%';
             }
         }
+
+        // Apply to current active image in the gallery
+        if (currentActivePaddingImageId) {
+            const padInput = document.getElementById('pad-input-' + currentActivePaddingImageId);
+            if (padInput) padInput.value = input.value;
+
+            const cardImg = document.getElementById('card-img-' + currentActivePaddingImageId);
+            if (cardImg) {
+                cardImg.style.padding = cssVal || '0';
+            }
+
+            const padPill = document.getElementById('pad-pill-' + currentActivePaddingImageId);
+            if (padPill) {
+                const pillVal = padPill.querySelector('.pad-pill-val');
+                if (pillVal) pillVal.textContent = input.value || '0%';
+            }
+
+            const box = document.getElementById('box-img-' + currentActivePaddingImageId);
+            if (box) {
+                box.setAttribute('data-image-padding', input.value);
+            }
+
+            // Debounced AJAX auto-save
+            if (triggerAjax && typeof currentProductId !== 'undefined') {
+                clearTimeout(imagePaddingSaveTimeout);
+                imagePaddingSaveTimeout = setTimeout(() => {
+                    saveSingleImagePaddingAjax(currentActivePaddingImageId, input.value);
+                }, 400);
+            }
+        }
+
+        highlightActivePreset(input.value);
     }
 
     range.addEventListener('input', function() {
@@ -1735,9 +2665,15 @@ function initImagePaddingControl() {
         range.value = 0;
         applyPadding('', false);
     };
+
+    // Initialize selection on active image
+    if (currentActivePaddingImageId) {
+        selectImageForPadding(currentActivePaddingImageId);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    initImageSortable();
     initImagePaddingControl();
     const serverVariants = {!! json_encode(old('variants', $product->variants ? $product->variants->toArray() : [])) !!};
     if (Array.isArray(serverVariants) && serverVariants.length > 0) {
