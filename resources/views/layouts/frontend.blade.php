@@ -58,16 +58,16 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
     <!-- Favicon -->
-    <link rel="icon" href="{{ app_logo_url() }}" type="image/png">
-    <link rel="icon" href="{{ app_logo_url() }}" sizes="any">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ app_logo_url() }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ app_logo_url() }}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ app_logo_url() }}">
-    <link rel="shortcut icon" href="{{ app_logo_url() }}">
+    <link rel="icon" href="{{ site_logo_url('favicon') }}" type="image/png">
+    <link rel="icon" href="{{ site_logo_url('favicon') }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ site_logo_url('favicon') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ site_logo_url('favicon') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ site_logo_url('apple_touch') }}">
+    <link rel="shortcut icon" href="{{ site_logo_url('favicon') }}">
 
     @php
         $siteTitle = setting('app_name', 'WINA SHOP');
-        $defaultMetaImage = app_logo_url();
+        $defaultMetaImage = site_logo_url('og');
         
         $metaImageRaw = trim($__env->yieldContent('meta_image'));
         $resolvedOgImage = !empty($metaImageRaw) ? $metaImageRaw : $defaultMetaImage;
@@ -1654,6 +1654,11 @@
             font-weight: 700 !important;
         }
 
+        #mobileNavDrawer .nav-link.active,
+        #mobileNavDrawer .nav-link.active-link {
+            background-color: #dcdcdc !important;
+        }
+
         /* Shop page hero background */
         .shop-hero {
             background: #000000 !important;
@@ -2234,8 +2239,11 @@
                 <!-- Left: Logo + Categories Button + Navigation Links on its right -->
                 <div class="d-flex align-items-center gap-2 gap-lg-3 gap-xl-4 flex-nowrap">
                     <!-- Brand Logo (Enlarged) -->
+                    @php
+                        $headerLogoHeight = max(28, min(140, (int) setting('header_logo_height', 96)));
+                    @endphp
                     <a class="navbar-brand m-0 p-0 d-flex align-items-center me-1 me-lg-2" href="{{ url('/') }}" style="flex-shrink: 0;" title="{{ setting('app_name', 'WINA SHOP') }}" aria-label="{{ setting('app_name', 'WINA SHOP') }} - {{ __('Accueil') }}">
-                        <img src="{{ app_logo_url() }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="96" height="96" class="brand-logo-img" style="height: 96px; max-height: 105px; width: auto; max-width: 280px; object-fit: contain;">
+                        <img src="{{ site_logo_url('header') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="{{ $headerLogoHeight }}" height="{{ $headerLogoHeight }}" class="brand-logo-img" style="height: {{ $headerLogoHeight }}px; max-height: {{ $headerLogoHeight + 10 }}px; width: auto; max-width: 280px; object-fit: contain;">
                         <span class="visually-hidden">{{ setting('app_name', 'WINA SHOP') }}</span>
                     </a>
 
@@ -2283,7 +2291,7 @@
                                 id="headerCategoriesBtn" 
                                 data-bs-toggle="dropdown" 
                                 aria-expanded="false">
-                            <i class="fas fa-bars"></i>
+                            {!! site_icon_html('icon_nav_categories', 'fas fa-bars', '', '', 16) !!}
                             <span>CATÉGORIES</span>
                             <i class="fas fa-chevron-down ms-1" style="font-size: 10px;"></i>
                         </button>
@@ -2373,13 +2381,13 @@
                     
                     <!-- Mobile Menu Toggler -->
                     <button class="navbar-toggler border-0 p-1 d-lg-none text-dark ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNavDrawer" aria-controls="mobileNavDrawer" aria-label="Menu">
-                        <i class="fas fa-bars" style="font-size: 20px;"></i>
+                        {!! site_icon_html('icon_nav_mobile_menu', 'fas fa-bars', '', 'font-size: 20px;', 22) !!}
                     </button>    
                 
                     <!-- Search Input (Pill shape #f1f3f5) -->
                     <form action="{{ route('shop.index') }}" method="GET" class="header-search-wrap w-100 position-relative" style="max-width: 380px;" id="headerSearchForm" autocomplete="off">
                         <div class="position-relative d-flex align-items-center header-search-box" style="background: #f1f3f5; border-radius: 9999px; padding: 0 14px; height: 42px;">
-                            <i class="fas fa-search text-muted me-2" style="font-size: 13px;"></i>
+                            {!! site_icon_html('icon_nav_search', 'fas fa-search', 'text-muted me-2', 'font-size: 13px;', 15) !!}
                             <input class="form-control border-0 bg-transparent shadow-none p-0 header-search-input" 
                                    type="search" 
                                    name="q" 
@@ -2432,7 +2440,7 @@
                     <!-- Cart Icon with Red Badge -->
                     <div class="position-relative ms-1">
                         <button class="bg-transparent border-0 p-1 text-dark d-flex align-items-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart" title="{{ __('My Cart') }}" style="cursor: pointer;">
-                            <i class="fas fa-shopping-bag" style="font-size: 22px;"></i>
+                            {!! site_icon_html('icon_nav_cart', 'fas fa-shopping-bag', '', 'font-size: 22px;', 22) !!}
                         </button>
                         @php
                             $headerInitialCartCount = array_sum(array_column(session('cart', []), 'quantity'));
@@ -2447,10 +2455,13 @@
     </div>
 
     <!-- Mobile Navigation Offcanvas Drawer -->
+    @php
+        $mobileLogoHeight = max(28, min(110, (int) setting('mobile_logo_height', 70)));
+    @endphp
     <div class="offcanvas offcanvas-start border-0 shadow-lg d-lg-none" tabindex="-1" id="mobileNavDrawer" aria-labelledby="mobileNavDrawerLabel" style="width: 310px; z-index: 1000000;">
         <div class="offcanvas-header border-bottom py-3">
             <a href="{{ url('/') }}" class="navbar-brand m-0" aria-label="{{ setting('app_name', 'WINA SHOP') }} - {{ __('Accueil') }}" title="{{ setting('app_name', 'WINA SHOP') }}">
-                <img src="{{ app_logo_url() }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="70" height="70" style="height: 70px; width: auto; object-fit: contain;">
+                <img src="{{ site_logo_url('mobile') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="{{ $mobileLogoHeight }}" height="{{ $mobileLogoHeight }}" style="height: {{ $mobileLogoHeight }}px; width: auto; object-fit: contain;">
                 <span class="visually-hidden">{{ setting('app_name', 'WINA SHOP') }}</span>
             </a>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -2460,7 +2471,7 @@
             <div class="mb-3">
                 <a href="{{ route('shop.index') }}" class="btn btn-categories-red text-white w-100 fw-bold d-flex align-items-center justify-content-between py-2 px-3">
                     <span class="d-flex align-items-center gap-2">
-                        <i class="fas fa-bars"></i>
+                        {!! site_icon_html('icon_nav_categories', 'fas fa-bars', '', '', 16) !!}
                         <span>CATÉGORIES</span>
                     </span>
                     <i class="fas fa-chevron-right" style="font-size: 11px;"></i>
@@ -2468,10 +2479,10 @@
             </div>
 
             <nav class="d-flex flex-column gap-2">
-                <a href="{{ route('home') }}" class="nav-link py-2 px-3 rounded fw-bold text-dark text-decoration-none {{ request()->routeIs('home') ? 'bg-light text-danger' : '' }}">ACCUEIL</a>
-                <a href="{{ route('shop.index') }}" class="nav-link py-2 px-3 rounded fw-bold text-dark text-decoration-none {{ request()->routeIs('shop.*') && !request('category') ? 'bg-light text-danger' : '' }}">BOUTIQUE</a>
-                <a href="{{ route('about') }}" class="nav-link py-2 px-3 rounded fw-bold text-dark text-decoration-none {{ request()->routeIs('about') ? 'bg-light text-danger' : '' }}">À PROPOS</a>
-                <a href="{{ route('contact') }}" class="nav-link py-2 px-3 rounded fw-bold text-dark text-decoration-none {{ request()->routeIs('contact') ? 'bg-light text-danger' : '' }}">CONTACT</a>
+                <a href="{{ route('home') }}" class="nav-link py-2 px-3 rounded fw-bold text-dark text-decoration-none {{ request()->routeIs('home') ? 'active text-danger' : '' }}" style="{{ request()->routeIs('home') ? 'background-color: #dcdcdc !important;' : '' }}">ACCUEIL</a>
+                <a href="{{ route('shop.index') }}" class="nav-link py-2 px-3 rounded fw-bold text-dark text-decoration-none {{ request()->routeIs('shop.*') && !request('category') ? 'active text-danger' : '' }}" style="{{ request()->routeIs('shop.*') && !request('category') ? 'background-color: #dcdcdc !important;' : '' }}">BOUTIQUE</a>
+                <a href="{{ route('about') }}" class="nav-link py-2 px-3 rounded fw-bold text-dark text-decoration-none {{ request()->routeIs('about') ? 'active text-danger' : '' }}" style="{{ request()->routeIs('about') ? 'background-color: #dcdcdc !important;' : '' }}">À PROPOS</a>
+                <a href="{{ route('contact') }}" class="nav-link py-2 px-3 rounded fw-bold text-dark text-decoration-none {{ request()->routeIs('contact') ? 'active text-danger' : '' }}" style="{{ request()->routeIs('contact') ? 'background-color: #dcdcdc !important;' : '' }}">CONTACT</a>
             </nav>
 
             <div class="mt-4 pt-3 border-top">
@@ -2901,22 +2912,29 @@
        title="WhatsApp - Service Client Wina Shop">
         <span class="whatsapp-float-pulse"></span>
         <span class="whatsapp-online-dot"></span>
-        <svg viewBox="0 0 32 32" class="whatsapp-float-svg" width="30" height="30" fill="currentColor" aria-hidden="true">
-            <path d="M16.002 0.007C7.168 0.007 0 7.175 0 16.008c0 2.825 0.738 5.578 2.141 7.999L0.086 31.914l8.13-2.052c2.342 1.282 4.978 1.956 7.786 1.956 8.834 0 16.002-7.168 16.002-16.01S24.836 0.007 16.002 0.007zm0 29.317c-2.484 0-4.912-0.669-7.037-1.936l-0.505-0.3-5.234 1.321 1.398-5.093-0.33-0.526C3.003 20.672 2.302 18.384 2.302 16.008c0-7.555 6.145-13.7 13.7-13.7 7.555 0 13.7 6.145 13.7 13.7 0 7.555-6.145 13.7-13.7 13.7zm7.51-10.252c-0.412-0.206-2.438-1.203-2.816-1.34-0.378-0.137-0.653-0.206-0.927 0.206s-1.065 1.34-1.305 1.615c-0.24 0.275-0.481 0.309-0.893 0.103-0.412-0.206-1.741-0.642-3.316-2.046-1.226-1.093-2.054-2.443-2.294-2.855-0.24-0.412-0.026-0.635 0.18-0.84 0.186-0.185 0.412-0.481 0.618-0.721 0.206-0.24 0.275-0.412 0.412-0.687 0.137-0.275 0.069-0.515-0.034-0.721s-0.927-2.233-1.27-3.057c-0.335-0.803-0.675-0.694-0.927-0.707l-0.79-0.014c-0.275 0-0.721 0.103-1.099 0.515s-1.443 1.409-1.443 3.435 1.477 3.985 1.683 4.26c0.206 0.275 2.907 4.439 7.042 6.225 0.984 0.425 1.753 0.679 2.352 0.869 0.988 0.314 1.888 0.27 2.6 0.164 0.794-0.119 2.438-0.996 2.781-1.958 0.344-0.962 0.344-1.786 0.24-1.958-0.103-0.172-0.378-0.275-0.79-0.481z"/>
-        </svg>
+        @if(setting('icon_whatsapp_float_image') || setting('icon_whatsapp_float'))
+            {!! site_icon_html('icon_whatsapp_float', 'fab fa-whatsapp', 'whatsapp-float-svg', 'font-size: 28px;', 30) !!}
+        @else
+            <svg viewBox="0 0 32 32" class="whatsapp-float-svg" width="30" height="30" fill="currentColor" aria-hidden="true">
+                <path d="M16.002 0.007C7.168 0.007 0 7.175 0 16.008c0 2.825 0.738 5.578 2.141 7.999L0.086 31.914l8.13-2.052c2.342 1.282 4.978 1.956 7.786 1.956 8.834 0 16.002-7.168 16.002-16.01S24.836 0.007 16.002 0.007zm0 29.317c-2.484 0-4.912-0.669-7.037-1.936l-0.505-0.3-5.234 1.321 1.398-5.093-0.33-0.526C3.003 20.672 2.302 18.384 2.302 16.008c0-7.555 6.145-13.7 13.7-13.7 7.555 0 13.7 6.145 13.7 13.7 0 7.555-6.145 13.7-13.7 13.7zm7.51-10.252c-0.412-0.206-2.438-1.203-2.816-1.34-0.378-0.137-0.653-0.206-0.927 0.206s-1.065 1.34-1.305 1.615c-0.24 0.275-0.481 0.309-0.893 0.103-0.412-0.206-1.741-0.642-3.316-2.046-1.226-1.093-2.054-2.443-2.294-2.855-0.24-0.412-0.026-0.635 0.18-0.84 0.186-0.185 0.412-0.481 0.618-0.721 0.206-0.24 0.275-0.412 0.412-0.687 0.137-0.275 0.069-0.515-0.034-0.721s-0.927-2.233-1.27-3.057c-0.335-0.803-0.675-0.694-0.927-0.707l-0.79-0.014c-0.275 0-0.721 0.103-1.099 0.515s-1.443 1.409-1.443 3.435 1.477 3.985 1.683 4.26c0.206 0.275 2.907 4.439 7.042 6.225 0.984 0.425 1.753 0.679 2.352 0.869 0.988 0.314 1.888 0.27 2.6 0.164 0.794-0.119 2.438-0.996 2.781-1.958 0.344-0.962 0.344-1.786 0.24-1.958-0.103-0.172-0.378-0.275-0.79-0.481z"/>
+            </svg>
+        @endif
         <span class="whatsapp-float-tooltip" aria-hidden="true" style="display: none;">
             <span style="color: #ffffff;">WhatsApp</span>
             <small style="color: #4ade80;">En ligne</small>
         </span>
     </a>
 
+    @php
+        $footerLogoHeight = max(28, min(110, (int) setting('footer_logo_height', 56)));
+    @endphp
     <footer class="footer-modern">
         <div class="container">
             <div class="row g-5">
                 <div class="col-lg-6">
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <a href="{{ url('/') }}" class="d-inline-block" title="{{ setting('app_name', 'WINA SHOP') }}" aria-label="{{ setting('app_name', 'WINA SHOP') }}">
-                            <img src="{{ app_logo_url() }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="56" height="56" style="height: 56px; width: auto; object-fit: contain;">
+                            <img src="{{ site_logo_url('footer') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="{{ $footerLogoHeight }}" height="{{ $footerLogoHeight }}" style="height: {{ $footerLogoHeight }}px; width: auto; object-fit: contain;">
                         </a>
                         <p class="fw-bold text-white mb-0 text-uppercase ls-1 d-flex align-items-center gap-2 h5">
                             <span class="tally-dot"></span> {{ setting('app_name', 'WINA SHOP') }}
@@ -2941,22 +2959,22 @@
                     <div class="d-flex gap-3 flex-wrap">
                         @if($validUrl($sfb))
                         <a href="{{ $sfb }}" target="_blank" rel="noopener" class="footer-social-btn" title="Facebook" aria-label="Facebook">
-                            <i class="fab fa-facebook-f"></i>
+                            {!! site_icon_html('icon_social_facebook', 'fab fa-facebook-f', '', '', 18) !!}
                         </a>
                         @endif
                         @if($validUrl($stw))
                         <a href="{{ $stw }}" target="_blank" rel="noopener" class="footer-social-btn" title="Twitter / X" aria-label="Twitter">
-                            <i class="fab fa-twitter"></i>
+                            {!! site_icon_html('icon_social_twitter', 'fab fa-twitter', '', '', 18) !!}
                         </a>
                         @endif
                         @if($validUrl($sig))
                         <a href="{{ $sig }}" target="_blank" rel="noopener" class="footer-social-btn" title="Instagram" aria-label="Instagram">
-                            <i class="fab fa-instagram"></i>
+                            {!! site_icon_html('icon_social_instagram', 'fab fa-instagram', '', '', 18) !!}
                         </a>
                         @endif
                         @if($validUrl($sli))
                         <a href="{{ $sli }}" target="_blank" rel="noopener" class="footer-social-btn" title="LinkedIn" aria-label="LinkedIn">
-                            <i class="fab fa-linkedin-in"></i>
+                            {!! site_icon_html('icon_social_linkedin', 'fab fa-linkedin-in', '', '', 18) !!}
                         </a>
                         @endif
                         @if($validUrl($swa))
@@ -2964,7 +2982,7 @@
                             $waFooterLink = 'https://wa.me/' . preg_replace('/[^0-9]/', '', $swa);
                         @endphp
                         <a href="{{ $waFooterLink }}" target="_blank" rel="noopener" class="footer-social-btn footer-social-btn--wa" title="WhatsApp" aria-label="WhatsApp">
-                            <i class="fab fa-whatsapp"></i>
+                            {!! site_icon_html('icon_social_whatsapp', 'fab fa-whatsapp', '', '', 18) !!}
                         </a>
                         @endif
                         {{-- If none configured, show placeholder text --}}

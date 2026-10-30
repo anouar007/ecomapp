@@ -702,7 +702,11 @@
                                     class="pdp-add-btn {{ $isInCart ? 'is-in-cart' : '' }} flex-grow-1 text-nowrap shadow-none" 
                                     data-product-id="{{ $product->id }}" 
                                     title="{{ $isInCart ? $inCartLabel : $notInCartLabel }}">
-                                <i class="fas {{ $isInCart ? 'fa-check' : 'fa-cart-plus' }} me-2"></i>
+                                @if($isInCart)
+                                    <i class="fas fa-check me-2"></i>
+                                @else
+                                    {!! site_icon_html('icon_add_to_cart', 'fas fa-cart-plus', 'me-2', '', 16) !!}
+                                @endif
                                 <span id="addToCartText">{{ $isInCart ? $inCartLabel : $notInCartLabel }}</span>
                             </button>
                         </div>
@@ -774,8 +778,8 @@
                     @endif
 
                     <div class="pdp-trust-row mt-3">
-                        <div class="pdp-trust-pill"><i class="fas fa-truck-fast"></i> {{ __('Secure Delivery 24/48h') }}</div>
-                        <div class="pdp-trust-pill"><i class="fas fa-video"></i> {{ __('Showroom Demo Casablanca') }}</div>
+                        <div class="pdp-trust-pill">{!! site_icon_html('icon_pdp_trust_1', 'fas fa-truck-fast', '', '', 15) !!} {{ setting('pdp_trust_1_text', __('Secure Delivery 24/48h')) }}</div>
+                        <div class="pdp-trust-pill">{!! site_icon_html('icon_pdp_trust_2', 'fas fa-video', '', '', 15) !!} {{ setting('pdp_trust_2_text', __('Showroom Demo Casablanca')) }}</div>
                     </div>
 
                     @if(!empty($product->sku))

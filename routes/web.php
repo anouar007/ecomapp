@@ -188,6 +188,14 @@ Route::middleware('auth')->group(function () {
         Route::delete('/settings/stamp', [\App\Http\Controllers\SettingsController::class, 'removeStamp'])->name('settings.stamp.remove');
         Route::post('/settings/reset', [\App\Http\Controllers\SettingsController::class, 'reset'])->name('settings.reset');
         Route::post('/settings/test-email', [\App\Http\Controllers\SettingsController::class, 'sendTestEmail'])->name('settings.test-email');
+
+        // Centralized Logos & Icons Management Studio
+        Route::get('/logos-icons', [\App\Http\Controllers\SettingsController::class, 'logosAndIcons'])->name('settings.logos-icons');
+        Route::post('/logos-icons/save', [\App\Http\Controllers\SettingsController::class, 'saveLogosAndIcons'])->name('settings.logos-icons.save');
+        Route::post('/logos-icons/upload', [\App\Http\Controllers\SettingsController::class, 'uploadBrandAsset'])->name('settings.logos-icons.upload');
+        Route::delete('/logos-icons/remove', [\App\Http\Controllers\SettingsController::class, 'removeBrandAsset'])->name('settings.logos-icons.remove');
+        Route::post('/logos-icons/category/{category}', [\App\Http\Controllers\SettingsController::class, 'quickUpdateCategoryAsset'])->name('settings.logos-icons.category');
+        Route::post('/logos-icons/brand/{brand}', [\App\Http\Controllers\SettingsController::class, 'quickUpdateBrandLogo'])->name('settings.logos-icons.brand');
         
         // Custom Code Manager
         Route::resource('custom-codes', \App\Http\Controllers\CustomCodeController::class);

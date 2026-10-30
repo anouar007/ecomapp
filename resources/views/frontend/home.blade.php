@@ -619,12 +619,12 @@
             <div class="col">
                 <div class="reassurance-box">
                     <div class="reassurance-icon icon-red">
-                        <i class="fas fa-truck-fast"></i>
+                        {!! site_icon_html('icon_trust_1', 'fas fa-truck-fast', '', '', 22) !!}
                     </div>
                     <div>
-                        <span class="d-block fw-bold text-dark mb-1" style="font-size: 0.95rem;">Livraison Express 24-48h</span>
+                        <span class="d-block fw-bold text-dark mb-1" style="font-size: 0.95rem;">{{ setting('trust_1_title', 'Livraison Express 24-48h') }}</span>
                         <p class="text-secondary mb-0" style="font-size: 0.8rem; line-height: 1.45;">
-                            Expédition rapide et sécurisée avec emballage renforcé anti-chocs dans tout le Maroc.
+                            {{ setting('trust_1_desc', 'Expédition rapide et sécurisée avec emballage renforcé anti-chocs dans tout le Maroc.') }}
                         </p>
                     </div>
                 </div>
@@ -633,12 +633,12 @@
             <div class="col">
                 <div class="reassurance-box">
                     <div class="reassurance-icon icon-blue">
-                        <i class="fas fa-shield-halved"></i>
+                        {!! site_icon_html('icon_trust_2', 'fas fa-shield-halved', '', '', 22) !!}
                     </div>
                     <div>
-                        <span class="d-block fw-bold text-dark mb-1" style="font-size: 0.95rem;">100% Neuf & Scellé</span>
+                        <span class="d-block fw-bold text-dark mb-1" style="font-size: 0.95rem;">{{ setting('trust_2_title', '100% Neuf & Scellé') }}</span>
                         <p class="text-secondary mb-0" style="font-size: 0.8rem; line-height: 1.45;">
-                            Matériel d'origine constructeur sous garantie officielle avec SAV réactif à Casablanca.
+                            {{ setting('trust_2_desc', "Matériel d'origine constructeur sous garantie officielle avec SAV réactif à Casablanca.") }}
                         </p>
                     </div>
                 </div>
@@ -647,12 +647,12 @@
             <div class="col">
                 <div class="reassurance-box">
                     <div class="reassurance-icon icon-amber">
-                        <i class="fas fa-headset"></i>
+                        {!! site_icon_html('icon_trust_3', 'fas fa-headset', '', '', 22) !!}
                     </div>
                     <div>
-                        <span class="d-block fw-bold text-dark mb-1" style="font-size: 0.95rem;">Conseil Technique Pro</span>
+                        <span class="d-block fw-bold text-dark mb-1" style="font-size: 0.95rem;">{{ setting('trust_3_title', 'Conseil Technique Pro') }}</span>
                         <p class="text-secondary mb-0" style="font-size: 0.8rem; line-height: 1.45;">
-                            Une équipe de vidéastes et photographes vous aide à choisir la configuration idéale.
+                            {{ setting('trust_3_desc', 'Une équipe de vidéastes et photographes vous aide à choisir la configuration idéale.') }}
                         </p>
                     </div>
                 </div>
@@ -661,12 +661,12 @@
             <div class="col">
                 <div class="reassurance-box">
                     <div class="reassurance-icon icon-green">
-                        <i class="fas fa-wallet"></i>
+                        {!! site_icon_html('icon_trust_4', 'fas fa-wallet', '', '', 22) !!}
                     </div>
                     <div>
-                        <span class="d-block fw-bold text-dark mb-1" style="font-size: 0.95rem;">Paiement à la Livraison</span>
+                        <span class="d-block fw-bold text-dark mb-1" style="font-size: 0.95rem;">{{ setting('trust_4_title', 'Paiement à la Livraison') }}</span>
                         <p class="text-secondary mb-0" style="font-size: 0.8rem; line-height: 1.45;">
-                            Payez en toute sérénité à la réception de votre commande ou en ligne par carte bancaire.
+                            {{ setting('trust_4_desc', 'Payez en toute sérénité à la réception de votre commande ou en ligne par carte bancaire.') }}
                         </p>
                     </div>
                 </div>

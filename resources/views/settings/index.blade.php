@@ -15,6 +15,9 @@
             </div>
         </div>
         <div class="brand-header-actions">
+            <a href="{{ route('settings.logos-icons') }}" class="btn btn-outline-danger shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
+                <i class="fas fa-icons"></i> <span>Logos & Icônes du Site</span>
+            </a>
             <a href="{{ route('custom-codes.index') }}" class="btn btn-outline-secondary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
                 <i class="fas fa-code text-primary"></i> <span>Codes & Scripts</span>
             </a>
@@ -299,11 +302,17 @@
 
                         {{-- Logo Section --}}
                         <div class="settings-section-card">
-                            <h3 class="settings-section-title">
-                                <i class="fas fa-image text-danger"></i>
-                                <span>Logo Officiel de la Boutique</span>
-                            </h3>
-                            <p class="settings-section-desc">Le logo s'affiche dans l'en-tête, les factures et les communications clients.</p>
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                                <h3 class="settings-section-title m-0">
+                                    <i class="fas fa-image text-danger"></i>
+                                    <span>Logo Officiel de la Boutique</span>
+                                </h3>
+                                <a href="{{ route('settings.logos-icons') }}" class="btn btn-sm btn-danger rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5">
+                                    <i class="fas fa-icons"></i>
+                                    <span>Gérer tous les Logos & Icônes (Header, Mobile, Footer, Favicon...)</span>
+                                </a>
+                            </div>
+                            <p class="settings-section-desc">Le logo principal s'affiche par défaut dans l'en-tête, les factures et les communications clients. Pour personnaliser chaque emplacement séparément et toutes les icônes du site, ouvrez le studio <strong>Logos & Icônes</strong>.</p>
                             
                             @if(setting('app_logo'))
                                 <div class="p-3 bg-light rounded-4 text-center mb-3 border">

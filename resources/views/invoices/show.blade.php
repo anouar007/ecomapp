@@ -1323,8 +1323,8 @@
             <div class="header-row">
                 {{-- Left: Brand & Logo --}}
                 <div class="header-brand">
-                    @if(app_logo_url())
-                        <img src="{{ app_logo_url() }}" class="header-logo" alt="Logo">
+                    @if(site_logo_url('invoice'))
+                        <img src="{{ site_logo_url('invoice') }}" class="header-logo" alt="Logo">
                     @else
                         <div style="width: 46px; height: 46px; background: #0f172a; color: #ffffff; font-size: 22px; font-weight: 800; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
                             {{ strtoupper(substr($companyName, 0, 1)) }}

@@ -6,12 +6,12 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{{ __('Sign In') }} - {{ setting('app_name', 'WINA SHOP') }}</title>
     <!-- Favicon -->
-    <link rel="icon" href="{{ app_logo_url() }}" type="image/png">
-    <link rel="icon" href="{{ app_logo_url() }}" sizes="any">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ app_logo_url() }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ app_logo_url() }}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ app_logo_url() }}">
-    <link rel="shortcut icon" href="{{ app_logo_url() }}">
+    <link rel="icon" href="{{ site_logo_url('favicon') }}" type="image/png">
+    <link rel="icon" href="{{ site_logo_url('favicon') }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ site_logo_url('favicon') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ site_logo_url('favicon') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ site_logo_url('apple_touch') }}">
+    <link rel="shortcut icon" href="{{ site_logo_url('favicon') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,7 +42,7 @@
             <div class="auth-header">
                 <div class="auth-logo">
                     <a href="{{ url('/') }}" title="{{ setting('app_name', 'WINA SHOP') }}">
-                        <img src="{{ app_logo_url() }}" alt="{{ setting('app_name', 'WINA SHOP') }}" style="max-height: 72px; width: auto; object-fit: contain;">
+                        <img src="{{ site_logo_url('admin') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" style="max-height: 72px; width: auto; object-fit: contain;">
                     </a>
                 </div>
                 <h1 class="auth-title">{{ __('Welcome Back') }}</h1>

@@ -7,12 +7,12 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Tableau de bord') - {{ setting('app_name', 'E-commerce') }}</title>
     <!-- Favicon -->
-    <link rel="icon" href="{{ app_logo_url() }}" type="image/png">
-    <link rel="icon" href="{{ app_logo_url() }}" sizes="any">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ app_logo_url() }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ app_logo_url() }}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ app_logo_url() }}">
-    <link rel="shortcut icon" href="{{ app_logo_url() }}">
+    <link rel="icon" href="{{ site_logo_url('favicon') }}" type="image/png">
+    <link rel="icon" href="{{ site_logo_url('favicon') }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ site_logo_url('favicon') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ site_logo_url('favicon') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ site_logo_url('apple_touch') }}">
+    <link rel="shortcut icon" href="{{ site_logo_url('favicon') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -287,10 +287,11 @@
         </button>
         <a href="{{ route('dashboard') }}" class="navbar-brand">
             @php
-                $winaLogo = app_logo_url();
+                $winaLogo = site_logo_url('admin');
+                $adminLogoHeight = max(24, min(80, (int) setting('admin_logo_height', 48)));
             @endphp
             @if($winaLogo)
-                <img src="{{ $winaLogo }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="110" height="48" style="height: 48px; max-width: 180px; object-fit: contain; margin-right: 10px;">
+                <img src="{{ $winaLogo }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="110" height="{{ $adminLogoHeight }}" style="height: {{ $adminLogoHeight }}px; max-width: 180px; object-fit: contain; margin-right: 10px;">
             @else
                 <i class="fas fa-camera text-danger me-2"></i>
                 <span style="font-weight: 800; color: #0f172a;">WINA<span style="color: #dc2626;">SHOP</span></span>
@@ -444,7 +445,13 @@
 
             @can('manage_settings')
             <li class="sidebar-menu-item">
-                <a href="{{ route('settings.index') }}" class="sidebar-menu-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
+                <a href="{{ route('settings.logos-icons') }}" class="sidebar-menu-link {{ request()->routeIs('settings.logos-icons*') ? 'active' : '' }}">
+                    <i class="fas fa-icons"></i>
+                    <span>Logos & Icônes</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="{{ route('settings.index') }}" class="sidebar-menu-link {{ request()->routeIs('settings.index') ? 'active' : '' }}">
                     <i class="fas fa-cog"></i>
                     <span>Paramètres</span>
                 </a>

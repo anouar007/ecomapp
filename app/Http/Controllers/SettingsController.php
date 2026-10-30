@@ -390,4 +390,160 @@ class SettingsController extends Controller
             return back()->with('error', "Échec de l'envoi de l'email : " . $e->getMessage());
         }
     }
+
+    /**
+     * Display the centralized Logos & Icons Studio page
+     */
+    public function logosAndIcons()
+    {
+        $categories = \App\Models\Category::orderBy('sort_order', 'asc')->orderBy('name', 'asc')->get();
+        $brands = \App\Models\Brand::orderBy('sort_order', 'asc')->orderBy('name', 'asc')->get();
+
+        return view('settings.logos-icons', compact('categories', 'brands'));
+    }
+
+    /**
+     * Upload a single logo or custom icon asset slot
+     */
+    public function uploadBrandAsset(Request $request)
+    {
+        $request->validate([
+            'slot_key' => 'required|string|max:100',
+            'asset_file' => 'required|file|mimes:jpeg,png,jpg,svg,webp,ico,gif|max:4096',
+        ]);
+
+        $key = $request->input('slot_key');
+        $oldPath = setting($key);
+        if ($oldPath && Storage::disk('public')->exists($oldPath)) {
+            Storage::disk('public')->delete($oldPath);
+        }
+
+        $folder = str_starts_with($key, 'icon_') ? 'icons' : ($key === 'company_stamp' ? 'stamps' : 'logos');
+        $path = $request->file('asset_file')->store($folder, 'public');
+
+        $group = $this->inferSettingGroup($key);
+        Setting::set($key, $path, 'file', $group);
+
+        Cache::forget('setting_' . $key);
+        Setting::clearCache();
+        \Artisan::call('cache:clear');
+
+        return back()->with('success', 'Visuel mis à jour avec succès !');
+    }
+
+    /**
+     * Remove a single logo or custom icon asset slot
+     */
+    public function removeBrandAsset(Request $request)
+    {
+        $request->validate([
+            'slot_key' => 'required|string|max:100',
+        ]);
+
+        $key = $request->input('slot_key');
+        $oldPath = setting($key);
+        if ($oldPath && Storage::disk('public')->exists($oldPath)) {
+            Storage::disk('public')->delete($oldPath);
+        }
+
+        Setting::where('key', $key)->delete();
+        Cache::forget('setting_' . $key);
+        Setting::clearCache();
+        \Artisan::call('cache:clear');
+
+        return back()->with('success', 'Visuel supprimé avec succès (retour à la valeur par défaut).');
+    }
+
+    /**
+     * Batch save logo dimensions, icon classes, texts, and optional uploaded files
+     */
+    public function saveLogosAndIcons(Request $request)
+    {
+        if ($request->has('settings') && is_array($request->settings)) {
+            foreach ($request->settings as $key => $value) {
+                $setting = Setting::where('key', $key)->first();
+                if ($setting) {
+                    Setting::set($key, $value, $setting->type, $setting->group);
+                } else {
+                    $group = $this->inferSettingGroup($key);
+                    $type = $this->inferSettingType($key, $value);
+                    Setting::set($key, $value, $type, $group);
+                }
+            }
+        }
+
+        if ($request->hasFile('asset_files')) {
+            foreach ($request->file('asset_files') as $key => $file) {
+                if ($file && $file->isValid()) {
+                    $oldPath = setting($key);
+                    if ($oldPath && Storage::disk('public')->exists($oldPath)) {
+                        Storage::disk('public')->delete($oldPath);
+                    }
+                    $folder = str_starts_with($key, 'icon_') ? 'icons' : ($key === 'company_stamp' ? 'stamps' : 'logos');
+                    $path = $file->store($folder, 'public');
+                    Setting::set($key, $path, 'file', $this->inferSettingGroup($key));
+                }
+            }
+        }
+
+        Setting::clearCache();
+        \Artisan::call('cache:clear');
+        \Artisan::call('view:clear');
+
+        return back()->with('success', 'Tous les logos, dimensions et icônes du site ont été enregistrés avec succès !');
+    }
+
+    /**
+     * Quick update a category's icon or image from the Logos & Icons studio
+     */
+    public function quickUpdateCategoryAsset(Request $request, \App\Models\Category $category)
+    {
+        if ($request->boolean('remove_image')) {
+            if ($category->image && Storage::disk('public')->exists($category->image)) {
+                Storage::disk('public')->delete($category->image);
+            }
+            $category->image = null;
+        }
+
+        if ($request->has('icon')) {
+            $category->icon = trim((string) $request->input('icon')) ?: null;
+        }
+
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            if ($category->image && Storage::disk('public')->exists($category->image)) {
+                Storage::disk('public')->delete($category->image);
+            }
+            $category->image = $request->file('image')->store('categories', 'public');
+        }
+
+        $category->save();
+        \Artisan::call('cache:clear');
+
+        return back()->with('success', "Icône / image de la catégorie « {$category->name} » mise à jour !");
+    }
+
+    /**
+     * Quick update a brand's logo from the Logos & Icons studio
+     */
+    public function quickUpdateBrandLogo(Request $request, \App\Models\Brand $brand)
+    {
+        if ($request->boolean('remove_logo')) {
+            if ($brand->logo && Storage::disk('public')->exists($brand->logo)) {
+                Storage::disk('public')->delete($brand->logo);
+            }
+            $brand->logo = null;
+        }
+
+        if ($request->hasFile('logo') && $request->file('logo')->isValid()) {
+            if ($brand->logo && Storage::disk('public')->exists($brand->logo)) {
+                Storage::disk('public')->delete($brand->logo);
+            }
+            $brand->logo = $request->file('logo')->store('brands', 'public');
+        }
+
+        $brand->save();
+        \Artisan::call('cache:clear');
+
+        return back()->with('success', "Logo de la marque « {$brand->name} » mis à jour !");
+    }
 }

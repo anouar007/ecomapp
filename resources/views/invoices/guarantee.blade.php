@@ -270,8 +270,8 @@
             <!-- Header Section -->
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; border-bottom: 1px solid #f1f5f9; padding-bottom: 24px; flex-wrap: wrap; gap: 20px;">
                 <div>
-                    @if(app_logo_url())
-                        <img src="{{ app_logo_url() }}" alt="Logo" style="max-height: 55px; margin-bottom: 12px; object-fit: contain;">
+                    @if(site_logo_url('invoice'))
+                        <img src="{{ site_logo_url('invoice') }}" alt="Logo" style="max-height: 55px; margin-bottom: 12px; object-fit: contain;">
                     @else
                         <h2 style="font-size: 26px; font-weight: 900; color: #1e293b; margin: 0 0 8px 0;">{{ setting('company_name', config('app.name')) }}</h2>
                     @endif

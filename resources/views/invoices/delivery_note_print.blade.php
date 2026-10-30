@@ -435,8 +435,8 @@
             <!-- Header -->
             <div class="dn-header">
                 <div class="header-brand">
-                    @if(app_logo_url())
-                        <img src="{{ app_logo_url() }}" class="header-logo" alt="Logo">
+                    @if(site_logo_url('invoice'))
+                        <img src="{{ site_logo_url('invoice') }}" class="header-logo" alt="Logo">
                     @else
                         <div class="brand-monogram">
                             {{ strtoupper(substr($companyName, 0, 1)) }}
