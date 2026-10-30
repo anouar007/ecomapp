@@ -173,12 +173,18 @@ class ProductController extends Controller
             'images.*' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:999999'],
+            'image_padding' => ['nullable', 'string', 'max:50'],
         ], [
             'old_price.numeric' => "L'ancien prix doit être un nombre valide.",
             'old_price.min' => "L'ancien prix ne peut pas être négatif.",
         ]);
 
         $validated['sort_order'] = isset($validated['sort_order']) && $validated['sort_order'] !== '' ? (int) $validated['sort_order'] : 0;
+
+        if ($request->has('image_padding')) {
+            $rawPadding = trim((string) $request->input('image_padding'));
+            $validated['image_padding'] = ($rawPadding === '' || $rawPadding === '0' || $rawPadding === '0%' || $rawPadding === '0px') ? null : $rawPadding;
+        }
 
         $categoryIds = [];
         if ($request->has('category_ids') && is_array($request->category_ids)) {
@@ -341,6 +347,7 @@ class ProductController extends Controller
             'images.*' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:999999'],
+            'image_padding' => ['nullable', 'string', 'max:50'],
             'remove_images' => ['nullable', 'array'],
             'remove_images.*' => ['exists:product_images,id'],
         ], [
@@ -350,6 +357,11 @@ class ProductController extends Controller
 
         if (array_key_exists('sort_order', $validated)) {
             $validated['sort_order'] = isset($validated['sort_order']) && $validated['sort_order'] !== '' ? (int) $validated['sort_order'] : 0;
+        }
+
+        if ($request->has('image_padding')) {
+            $rawPadding = trim((string) $request->input('image_padding'));
+            $validated['image_padding'] = ($rawPadding === '' || $rawPadding === '0' || $rawPadding === '0%' || $rawPadding === '0px') ? null : $rawPadding;
         }
 
         $categoryIds = [];
@@ -587,10 +599,11 @@ class ProductController extends Controller
     public function bulkAction(Request $request)
     {
         $request->validate([
-            'action' => 'required|string|in:delete,duplicate,increase_stock,decrease_stock,activate,deactivate',
+            'action' => 'required|string|in:delete,duplicate,increase_stock,decrease_stock,activate,deactivate,set_image_padding',
             'product_ids' => 'required|array|min:1',
             'product_ids.*' => 'exists:products,id',
             'stock_amount' => 'nullable|integer|min:1',
+            'image_padding' => 'nullable|string|max:50',
         ]);
 
         $productIds = $request->product_ids;
@@ -660,6 +673,16 @@ class ProductController extends Controller
                     return response()->json([
                         'success' => true,
                         'message' => "{$count} product(s) deactivated successfully."
+                    ]);
+
+                case 'set_image_padding':
+                    $rawPadding = trim((string) ($request->image_padding ?? ''));
+                    $val = ($rawPadding === '' || $rawPadding === '0' || $rawPadding === '0%' || $rawPadding === '0px') ? null : $rawPadding;
+                    Product::whereIn('id', $productIds)->update(['image_padding' => $val]);
+                    \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
+                    return response()->json([
+                        'success' => true,
+                        'message' => "Marge d'image ({$val}) appliquée à {$count} produit(s)."
                     ]);
 
                 default:

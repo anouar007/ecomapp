@@ -39,7 +39,7 @@
         @endforeach
 
         <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" class="w-100 h-100 d-flex align-items-center justify-content-center" aria-label="{{ $product->name }}">
-            <img src="{{ $product->thumbnail }}" alt="{{ $product->name }}" width="220" height="220" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+            <img src="{{ $product->thumbnail }}" alt="{{ $product->name }}" width="220" height="220" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';" @if($product->image_padding_style) style="padding: {{ $product->image_padding_style }} !important;" @endif>
         </a>
     </div>
 

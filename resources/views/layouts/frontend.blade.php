@@ -704,12 +704,15 @@
         }
 
         .featured-pro-card .featured-pro-img-box img,
-        .selection-card .featured-pro-img-box img {
+        .selection-card .featured-pro-img-box img,
+        .pdp-main-image,
+        .pdp-thumb img {
             width: 100% !important;
             height: 100% !important;
             max-height: 100% !important;
             max-width: 100% !important;
             object-fit: contain !important;
+            box-sizing: border-box !important;
             transition: transform 0.3s ease;
         }
 

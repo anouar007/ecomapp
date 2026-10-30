@@ -30,6 +30,7 @@ class Product extends Model
         'image_width',
         'image_height',
         'image_quality',
+        'image_padding',
     ];
 
     protected $casts = [
@@ -864,6 +865,37 @@ class Product extends Model
         }
 
         return '<span class="badge" style="background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; font-size: 0.68rem; font-weight: 600; padding: 2px 8px; border-radius: 6px;"><i class="fas fa-camera me-1 opacity-75"></i>Photo manquante</span>';
+    }
+
+    /**
+     * Get CSS padding value formatted for product images.
+     * Supports percentage (e.g. "10%"), pixels ("20px"), rem, or plain numbers (converted to %).
+     */
+    public function getImagePaddingStyleAttribute(): string
+    {
+        $val = trim((string) ($this->image_padding ?? ''));
+        if ($val === '' || $val === '0' || $val === '0%' || $val === '0px') {
+            return '';
+        }
+        if (is_numeric($val)) {
+            return $val . '%';
+        }
+        return $val;
+    }
+
+    /**
+     * Get numeric percentage for UI slider/inputs (e.g. "15%" -> 15).
+     */
+    public function getImagePaddingPercentAttribute(): int
+    {
+        $val = trim((string) ($this->image_padding ?? ''));
+        if ($val === '' || $val === '0' || $val === '0%' || $val === '0px') {
+            return 0;
+        }
+        if (preg_match('/^(\d+)/', $val, $matches)) {
+            return min(100, max(0, (int) $matches[1]));
+        }
+        return 0;
     }
 }
 

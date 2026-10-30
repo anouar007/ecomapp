@@ -281,6 +281,93 @@
                         </div>
                         Si vous ne téléversez aucune image, le système recherchera et appliquera automatiquement le master officiel 4K Ultra-HD à partir du nom du produit dès l'enregistrement.
                     </div>
+
+                    <!-- Marge interne & Espace vide de l'image (Padding) -->
+                    <div class="mt-3 pt-3 border-top">
+                        <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+                            <label class="form-label fw-bold text-dark small mb-0 d-flex align-items-center gap-2">
+                                <i class="fas fa-expand-alt text-primary"></i>
+                                <span>Espace vide autour de l'image (Marge / Padding)</span>
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace px-2 py-0.5" id="imagePaddingBadge">0%</span>
+                            </label>
+                            <span class="small text-muted" style="font-size: 0.78rem;">
+                                S'applique automatiquement sur les <strong>cartes de produits</strong> et la <strong>page produit</strong>
+                            </span>
+                        </div>
+
+                        <div class="p-3 bg-light rounded-3 border">
+                            <div class="row g-3 align-items-center">
+                                <!-- Aperçu interactif en direct -->
+                                <div class="col-auto">
+                                    <div class="position-relative text-center bg-white rounded-3 border shadow-xs" style="width: 105px; height: 105px; display: flex; align-items: center; justify-content: center; overflow: hidden; background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 8px 8px;">
+                                        <img id="imagePaddingLivePreview" 
+                                             src="{{ asset('images/camera/cat_cameras.jpg') }}" 
+                                             alt="Aperçu marge" 
+                                             style="width: 100%; height: 100%; object-fit: contain; box-sizing: border-box !important; transition: padding 0.15s ease; padding: 0;">
+                                        <span class="position-absolute bottom-0 end-0 bg-dark text-white font-monospace px-1 rounded-top-start" style="font-size: 0.6rem; opacity: 0.85;" id="previewPaddingLabel">
+                                            0%
+                                        </span>
+                                    </div>
+                                    <div class="text-center mt-1">
+                                        <span class="text-muted font-monospace" style="font-size: 0.68rem;">Aperçu direct</span>
+                                    </div>
+                                </div>
+
+                                <!-- Contrôles : Curseur, Préréglages & Unités -->
+                                <div class="col">
+                                    <!-- Curseur pourcentage -->
+                                    <div class="mb-2">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="small fw-semibold text-secondary" style="font-size: 0.75rem;">Ajustement par curseur :</span>
+                                            <span class="small fw-bold text-primary font-monospace" id="sliderValueText" style="font-size: 0.78rem;">0%</span>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="small text-muted font-monospace" style="font-size: 0.72rem;">0%</span>
+                                            <input type="range" 
+                                                   class="form-range flex-grow-1" 
+                                                   id="image_padding_range" 
+                                                   min="0" 
+                                                   max="35" 
+                                                   step="1" 
+                                                   value="0">
+                                            <span class="small text-muted font-monospace" style="font-size: 0.72rem;">35%</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Boutons de raccourcis rapides -->
+                                    <div class="d-flex flex-wrap gap-1.5 align-items-center mb-2.5">
+                                        <span class="small text-muted me-1" style="font-size: 0.75rem;">Préréglages :</span>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0.5 px-2 text-nowrap img-pad-preset" data-val="0%" style="font-size: 0.73rem;">0% (Plein bord)</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0.5 px-2 text-nowrap img-pad-preset" data-val="5%" style="font-size: 0.73rem;">5%</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0.5 px-2 text-nowrap img-pad-preset" data-val="8%" style="font-size: 0.73rem;">8%</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0.5 px-2 text-nowrap img-pad-preset" data-val="10%" style="font-size: 0.73rem;">10%</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0.5 px-2 text-nowrap img-pad-preset" data-val="15%" style="font-size: 0.73rem;">15%</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0.5 px-2 text-nowrap img-pad-preset" data-val="20%" style="font-size: 0.73rem;">20%</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0.5 px-2 text-nowrap img-pad-preset" data-val="25%" style="font-size: 0.73rem;">25%</button>
+                                    </div>
+
+                                    <!-- Champ valeur libre multi-unités -->
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <div class="input-group input-group-sm" style="max-width: 290px;">
+                                            <span class="input-group-text bg-white text-muted small"><i class="fas fa-ruler-combined me-1"></i> Valeur :</span>
+                                            <input type="text" 
+                                                   id="image_padding_input" 
+                                                   name="image_padding" 
+                                                   class="form-control font-monospace" 
+                                                   value="{{ old('image_padding', '') }}" 
+                                                   placeholder="Ex: 12%, 15px, 1.2rem">
+                                            <button type="button" class="btn btn-white border text-danger" onclick="resetImagePadding()" title="Réinitialiser à 0%">
+                                                <i class="fas fa-undo"></i>
+                                            </button>
+                                        </div>
+                                        <span class="small text-muted" style="font-size: 0.73rem;">
+                                            Prend en charge <code>%</code> (recommandé), <code>px</code>, <code>rem</code> ou <code>em</code>.
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Informations Générales -->
@@ -821,6 +908,10 @@ function displayImages() {
                 <span class="image-remove-btn" onclick="removeImage(${index})" title="Supprimer">&times;</span>
             `;
             container.appendChild(box);
+            if (index === 0) {
+                const livePrev = document.getElementById('imagePaddingLivePreview');
+                if (livePrev) livePrev.src = e.target.result;
+            }
         }
         reader.readAsDataURL(file);
     });
@@ -1333,7 +1424,80 @@ function recalculateVariantSummary() {
     }
 }
 
+function initImagePaddingControl() {
+    const range = document.getElementById('image_padding_range');
+    const input = document.getElementById('image_padding_input');
+    const badge = document.getElementById('imagePaddingBadge');
+    const preview = document.getElementById('imagePaddingLivePreview');
+    const label = document.getElementById('previewPaddingLabel');
+    const sliderText = document.getElementById('sliderValueText');
+    if (!range || !input) return;
+
+    function applyPadding(val, fromRange = false) {
+        val = (val || '').trim();
+        let cssVal = val;
+        if (cssVal && !isNaN(cssVal)) {
+            cssVal = cssVal + '%';
+        }
+        if (!cssVal || cssVal === '0' || cssVal === '0%' || cssVal === '0px') {
+            cssVal = '';
+        }
+
+        if (preview) {
+            preview.style.padding = cssVal || '0';
+        }
+        if (badge) {
+            badge.textContent = cssVal || '0%';
+        }
+        if (label) {
+            label.textContent = cssVal || '0%';
+        }
+
+        if (fromRange) {
+            input.value = val === '0' ? '' : val + '%';
+            if (sliderText) sliderText.textContent = val + '%';
+        } else {
+            const num = parseInt(val, 10);
+            if (!isNaN(num) && val.includes('%')) {
+                range.value = Math.min(35, Math.max(0, num));
+                if (sliderText) sliderText.textContent = range.value + '%';
+            } else if (cssVal === '') {
+                range.value = 0;
+                if (sliderText) sliderText.textContent = '0%';
+            } else if (!isNaN(num)) {
+                range.value = Math.min(35, Math.max(0, num));
+                if (sliderText) sliderText.textContent = range.value + '%';
+            }
+        }
+    }
+
+    range.addEventListener('input', function() {
+        applyPadding(this.value, true);
+    });
+
+    input.addEventListener('input', function() {
+        applyPadding(this.value, false);
+    });
+
+    document.querySelectorAll('.img-pad-preset').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const v = this.getAttribute('data-val');
+            input.value = v === '0%' ? '' : v;
+            const num = parseInt(v, 10) || 0;
+            range.value = num;
+            applyPadding(input.value, false);
+        });
+    });
+
+    window.resetImagePadding = function() {
+        input.value = '';
+        range.value = 0;
+        applyPadding('', false);
+    };
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    initImagePaddingControl();
     const serverVariants = {!! json_encode(old('variants', [])) !!};
     if (Array.isArray(serverVariants) && serverVariants.length > 0) {
         serverVariants.forEach(v => addVariantRow(v));

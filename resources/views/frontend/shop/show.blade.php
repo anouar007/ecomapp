@@ -548,7 +548,7 @@
                         @endforeach
 
                         <img id="mainImage" src="{{ $product->thumbnail }}"
-                             alt="{{ $product->name }}" width="600" height="600" class="pdp-main-image" fetchpriority="high" decoding="async">
+                             alt="{{ $product->name }}" width="600" height="600" class="pdp-main-image" fetchpriority="high" decoding="async" @if($product->image_padding_style) style="padding: {{ $product->image_padding_style }} !important;" @endif>
                     </div>
 
                     @php
@@ -571,7 +571,7 @@
                     <div class="pdp-thumbs" id="pdpThumbs">
                         @foreach($galleryImages as $imgUrl)
                         <div class="pdp-thumb {{ $loop->first ? 'active' : '' }}" onclick="pdpChangeImage('{{ $imgUrl }}', this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')pdpChangeImage('{{ $imgUrl }}', this)" aria-label="{{ $product->name }} {{ $loop->iteration }}">
-                            <img src="{{ $imgUrl }}" alt="{{ $product->name }} {{ $loop->iteration }}" width="76" height="76" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                            <img src="{{ $imgUrl }}" alt="{{ $product->name }} {{ $loop->iteration }}" width="76" height="76" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';" @if($product->image_padding_style) style="padding: {{ $product->image_padding_style }} !important;" @endif>
                         </div>
                         @endforeach
                     </div>

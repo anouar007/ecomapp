@@ -396,7 +396,7 @@
                             <div class="d-flex align-items-center gap-2.5">
                                 <div class="position-relative flex-shrink-0">
                                     <div class="brand-avatar prod-avatar" id="prod-avatar-wrap-{{ $product->id }}">
-                                        <img id="prod-img-{{ $product->id }}" src="{{ $product->thumbnail }}" alt="{{ $product->name }}" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                                        <img id="prod-img-{{ $product->id }}" src="{{ $product->thumbnail }}" alt="{{ $product->name }}" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';" @if($product->image_padding_style) style="padding: {{ $product->image_padding_style }} !important; box-sizing: border-box !important;" @endif>
                                     </div>
                                     <button type="button" 
                                             class="prod-avatar-badge" 
