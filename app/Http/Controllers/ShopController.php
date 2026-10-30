@@ -18,6 +18,16 @@ class ShopController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('q', '');
+
+        // Save the search in the client's history (logged-in clients, first page only)
+        if ($request->user() && is_string($search) && trim($search) !== '' && (int) $request->get('page', 1) <= 1) {
+            try {
+                \App\Models\SearchHistory::record($request->user()->id, $search);
+            } catch (\Throwable $e) {
+                report($e); // never break the shop page because of history
+            }
+        }
+
         $categorySlug = $request->get('category');
         $brandSlug = $request->get('brand');
         $minPrice = $request->filled('min_price') ? (float) $request->min_price : null;

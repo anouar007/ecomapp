@@ -1211,6 +1211,75 @@
             border-radius: 3px !important;
         }
 
+        /* ===== Client Search History (Recent Searches) ===== */
+        .search-history-block { margin-bottom: 14px; }
+        .search-history-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        .search-history-clear {
+            background: none;
+            border: 0;
+            padding: 4px 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .search-history-clear:hover { color: #e11d48; background: #fff1f2; }
+        .search-history-list { list-style: none; margin: 0; padding: 0; }
+        .search-history-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            border-radius: 8px;
+            transition: background .15s ease;
+        }
+        .search-history-item:hover { background: #f1f5f9; }
+        .search-history-use {
+            flex: 1 1 auto;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: none;
+            border: 0;
+            padding: 8px;
+            text-align: start;
+            color: #334155;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .search-history-use i { color: #94a3b8; font-size: 13px; flex-shrink: 0; }
+        .search-history-use span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .search-history-remove {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: 0;
+            border-radius: 50%;
+            color: #94a3b8;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .search-history-remove:hover { color: #e11d48; background: #ffe4e6; }
+        /* Bigger touch targets in the mobile overlay */
+        .pro-mobile-search-overlay .search-history-use { padding: 11px 8px; font-size: 15px; }
+        .pro-mobile-search-overlay .search-history-remove { width: 40px; height: 40px; }
+        .pro-mobile-search-overlay .search-history-item + .search-history-item { border-top: 1px solid #f1f5f9; }
+
         .featured-stock-badge-corner {
             position: static !important;
             top: auto !important;
@@ -2452,6 +2521,16 @@
                         <!-- Live Search Floating Dropdown -->
                         <div class="header-search-dropdown shadow-lg d-none" id="headerSearchDropdown" role="region" aria-label="{{ __('Search Results') }}">
                             <div class="search-quick-tags p-3 border-bottom" id="headerSearchTags">
+                                <!-- Client Recent Searches (history) -->
+                                <div class="search-history-block d-none" id="headerSearchHistory">
+                                    <div class="search-history-head">
+                                        <div class="search-section-label m-0">
+                                            <i class="fas fa-history me-1 text-danger"></i> {{ strtoupper(__('Recent Searches')) }}
+                                        </div>
+                                        <button type="button" class="search-history-clear" data-history-clear>{{ __('Clear all') }}</button>
+                                    </div>
+                                    <ul class="search-history-list" id="headerSearchHistoryList"></ul>
+                                </div>
                                 <div class="search-section-label">
                                     <i class="fas fa-fire me-1 text-danger"></i> {{ strtoupper(__('Frequent Searches')) }}
                                 </div>
@@ -2614,6 +2693,17 @@
         <div class="pro-mobile-search-body" id="proMobileSearchBody">
             <!-- 1. Default Discovery State (When query is empty) -->
             <div class="pro-search-suggestions" id="proMobileSearchSuggestions">
+                <!-- Client Recent Searches (history) -->
+                <div class="pro-search-section search-history-block mb-4 d-none" id="proMobileSearchHistory">
+                    <div class="search-history-head">
+                        <div class="pro-section-title m-0">
+                            <i class="fas fa-history text-danger me-1"></i> {{ strtoupper(__('Recent Searches')) }}
+                        </div>
+                        <button type="button" class="search-history-clear" data-history-clear>{{ __('Clear all') }}</button>
+                    </div>
+                    <ul class="search-history-list" id="proMobileSearchHistoryList"></ul>
+                </div>
+
                 <div class="pro-search-section">
                     <div class="pro-section-title">
                         <i class="fas fa-fire text-danger me-1"></i> {{ strtoupper(__('Frequent Searches')) }}
@@ -3713,6 +3803,136 @@
             initMobileCategoryToggle();
         }
 
+        // ===== Client Search History Store =====
+        // Guests: saved in the browser (localStorage).
+        // Logged-in clients: saved in the database (synced across devices);
+        // searches made as a guest are merged into the account after login.
+        window.SearchHistory = (function() {
+            const MAX = 10;
+            const USER_ID = @json(auth()->id());
+            const GUEST_KEY = 'shop_search_history_guest';
+            const KEY = USER_ID ? ('shop_search_history_u' + USER_ID) : GUEST_KEY;
+            const API = {
+                base: @json(route('search-history.index', [], false)),
+                sync: @json(route('search-history.sync', [], false)),
+                item: @json(route('search-history.destroy', [], false)),
+            };
+            const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            const listeners = [];
+
+            function read(key) {
+                try {
+                    const data = JSON.parse(localStorage.getItem(key || KEY) || '[]');
+                    return Array.isArray(data) ? data.filter(i => i && typeof i.q === 'string') : [];
+                } catch (e) { return []; }
+            }
+            function write(items) {
+                try { localStorage.setItem(KEY, JSON.stringify(items.slice(0, MAX))); } catch (e) {}
+                listeners.forEach(fn => { try { fn(all()); } catch (e) {} });
+            }
+            function clean(q) {
+                return String(q || '').replace(/\s+/g, ' ').trim().slice(0, 150);
+            }
+            function all() { return read().slice(0, MAX); }
+
+            function api(method, url, body) {
+                if (!USER_ID) return Promise.resolve(null);
+                return fetch(url, {
+                    method,
+                    credentials: 'same-origin',
+                    keepalive: method !== 'GET', // survive page navigation (e.g. clicking a result)
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrf,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: body ? JSON.stringify(body) : undefined
+                })
+                .then(r => r.ok ? r.json() : null)
+                .then(data => {
+                    if (data && Array.isArray(data.items)) write(data.items);
+                    return data;
+                })
+                .catch(() => null);
+            }
+
+            // localOnly = true when the server already recorded it (shop page load)
+            function add(q, localOnly) {
+                q = clean(q);
+                if (q.length < 2) return;
+                const key = q.toLowerCase();
+                const items = read().filter(i => i.q.toLowerCase() !== key);
+                items.unshift({ q, t: Date.now() });
+                write(items);
+                if (!localOnly) api('POST', API.base, { q });
+            }
+            function remove(q) {
+                const key = clean(q).toLowerCase();
+                write(read().filter(i => i.q.toLowerCase() !== key));
+                api('DELETE', API.item, { q });
+            }
+            function clear() {
+                write([]);
+                api('DELETE', API.base);
+            }
+            function onChange(fn) { listeners.push(fn); }
+
+            // Initial sync with the account
+            function init() {
+                if (!USER_ID) return;
+                const guestItems = read(GUEST_KEY);
+                if (guestItems.length) {
+                    api('POST', API.sync, { items: guestItems.slice(0, 30) }).then(res => {
+                        if (res) { try { localStorage.removeItem(GUEST_KEY); } catch (e) {} }
+                    });
+                } else {
+                    api('GET', API.base);
+                }
+            }
+
+            return { all, add, remove, clear, onChange, init, isLoggedIn: !!USER_ID };
+        })();
+
+        // Renders the history list into a container; returns true if it has items
+        function renderSearchHistory(block, list) {
+            if (!block || !list) return false;
+            const items = window.SearchHistory.all();
+            if (!items.length) {
+                block.classList.add('d-none');
+                list.innerHTML = '';
+                return false;
+            }
+            const esc = s => String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
+            list.innerHTML = items.map(i => `
+                <li class="search-history-item">
+                    <button type="button" class="search-history-use" data-history-use="${esc(i.q)}">
+                        <i class="fas fa-history"></i><span>${esc(i.q)}</span>
+                    </button>
+                    <button type="button" class="search-history-remove" data-history-remove="${esc(i.q)}" aria-label="{{ __('Remove from history') }}" title="{{ __('Remove from history') }}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </li>
+            `).join('');
+            block.classList.remove('d-none');
+            return true;
+        }
+
+        // Record the search when the client lands on the shop with ?q=
+        (function recordShopPageSearch() {
+            try {
+                const url = new URL(window.location.href);
+                const shopPath = new URL(@json(route('shop.index')), window.location.origin).pathname;
+                const q = url.searchParams.get('q');
+                const page = parseInt(url.searchParams.get('page') || '1', 10);
+                if (q && url.pathname === shopPath && page <= 1) {
+                    // Logged-in: the server already saved it in ShopController@index
+                    window.SearchHistory.add(q, window.SearchHistory.isLoggedIn);
+                }
+            } catch (e) {}
+            window.SearchHistory.init();
+        })();
+
         // Dynamic Navbar Live Search
         function initNavbarLiveSearch() {
             const form = document.getElementById('headerSearchForm');
@@ -3729,6 +3949,12 @@
             const defaultIcon = document.querySelector('.search-icon-default');
 
             if (!form || !input || !dropdown) return;
+
+            const historyBlock = document.getElementById('headerSearchHistory');
+            const historyList = document.getElementById('headerSearchHistoryList');
+            const refreshHistory = () => renderSearchHistory(historyBlock, historyList);
+            refreshHistory();
+            window.SearchHistory.onChange(refreshHistory);
 
             let debounceTimer = null;
             let currentAbortController = null;
@@ -3978,6 +4204,35 @@
 
             // Quick suggestion tags click
             dropdown.addEventListener('click', function(e) {
+                // --- Recent searches (history) actions ---
+                const useBtn = e.target.closest('[data-history-use]');
+                const removeBtn = e.target.closest('[data-history-remove]');
+                const clearAllBtn = e.target.closest('[data-history-clear]');
+                if (useBtn || removeBtn || clearAllBtn) {
+                    e.preventDefault();
+                    e.stopPropagation(); // keep dropdown open (re-render detaches the clicked node)
+                    if (useBtn) {
+                        const term = useBtn.getAttribute('data-history-use');
+                        input.value = term;
+                        updateClearButton();
+                        input.focus();
+                        fetchLiveSearch(term);
+                    } else if (removeBtn) {
+                        window.SearchHistory.remove(removeBtn.getAttribute('data-history-remove'));
+                        input.focus();
+                    } else {
+                        window.SearchHistory.clear();
+                        input.focus();
+                    }
+                    return;
+                }
+
+                // Clicking a live result: remember what the client searched for
+                const resultLink = e.target.closest('.search-result-item, .search-cat-item');
+                if (resultLink && input.value.trim()) {
+                    window.SearchHistory.add(input.value.trim());
+                }
+
                 const chip = e.target.closest('.search-tag-chip');
                 if (chip) {
                     e.preventDefault();
@@ -4011,6 +4266,7 @@
                 } else if (e.key === 'Enter') {
                     if (selectedIndex >= 0 && items[selectedIndex]) {
                         e.preventDefault();
+                        if (input.value.trim()) window.SearchHistory.add(input.value.trim());
                         window.location.href = items[selectedIndex].href;
                     }
                 } else if (e.key === 'Escape') {
@@ -4055,6 +4311,12 @@
             const defaultIcon = overlay ? overlay.querySelector('.pro-icon-default') : null;
 
             if (!overlay || !input) return;
+
+            const mHistoryBlock = document.getElementById('proMobileSearchHistory');
+            const mHistoryList = document.getElementById('proMobileSearchHistoryList');
+            const refreshMobileHistory = () => renderSearchHistory(mHistoryBlock, mHistoryList);
+            refreshMobileHistory();
+            window.SearchHistory.onChange(refreshMobileHistory);
 
             let debounceTimer = null;
             let currentAbort = null;
@@ -4290,6 +4552,32 @@
 
             // Chip click listeners inside overlay (popular tags + empty state tags)
             overlay.addEventListener('click', function(e) {
+                // --- Recent searches (history) actions ---
+                const useBtn = e.target.closest('[data-history-use]');
+                const removeBtn = e.target.closest('[data-history-remove]');
+                const clearAllBtn = e.target.closest('[data-history-clear]');
+                if (useBtn || removeBtn || clearAllBtn) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (useBtn) {
+                        const q = useBtn.getAttribute('data-history-use');
+                        input.value = q;
+                        updateClear();
+                        fetchMobileSearch(q);
+                    } else if (removeBtn) {
+                        window.SearchHistory.remove(removeBtn.getAttribute('data-history-remove'));
+                    } else {
+                        window.SearchHistory.clear();
+                    }
+                    return;
+                }
+
+                // Clicking a live result: remember what the client searched for
+                const resultLink = e.target.closest('.pro-result-card, .pro-cat-match-card');
+                if (resultLink && input.value.trim()) {
+                    window.SearchHistory.add(input.value.trim());
+                }
+
                 const chip = e.target.closest('.pro-tag-chip');
                 if (chip) {
                     e.preventDefault();

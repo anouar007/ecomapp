@@ -41,6 +41,15 @@ Route::post('/contact', [\App\Http\Controllers\HomeController::class, 'sendConta
 // Shop & Products
 Route::get('/shop', [\App\Http\Controllers\ShopController::class, 'index'])->name('shop.index');
 Route::get('/shop/search/live', [\App\Http\Controllers\ShopController::class, 'liveSearch'])->name('shop.search.live');
+
+// Client Search History (logged-in clients; guests use browser localStorage)
+Route::middleware(['auth', 'throttle:60,1'])->prefix('search-history')->name('search-history.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\SearchHistoryController::class, 'index'])->name('index');
+    Route::post('/', [\App\Http\Controllers\SearchHistoryController::class, 'store'])->name('store');
+    Route::post('/sync', [\App\Http\Controllers\SearchHistoryController::class, 'sync'])->name('sync');
+    Route::delete('/item', [\App\Http\Controllers\SearchHistoryController::class, 'destroy'])->name('destroy');
+    Route::delete('/', [\App\Http\Controllers\SearchHistoryController::class, 'clear'])->name('clear');
+});
 Route::get('/shop/{id}', [\App\Http\Controllers\ShopController::class, 'show'])->name('shop.show');
 Route::get('/products/{id}/json', [\App\Http\Controllers\ShopController::class, 'json'])->name('product.json');
 
