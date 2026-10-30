@@ -169,8 +169,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/returns/{return}/complete', [\App\Http\Controllers\ReturnController::class, 'complete'])->name('returns.complete');
     });
     
-    // Advanced Analytics
+    // Advanced Analytics & Views Intelligence
     Route::middleware('permission:view_analytics')->group(function () {
+        Route::get('/analytics/views', [\App\Http\Controllers\ViewsAnalyticsController::class, 'index'])->name('analytics.views');
+        Route::get('/analytics/views/export', [\App\Http\Controllers\ViewsAnalyticsController::class, 'export'])->name('analytics.views.export');
+        Route::get('/analytics/views/product/{product}', [\App\Http\Controllers\ViewsAnalyticsController::class, 'productDetail'])->name('analytics.views.product');
         Route::get('/analytics', [\App\Http\Controllers\AnalyticsController::class, 'index'])->name('analytics.index');
         Route::get('/analytics/export', [\App\Http\Controllers\AnalyticsController::class, 'export'])->name('analytics.export');
     });

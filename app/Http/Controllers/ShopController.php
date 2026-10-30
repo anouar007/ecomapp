@@ -69,6 +69,14 @@ class ShopController extends Controller
             ? $activeCategory->name 
             : ($request->filled('q') ? __('Résultats pour ":q"', ['q' => $request->q]) : __('Tout le matériel'));
 
+        // Track Category View and Search Query
+        if ($activeCategory && (int) $request->get('page', 1) <= 1) {
+            \App\Services\ViewTrackingService::trackCategoryView($activeCategory, $request);
+        }
+        if (is_string($search) && trim($search) !== '' && (int) $request->get('page', 1) <= 1) {
+            \App\Services\ViewTrackingService::trackSearch($search, $products->total(), $request);
+        }
+
         $viewData = compact(
             'products',
             'categories',
@@ -104,12 +112,15 @@ class ShopController extends Controller
     /**
      * Display the specified product.
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $product = is_numeric($id)
             ? Product::with(['images', 'productCategory', 'categories', 'inventoryMovements', 'variants', 'brand', 'activeTags'])->findOrFail($id)
             : Product::with(['images', 'productCategory', 'categories', 'inventoryMovements', 'variants', 'brand', 'activeTags'])->where('slug', $id)->firstOrFail();
         
+        // Track product view with date and device telemetry
+        \App\Services\ViewTrackingService::trackProductView($product, $request);
+
         // Paginate approved reviews separately - 5 per page
         $reviews = ProductReview::where('product_id', $product->id)
             ->where('status', 'approved')
@@ -163,6 +174,10 @@ class ShopController extends Controller
     public function liveSearch(Request $request)
     {
         $q = trim($request->get('q', ''));
-        return response()->json(ProductSearchService::liveSearch($q, 8));
+        $data = ProductSearchService::liveSearch($q, 8);
+        if (mb_strlen($q) >= 2) {
+            \App\Services\ViewTrackingService::trackSearch($q, (int)($data['count'] ?? count($data['products'] ?? [])), $request);
+        }
+        return response()->json($data);
     }
 }

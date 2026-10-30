@@ -19,6 +19,7 @@ class Category extends Model
         'image',
         'status',
         'sort_order',
+        'views_count',
     ];
 
     protected $casts = [
@@ -73,6 +74,14 @@ class Category extends Model
     public function children()
     {
         return $this->hasMany(Category::class, 'parent_id')->orderBy('sort_order');
+    }
+
+    /**
+     * Get detailed view events for this category.
+     */
+    public function views()
+    {
+        return $this->hasMany(\App\Models\CategoryView::class);
     }
 
     /**

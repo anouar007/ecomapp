@@ -31,6 +31,7 @@ class Product extends Model
         'image_height',
         'image_quality',
         'image_padding',
+        'views_count',
     ];
 
     protected $casts = [
@@ -295,6 +296,14 @@ class Product extends Model
     public function primaryImage()
     {
         return $this->hasOne(ProductImage::class)->where('is_primary', true);
+    }
+
+    /**
+     * Get detailed view events for this product.
+     */
+    public function views()
+    {
+        return $this->hasMany(\App\Models\ProductView::class);
     }
 
     /**

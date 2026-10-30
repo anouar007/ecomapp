@@ -367,6 +367,14 @@
                     <span>Tableau de bord</span>
                 </a>
             </li>
+            @if(auth()->check() && (auth()->user()->can('view_analytics') || auth()->user()->hasRole('Admin')))
+            <li class="sidebar-menu-item">
+                <a href="{{ route('analytics.views') }}" class="sidebar-menu-link {{ request()->routeIs('analytics.views*') ? 'active' : '' }}">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Vues & Recherches</span>
+                </a>
+            </li>
+            @endif
             @can('manage_categories')
             <li class="sidebar-menu-item">
                 <a href="{{ route('categories.index') }}" class="sidebar-menu-link {{ request()->routeIs('categories.*') ? 'active' : '' }}">
