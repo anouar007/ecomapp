@@ -77,6 +77,26 @@
   @endif
   @endforeach
 
+  {{-- Brand Catalog Pages --}}
+  @if(isset($brands))
+  @foreach($brands as $brand)
+  @if($brand->slug)
+  @php $brandUrl = route('shop.index', ['brand' => $brand->slug]); @endphp
+  <url>
+    <loc>{{ $brandUrl }}</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="{{ $brandUrl }}"/>
+    <xhtml:link rel="alternate" hreflang="fr-MA" href="{{ $brandUrl }}"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="{{ $brandUrl }}&amp;lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ $brandUrl }}&amp;lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="{{ $brandUrl }}"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <lastmod>{{ $brand->updated_at ? $brand->updated_at->toAtomString() : now()->toAtomString() }}</lastmod>
+  </url>
+  @endif
+  @endforeach
+  @endif
+
   {{-- Product Pages with Multilingual Links and Google Images --}}
   @foreach($products as $product)
   @php $prodUrl = route('shop.show', $product->slug ?: $product->id); @endphp

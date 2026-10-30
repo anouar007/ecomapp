@@ -17,7 +17,7 @@
     
     // Extract specs summary from enriched description
     $specsSummary = '';
-    if (preg_match_all('/<div class="pdp-spec-label"><i[^>]*><\/i>\s*([^<]+)<\/div>\s*<div class="pdp-spec-value">([^<]+)<\/div>/is', $product->description, $mSpecs)) {
+    if (!empty($product->description) && preg_match_all('/<div class="pdp-spec-label"><i[^>]*><\/i>\s*([^<]+)<\/div>\s*<div class="pdp-spec-value">([^<]+)<\/div>/is', (string) $product->description, $mSpecs)) {
         $specPairs = [];
         foreach(array_slice($mSpecs[1], 0, 5) as $idx => $sName) {
             $specPairs[] = html_entity_decode(trim($sName), ENT_QUOTES | ENT_HTML5, 'UTF-8') . ': ' . html_entity_decode(trim($mSpecs[2][$idx]), ENT_QUOTES | ENT_HTML5, 'UTF-8');

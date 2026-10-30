@@ -188,6 +188,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/settings/stamp', [\App\Http\Controllers\SettingsController::class, 'removeStamp'])->name('settings.stamp.remove');
         Route::post('/settings/reset', [\App\Http\Controllers\SettingsController::class, 'reset'])->name('settings.reset');
         Route::post('/settings/test-email', [\App\Http\Controllers\SettingsController::class, 'sendTestEmail'])->name('settings.test-email');
+        Route::post('/settings/seo-boost', [\App\Http\Controllers\SettingsController::class, 'boostSeoAndAiIndex'])->name('settings.seo-boost');
 
         // Centralized Logos & Icons Management Studio
         Route::get('/logos-icons', [\App\Http\Controllers\SettingsController::class, 'logosAndIcons'])->name('settings.logos-icons');

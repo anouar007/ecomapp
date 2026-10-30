@@ -11,11 +11,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// SEO: Sitemap, Robots & AI LLM Crawlers
+// SEO: Sitemap, Robots, Google Merchant Shopping Feed & AI LLM Crawlers
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
+Route::get('/google-merchant.xml', [\App\Http\Controllers\SitemapController::class, 'googleMerchantFeed'])->name('google.merchant.xml');
+Route::get('/ai-catalog.json', [\App\Http\Controllers\SitemapController::class, 'aiCatalogJson'])->name('ai.catalog.json');
+Route::get('/.well-known/ai-catalog.json', [\App\Http\Controllers\SitemapController::class, 'aiCatalogJson']);
 Route::get('/robots.txt', [\App\Http\Controllers\SitemapController::class, 'robots'])->name('robots');
 Route::get('/llms.txt', [\App\Http\Controllers\SitemapController::class, 'llmsTxt'])->name('llms.txt');
+Route::get('/.well-known/llms.txt', [\App\Http\Controllers\SitemapController::class, 'llmsTxt']);
 Route::get('/llms-full.txt', [\App\Http\Controllers\SitemapController::class, 'llmsFullTxt'])->name('llms.full.txt');
+Route::get('/indexnow-{key}.txt', [\App\Http\Controllers\SitemapController::class, 'indexNowKey'])->where('key', '[a-zA-Z0-9]+')->name('indexnow.key');
 Route::get('/media/proxy', [\App\Http\Controllers\DiagramMediaController::class, 'proxy'])->name('media.proxy');
 // Google Search Console Automated HTML File Verification
 Route::get('/google{code}.html', function ($code) {

@@ -8,6 +8,38 @@
 [
   {
     "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "{{ url('/') }}#webpage",
+    "url": "{{ url('/') }}",
+    "name": {!! json_encode(setting('app_name', 'WINA SHOP') . ' — Matériel Photo, Vidéo, Caméras & Drones au Maroc') !!},
+    "description": {!! json_encode(setting('app_description', 'Votre référence au Maroc pour le matériel photo & vidéo professionnel — Caméras Sony, Canon, drones & stabilisateurs DJI, optiques et éclairage studio.')) !!},
+    "inLanguage": ["fr-MA", "ar-MA", "en-MA"],
+    "about": { "@id": "{{ url('/') }}#organization" },
+    "speakable": {
+      "@type": "SpeakableSpecification",
+      "cssSelector": ["h1", ".selection-title", ".reassurance-box"]
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Sélection de Matériel Photo & Vidéo Professionnel au Maroc",
+    "numberOfItems": {{ isset($featuredProducts) ? $featuredProducts->take(10)->count() : 0 }},
+    "itemListElement": [
+      @if(isset($featuredProducts))
+      @foreach($featuredProducts->take(10) as $idx => $fp)
+      {
+        "@type": "ListItem",
+        "position": {{ $idx + 1 }},
+        "url": "{{ route('shop.show', $fp->slug ?: $fp->id) }}",
+        "name": {!! json_encode($fp->name) !!}
+      }@if(!$loop->last),@endif
+      @endforeach
+      @endif
+    ]
+  },
+  {
+    "@context": "https://schema.org",
     "@type": "FAQPage",
     "mainEntity": [
       {

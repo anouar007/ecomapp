@@ -48,15 +48,20 @@ Allow: /sitemap.xml
 Disallow: /dashboard
 Disallow: /admin
 
-# Anthropic Claude & Apple Intelligence
+# Anthropic Claude, Meta AI, DuckAssist & Apple Intelligence
 User-agent: ClaudeBot
 User-agent: anthropic-ai
 User-agent: Applebot
 User-agent: Applebot-Extended
+User-agent: Meta-ExternalAgent
+User-agent: DuckAssistBot
+User-agent: YouBot
 Allow: /
 Allow: /shop
 Allow: /llms.txt
 Allow: /llms-full.txt
+Allow: /ai-catalog.json
+Allow: /google-merchant.xml
 Allow: /sitemap.xml
 Disallow: /dashboard
 Disallow: /admin
@@ -106,5 +111,7 @@ Disallow: /analytics/
 Disallow: /reports/
 
 Sitemap: {{ $sitemapUrl }}
+Sitemap: {{ $merchantUrl ?? url('/google-merchant.xml') }}
 # LLMs-Txt: {{ $llmsUrl ?? url('/llms.txt') }}
 # LLMs-Full-Txt: {{ $llmsFullUrl ?? url('/llms-full.txt') }}
+# AI-Catalog-JSON: {{ $aiJsonUrl ?? url('/ai-catalog.json') }}

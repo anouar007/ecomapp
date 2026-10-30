@@ -163,6 +163,10 @@ class SettingsController extends Controller
 
         // Clear all settings cache
         Setting::clearCache();
+        $seoKeys = ['seo_sitemap_xml', 'seo_google_merchant_xml', 'seo_llms_txt', 'seo_llms_full_txt', 'seo_ai_catalog_json'];
+        foreach ($seoKeys as $sKey) {
+            Cache::forget($sKey);
+        }
         \Artisan::call('cache:clear');
         \Artisan::call('config:clear');
 
@@ -205,6 +209,9 @@ class SettingsController extends Controller
             'mail_' => 'email',
             'order_notification_' => 'email',
             'smtp_' => 'email',
+            'seo_' => 'seo',
+            'google_' => 'seo',
+            'bing_' => 'seo',
         ];
 
         foreach ($prefixGroups as $prefix => $group) {
@@ -545,5 +552,74 @@ class SettingsController extends Controller
         \Artisan::call('cache:clear');
 
         return back()->with('success', "Logo de la marque « {$brand->name} » mis à jour !");
+    }
+
+    /**
+     * Regenerate all SEO & AI Search feeds and ping IndexNow (Bing, ChatGPT Search, Perplexity, Yandex)
+     */
+    public function boostSeoAndAiIndex(Request $request)
+    {
+        // Clear all cached SEO & AI feeds
+        $cacheKeys = [
+            'seo_sitemap_xml',
+            'seo_google_merchant_xml',
+            'seo_llms_txt',
+            'seo_llms_full_txt',
+            'seo_ai_catalog_json',
+        ];
+        foreach ($cacheKeys as $key) {
+            Cache::forget($key);
+        }
+
+        // Warm up caches immediately via SitemapController
+        $sitemapCtrl = app(\App\Http\Controllers\SitemapController::class);
+        $sitemapCtrl->index();
+        $sitemapCtrl->googleMerchantFeed();
+        $sitemapCtrl->llmsTxt();
+        $sitemapCtrl->llmsFullTxt();
+        $sitemapCtrl->aiCatalogJson();
+
+        // Prepare URL list for IndexNow (Bing, ChatGPT Search, Copilot, Yandex)
+        $indexNowKey = setting('seo_indexnow_key');
+        if (!$indexNowKey) {
+            $indexNowKey = substr(md5(config('app.key') . '_indexnow_wina'), 0, 32);
+            Setting::set('seo_indexnow_key', $indexNowKey, 'string', 'seo');
+        }
+
+        $host = parse_url(url('/'), PHP_URL_HOST) ?: 'localhost';
+        $urls = [
+            url('/'),
+            url('/shop'),
+            url('/sitemap.xml'),
+            url('/llms.txt'),
+            url('/ai-catalog.json'),
+        ];
+
+        $topProducts = \App\Models\Product::where('status', 'active')
+            ->orderBy('updated_at', 'desc')
+            ->take(50)
+            ->get(['slug']);
+        foreach ($topProducts as $prod) {
+            $urls[] = route('shop.show', $prod->slug);
+        }
+
+        $pingStatus = 'Flux SEO, Google Shopping & IA régénérés avec succès !';
+        if (!in_array($host, ['localhost', '127.0.0.1'], true)) {
+            try {
+                \Illuminate\Support\Facades\Http::timeout(5)->post('https://api.indexnow.org/indexnow', [
+                    'host' => $host,
+                    'key' => $indexNowKey,
+                    'keyLocation' => url("/indexnow-{$indexNowKey}.txt"),
+                    'urlList' => array_values(array_unique($urls)),
+                ]);
+                $pingStatus .= ' Notification IndexNow envoyée à Bing, ChatGPT Search & Perplexity (' . count($urls) . ' URLs).';
+            } catch (\Throwable $e) {
+                // Silent fail on network restrictions
+            }
+        } else {
+            $pingStatus .= ' (' . count($urls) . ' URLs prêtes pour Google, Bing, ChatGPT Search & Perplexity dès la mise en ligne sur votre nom de domaine).';
+        }
+
+        return redirect()->to(route('settings.index') . '#seo')->with('success', $pingStatus);
     }
 }
