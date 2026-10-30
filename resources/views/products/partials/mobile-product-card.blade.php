@@ -37,7 +37,7 @@
             <div class="d-flex justify-content-between align-items-start gap-2">
                 <!-- Title -->
                 <div class="min-w-0 flex-grow-1">
-                    <a href="{{ route('products.edit', $product) }}" class="mobile-prod-title" title="{{ $product->name }}">
+                    <a href="{{ route('products.edit', ['product' => $product->id, 'return_url' => request()->fullUrl()]) }}" class="mobile-prod-title" title="{{ $product->name }}">
                         {{ $product->name }}
                     </a>
                     @if($product->variants && $product->variants->isNotEmpty())
@@ -150,7 +150,7 @@
             </button>
 
             <!-- Modifier -->
-            <a href="{{ route('products.edit', $product) }}" 
+            <a href="{{ route('products.edit', ['product' => $product->id, 'return_url' => request()->fullUrl()]) }}" 
                class="mobile-act-btn mobile-act-edit" 
                title="Modifier le produit">
                 <i class="fas fa-pencil-alt"></i>

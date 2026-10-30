@@ -306,7 +306,7 @@ class ProductController extends Controller
     /**
      * Show the form for editing the specified product.
      */
-    public function edit(Product $product)
+    public function edit(Request $request, Product $product)
     {
         // Ensure legacy single image is represented as a ProductImage record if relation is empty
         if ($product->images->isEmpty() && !empty($product->image)) {
@@ -332,7 +332,12 @@ class ProductController extends Controller
             ->orderBy('name')
             ->get();
         
-        return view('products.edit', compact('product', 'categories', 'brands', 'productTags'));
+        $returnUrl = $request->input('return_url');
+        if (!$returnUrl && url()->previous() && url()->previous() !== url()->current() && !str_contains(url()->previous(), '/login')) {
+            $returnUrl = url()->previous();
+        }
+
+        return view('products.edit', compact('product', 'categories', 'brands', 'productTags', 'returnUrl'));
     }
 
     /**
@@ -558,9 +563,18 @@ class ProductController extends Controller
             }
 
             DB::commit();
+
+            $returnUrl = $request->input('return_url');
+            if ($returnUrl) {
+                $cleanUrl = strtok($returnUrl, '#');
+                $redirectUrl = $cleanUrl . '#product-row-' . $product->id;
+            } else {
+                $redirectUrl = route('products.index') . '#product-row-' . $product->id;
+            }
             
-            return redirect()->route('products.index')
-                ->with('success', 'Product updated successfully.');
+            return redirect()->to($redirectUrl)
+                ->with('success', 'Produit mis à jour avec succès.')
+                ->with('updated_product_id', $product->id);
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Failed to update product: ' . $e->getMessage())->withInput();

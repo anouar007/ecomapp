@@ -546,8 +546,7 @@
                                         onclick="open4kFinderFromElement(this)">
                                     <i class="fas fa-wand-magic-sparkles"></i>
                                 </button>
-                                <a href="{{ route('products.edit', $product) }}" 
-                                    target="_blank"
+                                <a href="{{ route('products.edit', ['product' => $product->id, 'return_url' => request()->fullUrl()]) }}" 
                                     class="action-btn action-btn-edit" 
                                     title="Modifier le produit" 
                                     data-bs-toggle="tooltip">
@@ -1026,6 +1025,31 @@
         border-top: 1px solid #eef2f6;
     }
     .products-table-footer .custom-pagination-nav { justify-content: flex-end; }
+
+    /* Pulsing highlight for recently edited or focused product */
+    @keyframes productHighlightPulse {
+        0% {
+            background-color: rgba(99, 102, 241, 0.22);
+            box-shadow: inset 0 0 0 2px rgba(99, 102, 241, 0.35);
+        }
+        50% {
+            background-color: rgba(99, 102, 241, 0.12);
+            box-shadow: inset 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+        100% {
+            background-color: transparent;
+            box-shadow: none;
+        }
+    }
+
+    .brand-table-products tbody tr.product-row-highlight > td {
+        animation: productHighlightPulse 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    .mobile-product-card.product-row-highlight {
+        animation: productHighlightPulse 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        border-color: #6366f1 !important;
+    }
 </style>
 @endpush
 
@@ -1036,7 +1060,54 @@
     document.addEventListener('DOMContentLoaded', function() {
         initTooltips();
         initSortOrderInputs();
+        restoreProductPosition();
     });
+
+    // Automatically restore scroll position & highlight product when returning from edit or with anchor
+    function restoreProductPosition() {
+        const updatedProductId = @json(session('updated_product_id'));
+        const hash = window.location.hash;
+        
+        let targetEl = null;
+
+        if (updatedProductId) {
+            targetEl = document.getElementById(`product-row-${updatedProductId}`) ||
+                       document.getElementById(`mobile-product-card-${updatedProductId}`);
+        }
+        
+        if (!targetEl && hash) {
+            if (hash.startsWith('#product-row-')) {
+                const id = hash.replace('#product-row-', '');
+                targetEl = document.getElementById(hash.substring(1)) ||
+                           document.getElementById(`mobile-product-card-${id}`);
+            } else if (hash.startsWith('#mobile-product-card-')) {
+                const id = hash.replace('#mobile-product-card-', '');
+                targetEl = document.getElementById(hash.substring(1)) ||
+                           document.getElementById(`product-row-${id}`);
+            } else {
+                try {
+                    targetEl = document.querySelector(hash);
+                } catch (e) {}
+            }
+        }
+
+        if (targetEl) {
+            const performScroll = () => {
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                targetEl.classList.remove('product-row-highlight');
+                void targetEl.offsetWidth; // Trigger reflow to restart animation
+                targetEl.classList.add('product-row-highlight');
+            };
+
+            // Scroll once DOM is ready
+            setTimeout(performScroll, 120);
+
+            // Re-check after images/layout settle
+            window.addEventListener('load', function() {
+                setTimeout(performScroll, 60);
+            }, { once: true });
+        }
+    }
 
     function initSortOrderInputs() {
         document.querySelectorAll('.prod-sort-order-input').forEach(input => {

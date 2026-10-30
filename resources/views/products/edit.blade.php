@@ -559,6 +559,9 @@
 @endpush
 
 @section('content')
+@php
+    $backUrl = ($returnUrl ? strtok($returnUrl, '#') : route('products.index')) . '#product-row-' . $product->id;
+@endphp
     <!-- En-tête de la page -->
     <div class="brand-header">
         <div class="d-flex align-items-center gap-2.5">
@@ -581,7 +584,7 @@
             </div>
         </div>
         <div class="brand-header-actions flex-wrap">
-            <a href="{{ route('products.index') }}" class="btn btn-sm btn-light border rounded-pill px-2.5 py-1.5 text-muted fw-semibold d-inline-flex align-items-center" title="Retour à la liste">
+            <a href="{{ $backUrl }}" class="btn btn-sm btn-light border rounded-pill px-2.5 py-1.5 text-muted fw-semibold d-inline-flex align-items-center" title="Retour à la liste">
                 <i class="fas fa-arrow-left me-1"></i> <span>Retour</span>
             </a>
             <a href="{{ Route::has('shop.show') ? route('shop.show', $product->slug ?: $product->id) : url('/shop/' . ($product->slug ?: $product->id)) }}" 
@@ -623,6 +626,7 @@
     <form action="{{ route('products.update', $product) }}" method="POST" enctype="multipart/form-data" id="productForm" novalidate>
         @csrf
         @method('PUT')
+        <input type="hidden" name="return_url" value="{{ old('return_url', $returnUrl ?? request('return_url')) }}">
 
         <div class="row g-4">
             <!-- Colonne Principale (Gauche) -->
@@ -1394,7 +1398,7 @@
                     <button type="submit" form="productForm" class="btn btn-brand-primary w-100 py-2.5 justify-content-center shadow-sm fw-bold">
                         <i class="fas fa-save me-2"></i> Enregistrer les modifications
                     </button>
-                    <a href="{{ route('products.index') }}" class="btn btn-outline-secondary w-100 py-2 mt-2 rounded-pill text-center d-block text-decoration-none">
+                    <a href="{{ $backUrl }}" class="btn btn-outline-secondary w-100 py-2 mt-2 rounded-pill text-center d-block text-decoration-none">
                         Annuler
                     </a>
                     <div class="text-center text-muted small mt-2.5" style="font-size: 0.72rem;">
@@ -1415,7 +1419,7 @@
             </div>
         </div>
         <div class="d-flex align-items-center gap-2 flex-shrink-0">
-            <a href="{{ route('products.index') }}" class="btn btn-sm btn-light border rounded-pill px-2.5 py-1.5 text-muted small" title="Annuler">
+            <a href="{{ $backUrl }}" class="btn btn-sm btn-light border rounded-pill px-2.5 py-1.5 text-muted small" title="Annuler">
                 Annuler
             </a>
             <button type="submit" form="productForm" class="btn btn-sm btn-brand-primary rounded-pill px-3 py-1.5 shadow-sm fw-bold d-inline-flex align-items-center gap-1.5">
