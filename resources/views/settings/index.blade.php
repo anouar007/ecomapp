@@ -736,6 +736,70 @@
                                 </div>
                             </div>
                         </div>
+
+                        {{-- Options sous la barre de recherche Navbar --}}
+                        <div class="settings-section-card mt-4">
+                            <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+                                <h3 class="settings-section-title m-0">
+                                    <i class="fas fa-search text-danger"></i>
+                                    <span>Barre de Recherche Navbar (Options & Recherches Fréquentes)</span>
+                                </h3>
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1" style="font-size: 0.72rem;">
+                                    <i class="fas fa-mobile-alt me-1"></i> Synchronisé PC & Mobile
+                                </span>
+                            </div>
+                            <p class="text-muted small mb-4">
+                                Personnalisez les options qui s'affichent sous la barre de recherche (recherches fréquentes, historique des visiteurs et suggestions rapides).
+                            </p>
+
+                            <div class="row g-3">
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Afficher les "Recherches fréquentes"</label>
+                                    <select name="settings[frontend_search_frequent_enabled]" class="form-select rounded-3">
+                                        <option value="1" {{ setting('frontend_search_frequent_enabled', '1') == '1' ? 'selected' : '' }}>Activées (Afficher les pastilles)</option>
+                                        <option value="0" {{ setting('frontend_search_frequent_enabled', '1') == '0' ? 'selected' : '' }}>Désactivées</option>
+                                    </select>
+                                    <div class="form-text small text-muted">Affiche les pastilles de suggestions rapides sous le champ de recherche.</div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Historique des recherches récentes du client</label>
+                                    <select name="settings[frontend_search_history_enabled]" class="form-select rounded-3">
+                                        <option value="1" {{ setting('frontend_search_history_enabled', '1') == '1' ? 'selected' : '' }}>Activé (Mémorise les dernières recherches)</option>
+                                        <option value="0" {{ setting('frontend_search_history_enabled', '1') == '0' ? 'selected' : '' }}>Désactivé</option>
+                                    </select>
+                                    <div class="form-text small text-muted">Permet au client de retrouver ses dernières recherches en 1 clic.</div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-bold small text-dark">Titre de la section des suggestions</label>
+                                    <input type="text" 
+                                           name="settings[frontend_search_frequent_title]" 
+                                           class="form-control rounded-3" 
+                                           value="{{ setting('frontend_search_frequent_title', 'Recherches fréquentes') }}" 
+                                           placeholder="Ex: Recherches fréquentes, Tendances...">
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label fw-bold small text-dark d-flex align-items-center justify-content-between">
+                                        <span>Mots-clés / Suggestions rapides</span>
+                                        <span class="text-muted fw-normal" style="font-size: 0.72rem;">Séparez par une virgule ou retour à la ligne</span>
+                                    </label>
+                                    <textarea name="settings[frontend_search_frequent_tags]" 
+                                              id="search_frequent_tags_input"
+                                              class="form-control rounded-3 font-monospace" 
+                                              rows="3" 
+                                              placeholder="Sony Alpha, DJI Osmo, Godox, Rode, Insta360">{{ setting('frontend_search_frequent_tags', 'Sony Alpha, DJI Osmo, Godox, Rode, Insta360') }}</textarea>
+                                    
+                                    <div class="mt-2.5 p-2.5 bg-light rounded-3 border">
+                                        <div class="small fw-semibold text-muted mb-1.5 d-flex align-items-center gap-1.5" style="font-size: 0.74rem;">
+                                            <i class="fas fa-eye text-primary"></i> <span>Aperçu en direct des pastilles :</span>
+                                        </div>
+                                        <div class="d-flex flex-wrap gap-2" id="search_tags_live_preview"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {{-- 7. Localization & Tax Tab --}}
@@ -1530,5 +1594,29 @@
             if (enc) enc.value = 'ssl';
         }
     }
+
+    function updateSearchTagsPreview() {
+        const input = document.getElementById('search_frequent_tags_input');
+        const preview = document.getElementById('search_tags_live_preview');
+        if (!input || !preview) return;
+        const raw = input.value || '';
+        const tags = raw.split(/[,\n\r]+/).map(t => t.trim()).filter(Boolean);
+        if (tags.length === 0) {
+            preview.innerHTML = '<span class="text-muted small fst-italic">Aucune pastille définie</span>';
+            return;
+        }
+        preview.innerHTML = tags.map(t => {
+            const escaped = t.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
+            return `<span class="badge bg-white text-dark border shadow-2xs rounded-pill px-2.5 py-1.5 font-sans d-inline-flex align-items-center gap-1.5" style="font-size: 0.76rem;"><i class="fas fa-search text-danger" style="font-size: 10px;"></i>${escaped}</span>`;
+        }).join('');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        updateSearchTagsPreview();
+        const tagsInput = document.getElementById('search_frequent_tags_input');
+        if (tagsInput) {
+            tagsInput.addEventListener('input', updateSearchTagsPreview);
+        }
+    });
 </script>
 @endpush

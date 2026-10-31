@@ -130,6 +130,23 @@ class ViewsAnalyticsController extends Controller
         // C: Live recent activity feed (last 25 events)
         $recentActivity = $this->getRecentActivityFeed();
 
+        // 8. Real-time active clients & visitors (last 5 min activity)
+        $cutoff = now()->subMinutes(5)->timestamp;
+        $onlineVisitors = DB::table('sessions')
+            ->where('last_activity', '>=', $cutoff)
+            ->count();
+        $onlineAuthClients = DB::table('sessions')
+            ->where('last_activity', '>=', $cutoff)
+            ->whereNotNull('user_id')
+            ->distinct('user_id')
+            ->count('user_id');
+        $totalOnline = max(1, $onlineVisitors);
+        $onlineStats = [
+            'total_online' => $totalOnline,
+            'auth_online' => $onlineAuthClients,
+            'guest_online' => max(0, $totalOnline - $onlineAuthClients),
+        ];
+
         // All active categories for filter dropdown
         $allCategories = Category::orderBy('name')->get(['id', 'name']);
 
@@ -151,7 +168,8 @@ class ViewsAnalyticsController extends Controller
             'allCategories',
             'productSearch',
             'categoryId',
-            'searchWord'
+            'searchWord',
+            'onlineStats'
         ));
     }
 
@@ -504,6 +522,40 @@ class ViewsAnalyticsController extends Controller
             ->take(25)
             ->values()
             ->all();
+    }
+
+    /**
+     * Return real-time active clients & visitors counter JSON.
+     */
+    public function liveVisitors()
+    {
+        $cutoff = now()->subMinutes(5)->timestamp;
+
+        $onlineVisitors = DB::table('sessions')
+            ->where('last_activity', '>=', $cutoff)
+            ->count();
+
+        $onlineAuthClients = DB::table('sessions')
+            ->where('last_activity', '>=', $cutoff)
+            ->whereNotNull('user_id')
+            ->distinct('user_id')
+            ->count('user_id');
+
+        $staffRoles = ['Admin', 'Manager', 'Staff'];
+        $totalRegisteredClients = \App\Models\User::whereDoesntHave('roles', function($q) use ($staffRoles) {
+            $q->whereIn('name', $staffRoles);
+        })->count();
+
+        $totalOnline = max(1, $onlineVisitors);
+        $guestsOnline = max(0, $totalOnline - $onlineAuthClients);
+
+        return response()->json([
+            'online_clients' => $totalOnline,
+            'online_auth_clients' => $onlineAuthClients,
+            'online_guests' => $guestsOnline,
+            'total_registered_clients' => $totalRegisteredClients ?: \App\Models\User::count(),
+            'updated_at' => now()->format('H:i:s'),
+        ]);
     }
 }
 

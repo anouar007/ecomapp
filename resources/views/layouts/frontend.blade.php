@@ -1231,7 +1231,38 @@
             cursor: pointer;
         }
         .search-history-clear:hover { color: #e11d48; background: #fff1f2; }
-        .search-history-list { list-style: none; margin: 0; padding: 0; }
+        .search-history-empty {
+            color: #94a3b8;
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            font-style: italic;
+        }
+        .header-search-dropdown {
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            max-height: min(85vh, 560px) !important;
+        }
+        .header-search-dropdown::-webkit-scrollbar,
+        .search-history-list::-webkit-scrollbar {
+            width: 5px;
+        }
+        .header-search-dropdown::-webkit-scrollbar-thumb,
+        .search-history-list::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.45);
+            border-radius: 999px;
+        }
+        .header-search-dropdown::-webkit-scrollbar-track,
+        .search-history-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .search-history-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            max-height: 180px;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+        }
         .search-history-item {
             display: flex;
             align-items: center;
@@ -2499,6 +2530,17 @@
                         {!! site_icon_html('icon_nav_mobile_menu', 'fas fa-bars', '', 'font-size: 20px;', 22) !!}
                     </button>    
                 
+                    @php
+                        $searchHistoryEnabled = (bool) setting('frontend_search_history_enabled', true);
+                        $searchFrequentEnabled = (bool) setting('frontend_search_frequent_enabled', true);
+                        $searchFrequentTitle = setting('frontend_search_frequent_title', __('Frequent Searches'));
+                        $searchFrequentRaw = setting('frontend_search_frequent_tags', 'Sony Alpha, DJI Osmo, Godox, Rode, Insta360');
+                        $searchFrequentTags = array_values(array_filter(array_map('trim', preg_split('/[,\r\n]+/', (string) $searchFrequentRaw))));
+                        if (empty($searchFrequentTags) && setting('frontend_search_frequent_tags') === null) {
+                            $searchFrequentTags = ['Sony Alpha', 'DJI Osmo', 'Godox', 'Rode', 'Insta360'];
+                        }
+                    @endphp
+
                     <!-- Search Input (Pill shape #f1f3f5) -->
                     <form action="{{ route('shop.index') }}" method="GET" class="header-search-wrap w-100 position-relative" style="max-width: 380px;" id="headerSearchForm" autocomplete="off">
                         <div class="position-relative d-flex align-items-center header-search-box" style="background: #f1f3f5; border-radius: 9999px; padding: 0 14px; height: 42px;">
@@ -2520,27 +2562,30 @@
 
                         <!-- Live Search Floating Dropdown -->
                         <div class="header-search-dropdown shadow-lg d-none" id="headerSearchDropdown" role="region" aria-label="{{ __('Search Results') }}">
-                            <div class="search-quick-tags p-3 border-bottom" id="headerSearchTags">
+                            <div class="search-quick-tags p-3 border-bottom {{ (!$searchHistoryEnabled && (!$searchFrequentEnabled || empty($searchFrequentTags))) ? 'd-none' : '' }}" id="headerSearchTags">
+                                @if($searchHistoryEnabled)
                                 <!-- Client Recent Searches (history) -->
-                                <div class="search-history-block d-none" id="headerSearchHistory">
+                                <div class="search-history-block" id="headerSearchHistory">
                                     <div class="search-history-head">
                                         <div class="search-section-label m-0">
                                             <i class="fas fa-history me-1 text-danger"></i> {{ strtoupper(__('Recent Searches')) }}
                                         </div>
-                                        <button type="button" class="search-history-clear" data-history-clear>{{ __('Clear all') }}</button>
+                                        <button type="button" class="search-history-clear d-none" data-history-clear>{{ __('Clear all') }}</button>
                                     </div>
                                     <ul class="search-history-list" id="headerSearchHistoryList"></ul>
                                 </div>
-                                <div class="search-section-label">
-                                    <i class="fas fa-fire me-1 text-danger"></i> {{ strtoupper(__('Frequent Searches')) }}
+                                @endif
+
+                                @if($searchFrequentEnabled && !empty($searchFrequentTags))
+                                <div class="search-section-label {{ $searchHistoryEnabled ? 'mt-3' : '' }}">
+                                    <i class="fas fa-fire me-1 text-danger"></i> {{ strtoupper($searchFrequentTitle) }}
                                 </div>
                                 <div class="d-flex flex-wrap gap-2 mt-2">
-                                    <button type="button" class="search-tag-chip" data-search="Sony Alpha">Sony Alpha</button>
-                                    <button type="button" class="search-tag-chip" data-search="DJI Osmo">DJI Osmo</button>
-                                    <button type="button" class="search-tag-chip" data-search="Godox">Godox</button>
-                                    <button type="button" class="search-tag-chip" data-search="Rode">Røde</button>
-                                    <button type="button" class="search-tag-chip" data-search="Insta360">Insta360</button>
+                                    @foreach($searchFrequentTags as $chipTag)
+                                        <button type="button" class="search-tag-chip" data-search="{{ $chipTag }}">{{ $chipTag }}</button>
+                                    @endforeach
                                 </div>
+                                @endif
                             </div>
                             <div class="search-results-list" id="headerSearchResultsList"></div>
                             <div class="search-empty-state text-center py-4 px-3 d-none" id="headerSearchEmpty">
@@ -2693,42 +2738,33 @@
         <div class="pro-mobile-search-body" id="proMobileSearchBody">
             <!-- 1. Default Discovery State (When query is empty) -->
             <div class="pro-search-suggestions" id="proMobileSearchSuggestions">
+                @if($searchHistoryEnabled)
                 <!-- Client Recent Searches (history) -->
-                <div class="pro-search-section search-history-block mb-4 d-none" id="proMobileSearchHistory">
+                <div class="pro-search-section search-history-block mb-4" id="proMobileSearchHistory">
                     <div class="search-history-head">
                         <div class="pro-section-title m-0">
                             <i class="fas fa-history text-danger me-1"></i> {{ strtoupper(__('Recent Searches')) }}
                         </div>
-                        <button type="button" class="search-history-clear" data-history-clear>{{ __('Clear all') }}</button>
+                        <button type="button" class="search-history-clear d-none" data-history-clear>{{ __('Clear all') }}</button>
                     </div>
                     <ul class="search-history-list" id="proMobileSearchHistoryList"></ul>
                 </div>
+                @endif
 
+                @if($searchFrequentEnabled && !empty($searchFrequentTags))
                 <div class="pro-search-section">
                     <div class="pro-section-title">
-                        <i class="fas fa-fire text-danger me-1"></i> {{ strtoupper(__('Frequent Searches')) }}
+                        <i class="fas fa-fire text-danger me-1"></i> {{ strtoupper($searchFrequentTitle) }}
                     </div>
                     <div class="pro-tags-grid">
-                        <button type="button" class="pro-tag-chip" data-query="DJI Mic 2">
-                            <i class="fas fa-search"></i> DJI Mic 2
-                        </button>
-                        <button type="button" class="pro-tag-chip" data-query="Sony Alpha 7">
-                            <i class="fas fa-search"></i> Sony Alpha 7
-                        </button>
-                        <button type="button" class="pro-tag-chip" data-query="Blackmagic 6K">
-                            <i class="fas fa-search"></i> Blackmagic 6K
-                        </button>
-                        <button type="button" class="pro-tag-chip" data-query="Objectif 24-70">
-                            <i class="fas fa-search"></i> {{ app()->getLocale() === 'ar' ? 'عدسة 24-70' : 'Objectif 24-70' }}
-                        </button>
-                        <button type="button" class="pro-tag-chip" data-query="Stabilisateur RS 4">
-                            <i class="fas fa-search"></i> {{ app()->getLocale() === 'ar' ? 'مانع اهتزاز RS 4' : 'Stabilisateur RS 4' }}
-                        </button>
-                        <button type="button" class="pro-tag-chip" data-query="Mavic 3 Cine">
-                            <i class="fas fa-search"></i> Mavic 3 Cine
-                        </button>
+                        @foreach($searchFrequentTags as $chipTag)
+                            <button type="button" class="pro-tag-chip" data-query="{{ $chipTag }}">
+                                <i class="fas fa-search"></i> {{ $chipTag }}
+                            </button>
+                        @endforeach
                     </div>
                 </div>
+                @endif
 
                 <div class="pro-search-section mt-4">
                     <div class="pro-section-title">
@@ -2768,15 +2804,18 @@
                 <p class="pro-empty-subtitle">
                     {{ __('No results match') }} « <span class="pro-empty-query text-danger fw-bold"></span> »
                 </p>
+                @if($searchFrequentEnabled && !empty($searchFrequentTags))
                 <div class="pro-empty-tags-hint">
-                    <span class="text-muted small d-block mb-2">{{ __('Popular suggestions:') }}</span>
+                    <span class="text-muted small d-block mb-2">{{ $searchFrequentTitle }} :</span>
                     <div class="pro-tags-grid justify-content-center">
-                        <button type="button" class="pro-tag-chip" data-query="Sony">Sony</button>
-                        <button type="button" class="pro-tag-chip" data-query="Mic">{{ app()->getLocale() === 'ar' ? 'ميكروفونات' : 'Micros' }}</button>
-                        <button type="button" class="pro-tag-chip" data-query="Objectif">{{ app()->getLocale() === 'ar' ? 'عدسات' : 'Objectifs' }}</button>
-                        <button type="button" class="pro-tag-chip" data-query="Drone">{{ app()->getLocale() === 'ar' ? 'طائرات' : 'Drones' }}</button>
+                        @foreach($searchFrequentTags as $chipTag)
+                            <button type="button" class="pro-tag-chip" data-query="{{ $chipTag }}">
+                                <i class="fas fa-search"></i> {{ $chipTag }}
+                            </button>
+                        @endforeach
                     </div>
                 </div>
+                @endif
             </div>
         </div>
 
@@ -3808,6 +3847,7 @@
         // Logged-in clients: saved in the database (synced across devices);
         // searches made as a guest are merged into the account after login.
         window.SearchHistory = (function() {
+            const ENABLED = @json($searchHistoryEnabled);
             const MAX = 10;
             const USER_ID = @json(auth()->id());
             const GUEST_KEY = 'shop_search_history_guest';
@@ -3821,22 +3861,24 @@
             const listeners = [];
 
             function read(key) {
+                if (!ENABLED) return [];
                 try {
                     const data = JSON.parse(localStorage.getItem(key || KEY) || '[]');
                     return Array.isArray(data) ? data.filter(i => i && typeof i.q === 'string') : [];
                 } catch (e) { return []; }
             }
             function write(items) {
+                if (!ENABLED) return;
                 try { localStorage.setItem(KEY, JSON.stringify(items.slice(0, MAX))); } catch (e) {}
                 listeners.forEach(fn => { try { fn(all()); } catch (e) {} });
             }
             function clean(q) {
                 return String(q || '').replace(/\s+/g, ' ').trim().slice(0, 150);
             }
-            function all() { return read().slice(0, MAX); }
+            function all() { return ENABLED ? read().slice(0, MAX) : []; }
 
             function api(method, url, body) {
-                if (!USER_ID) return Promise.resolve(null);
+                if (!ENABLED || !USER_ID) return Promise.resolve(null);
                 return fetch(url, {
                     method,
                     credentials: 'same-origin',
@@ -3859,6 +3901,7 @@
 
             // localOnly = true when the server already recorded it (shop page load)
             function add(q, localOnly) {
+                if (!ENABLED) return;
                 q = clean(q);
                 if (q.length < 2) return;
                 const key = q.toLowerCase();
@@ -3868,11 +3911,13 @@
                 if (!localOnly) api('POST', API.base, { q });
             }
             function remove(q) {
+                if (!ENABLED) return;
                 const key = clean(q).toLowerCase();
                 write(read().filter(i => i.q.toLowerCase() !== key));
                 api('DELETE', API.item, { q });
             }
             function clear() {
+                if (!ENABLED) return;
                 write([]);
                 api('DELETE', API.base);
             }
@@ -3880,7 +3925,7 @@
 
             // Initial sync with the account
             function init() {
-                if (!USER_ID) return;
+                if (!ENABLED || !USER_ID) return;
                 const guestItems = read(GUEST_KEY);
                 if (guestItems.length) {
                     api('POST', API.sync, { items: guestItems.slice(0, 30) }).then(res => {
@@ -3891,18 +3936,26 @@
                 }
             }
 
-            return { all, add, remove, clear, onChange, init, isLoggedIn: !!USER_ID };
+            return { all, add, remove, clear, onChange, init, isLoggedIn: !!USER_ID, isEnabled: ENABLED };
         })();
 
         // Renders the history list into a container; returns true if it has items
         function renderSearchHistory(block, list) {
             if (!block || !list) return false;
+            const clearBtn = block.querySelector('[data-history-clear]');
             const items = window.SearchHistory.all();
             if (!items.length) {
-                block.classList.add('d-none');
-                list.innerHTML = '';
-                return false;
+                if (clearBtn) clearBtn.classList.add('d-none');
+                list.innerHTML = `
+                    <li class="search-history-empty text-muted small py-1.5 px-2 d-flex align-items-center gap-2 fst-italic" style="list-style: none;">
+                        <i class="fas fa-history text-muted opacity-50" style="font-size: 11px;"></i>
+                        <span>{{ __('Aucune recherche récente') }}</span>
+                    </li>
+                `;
+                block.classList.remove('d-none');
+                return true;
             }
+            if (clearBtn) clearBtn.classList.remove('d-none');
             const esc = s => String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
             list.innerHTML = items.map(i => `
                 <li class="search-history-item">
@@ -4031,6 +4084,7 @@
                     const emptyQueryText = emptyBox.querySelector('.empty-query-text');
                     if (emptyQueryText) emptyQueryText.textContent = query;
                     footerBox.classList.add('d-none');
+                    tagsBox.classList.remove('d-none');
                     openDropdown();
                     return;
                 }
@@ -4171,8 +4225,7 @@
                 }, 150);
             });
 
-            // Focus event
-            input.addEventListener('focus', function() {
+            function showDropdownContent() {
                 updateClearButton();
                 const query = input.value.trim();
                 if (query.length === 0) {
@@ -4183,6 +4236,16 @@
                     openDropdown();
                 } else {
                     fetchLiveSearch(query);
+                }
+            }
+
+            // Focus event
+            input.addEventListener('focus', showDropdownContent);
+
+            // Click event (reopens if closed while preserving input state)
+            input.addEventListener('click', function() {
+                if (dropdown.classList.contains('d-none')) {
+                    showDropdownContent();
                 }
             });
 
@@ -4413,6 +4476,7 @@
                     const emptyQ = emptyBox.querySelector('.pro-empty-query');
                     if (emptyQ) emptyQ.textContent = query;
                     footerBox.classList.add('d-none');
+                    suggestionsBox.classList.remove('d-none');
                     return;
                 }
 
@@ -4538,6 +4602,13 @@
                 debounceTimer = setTimeout(() => {
                     fetchMobileSearch(query);
                 }, 150);
+            });
+
+            // Click on input: if empty or closed, ensure suggestions are shown
+            input.addEventListener('click', function() {
+                if (input.value.trim().length === 0) {
+                    showSuggestions();
+                }
             });
 
             // Clear button

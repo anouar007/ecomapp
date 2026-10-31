@@ -11,8 +11,14 @@
                 <i class="fas fa-chart-pie"></i>
             </div>
             <div>
-                <h1 class="brand-title">Vue d'ensemble</h1>
-                <p class="brand-subtitle">Bienvenue, <strong>{{ auth()->user()->name }}</strong> &bull; Administration Wina Shop</p>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <h1 class="brand-title mb-0">Vue d'ensemble</h1>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 d-inline-flex align-items-center gap-1.5" style="font-size: 0.74rem;">
+                        <span class="stock-pulse-dot" style="width: 7px; height: 7px; background: #10b981; display: inline-block;"></span>
+                        <span><strong class="live-clients-badge">{{ $stats['online_clients'] ?? 1 }}</strong> client(s) en ligne sur le site</span>
+                    </span>
+                </div>
+                <p class="brand-subtitle mb-0 mt-1">Bienvenue, <strong>{{ auth()->user()->name }}</strong> &bull; Administration Wina Shop</p>
             </div>
         </div>
         <div class="brand-header-actions">
@@ -27,6 +33,18 @@
 
     <!-- Quick Actions Pills (Barre d'accès rapide fluide) -->
     <div class="dashboard-quick-actions">
+        <a href="{{ route('customers.index') }}" class="quick-action-pill border-success-subtle" title="Clients actuellement sur le site">
+            <span class="quick-pill-icon" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">
+                <span class="stock-pulse-dot" style="width: 7px; height: 7px; background: #10b981; display: inline-block;"></span>
+            </span>
+            <span class="quick-pill-text text-dark">
+                <strong><span class="live-clients-badge">{{ $stats['online_clients'] ?? 1 }}</span></strong> en ligne sur le site
+            </span>
+        </a>
+        <a href="{{ route('customers.index') }}" class="quick-action-pill">
+            <span class="quick-pill-icon icon-indigo"><i class="fas fa-users"></i></span>
+            <span class="quick-pill-text">Clients ({{ $stats['total_clients'] ?? $stats['total_users'] }})</span>
+        </a>
         <a href="{{ route('orders.index', ['status' => 'pending']) }}" class="quick-action-pill">
             <span class="quick-pill-icon icon-warning"><i class="fas fa-clock"></i></span>
             <span class="quick-pill-text">En attente ({{ $quickStats['pending_orders'] ?? 0 }})</span>
@@ -133,25 +151,37 @@
         </div>
 
         <!-- KPI 4 : Clients -->
-        <div class="stat-card-pro">
+        <div class="stat-card-pro" style="cursor: pointer;" onclick="window.location='{{ route('customers.index') }}'" title="Voir la liste des clients">
             <div class="stat-card-header">
                 <div class="stat-icon-pro icon-indigo">
                     <i class="fas fa-users"></i>
                 </div>
-                @php $uGrowth = $stats['users_growth']; @endphp
-                <span class="stat-trend-badge {{ $uGrowth >= 0 ? 'trend-up' : 'trend-down' }}">
-                    <i class="fas fa-arrow-{{ $uGrowth >= 0 ? 'up' : 'down' }}"></i>
-                    {{ abs($uGrowth) }}%
+                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 d-inline-flex align-items-center gap-1.5" style="font-size: 0.72rem;">
+                    <span class="stock-pulse-dot" style="width: 7px; height: 7px; background: #10b981; display: inline-block;"></span>
+                    <strong class="live-clients-badge">{{ $stats['online_clients'] ?? 1 }}</strong> en ligne
                 </span>
             </div>
             <div class="stat-card-body">
-                <div class="stat-label-pro">Clients inscrits</div>
-                <div class="stat-value-pro">{{ number_format($stats['total_users']) }}</div>
+                <div class="stat-label-pro d-flex align-items-center justify-content-between">
+                    <span>Clients de la boutique</span>
+                    <span class="text-muted small fw-normal" style="font-size: 0.72rem;">Actuels</span>
+                </div>
+                <div class="stat-value-pro d-flex align-items-baseline gap-2">
+                    <span class="total-clients-display">{{ number_format($stats['total_clients'] ?? $stats['total_users']) }}</span>
+                    <span class="text-muted fw-normal" style="font-size: 0.8rem;">inscrits</span>
+                </div>
             </div>
             <div class="stat-card-footer">
-                <span class="stat-sub-text">
-                    <span class="badge-dot dot-info"></span> {{ $quickStats['today_orders'] ?? 0 }} commandes du jour
-                </span>
+                <div class="d-flex align-items-center justify-content-between w-100">
+                    <span class="stat-sub-text text-dark d-inline-flex align-items-center gap-1.5">
+                        <i class="fas fa-signal text-success" style="font-size: 11px;"></i>
+                        <span><strong class="text-success live-clients-badge">{{ $stats['online_clients'] ?? 1 }}</strong> sur le site en ce moment</span>
+                    </span>
+                    <span class="text-muted small d-inline-flex align-items-center gap-1" style="font-size: 0.74rem;">
+                        <span>Gérer</span>
+                        <i class="fas fa-arrow-right" style="font-size: 10px;"></i>
+                    </span>
+                </div>
             </div>
         </div>
     </div>
@@ -639,6 +669,23 @@
                 }
             }
         });
+
+        // Auto-refresh real-time online clients count every 20 seconds
+        setInterval(function() {
+            fetch("{{ route('dashboard.live-clients') }}")
+                .then(r => r.ok ? r.json() : null)
+                .then(data => {
+                    if (data && typeof data.online_clients !== 'undefined') {
+                        document.querySelectorAll('.live-clients-badge').forEach(el => {
+                            el.textContent = data.online_clients;
+                        });
+                        document.querySelectorAll('.total-clients-display').forEach(el => {
+                            el.textContent = Number(data.total_clients).toLocaleString('fr-FR');
+                        });
+                    }
+                })
+                .catch(() => {});
+        }, 20000);
     });
 </script>
 @endsection

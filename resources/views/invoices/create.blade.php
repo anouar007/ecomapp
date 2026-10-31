@@ -467,7 +467,10 @@
                             </h2>
                             <p class="product-form-card-subtitle">Ajoutez des produits du catalogue ou saisissez des articles et prestations avec prix HT libre</p>
                         </div>
-                        <div class="d-flex gap-2">
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button type="button" onclick="openSmartTextModal()" class="btn btn-sm btn-dark rounded-pill px-3 py-1.5 fw-medium d-inline-flex align-items-center gap-1.5 shadow-2xs" style="background: #0f172a; border-color: #0f172a;">
+                                <i class="fas fa-wand-magic-sparkles text-warning"></i> <span>Ajout rapide par texte (Smart)</span>
+                            </button>
                             <button type="button" onclick="addItem('catalog')" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1.5 fw-medium d-inline-flex align-items-center gap-1.5 shadow-2xs">
                                 <i class="fas fa-boxes-stacked text-muted"></i> <span>Du catalogue</span>
                             </button>
@@ -495,25 +498,36 @@
                     </div>
 
                     <div class="row g-2 w-100">
-                        <div class="col-12 col-sm-6">
+                        <div class="col-12 col-md-4">
+                            <button type="button" onclick="openSmartTextModal()" class="btn-add-line w-100 border-2" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #fff; border: 1px solid #334155;">
+                                <div class="btn-add-line-icon" style="background: rgba(251, 191, 36, 0.2); color: #fbbf24;">
+                                    <i class="fas fa-wand-magic-sparkles"></i>
+                                </div>
+                                <div class="text-start">
+                                    <div class="btn-add-line-title text-white">Ajout intelligent par texte</div>
+                                    <div class="btn-add-line-sub text-white-50">Coller une liste (ex: fx3, 24-70mm...)</div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-12 col-md-4">
                             <button type="button" onclick="addItem('catalog')" class="btn-add-line btn-add-catalog w-100">
                                 <div class="btn-add-line-icon">
                                     <i class="fas fa-boxes-stacked"></i>
                                 </div>
                                 <div class="text-start">
                                     <div class="btn-add-line-title">+ Produit du catalogue</div>
-                                    <div class="btn-add-line-sub">Sélectionner parmi vos produits enregistrés</div>
+                                    <div class="btn-add-line-sub">Sélectionner parmi vos produits</div>
                                 </div>
                             </button>
                         </div>
-                        <div class="col-12 col-sm-6">
+                        <div class="col-12 col-md-4">
                             <button type="button" onclick="addItem('manual')" class="btn-add-line btn-add-manual w-100">
                                 <div class="btn-add-line-icon">
                                     <i class="fas fa-feather-pointed"></i>
                                 </div>
                                 <div class="text-start">
                                     <div class="btn-add-line-title">+ Article ou Prestation libre</div>
-                                    <div class="btn-add-line-sub">Désignation libre & Prix unitaire HT personnalisable</div>
+                                    <div class="btn-add-line-sub">Désignation libre & Prix HT</div>
                                 </div>
                             </button>
                         </div>
@@ -721,6 +735,107 @@
             </td>
         </tr>
     </template>
+
+    <!-- Modal Smart Text Import -->
+    <div class="modal fade" id="smartTextModal" tabindex="-1" aria-labelledby="smartTextModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content rounded-4 border-0 shadow-lg" style="overflow: hidden;">
+                <div class="modal-header border-bottom py-3 px-4" style="background: #0f172a; color: #fff;">
+                    <div class="d-flex align-items-center gap-2.5">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-3" style="width: 36px; height: 36px; background: rgba(251, 191, 36, 0.2); color: #fbbf24;">
+                            <i class="fas fa-wand-magic-sparkles"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold fs-6 text-white mb-0" id="smartTextModalLabel">Ajout intelligent d'articles par texte</h5>
+                            <p class="text-white-50 small mb-0" style="font-size: 0.76rem;">Collez une liste de produits pour reconnaissance et ajout instantané</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body p-4">
+                    <!-- Step 1: Input text block -->
+                    <div id="smartStepInput">
+                        <label class="form-label fw-bold text-dark small d-flex justify-content-between align-items-center mb-1.5">
+                            <span>Saisissez ou collez vos produits (1 par ligne)</span>
+                            <span class="text-muted fw-normal" style="font-size: 0.75rem;">Supporte les quantités (ex: <i>2x fx3</i>, <i>sony 24-70mm x 3</i>)</span>
+                        </label>
+
+                        <textarea id="smartTextInput" class="form-control rounded-3 font-monospace p-3" rows="6" placeholder="fx3&#10;sony 24-70mm&#10;dji mic3&#10;2x sandisk 512gb" style="font-size: 0.88rem; line-height: 1.6; resize: vertical;"></textarea>
+
+                        <!-- Example quick chips -->
+                        <div class="d-flex align-items-center gap-1.5 flex-wrap mt-2.5">
+                            <span class="text-muted small" style="font-size: 0.74rem;">Exemples rapides :</span>
+                            <button type="button" class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-decoration-none" onclick="appendSmartExample('fx3')">fx3</button>
+                            <button type="button" class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-decoration-none" onclick="appendSmartExample('sony 24-70mm')">sony 24-70mm</button>
+                            <button type="button" class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-decoration-none" onclick="appendSmartExample('dji mic3')">dji mic3</button>
+                            <button type="button" class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-decoration-none" onclick="appendSmartExample('2x sandisk 512gb')">2x sandisk 512gb</button>
+                            <button type="button" class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-decoration-none" onclick="appendSmartExample('tamron 28-200')">tamron 28-200</button>
+                            <button type="button" class="btn btn-link btn-sm text-danger text-decoration-none p-0 ms-auto" style="font-size: 0.75rem;" onclick="clearSmartInput()">Effacer</button>
+                        </div>
+
+                        <div class="bg-light rounded-3 p-3 mt-3 border">
+                            <div class="d-flex align-items-start gap-2 text-muted small" style="font-size: 0.78rem;">
+                                <i class="fas fa-lightbulb text-warning mt-0.5"></i>
+                                <div>
+                                    <strong>Reconnaissance intelligente :</strong> L'algorithme détecte les modèles officiels, marques et références du catalogue (avec exclusion des accessoires non demandés). Si un article n'est pas dans le catalogue, il sera automatiquement inséré en tant qu'article libre personnalisé.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Analysis Preview Block (hidden by default) -->
+                    <div id="smartStepPreview" class="d-none">
+                        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                            <div>
+                                <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                                    <span>Articles analysés</span>
+                                    <span class="badge bg-dark rounded-pill px-2" id="smartDetectedCountBadge">0</span>
+                                </h6>
+                                <p class="text-muted small mb-0" style="font-size: 0.76rem;">Vérifiez et affinez les correspondances avant l'insertion dans la facture</p>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 fw-medium" onclick="backToSmartInput()">
+                                <i class="fas fa-edit me-1"></i> Modifier le texte
+                            </button>
+                        </div>
+
+                        <div class="table-responsive border rounded-3 mb-2" style="max-height: 400px; overflow-y: auto;">
+                            <table class="table table-hover align-middle mb-0" style="font-size: 0.85rem;">
+                                <thead class="table-light text-muted small text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.04em;">
+                                    <tr>
+                                        <th style="width: 38px;" class="text-center">
+                                            <input type="checkbox" class="form-check-input" id="smartSelectAllCheck" checked onchange="toggleSelectAllSmart(this)" title="Tout sélectionner / désélectionner">
+                                        </th>
+                                        <th style="width: 22%;">Texte saisi</th>
+                                        <th>Correspondance catalogue</th>
+                                        <th style="width: 85px;" class="text-center">Qté</th>
+                                        <th style="width: 120px;" class="text-end">P.U. HT</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="smartPreviewTableBody">
+                                    <!-- Dynamic rows generated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-top py-2.5 px-4 bg-light d-flex justify-content-between align-items-center">
+                    <button type="button" class="btn btn-light border rounded-pill px-3 py-1.5 text-secondary" data-bs-dismiss="modal">Fermer</button>
+                    <div id="smartModalFooterAction">
+                        <button type="button" id="btnAnalyzeSmart" class="btn btn-dark rounded-pill px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm" onclick="analyzeSmartText()">
+                            <i class="fas fa-wand-magic-sparkles text-warning"></i>
+                            <span>Analyser & Trouver les correspondances</span>
+                        </button>
+                        <button type="button" id="btnInsertSmart" class="btn btn-brand-primary rounded-pill px-4 py-2 fw-semibold d-none align-items-center gap-2 shadow-sm" onclick="insertSmartItemsIntoInvoice()">
+                            <i class="fas fa-check"></i>
+                            <span id="btnInsertSmartText">Insérer dans la facture</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -749,6 +864,7 @@
             switchRowToManual(newRow.querySelector('.manual-mode-box'));
         }
         updateTotals();
+        return newRow;
     }
 
     function removeItem(btn) {
@@ -874,5 +990,348 @@
     document.addEventListener('DOMContentLoaded', function() {
         addItem('catalog');
     });
+
+    // ===== SMART TEXT IMPORT SYSTEM =====
+    let smartModalInstance = null;
+    window.smartAnalyzedItems = [];
+
+    function openSmartTextModal() {
+        const modalEl = document.getElementById('smartTextModal');
+        if (!modalEl) return;
+        if (!smartModalInstance) {
+            smartModalInstance = new bootstrap.Modal(modalEl);
+        }
+        smartModalInstance.show();
+        setTimeout(() => {
+            const textarea = document.getElementById('smartTextInput');
+            if (textarea) textarea.focus();
+        }, 200);
+    }
+
+    function appendSmartExample(sampleText) {
+        const input = document.getElementById('smartTextInput');
+        if (!input) return;
+        const current = input.value.trim();
+        input.value = current ? (current + '\n' + sampleText) : sampleText;
+        input.focus();
+    }
+
+    function clearSmartInput() {
+        const input = document.getElementById('smartTextInput');
+        if (input) {
+            input.value = '';
+            input.focus();
+        }
+    }
+
+    function backToSmartInput() {
+        document.getElementById('smartStepInput').classList.remove('d-none');
+        document.getElementById('smartStepPreview').classList.add('d-none');
+        document.getElementById('btnAnalyzeSmart').classList.remove('d-none');
+        const insertBtn = document.getElementById('btnInsertSmart');
+        insertBtn.classList.add('d-none');
+        insertBtn.classList.remove('d-inline-flex');
+    }
+
+    function toggleSelectAllSmart(master) {
+        document.querySelectorAll('.smart-item-checkbox').forEach(cb => {
+            cb.checked = master.checked;
+        });
+        updateSmartInsertButtonCount();
+    }
+
+    function updateSmartInsertButtonCount() {
+        const checkedCount = document.querySelectorAll('.smart-item-checkbox:checked').length;
+        const btnText = document.getElementById('btnInsertSmartText');
+        const docType = document.querySelector('select[name="type"]')?.value === 'quote' ? 'le devis' : 'la facture';
+        if (btnText) {
+            btnText.textContent = `Insérer ${checkedCount} article(s) dans ${docType}`;
+        }
+    }
+
+    async function analyzeSmartText() {
+        const text = document.getElementById('smartTextInput')?.value.trim() || '';
+        if (!text) {
+            alert('Veuillez saisir ou coller au moins un produit.');
+            return;
+        }
+
+        const btn = document.getElementById('btnAnalyzeSmart');
+        const origHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Analyse intelligente en cours...';
+
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') 
+                || document.querySelector('input[name="_token"]')?.value || '';
+
+            const res = await fetch("{{ route('invoices.smart-match-text') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ text })
+            });
+
+            const data = await res.json();
+            if (!data.success || !data.items || data.items.length === 0) {
+                alert(data.message || 'Aucun produit détecté dans le texte.');
+                btn.disabled = false;
+                btn.innerHTML = origHtml;
+                return;
+            }
+
+            window.smartAnalyzedItems = data.items;
+            renderSmartPreview(data.items);
+
+            // Switch to Step 2 Preview
+            document.getElementById('smartStepInput').classList.add('d-none');
+            document.getElementById('smartStepPreview').classList.remove('d-none');
+            btn.classList.add('d-none');
+            const insertBtn = document.getElementById('btnInsertSmart');
+            insertBtn.classList.remove('d-none');
+            insertBtn.classList.add('d-inline-flex');
+
+            document.getElementById('smartDetectedCountBadge').textContent = data.items.length;
+            updateSmartInsertButtonCount();
+
+        } catch (err) {
+            console.error('Smart text error:', err);
+            alert('Une erreur est survenue lors de l\'analyse du texte.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = origHtml;
+        }
+    }
+
+    function renderSmartPreview(items) {
+        const tbody = document.getElementById('smartPreviewTableBody');
+        if (!tbody) return;
+
+        let html = '';
+        items.forEach((item, idx) => {
+            const best = item.best;
+            const hasMatch = item.matched && best;
+
+            let productHtml = '';
+            if (hasMatch) {
+                const imgHtml = best.thumbnail ? `
+                    <img src="${best.thumbnail}" alt="" width="36" height="36" class="rounded-2 border flex-shrink-0" style="object-fit: cover;" onerror="this.style.display='none'">
+                ` : `
+                    <div class="rounded-2 border flex-shrink-0 bg-light d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                        <i class="fas fa-camera text-muted" style="font-size: 13px;"></i>
+                    </div>
+                `;
+
+                let altsSelectHtml = '';
+                if (item.alternatives && item.alternatives.length > 0) {
+                    altsSelectHtml = `
+                        <div class="mt-1.5">
+                            <select class="form-select form-select-sm smart-product-choice" style="font-size: 0.76rem;" onchange="smartRowChoiceChanged(${idx}, this)">
+                                <option value="${best.id}" selected>✓ ${escapeHtml(best.name)} (${best.price_ht} DH HT)</option>
+                                ${item.alternatives.map(alt => `
+                                    <option value="${alt.id}" data-name="${escapeHtml(alt.name)}" data-price-ht="${alt.price_ht}" data-sku="${escapeHtml(alt.sku || '')}" data-stock="${alt.stock}" data-thumb="${alt.thumbnail || ''}">
+                                        ↔ ${escapeHtml(alt.name)} (${alt.price_ht} DH HT)
+                                    </option>
+                                `).join('')}
+                                <option value="manual">➕ Conserver comme article libre / personnalisé</option>
+                            </select>
+                        </div>
+                    `;
+                }
+
+                productHtml = `
+                    <div class="smart-row-product-box" data-idx="${idx}">
+                        <div class="d-flex align-items-center gap-2">
+                            ${imgHtml}
+                            <div class="min-w-0 flex-grow-1">
+                                <div class="fw-bold text-dark text-truncate smart-product-name" style="font-size: 0.84rem;" title="${escapeHtml(best.name)}">${escapeHtml(best.name)}</div>
+                                <div class="text-muted d-flex align-items-center gap-2" style="font-size: 0.72rem;">
+                                    ${best.sku ? `<span>SKU: <strong class="font-monospace">${escapeHtml(best.sku)}</strong></span>` : ''}
+                                    <span class="badge ${best.stock > 0 ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'} border rounded-pill px-1.5" style="font-size: 0.68rem;">
+                                        ${best.stock > 0 ? `Stock: ${best.stock}` : 'Rupture'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        ${altsSelectHtml}
+                        <input type="hidden" class="smart-selected-product-id" value="${best.id}">
+                        <input type="hidden" class="smart-is-manual" value="0">
+                    </div>
+                `;
+            } else {
+                productHtml = `
+                    <div class="smart-row-product-box" data-idx="${idx}">
+                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-0.5 mb-1" style="font-size: 0.7rem;">
+                            <i class="fas fa-exclamation-triangle me-1"></i> Non trouvé au catalogue (création libre)
+                        </span>
+                        <input type="text" class="form-control form-control-sm smart-custom-title" value="${escapeHtml(item.parsed_query)}" placeholder="Désignation de l'article...">
+                        <input type="hidden" class="smart-selected-product-id" value="">
+                        <input type="hidden" class="smart-is-manual" value="1">
+                    </div>
+                `;
+            }
+
+            const priceVal = hasMatch ? parseFloat(best.price_ht).toFixed(2) : '0.00';
+
+            html += `
+                <tr class="smart-preview-row" data-idx="${idx}">
+                    <td class="text-center">
+                        <input type="checkbox" class="form-check-input smart-item-checkbox" checked onchange="updateSmartInsertButtonCount()">
+                    </td>
+                    <td>
+                        <span class="badge bg-light text-dark border px-2 py-1 font-monospace fw-normal" style="font-size: 0.78rem;">
+                            ${escapeHtml(item.original)}
+                        </span>
+                    </td>
+                    <td>
+                        ${productHtml}
+                    </td>
+                    <td class="text-center">
+                        <input type="number" min="1" value="${item.qty}" class="form-control form-control-sm font-monospace text-center smart-row-qty" style="width: 65px; margin: 0 auto;">
+                    </td>
+                    <td class="text-end">
+                        <div class="d-flex align-items-center justify-content-end gap-1">
+                            <input type="number" step="0.01" min="0" value="${priceVal}" class="form-control form-control-sm font-monospace text-end smart-row-price-ht" style="width: 105px;">
+                            <span class="text-muted small" style="font-size: 0.72rem;">HT</span>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+    }
+
+    function smartRowChoiceChanged(idx, selectEl) {
+        const row = selectEl.closest('tr');
+        if (!row) return;
+
+        const val = selectEl.value;
+        const priceInput = row.querySelector('.smart-row-price-ht');
+        const isManualInput = row.querySelector('.smart-is-manual');
+        const prodIdInput = row.querySelector('.smart-selected-product-id');
+        const nameEl = row.querySelector('.smart-product-name');
+
+        if (val === 'manual') {
+            isManualInput.value = '1';
+            prodIdInput.value = '';
+            if (priceInput) priceInput.value = '0.00';
+        } else {
+            isManualInput.value = '0';
+            prodIdInput.value = val;
+            const opt = selectEl.selectedOptions[0];
+            if (opt && opt.dataset.priceHt && priceInput) {
+                priceInput.value = parseFloat(opt.dataset.priceHt).toFixed(2);
+            }
+            if (opt && opt.dataset.name && nameEl) {
+                nameEl.textContent = opt.dataset.name;
+            }
+        }
+    }
+
+    function insertSmartItemsIntoInvoice() {
+        const rows = document.querySelectorAll('#smartPreviewTableBody tr.smart-preview-row');
+        if (rows.length === 0) return;
+
+        // Check if existing items table only has 1 blank untouched row
+        const existingRows = document.querySelectorAll('#itemsTable tbody .item-row');
+        if (existingRows.length === 1) {
+            const firstSelect = existingRows[0].querySelector('.product-select');
+            const firstName = existingRows[0].querySelector('.item-manual-name');
+            const firstPrice = parseFloat(existingRows[0].querySelector('.unit-price-input')?.value || 0);
+            if ((!firstSelect || !firstSelect.value) && (!firstName || !firstName.value.trim()) && firstPrice === 0) {
+                existingRows[0].remove();
+            }
+        }
+
+        let insertedCount = 0;
+
+        rows.forEach(row => {
+            const checkbox = row.querySelector('.smart-item-checkbox');
+            if (!checkbox || !checkbox.checked) return;
+
+            const isManual = row.querySelector('.smart-is-manual')?.value === '1';
+            const productId = row.querySelector('.smart-selected-product-id')?.value;
+            const qty = parseInt(row.querySelector('.smart-row-qty')?.value || 1, 10);
+            const priceHt = parseFloat(row.querySelector('.smart-row-price-ht')?.value || 0);
+            const customTitle = row.querySelector('.smart-custom-title')?.value || row.querySelector('.smart-product-name')?.textContent || '';
+
+            if (!isManual && productId) {
+                const newRow = addItem('catalog');
+                const productSelect = newRow.querySelector('.product-select');
+                if (productSelect) {
+                    productSelect.value = productId;
+                    // If product option is not in pre-rendered select, create it dynamically
+                    if (productSelect.value !== productId) {
+                        const opt = document.createElement('option');
+                        opt.value = productId;
+                        opt.textContent = customTitle;
+                        opt.setAttribute('data-price-ht', priceHt);
+                        productSelect.appendChild(opt);
+                        productSelect.value = productId;
+                    }
+                    updateItem(productSelect);
+                }
+                const qtyInput = newRow.querySelector('.quantity-input');
+                if (qtyInput) qtyInput.value = qty;
+                const priceInput = newRow.querySelector('.unit-price-input');
+                if (priceInput) priceInput.value = priceHt.toFixed(2);
+
+                insertedCount++;
+            } else {
+                const newRow = addItem('manual');
+                const nameInput = newRow.querySelector('.item-manual-name');
+                if (nameInput) nameInput.value = customTitle;
+                const qtyInput = newRow.querySelector('.quantity-input');
+                if (qtyInput) qtyInput.value = qty;
+                const priceInput = newRow.querySelector('.unit-price-input');
+                if (priceInput) priceInput.value = priceHt.toFixed(2);
+
+                insertedCount++;
+            }
+        });
+
+        updateTotals();
+
+        // Close modal
+        if (smartModalInstance) {
+            smartModalInstance.hide();
+        }
+
+        // Reset step
+        backToSmartInput();
+        clearSmartInput();
+
+        // Show friendly visual feedback toast
+        showSmartToast(`${insertedCount} article(s) inséré(s) avec succès dans le document !`);
+    }
+
+    function showSmartToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'position-fixed bottom-0 end-0 p-3';
+        toast.style.zIndex = '99999';
+        toast.innerHTML = `
+            <div class="toast show align-items-center text-white bg-dark border-0 rounded-4 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body d-flex align-items-center gap-2 py-3 px-3">
+                        <i class="fas fa-check-circle text-success fs-5"></i>
+                        <span class="fw-semibold small">${message}</span>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close" onclick="this.closest('.position-fixed').remove()"></button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
+    }
 </script>
 @endpush

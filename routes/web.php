@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/live-clients', [DashboardController::class, 'liveClients'])->name('dashboard.live-clients');
     
     // Profile Management
     Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
@@ -87,6 +88,7 @@ Route::middleware('auth')->group(function () {
     
     // Invoices Management
     Route::middleware('permission:manage_invoices')->group(function () {
+        Route::post('invoices/smart-match-text', [\App\Http\Controllers\InvoiceController::class, 'smartMatchText'])->name('invoices.smart-match-text');
         Route::resource('invoices', \App\Http\Controllers\InvoiceController::class);
         Route::get('invoices/{invoice}/download', [\App\Http\Controllers\InvoiceController::class, 'download'])->name('invoices.download');
         Route::get('invoices/{invoice}/print', [\App\Http\Controllers\InvoiceController::class, 'print'])->name('invoices.print');
@@ -172,6 +174,7 @@ Route::middleware('auth')->group(function () {
     // Advanced Analytics & Views Intelligence
     Route::middleware('permission:view_analytics')->group(function () {
         Route::get('/analytics/views', [\App\Http\Controllers\ViewsAnalyticsController::class, 'index'])->name('analytics.views');
+        Route::get('/analytics/views/live-visitors', [\App\Http\Controllers\ViewsAnalyticsController::class, 'liveVisitors'])->name('analytics.views.live-visitors');
         Route::get('/analytics/views/export', [\App\Http\Controllers\ViewsAnalyticsController::class, 'export'])->name('analytics.views.export');
         Route::get('/analytics/views/product/{product}', [\App\Http\Controllers\ViewsAnalyticsController::class, 'productDetail'])->name('analytics.views.product');
         Route::get('/analytics', [\App\Http\Controllers\AnalyticsController::class, 'index'])->name('analytics.index');

@@ -859,4 +859,164 @@ class InvoiceController extends Controller
             ]
         ]);
     }
+
+    /**
+     * Smartly parse text lines and match them against active catalog products.
+     */
+    public function smartMatchText(Request $request)
+    {
+        $rawText = (string) $request->input('text', '');
+        $lines = array_filter(array_map('trim', preg_split('/[\r\n]+/', $rawText)));
+
+        if (empty($lines)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Veuillez saisir au moins une ligne de texte.',
+                'items' => [],
+            ]);
+        }
+
+        $allProducts = Product::where('status', 'active')->get();
+        $taxRate = floatval(setting('tax_rate', 20)) / 100;
+
+        $accessoryTokens = ['cage', 'filtre', 'filter', 'batterie', 'battery', 'chargeur', 'charger', 'adaptateur', 'adapter', 'housse', 'sac', 'case', 'poignee', 'poignée', 'support', 'cable', 'câble', 'sangle', 'protection', 'parasoleil', 'bouchon', 'vis', 'plaque', 'fixation'];
+
+        $parsedItems = [];
+
+        foreach ($lines as $rawLine) {
+            $line = trim($rawLine);
+            if ($line === '') continue;
+
+            $qty = 1;
+            // 1. Extract quantity (prefix: "2x fx3", "2 * fx3", "2 fx3", suffix: "fx3 x2", "fx3 x 2")
+            if (preg_match('/^(\d+)\s*(?:[xX*]\s*|\s+)(.+)$/', $line, $m)) {
+                $qty = max(1, (int)$m[1]);
+                $line = trim($m[2]);
+            } elseif (preg_match('/^(.+?)\s+(?:[xX*]\s*|\*\s*)(\d+)$/', $line, $m)) {
+                $line = trim($m[1]);
+                $qty = max(1, (int)$m[2]);
+            }
+            // Strip leading bullet marks (- , * , 1. , etc.)
+            $line = preg_replace('/^[•\-\*\d+\.\s]+/', '', $line);
+            $line = trim($line);
+            if ($line === '') continue;
+
+            // 2. Normalize and tokenize query
+            $qLower = strtolower($line);
+            $qExpanded = preg_replace('/([a-z]+)(\d+)/i', '$1 $2', $qLower);
+            $qExpanded = preg_replace('/(\d+)([a-z]+)/i', '$1 $2', $qExpanded);
+            $qTokens = array_filter(explode(' ', preg_replace('/[^a-z0-9]/', ' ', $qExpanded)));
+            $qTokens = array_values(array_unique($qTokens));
+
+            $wantsAccessory = false;
+            foreach ($accessoryTokens as $at) {
+                if (in_array($at, $qTokens)) {
+                    $wantsAccessory = true;
+                    break;
+                }
+            }
+
+            $scored = [];
+            foreach ($allProducts as $p) {
+                $pNameLower = strtolower($p->name);
+                $pSkuLower = strtolower($p->sku ?? '');
+                $pExpanded = preg_replace('/([a-z]+)(\d+)/i', '$1 $2', $pNameLower);
+                $pExpanded = preg_replace('/(\d+)([a-z]+)/i', '$1 $2', $pExpanded);
+                $pTokens = array_filter(explode(' ', preg_replace('/[^a-z0-9]/', ' ', $pExpanded)));
+
+                $score = 0;
+
+                // Exact SKU match
+                if ($pSkuLower === $qLower) {
+                    $score += 5000;
+                } elseif (str_contains($pSkuLower, $qLower)) {
+                    $score += 1500;
+                }
+
+                // Substring match in full name
+                if (str_contains($pNameLower, $qLower)) {
+                    $score += 2000;
+                }
+                if (str_contains($pExpanded, $qExpanded)) {
+                    $score += 1800;
+                }
+
+                // Token matches
+                $matched = 0;
+                foreach ($qTokens as $tok) {
+                    if (strlen($tok) === 1 && !is_numeric($tok)) continue;
+                    if (in_array($tok, $pTokens)) {
+                        $score += 400;
+                        $matched++;
+                    } elseif (str_contains($pNameLower, $tok)) {
+                        $score += 200;
+                        $matched++;
+                    }
+                }
+
+                $coverage = count($qTokens) > 0 ? ($matched / count($qTokens)) : 0;
+                $score += ($coverage * 800);
+
+                // Accessory penalty if query didn't ask for it
+                if (!$wantsAccessory) {
+                    foreach ($accessoryTokens as $at) {
+                        if (in_array($at, $pTokens) || str_contains($pNameLower, 'smallrig')) {
+                            $score -= 1500;
+                            break;
+                        }
+                    }
+                }
+
+                // Brand priority
+                if (!empty($qTokens[0])) {
+                    $first = $qTokens[0];
+                    if (str_starts_with($pNameLower, $first) || str_starts_with($pNameLower, 'objectif ' . $first) || str_starts_with($pNameLower, 'caméra ' . $first) || str_starts_with($pNameLower, 'appareil ' . $first)) {
+                        $score += 500;
+                    }
+                    if ($first === 'sony' && str_contains($pNameLower, 'sigma') && !in_array('sigma', $qTokens)) {
+                        $score -= 800;
+                    }
+                }
+
+                // Bonus if in stock
+                if ($p->stock > 0) $score += 50;
+
+                if ($matched > 0 && ($coverage >= 0.5 || $score > 500)) {
+                    $pSelling = $p->active_price;
+                    $pPriceHt = $taxRate > 0 ? ($pSelling / (1 + $taxRate)) : $pSelling;
+                    $scored[] = [
+                        'id' => $p->id,
+                        'name' => $p->name,
+                        'sku' => $p->sku,
+                        'thumbnail' => $p->thumbnail,
+                        'price_ttc' => $pSelling,
+                        'price_ht' => round($pPriceHt, 2),
+                        'stock' => $p->stock,
+                        'score' => $score,
+                        'coverage' => round($coverage * 100),
+                    ];
+                }
+            }
+
+            usort($scored, fn($a, $b) => $b['score'] <=> $a['score']);
+
+            $best = $scored[0] ?? null;
+            $alternatives = array_slice($scored, 1, 4);
+
+            $parsedItems[] = [
+                'original' => $rawLine,
+                'parsed_query' => $line,
+                'qty' => $qty,
+                'matched' => !is_null($best),
+                'best' => $best,
+                'alternatives' => $alternatives,
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'items' => $parsedItems,
+            'count' => count($parsedItems),
+        ]);
+    }
 }

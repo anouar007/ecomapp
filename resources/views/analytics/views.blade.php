@@ -36,6 +36,41 @@
     .kpi-accent-blue   { --kpi-accent: #0ea5e9; }
     .kpi-accent-teal   { --kpi-accent: #14b8a6; }
     .kpi-accent-rose   { --kpi-accent: #f43f5e; }
+    .kpi-accent-emerald { --kpi-accent: #10b981; }
+
+    .bg-emerald-subtle { background-color: #ecfdf5 !important; }
+    .text-emerald { color: #059669 !important; }
+
+    /* Live Pulse Dot Animation */
+    .live-pulse-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #10b981;
+        display: inline-block;
+        flex-shrink: 0;
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+        animation: livePulseAnim 1.8s infinite cubic-bezier(0.66, 0, 0, 1);
+    }
+    @keyframes livePulseAnim {
+        0% {
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+        }
+        70% {
+            box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+        }
+    }
+    .scale-bump {
+        animation: bumpAnim 0.35s ease-in-out;
+    }
+    @keyframes bumpAnim {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.22); color: #059669; }
+        100% { transform: scale(1); }
+    }
 
     .views-kpi-icon {
         width: 40px;
@@ -239,11 +274,23 @@
     <!-- Top Header -->
     <div class="d-flex align-items-start justify-content-between flex-wrap gap-2.5 mb-3 mb-md-4">
         <div>
-            <div class="d-flex align-items-center gap-1.5 mb-1">
+            <div class="d-flex align-items-center gap-1.5 mb-1 flex-wrap">
                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-0.5" style="font-size: 0.72rem;">
                     <i class="fas fa-chart-line me-1"></i> Intelligence Clients
                 </span>
                 <span class="text-muted small" style="font-size: 0.72rem;">&bull; {{ $periodLabel }}</span>
+
+                <!-- Live Real-Time Pulse Badge -->
+                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 d-inline-flex align-items-center gap-1.5 shadow-xs" title="Clients et visiteurs actifs sur le site ces 5 dernières minutes">
+                    <span class="live-pulse-dot" style="width: 7px; height: 7px;"></span>
+                    <span class="fw-bold"><span class="live-online-counter">{{ $onlineStats['total_online'] ?? 1 }}</span> client(s) en ligne</span>
+                    <span class="text-muted small ms-0.5 d-none d-sm-inline" style="font-size: 0.7rem; font-weight: 500;">
+                        (<span class="live-auth-counter text-success fw-semibold">{{ $onlineStats['auth_online'] ?? 0 }}</span> connectés · <span class="live-guest-counter text-secondary">{{ $onlineStats['guest_online'] ?? 1 }}</span> visiteurs)
+                    </span>
+                </span>
+                <span class="text-muted small d-none d-lg-inline" style="font-size: 0.7rem;">
+                    <i class="fas fa-bolt text-warning me-0.5"></i>Temps réel (<span id="liveLastUpdated">{{ now()->format('H:i:s') }}</span>)
+                </span>
             </div>
             <h1 class="h4 h3-md fw-bold text-dark mb-0" style="letter-spacing: -0.02em;">Vues, Recherches & Besoins Clients</h1>
             <p class="text-muted small mb-0 d-none d-sm-block">Consultez ce que recherchent vos clients, les produits et catégories les plus vus, et identifiez les opportunités de stock.</p>
@@ -318,10 +365,30 @@
         </div>
     </div>
 
-    <!-- 4 KPI Summary Cards (2x2 Grid on Mobile, 4 in row on Desktop) -->
-    <div class="row g-2 g-md-3 mb-3 mb-md-4">
-        <!-- Vues Produits -->
-        <div class="col-6 col-xl-3">
+    <!-- 5 KPI Summary Cards (2 on mobile, 3 on tablet, 5 on desktop) -->
+    <div class="row row-cols-2 row-cols-md-3 row-cols-xl-5 g-2 g-md-3 mb-3 mb-md-4">
+        <!-- 1. En Direct / Visiteurs Actifs -->
+        <div class="col">
+            <div class="views-kpi-card kpi-accent-emerald h-100">
+                <div class="d-flex align-items-center justify-content-between mb-1.5">
+                    <div class="views-kpi-label text-truncate text-success d-flex align-items-center gap-1.5">
+                        <span class="live-pulse-dot" style="width: 7px; height: 7px;"></span>
+                        <span>En Direct</span>
+                    </div>
+                    <div class="views-kpi-icon bg-emerald-subtle text-success">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+                <div class="views-kpi-value text-success live-online-counter">{{ $onlineStats['total_online'] ?? 1 }}</div>
+                <div class="text-muted small mt-1.5 d-flex align-items-center justify-content-between flex-wrap gap-1" style="font-size: 0.72rem;">
+                    <span><strong class="text-dark live-auth-counter">{{ $onlineStats['auth_online'] ?? 0 }}</strong> connectés</span>
+                    <span class="badge bg-light text-secondary border px-1.5 py-0.5"><span class="live-guest-counter">{{ $onlineStats['guest_online'] ?? 1 }}</span> vis.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Vues Produits -->
+        <div class="col">
             <div class="views-kpi-card kpi-accent-purple h-100">
                 <div class="d-flex align-items-center justify-content-between mb-1.5">
                     <div class="views-kpi-label text-truncate">Vues Produits</div>
@@ -337,8 +404,8 @@
             </div>
         </div>
 
-        <!-- Vues Catégories -->
-        <div class="col-6 col-xl-3">
+        <!-- 3. Vues Catégories -->
+        <div class="col">
             <div class="views-kpi-card kpi-accent-teal h-100">
                 <div class="d-flex align-items-center justify-content-between mb-1.5">
                     <div class="views-kpi-label text-truncate">Vues Rayons</div>
@@ -353,8 +420,8 @@
             </div>
         </div>
 
-        <!-- Recherches Effectuées -->
-        <div class="col-6 col-xl-3">
+        <!-- 4. Recherches Effectuées -->
+        <div class="col">
             <div class="views-kpi-card kpi-accent-blue h-100">
                 <div class="d-flex align-items-center justify-content-between mb-1.5">
                     <div class="views-kpi-label text-truncate">Recherches</div>
@@ -370,8 +437,8 @@
             </div>
         </div>
 
-        <!-- Recherches Sans Résultat (Besoins Clients) -->
-        <div class="col-6 col-xl-3">
+        <!-- 5. Recherches Sans Résultat (Besoins Clients) -->
+        <div class="col">
             <div class="views-kpi-card kpi-accent-rose h-100">
                 <div class="d-flex align-items-center justify-content-between mb-1.5">
                     <div class="views-kpi-label text-truncate">Sans Résultat</div>
@@ -381,7 +448,7 @@
                 </div>
                 <div class="views-kpi-value text-danger">{{ number_format($kpi['zero_result_searches'], 0, ',', ' ') }}</div>
                 <div class="text-danger small mt-1.5 text-truncate fw-semibold" style="font-size: 0.72rem;">
-                    <i class="fas fa-exclamation-triangle me-0.5"></i> Demandes non comblées
+                    <i class="fas fa-exclamation-triangle me-0.5"></i> Demandes 0 stock
                 </div>
             </div>
         </div>
@@ -472,6 +539,9 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity-pane" type="button" role="tab" aria-controls="activity-pane" aria-selected="false">
                             <i class="fas fa-stream me-1.5 text-secondary"></i> Flux en Direct
+                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill ms-1 d-inline-flex align-items-center gap-1 px-1.5 py-0.5" style="font-size: 0.68rem;">
+                                <span class="live-pulse-dot" style="width: 5px; height: 5px;"></span> <span class="live-online-counter">{{ $onlineStats['total_online'] ?? 1 }}</span>
+                            </span>
                         </button>
                     </li>
                 </ul>
@@ -994,9 +1064,20 @@
 
                 <!-- ================= TAB 5: FLUX EN DIRECT ================= -->
                 <div class="tab-pane fade" id="activity-pane" role="tabpanel" aria-labelledby="activity-tab" tabindex="0">
-                    <div class="p-2.5 p-md-3 bg-light border-bottom d-flex align-items-center justify-content-between flex-wrap gap-1">
-                        <span class="fw-bold text-dark small"><i class="fas fa-circle text-success me-1.5" style="font-size: 7px;"></i>Dernières actions des visiteurs en direct</span>
-                        <span class="badge bg-white text-muted border" style="font-size: 0.7rem;">25 dernières actions</span>
+                    <div class="p-2.5 p-md-3 bg-light border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <span class="live-pulse-dot"></span>
+                            <span class="fw-bold text-dark small">Dernières actions des visiteurs en direct</span>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5 small" style="font-size: 0.72rem;">
+                                <span class="live-online-counter">{{ $onlineStats['total_online'] ?? 1 }}</span> actif(s) en temps réel
+                            </span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-muted small" style="font-size: 0.72rem;">
+                                <i class="fas fa-clock me-1"></i>Mis à jour : <strong class="text-dark" id="liveActivityUpdated">{{ now()->format('H:i:s') }}</strong>
+                            </span>
+                            <span class="badge bg-white text-muted border" style="font-size: 0.7rem;">25 dernières actions</span>
+                        </div>
                     </div>
 
                     <!-- Desktop Table -->
@@ -1344,5 +1425,54 @@ function openProductViewsModal(productId) {
             console.error('Error loading product views:', err);
         });
 }
+
+// ================= Real-time Online Clients Polling =================
+function pollLiveVisitors() {
+    fetch('{{ route("analytics.views.live-visitors") }}', {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
+    })
+    .then(res => {
+        if (!res.ok) throw new Error('Network error');
+        return res.json();
+    })
+    .then(data => {
+        if (!data || typeof data.online_clients === 'undefined') return;
+
+        // Update all online counter elements
+        document.querySelectorAll('.live-online-counter').forEach(el => {
+            const currentVal = el.textContent.trim();
+            const newVal = String(data.online_clients);
+            if (currentVal !== newVal) {
+                el.textContent = newVal;
+                el.classList.add('scale-bump');
+                setTimeout(() => el.classList.remove('scale-bump'), 400);
+            }
+        });
+
+        // Update auth and guest counters
+        document.querySelectorAll('.live-auth-counter').forEach(el => {
+            el.textContent = data.online_auth_clients ?? 0;
+        });
+        document.querySelectorAll('.live-guest-counter').forEach(el => {
+            el.textContent = data.online_guests ?? 0;
+        });
+
+        // Update timestamps
+        const timeStr = data.updated_at || new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+        const lastUpdatedEl = document.getElementById('liveLastUpdated');
+        if (lastUpdatedEl) lastUpdatedEl.textContent = timeStr;
+        const liveActivityEl = document.getElementById('liveActivityUpdated');
+        if (liveActivityEl) liveActivityEl.textContent = timeStr;
+    })
+    .catch(() => {
+        // silent fail to avoid disruptive console logs
+    });
+}
+
+// Poll every 10 seconds for real-time accuracy
+setInterval(pollLiveVisitors, 10000);
 </script>
 @endpush
