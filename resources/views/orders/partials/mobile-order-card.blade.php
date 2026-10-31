@@ -155,7 +155,7 @@
             $stLower = strtolower($order->status);
             $statusStyle = match($stLower) {
                 'delivered', 'livrée' => ['bg' => '#ecfdf5', 'color' => '#047857', 'border' => '#a7f3d0', 'dot' => 'dot-green', 'text' => 'Livrée'],
-                'shipped', 'expédiée' => ['bg' => '#f0fdfa', 'color' => '#0f766e', 'border' => '#99f6e4', 'dot' => 'dot-teal', 'text' => 'Expédiée'],
+                'shipped', 'expédiée' => ['bg' => 'rgb(192 246 255 / 53%)', 'color' => '#0093ac', 'border' => '#0dcaf0', 'dot' => 'dot-teal', 'text' => 'Expédiée'],
                 'processing', 'en cours' => ['bg' => '#eff6ff', 'color' => '#1d4ed8', 'border' => '#bfdbfe', 'dot' => 'dot-blue', 'text' => 'En cours'],
                 'cancelled', 'annulée' => ['bg' => '#fef2f2', 'color' => '#b91c1c', 'border' => '#fecaca', 'dot' => 'dot-red', 'text' => 'Annulée'],
                 default => ['bg' => '#fffbeb', 'color' => '#b45309', 'border' => '#fde68a', 'dot' => 'dot-amber', 'text' => 'En attente']

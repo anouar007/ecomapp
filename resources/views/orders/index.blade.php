@@ -719,7 +719,7 @@
         const stMap = {
             'pending': { label: 'En attente', dot: 'amber', badgeClass: 'warning', textClass: 'text-warning', mobBg: '#fffbeb', mobColor: '#b45309', mobBorder: '#fde68a' },
             'processing': { label: 'En cours', dot: 'blue', badgeClass: 'primary', textClass: 'text-primary', mobBg: '#eff6ff', mobColor: '#1d4ed8', mobBorder: '#bfdbfe' },
-            'shipped': { label: 'Expédiée', dot: 'teal', badgeClass: 'info', textClass: 'text-info', mobBg: '#f0fdfa', mobColor: '#0f766e', mobBorder: '#99f6e4' },
+            'shipped': { label: 'Expédiée', dot: 'teal', badgeClass: 'info', textClass: 'text-info', mobBg: 'rgb(192 246 255 / 53%)', mobColor: '#0093ac', mobBorder: '#0dcaf0' },
             'delivered': { label: 'Livrée', dot: 'green', badgeClass: 'success', textClass: 'text-success', mobBg: '#ecfdf5', mobColor: '#047857', mobBorder: '#a7f3d0' },
             'cancelled': { label: 'Annulée', dot: 'red', badgeClass: 'danger', textClass: 'text-danger', mobBg: '#fef2f2', mobColor: '#b91c1c', mobBorder: '#fecaca' }
         };
