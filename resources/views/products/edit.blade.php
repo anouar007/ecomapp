@@ -752,9 +752,6 @@
                             <i class="fas fa-mobile-alt text-primary"></i>
                             <span>Sur mobile & tactile, maintenez la poignée <i class="fas fa-grip-vertical text-muted"></i> ou utilisez les flèches <i class="fas fa-chevron-left text-muted"></i> <i class="fas fa-chevron-right text-muted"></i> pour réordonner sans effort.</span>
                         </div>
-                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5" style="font-size: 0.72rem;">
-                            <i class="fas fa-check-circle me-1"></i> Sauvegarde automatique instantanée
-                        </span>
                     </div>
 
                     <!-- Marge interne & Espace vide de l'image (Padding) -->
@@ -1570,32 +1567,6 @@ function updateImageOrdersAndInputs(triggerAjax = false) {
 
     const badge = document.getElementById('imageCountBadge');
     if (badge) badge.textContent = boxes.length + ' photo(s)';
-
-    // Trigger background AJAX save if editing an existing product
-    if (triggerAjax && orderArray.length > 0 && typeof currentProductId !== 'undefined') {
-        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]')?.value;
-        fetch(`/products/${currentProductId}/images/reorder`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': token,
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ order: orderArray })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success && typeof Toast !== 'undefined') {
-                Toast.fire({
-                    icon: 'success',
-                    title: 'Ordre de la galerie sauvegardé',
-                    timer: 1500
-                });
-            }
-        })
-        .catch(err => console.error('Error saving image order:', err));
-    }
 }
 
 function selectPrimaryImage(imageId, buttonEl) {
@@ -1645,31 +1616,6 @@ function selectPrimaryImage(imageId, buttonEl) {
 
     // Also select this image for padding adjustment
     selectImageForPadding(imageId);
-
-    // Trigger instant AJAX save
-    if (typeof currentProductId !== 'undefined') {
-        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]')?.value;
-        fetch(`/products/${currentProductId}/images/${imageId}/make-primary`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': token,
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
-            }
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success && typeof Toast !== 'undefined') {
-                Toast.fire({
-                    icon: 'success',
-                    title: 'Image principale mise à jour !',
-                    timer: 2000
-                });
-            }
-        })
-        .catch(err => console.error('Error setting primary image:', err));
-    }
 }
 
 function moveImageBox(boxId, direction) {
@@ -2391,7 +2337,6 @@ function recalculateVariantSummary() {
 }
 
 let currentActivePaddingImageId = {{ optional($product->primaryImage)->id ?? optional($product->images->first())->id ?? 'null' }};
-let imagePaddingSaveTimeout = null;
 
 function selectImageForPadding(imageId, event) {
     if (event) {
@@ -2481,35 +2426,6 @@ function highlightActivePreset(val) {
     });
 }
 
-function saveSingleImagePaddingAjax(imageId, paddingVal) {
-    if (!currentProductId || !imageId) return;
-    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]')?.value;
-
-    fetch(`/products/${currentProductId}/images/${imageId}/padding`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': token,
-            'X-Requested-With': 'XMLHttpRequest',
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({ image_padding: paddingVal })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success && typeof Toast !== 'undefined') {
-            const box = document.getElementById('box-img-' + imageId);
-            const num = box ? box.querySelector('.image-order-pill')?.textContent : '';
-            Toast.fire({
-                icon: 'success',
-                title: 'Marge ' + (num ? num + ' ' : '') + 'mise à jour (' + (paddingVal || '0%') + ')',
-                timer: 1500
-            });
-        }
-    })
-    .catch(err => console.error('Error saving image padding:', err));
-}
-
 function applyCurrentPaddingToAll() {
     const input = document.getElementById('image_padding_input');
     const val = input ? input.value : '';
@@ -2540,30 +2456,12 @@ function applyCurrentPaddingToAll() {
         }
     });
 
-    if (typeof currentProductId !== 'undefined') {
-        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]')?.value;
-
-        fetch(`/products/${currentProductId}/images/apply-padding-all`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': token,
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ image_padding: val })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success && typeof Toast !== 'undefined') {
-                Toast.fire({
-                    icon: 'success',
-                    title: 'Marge (' + (val || '0%') + ') appliquée à toutes les photos !',
-                    timer: 2000
-                });
-            }
-        })
-        .catch(err => console.error('Error applying padding to all:', err));
+    if (typeof Toast !== 'undefined') {
+        Toast.fire({
+            icon: 'info',
+            title: 'Marge (' + (val || '0%') + ') appliquée à toutes les photos (cliquez sur Enregistrer pour valider)',
+            timer: 2000
+        });
     }
 }
 
@@ -2576,7 +2474,7 @@ function initImagePaddingControl() {
     const sliderText = document.getElementById('sliderValueText');
     if (!range || !input) return;
 
-    function applyPadding(val, fromRange = false, triggerAjax = true) {
+    function applyPadding(val, fromRange = false) {
         val = (val || '').trim();
         let cssVal = val;
         if (cssVal && !isNaN(cssVal)) {
@@ -2632,14 +2530,6 @@ function initImagePaddingControl() {
             const box = document.getElementById('box-img-' + currentActivePaddingImageId);
             if (box) {
                 box.setAttribute('data-image-padding', input.value);
-            }
-
-            // Debounced AJAX auto-save
-            if (triggerAjax && typeof currentProductId !== 'undefined') {
-                clearTimeout(imagePaddingSaveTimeout);
-                imagePaddingSaveTimeout = setTimeout(() => {
-                    saveSingleImagePaddingAjax(currentActivePaddingImageId, input.value);
-                }, 400);
             }
         }
 
