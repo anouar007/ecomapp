@@ -5354,3 +5354,349 @@ html[dir="rtl"] .floating-checkout-badge {
     }
 }
 
+/* ================================================================
+   PRO HOME PAGE ENHANCEMENTS — ULTRA-PREMIUM CINEMA AESTHETICS
+   ================================================================ */
+
+/* Brands Ticker Strip */
+.brands-ticker-section {
+    background: #090e17;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 24px 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.brands-ticker-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.brands-ticker-title {
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.brands-ticker-title i {
+    color: var(--brand-red);
+    font-size: 0.82rem;
+}
+
+.brands-grid-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+}
+
+.brand-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    color: #e2e8f0;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    transition: all 0.25s ease;
+}
+
+.brand-pill:hover {
+    background: rgba(220, 38, 38, 0.2);
+    border-color: var(--brand-red);
+    color: #ffffff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(220, 38, 38, 0.35);
+}
+
+.brand-pill .brand-tag {
+    font-size: 0.65rem;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+.brand-pill:hover .brand-tag {
+    background: var(--brand-red);
+    color: #ffffff;
+}
+
+/* Quick Actions Overlay on Product Image */
+.product-v2-quick-actions {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 5;
+    pointer-events: none;
+}
+
+.product-card-v2:hover .product-v2-quick-actions {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.btn-card-quick-cart {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: var(--brand-red);
+    color: #ffffff;
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(220, 38, 38, 0.45);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-card-quick-cart:hover {
+    background: var(--brand-red-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(220, 38, 38, 0.6);
+}
+
+.btn-card-quick-view {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    color: var(--brand-black);
+    border-radius: 10px;
+    font-size: 0.85rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-card-quick-view:hover {
+    background: var(--brand-black);
+    color: #ffffff;
+    border-color: var(--brand-black);
+}
+
+/* Stock Indicator */
+.pro-stock-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #059669;
+    letter-spacing: 0.02em;
+}
+
+.pro-stock-indicator .pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    animation: pulseStock 2s infinite;
+}
+
+@keyframes pulseStock {
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* Price Row with Micro Cart Button */
+.product-v2-price-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.btn-price-cart {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: var(--brand-red-light);
+    color: var(--brand-red);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.92rem;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.btn-price-cart:hover {
+    background: var(--brand-red);
+    color: #ffffff;
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+}
+
+/* Category Showcase Headers */
+.showcase-header-wrap {
+    padding-bottom: 8px;
+}
+
+.showcase-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--brand-red);
+    background: var(--brand-red-light);
+    padding: 5px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(220, 38, 38, 0.15);
+    margin-bottom: 8px;
+}
+
+.showcase-title {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 1.85rem;
+    letter-spacing: -0.02em;
+    color: var(--brand-black);
+    margin-bottom: 4px;
+}
+
+.showcase-desc {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    max-width: 680px;
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+/* Pro Showroom Spotlight Strip */
+.showroom-spotlight {
+    background: linear-gradient(135deg, #090e17 0%, #111827 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 38px 36px;
+    position: relative;
+    overflow: hidden;
+    color: #ffffff;
+    box-shadow: 0 20px 45px rgba(2, 6, 23, 0.25);
+}
+
+.showroom-spotlight::before {
+    content: '';
+    position: absolute;
+    top: -80px;
+    right: -80px;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(220, 38, 38, 0.2) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.spotlight-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(220, 38, 38, 0.18);
+    border: 1px solid rgba(220, 38, 38, 0.4);
+    color: #fca5a5;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 14px;
+}
+
+/* Testimonials Pro Card */
+.testimonial-card-pro {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 28px 24px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.03);
+    transition: all 0.3s ease;
+}
+
+.testimonial-card-pro:hover {
+    transform: translateY(-5px);
+    border-color: var(--brand-red);
+    box-shadow: 0 16px 32px rgba(220, 38, 38, 0.09);
+}
+
+.testimonial-quote {
+    font-size: 0.94rem;
+    line-height: 1.6;
+    color: var(--brand-black);
+    font-style: italic;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.testimonial-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--brand-red-light);
+    color: var(--brand-red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1rem;
+    border: 2px solid rgba(220, 38, 38, 0.2);
+    flex-shrink: 0;
+}
+

@@ -157,14 +157,14 @@
                     <button class="btn-mobile-tool w-100 justify-content-between" type="button" id="mobileSortDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
                         <span class="d-flex align-items-center gap-1 text-truncate">
                             <i class="fas fa-sort-amount-down text-muted"></i>
-                            <span id="mobileSortLabel">{{ __('Newest') }}</span>
+                            <span id="mobileSortLabel">{{ __('Price: High to Low') }}</span>
                         </span>
                         <i class="fas fa-chevron-down opacity-50 ms-1" style="font-size: 0.65rem;"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2" aria-labelledby="mobileSortDropdownBtn" style="z-index: 1095;">
-                        <li><button class="dropdown-item rounded-3 py-2 mobile-sort-item {{ request('sort') == 'newest' || !request('sort') ? 'active' : '' }}" type="button" data-sort="newest"><i class="fas fa-clock me-2"></i>{{ __('Newest') }}</button></li>
+                        <li><button class="dropdown-item rounded-3 py-2 mobile-sort-item {{ request('sort', 'price_desc') == 'price_desc' ? 'active' : '' }}" type="button" data-sort="price_desc"><i class="fas fa-arrow-down-9-1 me-2"></i>{{ __('Price: High to Low') }}</button></li>
                         <li><button class="dropdown-item rounded-3 py-2 mobile-sort-item {{ request('sort') == 'price_asc' ? 'active' : '' }}" type="button" data-sort="price_asc"><i class="fas fa-arrow-up-1-9 me-2"></i>{{ __('Price: Low to High') }}</button></li>
-                        <li><button class="dropdown-item rounded-3 py-2 mobile-sort-item {{ request('sort') == 'price_desc' ? 'active' : '' }}" type="button" data-sort="price_desc"><i class="fas fa-arrow-down-9-1 me-2"></i>{{ __('Price: High to Low') }}</button></li>
+                        <li><button class="dropdown-item rounded-3 py-2 mobile-sort-item {{ request('sort') == 'newest' ? 'active' : '' }}" type="button" data-sort="newest"><i class="fas fa-clock me-2"></i>{{ __('Newest') }}</button></li>
                     </ul>
                 </div>
 
@@ -208,9 +208,9 @@
                     <div class="d-flex align-items-center gap-2">
                         <label class="shop-sort-label">{{ __('Sort by:') }}</label>
                         <select class="shop-sort-select" id="sortSelect">
-                            <option value="newest"  {{ request('sort') == 'newest'     ? 'selected' : '' }}>{{ __('Newest') }}</option>
+                            <option value="price_desc" {{ request('sort', 'price_desc') == 'price_desc' ? 'selected' : '' }}>{{ __('Price: High to Low') }}</option>
                             <option value="price_asc"  {{ request('sort') == 'price_asc'  ? 'selected' : '' }}>{{ __('Price: Low to High') }}</option>
-                            <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>{{ __('Price: High to Low') }}</option>
+                            <option value="newest"     {{ request('sort') == 'newest'     ? 'selected' : '' }}>{{ __('Newest') }}</option>
                         </select>
                     </div>
                 </div>
@@ -305,9 +305,9 @@
         <div class="filter-section mb-4">
             <label class="filter-section-title"><i class="fas fa-sort-amount-down me-2 text-danger"></i>{{ __('Sort by') }}</label>
             <div class="d-flex flex-column gap-2" id="sheetSortGroup">
-                <label class="sheet-radio-tile {{ request('sort') == 'newest' || !request('sort') ? 'selected' : '' }}">
-                    <input type="radio" name="sheet_sort_radio" value="newest" {{ request('sort') == 'newest' || !request('sort') ? 'checked' : '' }}>
-                    <span>{{ __('Newest (New arrivals)') }}</span>
+                <label class="sheet-radio-tile {{ request('sort', 'price_desc') == 'price_desc' ? 'selected' : '' }}">
+                    <input type="radio" name="sheet_sort_radio" value="price_desc" {{ request('sort', 'price_desc') == 'price_desc' ? 'checked' : '' }}>
+                    <span>{{ __('Price: High to Low (Premium)') }}</span>
                     <i class="fas fa-check check-icon"></i>
                 </label>
                 <label class="sheet-radio-tile {{ request('sort') == 'price_asc' ? 'selected' : '' }}">
@@ -315,9 +315,9 @@
                     <span>{{ __('Price: Low to High (Cheapest)') }}</span>
                     <i class="fas fa-check check-icon"></i>
                 </label>
-                <label class="sheet-radio-tile {{ request('sort') == 'price_desc' ? 'selected' : '' }}">
-                    <input type="radio" name="sheet_sort_radio" value="price_desc" {{ request('sort') == 'price_desc' ? 'checked' : '' }}>
-                    <span>{{ __('Price: High to Low (Premium)') }}</span>
+                <label class="sheet-radio-tile {{ request('sort') == 'newest' ? 'selected' : '' }}">
+                    <input type="radio" name="sheet_sort_radio" value="newest" {{ request('sort') == 'newest' ? 'checked' : '' }}>
+                    <span>{{ __('Newest (New arrivals)') }}</span>
                     <i class="fas fa-check check-icon"></i>
                 </label>
             </div>
@@ -337,7 +337,7 @@
 // Shop State Manager
 const shopState = {
     category: "{{ request('category', '') }}",
-    sort: "{{ request('sort', 'newest') }}",
+    sort: "{{ request('sort', 'price_desc') }}",
     q: "{{ request('q', '') }}",
     min_price: "{{ request('min_price', '') }}",
     max_price: "{{ request('max_price', '') }}",
@@ -354,15 +354,15 @@ const categoryNamesMap = {
 
 // Sort Labels Map
 const sortLabelsMap = {
-    'newest': '{{ __('Newest') }}',
+    'price_desc': '{{ __('Price: High to Low') }}',
     'price_asc': '{{ __('Price: Low to High') }}',
-    'price_desc': '{{ __('Price: High to Low') }}'
+    'newest': '{{ __('Newest') }}'
 };
 
 function getParams() {
     const p = new URLSearchParams();
     if (shopState.category) p.append('category', shopState.category);
-    if (shopState.sort && shopState.sort !== 'newest') p.append('sort', shopState.sort);
+    if (shopState.sort && shopState.sort !== 'price_desc') p.append('sort', shopState.sort);
     if (shopState.q) p.append('q', shopState.q);
     if (shopState.min_price) p.append('min_price', shopState.min_price);
     if (shopState.max_price) p.append('max_price', shopState.max_price);
@@ -589,7 +589,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // 2. Desktop Category clicks
+    // 2. Desktop Category clicks & In-grid category links
     document.querySelectorAll('.shop-cat-link').forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
@@ -597,6 +597,19 @@ document.addEventListener('DOMContentLoaded', function() {
             fetchProducts();
         });
     });
+
+    const gridContainer = document.getElementById('productGridContainer');
+    if (gridContainer) {
+        gridContainer.addEventListener('click', function(e) {
+            const catLink = e.target.closest('.category-filter[data-slug]');
+            if (catLink) {
+                e.preventDefault();
+                shopState.category = catLink.getAttribute('data-slug') || '';
+                fetchProducts();
+                window.scrollTo({ top: 150, behavior: 'smooth' });
+            }
+        });
+    }
 
     // 3. Desktop Sort Select
     const sortSelect = document.getElementById('sortSelect');

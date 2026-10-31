@@ -18,7 +18,7 @@ class ShopController extends Controller
         $query = Product::where('status', 'active');
 
         // Filter by category
-        if ($request->has('category')) {
+        if ($request->filled('category')) {
             $query->whereHas('productCategory', function ($q) use ($request) {
                 $q->where('slug', $request->category);
             });
@@ -45,20 +45,56 @@ class ShopController extends Controller
             $query->where('price', '<=', $request->max_price);
         }
 
-        // Sort
-        switch ($request->get('sort')) {
+        // Sort: default to 'price_desc' (sort from the most expensive)
+        $sort = $request->get('sort', 'price_desc');
+        switch ($sort) {
             case 'price_asc':
                 $query->orderBy('price', 'asc');
-                break;
-            case 'price_desc':
-                $query->orderBy('price', 'desc');
                 break;
             case 'newest':
                 $query->orderBy('created_at', 'desc');
                 break;
+            case 'price_desc':
             default:
-                $query->orderBy('created_at', 'desc');
+                $query->orderBy('price', 'desc');
                 break;
+        }
+
+        // Check if we should display grouped categories (3 products of each category sorted from most expensive)
+        $isGroupedByCategory = !$request->filled('category')
+            && !$request->filled('q')
+            && !$request->filled('min_price')
+            && !$request->filled('max_price')
+            && (!$request->filled('sort') || $request->sort === 'price_desc')
+            && !$request->filled('page');
+
+        $groupedCategories = [];
+        if ($isGroupedByCategory) {
+            $rawCategories = Category::where('status', 'active')
+                ->where('slug', '!=', 'general')
+                ->withCount(['products' => function($q) {
+                    $q->where('status', 'active');
+                }])
+                ->orderBy('sort_order', 'asc')
+                ->get();
+
+            foreach ($rawCategories as $cat) {
+                if ($cat->products_count > 0) {
+                    $catProducts = Product::where('category_id', $cat->id)
+                        ->where('status', 'active')
+                        ->with(['primaryImage', 'images', 'productCategory'])
+                        ->withCount('reviews')
+                        ->withAvg('reviews', 'rating')
+                        ->orderBy('price', 'desc')
+                        ->take(3)
+                        ->get();
+
+                    $groupedCategories[] = [
+                        'category' => $cat,
+                        'products' => $catProducts,
+                    ];
+                }
+            }
         }
 
         $products = $query->with(['images', 'productCategory'])
@@ -67,14 +103,14 @@ class ShopController extends Controller
             ->paginate(12)->withQueryString();
 
         if ($request->ajax()) {
-            return view('frontend.shop.partials.product-grid', compact('products'))->render();
+            return view('frontend.shop.partials.product-grid', compact('products', 'isGroupedByCategory', 'groupedCategories'))->render();
         }
 
         $categories = Cache::remember('shop_catalog_categories', 3600, function () {
             return Category::withCount('products')->get();
         });
 
-        return view('frontend.shop.index', compact('products', 'categories'));
+        return view('frontend.shop.index', compact('products', 'categories', 'isGroupedByCategory', 'groupedCategories'));
     }
 
     /**

@@ -45,7 +45,7 @@ class HomeController extends Controller
                 ->orderBy('sort_order', 'asc')
                 ->get();
 
-            // 3. Featured Products - Show only one row (4 items)
+            // 3. Featured Products
             $featuredProducts = Product::where('status', 'active')
                 ->with(['productCategory', 'primaryImage', 'images'])
                 ->latest() 
@@ -60,6 +60,44 @@ class HomeController extends Controller
                     return $product;
                 });
 
+            // 4. Category Showcases: Camera, Objectifs, Son, Stabilisateurs, Trépieds
+            // Fetches the most expensive active products for each category
+            $targetSlugs = ['camera', 'objectifs', 'son', 'stabilisateurs', 'trepieds'];
+
+            $showcaseCategories = Category::whereIn('slug', $targetSlugs)
+                ->where('status', 'active')
+                ->withCount(['products' => function($q) {
+                    $q->where('status', 'active');
+                }])
+                ->get()
+                ->keyBy('slug');
+
+            $categoryShowcases = [];
+
+            foreach ($targetSlugs as $slug) {
+                if (isset($showcaseCategories[$slug])) {
+                    $category = $showcaseCategories[$slug];
+                    $topProducts = Product::where('category_id', $category->id)
+                        ->where('status', 'active')
+                        ->with(['productCategory', 'primaryImage', 'images'])
+                        ->withCount('reviews')
+                        ->withAvg('reviews', 'rating')
+                        ->orderBy('price', 'desc')
+                        ->take(4)
+                        ->get()
+                        ->map(function($product) {
+                            $product->is_new = $product->created_at && $product->created_at->diffInDays(now()) < 30;
+                            $product->short_description = Str::limit($product->description, 60);
+                            return $product;
+                        });
+
+                    $categoryShowcases[] = [
+                        'category' => $category,
+                        'products' => $topProducts,
+                    ];
+                }
+            }
+
             // Ensure category products also have these properties for the view
             foreach($allCategories as $category) {
                 $category->products->each(function($product) {
@@ -68,13 +106,13 @@ class HomeController extends Controller
                 });
             }
 
-            // 4. Testimonials
+            // 5. Testimonials
             $testimonials = \App\Models\Testimonial::where('is_active', true)
                 ->latest()
                 ->take(6)
                 ->get();
 
-            return compact('heroSlides', 'allCategories', 'featuredProducts', 'testimonials');
+            return compact('heroSlides', 'allCategories', 'featuredProducts', 'categoryShowcases', 'testimonials');
         });
 
         return view('frontend.home', $data);

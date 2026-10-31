@@ -94,7 +94,7 @@
                                             <i class="fas fa-camera"></i>
                                             <span>{{ __('Explore the Catalogue') }}</span>
                                         </a>
-                                        <a href="{{ route('shop.index', ['category' => 'cameras-hybrides']) }}" class="hero-btn-secondary">
+                                        <a href="{{ route('shop.index', ['category' => 'camera']) }}" class="hero-btn-secondary">
                                             <i class="fas fa-play-circle"></i>
                                             <span>{{ __('Pro Cameras') }}</span>
                                         </a>
@@ -174,7 +174,38 @@
     </div>
 </section>
 
-{{-- CATEGORIES --}}
+{{-- BRANDS TICKER STRIP --}}
+<section class="brands-ticker-section">
+    <div class="container">
+        <div class="brands-ticker-header">
+            <h6 class="brands-ticker-title">
+                <i class="fas fa-certificate"></i> {{ __('Distributeur Agréé & Marques Professionnelles') }}
+            </h6>
+        </div>
+        <div class="brands-grid-wrap">
+            @php
+            $proBrands = [
+                ['name' => 'Sony Cine', 'tag' => 'FX Series', 'q' => 'Sony'],
+                ['name' => 'Canon EOS', 'tag' => 'Cinema & RF', 'q' => 'Canon'],
+                ['name' => 'DJI Pro', 'tag' => 'Ronin & RS', 'q' => 'DJI'],
+                ['name' => 'Nikon Z', 'tag' => 'Full-Frame', 'q' => 'Nikon'],
+                ['name' => 'Blackmagic', 'tag' => 'Pocket 6K', 'q' => 'Blackmagic'],
+                ['name' => 'RED Digital', 'tag' => 'Cinema Raw', 'q' => 'RED'],
+                ['name' => 'RØDE Pro', 'tag' => 'Broadcast Mic', 'q' => 'RODE'],
+                ['name' => 'Hollyland', 'tag' => 'Wireless HF', 'q' => 'Hollyland'],
+                ['name' => 'SmallRig', 'tag' => 'Rigs & Cage', 'q' => 'SmallRig'],
+                ['name' => 'Peak Design', 'tag' => 'Carbon Tripods', 'q' => 'Peak Design'],
+            ];
+            @endphp
+            @foreach($proBrands as $b)
+                <a href="{{ route('shop.index', ['search' => $b['q']]) }}" class="brand-pill" title="{{ $b['name'] }} au Maroc">
+                    <span>{{ $b['name'] }}</span>
+                    <span class="brand-tag">{{ $b['tag'] }}</span>
+                </a>
+            @endforeach
+        </div>
+    </div>
+</section>
 <section id="categories" class="section-py">
     <div class="container">
         <div class="d-flex justify-content-between align-items-end mb-4">
@@ -208,73 +239,288 @@
     </div>
 </section>
 
-{{-- FEATURED PRODUCTS --}}
-<section id="featured" class="section-py bg-surface">
-    <div class="container">
-        <div class="d-flex justify-content-between align-items-end mb-4">
-            <div>
-                <span class="section-eyebrow-cine"><i class="fas fa-star"></i> {{ __('Studio Selection') }}</span>
-                <h2 class="section-title mb-1">{{ __('Flagship Equipment') }}</h2>
-                <p class="section-desc">{{ __('Cameras, optics and accessories from cinematographers') }}</p>
-            </div>
-            <a href="{{ route('shop.index') }}" class="btn-link-arrow d-none d-md-inline-flex">
-                <span>{{ __('View Full Catalogue') }}</span> <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }}"></i>
-            </a>
-        </div>
+{{-- CATEGORY SHOWCASES (Camera, Objectifs, Son, Stabilisateurs, Trépieds) --}}
+@php
+    $categoryMetaConfig = [
+        'camera' => [
+            'icon' => 'fa-video',
+            'badge' => __('Caméras'),
+            'title' => __('Caméras & Boîtiers Cinéma'),
+            'desc' => __('Les modèles professionnels les plus performants pour tournages 4K, 6K et 8K.'),
+            'btn' => __('Voir toutes les caméras'),
+        ],
+        'objectifs' => [
+            'icon' => 'fa-circle-notch',
+            'badge' => __('Objectifs & Optiques'),
+            'title' => __('Objectifs Prime & Zooms Pro'),
+            'desc' => __('Optiques haut de gamme de très haute précision, focales fixes et zooms lumineux.'),
+            'btn' => __('Voir tous les objectifs'),
+        ],
+        'son' => [
+            'icon' => 'fa-microphone',
+            'badge' => __('Son & Audio Broadcast'),
+            'title' => __('Prise de Son & Systèmes HF'),
+            'desc' => __('Micros HF sans fil, capsules cinéma et enregistreurs studio 32-bit float.'),
+            'btn' => __('Voir tout le matériel son'),
+        ],
+        'stabilisateurs' => [
+            'icon' => 'fa-crosshairs',
+            'badge' => __('Stabilisation & Gimbals'),
+            'title' => __('Stabilisateurs & Rigs'),
+            'desc' => __('Systèmes de stabilisation gyroscopique avancés pour des plans d’une fluidité absolue.'),
+            'btn' => __('Voir tous les stabilisateurs'),
+        ],
+        'trepieds' => [
+            'icon' => 'fa-layer-group',
+            'badge' => __('Trépieds & Supports'),
+            'title' => __('Trépieds Carbone & Têtes Fluides'),
+            'desc' => __('Supports haute charge robustes et rotules fluides pour cadrages stables et précis.'),
+            'btn' => __('Voir tous les trépieds'),
+        ],
+    ];
+@endphp
 
-        <div class="row g-2 g-sm-3 g-lg-4">
-            @foreach($featuredProducts as $index => $product)
-            <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="{{ ($index % 4) * 80 }}">
-                <div class="product-card-v2">
-                    <div class="product-v2-image">
-                        <a href="{{ route('shop.show', $product->id) }}" class="product-v2-img-link d-block w-100 h-100">
-                            <img src="{{ $product->thumbnail }}" alt="{{ $product->name }}" loading="lazy">
-                        </a>
-                        <div class="product-v2-badges">
-                            @if($product->created_at && $product->created_at->diffInDays(now()) < 14)
-                                <span class="badge-v2 badge-new">{{ __('New') }}</span>
-                            @endif
-                            @if($product->isOnSale())
-                                <span class="badge-v2 badge-sale">-{{ $product->discount_percentage }}%</span>
-                            @endif
+@if(isset($categoryShowcases) && count($categoryShowcases) > 0)
+    @foreach($categoryShowcases as $showcaseIndex => $showcase)
+        @php
+            $cat = $showcase['category'];
+            $products = $showcase['products'];
+            $meta = $categoryMetaConfig[$cat->slug] ?? [
+                'icon' => 'fa-tag',
+                'badge' => $cat->name,
+                'title' => $cat->name,
+                'desc' => __('Équipements professionnels de la catégorie :name', ['name' => $cat->name]),
+                'btn' => __('Voir tous les produits'),
+            ];
+            $bgClass = ($showcaseIndex % 2 === 0) ? 'bg-surface' : 'bg-white';
+        @endphp
+        @if($products->count() > 0)
+        <section id="category-{{ $cat->slug }}" class="section-py {{ $bgClass }} border-bottom border-light">
+            <div class="container">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-end gap-3 mb-4">
+                    <div class="showcase-header-wrap">
+                        <span class="showcase-eyebrow"><i class="fas {{ $meta['icon'] }}"></i> {{ $meta['badge'] }}</span>
+                        <h2 class="showcase-title mb-1">{{ $meta['title'] }}</h2>
+                        <p class="showcase-desc mb-0">{{ $meta['desc'] }}</p>
+                    </div>
+                    <a href="{{ route('shop.index', ['category' => $cat->slug]) }}" class="btn-link-arrow d-none d-md-inline-flex flex-shrink-0">
+                        <span>{{ __('Explorer tout le rayon (:count)', ['count' => $cat->products_count]) }}</span>
+                        <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }}"></i>
+                    </a>
+                </div>
+
+                {{-- ONE ROW: Responsive product count per screen size --}}
+                <div class="row g-2 g-sm-3 g-lg-4">
+                    @foreach($products as $index => $product)
+                    @php
+                        // Exactly ONE row on every screen:
+                        // - Mobile (< 768px): 2 products (col-6)
+                        // - Tablet (768px - 991px): 3 products (col-md-4)
+                        // - Desktop (>= 992px): 4 products (col-lg-3)
+                        $colClass = 'col-6 col-md-4 col-lg-3';
+                        if ($index === 2) {
+                            $colClass .= ' d-none d-md-block';
+                        } elseif ($index >= 3) {
+                            $colClass = 'col-lg-3 d-none d-lg-block';
+                        }
+                    @endphp
+                    <div class="{{ $colClass }}" data-aos="fade-up" data-aos-delay="{{ ($index % 4) * 80 }}">
+                        <div class="product-card-v2">
+                            <div class="product-v2-image">
+                                <a href="{{ route('shop.show', $product->id) }}" class="product-v2-img-link d-block w-100 h-100">
+                                    <img src="{{ $product->thumbnail }}" alt="{{ $product->name }}" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                                </a>
+                                <div class="product-v2-badges">
+                                    @if($product->created_at && $product->created_at->diffInDays(now()) < 14)
+                                        <span class="badge-v2 badge-new">{{ __('New') }}</span>
+                                    @endif
+                                    @if($product->isOnSale())
+                                        <span class="badge-v2 badge-sale">-{{ $product->discount_percentage }}%</span>
+                                    @endif
+                                </div>
+                                {{-- Quick Actions on Image Hover --}}
+                                <div class="product-v2-quick-actions">
+                                    <button type="button" class="btn-card-quick-cart" onclick="addToCart({{ $product->id }})" title="{{ __('Ajouter au panier') }}">
+                                        <i class="fas fa-cart-plus"></i> <span>{{ __('Ajouter') }}</span>
+                                    </button>
+                                    <a href="{{ route('shop.show', $product->id) }}" class="btn-card-quick-view" title="{{ __('Voir détails') }}">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="product-v2-body">
+                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                    @if($product->productCategory)
+                                        <span class="product-v2-cat text-truncate mb-0">{{ $product->productCategory->name }}</span>
+                                    @endif
+                                    <span class="pro-stock-indicator">
+                                        <span class="pulse-dot"></span> {{ __('En stock') }}
+                                    </span>
+                                </div>
+                                <h4 class="product-v2-name">
+                                    <a href="{{ route('shop.show', $product->id) }}" class="product-v2-name-link" title="{{ $product->name }}">
+                                        {{ Str::limit($product->name, 45) }}
+                                    </a>
+                                </h4>
+                                <div class="product-v2-rating">
+                                    @php $rating = round($product->reviews_avg_rating ?: 5); @endphp
+                                    <div class="stars-row">
+                                        @for($i = 0; $i < 5; $i++)
+                                            <i class="fas fa-star{{ $i < $rating ? '' : ' opacity-25' }}"></i>
+                                        @endfor
+                                    </div>
+                                    <span class="reviews-count">({{ $product->reviews_count > 0 ? $product->reviews_count : 5 }})</span>
+                                </div>
+                                <div class="product-v2-price-row">
+                                    <div class="product-v2-price mb-0">
+                                        @if($product->isOnSale())
+                                            <span class="price-sale text-nowrap">{{ $product->formatted_sale_price }}</span>
+                                            <span class="price-old text-nowrap">{{ $product->formatted_price }}</span>
+                                        @else
+                                            <span class="price-sale text-nowrap">{{ $product->formatted_price }}</span>
+                                        @endif
+                                    </div>
+                                    <button type="button" class="btn-price-cart" onclick="addToCart({{ $product->id }})" title="{{ __('Ajouter au panier') }}">
+                                        <i class="fas fa-cart-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="product-v2-body">
-                        @if($product->productCategory)
-                            <span class="product-v2-cat text-truncate">{{ $product->productCategory->name }}</span>
-                        @endif
-                        <h4 class="product-v2-name">
-                            <a href="{{ route('shop.show', $product->id) }}" class="product-v2-name-link" title="{{ $product->name }}">
-                                {{ Str::limit($product->name, 45) }}
-                            </a>
-                        </h4>
-                        <div class="product-v2-rating">
-                            @php $rating = round($product->reviews()->avg('rating') ?? 5); @endphp
-                            <div class="stars-row">
-                                @for($i = 0; $i < 5; $i++)
-                                    <i class="fas fa-star{{ $i < $rating ? '' : ' opacity-25' }}"></i>
-                                @endfor
-                            </div>
-                            <span class="reviews-count">({{ $product->reviews()->count() > 0 ? $product->reviews()->count() : 5 }})</span>
+                    @endforeach
+                </div>
+
+                {{-- Action button to view all products in category --}}
+                <div class="text-center mt-4 mt-md-5">
+                    <a href="{{ route('shop.index', ['category' => $cat->slug]) }}" class="hero-btn-primary w-sm-auto">
+                        <i class="fas {{ $meta['icon'] }} me-2"></i>
+                        <span>{{ $meta['btn'] }}</span>
+                        <span class="badge bg-white text-danger rounded-pill ms-2 px-2 py-1 fw-bold">{{ $cat->products_count }}</span>
+                        <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }} ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+        @endif
+    @endforeach
+@endif
+
+{{-- SHOWROOM LIVE DEMO & TEST BENCH --}}
+<section class="section-py bg-surface border-bottom border-light">
+    <div class="container">
+        <div class="showroom-spotlight">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <span class="spotlight-pill">
+                        <i class="fas fa-video me-1"></i> {{ __('Showroom & Banc d\'Essai Technique') }}
+                    </span>
+                    <h2 class="h1 fw-bold text-white mb-2" style="font-family: var(--font-heading); letter-spacing: -0.02em;">
+                        {{ __('Testez vos caméras et optiques avant achat') }}
+                    </h2>
+                    <p class="text-white-50 mb-4" style="font-size: 1.02rem; max-width: 650px; line-height: 1.6;">
+                        {{ __('Notre showroom technique à Casablanca vous accueille pour tester boîtiers 8K, objectifs cinéma, stabilisateurs et micros sans fil. Équilibrage de gimbals et calibration offerts.') }}
+                    </p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{{ route('contact') }}" class="hero-btn-primary">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>{{ __('Prendre RDV au Showroom') }}</span>
+                        </a>
+                        <a href="tel:{{ setting('company_phone', '+212661987654') }}" class="hero-btn-secondary">
+                            <i class="fas fa-phone-alt"></i>
+                            <span>{{ __('Conseiller Technique') }}</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center text-lg-end mt-4 mt-lg-0">
+                    <div class="p-3 rounded-4 text-start" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); backdrop-filter: blur(12px);">
+                        <div class="d-flex align-items-center justify-content-between p-2 border-bottom border-secondary border-opacity-25 mb-2">
+                            <span class="text-white-50 small"><i class="fas fa-clock text-danger me-2"></i>{{ __('Horaires Showroom') }}</span>
+                            <span class="text-white fw-bold small">Lun - Sam : 09h - 19h</span>
                         </div>
-                        <div class="product-v2-price">
-                            @if($product->isOnSale())
-                                <span class="price-sale text-nowrap">{{ $product->formatted_sale_price }}</span>
-                                <span class="price-old text-nowrap">{{ $product->formatted_price }}</span>
-                            @else
-                                <span class="price-sale text-nowrap">{{ $product->formatted_price }}</span>
-                            @endif
+                        <div class="d-flex align-items-center justify-content-between p-2 border-bottom border-secondary border-opacity-25 mb-2">
+                            <span class="text-white-50 small"><i class="fas fa-location-dot text-danger me-2"></i>{{ __('Localisation') }}</span>
+                            <span class="text-white fw-bold small">Casablanca, Maroc</span>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between p-2">
+                            <span class="text-white-50 small"><i class="fas fa-file-invoice text-danger me-2"></i>{{ __('Facturation') }}</span>
+                            <span class="text-white fw-bold small">TVA 20% & ICE officiel</span>
                         </div>
                     </div>
                 </div>
             </div>
-            @endforeach
+        </div>
+    </div>
+</section>
+
+{{-- PRODUCTION REVIEWS & TESTIMONIALS --}}
+<section class="section-py bg-white border-bottom border-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="showcase-eyebrow"><i class="fas fa-star"></i> {{ __('Avis & Références Pro') }}</span>
+            <h2 class="showcase-title">{{ __('Ils tournent avec notre matériel') }}</h2>
+            <p class="showcase-desc mx-auto">{{ __('Directeurs de la photographie, sociétés de production et créateurs au Maroc nous font confiance.') }}</p>
         </div>
 
-        <div class="text-center mt-4 mt-md-5">
-            <a href="{{ route('shop.index') }}" class="hero-btn-primary w-sm-auto">
-                <i class="fas fa-th-large me-2"></i> {{ __('View Full Catalogue') }}
-            </a>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="testimonial-card-pro">
+                    <div>
+                        <div class="d-flex align-items-center text-warning mb-3">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <p class="testimonial-quote">
+                            "Matériel 100% neuf scellé avec facture ICE officielle et garantie constructeur. Nous avons reçu notre pack Sony FX6 et optiques GM en moins de 24h sur Marrakech."
+                        </p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">KO</div>
+                        <div>
+                            <h6 class="fw-bold mb-0 text-dark">Karim Ouazzani</h6>
+                            <small class="text-muted">Directeur de la Photographie (DP)</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="testimonial-card-pro">
+                    <div>
+                        <div class="d-flex align-items-center text-warning mb-3">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <p class="testimonial-quote">
+                            "Le support technique a calibré et équilibré notre gimbal DJI RS 4 Pro avec notre boîtier et matte box avant l'envoi. Un gain de temps inestimable pour notre tournage."
+                        </p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">SM</div>
+                        <div>
+                            <h6 class="fw-bold mb-0 text-dark">Studio Motion Atlas</h6>
+                            <small class="text-muted">Agence Média & Publicité, Casablanca</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="testimonial-card-pro">
+                    <div>
+                        <div class="d-flex align-items-center text-warning mb-3">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <p class="testimonial-quote">
+                            "Les systèmes micro sans fil HF Hollyland et les trépieds carbone SmallRig sont parfaits pour nos documentaires. Qualité irréprochable et conseils sur mesure."
+                        </p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">YB</div>
+                        <div>
+                            <h6 class="fw-bold mb-0 text-dark">Yassine Benali</h6>
+                            <small class="text-muted">Réalisateur & Documentariste</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>

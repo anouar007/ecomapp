@@ -830,7 +830,7 @@
             
             <div class="row align-items-center">
                 <div class="col-md-12 text-center text-md-start mb-3 mb-md-0">
-                    <p class="small text-center mb-0">&copy; {{ date('Y') }} {{ setting('app_name', 'LUMINA Cine & Optics') }}. {{ __('All rights reserved') }}. {{ app()->getLocale() === 'ar' ? 'تطوير' : 'Développé par' }} <a href="https://elegantboost.com/" target="_blank" class="text-white text-decoration-none fw-bold hover-primary transition-all">Elegant Boost</a>.</p>
+                    <p class="small text-center mb-0">&copy; {{ date('Y') }} {{ setting('app_name', 'Full Frame House') }}. {{ __('All rights reserved') }}.</p>
                 </div>
             </div>
         </div>
