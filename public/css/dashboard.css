@@ -1743,41 +1743,81 @@ body {
 }
 
 .brand-badge {
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     font-weight: 700;
     padding: 0.35rem 0.75rem;
     border-radius: 99px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.02em;
     display: inline-flex;
     align-items: center;
     gap: 0.375rem;
+    border: 1px solid transparent;
 }
 
-.brand-badge.success {
-    background: #f0fdf4;
-    color: #16a34a;
+/* Delivery Status Badges */
+.brand-badge.success,
+.brand-badge.delivery-delivered {
+    background: #ecfdf5;
+    color: #047857;
+    border-color: #a7f3d0;
 }
 
-.brand-badge.warning {
+.brand-badge.primary,
+.brand-badge.delivery-processing {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-color: #bfdbfe;
+}
+
+.brand-badge.info,
+.brand-badge.delivery-shipped {
+    background: #f0fdfa;
+    color: #0f766e;
+    border-color: #99f6e4;
+}
+
+.brand-badge.warning,
+.brand-badge.delivery-pending {
     background: #fffbeb;
-    color: #d97706;
+    color: #b45309;
+    border-color: #fde68a;
 }
 
-.brand-badge.danger {
+.brand-badge.danger,
+.brand-badge.delivery-cancelled {
     background: #fef2f2;
-    color: #dc2626;
+    color: #b91c1c;
+    border-color: #fecaca;
 }
 
-.brand-badge.info {
-    background: #f0f9ff;
-    color: #0ea5e9;
+/* Payment Status Badges & Pills */
+.brand-badge.paid,
+.brand-badge.pay-badge-paid {
+    background: #ecfdf5;
+    color: #047857;
+    border-color: #a7f3d0;
 }
 
-.brand-badge.primary {
-    background: rgba(220, 38, 38, 0.08);
-    color: #dc2626;
-    border: 1px solid rgba(220, 38, 38, 0.15);
+.brand-badge.pending,
+.brand-badge.pay-badge-pending {
+    background: #fffbeb;
+    color: #b45309;
+    border-color: #fde68a;
+}
+
+.brand-badge.failed,
+.brand-badge.pay-badge-failed {
+    background: #fef2f2;
+    color: #b91c1c;
+    border-color: #fecaca;
+}
+
+.brand-badge.refunded,
+.brand-badge.secondary,
+.brand-badge.pay-badge-refunded {
+    background: #f1f5f9;
+    color: #475569;
+    border-color: #cbd5e1;
 }
 
 .btn-action-icon {
@@ -3224,20 +3264,21 @@ i.fa-sparkles:before {
 }
 
 .mobile-order-pay-pill {
-    font-size: 0.65rem;
+    font-size: 0.68rem;
     font-weight: 700;
     display: inline-flex;
     align-items: center;
-    gap: 3px;
-    padding: 1px 6px;
+    gap: 3.5px;
+    padding: 2px 7.5px;
     border-radius: 999px;
     margin-top: 3px;
+    transition: all 0.15s ease;
 }
 
 .mobile-order-pay-pill.paid {
     background: #ecfdf5;
     color: #047857;
-    border: 1px solid #d1fae5;
+    border: 1px solid #a7f3d0;
 }
 
 .mobile-order-pay-pill.pending {
@@ -3250,6 +3291,12 @@ i.fa-sparkles:before {
     background: #fef2f2;
     color: #b91c1c;
     border: 1px solid #fecaca;
+}
+
+.mobile-order-pay-pill.refunded {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
 }
 
 .mobile-order-customer {
@@ -3954,12 +4001,13 @@ i.fa-sparkles:before {
 .brand-badge-btn {
     cursor: pointer;
     transition: all 0.15s ease;
-    border: none;
     outline: none;
-    padding: 4px 10px;
+    padding: 0.35rem 0.75rem;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 0.375rem;
+    font-size: 0.72rem;
+    font-weight: 700;
 }
 
 .brand-badge-btn:hover {
@@ -3988,10 +4036,29 @@ i.fa-sparkles:before {
     transform: translateY(-1px);
 }
 
-.mobile-order-pay-pill.refunded {
-    background: #f1f5f9;
-    color: #475569;
-    border: 1px solid #e2e8f0;
+/* Specific Payment Status Badges on Desktop */
+.pay-badge-paid {
+    background: #ecfdf5 !important;
+    color: #047857 !important;
+    border: 1px solid #a7f3d0 !important;
+}
+
+.pay-badge-pending {
+    background: #fffbeb !important;
+    color: #b45309 !important;
+    border: 1px solid #fde68a !important;
+}
+
+.pay-badge-failed {
+    background: #fef2f2 !important;
+    color: #b91c1c !important;
+    border: 1px solid #fecaca !important;
+}
+
+.pay-badge-refunded {
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+    border: 1px solid #cbd5e1 !important;
 }
 
 /* Status dots & indicators */
@@ -4002,12 +4069,12 @@ i.fa-sparkles:before {
     flex-shrink: 0;
     display: inline-block;
 }
-.dot-green { background: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.18); }
-.dot-teal  { background: #0d9488; box-shadow: 0 0 0 3px rgba(13,148,136,0.18); }
-.dot-blue  { background: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.18); }
-.dot-amber { background: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,0.18); }
-.dot-red   { background: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.18); }
-.dot-gray  { background: #94a3b8; }
+.dot-green { background: #10b981; box-shadow: 0 0 0 2.5px rgba(16,185,129,0.22); }
+.dot-teal  { background: #0d9488; box-shadow: 0 0 0 2.5px rgba(13,148,136,0.22); }
+.dot-blue  { background: #2563eb; box-shadow: 0 0 0 2.5px rgba(37,99,235,0.22); }
+.dot-amber { background: #f59e0b; box-shadow: 0 0 0 2.5px rgba(245,158,11,0.22); }
+.dot-red   { background: #ef4444; box-shadow: 0 0 0 2.5px rgba(239,68,68,0.22); }
+.dot-gray  { background: #94a3b8; box-shadow: 0 0 0 2.5px rgba(148,163,184,0.22); }
 
 .brand-badge-btn:focus,
 .brand-badge-btn:active {

@@ -323,7 +323,8 @@
                                             $statusClass = match($st) {
                                                 'completed', 'livrée', 'payée', 'delivered' => 'success',
                                                 'pending', 'en attente' => 'warning',
-                                                'processing', 'en cours', 'shipped' => 'info',
+                                                'processing', 'en cours' => 'primary',
+                                                'shipped', 'expédiée' => 'info',
                                                 'cancelled', 'annulée' => 'danger',
                                                 default => 'secondary'
                                             };

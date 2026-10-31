@@ -357,6 +357,7 @@
                                 <button type="button" 
                                         class="brand-badge brand-badge-btn {{ $statusClass }} dropdown-toggle" 
                                         data-bs-toggle="dropdown" 
+                                        data-bs-auto-close="true"
                                         data-bs-boundary="viewport"
                                         data-bs-popper-config='{"strategy":"fixed"}'
                                         aria-expanded="false"
@@ -407,10 +408,10 @@
                                 $payStatus = strtolower($order->payment_status);
                                 $isPaid = in_array($payStatus, ['paid', 'payé']);
                                 $pClass = match($payStatus) {
-                                    'paid', 'payé' => 'success',
-                                    'failed', 'échoué' => 'danger',
-                                    'refunded', 'remboursé' => 'info',
-                                    default => 'warning'
+                                    'paid', 'payé' => 'paid',
+                                    'failed', 'échoué' => 'failed',
+                                    'refunded', 'remboursé' => 'refunded',
+                                    default => 'pending'
                                 };
                                 $pText = match($payStatus) {
                                     'paid', 'payé' => 'Payé',
@@ -427,8 +428,9 @@
                             @endphp
                             <div class="dropdown d-inline-block">
                                 <button type="button" 
-                                        class="brand-badge brand-badge-btn {{ $pClass }} dropdown-toggle" 
+                                        class="brand-badge brand-badge-btn pay-badge-{{ $pClass }} dropdown-toggle" 
                                         data-bs-toggle="dropdown" 
+                                        data-bs-auto-close="true"
                                         data-bs-boundary="viewport"
                                         data-bs-popper-config='{"strategy":"fixed"}'
                                         aria-expanded="false"
@@ -571,22 +573,64 @@
     }
 
     /**
+     * Helper to immediately close any dropdown for an order
+     */
+    function closeOrderDropdowns(orderId) {
+        const toggles = [
+            document.getElementById(`dt-status-pill-${orderId}`),
+            document.getElementById(`dt-pay-pill-${orderId}`),
+            document.getElementById(`mob-status-pill-${orderId}`),
+            document.getElementById(`mob-pay-pill-${orderId}`)
+        ].filter(Boolean);
+
+        toggles.forEach(btn => {
+            if (typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
+                const inst = bootstrap.Dropdown.getInstance(btn);
+                if (inst) inst.hide();
+            }
+            btn.classList.remove('show');
+            btn.setAttribute('aria-expanded', 'false');
+            const parent = btn.closest('.dropdown');
+            if (parent) {
+                parent.querySelectorAll('.dropdown-menu.show').forEach(m => m.classList.remove('show'));
+            }
+        });
+
+        // Close any other open status dropdown menu immediately
+        document.querySelectorAll('.status-dropdown-menu.show').forEach(m => {
+            m.classList.remove('show');
+            const toggle = m.closest('.dropdown')?.querySelector('[data-bs-toggle="dropdown"]');
+            if (toggle) {
+                toggle.classList.remove('show');
+                toggle.setAttribute('aria-expanded', 'false');
+                if (typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
+                    const inst = bootstrap.Dropdown.getInstance(toggle);
+                    if (inst) inst.hide();
+                }
+            }
+        });
+    }
+
+    /**
      * Quick In-Place Status & Payment Status Updater
      */
     function quickUpdateOrder(orderId, field, value) {
         if (!orderId || !field || !value) return;
 
-        // Visual loading indicator on triggering pill
+        // Auto close dropdown immediately on click
+        closeOrderDropdowns(orderId);
+
+        // Visual loading indicator on triggering pill (using pointerEvents instead of disabled)
         const dtPill = document.getElementById(field === 'status' ? `dt-status-pill-${orderId}` : `dt-pay-pill-${orderId}`);
         const mobPill = document.getElementById(field === 'status' ? `mob-status-pill-${orderId}` : `mob-pay-pill-${orderId}`);
         
         if (dtPill) {
             dtPill.style.opacity = '0.6';
-            dtPill.disabled = true;
+            dtPill.style.pointerEvents = 'none';
         }
         if (mobPill) {
             mobPill.style.opacity = '0.6';
-            mobPill.disabled = true;
+            mobPill.style.pointerEvents = 'none';
         }
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
@@ -624,7 +668,7 @@
                         toast: true,
                         position: 'top-end',
                         showConfirmButton: false,
-                        timer: 2500,
+                        timer: 2000,
                         timerProgressBar: true,
                         didOpen: (toast) => {
                             toast.addEventListener('mouseenter', Swal.stopTimer);
@@ -657,11 +701,11 @@
         .finally(() => {
             if (dtPill) {
                 dtPill.style.opacity = '1';
-                dtPill.disabled = false;
+                dtPill.style.pointerEvents = '';
             }
             if (mobPill) {
                 mobPill.style.opacity = '1';
-                mobPill.disabled = false;
+                mobPill.style.pointerEvents = '';
             }
         });
     }
@@ -674,9 +718,9 @@
         const st = (order.status || '').toLowerCase();
         const stMap = {
             'pending': { label: 'En attente', dot: 'amber', badgeClass: 'warning', textClass: 'text-warning', mobBg: '#fffbeb', mobColor: '#b45309', mobBorder: '#fde68a' },
-            'processing': { label: 'En cours', dot: 'blue', badgeClass: 'primary', textClass: 'text-primary', mobBg: '#eff6ff', mobColor: '#2563eb', mobBorder: '#dbeafe' },
-            'shipped': { label: 'Expédiée', dot: 'teal', badgeClass: 'info', textClass: 'text-info', mobBg: '#f0fdfa', mobColor: '#0d9488', mobBorder: '#ccfbf1' },
-            'delivered': { label: 'Livrée', dot: 'green', badgeClass: 'success', textClass: 'text-success', mobBg: '#ecfdf5', mobColor: '#047857', mobBorder: '#d1fae5' },
+            'processing': { label: 'En cours', dot: 'blue', badgeClass: 'primary', textClass: 'text-primary', mobBg: '#eff6ff', mobColor: '#1d4ed8', mobBorder: '#bfdbfe' },
+            'shipped': { label: 'Expédiée', dot: 'teal', badgeClass: 'info', textClass: 'text-info', mobBg: '#f0fdfa', mobColor: '#0f766e', mobBorder: '#99f6e4' },
+            'delivered': { label: 'Livrée', dot: 'green', badgeClass: 'success', textClass: 'text-success', mobBg: '#ecfdf5', mobColor: '#047857', mobBorder: '#a7f3d0' },
             'cancelled': { label: 'Annulée', dot: 'red', badgeClass: 'danger', textClass: 'text-danger', mobBg: '#fef2f2', mobColor: '#b91c1c', mobBorder: '#fecaca' }
         };
         const sInfo = stMap[st] || { label: order.status_label || st, dot: 'amber', badgeClass: 'warning', textClass: 'text-warning', mobBg: '#fffbeb', mobColor: '#b45309', mobBorder: '#fde68a' };
@@ -734,17 +778,17 @@
         // --- Payment Status ---
         const pst = (order.payment_status || '').toLowerCase();
         const pstMap = {
-            'paid': { label: 'Payé', icon: 'fa-check-circle', badgeClass: 'success', textClass: 'text-success', mobClass: 'paid' },
-            'pending': { label: 'En attente', icon: 'fa-clock', badgeClass: 'warning', textClass: 'text-warning', mobClass: 'pending' },
-            'failed': { label: 'Échoué', icon: 'fa-exclamation-circle', badgeClass: 'danger', textClass: 'text-danger', mobClass: 'failed' },
-            'refunded': { label: 'Remboursé', icon: 'fa-undo', badgeClass: 'info', textClass: 'text-secondary', mobClass: 'refunded' }
+            'paid': { label: 'Payé', icon: 'fa-check-circle', badgeClass: 'paid', textClass: 'text-success', mobClass: 'paid' },
+            'pending': { label: 'En attente', icon: 'fa-clock', badgeClass: 'pending', textClass: 'text-warning', mobClass: 'pending' },
+            'failed': { label: 'Échoué', icon: 'fa-exclamation-circle', badgeClass: 'failed', textClass: 'text-danger', mobClass: 'failed' },
+            'refunded': { label: 'Remboursé', icon: 'fa-undo', badgeClass: 'refunded', textClass: 'text-secondary', mobClass: 'refunded' }
         };
-        const pInfo = pstMap[pst] || { label: order.payment_status_label || pst, icon: 'fa-clock', badgeClass: 'warning', textClass: 'text-warning', mobClass: 'pending' };
+        const pInfo = pstMap[pst] || { label: order.payment_status_label || pst, icon: 'fa-clock', badgeClass: 'pending', textClass: 'text-warning', mobClass: 'pending' };
 
         // Desktop Payment Badge
         const dtPayPill = document.getElementById(`dt-pay-pill-${orderId}`);
         if (dtPayPill) {
-            dtPayPill.className = `brand-badge brand-badge-btn ${pInfo.badgeClass} dropdown-toggle`;
+            dtPayPill.className = `brand-badge brand-badge-btn pay-badge-${pInfo.badgeClass} dropdown-toggle`;
             const dtPayLabel = document.getElementById(`dt-pay-label-${orderId}`);
             if (dtPayLabel) dtPayLabel.textContent = pInfo.label;
             const dtPayIcon = document.getElementById(`dt-pay-icon-${orderId}`);
@@ -788,9 +832,6 @@
                 });
             }
         }
-
-        // Re-initialize dropdowns to preserve fixed Popper strategy
-        initStatusDropdowns();
     }
 
     /**
@@ -823,10 +864,8 @@
         if (typeof bootstrap === 'undefined' || !bootstrap.Dropdown) return;
         const triggers = document.querySelectorAll('.brand-badge-btn[data-bs-toggle="dropdown"], .mobile-order-badge[data-bs-toggle="dropdown"], .mobile-order-pay-pill[data-bs-toggle="dropdown"]');
         triggers.forEach(el => {
-            const current = bootstrap.Dropdown.getInstance(el);
-            if (current) current.dispose();
-
-            new bootstrap.Dropdown(el, {
+            bootstrap.Dropdown.getOrCreateInstance(el, {
+                autoClose: true,
                 popperConfig: function(defaultBsPopperConfig) {
                     return {
                         ...defaultBsPopperConfig,
@@ -852,6 +891,26 @@
             });
         });
     }
+
+    // Auto-close any status dropdown as soon as an item inside is clicked
+    document.addEventListener('click', function(e) {
+        const item = e.target.closest('.status-dropdown-menu .dropdown-item');
+        if (item) {
+            const menu = item.closest('.dropdown-menu');
+            if (menu) {
+                menu.classList.remove('show');
+                const toggle = menu.closest('.dropdown')?.querySelector('[data-bs-toggle="dropdown"]');
+                if (toggle) {
+                    toggle.classList.remove('show');
+                    toggle.setAttribute('aria-expanded', 'false');
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
+                        const inst = bootstrap.Dropdown.getInstance(toggle);
+                        if (inst) inst.hide();
+                    }
+                }
+            }
+        }
+    });
 
     document.addEventListener('DOMContentLoaded', function() {
         initStatusDropdowns();

@@ -306,10 +306,10 @@
                     @php
                         $payLower = strtolower($order->payment_status);
                         $payBadgeClass = match($payLower) {
-                            'paid', 'payé' => 'bg-success-subtle text-success border-success-subtle',
-                            'failed', 'échoué' => 'bg-danger-subtle text-danger border-danger-subtle',
-                            'refunded', 'remboursé' => 'bg-secondary-subtle text-secondary',
-                            default => 'bg-warning-subtle text-warning border-warning-subtle'
+                            'paid', 'payé' => 'pay-badge-paid',
+                            'failed', 'échoué' => 'pay-badge-failed',
+                            'refunded', 'remboursé' => 'pay-badge-refunded',
+                            default => 'pay-badge-pending'
                         };
                         $payText = match($payLower) {
                             'paid' => 'Règlement Confirmé (Payé)',
@@ -318,7 +318,7 @@
                             default => 'En attente de paiement'
                         };
                     @endphp
-                    <div class="mt-2 text-center p-2.5 rounded-pill border {{ $payBadgeClass }} fw-semibold small">
+                    <div class="mt-2 text-center p-2.5 rounded-pill {{ $payBadgeClass }} fw-semibold small">
                         <i class="fas fa-credit-card me-1.5"></i> {{ $payText }}
                     </div>
                 </div>
