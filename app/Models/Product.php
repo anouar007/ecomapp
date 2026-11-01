@@ -583,7 +583,7 @@ class Product extends Model
             $styles[] = "background: {$this->custom_tag_bg} !important";
         }
         if (!empty($this->custom_tag_border)) {
-            $styles[] = "border-color: {$this->custom_tag_border} !important";
+            $styles[] = "border: 0.08em solid {$this->custom_tag_border} !important";
         }
         return !empty($styles) ? implode('; ', $styles) . ';' : '';
     }

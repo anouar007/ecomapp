@@ -9873,7 +9873,7 @@ html[dir="rtl"] .hero-side-tag {
 
 .featured-stock-pill.featured-stock-pill--coming-soon {
     background: rgba(249, 115, 22, 0.12) !important;
-    border: 0.1em solid rgba(234, 88, 12, 0.45) !important;
+    border: 0.08em solid #fb923c !important;
     color: #ea580c !important;
 }
 
@@ -9885,7 +9885,6 @@ a.featured-pro-btn--gold {
     border: none !important;
     box-shadow: 0 3px 12px rgba(217, 119, 6, 0.35) !important;
     font-weight: 700 !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
     text-decoration: none !important;
     transition: all 0.22s ease !important;
 }
@@ -10262,7 +10261,7 @@ html[dir="rtl"] .insta360-promo-overlay {
 .selection-card .featured-stock-pill--coming-soon,
 .featured-pro-card .featured-stock-pill--coming-soon {
     background: rgba(249, 115, 22, 0.12) !important;
-    border: 0.1em solid rgba(234, 88, 12, 0.45) !important;
+    border: 0.08em solid #fb923c !important;
     color: #ea580c !important;
     font-size: 0.78rem !important;
     font-weight: 700 !important;
@@ -10300,10 +10299,7 @@ html[dir="rtl"] .insta360-promo-overlay {
 
 .shop-body .featured-stock-pill--coming-soon,
 .home-products-grid .featured-stock-pill--coming-soon {
-    border: 0.1em solid rgba(234, 88, 12, 0.45) !important;
-}
-
-border: 0.1em solid rgb(200 16 47 / 43%) !important;
+    border: 0.08em solid #fb923c !important;
 }
 
 .featured-stock-badge-corner {
@@ -13085,4 +13081,8 @@ html:not(.aos-init) [data-aos] {
     -webkit-backdrop-filter: blur(2px);
     z-index: 1015;
     transition: opacity 0.2s ease;
+}
+
+.pdp-stock-badge--coming-soon {
+    border: 0.1em solid #fb923c !important;
 }

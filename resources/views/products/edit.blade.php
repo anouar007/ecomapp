@@ -1662,7 +1662,7 @@
                                     <span class="small text-muted" style="font-size: 0.75rem;">Tag prix :</span>
                                     <span id="previewStockBadge" 
                                           class="badge rounded-pill px-2.5 py-1 d-inline-flex align-items-center gap-1 transition-all" 
-                                          style="{{ $product->custom_tag_style ?: 'background: rgba(249, 115, 22, 0.12); border: 1px solid rgba(234, 88, 12, 0.45); color: #ea580c;' }} font-size: 0.75rem; font-weight: 700;">
+                                          style="{{ $product->custom_tag_style ?: 'background: rgba(249, 115, 22, 0.12); border: 0.08em solid #fb923c; color: #ea580c;' }} font-size: 0.75rem; font-weight: 700;">
                                         <i class="fas fa-clock" id="previewStockTagIcon" style="font-size: 10px; {{ !empty($product->custom_tag_color) ? 'color: '.$product->custom_tag_color.' !important;' : '' }}"></i>
                                         <span id="previewStockTagText">{{ $product->stock_tag_label }}</span>
                                     </span>
@@ -2974,7 +2974,7 @@ window.updateCustomStockLivePreview = function() {
     if (tagBadgeEl) {
         tagBadgeEl.style.color = tagColor || '#ea580c';
         tagBadgeEl.style.backgroundColor = tagBg || 'rgba(249, 115, 22, 0.12)';
-        tagBadgeEl.style.borderColor = tagBorder || 'rgba(234, 88, 12, 0.45)';
+        tagBadgeEl.style.border = tagBorder ? `0.08em solid ${tagBorder}` : '0.08em solid #fb923c';
     }
     if (tagIconEl) {
         tagIconEl.style.color = tagColor || '#ea580c';

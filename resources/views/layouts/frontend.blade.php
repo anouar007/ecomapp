@@ -913,7 +913,7 @@
         .featured-pro-card .featured-stock-pill--coming-soon,
         .featured-stock-pill--coming-soon {
             background: rgba(249, 115, 22, 0.12) !important;
-            border: 0.1em solid rgba(234, 88, 12, 0.45) !important;
+            border: 0.08em solid #fb923c !important;
             color: #ea580c !important;
             font-size: 0.78rem !important;
             font-weight: 700 !important;
@@ -928,7 +928,7 @@
         .pdp-stock-badge--coming-soon,
         .pdp-price-main-line .pdp-stock-badge--coming-soon {
             background: rgba(249, 115, 22, 0.12) !important;
-            border: 0.1em solid rgba(234, 88, 12, 0.45) !important;
+            border: 0.08em solid #fb923c !important;
             color: #ea580c !important;
             font-weight: 700 !important;
             border-radius: 20px !important;
@@ -959,6 +959,7 @@
             text-decoration: none !important;
             transition: all 0.22s ease !important;
         }
+
 
         .featured-pro-btn.featured-pro-btn--gold:hover,
         .featured-pro-btn--gold:hover,
@@ -1652,7 +1653,7 @@
         .home-products-grid .featured-stock-pill--coming-soon,
         .featured-stock-pill.featured-stock-pill--coming-soon,
         .featured-stock-pill--coming-soon {
-            border: 0.1em solid rgba(234, 88, 12, 0.45) !important;
+            border: 0.08em solid #fb923c !important;
             background: rgba(249, 115, 22, 0.12) !important;
             color: #ea580c !important;
         }
@@ -2463,6 +2464,10 @@
         html[dir="rtl"] .indh-btn-choose i.fa-chevron-right,
         html[dir="rtl"] .indh-btn-devis i.fa-chevron-right {
             transform: rotate(180deg);
+        }
+
+        .pdp-stock-badge--coming-soon {
+            border: 0.08em solid #fb923c !important;
         }
     </style>
     <!-- Custom Head & Body Codes (Cached) -->

@@ -12656,7 +12656,7 @@ html:not(.aos-init) [data-aos] {
 
     .featured-stock-pill.featured-stock-pill--coming-soon {
         background: rgba(249, 115, 22, .12) !important;
-        border: .1em solid rgba(234, 88, 12, .45) !important;
+        border: 0.08em solid #fb923c !important;
         color: #ea580c !important;
     }
 
@@ -12688,7 +12688,7 @@ html:not(.aos-init) [data-aos] {
     .featured-stock-pill.featured-stock-pill--coming-soon,
     .featured-stock-pill--coming-soon {
         background: rgba(249, 115, 22, .12) !important;
-        border: .1em solid rgba(234, 88, 12, .45) !important;
+        border: 0.08em solid #fb923c !important;
         color: #ea580c !important;
     }
 
@@ -12703,4 +12703,8 @@ html:not(.aos-init) [data-aos] {
     .featured-pro-card .featured-stock-pill--coming-soon .featured-stock-label,
     .featured-stock-pill--coming-soon .featured-stock-label {
         color: #ea580c !important;
+    }
+
+    .pdp-stock-badge--coming-soon {
+        border: 0.1em solid #fb923c !important;
     }
