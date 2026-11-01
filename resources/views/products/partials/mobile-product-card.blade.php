@@ -71,7 +71,11 @@
                 @php
                     $stock = $product->stock;
                     $min = $product->min_stock ?? 5;
-                    if ($stock <= 0) {
+                    if ($product->isComingSoon()) {
+                        $stockClass = 'coming-soon';
+                        $dotColor = 'orange';
+                        $stockText = $product->stock_badge_label;
+                    } elseif ($stock <= 0) {
                         $stockClass = 'out';
                         $dotColor = 'red';
                         $stockText = 'Rupture (0)';

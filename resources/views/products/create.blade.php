@@ -1014,6 +1014,72 @@
                             @enderror
                         </div>
                     </div>
+
+                    <!-- Disponibilité & Tag Spécial (Coming Soon / Arrivage) -->
+                    <div class="mt-3 pt-3 border-top">
+                        <label class="form-label fw-semibold text-dark d-flex align-items-center justify-content-between mb-1">
+                            <span><i class="fas fa-tag text-warning me-1"></i> Disponibilité & Tag Spécial</span>
+                            <span class="badge bg-warning-subtle text-warning-emphasis border" style="font-size: 0.68rem;">Coming soon / Arrivage</span>
+                        </label>
+                        <p class="text-muted small mb-2" style="font-size: 0.75rem;">
+                            Pour les produits à venir (stock 0), activez ce mode pour afficher un tag ORANGE et un bouton GOLD à la place de "Rupture".
+                        </p>
+
+                        <div class="mb-2">
+                            <select id="availability_status" name="availability_status" class="form-select form-select-sm" onchange="toggleCustomStockTag(this.value)">
+                                <option value="standard" {{ old('availability_status', 'standard') == 'standard' ? 'selected' : '' }}>
+                                    Standard (Automatique selon stock : En stock / Rupture)
+                                </option>
+                                <option value="coming_soon" {{ old('availability_status') == 'coming_soon' ? 'selected' : '' }}>
+                                    🟠 Bientôt disponible (Coming soon - Tag Orange & Bouton Gold)
+                                </option>
+                                <option value="preorder" {{ old('availability_status') == 'preorder' ? 'selected' : '' }}>
+                                    🟡 Précommande / Sur commande (Tag Orange & Bouton Gold)
+                                </option>
+                                <option value="custom" {{ old('availability_status') == 'custom' ? 'selected' : '' }}>
+                                    ✨ Tag Personnalisé (Texte libre - Tag Orange & Bouton Gold)
+                                </option>
+                            </select>
+                        </div>
+
+                        <div id="customStockTagContainer" class="mt-2" style="{{ in_array(old('availability_status'), ['coming_soon', 'preorder', 'custom']) ? '' : 'display: none;' }}">
+                            <label for="custom_stock_tag" class="form-label small fw-semibold text-muted mb-1">
+                                Texte personnalisé du tag & du bouton :
+                            </label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-white"><i class="fas fa-pen text-warning"></i></span>
+                                <input type="text" 
+                                       id="custom_stock_tag" 
+                                       name="custom_stock_tag" 
+                                       class="form-control" 
+                                       value="{{ old('custom_stock_tag') }}" 
+                                       placeholder="Ex: Bientôt disponible, Coming Soon, Arrive bientôt..."
+                                       oninput="updateCustomTagPreview(this.value)">
+                            </div>
+                            <div class="form-text text-muted" style="font-size: 0.72rem;">
+                                Laissez vide pour utiliser automatiquement "Bientôt disponible".
+                            </div>
+
+                            <!-- Live Visual Preview of Orange Tag + Gold Button -->
+                            <div class="p-2.5 mt-2 rounded-3 bg-light border">
+                                <div class="text-muted small fw-bold mb-1.5" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;">Aperçu boutique :</div>
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <span class="small text-muted" style="font-size: 0.75rem;">Tag prix :</span>
+                                    <span class="badge rounded-pill px-2.5 py-1 d-inline-flex align-items-center gap-1" style="background: rgba(249, 115, 22, 0.12); border: 1px solid rgba(234, 88, 12, 0.45); color: #ea580c; font-size: 0.75rem; font-weight: 700;">
+                                        <i class="fas fa-clock" style="font-size: 10px;"></i>
+                                        <span id="previewStockTagText">{{ old('custom_stock_tag') ?: 'Bientôt disponible' }}</span>
+                                    </span>
+                                </div>
+                                <div>
+                                    <span class="small text-muted d-block mb-1" style="font-size: 0.75rem;">Bouton produit :</span>
+                                    <button type="button" class="btn btn-sm w-100 py-1.5 fw-bold d-inline-flex align-items-center justify-content-center gap-1.5" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%); color: #fff; border: 1px solid rgba(180, 83, 9, 0.5); border-radius: 8px; box-shadow: 0 2px 8px rgba(217, 119, 6, 0.35); pointer-events: none;">
+                                        <i class="fas fa-clock" style="font-size: 11px;"></i>
+                                        <span id="previewStockBtnText">{{ old('custom_stock_tag') ?: 'Bientôt disponible' }}</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Boutons d'Action -->
@@ -1783,5 +1849,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+window.toggleCustomStockTag = function(val) {
+    const container = document.getElementById('customStockTagContainer');
+    if (!container) return;
+    if (val === 'standard') {
+        container.style.display = 'none';
+    } else {
+        container.style.display = 'block';
+        const input = document.getElementById('custom_stock_tag');
+        let currentText = input ? input.value.trim() : '';
+        if (!currentText) {
+            currentText = (val === 'preorder') ? 'Précommande' : 'Bientôt disponible';
+        }
+        updateCustomTagPreview(currentText);
+    }
+};
+
+window.updateCustomTagPreview = function(val) {
+    const defaultText = (document.getElementById('availability_status')?.value === 'preorder') ? 'Précommande' : 'Bientôt disponible';
+    const text = (val && val.trim()) ? val.trim() : defaultText;
+    const tagEl = document.getElementById('previewStockTagText');
+    const btnEl = document.getElementById('previewStockBtnText');
+    if (tagEl) tagEl.textContent = text;
+    if (btnEl) btnEl.textContent = text;
+};
 </script>
 @endpush

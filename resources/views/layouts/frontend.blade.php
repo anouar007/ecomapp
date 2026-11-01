@@ -819,9 +819,9 @@
         }
 
         .pdp-stock-badge--in,
-        .featured-stock-pill:not(.featured-stock-pill--out),
-        .selection-card .featured-stock-pill:not(.featured-stock-pill--out),
-        .featured-pro-card .featured-stock-pill:not(.featured-stock-pill--out) {
+        .featured-stock-pill:not(.featured-stock-pill--out):not(.featured-stock-pill--coming-soon),
+        .selection-card .featured-stock-pill:not(.featured-stock-pill--out):not(.featured-stock-pill--coming-soon),
+        .featured-pro-card .featured-stock-pill:not(.featured-stock-pill--out):not(.featured-stock-pill--coming-soon) {
             background: rgba(21, 128, 61, 0.08) !important;
             border: 0.1em solid rgb(23 128 61 / 43%) !important;
             color: #15803d !important;
@@ -837,7 +837,7 @@
             font-size: 0.74rem !important;
         }
 
-        .featured-stock-pill:not(.featured-stock-pill--out) i {
+        .featured-stock-pill:not(.featured-stock-pill--out):not(.featured-stock-pill--coming-soon) i {
             color: #15803d !important;
             font-size: 0.67rem !important;
         }
@@ -905,6 +905,91 @@
         .pdp-stock-badge--out i {
             color: #dc2626 !important;
             font-size: 0.72rem !important;
+        }
+
+        /* Coming Soon / Custom Tag in Orange */
+        .pcard-price .featured-stock-pill--coming-soon,
+        .selection-card .featured-stock-pill--coming-soon,
+        .featured-pro-card .featured-stock-pill--coming-soon,
+        .featured-stock-pill--coming-soon {
+            background: rgba(249, 115, 22, 0.12) !important;
+            border: 0.1em solid rgba(234, 88, 12, 0.45) !important;
+            color: #ea580c !important;
+            font-size: 0.78rem !important;
+            font-weight: 700 !important;
+            border-radius: 20px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            line-height: 1 !important;
+            transform: none !important;
+            align-self: center !important;
+        }
+
+        .pdp-stock-badge--coming-soon,
+        .pdp-price-main-line .pdp-stock-badge--coming-soon {
+            background: rgba(249, 115, 22, 0.12) !important;
+            border: 0.1em solid rgba(234, 88, 12, 0.45) !important;
+            color: #ea580c !important;
+            font-weight: 700 !important;
+            border-radius: 20px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            line-height: 1 !important;
+            font-size: 0.71rem !important;
+            padding: 4.5px 11px !important;
+            transform: none !important;
+            align-self: center !important;
+        }
+
+        .featured-stock-pill--coming-soon i,
+        .pdp-stock-badge--coming-soon i {
+            color: #ea580c !important;
+            font-size: 0.67rem !important;
+        }
+
+        /* Coming Soon / Custom Button in Gold */
+        .featured-pro-btn.featured-pro-btn--gold,
+        .featured-pro-btn--gold,
+        a.featured-pro-btn--gold {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(180, 83, 9, 0.5) !important;
+            box-shadow: 0 3px 12px rgba(217, 119, 6, 0.35) !important;
+            font-weight: 700 !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+            text-decoration: none !important;
+            transition: all 0.22s ease !important;
+        }
+
+        .featured-pro-btn.featured-pro-btn--gold:hover,
+        .featured-pro-btn--gold:hover,
+        a.featured-pro-btn--gold:hover {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 45%, #d97706 100%) !important;
+            color: #ffffff !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 18px rgba(217, 119, 6, 0.45) !important;
+        }
+
+        .pdp-add-btn--gold,
+        .pdp-add-btn.pdp-add-btn--gold,
+        a.pdp-add-btn--gold {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(180, 83, 9, 0.5) !important;
+            box-shadow: 0 3px 12px rgba(217, 119, 6, 0.35) !important;
+            font-weight: 700 !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+            text-decoration: none !important;
+            transition: all 0.22s ease !important;
+        }
+
+        .pdp-add-btn--gold:hover,
+        .pdp-add-btn.pdp-add-btn--gold:hover,
+        a.pdp-add-btn--gold:hover {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 45%, #d97706 100%) !important;
+            color: #ffffff !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 18px rgba(217, 119, 6, 0.45) !important;
         }
 
         .stock-pulse-dot {
@@ -1534,11 +1619,11 @@
             transform: translateY(-1.5px) !important;
         }
 
-        .featured-pro-card .pcard-price-main-line > .featured-stock-pill:not(.featured-stock-pill--out),
-        .selection-card .pcard-price-main-line > .featured-stock-pill:not(.featured-stock-pill--out),
-        .pcard-price .featured-stock-pill:not(.featured-stock-pill--out),
-        .pcard-price-main-line > .featured-stock-pill:not(.featured-stock-pill--out),
-        .shop-body .featured-stock-pill:not(.featured-stock-pill--out),
+        .featured-pro-card .pcard-price-main-line > .featured-stock-pill:not(.featured-stock-pill--out):not(.featured-stock-pill--coming-soon),
+        .selection-card .pcard-price-main-line > .featured-stock-pill:not(.featured-stock-pill--out):not(.featured-stock-pill--coming-soon),
+        .pcard-price .featured-stock-pill:not(.featured-stock-pill--out):not(.featured-stock-pill--coming-soon),
+        .pcard-price-main-line > .featured-stock-pill:not(.featured-stock-pill--out):not(.featured-stock-pill--coming-soon),
+        .shop-body .featured-stock-pill:not(.featured-stock-pill--out):not(.featured-stock-pill--coming-soon),
         .shop-body .featured-stock-pill--in,
         .home-products-grid .featured-stock-pill--in,
         .featured-stock-pill--in {
@@ -1559,6 +1644,21 @@
             color: #dc2626 !important;
         }
 
+        .selection-card .featured-stock-pill--coming-soon,
+        .featured-pro-card .featured-stock-pill--coming-soon,
+        .featured-pro-card .pcard-price-main-line > .featured-stock-pill--coming-soon,
+        .selection-card .pcard-price-main-line > .featured-stock-pill--coming-soon,
+        .pcard-price .featured-stock-pill--coming-soon,
+        .pcard-price-main-line > .featured-stock-pill--coming-soon,
+        .shop-body .featured-stock-pill--coming-soon,
+        .home-products-grid .featured-stock-pill--coming-soon,
+        .featured-stock-pill.featured-stock-pill--coming-soon,
+        .featured-stock-pill--coming-soon {
+            border: 0.1em solid rgba(234, 88, 12, 0.45) !important;
+            background: rgba(249, 115, 22, 0.12) !important;
+            color: #ea580c !important;
+        }
+
         .featured-pro-card .pcard-price-main-line > .featured-stock-pill i,
         .selection-card .pcard-price-main-line > .featured-stock-pill i,
         .pcard-price .featured-stock-pill i,
@@ -1574,6 +1674,24 @@
         .pcard-price .featured-stock-pill--out i,
         .pcard-price-main-line > .featured-stock-pill--out i {
             color: #dc2626 !important;
+        }
+
+        .selection-card .featured-stock-pill--coming-soon i,
+        .featured-pro-card .featured-stock-pill--coming-soon i,
+        .featured-pro-card .pcard-price-main-line > .featured-stock-pill--coming-soon i,
+        .selection-card .pcard-price-main-line > .featured-stock-pill--coming-soon i,
+        .pcard-price .featured-stock-pill--coming-soon i,
+        .pcard-price-main-line > .featured-stock-pill--coming-soon i,
+        .featured-stock-pill.featured-stock-pill--coming-soon i,
+        .featured-stock-pill--coming-soon i {
+            color: #ea580c !important;
+        }
+
+        .selection-card .featured-stock-pill--coming-soon .featured-stock-label,
+        .featured-pro-card .featured-stock-pill--coming-soon .featured-stock-label,
+        .featured-stock-pill--coming-soon .featured-stock-label {
+            color: #ea580c !important;
+            font-weight: 700 !important;
         }
 
         .featured-pro-card .featured-stock-label,

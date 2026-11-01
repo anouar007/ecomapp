@@ -25,6 +25,8 @@ class Product extends Model
         'category_id',
         'brand_id',
         'status',
+        'availability_status',
+        'custom_stock_tag',
         'sort_order',
         'image',
         'image_width',
@@ -493,6 +495,43 @@ class Product extends Model
         }, $html);
 
         return $html;
+    }
+
+    /**
+     * Check if product is marked as Coming Soon or has a custom availability tag.
+     */
+    public function isComingSoon(): bool
+    {
+        return in_array($this->availability_status, ['coming_soon', 'preorder', 'custom'])
+            || (!empty($this->custom_stock_tag) && $this->availability_status !== 'standard');
+    }
+
+    /**
+     * Get stock badge type: 'coming_soon', 'in_stock', or 'out_of_stock'.
+     */
+    public function getStockBadgeTypeAttribute(): string
+    {
+        if ($this->isComingSoon()) {
+            return 'coming_soon';
+        }
+        return $this->isInStock() ? 'in_stock' : 'out_of_stock';
+    }
+
+    /**
+     * Get the badge label text to display for the tag & action button.
+     */
+    public function getStockBadgeLabelAttribute(): string
+    {
+        if ($this->isComingSoon()) {
+            if (!empty($this->custom_stock_tag)) {
+                return $this->custom_stock_tag;
+            }
+            $locale = app()->getLocale();
+            if ($locale === 'ar') return 'قريباً';
+            if ($locale === 'en') return 'Coming Soon';
+            return 'Bientôt disponible';
+        }
+        return $this->isInStock() ? __('In stock') : __('Out of stock');
     }
 
     /**

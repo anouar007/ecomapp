@@ -66,7 +66,11 @@
                     @endif
 
                     {{-- Stock Status Badge aligned with price --}}
-                    @if($product->isInStock())
+                    @if($product->isComingSoon())
+                        <span class="featured-stock-pill featured-stock-pill--coming-soon featured-stock-badge-corner" title="{{ $product->stock_badge_label }}">
+                            <i class="fas fa-clock" aria-hidden="true"></i><span class="featured-stock-label">{{ $product->stock_badge_label }}</span>
+                        </span>
+                    @elseif($product->isInStock())
                         <span class="featured-stock-pill featured-stock-badge-corner featured-stock-pill--in">
                             <i class="fas fa-check-circle" aria-hidden="true"></i><span class="featured-stock-label">{{ __('In stock') }}</span>
                         </span>
@@ -88,7 +92,14 @@
 
     {{-- Full-width Action Button --}}
     <div class="featured-pro-action mt-auto pt-0">
-        @if($product->isInStock())
+        @if($product->isComingSoon())
+            <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" 
+               class="btn w-100 featured-pro-btn featured-pro-btn--gold" 
+               title="{{ $product->stock_badge_label }}">
+                <i class="fas fa-clock" style="font-size: 11px;"></i>
+                <span>{{ $product->stock_badge_label }}</span>
+            </a>
+        @elseif($product->isInStock())
             <button type="button" 
                     class="btn w-100 featured-pro-btn {{ $isInCart ? 'is-in-cart' : '' }}" 
                     onclick="addToCart({{ $product->id }}, 1, this)"

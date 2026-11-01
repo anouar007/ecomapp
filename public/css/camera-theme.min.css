@@ -12653,3 +12653,10 @@ html:not(.aos-init) [data-aos] {
         z-index: 1015;
         transition: opacity 0.2s ease;
     }
+.featured-stock-pill.featured-stock-pill--coming-soon{background:rgba(249,115,22,.12)!important;border:.1em solid rgba(234,88,12,.45)!important;color:#ea580c!important;}
+.featured-pro-btn.featured-pro-btn--gold,.featured-pro-btn--gold,a.featured-pro-btn--gold{background:linear-gradient(135deg,#f59e0b 0%,#d97706 50%,#b45309 100%)!important;color:#fff!important;border:1px solid rgba(180,83,9,.5)!important;box-shadow:0 3px 12px rgba(217,119,6,.35)!important;font-weight:700!important;text-shadow:0 1px 2px rgba(0,0,0,.25);text-decoration:none!important;transition:all .22s ease!important;}
+.featured-pro-btn.featured-pro-btn--gold:hover,.featured-pro-btn--gold:hover,a.featured-pro-btn--gold:hover{background:linear-gradient(135deg,#fbbf24 0%,#f59e0b 45%,#d97706 100%)!important;color:#fff!important;transform:translateY(-2px)!important;box-shadow:0 6px 18px rgba(217,119,6,.45)!important;}
+
+.selection-card .featured-stock-pill--coming-soon,.featured-pro-card .featured-stock-pill--coming-soon,.shop-body .featured-stock-pill--coming-soon,.home-products-grid .featured-stock-pill--coming-soon,.featured-stock-pill.featured-stock-pill--coming-soon,.featured-stock-pill--coming-soon{background:rgba(249,115,22,.12)!important;border:.1em solid rgba(234,88,12,.45)!important;color:#ea580c!important;}
+.selection-card .featured-stock-pill--coming-soon i,.featured-pro-card .featured-stock-pill--coming-soon i,.featured-stock-pill.featured-stock-pill--coming-soon i,.featured-stock-pill--coming-soon i{color:#ea580c!important;}
+.selection-card .featured-stock-pill--coming-soon .featured-stock-label,.featured-pro-card .featured-stock-pill--coming-soon .featured-stock-label,.featured-stock-pill--coming-soon .featured-stock-label{color:#ea580c!important;}

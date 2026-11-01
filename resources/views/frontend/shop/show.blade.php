@@ -608,7 +608,11 @@
                             <div class="pdp-price-main-line d-flex align-items-center">
                                 <span class="pdp-price-main">{{ $product->isOnSale() ? $product->formatted_sale_price : $product->formatted_price }}</span>
 
-                                @if($product->isInStock())
+                                @if($product->isComingSoon())
+                                    <span class="pdp-stock-badge pdp-stock-badge--coming-soon">
+                                        <i class="fas fa-clock" aria-hidden="true"></i><span class="pdp-stock-label">{{ $product->stock_badge_label }}</span>
+                                    </span>
+                                @elseif($product->isInStock())
                                     <span class="pdp-stock-badge pdp-stock-badge--in">
                                         <i class="fas fa-check-circle" aria-hidden="true"></i><span class="pdp-stock-label">{{ __('In stock') }}</span>
                                     </span>
@@ -664,7 +668,33 @@
                     </div>
                     @endif
 
-                    @if($product->isInStock())
+                    @if($product->isComingSoon())
+                    {{-- COMING SOON / SPECIAL CUSTOM TAG MODE (GOLD BUTTON NON-CLICKABLE) --}}
+                    @php
+                        $currentLocale = app()->getLocale();
+                        $shareLabel = $currentLocale === 'ar' ? 'مشاركة' : ($currentLocale === 'en' ? 'Share' : 'Partager');
+                    @endphp
+                    <div class="pdp-cart-row d-flex flex-row flex-nowrap align-items-stretch w-100">
+                        <button type="button" 
+                                id="pdpShareBtnComingSoon" 
+                                class="pdp-share-btn flex-shrink-0 shadow-none" 
+                                onclick="copyPdpShareLink('{{ $productShareUrl }}', this)" 
+                                title="{{ __('Copier le lien du produit') }}" 
+                                aria-label="{{ __('Partager le produit') }}">
+                            <i class="fas fa-link" id="pdpShareIcon"></i>
+                            <span id="pdpShareText">{{ $shareLabel }}</span>
+                        </button>
+                        <button type="button" 
+                                id="addToCartBtn" 
+                                class="pdp-add-btn pdp-add-btn--gold flex-grow-1 text-nowrap shadow-none d-inline-flex align-items-center justify-content-center" 
+                                disabled
+                                style="cursor: default !important; pointer-events: none !important;"
+                                title="{{ $product->stock_badge_label }}">
+                            <i class="fas fa-clock me-2"></i>
+                            <span id="addToCartText">{{ $product->stock_badge_label }}</span>
+                        </button>
+                    </div>
+                    @elseif($product->isInStock())
                     @php
                         $isInCart = isset(session('cart', [])[$product->id]);
                         $locale = app()->getLocale();
@@ -1274,7 +1304,7 @@ function pdpCommanderAction(event) {
 
     const productId = {{ $product->id }};
     const addBtn = document.getElementById('addToCartBtn');
-    const isProductInStock = {{ $product->isInStock() ? 'true' : 'false' }};
+    const isProductInStock = {{ ($product->isInStock() && !$product->isComingSoon()) ? 'true' : 'false' }};
     if (!isProductInStock) {
         return;
     }

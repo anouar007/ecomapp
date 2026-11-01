@@ -9871,6 +9871,34 @@ html[dir="rtl"] .hero-side-tag {
     color: #dc2626 !important;
 }
 
+.featured-stock-pill.featured-stock-pill--coming-soon {
+    background: rgba(249, 115, 22, 0.12) !important;
+    border: 0.1em solid rgba(234, 88, 12, 0.45) !important;
+    color: #ea580c !important;
+}
+
+.featured-pro-btn.featured-pro-btn--gold,
+.featured-pro-btn--gold,
+a.featured-pro-btn--gold {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(180, 83, 9, 0.5) !important;
+    box-shadow: 0 3px 12px rgba(217, 119, 6, 0.35) !important;
+    font-weight: 700 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    text-decoration: none !important;
+    transition: all 0.22s ease !important;
+}
+
+.featured-pro-btn.featured-pro-btn--gold:hover,
+.featured-pro-btn--gold:hover,
+a.featured-pro-btn--gold:hover {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 45%, #d97706 100%) !important;
+    color: #ffffff !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 18px rgba(217, 119, 6, 0.45) !important;
+}
+
 .featured-card-oos-badge {
     position: absolute;
     top: 8px;
@@ -10182,8 +10210,8 @@ html[dir="rtl"] .insta360-promo-overlay {
     padding-top: 0px !important;
 }
 
-.selection-card .featured-stock-pill,
-.featured-pro-card .featured-stock-pill {
+.selection-card .featured-stock-pill:not(.featured-stock-pill--out):not(.featured-stock-pill--coming-soon),
+.featured-pro-card .featured-stock-pill:not(.featured-stock-pill--out):not(.featured-stock-pill--coming-soon) {
     background: rgba(21, 128, 61, 0.08) !important;
     border: 0.1em solid rgb(23 128 61 / 43%) !important;
     color: #15803d !important;
@@ -10204,8 +10232,8 @@ html[dir="rtl"] .insta360-promo-overlay {
     align-self: center !important;
 }
 
-.selection-card .featured-stock-pill i,
-.featured-pro-card .featured-stock-pill i {
+.selection-card .featured-stock-pill:not(.featured-stock-pill--out):not(.featured-stock-pill--coming-soon) i,
+.featured-pro-card .featured-stock-pill:not(.featured-stock-pill--out):not(.featured-stock-pill--coming-soon) i {
     color: #15803d !important;
     font-size: 0.67rem !important;
 }
@@ -10231,7 +10259,34 @@ html[dir="rtl"] .insta360-promo-overlay {
     font-size: 0.67rem !important;
 }
 
-.shop-body .featured-stock-pill,
+.selection-card .featured-stock-pill--coming-soon,
+.featured-pro-card .featured-stock-pill--coming-soon {
+    background: rgba(249, 115, 22, 0.12) !important;
+    border: 0.1em solid rgba(234, 88, 12, 0.45) !important;
+    color: #ea580c !important;
+    font-size: 0.78rem !important;
+    font-weight: 700 !important;
+    border-radius: 20px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    line-height: 1 !important;
+    transform: none !important;
+    align-self: center !important;
+}
+
+.selection-card .featured-stock-pill--coming-soon i,
+.featured-pro-card .featured-stock-pill--coming-soon i {
+    color: #ea580c !important;
+    font-size: 0.67rem !important;
+}
+
+.selection-card .featured-stock-pill--coming-soon .featured-stock-label,
+.featured-pro-card .featured-stock-pill--coming-soon .featured-stock-label {
+    color: #ea580c !important;
+    font-weight: 700 !important;
+}
+
+.shop-body .featured-stock-pill:not(.featured-stock-pill--out):not(.featured-stock-pill--coming-soon),
 .shop-body .featured-stock-pill--in,
 .home-products-grid .featured-stock-pill--in,
 .featured-stock-pill--in {
@@ -10240,6 +10295,13 @@ html[dir="rtl"] .insta360-promo-overlay {
 
 .shop-body .featured-stock-pill--out,
 .home-products-grid .featured-stock-pill--out {
+    border: 0.1em solid rgb(200 16 47 / 43%) !important;
+}
+
+.shop-body .featured-stock-pill--coming-soon,
+.home-products-grid .featured-stock-pill--coming-soon {
+    border: 0.1em solid rgba(234, 88, 12, 0.45) !important;
+}
     border: 0.1em solid rgb(200 16 47 / 43%) !important;
 }
 

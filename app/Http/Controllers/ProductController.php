@@ -86,6 +86,8 @@ class ProductController extends Controller
                 $query->where('stock', '>', 0)->where('stock', '<=', 5);
             } elseif ($request->stock_status === 'out_of_stock') {
                 $query->where('stock', '<=', 0);
+            } elseif ($request->stock_status === 'coming_soon') {
+                $query->whereIn('availability_status', ['coming_soon', 'preorder', 'custom']);
             } elseif ($request->stock_status === 'alert') {
                 $query->where('stock', '<=', 5);
             }
@@ -172,6 +174,8 @@ class ProductController extends Controller
             'brand_id' => ['nullable', 'exists:brands,id'],
             'images.*' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
+            'availability_status' => ['nullable', 'string', 'in:standard,coming_soon,preorder,custom'],
+            'custom_stock_tag' => ['nullable', 'string', 'max:100'],
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:999999'],
             'image_padding' => ['nullable', 'string', 'max:50'],
         ], [
@@ -180,6 +184,8 @@ class ProductController extends Controller
         ]);
 
         $validated['sort_order'] = isset($validated['sort_order']) && $validated['sort_order'] !== '' ? (int) $validated['sort_order'] : 0;
+        $validated['availability_status'] = $request->input('availability_status', 'standard') ?: 'standard';
+        $validated['custom_stock_tag'] = trim((string) $request->input('custom_stock_tag', '')) ?: null;
 
         if ($request->has('image_padding')) {
             $rawPadding = trim((string) $request->input('image_padding'));
@@ -367,6 +373,8 @@ class ProductController extends Controller
             'brand_id' => ['nullable', 'exists:brands,id'],
             'images.*' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
+            'availability_status' => ['nullable', 'string', 'in:standard,coming_soon,preorder,custom'],
+            'custom_stock_tag' => ['nullable', 'string', 'max:100'],
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:999999'],
             'image_padding' => ['nullable', 'string', 'max:50'],
             'remove_images' => ['nullable', 'array'],
@@ -378,6 +386,8 @@ class ProductController extends Controller
 
         if (array_key_exists('sort_order', $validated)) {
             $validated['sort_order'] = isset($validated['sort_order']) && $validated['sort_order'] !== '' ? (int) $validated['sort_order'] : 0;
+        $validated['availability_status'] = $request->input('availability_status', 'standard') ?: 'standard';
+        $validated['custom_stock_tag'] = trim((string) $request->input('custom_stock_tag', '')) ?: null;
         }
 
         if ($request->has('image_padding')) {

@@ -161,6 +161,7 @@
                             <option value="in_stock" {{ request('stock_status') == 'in_stock' ? 'selected' : '' }}>📦 En stock (&gt; 5)</option>
                             <option value="low_stock" {{ request('stock_status') == 'low_stock' ? 'selected' : '' }}>⚠️ Stock faible (1-5)</option>
                             <option value="out_of_stock" {{ request('stock_status') == 'out_of_stock' ? 'selected' : '' }}>🚫 Rupture (0)</option>
+                            <option value="coming_soon" {{ request('stock_status') == 'coming_soon' ? 'selected' : '' }}>🟠 Bientôt disponible</option>
                             <option value="alert" {{ request('stock_status') == 'alert' ? 'selected' : '' }}>🚨 En alerte (≤ 5)</option>
                         </select>
                     </div>
@@ -243,6 +244,7 @@
                         'in_stock' => 'En stock (> 5)',
                         'low_stock' => 'Stock faible (1-5)',
                         'out_of_stock' => 'Rupture (0)',
+                        'coming_soon' => 'Bientôt disponible',
                         'alert' => 'En alerte (≤ 5)',
                     ];
                 @endphp
@@ -483,7 +485,11 @@
                             @php
                                 $stock = $product->stock;
                                 $min = $product->min_stock ?? 5;
-                                if ($stock <= 0) {
+                                if ($product->isComingSoon()) {
+                                    $badgeType = 'coming-soon';
+                                    $dotColor = 'orange';
+                                    $badgeText = $product->stock_badge_label;
+                                } elseif ($stock <= 0) {
                                     $badgeType = 'out';
                                     $dotColor = 'red';
                                     $badgeText = 'Rupture (0)';
@@ -985,6 +991,9 @@
     .badge-stock-in  { background: #ecfdf5; color: #047857; border: 1px solid #d1fae5; }
     .badge-stock-low { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
     .badge-stock-out { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+    .badge-stock-coming-soon { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+    .dot-orange { background: #f97316; box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2); }
+    .mobile-stock-coming-soon { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
 
     .badge-status-active   { background: #ffffff; color: #047857; border: 1px solid #d1fae5; }
     .badge-status-inactive { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
