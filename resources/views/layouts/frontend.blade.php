@@ -956,7 +956,6 @@
             border: none;
             box-shadow: 0 3px 12px rgba(217, 119, 6, 0.35) !important;
             font-weight: 700 !important;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
             text-decoration: none !important;
             transition: all 0.22s ease !important;
         }
