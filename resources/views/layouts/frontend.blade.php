@@ -951,7 +951,7 @@
         .featured-pro-btn.featured-pro-btn--gold,
         .featured-pro-btn--gold,
         a.featured-pro-btn--gold {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%) !important;
+            background: linear-gradient(135deg, #ffb231 0%, #ee9700 100%) !important;
             color: #ffffff !important;
             border: none;
             box-shadow: 0 3px 12px rgba(217, 119, 6, 0.35) !important;
