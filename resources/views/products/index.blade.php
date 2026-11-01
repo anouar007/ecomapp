@@ -1598,7 +1598,8 @@
                 const badgeColor = is4k ? "background: linear-gradient(135deg, #10b981, #059669); color: white;" : "background: #f1f5f9; color: #475569;";
 
                 const previewSrc = cand.preview_url || cand.url;
-                const safeUrl = cand.url.replace(/'/g, "\\'");
+                const safeUrl = (cand.url || '').replace(/'/g, "\\'");
+                const safeFallback = (cand.fallback_url || cand.preview_url || '').replace(/'/g, "\\'");
                 const fallbackImg = "{{ asset('images/camera/cat_cameras.jpg') }}";
 
                 card.innerHTML = `
@@ -1612,7 +1613,7 @@
                         </span>
                     </div>
                     <div style="padding: 12px; display: flex; flex-direction: column; gap: 8px; background: #ffffff; border-top: 1px solid #f1f5f9;">
-                        <button type="button" onclick="applySelected4kImage('${safeUrl}', this)" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; border: none; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s;">
+                        <button type="button" onclick="applySelected4kImage('${safeUrl}', '${safeFallback}', this)" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; border: none; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s;">
                             <i class="fas fa-check-circle"></i> Choisir cette image 4K
                         </button>
                     </div>
@@ -1628,7 +1629,11 @@
         });
     }
 
-    function applySelected4kImage(imageUrl, button) {
+    function applySelected4kImage(imageUrl, fallbackUrl, button) {
+        if (!button && typeof fallbackUrl === 'object') {
+            button = fallbackUrl;
+            fallbackUrl = null;
+        }
         const origHtml = button.innerHTML;
         button.disabled = true;
         button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Téléchargement 4K...';
@@ -1643,7 +1648,10 @@
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'application/json'
             },
-            body: JSON.stringify({ image_url: imageUrl })
+            body: JSON.stringify({ 
+                image_url: imageUrl,
+                fallback_url: fallbackUrl 
+            })
         })
         .then(res => res.json())
         .then(data => {

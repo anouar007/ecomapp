@@ -918,16 +918,17 @@ class OfficialProductImageService
 
     /**
      * Search 4K / Ultra-HD studio master images for a product.
-     * Evaluates SQLite catalog, multi-CDN search, filters watermarks, and ranks by studio quality.
+     * Evaluates multi-query search, white background isolation, filters out banners & watermarks,
+     * and ranks by pristine e-commerce studio quality.
      */
-    public function find4kCandidates(string $productName, ?string $brand = null, int $minWidth = 300, int $limit = 24, ?string $sku = null): array
+    public function find4kCandidates(string $productName, ?string $brand = null, int $minWidth = 300, int $limit = 28, ?string $sku = null): array
     {
         $productName = trim($productName);
         if (empty($productName)) {
             return [];
         }
 
-        $cacheKey = 'img_search_name_v2_' . md5($productName . '_' . $minWidth . '_' . $limit);
+        $cacheKey = 'img_search_studio_v3_' . md5($productName . '_' . ($sku ?? '') . '_' . $minWidth . '_' . $limit);
         $cached = Cache::get($cacheKey);
         if (is_array($cached) && !empty($cached)) {
             return $cached;
@@ -936,32 +937,52 @@ class OfficialProductImageService
         $candidates = [];
         $seenFingerprints = [];
 
-        // Search strictly with the product name
-        $searchQueries = [$productName];
+        // Build intelligent studio search queries
+        $searchQueries = [];
+        $cleanStudio = $this->cleanStudioSearchQuery($productName);
 
-        // Secondary fallback if product name has parentheses/condition tags and returns no results
-        $cleanName = trim(preg_replace('/\([^)]*\)|\[[^\]]*\]/', '', $productName));
-        if ($cleanName !== $productName && !empty($cleanName)) {
-            $searchQueries[] = $cleanName;
+        $isStudioQuery = (bool)preg_match('/\b(white\s+background|fond\s+blanc|studio|isolated|transparen?t?)\b/i', $productName);
+
+        if ($isStudioQuery) {
+            $searchQueries[] = $productName;
+            if ($cleanStudio !== $productName) {
+                $searchQueries[] = $cleanStudio;
+            }
+        } else {
+            // Priority 1: Clean product name + white background for crisp isolated e-commerce studio shots
+            $searchQueries[] = $cleanStudio . ' white background';
+            // Priority 2: Clean product name alone
+            if ($cleanStudio !== $productName) {
+                $searchQueries[] = $cleanStudio;
+            }
+            // Priority 3: With SKU if available
+            if (!empty($sku) && strlen($sku) >= 4) {
+                $searchQueries[] = trim(($brand ?: '') . ' ' . $sku);
+            }
+            // Priority 4: Full original name
+            $searchQueries[] = $productName;
         }
+
+        $searchQueries = array_values(array_unique(array_filter($searchQueries)));
 
         $badDomains = [
             'freepik', 'alamy', 'shutterstock', 'getty', 'dreamstime',
             '123rf', 'depositphotos', 'istock', 'vector', 'clipart', 'watermark',
-            'pinterest', 'facebook', 'instagram', 'tiktok', 'youtube', 'redbubble', 'etsy'
+            'pinterest', 'facebook', 'instagram', 'tiktok', 'youtube', 'ytimg', 'redbubble', 'etsy',
+            'vimeo', 'dailymotion', 'twitter', 'twimg'
         ];
 
         // Tokenize product name into meaningful keywords for scoring
         $productWords = array_values(array_filter(
-            preg_split('/[\s,\-_–\/\+]+/', strtolower($productName)),
-            fn($w) => strlen($w) >= 2 && !in_array($w, ['le', 'la', 'les', 'de', 'du', 'des', 'pour', 'for', 'and', 'et', 'the', 'avec', 'with', 'sur', 'dans', 'en', 'au', 'aux'])
+            preg_split('/[\s,\-_–\/\+]+/', strtolower($cleanStudio ?: $productName)),
+            fn($w) => strlen($w) >= 2 && !in_array($w, ['le', 'la', 'les', 'de', 'du', 'des', 'pour', 'for', 'and', 'et', 'the', 'avec', 'with', 'sur', 'dans', 'en', 'au', 'aux', 'camera', 'photo', 'white', 'background'])
         ));
 
         foreach ($searchQueries as $q) {
             if (count($candidates) >= $limit) break;
 
-            // Search without restrictive size filters so all valid e-commerce retailer images are discovered
-            $searchUrl = "https://www.bing.com/images/search?q=" . urlencode($q) . "&form=HDRSC2";
+            // Search with Bing photo filter to get pristine camera & product shots
+            $searchUrl = "https://www.bing.com/images/search?q=" . urlencode($q) . "&qft=+filterui:photo-photo&form=HDRSC2";
 
             try {
                 $res = Http::withHeaders([
@@ -971,13 +992,17 @@ class OfficialProductImageService
                 ])->timeout(6)->get($searchUrl);
 
                 if ($res->successful()) {
-                    preg_match_all('/m="?({[^\"]*murl[^\"]*})"?/i', $res->body(), $matches);
-                    $jsonItems = $matches[1] ?? [];
+                    preg_match_all('/<a[^>]*class=\"iusc\"[^>]*>/i', $res->body(), $anchors);
+                    $anchorList = $anchors[0] ?? [];
 
-                    foreach ($jsonItems as $rawJson) {
+                    foreach ($anchorList as $anchorHtml) {
                         if (count($candidates) >= $limit) break;
 
-                        $itemData = json_decode(html_entity_decode($rawJson), true);
+                        if (!preg_match('/m=\"?({[^\"]*murl[^\"]*})\"?/i', $anchorHtml, $mJson)) {
+                            continue;
+                        }
+
+                        $itemData = json_decode(html_entity_decode($mJson[1]), true);
                         if (empty($itemData['murl']) || empty($itemData['turl'])) continue;
 
                         $murl = html_entity_decode($itemData['murl']);
@@ -985,6 +1010,15 @@ class OfficialProductImageService
                         $title = html_entity_decode($itemData['t'] ?? ($itemData['desc'] ?? ''));
                         $purl = html_entity_decode($itemData['purl'] ?? '');
                         $titleLower = strtolower($title);
+
+                        // Extract actual resolution and CDN fallback from Bing anchor parameters
+                        preg_match('/(?:&amp;|&|\?)expw=(\d+)/i', $anchorHtml, $mExpw);
+                        preg_match('/(?:&amp;|&|\?)exph=(\d+)/i', $anchorHtml, $mExph);
+                        preg_match('/(?:&amp;|&|\?)cdnurl=([^&\"\'\s]+)/i', $anchorHtml, $mCdn);
+
+                        $rawW = isset($mExpw[1]) ? (int)$mExpw[1] : 0;
+                        $rawH = isset($mExph[1]) ? (int)$mExph[1] : 0;
+                        $cdnUrl = isset($mCdn[1]) ? urldecode($mCdn[1]) : $previewUrl;
 
                         // Check domain blacklist
                         $isBad = false;
@@ -996,61 +1030,66 @@ class OfficialProductImageService
                         }
                         if ($isBad) continue;
 
-                        // Identify domain for display
-                        $host = parse_url($murl, PHP_URL_HOST) ?: (parse_url($purl, PHP_URL_HOST) ?: 'web');
-                        $host = preg_replace('/^www\./i', '', $host);
+                        // Aspect ratio check: product photos should not be horizontal banners or ultra-tall ribbons
+                        if ($rawW > 0 && $rawH > 0) {
+                            $aspectRatio = $rawW / $rawH;
+                            if ($aspectRatio > 1.85 || $aspectRatio < 0.55) {
+                                continue; // Skip panoramic banners or tall banners
+                            }
+                        }
 
                         // Deduplicate
                         $fingerprint = md5($murl);
                         if (isset($seenFingerprints[$fingerprint])) continue;
                         $seenFingerprints[$fingerprint] = true;
 
+                        // Identify domain for display
+                        $host = parse_url($murl, PHP_URL_HOST) ?: (parse_url($purl, PHP_URL_HOST) ?: 'web');
+                        $host = preg_replace('/^www\./i', '', $host);
+
                         // Master URL enhancement where available
                         $finalUrl = $murl;
-                        $w = 1200;
-                        $h = 1200;
                         $source = $host;
+                        $w = $rawW ?: 1200;
+                        $h = $rawH ?: 1200;
 
                         if (str_contains($murl, 'm.media-amazon.com')) {
                             $finalUrl = preg_replace('/\._[A-Z0-9_,]+_\./i', '.', $murl);
                             $source = 'Amazon';
-                            $w = 2000;
-                            $h = 2000;
+                            if ($w < 1800) { $w = 2000; $h = 2000; }
                         } elseif (str_contains($murl, 'pisces.bbystatic.com')) {
                             $finalUrl = preg_replace('/;maxHeight=\d+;maxWidth=\d+/i', '', $murl);
                             $source = 'Best Buy';
-                            $w = 2000;
-                            $h = 2000;
+                            if ($w < 1800) { $w = 2000; $h = 2000; }
                         } elseif (str_contains($murl, 'cdn.shopify.com')) {
                             $finalUrl = preg_replace('/_(?:small|compact|medium|large|grande|pico|icon|\d+x\d*)\./i', '.', $murl);
                             $finalUrl = preg_replace('/(\?|&)width=\d+/i', '', $finalUrl);
                             $source = 'Shopify Store';
-                            $w = 1600;
-                            $h = 1600;
+                            if ($w < 1200) { $w = 1600; $h = 1600; }
                         } elseif (str_contains($murl, 'bhphotovideo.com') || str_contains($murl, 'static.bhphoto.com')) {
                             $source = 'B&H Photo';
-                            $w = 2000;
-                            $h = 2000;
+                            if ($w < 1800) { $w = 2000; $h = 2000; }
                         } elseif (str_contains($murl, 'smallrig.com')) {
                             $source = 'SmallRig Official';
-                            $w = 1600;
-                            $h = 1600;
+                            if ($w < 1200) { $w = 1600; $h = 1600; }
                         } elseif (str_contains($murl, 'godox.com')) {
                             $source = 'Godox Official';
-                            $w = 1600;
-                            $h = 1600;
+                            if ($w < 1200) { $w = 1600; $h = 1600; }
                         } elseif (str_contains($murl, 'dji.com')) {
                             $source = 'DJI Official';
-                            $w = 2000;
-                            $h = 2000;
+                            if ($w < 1800) { $w = 2000; $h = 2000; }
+                        } elseif (str_contains($murl, 'sony.') || str_contains($murl, 'sony-asia.') || str_contains($murl, 'sony-europe.')) {
+                            $source = 'Sony Official';
+                            if ($w < 1800) { $w = 2000; $h = 2000; }
+                        } elseif (str_contains($murl, 'canon.')) {
+                            $source = 'Canon Official';
+                            if ($w < 1800) { $w = 2000; $h = 2000; }
                         }
 
-                        // Scoring: Priority on ACCURACY of product match
+                        // Scoring
                         $score = 50;
 
-                        // Scoring: Priority on how closely the candidate matches the PRODUCT NAME
-                        $score = 50;
-
+                        // Match keywords
                         $matchedWords = 0;
                         foreach ($productWords as $pw) {
                             if (str_contains($titleLower, $pw) || str_contains(strtolower($murl), $pw) || str_contains(strtolower($purl), $pw)) {
@@ -1059,20 +1098,38 @@ class OfficialProductImageService
                         }
                         $score += ($matchedWords * 15);
 
-                        // High-res bonus
-                        if ($w >= 1000) {
-                            $score += 15;
+                        // Bonus for studio characteristics
+                        if (str_contains($titleLower, 'white background') || str_contains($titleLower, 'white') || str_contains(strtolower($murl), 'white') || str_contains(strtolower($murl), 'isolated')) {
+                            $score += 25;
                         }
-                        if ($w >= 1800) {
-                            $score += 15;
+                        if (str_ends_with(strtolower($murl), '.png') || str_contains(strtolower($murl), 'transparent')) {
+                            $score += 20;
+                        }
+                        // Aspect ratio bonus: closer to 1:1 square
+                        if ($rawW > 0 && $rawH > 0) {
+                            $ratio = $rawW / $rawH;
+                            if ($ratio >= 0.85 && $ratio <= 1.25) {
+                                $score += 25; // Perfect product photo ratio
+                            } elseif ($ratio >= 0.70 && $ratio <= 1.50) {
+                                $score += 10;
+                            }
+                        }
+                        // Trusted camera retailer bonus
+                        if (in_array($source, ['B&H Photo', 'Sony Official', 'Canon Official', 'DJI Official', 'Best Buy', 'Amazon', 'SmallRig Official', 'Godox Official'])) {
+                            $score += 40;
                         }
 
+                        // Resolution bonus
+                        if ($w >= 1000) $score += 15;
+                        if ($w >= 1800) $score += 25;
+
                         // Quality label
-                        $qualityLabel = $w >= 1800 ? "4K Ultra-HD ({$w}×{$h})" : ($w >= 1000 ? "Full HD ({$w}×{$h})" : "HD Standard");
+                        $qualityLabel = $w >= 1800 ? "4K Ultra-HD ({$w}×{$h})" : ($w >= 1000 ? "Full HD ({$w}×{$h})" : "HD Standard ({$w}×{$h})");
 
                         $candidates[] = [
                             'title' => $title ?: $q,
                             'url' => $finalUrl,
+                            'fallback_url' => $cdnUrl,
                             'preview_url' => $previewUrl,
                             'width' => $w,
                             'height' => $h,
@@ -1089,7 +1146,7 @@ class OfficialProductImageService
             }
         }
 
-        // Rank by score descending so the exact product matches appear first
+        // Rank by score descending so pristine studio images appear at the top
         usort($candidates, fn($a, $b) => ($b['score'] ?? 0) <=> ($a['score'] ?? 0));
 
         if (!empty($candidates)) {

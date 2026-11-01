@@ -848,16 +848,21 @@ class ProductController extends Controller
      */
     public function search4kImages(Request $request, Product $product)
     {
-        $query = trim($request->input('q') ?: $product->name);
         $service = app(\App\Services\OfficialProductImageService::class);
+        $userQuery = trim((string)$request->input('q'));
+        
+        $cleanQuery = $service->cleanStudioSearchQuery($product->name);
+        $query = !empty($userQuery) ? $userQuery : $cleanQuery;
         $brand = $service->detectBrand($query ?: $product->name);
         
-        $candidates = $service->find4kCandidates($query, $brand, 300, 24);
+        $candidates = $service->find4kCandidates($query, $brand, 300, 28, $product->sku);
 
         return response()->json([
             'success' => true,
             'query' => $query,
+            'clean_query' => $cleanQuery,
             'product_name' => $product->name,
+            'sku' => $product->sku,
             'count' => count($candidates),
             'candidates' => $candidates,
         ]);

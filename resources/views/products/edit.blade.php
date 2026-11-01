@@ -1736,23 +1736,35 @@
                 </button>
             </div>
 
-            <!-- Search Bar with Product Name -->
+            @php
+                $cleanModel = app(\App\Services\OfficialProductImageService::class)->cleanStudioSearchQuery($product->name);
+            @endphp
+            <!-- Search Bar with Product Name & Smart Studio Chips -->
             <div class="p-3 bg-light border-bottom d-flex flex-column gap-2">
                 <div class="d-flex gap-2 align-items-center flex-wrap flex-sm-nowrap">
                     <div class="position-relative flex-grow-1 w-100">
                         <i class="fas fa-search position-absolute text-muted" style="left: 14px; top: 50%; transform: translateY(-50%); font-size: 14px;"></i>
-                        <input type="text" id="query4k" value="{{ $product->name }}" placeholder="Nom du produit..." class="form-control ps-5" style="border-radius: 10px;" onkeydown="if(event.key==='Enter'){event.preventDefault(); trigger4kSearch();}">
+                        <input type="text" id="query4k" value="{{ $cleanModel }}" placeholder="Nom ou référence du produit..." class="form-control ps-5" style="border-radius: 10px;" onkeydown="if(event.key==='Enter'){event.preventDefault(); trigger4kSearch();}">
                     </div>
                     <button type="button" id="btnRun4kSearch" onclick="trigger4kSearch()" class="btn btn-primary rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1 text-nowrap flex-shrink-0 w-100 w-sm-auto justify-content-center" style="background: #4f46e5; border-color: #4f46e5;">
                         <i class="fas fa-bolt me-1"></i> Rechercher
                     </button>
                 </div>
-                <div id="chips4k" class="d-flex gap-2 flex-wrap align-items-center justify-content-between">
-                    <span class="small text-muted fw-medium text-truncate" style="font-size: 0.78rem; max-width: 350px;">
-                        <i class="fas fa-camera text-primary me-1"></i>Recherche : <strong class="text-dark">{{ $product->name }}</strong>
-                    </span>
-                    <button type="button" onclick="setQuery4k('{{ addslashes($product->name) }}')" class="btn btn-sm btn-light border rounded-pill px-2.5 py-0.5" style="font-size: 0.72rem; font-weight: 600; color: #4338ca; background: #eef2ff; border-color: #c7d2fe;">
-                        <i class="fas fa-undo me-1"></i> Réinitialiser au nom
+                <div id="chips4k" class="d-flex gap-1.5 flex-wrap align-items-center">
+                    <span class="small text-muted fw-bold me-1" style="font-size: 0.72rem;">Filtres Studio :</span>
+                    <button type="button" onclick="setQuery4k('{{ addslashes($cleanModel) }} white background')" class="btn btn-xs btn-outline-primary bg-white py-1 px-2.5 rounded-pill fw-semibold shadow-2xs" style="font-size: 0.72rem;">
+                        ✨ Fond blanc studio
+                    </button>
+                    <button type="button" onclick="setQuery4k('{{ addslashes($cleanModel) }}')" class="btn btn-xs btn-outline-secondary bg-white py-1 px-2.5 rounded-pill fw-semibold shadow-2xs" style="font-size: 0.72rem;">
+                        📷 Modèle pur ({{ $cleanModel }})
+                    </button>
+                    @if(!empty($product->sku))
+                        <button type="button" onclick="setQuery4k('{{ addslashes($product->sku) }}')" class="btn btn-xs btn-outline-dark bg-white py-1 px-2.5 rounded-pill fw-semibold font-monospace shadow-2xs" style="font-size: 0.72rem;">
+                            🏷️ SKU ({{ $product->sku }})
+                        </button>
+                    @endif
+                    <button type="button" onclick="setQuery4k('{{ addslashes($product->name) }}')" class="btn btn-xs btn-outline-light text-muted border py-1 px-2.5 rounded-pill ms-auto" style="font-size: 0.72rem;">
+                        🌐 Nom complet
                     </button>
                 </div>
             </div>
@@ -2137,7 +2149,7 @@ function trigger4kSearch() {
 
             const previewSrc = cand.preview_url || cand.url;
             const safeUrl = (cand.url || '').replace(/'/g, "\\'");
-            const safeFallback = (cand.preview_url || '').replace(/'/g, "\\'");
+            const safeFallback = (cand.fallback_url || cand.preview_url || '').replace(/'/g, "\\'");
             const fallbackImg = "{{ asset('images/camera/cat_cameras.jpg') }}";
             const safeTitle = (cand.title || 'Photo produit').replace(/"/g, '&quot;');
 
@@ -2174,7 +2186,7 @@ function trigger4kSearch() {
 function applySelected4kImage(imageUrl, fallbackUrl, button) {
     const origHtml = button.innerHTML;
     button.disabled = true;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Téléchargement...';
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Téléchargement 4K...';
 
     const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]')?.value;
 
@@ -2200,42 +2212,106 @@ function applySelected4kImage(imageUrl, fallbackUrl, button) {
 
         if (data.success) {
             const container = document.getElementById('imagePreviewContainer');
-            if (container) {
-                // Remove existing primary indicators
-                container.querySelectorAll('.primary-badge-indicator').forEach(b => b.remove());
+            const primaryInput = document.getElementById('primary_image_id');
+            const cacheBustedUrl = data.image_url + (data.image_url.includes('?') ? '&' : '?') + 'v=' + Date.now();
 
-                let currentBox = document.getElementById('box-img-current');
-                if (!currentBox) {
-                    currentBox = document.createElement('div');
-                    currentBox.className = 'image-upload-box';
-                    currentBox.id = 'box-img-current';
-                    container.insertBefore(currentBox, container.firstElementChild);
+            if (container) {
+                // Demote all existing boxes
+                container.querySelectorAll('.image-upload-box').forEach(box => {
+                    box.classList.remove('is-primary-card');
+                    box.setAttribute('data-is-primary', '0');
+                    const btn = box.querySelector('.btn-make-primary');
+                    if (btn) {
+                        btn.classList.remove('active');
+                        btn.title = 'Définir comme image principale';
+                        const icon = btn.querySelector('i');
+                        if (icon) icon.className = 'far fa-star';
+                        const txt = btn.querySelector('.btn-primary-text');
+                        if (txt) txt.textContent = 'Choisir';
+                    }
+                });
+
+                let targetBox = data.image_id ? document.getElementById('box-img-' + data.image_id) : null;
+
+                if (targetBox) {
+                    targetBox.classList.add('is-primary-card');
+                    targetBox.setAttribute('data-is-primary', '1');
+                    targetBox.setAttribute('data-image-url', data.image_url);
+                    const img = targetBox.querySelector('img');
+                    if (img) img.src = cacheBustedUrl;
+
+                    const btn = targetBox.querySelector('.btn-make-primary');
+                    if (btn) {
+                        btn.classList.add('active');
+                        btn.title = 'Image principale actuelle';
+                        const icon = btn.querySelector('i');
+                        if (icon) icon.className = 'fas fa-star text-warning';
+                        const txt = btn.querySelector('.btn-primary-text');
+                        if (txt) txt.textContent = 'Principale';
+                    }
+
+                    container.insertBefore(targetBox, container.firstElementChild);
+                } else if (data.image_id) {
+                    targetBox = document.createElement('div');
+                    targetBox.className = 'image-upload-box is-primary-card';
+                    targetBox.id = 'box-img-' + data.image_id;
+                    targetBox.setAttribute('data-image-id', data.image_id);
+                    targetBox.setAttribute('data-image-url', data.image_url);
+                    targetBox.setAttribute('data-image-padding', '0%');
+                    targetBox.setAttribute('data-image-padding-percent', '0');
+                    targetBox.setAttribute('data-is-primary', '1');
+                    targetBox.onclick = function(e) { selectImageForPadding(data.image_id, e); };
+
+                    targetBox.innerHTML = `
+                        <div class="image-box-top-bar">
+                            <div class="image-drag-handle" title="Glisser pour déplacer"><i class="fas fa-grip-vertical"></i></div>
+                            <span class="image-order-pill">#1</span>
+                            <span class="image-pad-pill" id="pad-pill-${data.image_id}" title="Marge de cette photo (cliquez pour régler)">
+                                <i class="fas fa-expand-alt" style="font-size: 8px;"></i>
+                                <span class="pad-pill-val">0%</span>
+                            </span>
+                            <button type="button" class="image-remove-btn" onclick="markImageForRemoval(${data.image_id}, this); event.stopPropagation();" title="Supprimer cette image">&times;</button>
+                        </div>
+                        <div class="image-box-img-wrap" title="Cliquer pour ajuster la marge / Glisser pour réordonner">
+                            <img id="card-img-${data.image_id}" src="${cacheBustedUrl}" alt="Image produit" style="padding: 0%; box-sizing: border-box !important;">
+                        </div>
+                        <input type="hidden" name="image_paddings[${data.image_id}]" id="pad-input-${data.image_id}" value="0%">
+                        <div class="image-box-bottom-bar">
+                            <button type="button" class="btn-make-primary active" onclick="selectPrimaryImage(${data.image_id}, this); event.stopPropagation();" title="Image principale actuelle">
+                                <i class="fas fa-star text-warning"></i>
+                                <span class="btn-primary-text">Principale</span>
+                            </button>
+                        </div>
+                    `;
+
+                    container.insertBefore(targetBox, container.firstElementChild);
                 }
-                
-                currentBox.innerHTML = `
-                    <img src="${data.image_url}?v=${new Date().getTime()}" alt="Image produit">
-                    <span class="primary-badge-indicator" style="background: #10b981;">PRINCIPALE</span>
-                `;
+
+                if (primaryInput && data.image_id) {
+                    primaryInput.value = data.image_id;
+                }
+
+                if (typeof reindexImageBoxes === 'function') {
+                    reindexImageBoxes();
+                }
             }
 
             const livePrev = document.getElementById('imagePaddingLivePreview');
             if (livePrev && data.image_url) {
-                livePrev.src = data.image_url;
+                livePrev.src = cacheBustedUrl;
             }
 
             close4kImageModal();
 
             Swal.fire({
-                title: 'Photo Appliquée !',
-                text: `Résolution : ${data.width}×${data.height} pixels (${data.quality || 'HD'})`,
+                title: 'Photo 4K Studio Appliquée !',
+                html: `<strong>Résolution :</strong> ${data.width}×${data.height} px (${data.quality || '4K UHD'})<br><span class="text-success small"><i class="fas fa-check-circle me-1"></i>Définie comme photo principale</span>`,
                 icon: 'success',
-                timer: 1500,
+                timer: 2500,
                 showConfirmButton: false,
                 toast: true,
                 position: 'top-end'
             });
-
-            setTimeout(() => window.location.reload(), 800);
         } else {
             Swal.fire('Erreur', data.message || 'Impossible d\'appliquer l\'image', 'error');
         }
