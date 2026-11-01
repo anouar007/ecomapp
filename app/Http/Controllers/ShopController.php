@@ -127,10 +127,11 @@ class ShopController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(5);
         
-        // Related products — find items sharing any assigned category
+        // 1. Related products — find items in stock sharing any assigned category (10 products on slider)
         $categoryIds = $product->category_ids;
-        $relatedProducts = Product::with(['images', 'activeTags'])
+        $relatedProducts = Product::with(['images', 'activeTags', 'productCategory', 'brand'])
             ->where('status', 'active')
+            ->where('stock', '>', 0)
             ->where('id', '!=', $product->id)
             ->where(function($q) use ($categoryIds) {
                 if (!empty($categoryIds)) {
@@ -140,10 +141,47 @@ class ShopController extends Controller
                       });
                 }
             })
-            ->take(4)
+            ->take(10)
             ->get();
 
-        return view('frontend.shop.show', compact('product', 'relatedProducts', 'reviews'));
+        // If fewer than 10 related in same category, supplement with same brand or latest active in-stock products
+        if ($relatedProducts->count() < 10) {
+            $excludeIds = $relatedProducts->pluck('id')->push($product->id)->all();
+            $fillQuery = Product::with(['images', 'activeTags', 'productCategory', 'brand'])
+                ->where('status', 'active')
+                ->where('stock', '>', 0)
+                ->whereNotIn('id', $excludeIds);
+
+            if ($product->brand_id) {
+                $fillQuery->orderByRaw("CASE WHEN brand_id = {$product->brand_id} THEN 0 ELSE 1 END");
+            }
+
+            $moreRelated = $fillQuery->latest()->take(10 - $relatedProducts->count())->get();
+            $relatedProducts = $relatedProducts->concat($moreRelated);
+        }
+
+        // 2. Random products / Suggestions pour vous (10 in-stock products on slider)
+        $excludeIdsForRandom = $relatedProducts->pluck('id')->push($product->id)->all();
+        $randomProducts = Product::with(['images', 'activeTags', 'productCategory', 'brand'])
+            ->where('status', 'active')
+            ->where('stock', '>', 0)
+            ->whereNotIn('id', $excludeIdsForRandom)
+            ->inRandomOrder()
+            ->take(10)
+            ->get();
+
+        if ($randomProducts->count() < 10) {
+            $fallbackRandom = Product::with(['images', 'activeTags', 'productCategory', 'brand'])
+                ->where('status', 'active')
+                ->where('stock', '>', 0)
+                ->where('id', '!=', $product->id)
+                ->inRandomOrder()
+                ->take(10)
+                ->get();
+            $randomProducts = $fallbackRandom;
+        }
+
+        return view('frontend.shop.show', compact('product', 'relatedProducts', 'randomProducts', 'reviews'));
     }
 
     /**

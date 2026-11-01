@@ -291,7 +291,7 @@
                 <div class="d-flex align-items-center gap-2">
                     <span class="selection-accent-badge"></span>
                     <h2 class="fw-bold text-dark mb-0 selection-title" style="font-size: clamp(1.25rem, 3vw, 1.55rem); letter-spacing: -0.4px;">
-                        Notre sélection de produits
+                        {{ setting('home_section_featured_title', __('Notre sélection de produits')) }}
                     </h2>
                 </div>
                 <div>
@@ -306,7 +306,7 @@
 
             {{-- Products Grid (5-column on desktop matching Screenshot 3, 2-column on mobile) --}}
             <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-2 home-products-grid">
-                @foreach($featuredProducts->take(10) as $product)
+                @foreach($featuredProducts as $product)
                     <div class="col">
                         @include('frontend.partials.product_card_slider', ['product' => $product])
                     </div>
@@ -372,7 +372,7 @@
                 <div class="d-flex align-items-center gap-2">
                     <span class="selection-accent-badge"></span>
                     <h2 class="fw-bold text-dark mb-0" style="font-size: clamp(1.2rem, 2.5vw, 1.45rem); letter-spacing: -0.3px;">
-                        Nouvelle Arrivage
+                        {{ setting('home_section_new_arrivals_title', __('Nouvelle Arrivage')) }}
                     </h2>
                 </div>
                 <a href="{{ route('shop.index') }}" class="text-secondary text-decoration-none small fw-semibold hover-red">
@@ -382,7 +382,7 @@
             </div>
 
             <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-2 home-products-grid">
-                @foreach($newArrivalProducts->take(6) as $product)
+                @foreach($newArrivalProducts as $product)
                     <div class="col">
                         @include('frontend.partials.product_card_slider', ['product' => $product])
                     </div>
@@ -395,7 +395,7 @@
             <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
                 <div class="d-flex align-items-center gap-2">
                     <h2 class="fw-bold text-dark mb-0" style="font-size: clamp(1.2rem, 2.5vw, 1.45rem); letter-spacing: -0.3px;">
-                        Coin Occasion (Reconditionné & Certifié)
+                        {{ setting('home_section_occasion_title', __('Coin Occasion (Reconditionné & Certifié)')) }}
                     </h2>
                 </div>
                 <a href="{{ route('shop.index', ['category' => 'occasion']) }}" class="text-secondary text-decoration-none small fw-semibold hover-red">

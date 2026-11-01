@@ -15,6 +15,9 @@
             </div>
         </div>
         <div class="brand-header-actions">
+            <a href="{{ route('home-sections.index') }}" class="btn btn-outline-danger shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
+                <i class="fas fa-layer-group"></i> <span>Sections Produits</span>
+            </a>
             <a href="{{ url('/') }}" target="_blank" class="btn btn-outline-secondary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
                 <i class="fas fa-external-link-alt"></i> <span>Voir le site</span>
             </a>

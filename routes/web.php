@@ -216,6 +216,11 @@ Route::middleware('auth')->group(function () {
     Route::post('banners/position/{position}', [\App\Http\Controllers\BannerController::class, 'savePosition'])->name('banners.save-position');
     Route::resource('banners', \App\Http\Controllers\BannerController::class);
 
+    // Home Page Product Sections & Order Management
+    Route::get('home-sections', [\App\Http\Controllers\HomeSectionController::class, 'index'])->name('home-sections.index');
+    Route::post('home-sections', [\App\Http\Controllers\HomeSectionController::class, 'update'])->name('home-sections.update');
+    Route::get('home-sections/search-products', [\App\Http\Controllers\HomeSectionController::class, 'searchProducts'])->name('home-sections.search');
+
     // Page & Navigation Management
     Route::middleware('permission:manage_content')->group(function () {
         Route::resource('pages', \App\Http\Controllers\PageController::class);

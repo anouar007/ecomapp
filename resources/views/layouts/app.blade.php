@@ -451,6 +451,13 @@
                 </a>
             </li>
 
+            <li class="sidebar-menu-item">
+                <a href="{{ route('home-sections.index') }}" class="sidebar-menu-link {{ request()->routeIs('home-sections.*') ? 'active' : '' }}">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Sections Accueil</span>
+                </a>
+            </li>
+
             @can('manage_settings')
             <li class="sidebar-menu-item">
                 <a href="{{ route('settings.logos-icons') }}" class="sidebar-menu-link {{ request()->routeIs('settings.logos-icons*') ? 'active' : '' }}">

@@ -198,6 +198,249 @@
             padding: 0 14px !important;
         }
     }
+
+    /* ── Product Page Dual Slider Rows (Scaled Down Proportional Cards) ── */
+    .pdp-slider-section {
+        background: #ffffff;
+        border: 1px solid #edf2f7;
+        border-radius: 14px !important;
+        padding: 14px 14px 12px 14px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+        margin-top: 16px;
+        position: relative;
+    }
+    .btn-slider-nav {
+        width: 30px;
+        height: 30px;
+        border-radius: 50% !important;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        color: #334155;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.72rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        cursor: pointer;
+        padding: 0;
+    }
+    .btn-slider-nav:hover:not(.swiper-button-disabled) {
+        background: #c8102e;
+        color: #ffffff;
+        border-color: #c8102e;
+        transform: scale(1.05);
+    }
+    .btn-slider-nav.swiper-button-disabled {
+        opacity: 0.35;
+        cursor: default;
+        pointer-events: none;
+    }
+    .pdp-products-swiper {
+        overflow: hidden;
+        width: 100%;
+        padding-bottom: 4px;
+    }
+    .pdp-products-swiper .swiper-wrapper {
+        align-items: stretch;
+    }
+    .pdp-products-swiper .swiper-slide {
+        height: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    .pdp-products-swiper .swiper-slide .featured-pro-card {
+        height: 100% !important;
+        width: 100% !important;
+        margin-bottom: 0 !important;
+    }
+
+    /* ── Proportional Scale-Down of Product Cards inside PDP Sliders ── */
+    .pdp-slider-section .featured-pro-card.selection-card {
+        padding: 8px !important;
+    }
+    .pdp-slider-section .featured-pro-img-box,
+    .pdp-slider-section .selection-card .featured-pro-img-box {
+        height: 150px !important;
+        min-height: 150px !important;
+        max-height: 150px !important;
+        margin-bottom: 6px !important;
+        padding: 4px !important;
+    }
+    .pdp-slider-section .featured-pro-title,
+    .pdp-slider-section .featured-pro-title a {
+        font-size: 0.80rem !important;
+        line-height: 1.3 !important;
+        height: 2.6em !important;
+        min-height: 2.6em !important;
+        max-height: 2.6em !important;
+        margin-bottom: 6px !important;
+    }
+    .pdp-slider-section .pcard-price {
+        height: 38px !important;
+        min-height: 38px !important;
+        max-height: 38px !important;
+    }
+    .pdp-slider-section .pcard-price-main-line {
+        height: 22px !important;
+        min-height: 22px !important;
+        max-height: 22px !important;
+        gap: 4px !important;
+    }
+    .pdp-slider-section .pcard-price-current {
+        font-size: 1.05rem !important;
+        height: 22px !important;
+        min-height: 22px !important;
+        max-height: 22px !important;
+    }
+    .pdp-slider-section .pcard-price-old {
+        font-size: 0.75rem !important;
+        height: 15px !important;
+        min-height: 15px !important;
+        max-height: 15px !important;
+    }
+    .pdp-slider-section .featured-pro-btn {
+        height: 34px !important;
+        min-height: 34px !important;
+        max-height: 34px !important;
+        font-size: 0.76rem !important;
+        padding: 0 8px !important;
+    }
+    .pdp-slider-pagination {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 8px;
+    }
+    .pdp-slider-pagination .swiper-pagination-bullet {
+        width: 6px;
+        height: 6px;
+        background: #cbd5e1;
+        opacity: 1;
+        transition: all 0.25s ease;
+        border-radius: 999px;
+    }
+    .pdp-slider-pagination .swiper-pagination-bullet-active {
+        width: 18px;
+        background: #c8102e;
+    }
+
+    @media (max-width: 575px) {
+        .pdp-slider-section {
+            padding: 10px 8px 8px 8px !important;
+            border-radius: 12px !important;
+            margin-top: 12px;
+        }
+        .pdp-slider-section .featured-pro-card.selection-card {
+            padding: 6px !important;
+        }
+        .pdp-slider-section .featured-pro-img-box,
+        .pdp-slider-section .selection-card .featured-pro-img-box {
+            height: 125px !important;
+            min-height: 125px !important;
+            max-height: 125px !important;
+            margin-bottom: 4px !important;
+            padding: 2px !important;
+        }
+        .pdp-slider-section .featured-pro-title,
+        .pdp-slider-section .featured-pro-title a {
+            font-size: 0.74rem !important;
+            line-height: 1.25 !important;
+            height: 2.5em !important;
+            min-height: 2.5em !important;
+            max-height: 2.5em !important;
+            margin-bottom: 4px !important;
+        }
+        .pdp-slider-section .pcard-price {
+            height: 34px !important;
+            min-height: 34px !important;
+            max-height: 34px !important;
+        }
+        .pdp-slider-section .pcard-price-main-line {
+            height: 20px !important;
+            min-height: 20px !important;
+            max-height: 20px !important;
+        }
+        .pdp-slider-section .pcard-price-current {
+            font-size: 0.95rem !important;
+            height: 20px !important;
+            min-height: 20px !important;
+            max-height: 20px !important;
+        }
+        .pdp-slider-section .featured-pro-btn {
+            height: 30px !important;
+            min-height: 30px !important;
+            max-height: 30px !important;
+            font-size: 0.70rem !important;
+            padding: 0 4px !important;
+        }
+        .btn-slider-nav {
+            width: 26px;
+            height: 26px;
+            font-size: 0.65rem;
+        }
+    }
+
+    /* ── Product Description Collapsible Section ── */
+    .pdp-description-collapsible {
+        position: relative;
+        overflow: hidden;
+        transition: max-height 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .pdp-description-collapsible.is-collapsed {
+        max-height: 580px !important;
+    }
+    .pdp-description-collapsible.is-collapsed::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 100px;
+        background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.95) 75%, #ffffff 100%);
+        pointer-events: none;
+        z-index: 2;
+    }
+    .pdp-description-collapsible.is-expanded {
+        max-height: 6000px !important;
+    }
+    .pdp-description-collapsible.is-expanded::after {
+        display: none !important;
+    }
+    .pdp-desc-toggle-wrap {
+        border-top: 1px dashed #f1f5f9;
+        padding-top: 16px;
+        margin-top: 12px;
+    }
+    .pdp-desc-toggle-btn {
+        font-size: 0.86rem !important;
+        font-weight: 600 !important;
+        padding: 8px 26px !important;
+        border-radius: 999px !important;
+        border: 1px solid #e2e8f0 !important;
+        background: #ffffff !important;
+        color: #0f172a !important;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04) !important;
+        transition: all 0.2s ease !important;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .pdp-desc-toggle-btn:hover {
+        background: #fef2f2 !important;
+        border-color: #c8102e !important;
+        color: #c8102e !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(200, 16, 46, 0.1) !important;
+    }
+
+    @media (max-width: 575px) {
+        .pdp-description-collapsible.is-collapsed {
+            max-height: 480px !important;
+        }
+    }
 </style>
 @endpush
 
@@ -883,6 +1126,86 @@
             </div>
         </div>
 
+        {{-- ROW 1: PRODUITS SIMILAIRES (10 ITEMS SLIDER) --}}
+        @if(isset($relatedProducts) && $relatedProducts->isNotEmpty())
+        <div class="pdp-slider-section" id="pdp-related-products-slider">
+            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <h2 class="fw-bold text-dark mb-0" style="font-size: clamp(1.1rem, 2vw, 1.3rem); letter-spacing: -0.3px;">
+                        <i class="fas fa-layer-group text-danger me-2"></i>{{ __('Produits similaires') }}
+                    </h2>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{{ route('shop.index', ['category' => $product->category?->slug]) }}" 
+                       class="btn btn-outline-danger fw-bold px-3 py-1 text-nowrap d-none d-sm-inline-flex align-items-center gap-2" 
+                       style="border-radius: 8px; font-size: 0.82rem; border-color: #c8102e;">
+                        <span>{{ __('Voir plus') }}</span>
+                        <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }}" style="font-size: 10px;"></i>
+                    </a>
+                    <div class="d-flex align-items-center gap-1.5">
+                        <button type="button" class="btn-slider-nav pdp-swiper-prev-related" aria-label="{{ __('Précédent') }}" title="{{ __('Précédent') }}">
+                            <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-chevron-right' : 'fa-chevron-left' }}"></i>
+                        </button>
+                        <button type="button" class="mx-2 btn-slider-nav pdp-swiper-next-related" aria-label="{{ __('Suivant') }}" title="{{ __('Suivant') }}">
+                            <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-chevron-left' : 'fa-chevron-right' }}"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="swiper pdp-products-swiper pdp-related-swiper">
+                <div class="swiper-wrapper">
+                    @foreach($relatedProducts as $relatedItem)
+                        <div class="swiper-slide">
+                            @include('frontend.partials.product_card_slider', ['product' => $relatedItem])
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            <div class="pdp-slider-pagination pdp-related-pagination d-md-none"></div>
+        </div>
+        @endif
+
+        {{-- ROW 2: PRODUITS ALÉATOIRES / RECOMMANDÉS (10 ITEMS SLIDER) --}}
+        @if(isset($randomProducts) && $randomProducts->isNotEmpty())
+        <div class="pdp-slider-section" id="pdp-random-products-slider">
+            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <h2 class="fw-bold text-dark mb-0" style="font-size: clamp(1.1rem, 2vw, 1.3rem); letter-spacing: -0.3px;">
+                        <i class="fas fa-fire text-warning me-2"></i>{{ __('Suggestions pour vous') }}
+                    </h2>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{{ route('shop.index') }}" 
+                       class="btn btn-outline-danger fw-bold px-3 py-1 text-nowrap d-none d-sm-inline-flex align-items-center gap-2" 
+                       style="border-radius: 8px; font-size: 0.82rem; border-color: #c8102e;">
+                        <span>{{ __('Tout le catalogue') }}</span>
+                        <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }}" style="font-size: 10px;"></i>
+                    </a>
+                    <div class="d-flex align-items-center gap-1.5">
+                        <button type="button" class="btn-slider-nav pdp-swiper-prev-random" aria-label="{{ __('Précédent') }}" title="{{ __('Précédent') }}">
+                            <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-chevron-right' : 'fa-chevron-left' }}"></i>
+                        </button>
+                        <button type="button" class="mx-2 btn-slider-nav pdp-swiper-next-random" aria-label="{{ __('Suivant') }}" title="{{ __('Suivant') }}">
+                            <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-chevron-left' : 'fa-chevron-right' }}"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="swiper pdp-products-swiper pdp-random-swiper">
+                <div class="swiper-wrapper">
+                    @foreach($randomProducts as $randomItem)
+                        <div class="swiper-slide">
+                            @include('frontend.partials.product_card_slider', ['product' => $randomItem])
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            <div class="pdp-slider-pagination pdp-random-pagination d-md-none"></div>
+        </div>
+        @endif
+
         {{-- DEDICATED PRODUCT DESCRIPTION CONTAINER --}}
         @php
             $cleanDescription = $product->clean_description;
@@ -899,16 +1222,38 @@
                         <i class="fas fa-check-double text-success me-1"></i>{{ __('Fiche technique officielle') }}
                     </span>
                 </div>
-                <div class="pdp-description pdp-description--clean entry-content">
-                    @if(strip_tags($product->description) !== $product->description)
-                        {!! $product->lighthouse_safe_description_html !!}
-                    @else
-                        @foreach(explode("\n\n", $cleanDescription) as $para)
-                            @if(trim($para))
-                                <p class="pdp-clean-p">{!! nl2br(e(trim($para))) !!}</p>
-                            @endif
-                        @endforeach
-                    @endif
+                <div class="pdp-description-collapsible is-collapsed" id="pdpDescriptionCollapsible">
+                    <div class="pdp-description pdp-description--clean entry-content" id="pdpDescriptionContent">
+                        @if(strip_tags($product->description) !== $product->description)
+                            {!! $product->lighthouse_safe_description_html !!}
+                        @else
+                            @foreach(explode("\n\n", $cleanDescription) as $para)
+                                @if(trim($para))
+                                    <p class="pdp-clean-p">{!! nl2br(e(trim($para))) !!}</p>
+                                @endif
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
+
+                @php
+                    $isAr = app()->getLocale() === 'ar';
+                    $isEn = app()->getLocale() === 'en';
+                    $showMoreText = $isAr ? 'عرض كل الوصف' : ($isEn ? 'Show full description' : 'Voir toute la description');
+                    $showLessText = $isAr ? 'عرض أقل' : ($isEn ? 'Show less' : 'Afficher moins');
+                @endphp
+                <div class="text-center pdp-desc-toggle-wrap" id="pdpDescToggleWrap">
+                    <button type="button" 
+                            class="btn pdp-desc-toggle-btn shadow-none" 
+                            id="pdpDescToggleBtn" 
+                            onclick="togglePdpDescription()"
+                            data-text-more="{{ $showMoreText }}"
+                            data-text-less="{{ $showLessText }}"
+                            aria-expanded="false"
+                            aria-controls="pdpDescriptionCollapsible">
+                        <span id="pdpDescToggleText">{{ $showMoreText }}</span>
+                        <i class="fas fa-chevron-down" id="pdpDescToggleIcon" style="font-size: 0.75rem;"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -1082,24 +1427,7 @@
             </div>
         </div>
 
-        {{-- RELATED PRODUCTS --}}
-        @if($relatedProducts->count() > 0)
-        <div class="pdp-related mt-5">
-            <div class="pdp-related-header">
-                <h2 class="pdp-related-title">{{ __('Related products') }}</h2>
-                <a href="{{ route('shop.index') }}" class="pdp-related-link">
-                    {{ __('See all') }} <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left ms-1' : 'fa-arrow-right ms-1' }}"></i>
-                </a>
-            </div>
-            <div class="row g-2 home-products-grid">
-                @foreach($relatedProducts as $related)
-                <div class="col-6 col-md-3">
-                    @include('frontend.partials.product_card_slider', ['product' => $related])
-                </div>
-                @endforeach
-            </div>
-        </div>
-        @endif
+
 
     </div>
 </section>
@@ -1447,5 +1775,152 @@ function pdpNativeShare(title, text, url) {
         copyPdpShareLink(url, btn);
     }
 }
+
+// PDP Dual Sliders (Produits Similaires & Suggestions)
+document.addEventListener('DOMContentLoaded', function() {
+    function initPdpSliders() {
+        if (typeof Swiper === 'undefined') {
+            setTimeout(initPdpSliders, 100);
+            return;
+        }
+
+        const baseSliderConfig = {
+            watchSlidesProgress: true,
+            grabCursor: true,
+            speed: 400,
+            touchRatio: 1.1,
+            resistanceRatio: 0.85,
+            keyboard: {
+                enabled: true,
+                onlyInViewport: true,
+            },
+            slidesPerView: 2.2,
+            spaceBetween: 8,
+            breakpoints: {
+                0: {
+                    slidesPerView: 2.2,
+                    spaceBetween: 8,
+                },
+                480: {
+                    slidesPerView: 2.4,
+                    spaceBetween: 8,
+                },
+                640: {
+                    slidesPerView: 3,
+                    spaceBetween: 8,
+                },
+                768: {
+                    slidesPerView: 3.2,
+                    spaceBetween: 8,
+                },
+                992: {
+                    slidesPerView: 4,
+                    spaceBetween: 8,
+                },
+                1200: {
+                    slidesPerView: 5,
+                    spaceBetween: 8,
+                }
+            }
+        };
+
+        if (document.querySelector('.pdp-related-swiper')) {
+            new Swiper('.pdp-related-swiper', Object.assign({}, baseSliderConfig, {
+                navigation: {
+                    prevEl: '.pdp-swiper-prev-related',
+                    nextEl: '.pdp-swiper-next-related',
+                },
+                pagination: {
+                    el: '.pdp-related-pagination',
+                    clickable: true,
+                }
+            }));
+        }
+
+        if (document.querySelector('.pdp-random-swiper')) {
+            new Swiper('.pdp-random-swiper', Object.assign({}, baseSliderConfig, {
+                navigation: {
+                    prevEl: '.pdp-swiper-prev-random',
+                    nextEl: '.pdp-swiper-next-random',
+                },
+                pagination: {
+                    el: '.pdp-random-pagination',
+                    clickable: true,
+                }
+            }));
+        }
+    }
+
+    initPdpSliders();
+});
+
+// PDP Collapsible Description
+function togglePdpDescription() {
+    const wrap = document.getElementById('pdpDescriptionCollapsible');
+    const btn = document.getElementById('pdpDescToggleBtn');
+    const textEl = document.getElementById('pdpDescToggleText');
+    const iconEl = document.getElementById('pdpDescToggleIcon');
+    if (!wrap || !btn || !textEl || !iconEl) return;
+
+    const isCollapsed = wrap.classList.contains('is-collapsed');
+    const moreText = btn.dataset.textMore;
+    const lessText = btn.dataset.textLess;
+
+    if (isCollapsed) {
+        wrap.classList.remove('is-collapsed');
+        wrap.classList.add('is-expanded');
+        btn.setAttribute('aria-expanded', 'true');
+        textEl.textContent = lessText;
+        iconEl.classList.remove('fa-chevron-down');
+        iconEl.classList.add('fa-chevron-up');
+    } else {
+        wrap.classList.remove('is-expanded');
+        wrap.classList.add('is-collapsed');
+        btn.setAttribute('aria-expanded', 'false');
+        textEl.textContent = moreText;
+        iconEl.classList.remove('fa-chevron-up');
+        iconEl.classList.add('fa-chevron-down');
+
+        const card = document.getElementById('pdp-full-description');
+        if (card) {
+            const cardTop = card.getBoundingClientRect().top + window.pageYOffset - 90;
+            window.scrollTo({ top: cardTop, behavior: 'smooth' });
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const wrap = document.getElementById('pdpDescriptionCollapsible');
+    const content = document.getElementById('pdpDescriptionContent');
+    const toggleWrap = document.getElementById('pdpDescToggleWrap');
+
+    if (wrap && content && toggleWrap) {
+        // If content is already short, don't collapse and hide the toggle button
+        if (content.scrollHeight <= 600) {
+            wrap.classList.remove('is-collapsed');
+            wrap.classList.add('is-expanded');
+            toggleWrap.style.display = 'none';
+        }
+    }
+
+    // When clicking "Voir la fiche complète" link from the top short desc snippet, auto-expand
+    document.querySelectorAll('a[href="#pdp-full-description"]').forEach(function(link) {
+        link.addEventListener('click', function() {
+            if (wrap && wrap.classList.contains('is-collapsed')) {
+                const btn = document.getElementById('pdpDescToggleBtn');
+                const textEl = document.getElementById('pdpDescToggleText');
+                const iconEl = document.getElementById('pdpDescToggleIcon');
+                wrap.classList.remove('is-collapsed');
+                wrap.classList.add('is-expanded');
+                if (btn && textEl && iconEl) {
+                    btn.setAttribute('aria-expanded', 'true');
+                    textEl.textContent = btn.dataset.textLess;
+                    iconEl.classList.remove('fa-chevron-down');
+                    iconEl.classList.add('fa-chevron-up');
+                }
+            }
+        });
+    });
+});
 </script>
 @endpush

@@ -69,6 +69,10 @@
             <span class="quick-pill-icon icon-red"><i class="fas fa-images"></i></span>
             <span class="quick-pill-text">Bannières & Sliders</span>
         </a>
+        <a href="{{ route('home-sections.index') }}" class="quick-action-pill">
+            <span class="quick-pill-icon icon-blue"><i class="fas fa-layer-group"></i></span>
+            <span class="quick-pill-text">Sections Accueil</span>
+        </a>
     </div>
 
     <!-- Cartes KPI Pro Unifiées (2x2 sur Mobile, 1x4 sur Desktop) -->

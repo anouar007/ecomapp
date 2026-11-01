@@ -80,51 +80,90 @@ class HomeController extends Controller
             })->toArray();
         });
 
-        // 3. Featured Flagship Products ("Notre sélection de produits" matching Screenshot 3)
-        $featuredIds = [594, 45, 374, 36, 18, 2, 7, 14];
+        // 3. Featured Flagship Products ("Notre sélection de produits")
+        $defaultFeaturedIds = [594, 45, 374, 36, 18, 2, 7, 14];
+        $savedFeatured = setting('home_section_featured_products');
+        if (is_string($savedFeatured)) {
+            $savedFeatured = json_decode($savedFeatured, true);
+        }
+        $featuredIds = (!empty($savedFeatured) && is_array($savedFeatured)) ? $savedFeatured : $defaultFeaturedIds;
+
         $featuredProducts = Cache::remember('home_featured_products_v1', 1800, function () use ($featuredIds) {
             $prods = Product::where('status', 'active')
                 ->whereIn('id', $featuredIds)
-                ->with(['images', 'productCategory', 'activeTags'])
-                ->orderByRaw('FIELD(id, 594, 45, 374, 36, 18, 2, 7, 14)')
+                ->with(['images', 'productCategory', 'activeTags', 'brand'])
                 ->get();
 
-            if ($prods->count() < 8) {
+            // Preserve exact configured order
+            $ordered = collect($featuredIds)
+                ->map(fn($id) => $prods->firstWhere('id', $id))
+                ->filter()
+                ->values();
+
+            if ($ordered->count() < 8) {
                 $extra = Product::where('status', 'active')
                     ->whereNotNull('price')
                     ->where('price', '>', 0)
-                    ->whereNotIn('id', $prods->pluck('id'))
-                    ->with(['images', 'productCategory', 'activeTags'])
-                    ->take(8 - $prods->count())
+                    ->whereNotIn('id', $ordered->pluck('id'))
+                    ->with(['images', 'productCategory', 'activeTags', 'brand'])
+                    ->take(8 - $ordered->count())
                     ->get();
-                $prods = $prods->merge($extra);
+                $ordered = $ordered->merge($extra);
             }
-            return $prods;
+            return $ordered;
         });
 
         // 4. New Arrivals ("Nouvelle Arrivage")
-        $newArrivalIds = [251, 239, 129, 130, 126, 127];
+        $defaultNewArrivalIds = [251, 239, 129, 130, 126, 127];
+        $savedNewArrival = setting('home_section_new_arrivals_products');
+        if (is_string($savedNewArrival)) {
+            $savedNewArrival = json_decode($savedNewArrival, true);
+        }
+        $newArrivalIds = (!empty($savedNewArrival) && is_array($savedNewArrival)) ? $savedNewArrival : $defaultNewArrivalIds;
+
         $newArrivalProducts = Cache::remember('home_new_arrival_products_v1', 1800, function () use ($newArrivalIds) {
             $prods = Product::where('status', 'active')
                 ->whereIn('id', $newArrivalIds)
-                ->with(['images', 'productCategory', 'activeTags'])
-                ->orderByRaw('FIELD(id, 251, 239, 129, 130, 126, 127)')
+                ->with(['images', 'productCategory', 'activeTags', 'brand'])
                 ->get();
 
-            if ($prods->count() < 6) {
+            $ordered = collect($newArrivalIds)
+                ->map(fn($id) => $prods->firstWhere('id', $id))
+                ->filter()
+                ->values();
+
+            if ($ordered->count() < 6) {
                 $extraNew = Product::where('status', 'active')
-                    ->whereNotIn('id', $prods->pluck('id'))
-                    ->with(['images', 'productCategory', 'activeTags'])
+                    ->whereNotIn('id', $ordered->pluck('id'))
+                    ->with(['images', 'productCategory', 'activeTags', 'brand'])
                     ->latest()
-                    ->take(6 - $prods->count())
+                    ->take(6 - $ordered->count())
                     ->get();
-                $prods = $prods->merge($extraNew);
+                $ordered = $ordered->merge($extraNew);
             }
-            return $prods;
+            return $ordered;
         });
 
-        // 5. Occasion Products ("Coin Occasion") - ONLY products of this category
-        $occasionProducts = Cache::remember('home_occasion_products_v1', 1800, function () {
+        // 5. Occasion Products ("Coin Occasion") - ONLY products of this category or custom selected
+        $savedOccasion = setting('home_section_occasion_products');
+        if (is_string($savedOccasion)) {
+            $savedOccasion = json_decode($savedOccasion, true);
+        }
+        $occasionIds = (!empty($savedOccasion) && is_array($savedOccasion)) ? $savedOccasion : null;
+
+        $occasionProducts = Cache::remember('home_occasion_products_v1', 1800, function () use ($occasionIds) {
+            if (!empty($occasionIds)) {
+                $prods = Product::where('status', 'active')
+                    ->whereIn('id', $occasionIds)
+                    ->with(['images', 'productCategory', 'categories', 'activeTags', 'brand'])
+                    ->get();
+
+                return collect($occasionIds)
+                    ->map(fn($id) => $prods->firstWhere('id', $id))
+                    ->filter()
+                    ->values();
+            }
+
             return Product::where('status', 'active')
                 ->where(function ($q) {
                     $q->whereHas('categories', function ($c) {
@@ -134,7 +173,7 @@ class HomeController extends Controller
                     })->orWhere('name', 'like', '%(occasion)%')
                       ->orWhere('name', 'like', '%occasion%');
                 })
-                ->with(['images', 'productCategory', 'categories', 'activeTags'])
+                ->with(['images', 'productCategory', 'categories', 'activeTags', 'brand'])
                 ->orderByRaw('FIELD(id, 71, 31, 9, 12, 84) DESC')
                 ->get();
         });
