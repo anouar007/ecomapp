@@ -67,8 +67,10 @@
 
                     {{-- Stock Status Badge aligned with price --}}
                     @if($product->isComingSoon())
-                        <span class="featured-stock-pill featured-stock-pill--coming-soon featured-stock-badge-corner" title="{{ $product->stock_badge_label }}">
-                            <i class="fas fa-clock" aria-hidden="true"></i><span class="featured-stock-label">{{ $product->stock_badge_label }}</span>
+                        <span class="featured-stock-pill featured-stock-pill--coming-soon featured-stock-badge-corner"
+                              @if($product->custom_tag_style) style="{{ $product->custom_tag_style }}" @endif
+                              title="{{ $product->stock_tag_label }}">
+                            <i class="fas fa-clock" aria-hidden="true" @if(!empty($product->custom_tag_color)) style="color: {{ $product->custom_tag_color }} !important;" @endif></i><span class="featured-stock-label">{{ $product->stock_tag_label }}</span>
                         </span>
                     @elseif($product->isInStock())
                         <span class="featured-stock-pill featured-stock-badge-corner featured-stock-pill--in">
@@ -95,9 +97,10 @@
         @if($product->isComingSoon())
             <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" 
                class="btn w-100 featured-pro-btn featured-pro-btn--gold" 
-               title="{{ $product->stock_badge_label }}">
-                <i class="fas fa-clock" style="font-size: 11px;"></i>
-                <span>{{ $product->stock_badge_label }}</span>
+               @if($product->custom_button_style) style="{{ $product->custom_button_style }}" @endif
+               title="{{ $product->stock_button_label }}">
+                <i class="fas fa-clock" style="font-size: 11px; @if(!empty($product->custom_btn_color)) color: {{ $product->custom_btn_color }} !important; @endif"></i>
+                <span>{{ $product->stock_button_label }}</span>
             </a>
         @elseif($product->isInStock())
             <button type="button" 

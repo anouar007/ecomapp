@@ -609,8 +609,8 @@
                                 <span class="pdp-price-main">{{ $product->isOnSale() ? $product->formatted_sale_price : $product->formatted_price }}</span>
 
                                 @if($product->isComingSoon())
-                                    <span class="pdp-stock-badge pdp-stock-badge--coming-soon">
-                                        <i class="fas fa-clock" aria-hidden="true"></i><span class="pdp-stock-label">{{ $product->stock_badge_label }}</span>
+                                    <span class="pdp-stock-badge pdp-stock-badge--coming-soon" @if($product->custom_tag_style) style="{{ $product->custom_tag_style }}" @endif>
+                                        <i class="fas fa-clock" aria-hidden="true" @if(!empty($product->custom_tag_color)) style="color: {{ $product->custom_tag_color }} !important;" @endif></i><span class="pdp-stock-label">{{ $product->stock_tag_label }}</span>
                                     </span>
                                 @elseif($product->isInStock())
                                     <span class="pdp-stock-badge pdp-stock-badge--in">
@@ -688,10 +688,10 @@
                                 id="addToCartBtn" 
                                 class="pdp-add-btn pdp-add-btn--gold flex-grow-1 text-nowrap shadow-none d-inline-flex align-items-center justify-content-center" 
                                 disabled
-                                style="cursor: default !important; pointer-events: none !important;"
-                                title="{{ $product->stock_badge_label }}">
-                            <i class="fas fa-clock me-2"></i>
-                            <span id="addToCartText">{{ $product->stock_badge_label }}</span>
+                                style="cursor: default !important; pointer-events: none !important; {{ $product->custom_button_style }}"
+                                title="{{ $product->stock_button_label }}">
+                            <i class="fas fa-clock me-2" @if(!empty($product->custom_btn_color)) style="color: {{ $product->custom_btn_color }} !important;" @endif></i>
+                            <span id="addToCartText">{{ $product->stock_button_label }}</span>
                         </button>
                     </div>
                     @elseif($product->isInStock())

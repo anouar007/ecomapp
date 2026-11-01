@@ -973,12 +973,11 @@
         .pdp-add-btn--gold,
         .pdp-add-btn.pdp-add-btn--gold,
         a.pdp-add-btn--gold {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%) !important;
+            background: linear-gradient(135deg, #ffb231 0%, #ee9700 100%) !important;
             color: #ffffff !important;
-            border: 1px solid rgba(180, 83, 9, 0.5) !important;
+            border: none !important;
             box-shadow: 0 3px 12px rgba(217, 119, 6, 0.35) !important;
             font-weight: 700 !important;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
             text-decoration: none !important;
             transition: all 0.22s ease !important;
         }

@@ -1421,39 +1421,260 @@
                             </select>
                         </div>
 
-                        <div id="customStockTagContainer" class="mt-2" style="{{ in_array(old('availability_status', $product->availability_status ?? 'standard'), ['coming_soon', 'preorder', 'custom']) ? '' : 'display: none;' }}">
-                            <label for="custom_stock_tag" class="form-label small fw-semibold text-muted mb-1">
-                                Texte personnalisé du tag & du bouton :
-                            </label>
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text bg-white"><i class="fas fa-pen text-warning"></i></span>
-                                <input type="text" 
-                                       id="custom_stock_tag" 
-                                       name="custom_stock_tag" 
-                                       class="form-control" 
-                                       value="{{ old('custom_stock_tag', $product->custom_stock_tag) }}" 
-                                       placeholder="Ex: Bientôt disponible, Coming Soon, Arrive bientôt..."
-                                       oninput="updateCustomTagPreview(this.value)">
-                            </div>
-                            <div class="form-text text-muted" style="font-size: 0.72rem;">
-                                Laissez vide pour utiliser automatiquement "Bientôt disponible" (ou le libellé sélectionné).
+                        <div id="customStockTagContainer" class="mt-3" style="{{ in_array(old('availability_status', $product->availability_status ?? 'standard'), ['coming_soon', 'preorder', 'custom']) ? '' : 'display: none;' }}">
+                            
+                            {{-- SECTION 1: TAG SUR LE PRIX --}}
+                            <div class="p-3 mb-3 rounded-3 border bg-white shadow-sm">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="fw-bold small text-dark d-flex align-items-center gap-1.5" style="font-size: 0.8rem;">
+                                        <i class="fas fa-tag text-warning"></i> 1. Tag sur le Prix (Pastille)
+                                    </span>
+                                    <span class="badge bg-light text-muted border" style="font-size: 0.68rem;">Affiché à côté du prix</span>
+                                </div>
+
+                                <div class="mb-2.5">
+                                    <label for="custom_stock_tag" class="form-label small fw-semibold text-muted mb-1" style="font-size: 0.75rem;">
+                                        Texte du Tag :
+                                    </label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-light text-muted"><i class="fas fa-pen"></i></span>
+                                        <input type="text" 
+                                               id="custom_stock_tag" 
+                                               name="custom_stock_tag" 
+                                               class="form-control" 
+                                               value="{{ old('custom_stock_tag', $product->custom_stock_tag) }}" 
+                                               placeholder="Ex: Bientôt disponible, Précommande, Arrive bientôt..."
+                                               oninput="updateCustomStockLivePreview()">
+                                    </div>
+                                    <div class="form-text text-muted" style="font-size: 0.7rem;">
+                                        Laissez vide pour utiliser automatiquement "Bientôt disponible" (ou le libellé du statut).
+                                    </div>
+                                </div>
+
+                                <div class="row g-2 pt-1">
+                                    <div class="col-12 col-sm-4">
+                                        <label for="custom_tag_color" class="form-label small fw-semibold text-muted mb-1" style="font-size: 0.72rem;">
+                                            Couleur texte
+                                        </label>
+                                        <div class="input-group input-group-sm">
+                                            <input type="color" 
+                                                   class="form-control form-control-color p-0 border flex-shrink-0" 
+                                                   id="custom_tag_color_picker" 
+                                                   value="{{ old('custom_tag_color', $product->custom_tag_color) && str_starts_with(old('custom_tag_color', $product->custom_tag_color), '#') && strlen(old('custom_tag_color', $product->custom_tag_color)) === 7 ? old('custom_tag_color', $product->custom_tag_color) : '#ea580c' }}" 
+                                                   style="width: 34px; height: 31px; border-radius: 6px 0 0 6px;" 
+                                                   title="Choisir la couleur"
+                                                   oninput="document.getElementById('custom_tag_color').value = this.value; updateCustomStockLivePreview();">
+                                            <input type="text" 
+                                                   class="form-control font-monospace text-uppercase" 
+                                                   id="custom_tag_color" 
+                                                   name="custom_tag_color" 
+                                                   value="{{ old('custom_tag_color', $product->custom_tag_color) }}" 
+                                                   placeholder="#ea580c" 
+                                                   style="font-size: 0.75rem;" 
+                                                   oninput="syncPickerFromText('custom_tag_color', 'custom_tag_color_picker'); updateCustomStockLivePreview();">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-sm-4">
+                                        <label for="custom_tag_bg" class="form-label small fw-semibold text-muted mb-1" style="font-size: 0.72rem;">
+                                            Couleur fond
+                                        </label>
+                                        <div class="input-group input-group-sm">
+                                            <input type="color" 
+                                                   class="form-control form-control-color p-0 border flex-shrink-0" 
+                                                   id="custom_tag_bg_picker" 
+                                                   value="{{ old('custom_tag_bg', $product->custom_tag_bg) && str_starts_with(old('custom_tag_bg', $product->custom_tag_bg), '#') && strlen(old('custom_tag_bg', $product->custom_tag_bg)) === 7 ? old('custom_tag_bg', $product->custom_tag_bg) : '#fff7ed' }}" 
+                                                   style="width: 34px; height: 31px; border-radius: 6px 0 0 6px;" 
+                                                   title="Choisir la couleur de fond"
+                                                   oninput="document.getElementById('custom_tag_bg').value = this.value; updateCustomStockLivePreview();">
+                                            <input type="text" 
+                                                   class="form-control font-monospace" 
+                                                   id="custom_tag_bg" 
+                                                   name="custom_tag_bg" 
+                                                   value="{{ old('custom_tag_bg', $product->custom_tag_bg) }}" 
+                                                   placeholder="#fff7ed" 
+                                                   style="font-size: 0.75rem;" 
+                                                   oninput="syncPickerFromText('custom_tag_bg', 'custom_tag_bg_picker'); updateCustomStockLivePreview();">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-sm-4">
+                                        <label for="custom_tag_border" class="form-label small fw-semibold text-muted mb-1" style="font-size: 0.72rem;">
+                                            Bordure
+                                        </label>
+                                        <div class="input-group input-group-sm">
+                                            <input type="color" 
+                                                   class="form-control form-control-color p-0 border flex-shrink-0" 
+                                                   id="custom_tag_border_picker" 
+                                                   value="{{ old('custom_tag_border', $product->custom_tag_border) && str_starts_with(old('custom_tag_border', $product->custom_tag_border), '#') && strlen(old('custom_tag_border', $product->custom_tag_border)) === 7 ? old('custom_tag_border', $product->custom_tag_border) : '#fb923c' }}" 
+                                                   style="width: 34px; height: 31px; border-radius: 6px 0 0 6px;" 
+                                                   title="Choisir la couleur de bordure"
+                                                   oninput="document.getElementById('custom_tag_border').value = this.value; updateCustomStockLivePreview();">
+                                            <input type="text" 
+                                                   class="form-control font-monospace" 
+                                                   id="custom_tag_border" 
+                                                   name="custom_tag_border" 
+                                                   value="{{ old('custom_tag_border', $product->custom_tag_border) }}" 
+                                                   placeholder="#fb923c" 
+                                                   style="font-size: 0.75rem;" 
+                                                   oninput="syncPickerFromText('custom_tag_border', 'custom_tag_border_picker'); updateCustomStockLivePreview();">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
-                            <!-- Live Visual Preview of Orange Tag + Gold Button -->
-                            <div class="p-2.5 mt-2 rounded-3 bg-light border">
-                                <div class="text-muted small fw-bold mb-1.5" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;">Aperçu boutique :</div>
-                                <div class="d-flex align-items-center gap-2 mb-2">
+                            {{-- SECTION 2: BOUTON D'ACTION --}}
+                            <div class="p-3 mb-3 rounded-3 border bg-white shadow-sm">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="fw-bold small text-dark d-flex align-items-center gap-1.5" style="font-size: 0.8rem;">
+                                        <i class="fas fa-hand-pointer text-warning"></i> 2. Bouton d'Action
+                                    </span>
+                                    <span class="badge bg-light text-muted border" style="font-size: 0.68rem;">Bouton principal</span>
+                                </div>
+
+                                <div class="mb-2.5">
+                                    <label for="custom_stock_button_text" class="form-label small fw-semibold text-muted mb-1" style="font-size: 0.75rem;">
+                                        Texte du Bouton :
+                                    </label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-light text-muted"><i class="fas fa-pen"></i></span>
+                                        <input type="text" 
+                                               id="custom_stock_button_text" 
+                                               name="custom_stock_button_text" 
+                                               class="form-control" 
+                                               value="{{ old('custom_stock_button_text', $product->custom_stock_button_text) }}" 
+                                               placeholder="Ex: Bientôt disponible, En arrivage, Réserver..."
+                                               oninput="updateCustomStockLivePreview()">
+                                    </div>
+                                    <div class="form-text text-muted" style="font-size: 0.7rem;">
+                                        Laissez vide pour utiliser le même libellé que le tag ci-dessus.
+                                    </div>
+                                </div>
+
+                                <div class="row g-2 pt-1">
+                                    <div class="col-12 col-sm-4">
+                                        <label for="custom_btn_color" class="form-label small fw-semibold text-muted mb-1" style="font-size: 0.72rem;">
+                                            Couleur texte
+                                        </label>
+                                        <div class="input-group input-group-sm">
+                                            <input type="color" 
+                                                   class="form-control form-control-color p-0 border flex-shrink-0" 
+                                                   id="custom_btn_color_picker" 
+                                                   value="{{ old('custom_btn_color', $product->custom_btn_color) && str_starts_with(old('custom_btn_color', $product->custom_btn_color), '#') && strlen(old('custom_btn_color', $product->custom_btn_color)) === 7 ? old('custom_btn_color', $product->custom_btn_color) : '#ffffff' }}" 
+                                                   style="width: 34px; height: 31px; border-radius: 6px 0 0 6px;" 
+                                                   title="Choisir la couleur du texte"
+                                                   oninput="document.getElementById('custom_btn_color').value = this.value; updateCustomStockLivePreview();">
+                                            <input type="text" 
+                                                   class="form-control font-monospace text-uppercase" 
+                                                   id="custom_btn_color" 
+                                                   name="custom_btn_color" 
+                                                   value="{{ old('custom_btn_color', $product->custom_btn_color) }}" 
+                                                   placeholder="#ffffff" 
+                                                   style="font-size: 0.75rem;" 
+                                                   oninput="syncPickerFromText('custom_btn_color', 'custom_btn_color_picker'); updateCustomStockLivePreview();">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-sm-4">
+                                        <label for="custom_btn_bg" class="form-label small fw-semibold text-muted mb-1" style="font-size: 0.72rem;">
+                                            Couleur fond
+                                        </label>
+                                        <div class="input-group input-group-sm">
+                                            <input type="color" 
+                                                   class="form-control form-control-color p-0 border flex-shrink-0" 
+                                                   id="custom_btn_bg_picker" 
+                                                   value="{{ old('custom_btn_bg', $product->custom_btn_bg) && str_starts_with(old('custom_btn_bg', $product->custom_btn_bg), '#') && strlen(old('custom_btn_bg', $product->custom_btn_bg)) === 7 ? old('custom_btn_bg', $product->custom_btn_bg) : '#d97706' }}" 
+                                                   style="width: 34px; height: 31px; border-radius: 6px 0 0 6px;" 
+                                                   title="Choisir la couleur de fond"
+                                                   oninput="document.getElementById('custom_btn_bg').value = this.value; updateCustomStockLivePreview();">
+                                            <input type="text" 
+                                                   class="form-control font-monospace" 
+                                                   id="custom_btn_bg" 
+                                                   name="custom_btn_bg" 
+                                                   value="{{ old('custom_btn_bg', $product->custom_btn_bg) }}" 
+                                                   placeholder="#d97706" 
+                                                   style="font-size: 0.75rem;" 
+                                                   oninput="syncPickerFromText('custom_btn_bg', 'custom_btn_bg_picker'); updateCustomStockLivePreview();">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-sm-4">
+                                        <label for="custom_btn_border" class="form-label small fw-semibold text-muted mb-1" style="font-size: 0.72rem;">
+                                            Bordure
+                                        </label>
+                                        <div class="input-group input-group-sm">
+                                            <input type="color" 
+                                                   class="form-control form-control-color p-0 border flex-shrink-0" 
+                                                   id="custom_btn_border_picker" 
+                                                   value="{{ old('custom_btn_border', $product->custom_btn_border) && str_starts_with(old('custom_btn_border', $product->custom_btn_border), '#') && strlen(old('custom_btn_border', $product->custom_btn_border)) === 7 ? old('custom_btn_border', $product->custom_btn_border) : '#b45309' }}" 
+                                                   style="width: 34px; height: 31px; border-radius: 6px 0 0 6px;" 
+                                                   title="Choisir la couleur de bordure"
+                                                   oninput="document.getElementById('custom_btn_border').value = this.value; updateCustomStockLivePreview();">
+                                            <input type="text" 
+                                                   class="form-control font-monospace" 
+                                                   id="custom_btn_border" 
+                                                   name="custom_btn_border" 
+                                                   value="{{ old('custom_btn_border', $product->custom_btn_border) }}" 
+                                                   placeholder="#b45309" 
+                                                   style="font-size: 0.75rem;" 
+                                                   oninput="syncPickerFromText('custom_btn_border', 'custom_btn_border_picker'); updateCustomStockLivePreview();">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- SECTION 3: PALETTES RAPIDES (PRESETS) --}}
+                            <div class="mb-3 p-2.5 rounded-3 border bg-light">
+                                <div class="text-muted small fw-bold mb-1.5" style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    <i class="fas fa-palette me-1"></i> Palettes de style rapides :
+                                </div>
+                                <div class="d-flex flex-wrap gap-1.5">
+                                    <button type="button" class="btn btn-xs btn-outline-warning text-dark bg-white py-1 px-2 fw-semibold" style="font-size: 0.72rem;" onclick="applyStockStylePreset('default')" title="Orange & Or">
+                                        🟠 Orange & Or
+                                    </button>
+                                    <button type="button" class="btn btn-xs btn-outline-info text-dark bg-white py-1 px-2 fw-semibold" style="font-size: 0.72rem;" onclick="applyStockStylePreset('blue')" title="Bleu Saphir">
+                                        🔵 Bleu Saphir
+                                    </button>
+                                    <button type="button" class="btn btn-xs btn-outline-success text-dark bg-white py-1 px-2 fw-semibold" style="font-size: 0.72rem;" onclick="applyStockStylePreset('emerald')" title="Vert Émeraude">
+                                        🟢 Émeraude
+                                    </button>
+                                    <button type="button" class="btn btn-xs btn-outline-primary text-dark bg-white py-1 px-2 fw-semibold" style="font-size: 0.72rem;" onclick="applyStockStylePreset('purple')" title="Violet">
+                                        🟣 Violet
+                                    </button>
+                                    <button type="button" class="btn btn-xs btn-outline-dark bg-white py-1 px-2 fw-semibold" style="font-size: 0.72rem;" onclick="applyStockStylePreset('dark')" title="Noir Élégant">
+                                        ⚫ Noir Élégant
+                                    </button>
+                                    <button type="button" class="btn btn-xs btn-outline-secondary bg-white py-1 px-2 fw-semibold ms-auto" style="font-size: 0.72rem;" onclick="applyStockStylePreset('clear')" title="Réinitialiser aux couleurs par défaut">
+                                        <i class="fas fa-undo me-1"></i> Réinitialiser
+                                    </button>
+                                </div>
+                            </div>
+
+                            {{-- SECTION 4: APERÇU BOUTIQUE EN DIRECT --}}
+                            <div class="p-3 rounded-3 bg-light border shadow-xs">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="text-muted small fw-bold" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        <i class="fas fa-eye me-1 text-primary"></i> Aperçu Boutique en Temps Réel
+                                    </span>
+                                    <span class="badge bg-white text-muted border" style="font-size: 0.65rem;">Mise à jour directe</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 mb-2.5">
                                     <span class="small text-muted" style="font-size: 0.75rem;">Tag prix :</span>
-                                    <span class="badge rounded-pill px-2.5 py-1 d-inline-flex align-items-center gap-1" style="background: rgba(249, 115, 22, 0.12); border: 1px solid rgba(234, 88, 12, 0.45); color: #ea580c; font-size: 0.75rem; font-weight: 700;">
-                                        <i class="fas fa-clock" style="font-size: 10px;"></i>
-                                        <span id="previewStockTagText">{{ old('custom_stock_tag', $product->custom_stock_tag) ?: ($product->availability_status === 'preorder' ? 'Précommande' : 'Bientôt disponible') }}</span>
+                                    <span id="previewStockBadge" 
+                                          class="badge rounded-pill px-2.5 py-1 d-inline-flex align-items-center gap-1 transition-all" 
+                                          style="{{ $product->custom_tag_style ?: 'background: rgba(249, 115, 22, 0.12); border: 1px solid rgba(234, 88, 12, 0.45); color: #ea580c;' }} font-size: 0.75rem; font-weight: 700;">
+                                        <i class="fas fa-clock" id="previewStockTagIcon" style="font-size: 10px; {{ !empty($product->custom_tag_color) ? 'color: '.$product->custom_tag_color.' !important;' : '' }}"></i>
+                                        <span id="previewStockTagText">{{ $product->stock_tag_label }}</span>
                                     </span>
                                 </div>
                                 <div>
                                     <span class="small text-muted d-block mb-1" style="font-size: 0.75rem;">Bouton produit :</span>
-                                    <button type="button" class="btn btn-sm w-100 py-1.5 fw-bold d-inline-flex align-items-center justify-content-center gap-1.5" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%); color: #fff; border: 1px solid rgba(180, 83, 9, 0.5); border-radius: 8px; box-shadow: 0 2px 8px rgba(217, 119, 6, 0.35); pointer-events: none;">
-                                        <i class="fas fa-clock" style="font-size: 11px;"></i>
-                                        <span id="previewStockBtnText">{{ old('custom_stock_tag', $product->custom_stock_tag) ?: ($product->availability_status === 'preorder' ? 'Précommande' : 'Bientôt disponible') }}</span>
+                                    <button type="button" 
+                                            id="previewStockBtn" 
+                                            class="btn btn-sm w-100 py-2 fw-bold d-inline-flex align-items-center justify-content-center gap-1.5 transition-all shadow-sm" 
+                                            style="{{ $product->custom_button_style ?: 'background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%); color: #fff; border: 1px solid rgba(180, 83, 9, 0.5);' }} border-radius: 8px; pointer-events: none;">
+                                        <i class="fas fa-clock" id="previewStockBtnIcon" style="font-size: 11px; {{ !empty($product->custom_btn_color) ? 'color: '.$product->custom_btn_color.' !important;' : '' }}"></i>
+                                        <span id="previewStockBtnText">{{ $product->stock_button_label }}</span>
                                     </button>
                                 </div>
                             </div>
@@ -2658,22 +2879,124 @@ window.toggleCustomStockTag = function(val) {
         container.style.display = 'none';
     } else {
         container.style.display = 'block';
-        const input = document.getElementById('custom_stock_tag');
-        let currentText = input ? input.value.trim() : '';
-        if (!currentText) {
-            currentText = (val === 'preorder') ? 'Précommande' : 'Bientôt disponible';
+        updateCustomStockLivePreview();
+    }
+};
+
+window.syncPickerFromText = function(textId, pickerId) {
+    const textVal = document.getElementById(textId)?.value.trim() || '';
+    const picker = document.getElementById(pickerId);
+    if (picker && textVal.startsWith('#') && (textVal.length === 7 || textVal.length === 4)) {
+        if (textVal.length === 7) {
+            picker.value = textVal;
         }
-        updateCustomTagPreview(currentText);
+    }
+};
+
+window.applyStockStylePreset = function(preset) {
+    const presets = {
+        'default': {
+            tagColor: '#ea580c', tagBg: '#fff7ed', tagBorder: '#fb923c',
+            btnColor: '#ffffff', btnBg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%)', btnBorder: '#b45309'
+        },
+        'blue': {
+            tagColor: '#0284c7', tagBg: '#f0f9ff', tagBorder: '#38bdf8',
+            btnColor: '#ffffff', btnBg: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)', btnBorder: '#0284c7'
+        },
+        'emerald': {
+            tagColor: '#059669', tagBg: '#ecfdf5', tagBorder: '#34d399',
+            btnColor: '#ffffff', btnBg: 'linear-gradient(135deg, #059669 0%, #047857 100%)', btnBorder: '#059669'
+        },
+        'purple': {
+            tagColor: '#7c3aed', tagBg: '#f5f3ff', tagBorder: '#a78bfa',
+            btnColor: '#ffffff', btnBg: 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)', btnBorder: '#7c3aed'
+        },
+        'dark': {
+            tagColor: '#1e293b', tagBg: '#f1f5f9', tagBorder: '#94a3b8',
+            btnColor: '#ffffff', btnBg: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', btnBorder: '#020617'
+        },
+        'clear': {
+            tagColor: '', tagBg: '', tagBorder: '',
+            btnColor: '', btnBg: '', btnBorder: ''
+        }
+    };
+
+    const p = presets[preset];
+    if (!p) return;
+
+    const fields = [
+        ['custom_tag_color', p.tagColor],
+        ['custom_tag_bg', p.tagBg],
+        ['custom_tag_border', p.tagBorder],
+        ['custom_btn_color', p.btnColor],
+        ['custom_btn_bg', p.btnBg],
+        ['custom_btn_border', p.btnBorder]
+    ];
+
+    fields.forEach(([id, val]) => {
+        const textInput = document.getElementById(id);
+        const pickerInput = document.getElementById(id + '_picker');
+        if (textInput) textInput.value = val;
+        if (pickerInput && val.startsWith('#') && val.length === 7) {
+            pickerInput.value = val;
+        }
+    });
+
+    updateCustomStockLivePreview();
+};
+
+window.updateCustomStockLivePreview = function() {
+    const statusVal = document.getElementById('availability_status')?.value || 'coming_soon';
+    const defaultTagText = (statusVal === 'preorder') ? 'Précommande' : 'Bientôt disponible';
+
+    const tagTextInput = document.getElementById('custom_stock_tag');
+    const btnTextInput = document.getElementById('custom_stock_button_text');
+
+    const tagText = (tagTextInput && tagTextInput.value.trim()) ? tagTextInput.value.trim() : defaultTagText;
+    const btnText = (btnTextInput && btnTextInput.value.trim()) ? btnTextInput.value.trim() : tagText;
+
+    const tagEl = document.getElementById('previewStockTagText');
+    const tagIconEl = document.getElementById('previewStockTagIcon');
+    const tagBadgeEl = document.getElementById('previewStockBadge');
+
+    const btnEl = document.getElementById('previewStockBtnText');
+    const btnIconEl = document.getElementById('previewStockBtnIcon');
+    const btnBadgeEl = document.getElementById('previewStockBtn');
+
+    if (tagEl) tagEl.textContent = tagText;
+    if (btnEl) btnEl.textContent = btnText;
+
+    // Tag colors
+    const tagColor = document.getElementById('custom_tag_color')?.value.trim();
+    const tagBg = document.getElementById('custom_tag_bg')?.value.trim();
+    const tagBorder = document.getElementById('custom_tag_border')?.value.trim();
+
+    if (tagBadgeEl) {
+        tagBadgeEl.style.color = tagColor || '#ea580c';
+        tagBadgeEl.style.backgroundColor = tagBg || 'rgba(249, 115, 22, 0.12)';
+        tagBadgeEl.style.borderColor = tagBorder || 'rgba(234, 88, 12, 0.45)';
+    }
+    if (tagIconEl) {
+        tagIconEl.style.color = tagColor || '#ea580c';
+    }
+
+    // Button colors
+    const btnColor = document.getElementById('custom_btn_color')?.value.trim();
+    const btnBg = document.getElementById('custom_btn_bg')?.value.trim();
+    const btnBorder = document.getElementById('custom_btn_border')?.value.trim();
+
+    if (btnBadgeEl) {
+        btnBadgeEl.style.color = btnColor || '#ffffff';
+        btnBadgeEl.style.background = btnBg || 'linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%)';
+        btnBadgeEl.style.borderColor = btnBorder || 'rgba(180, 83, 9, 0.5)';
+    }
+    if (btnIconEl) {
+        btnIconEl.style.color = btnColor || '#ffffff';
     }
 };
 
 window.updateCustomTagPreview = function(val) {
-    const defaultText = (document.getElementById('availability_status')?.value === 'preorder') ? 'Précommande' : 'Bientôt disponible';
-    const text = (val && val.trim()) ? val.trim() : defaultText;
-    const tagEl = document.getElementById('previewStockTagText');
-    const btnEl = document.getElementById('previewStockBtnText');
-    if (tagEl) tagEl.textContent = text;
-    if (btnEl) btnEl.textContent = text;
+    updateCustomStockLivePreview();
 };
 </script>
 @endpush

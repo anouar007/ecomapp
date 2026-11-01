@@ -27,6 +27,13 @@ class Product extends Model
         'status',
         'availability_status',
         'custom_stock_tag',
+        'custom_stock_button_text',
+        'custom_tag_color',
+        'custom_tag_bg',
+        'custom_tag_border',
+        'custom_btn_color',
+        'custom_btn_bg',
+        'custom_btn_border',
         'sort_order',
         'image',
         'image_width',
@@ -518,9 +525,9 @@ class Product extends Model
     }
 
     /**
-     * Get the badge label text to display for the tag & action button.
+     * Get the badge label text to display for the stock tag.
      */
-    public function getStockBadgeLabelAttribute(): string
+    public function getStockTagLabelAttribute(): string
     {
         if ($this->isComingSoon()) {
             if (!empty($this->custom_stock_tag)) {
@@ -532,6 +539,72 @@ class Product extends Model
             return 'Bientôt disponible';
         }
         return $this->isInStock() ? __('In stock') : __('Out of stock');
+    }
+
+    /**
+     * Get the label text to display on the action button.
+     */
+    public function getStockButtonLabelAttribute(): string
+    {
+        if ($this->isComingSoon()) {
+            if (!empty($this->custom_stock_button_text)) {
+                return $this->custom_stock_button_text;
+            }
+            if (!empty($this->custom_stock_tag)) {
+                return $this->custom_stock_tag;
+            }
+            $locale = app()->getLocale();
+            if ($locale === 'ar') return 'قريباً';
+            if ($locale === 'en') return 'Coming Soon';
+            return 'Bientôt disponible';
+        }
+        return $this->isInStock() ? __('Ajouter au panier') : __('Rupture');
+    }
+
+    /**
+     * Backwards-compatible alias for tag label.
+     */
+    public function getStockBadgeLabelAttribute(): string
+    {
+        return $this->stock_tag_label;
+    }
+
+    /**
+     * Generate custom inline CSS style for the stock tag if customized.
+     */
+    public function getCustomTagStyleAttribute(): string
+    {
+        if (!$this->isComingSoon()) return '';
+        $styles = [];
+        if (!empty($this->custom_tag_color)) {
+            $styles[] = "color: {$this->custom_tag_color} !important";
+        }
+        if (!empty($this->custom_tag_bg)) {
+            $styles[] = "background: {$this->custom_tag_bg} !important";
+        }
+        if (!empty($this->custom_tag_border)) {
+            $styles[] = "border-color: {$this->custom_tag_border} !important";
+        }
+        return !empty($styles) ? implode('; ', $styles) . ';' : '';
+    }
+
+    /**
+     * Generate custom inline CSS style for the action button if customized.
+     */
+    public function getCustomButtonStyleAttribute(): string
+    {
+        if (!$this->isComingSoon()) return '';
+        $styles = [];
+        if (!empty($this->custom_btn_color)) {
+            $styles[] = "color: {$this->custom_btn_color} !important";
+        }
+        if (!empty($this->custom_btn_bg)) {
+            $styles[] = "background: {$this->custom_btn_bg} !important";
+        }
+        if (!empty($this->custom_btn_border)) {
+            $styles[] = "border-color: {$this->custom_btn_border} !important";
+        }
+        return !empty($styles) ? implode('; ', $styles) . ';' : '';
     }
 
     /**
