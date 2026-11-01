@@ -126,48 +126,157 @@ class HomeSectionController extends Controller
 
     /**
      * Search products for adding to a section via AJAX.
+     * Supports:
+     * - Name search using ProductSearchService (fuzzy matching with 70% threshold, exactly like dashboard products page)
+     * - Product Code / SKU search (exact and partial SKU & variant SKU)
+     * - Product ID search (e.g. #123 or numeric)
+     * - Brand and keyword matches
+     * - Filter mode parameter ('all', 'name', 'code')
      */
     public function searchProducts(Request $request)
     {
-        $query = trim($request->get('q', ''));
+        $query = trim((string)$request->get('q', ''));
+        $mode = (string)$request->get('mode', 'all'); // 'all', 'name', 'code'
         $excludeIds = $request->get('exclude_ids', []);
         if (is_string($excludeIds)) {
-            $excludeIds = explode(',', $excludeIds);
+            $excludeIds = array_filter(array_map('intval', explode(',', $excludeIds)));
         }
 
-        $products = Product::where('status', 'active')
-            ->when(!empty($query), function ($q) use ($query) {
-                $q->where(function ($sub) use ($query) {
+        // If no search query, return recent active catalog products
+        if (empty($query)) {
+            $products = Product::where('status', 'active')
+                ->when(!empty($excludeIds), fn($q) => $q->whereNotIn('id', $excludeIds))
+                ->with(['images', 'productCategory', 'brand'])
+                ->latest()
+                ->take(60)
+                ->get();
+
+            $results = $products->map(fn($p) => $this->formatProductForSearch($p, false));
+
+            return response()->json([
+                'count' => $results->count(),
+                'products' => $results,
+            ]);
+        }
+
+        $codeMatchesIds = [];
+        $nameFuzzyIds = [];
+        $fallbackLikeIds = [];
+
+        // 1. Search by Product Code / SKU / ID
+        if ($mode === 'all' || $mode === 'code') {
+            $strippedId = ltrim($query, '#');
+            if (is_numeric($strippedId)) {
+                $exactId = (int)$strippedId;
+                if (!in_array($exactId, $excludeIds)) {
+                    $idFound = Product::where('status', 'active')->where('id', $exactId)->value('id');
+                    if ($idFound) {
+                        $codeMatchesIds[] = $idFound;
+                    }
+                }
+            }
+
+            // Direct SKU matches on products
+            $skuProductIds = Product::where('status', 'active')
+                ->where('sku', 'like', "%{$query}%")
+                ->when(!empty($excludeIds), fn($q) => $q->whereNotIn('id', $excludeIds))
+                ->orderByRaw("CASE WHEN sku = ? THEN 0 WHEN sku LIKE ? THEN 1 ELSE 2 END", [$query, "{$query}%"])
+                ->take(30)
+                ->pluck('id')
+                ->all();
+
+            // Variant SKU matches
+            $variantProductIds = Product::where('status', 'active')
+                ->whereHas('variants', function ($v) use ($query) {
+                    $v->where('sku', 'like', "%{$query}%");
+                })
+                ->when(!empty($excludeIds), fn($q) => $q->whereNotIn('id', $excludeIds))
+                ->take(20)
+                ->pluck('id')
+                ->all();
+
+            $codeMatchesIds = array_values(array_unique(array_merge($codeMatchesIds, $skuProductIds, $variantProductIds)));
+        }
+
+        // 2. Search strictly by Product Name using ProductSearchService (70% fuzzy match, same as dashboard)
+        if ($mode === 'all' || $mode === 'name') {
+            $scores = \App\Services\ProductSearchService::getMatchingProductScores(
+                search: $query,
+                threshold: 0.70,
+                activeOnly: true
+            );
+            $fuzzyKeys = array_keys($scores);
+            if (!empty($excludeIds)) {
+                $fuzzyKeys = array_values(array_diff($fuzzyKeys, $excludeIds));
+            }
+            $nameFuzzyIds = $fuzzyKeys;
+
+            // 3. Fallback name / brand LIKE matches to ensure high coverage
+            $likeMatches = Product::where('status', 'active')
+                ->where(function ($sub) use ($query) {
                     $sub->where('name', 'like', "%{$query}%")
-                        ->orWhere('sku', 'like', "%{$query}%")
-                        ->orWhereHas('brand', function ($b) use ($query) {
-                            $b->where('name', 'like', "%{$query}%");
-                        });
-                });
-            })
-            ->when(!empty($excludeIds), function ($q) use ($excludeIds) {
-                $q->whereNotIn('id', $excludeIds);
-            })
+                        ->orWhereHas('brand', fn($b) => $b->where('name', 'like', "%{$query}%"));
+                })
+                ->when(!empty($excludeIds), fn($q) => $q->whereNotIn('id', $excludeIds))
+                ->take(50)
+                ->pluck('id')
+                ->all();
+
+            $fallbackLikeIds = $likeMatches;
+        }
+
+        // Merge IDs while strictly honoring ranking priority:
+        // Priority 1: Direct Code / SKU matches
+        // Priority 2: Fuzzy Name matches (ordered by highest match score from dashboard engine)
+        // Priority 3: Fallback name/brand matches
+        $mergedIds = array_values(array_unique(array_merge($codeMatchesIds, $nameFuzzyIds, $fallbackLikeIds)));
+        $mergedIds = array_slice($mergedIds, 0, 70);
+
+        if (empty($mergedIds)) {
+            return response()->json([
+                'count' => 0,
+                'products' => [],
+            ]);
+        }
+
+        // Fetch products and preserve exact merged ranking
+        $products = Product::whereIn('id', $mergedIds)
             ->with(['images', 'productCategory', 'brand'])
-            ->latest()
-            ->take(24)
             ->get();
 
-        $results = $products->map(function ($p) {
-            return [
-                'id' => $p->id,
-                'name' => $p->name,
-                'sku' => $p->sku ?: '—',
-                'price' => $p->formatted_price,
-                'thumbnail' => $p->thumbnail,
-                'stock' => $p->stock,
-                'in_stock' => $p->isInStock(),
-                'category' => $p->productCategory?->name ?: 'Général',
-                'brand' => $p->brand?->name ?: '',
-            ];
+        $ordered = collect($mergedIds)
+            ->map(fn($id) => $products->firstWhere('id', $id))
+            ->filter()
+            ->values();
+
+        $results = $ordered->map(function ($p) use ($codeMatchesIds) {
+            $isCode = in_array($p->id, $codeMatchesIds);
+            return $this->formatProductForSearch($p, $isCode);
         });
 
-        return response()->json($results);
+        return response()->json([
+            'count' => $results->count(),
+            'products' => $results,
+        ]);
+    }
+
+    /**
+     * Format a product for search response.
+     */
+    protected function formatProductForSearch(Product $p, bool $isCodeMatch = false): array
+    {
+        return [
+            'id' => $p->id,
+            'name' => $p->name,
+            'sku' => $p->sku ?: '—',
+            'price' => $p->formatted_price,
+            'thumbnail' => $p->thumbnail,
+            'stock' => (int)$p->stock,
+            'in_stock' => $p->isInStock(),
+            'category' => $p->productCategory?->name ?: 'Général',
+            'brand' => $p->brand?->name ?: '',
+            'is_code_match' => $isCodeMatch,
+        ];
     }
 }
 

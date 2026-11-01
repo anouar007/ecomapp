@@ -204,37 +204,45 @@
         background: #ffffff;
         border: 1px solid #edf2f7;
         border-radius: 14px !important;
-        padding: 14px 14px 12px 14px;
+        padding: 12px 12px 10px 12px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
-        margin-top: 16px;
+        margin-top: 14px;
         position: relative;
     }
     .btn-slider-nav {
-        width: 30px;
-        height: 30px;
+        width: 32px;
+        height: 32px;
         border-radius: 50% !important;
-        border: 1px solid #e2e8f0;
-        background: #ffffff;
-        color: #334155;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        background: #0f172a !important;
+        color: #ffffff !important;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         font-size: 0.72rem;
-        transition: all 0.2s ease;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.15) !important;
         cursor: pointer;
         padding: 0;
     }
     .btn-slider-nav:hover:not(.swiper-button-disabled) {
-        background: #c8102e;
-        color: #ffffff;
-        border-color: #c8102e;
-        transform: scale(1.05);
+        background: #c8102e !important;
+        color: #ffffff !important;
+        border-color: #c8102e !important;
+        box-shadow: 0 6px 18px rgba(200, 16, 46, 0.35) !important;
+        transform: translateY(-1px) scale(1.05);
+    }
+    .btn-slider-nav:active:not(.swiper-button-disabled) {
+        transform: translateY(0) scale(1);
     }
     .btn-slider-nav.swiper-button-disabled {
-        opacity: 0.35;
-        cursor: default;
-        pointer-events: none;
+        background: #e2e8f0 !important;
+        color: #94a3b8 !important;
+        border-color: transparent !important;
+        opacity: 0.35 !important;
+        box-shadow: none !important;
+        cursor: not-allowed !important;
+        pointer-events: none !important;
     }
     .pdp-products-swiper {
         overflow: hidden;
@@ -255,124 +263,150 @@
         margin-bottom: 0 !important;
     }
 
-    /* ── Proportional Scale-Down of Product Cards inside PDP Sliders ── */
+    /* ── Proportional Scale-Down of Product Cards inside PDP Sliders (~10% scaled down) ── */
     .pdp-slider-section .featured-pro-card.selection-card {
-        padding: 8px !important;
+        padding: 7px !important;
     }
     .pdp-slider-section .featured-pro-img-box,
     .pdp-slider-section .selection-card .featured-pro-img-box {
-        height: 150px !important;
-        min-height: 150px !important;
-        max-height: 150px !important;
-        margin-bottom: 6px !important;
-        padding: 4px !important;
+        height: 135px !important;
+        min-height: 135px !important;
+        max-height: 135px !important;
+        margin-bottom: 5px !important;
+        padding: 3px !important;
     }
     .pdp-slider-section .featured-pro-title,
     .pdp-slider-section .featured-pro-title a {
-        font-size: 0.80rem !important;
-        line-height: 1.3 !important;
-        height: 2.6em !important;
-        min-height: 2.6em !important;
-        max-height: 2.6em !important;
-        margin-bottom: 6px !important;
+        font-size: 0.74rem !important;
+        line-height: 1.25 !important;
+        height: 2.5em !important;
+        min-height: 2.5em !important;
+        max-height: 2.5em !important;
+        margin-bottom: 5px !important;
     }
     .pdp-slider-section .pcard-price {
-        height: 38px !important;
-        min-height: 38px !important;
-        max-height: 38px !important;
-    }
-    .pdp-slider-section .pcard-price-main-line {
-        height: 22px !important;
-        min-height: 22px !important;
-        max-height: 22px !important;
-        gap: 4px !important;
-    }
-    .pdp-slider-section .pcard-price-current {
-        font-size: 1.05rem !important;
-        height: 22px !important;
-        min-height: 22px !important;
-        max-height: 22px !important;
-    }
-    .pdp-slider-section .pcard-price-old {
-        font-size: 0.75rem !important;
-        height: 15px !important;
-        min-height: 15px !important;
-        max-height: 15px !important;
-    }
-    .pdp-slider-section .featured-pro-btn {
         height: 34px !important;
         min-height: 34px !important;
         max-height: 34px !important;
-        font-size: 0.76rem !important;
-        padding: 0 8px !important;
+    }
+    .pdp-slider-section .pcard-price-main-line {
+        height: 20px !important;
+        min-height: 20px !important;
+        max-height: 20px !important;
+        gap: 3px !important;
+    }
+    .pdp-slider-section .pcard-price-current {
+        font-size: 0.95rem !important;
+        height: 20px !important;
+        min-height: 20px !important;
+        max-height: 20px !important;
+    }
+    .pdp-slider-section .pcard-price-old {
+        font-size: 0.68rem !important;
+        height: 14px !important;
+        min-height: 14px !important;
+        max-height: 14px !important;
+    }
+    .pdp-slider-section .featured-pro-btn {
+        height: 30px !important;
+        min-height: 30px !important;
+        max-height: 30px !important;
+        font-size: 0.70rem !important;
+        padding: 0 6px !important;
+    }
+    .pdp-slider-section .product-card-tag-badge {
+        font-size: 0.62rem !important;
+        padding: 2px 5px !important;
+    }
+    .pdp-slider-section .featured-stock-pill {
+        font-size: 0.60rem !important;
+        padding: 1px 5px !important;
     }
     .pdp-slider-pagination {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 6px;
-        margin-top: 8px;
+        gap: 2px;
+        margin-top: 12px;
+        min-height: 20px;
     }
+    .pdp-slider-pagination .cat-swiper-dot,
     .pdp-slider-pagination .swiper-pagination-bullet {
-        width: 6px;
-        height: 6px;
-        background: #cbd5e1;
-        opacity: 1;
-        transition: all 0.25s ease;
-        border-radius: 999px;
+        width: 9px !important;
+        height: 9px !important;
+        background: #cbd5e1 !important;
+        border-radius: 3px !important;
+        display: inline-block;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        border: none;
+        padding: 0;
+        margin: 0 3px;
+        opacity: 0.85;
     }
+    .pdp-slider-pagination .cat-swiper-dot:hover,
+    .pdp-slider-pagination .swiper-pagination-bullet:hover {
+        background: #94a3b8 !important;
+        opacity: 1;
+        transform: scale(1.15);
+    }
+    .pdp-slider-pagination .cat-swiper-dot.cat-swiper-dot-active,
     .pdp-slider-pagination .swiper-pagination-bullet-active {
-        width: 18px;
-        background: #c8102e;
+        width: 9px !important;
+        height: 9px !important;
+        background: #c8102e !important;
+        border-radius: 3px !important;
+        opacity: 1 !important;
+        box-shadow: 0 2px 8px rgba(200, 16, 46, 0.35);
     }
 
     @media (max-width: 575px) {
         .pdp-slider-section {
-            padding: 10px 8px 8px 8px !important;
+            padding: 8px 6px 6px 6px !important;
             border-radius: 12px !important;
-            margin-top: 12px;
+            margin-top: 10px;
         }
         .pdp-slider-section .featured-pro-card.selection-card {
-            padding: 6px !important;
+            padding: 5px !important;
         }
         .pdp-slider-section .featured-pro-img-box,
         .pdp-slider-section .selection-card .featured-pro-img-box {
-            height: 125px !important;
-            min-height: 125px !important;
-            max-height: 125px !important;
-            margin-bottom: 4px !important;
+            height: 112px !important;
+            min-height: 112px !important;
+            max-height: 112px !important;
+            margin-bottom: 3px !important;
             padding: 2px !important;
         }
         .pdp-slider-section .featured-pro-title,
         .pdp-slider-section .featured-pro-title a {
-            font-size: 0.74rem !important;
-            line-height: 1.25 !important;
-            height: 2.5em !important;
-            min-height: 2.5em !important;
-            max-height: 2.5em !important;
-            margin-bottom: 4px !important;
+            font-size: 0.67rem !important;
+            line-height: 1.2 !important;
+            height: 2.4em !important;
+            min-height: 2.4em !important;
+            max-height: 2.4em !important;
+            margin-bottom: 3px !important;
         }
         .pdp-slider-section .pcard-price {
-            height: 34px !important;
-            min-height: 34px !important;
-            max-height: 34px !important;
-        }
-        .pdp-slider-section .pcard-price-main-line {
-            height: 20px !important;
-            min-height: 20px !important;
-            max-height: 20px !important;
-        }
-        .pdp-slider-section .pcard-price-current {
-            font-size: 0.95rem !important;
-            height: 20px !important;
-            min-height: 20px !important;
-            max-height: 20px !important;
-        }
-        .pdp-slider-section .featured-pro-btn {
             height: 30px !important;
             min-height: 30px !important;
             max-height: 30px !important;
-            font-size: 0.70rem !important;
+        }
+        .pdp-slider-section .pcard-price-main-line {
+            height: 18px !important;
+            min-height: 18px !important;
+            max-height: 18px !important;
+        }
+        .pdp-slider-section .pcard-price-current {
+            font-size: 0.85rem !important;
+            height: 18px !important;
+            min-height: 18px !important;
+            max-height: 18px !important;
+        }
+        .pdp-slider-section .featured-pro-btn {
+            height: 27px !important;
+            min-height: 27px !important;
+            max-height: 27px !important;
+            font-size: 0.65rem !important;
             padding: 0 4px !important;
         }
         .btn-slider-nav {
@@ -1162,7 +1196,7 @@
                     @endforeach
                 </div>
             </div>
-            <div class="pdp-slider-pagination pdp-related-pagination d-md-none"></div>
+            <div class="pdp-slider-pagination pdp-related-pagination"></div>
         </div>
         @endif
 
@@ -1202,7 +1236,7 @@
                     @endforeach
                 </div>
             </div>
-            <div class="pdp-slider-pagination pdp-random-pagination d-md-none"></div>
+            <div class="pdp-slider-pagination pdp-random-pagination"></div>
         </div>
         @endif
 
@@ -1794,31 +1828,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 enabled: true,
                 onlyInViewport: true,
             },
-            slidesPerView: 2.2,
+            slidesPerView: 2.45,
+            slidesPerGroup: 2,
             spaceBetween: 8,
             breakpoints: {
                 0: {
-                    slidesPerView: 2.2,
+                    slidesPerView: 2.45,
+                    slidesPerGroup: 2,
                     spaceBetween: 8,
                 },
                 480: {
-                    slidesPerView: 2.4,
+                    slidesPerView: 2.65,
+                    slidesPerGroup: 2,
                     spaceBetween: 8,
                 },
                 640: {
-                    slidesPerView: 3,
+                    slidesPerView: 3.3,
+                    slidesPerGroup: 2,
                     spaceBetween: 8,
                 },
                 768: {
-                    slidesPerView: 3.2,
+                    slidesPerView: 3.6,
+                    slidesPerGroup: 2,
                     spaceBetween: 8,
                 },
                 992: {
-                    slidesPerView: 4,
+                    slidesPerView: 4.5,
+                    slidesPerGroup: 2,
                     spaceBetween: 8,
                 },
                 1200: {
-                    slidesPerView: 5,
+                    slidesPerView: 5.5,
+                    slidesPerGroup: 2,
                     spaceBetween: 8,
                 }
             }
@@ -1833,6 +1874,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 pagination: {
                     el: '.pdp-related-pagination',
                     clickable: true,
+                    bulletClass: 'cat-swiper-dot',
+                    bulletActiveClass: 'cat-swiper-dot-active',
                 }
             }));
         }
@@ -1846,6 +1889,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 pagination: {
                     el: '.pdp-random-pagination',
                     clickable: true,
+                    bulletClass: 'cat-swiper-dot',
+                    bulletActiveClass: 'cat-swiper-dot-active',
                 }
             }));
         }
