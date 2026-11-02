@@ -22,14 +22,12 @@ class ProductController extends Controller
             ->orderBy('products.sort_order', 'asc')
             ->latest();
 
-        // Search strictly on product name (>= 70% fuzzy match)
+        // Search by product name, SKU code (including variant SKUs), ID or brand
         if ($request->filled('search')) {
-            $matchedScores = \App\Services\ProductSearchService::getMatchingProductScores(
+            $matchedIds = \App\Services\ProductSearchService::getSearchProductIds(
                 search: (string) $request->search,
-                threshold: 0.70,
                 activeOnly: false
             );
-            $matchedIds = array_keys($matchedScores);
             if (empty($matchedIds)) {
                 $query->whereRaw('1 = 0');
             } else {
@@ -912,12 +910,10 @@ class ProductController extends Controller
         $query = Product::with(['productCategory'])->latest();
 
         if ($request->filled('search')) {
-            $matchedScores = \App\Services\ProductSearchService::getMatchingProductScores(
+            $matchedIds = \App\Services\ProductSearchService::getSearchProductIds(
                 search: (string) $request->search,
-                threshold: 0.70,
                 activeOnly: false
             );
-            $matchedIds = array_keys($matchedScores);
             if (empty($matchedIds)) {
                 $query->whereRaw('1 = 0');
             } else {

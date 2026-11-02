@@ -47,7 +47,7 @@
         "name": "Où acheter du matériel photo, vidéo et caméras professionnelles au Maroc ?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "WINA SHOP est le magasin de référence au Maroc pour l'équipement audiovisuel professionnel (Sony, Canon, Nikon, DJI, Godox, RØDE). Notre showroom est situé à Casablanca (Al Oulfa), avec livraison express 24h à 48h partout au Maroc et paiement à la livraison (Cash on Delivery)."
+          "text": "WINA SHOP est le magasin de référence au Maroc pour l'équipement audiovisuel professionnel (Sony, Canon, Nikon, DJI, Godox, RØDE). Notre showroom est situé à Casablanca (Al Oulfa), avec livraison express 24h à 48h partout au Maroc avec suivi et garantie officielle."
         }
       },
       {
@@ -71,15 +71,15 @@
         "name": "Quels sont les délais et les frais de livraison au Maroc ?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Nous livrons sous 24h à 48h dans toutes les villes du Maroc (Casablanca, Rabat, Marrakech, Tanger, Fès, Agadir, Oujda, Meknès, etc.). Le paiement s'effectue en espèces à la livraison après inspection de votre colis."
+          "text": "Nous livrons sous 24h à 48h dans toutes les villes du Maroc (Casablanca, Rabat, Marrakech, Tanger, Fès, Agadir, Oujda, Meknès, etc.). Votre colis est minutieusement protégé et suivi jusqu'à sa réception."
         }
       },
       {
         "@type": "Question",
-        "name": "أين يمكنني شراء كاميرات ومعدات تصوير احترافية في المغرب بالضمان والدفع عند الاستلام؟",
+        "name": "أين يمكنني شراء كاميرات ومعدات تصوير احترافية في المغرب بالضمان والتوصيل السريع؟",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "متجر WINA SHOP بالدار البيضاء هو خيارك الأول لشراء كاميرات سوني، كانون، نيكون، درون دي جي اي، ومعدات إضاءة غودوكس بالمغرب. نوفر ضماناً رسمياً، فواتير قانونية مع ICE، وفواتير شكلية INDH، مع التوصيل السريع والدفع نقداً عند الاستلام بكافة مدن المملكة."
+          "text": "متجر WINA SHOP بالدار البيضاء هو خيارك الأول لشراء كاميرات سوني، كانون، نيكون، درون دي جي اي، ومعدات إضاءة غودوكس بالمغرب. نوفر ضماناً رسمياً، فواتير قانونية مع ICE، وفواتير شكلية INDH، مع التوصيل السريع والموثوق بكافة مدن المملكة."
         }
       }
     ]
@@ -495,7 +495,7 @@
                     </h2>
 
                     <p class="indh-hero-sub mb-0">
-                        {{ __('Composez votre panier de matériel photo/vidéo, validez sans paiement et recevez votre devis officiel cacheté avec ICE et TVA 20%.') }}
+                        {{ __('Composez votre panier de matériel photo/vidéo, validez votre sélection et recevez votre devis officiel cacheté avec ICE et TVA 20%.') }}
                     </p>
                 </div>
 
@@ -549,10 +549,10 @@
                                         <div class="indh-step-badge-num">02</div>
                                     </div>
                                     <h3 class="indh-step-title mb-1.5">
-                                        {{ __('Validez sans paiement') }}
+                                        {{ __('Validez votre sélection') }}
                                     </h3>
                                     <p class="indh-step-desc mb-2">
-                                        {{ __('Passez votre commande sans effectuer de paiement en ligne. Simple et rapide.') }}
+                                        {{ __('Confirmez votre commande en toute simplicité pour générer votre devis proforma officiel.') }}
                                     </p>
                                 </div>
                                 <div class="pt-2">
@@ -564,7 +564,7 @@
                                 </div>
                             </div>
                             <div class="col-5 indh-step-img-col">
-                                <img src="{{ asset('images/indh/step2_phone.jpg') }}" alt="{{ __('Validez sans paiement') }}" class="indh-step-card-img">
+                                <img src="{{ asset('images/indh/step2_phone.jpg') }}" alt="{{ __('Validez votre sélection') }}" class="indh-step-card-img">
                             </div>
                         </div>
                     </div>
@@ -693,12 +693,12 @@
             <div class="col">
                 <div class="reassurance-box">
                     <div class="reassurance-icon icon-green">
-                        {!! site_icon_html('icon_trust_4', 'fas fa-wallet', '', '', 22) !!}
+                        {!! site_icon_html('icon_trust_4', 'fas fa-file-invoice', '', '', 22) !!}
                     </div>
                     <div>
-                        <span class="d-block fw-bold text-dark mb-1" style="font-size: 0.95rem;">{{ setting('trust_4_title', 'Paiement à la Livraison') }}</span>
+                        <span class="d-block fw-bold text-dark mb-1" style="font-size: 0.95rem;">{{ setting('trust_4_title', 'Facture & Devis avec ICE') }}</span>
                         <p class="text-secondary mb-0" style="font-size: 0.8rem; line-height: 1.45;">
-                            {{ setting('trust_4_desc', 'Payez en toute sérénité à la réception de votre commande ou en ligne par carte bancaire.') }}
+                            {{ setting('trust_4_desc', 'Facturation conforme avec TVA 20%, devis proforma pour professionnels et dossiers INDH.') }}
                         </p>
                     </div>
                 </div>
@@ -857,6 +857,283 @@
         </div>
     </div>
 </section>
+
+{{-- Floating Persistent Bottom-Center "Voir tous les produits" CTA Pill --}}
+@php
+    $isRtl = app()->getLocale() === 'ar';
+    $allProductsLabel = $isRtl ? 'عرض جميع المنتجات' : (app()->getLocale() === 'en' ? 'View all products' : 'Voir tous les produits');
+@endphp
+<div class="home-floating-catalog-wrap" id="homeFloatingCatalogWrap">
+    <a href="{{ route('shop.index') }}" 
+       class="home-floating-catalog-btn" 
+       id="homeFloatingCatalogBtn"
+       title="{{ $allProductsLabel }}">
+        <span class="home-floating-catalog-icon">
+            <i class="fas fa-layer-group"></i>
+        </span>
+        <span class="home-floating-catalog-text">{{ $allProductsLabel }}</span>
+        <span class="home-floating-catalog-arrow">
+            <i class="fas {{ $isRtl ? 'fa-arrow-left' : 'fa-arrow-right' }}"></i>
+        </span>
+    </a>
+</div>
+
+@push('styles')
+<style>
+    /* ── Floating Persistent Bottom-Left "Voir tous les produits" Button ── */
+    .home-floating-catalog-wrap {
+        position: fixed;
+        bottom: 24px;
+        left: 24px;
+        z-index: 9998;
+        pointer-events: auto;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        text-align: left;
+    }
+
+    html[dir="rtl"] .home-floating-catalog-wrap {
+        left: auto;
+        right: 24px;
+        text-align: right;
+    }
+
+    /* Ambient pulse glow halo around the button */
+    .home-floating-catalog-wrap::before {
+        content: '';
+        position: absolute;
+        inset: -4px;
+        border-radius: 999px;
+        background: radial-gradient(circle, rgba(229, 0, 39, 0.5) 0%, rgba(229, 0, 39, 0) 70%);
+        opacity: 0.8;
+        z-index: -1;
+        animation: catalogPulseHalo 2.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        pointer-events: none;
+    }
+
+    .home-floating-catalog-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 22px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #e50027 0%, #9e0018 100%);
+        color: #ffffff !important;
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 0.84rem;
+        letter-spacing: 0.2px;
+        text-decoration: none !important;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        box-shadow: 0 8px 24px rgba(229, 0, 39, 0.42), 0 2px 6px rgba(0, 0, 0, 0.15);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        cursor: pointer;
+        user-select: none;
+        white-space: nowrap;
+        position: relative;
+        overflow: hidden;
+        animation: catalogAttentionNudge 4.5s ease-in-out infinite;
+    }
+
+    /* Shimmer light sweep reflection passing through the button */
+    .home-floating-catalog-btn::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -120%;
+        width: 60%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+        transform: skewX(-22deg);
+        animation: catalogShimmerSweep 4.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        pointer-events: none;
+    }
+
+    .home-floating-catalog-btn:hover {
+        background: linear-gradient(135deg, #c8102e 0%, #7a000a 100%);
+        border-color: rgba(255, 255, 255, 0.5);
+        color: #ffffff !important;
+        transform: translateY(-3px) scale(1.03);
+        box-shadow: 0 14px 36px rgba(200, 16, 46, 0.6), 0 4px 10px rgba(0, 0, 0, 0.2);
+        animation-play-state: paused;
+    }
+
+    .home-floating-catalog-btn:active {
+        transform: translateY(0) scale(0.98);
+    }
+
+    .home-floating-catalog-icon {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.22);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.70rem;
+        transition: all 0.25s ease;
+        animation: catalogIconBounce 4.5s ease-in-out infinite;
+    }
+
+    .home-floating-catalog-btn:hover .home-floating-catalog-icon {
+        background: rgba(255, 255, 255, 0.32);
+        transform: rotate(8deg);
+        animation-play-state: paused;
+    }
+
+    .home-floating-catalog-arrow {
+        font-size: 0.70rem;
+        transition: transform 0.25s ease;
+        animation: catalogArrowNudge 4.5s ease-in-out infinite;
+    }
+
+    .home-floating-catalog-btn:hover .home-floating-catalog-arrow {
+        transform: translateX(4px);
+        animation-play-state: paused;
+    }
+
+    html[dir="rtl"] .home-floating-catalog-btn:hover .home-floating-catalog-arrow {
+        transform: translateX(-4px);
+    }
+
+    /* ── Attention Catching Keyframe Animations ── */
+    @keyframes catalogPulseHalo {
+        0% {
+            transform: scale(0.92);
+            opacity: 0.8;
+            box-shadow: 0 0 0 0 rgba(229, 0, 39, 0.55);
+        }
+        70% {
+            transform: scale(1.12);
+            opacity: 0;
+            box-shadow: 0 0 0 14px rgba(229, 0, 39, 0);
+        }
+        100% {
+            transform: scale(1.15);
+            opacity: 0;
+            box-shadow: 0 0 0 0 rgba(229, 0, 39, 0);
+        }
+    }
+
+    @keyframes catalogAttentionNudge {
+        0%, 75%, 100% {
+            transform: translateY(0) scale(1);
+        }
+        80% {
+            transform: translateY(-4px) scale(1.04);
+        }
+        85% {
+            transform: translateY(-1px) scale(1.02);
+        }
+        90% {
+            transform: translateY(-3px) scale(1.03);
+        }
+        95% {
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    @keyframes catalogShimmerSweep {
+        0%, 75% {
+            left: -120%;
+        }
+        88%, 100% {
+            left: 180%;
+        }
+    }
+
+    @keyframes catalogIconBounce {
+        0%, 75%, 100% {
+            transform: scale(1) rotate(0deg);
+        }
+        82% {
+            transform: scale(1.18) rotate(12deg);
+        }
+        90% {
+            transform: scale(1.08) rotate(-8deg);
+        }
+        95% {
+            transform: scale(1) rotate(0deg);
+        }
+    }
+
+    @keyframes catalogArrowNudge {
+        0%, 75%, 100% {
+            transform: translateX(0);
+        }
+        82% {
+            transform: translateX(4px);
+        }
+        88% {
+            transform: translateX(1px);
+        }
+        94% {
+            transform: translateX(3px);
+        }
+    }
+
+    html[dir="rtl"] @keyframes catalogArrowNudge {
+        0%, 75%, 100% {
+            transform: translateX(0);
+        }
+        82% {
+            transform: translateX(-4px);
+        }
+        88% {
+            transform: translateX(-1px);
+        }
+        94% {
+            transform: translateX(-3px);
+        }
+    }
+
+    /* Hide when offcanvas or miniCart is open so it never interferes */
+    body.mini-cart-open .home-floating-catalog-wrap,
+    body:has(#miniCart.show) .home-floating-catalog-wrap,
+    body:has(#miniCart.showing) .home-floating-catalog-wrap,
+    body:has(.offcanvas.show) .home-floating-catalog-wrap,
+    body:has(.offcanvas.showing) .home-floating-catalog-wrap {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        transform: translateY(20px) scale(0.85) !important;
+    }
+
+    /* Mobile screens: compact padding and safe-area support */
+    @media (max-width: 768px) {
+        .home-floating-catalog-wrap {
+            bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+            left: 12px;
+            right: auto;
+            width: auto;
+            max-width: calc(100vw - 80px);
+        }
+
+        html[dir="rtl"] .home-floating-catalog-wrap {
+            left: auto;
+            right: 12px;
+        }
+
+        .home-floating-catalog-btn {
+            padding: 7px 15px;
+            font-size: 0.78rem;
+            gap: 6px;
+            box-shadow: 0 6px 18px rgba(200, 16, 46, 0.4);
+        }
+
+        .home-floating-catalog-icon {
+            width: 19px;
+            height: 19px;
+            font-size: 0.64rem;
+        }
+
+        .home-floating-catalog-arrow {
+            font-size: 0.64rem;
+        }
+    }
+</style>
+@endpush
 
 @endsection
 

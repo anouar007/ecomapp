@@ -349,7 +349,60 @@ class ProductSearchService
     }
 
     /**
-     * Build search query for products strictly based on product name (>= 80% match).
+     * Get IDs of products matching a query across SKU (code), name, variants SKU, ID and brand.
+     * Ordered by relevance: Exact/prefix SKU matches first, then fuzzy name scores, then keyword matches.
+     *
+     * @param string $search
+     * @param bool $activeOnly
+     * @return array
+     */
+    public static function getSearchProductIds(string $search, bool $activeOnly = true): array
+    {
+        $clean = trim($search);
+        if (mb_strlen($clean) === 0) {
+            return [];
+        }
+
+        // 1. Check SKU, Variant SKU, and numeric ID (#...)
+        $qSku = Product::query();
+        if ($activeOnly) {
+            $qSku->where('products.status', 'active');
+        }
+
+        $skuMatches = $qSku->where(function ($q) use ($clean) {
+            $q->where('products.sku', 'like', "%{$clean}%")
+              ->orWhereHas('variants', fn($v) => $v->where('sku', 'like', "%{$clean}%"));
+            $num = ltrim($clean, '#');
+            if (is_numeric($num)) {
+                $q->orWhere('products.id', (int) $num);
+            }
+        })
+        ->orderByRaw("CASE WHEN products.sku = ? THEN 0 WHEN products.sku LIKE ? THEN 1 ELSE 2 END", [$clean, "{$clean}%"])
+        ->pluck('products.id')
+        ->all();
+
+        // 2. Fuzzy name match (>= 70% threshold)
+        $nameScores = self::getMatchingProductScores($clean, 0.70, $activeOnly);
+        $nameIds = array_keys($nameScores);
+
+        // 3. Fallback name / brand LIKE matches
+        $qLike = Product::query();
+        if ($activeOnly) {
+            $qLike->where('products.status', 'active');
+        }
+        $likeMatches = $qLike->where(function ($q) use ($clean) {
+            $q->where('products.name', 'like', "%{$clean}%")
+              ->orWhereHas('brand', fn($b) => $b->where('name', 'like', "%{$clean}%"));
+        })
+        ->take(50)
+        ->pluck('products.id')
+        ->all();
+
+        return array_values(array_unique(array_merge($skuMatches, $nameIds, $likeMatches)));
+    }
+
+    /**
+     * Build search query for products supporting Product Name (fuzzy), Product SKU, Variant SKU, and Brand.
      */
     public static function buildQuery(
         string $search = '',
@@ -401,14 +454,13 @@ class ProductSearchService
         // Primary Sort: In-stock products (stock > 0) always appear first, out-of-stock products appear last
         $query->orderByRaw('CASE WHEN products.stock > 0 THEN 1 ELSE 0 END DESC');
 
-        // 4. Search Matching ONLY ON PRODUCT NAME WITH >= 80% MATCH
+        // 4. Search Matching: Product Name (fuzzy), Product SKU, Variant SKU, ID, and Brand
         $cleanSearch = trim($search);
         if (mb_strlen($cleanSearch) > 0) {
-            $matchedScores = self::getMatchingProductScores($cleanSearch);
-            $matchedIds = array_keys($matchedScores);
+            $matchedIds = self::getSearchProductIds($cleanSearch, true);
 
             if (empty($matchedIds)) {
-                // Return zero results if no product reaches >= 80% match on name
+                // Return zero results if no product reaches match on name or SKU
                 $query->whereRaw('1 = 0');
                 return $query;
             }
@@ -428,7 +480,7 @@ class ProductSearchService
                     $query->orderByDesc('products.created_at');
                     break;
                 default:
-                    // Primary: Highest name match score first, Secondary: stock quantity descending
+                    // Primary: Highest relevance match (exact SKU, then name score) first, Secondary: stock quantity descending
                     $query->orderByRaw("FIELD(products.id, {$idList})")
                           ->orderByDesc('products.stock');
                     break;
@@ -517,7 +569,7 @@ class ProductSearchService
             ];
         }
 
-        $cacheKey = 'live_search_v3_' . md5(mb_strtolower($raw));
+        $cacheKey = 'live_search_v4_' . md5(mb_strtolower($raw));
         return Cache::remember($cacheKey, 180, function () use ($raw, $limit) {
             $categories = self::getMatchingCategories($raw, 3);
             $query = self::buildQuery($raw);
@@ -531,6 +583,7 @@ class ProductSearchService
                 return [
                     'id' => $product->id,
                     'name' => $product->name,
+                    'sku' => $product->sku ?: '',
                     'category' => $product->category_name ?? 'Matériel Caméra',
                     'price' => $product->formatted_price,
                     'is_sale' => $product->isOnSale(),
@@ -597,11 +650,10 @@ class ProductSearchService
             }
         }
 
-        // Apply search filter if provided (strictly >= 80% match on product name)
+        // Apply search filter if provided (name, SKU, brand)
         $cleanSearch = trim($search);
         if (mb_strlen($cleanSearch) > 0) {
-            $matchedScores = self::getMatchingProductScores($cleanSearch);
-            $matchedIds = array_keys($matchedScores);
+            $matchedIds = self::getSearchProductIds($cleanSearch, true);
 
             if (empty($matchedIds)) {
                 return collect();

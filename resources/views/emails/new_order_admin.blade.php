@@ -74,7 +74,7 @@
                             <div class="info-card-title">📍 Livraison & Paiement</div>
                             <p class="info-card-text"><strong>Ville :</strong> {{ $order->shipping_city ?: 'Non spécifiée' }}</p>
                             <p class="info-card-text"><strong>Adresse :</strong> {{ $order->shipping_address ?: 'Non renseignée' }}</p>
-                            <p class="info-card-text"><strong>Règlement :</strong> {{ strtoupper($order->payment_method ?? 'COD (Paiement à la livraison)') }}</p>
+                            <p class="info-card-text"><strong>Règlement :</strong> {{ strtoupper($order->payment_method ?? 'À réception') }}</p>
                             <p class="info-card-text"><strong>Paiement :</strong> <span style="color: #ea580c; font-weight: bold;">{{ ucfirst($order->payment_status ?? 'En attente') }}</span></p>
                         </td>
                     </tr>

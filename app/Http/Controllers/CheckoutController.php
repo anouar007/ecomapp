@@ -282,7 +282,7 @@ class CheckoutController extends Controller
             'paid' => __('Payé'),
             'failed' => __('Échoué'),
             'refunded' => __('Remboursé'),
-            default => __('En attente (Paiement à la livraison)'),
+            default => __('Commande validée'),
         };
 
         $paymentBadgeClass = match($paymentStatus) {

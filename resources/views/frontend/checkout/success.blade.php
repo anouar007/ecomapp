@@ -114,7 +114,7 @@
         'paid' => __('Payé'),
         'failed' => __('Échoué'),
         'refunded' => __('Remboursé'),
-        default => __('En attente (Paiement à la livraison)'),
+        default => __('Commande validée'),
     };
 
     $paymentBadgeClass = match($paymentStatus) {
@@ -226,11 +226,11 @@
 
                     <div class="order-step {{ $step4Class }}" id="step4">
                         <div class="order-step-circle">
-                            <i class="fas fa-hand-holding-dollar" id="step4Icon"></i>
+                            <i class="fas fa-circle-check" id="step4Icon"></i>
                         </div>
                         <div class="order-step-label">
                             <span class="order-step-title">{{ __('Livraison') }}</span>
-                            <span class="order-step-desc d-none d-sm-block">{{ __('Paiement à réception') }}</span>
+                            <span class="order-step-desc d-none d-sm-block">{{ __('Réception du colis') }}</span>
                         </div>
                     </div>
                 </div>
@@ -339,7 +339,7 @@
                     <div class="card-header bg-white p-3 p-sm-4 border-bottom">
                         <div class="d-flex align-items-center gap-2">
                             <i class="fas fa-truck-fast text-danger"></i>
-                            <h2 class="h5 fw-bold m-0 font-heading text-dark">{{ __('Informations de livraison & Paiement') }}</h2>
+                            <h2 class="h5 fw-bold m-0 font-heading text-dark">{{ __('Informations de livraison & Suivi') }}</h2>
                         </div>
                     </div>
                     <div class="card-body p-3 p-sm-4">
@@ -392,16 +392,16 @@
                                 </div>
                             </div>
 
-                            {{-- Mode de paiement --}}
+                            {{-- Statut de la commande --}}
                             <div class="col-12">
                                 <div class="p-3 rounded-3 border bg-light d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2.5">
                                     <div class="d-flex align-items-center gap-2.5">
                                         <div class="rounded-circle bg-white border p-2 text-success shadow-2xs flex-shrink-0" style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
-                                            <i class="fas fa-hand-holding-dollar fs-5"></i>
+                                            <i class="fas fa-check-circle fs-5"></i>
                                         </div>
                                         <div>
-                                            <strong class="d-block text-dark small fw-bold">{{ __('Paiement à la livraison (Cash on Delivery)') }}</strong>
-                                            <span class="text-muted small" style="font-size: 0.76rem;">{{ __('Réglez en toute sérénité en espèces ou par chèque directement au livreur lors de la réception.') }}</span>
+                                            <strong class="d-block text-dark small fw-bold">{{ __('Traitement de votre commande') }}</strong>
+                                            <span class="text-muted small" style="font-size: 0.76rem;">{{ __('Votre commande a été confirmée avec succès. Elle est préparée avec soin pour une expédition express.') }}</span>
                                         </div>
                                     </div>
                                     <div class="flex-shrink-0">
@@ -524,8 +524,8 @@
                             <div class="d-flex gap-2.5 align-items-start">
                                 <span class="badge bg-light text-dark border rounded-circle flex-shrink-0" style="width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 0.72rem;">3</span>
                                 <div>
-                                    <strong class="text-dark d-block fw-bold mb-0.5">{{ __('Paiement à la livraison') }}</strong>
-                                    <span class="text-muted" style="font-size: 0.76rem; line-height: 1.4;">{{ __('Vérifiez le colis et réglez le livreur en espèces ou par chèque.') }}</span>
+                                    <strong class="text-dark d-block fw-bold mb-0.5">{{ __('Réception sécurisée') }}</strong>
+                                    <span class="text-muted" style="font-size: 0.76rem; line-height: 1.4;">{{ __('Réceptionnez votre colis directement à votre adresse avec emballage d\'origine scellé.') }}</span>
                                 </div>
                             </div>
                         </div>

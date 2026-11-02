@@ -516,7 +516,7 @@
     
     $firstLineDesc = trim(explode("\n", $product->clean_description)[0] ?? '');
     $cleanDesc = Str::limit($firstLineDesc, 140) ?: ($product->name . ' disponible au Maroc chez WINA SHOP Casablanca.');
-    $cleanDesc .= ' Prix: ' . number_format($product->final_price, 2, '.', ' ') . ' MAD. Garantie officielle, devis proforma INDH, facture ICE, livraison 24h/48h partout au Maroc. شراء مع التوصيل والدفع عند الاستلام.';
+    $cleanDesc .= ' Prix: ' . number_format($product->final_price, 2, '.', ' ') . ' MAD. Garantie officielle, devis proforma INDH, facture ICE, livraison 24h/48h partout au Maroc. شراء مع التوصيل السريع لجميع المدن المغربية.';
 
     $extractedSpecs = [];
     if (preg_match_all('/<div class="pdp-spec-label"><i[^>]*><\/i>\s*([^<]+)<\/div>\s*<div class="pdp-spec-value">([^<]+)<\/div>/is', $product->description, $mSpecs)) {
@@ -740,7 +740,7 @@
         "name": {!! json_encode('Quel est le prix et le délai de livraison de ' . $product->name . ' au Maroc ?') !!},
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": {!! json_encode('Le prix de ' . $product->name . ' est de ' . number_format($product->final_price, 2, '.', ' ') . ' MAD chez WINA SHOP. La livraison est effectuée en 24h à 48h partout au Maroc avec option de paiement à la livraison (Cash on Delivery).') !!}
+          "text": {!! json_encode('Le prix de ' . $product->name . ' est de ' . number_format($product->final_price, 2, '.', ' ') . ' MAD chez WINA SHOP. La livraison est effectuée en 24h à 48h partout au Maroc avec suivi de colis et emballage sécurisé.') !!}
         }
       },
       {
@@ -753,10 +753,10 @@
       },
       {
         "@type": "Question",
-        "name": {!! json_encode('كيف يمكنني طلب ' . $product->name . ' في المغرب وما هي طرق الدفع؟') !!},
+        "name": {!! json_encode('كيف يمكنني طلب ' . $product->name . ' في المغرب وما هي الضمانات؟') !!},
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": {!! json_encode('يمكنك شراء ' . $product->name . ' مباشرة عبر متجر WINA SHOP أو بالتواصل عبر الواتساب على الرقم ' . setting('company_phone', '+212 629-035777') . '. نوفر الدفع نقداً عند الاستلام بعد معاينة المنتج مع التوصيل السريع لكافة المدن المغربية.') !!}
+          "text": {!! json_encode('يمكنك شراء ' . $product->name . ' مباشرة عبر متجر WINA SHOP أو بالتواصل عبر الواتساب على الرقم ' . setting('company_phone', '+212 629-035777') . '. نوفر منتجات أصلية مع ضمان رسمي وتوصيل سريع لكافة المدن المغربية.') !!}
         }
       }
       @if(!empty($extractedSpecs))
@@ -1434,7 +1434,7 @@
                     </h3>
                     <div id="faqCollapse2" class="accordion-collapse collapse" aria-labelledby="faqHeading2" data-bs-parent="#pdpFaqAccordion">
                         <div class="accordion-body text-muted pt-0 pb-3" style="font-size: 0.95rem; line-height: 1.6;">
-                            Le prix de {{ $product->name }} est de <strong>{{ number_format($product->final_price, 2, '.', ' ') }} {{ setting('currency_code', 'MAD') }}</strong>. La livraison est effectuée sous <strong>24h à 48h ouvrables</strong>. Le paiement s'effectue en toute sérénité <strong>à la livraison (Cash on Delivery)</strong> après inspection de votre colis, ou par virement bancaire sécurisé.
+                            Le prix de {{ $product->name }} est de <strong>{{ number_format($product->final_price, 2, '.', ' ') }} {{ setting('currency_code', 'MAD') }}</strong>. La livraison est effectuée sous <strong>24h à 48h ouvrables</strong> partout au Maroc avec emballage sécurisé, suivi rigoureux et garantie officielle.
                         </div>
                     </div>
                 </div>
@@ -1462,7 +1462,7 @@
                     </h3>
                     <div id="faqCollapse4" class="accordion-collapse collapse" aria-labelledby="faqHeading4" data-bs-parent="#pdpFaqAccordion">
                         <div class="accordion-body text-muted pt-0 pb-3" style="font-size: 0.95rem; line-height: 1.6;">
-                            يمكنك طلب <strong>{{ $product->name }}</strong> عبر متجر WINA SHOP أو بالتواصل مباشرة على الواتساب على الرقم <strong>{{ setting('company_phone', '+212 629-035777') }}</strong>. نوفر لك منتجات أصلية مع ضمان رسمي، وتوصيل سريع في ظرف 24 إلى 48 ساعة لكافة ربوع المملكة المغربية مع الدفع عند الاستلام.
+                            يمكنك طلب <strong>{{ $product->name }}</strong> عبر متجر WINA SHOP أو بالتواصل مباشرة على الواتساب على الرقم <strong>{{ setting('company_phone', '+212 629-035777') }}</strong>. نوفر لك منتجات أصلية مع ضمان رسمي، وتوصيل سريع في ظرف 24 إلى 48 ساعة لكافة ربوع المملكة المغربية.
                         </div>
                     </div>
                 </div>

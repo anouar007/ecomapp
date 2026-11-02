@@ -550,13 +550,13 @@
                     <div class="accordion-item">
                         <h3 class="accordion-header" id="headingFive">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
-                                <i class="fas fa-wallet text-brand-red me-3"></i>
-                                <span>{{ __('Quels sont les moyens de paiement acceptés ?') }}</span>
+                                <i class="fas fa-file-invoice text-brand-red me-3"></i>
+                                <span>{{ __('Comment commander et obtenir un devis ou une facture ?') }}</span>
                             </button>
                         </h2>
                         <div id="collapseFive" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
-                                {{ __('Vous pouvez régler vos achats en espèces à la livraison (Cash on Delivery), par virement bancaire pour les professionnels, ou par carte bancaire et terminal TPE directement dans notre showroom à Casablanca.') }}
+                                {{ __('Vous pouvez commander directement en ligne ou visiter notre showroom à Casablanca. Nous délivrons immédiatement des devis proforma certifiés pour les projets INDH et des factures officielles avec identifiant fiscal (ICE) pour toutes les entreprises et créateurs professionnels.') }}
                             </div>
                         </div>
                     </div>

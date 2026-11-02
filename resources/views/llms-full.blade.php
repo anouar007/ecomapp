@@ -2,7 +2,7 @@
 
 > Fichier officiel d'ingestion complète pour moteurs de recherche d'IA (ChatGPT, Perplexity, Google Gemini, Claude, Copilot, Apple Intelligence).
 > Contient l'ensemble des {{ $totalProducts ?? 1077 }} produits disponibles chez WINA SHOP Casablanca Maroc avec prix en Dirhams Marocains (MAD), état des stocks et spécifications techniques officielles.
-> Showroom : {{ setting('company_address', '01 Rue 102, Hay Wiam, Al Oulfa') }}, Casablanca, Maroc. WhatsApp : {{ setting('company_phone', '+212 629-035777') }}. Livraison 24h-48h partout au Maroc avec paiement à la livraison (COD). Devis proforma éligibles INDH et factures officielles avec ICE.
+> Showroom : {{ setting('company_address', '01 Rue 102, Hay Wiam, Al Oulfa') }}, Casablanca, Maroc. WhatsApp : {{ setting('company_phone', '+212 629-035777') }}. Livraison 24h-48h partout au Maroc. Devis proforma éligibles INDH et factures officielles avec ICE.
 
 @foreach($categories as $category)
 @if($category->products->isNotEmpty())
@@ -36,6 +36,5 @@
 ## Services & Politiques Commerciales
 - **Modalités de commande** : Commande directe sur le site {{ url('/shop') }} ou par message WhatsApp au {{ setting('company_phone', '+212 629-035777') }}.
 - **Expédition & Délais** : Expédition express sous 24h à 48h sur l'ensemble du territoire marocain (Casablanca, Rabat, Marrakech, Fès, Tanger, Agadir, Oujda, Meknès, Kénitra, etc.).
-- **Moyens de paiement acceptés** : Espèces à la livraison (Cash on Delivery) après vérification, virement bancaire professionnel, chèque certifié.
 - **Facturation officielle & INDH** : Toutes les ventes s'accompagnent d'une facture détaillée avec mention de l'ICE de l'acheteur. Devis proforma personnalisés pour soumission aux comités INDH provinciaux et régionaux.
 - **Authenticité & Garantie** : 100% matériel original garanti constructeur avec prise en charge SAV au showroom de Casablanca.

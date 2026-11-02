@@ -101,7 +101,7 @@
                 <div class="brand-search-wrapper flex-grow-1" style="min-width: 220px;">
                     <i class="fas fa-search"></i>
                     <input type="text" name="search" class="form-control" 
-                           placeholder="Rechercher par nom de produit (tolérance 70%)..."
+                           placeholder="Rechercher par nom, code SKU / référence ou ID..."
                            value="{{ request('search') }}">
                 </div>
 
