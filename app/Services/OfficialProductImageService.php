@@ -168,7 +168,8 @@ class OfficialProductImageService
             return null;
         }
 
-        return $this->downloadAndAttachImage($product, $imageUrl, $detectedBrand);
+        $res = $this->downloadAndAttachImage($product, $imageUrl, $detectedBrand, true);
+        return is_array($res) ? ($res['path'] ?? null) : $res;
     }
 
     /**
@@ -693,7 +694,7 @@ class OfficialProductImageService
     /**
      * Download the official image, store it on disk, and update the Product model.
      */
-    public function downloadAndAttachImage(Product $product, string $imageUrl, ?string $brand = null): ?string
+    public function downloadAndAttachImage(Product $product, string $imageUrl, ?string $brand = null, bool $isPrimary = true): ?array
     {
         try {
             $imageUrl = html_entity_decode($imageUrl, ENT_QUOTES | ENT_HTML5, 'UTF-8');
@@ -774,7 +775,8 @@ class OfficialProductImageService
                 $ext = 'png';
             }
 
-            $filename = $product->id . '_' . Str::slug(substr($product->name, 0, 40)) . '.' . $ext;
+            $uniqueSuffix = time() . '_' . Str::random(6);
+            $filename = $product->id . '_' . Str::slug(substr($product->name, 0, 30)) . '_' . $uniqueSuffix . '.' . $ext;
             $relativeDir = 'products/official';
             $fullStorageDir = storage_path('app/public/' . $relativeDir);
 
@@ -799,32 +801,64 @@ class OfficialProductImageService
                 $quality = 'low';
             }
 
-            // Update product main image and dimensions
-            $product->update([
-                'image' => $relativePath,
-                'image_width' => $width,
-                'image_height' => $height,
-                'image_quality' => $quality,
-            ]);
+            if ($isPrimary) {
+                // Update product main image and dimensions
+                $product->update([
+                    'image' => $relativePath,
+                    'image_width' => $width,
+                    'image_height' => $height,
+                    'image_quality' => $quality,
+                ]);
 
-            // Create or update ProductImage record (primary)
-            ProductImage::updateOrCreate(
-                [
+                // Demote existing primary images
+                ProductImage::where('product_id', $product->id)
+                    ->where('is_primary', true)
+                    ->update(['is_primary' => false]);
+
+                $productImage = ProductImage::create([
                     'product_id' => $product->id,
-                    'is_primary' => true,
-                ],
-                [
                     'image_path' => $relativePath,
                     'sort_order' => 0,
-                ]
-            );
+                    'is_primary' => true,
+                ]);
+            } else {
+                // Append as additional gallery image
+                $maxSort = (int)(ProductImage::where('product_id', $product->id)->max('sort_order') ?? 0);
+                $productImage = ProductImage::create([
+                    'product_id' => $product->id,
+                    'image_path' => $relativePath,
+                    'sort_order' => $maxSort + 1,
+                    'is_primary' => false,
+                ]);
+
+                // If product currently has no main image or placeholder, promote this as main
+                if (empty($product->image) || str_contains($product->image, 'cat_cameras') || str_contains($product->image, 'placeholder') || str_contains($product->image, 'images/camera/')) {
+                    $product->update([
+                        'image' => $relativePath,
+                        'image_width' => $width,
+                        'image_height' => $height,
+                        'image_quality' => $quality,
+                    ]);
+                    $productImage->update(['is_primary' => true]);
+                }
+            }
 
             // Clear cache
             Cache::forget('frontend_home_data');
             Cache::forget('frontend_nav_categories');
             Cache::forget('shop_catalog_categories');
 
-            return $relativePath;
+            return [
+                'path' => $relativePath,
+                'image_url' => asset('storage/' . $relativePath),
+                'image_id' => $productImage->id,
+                'is_primary' => (bool)$productImage->is_primary,
+                'sort_order' => $productImage->sort_order,
+                'width' => $width,
+                'height' => $height,
+                'quality' => $quality,
+                'badge_html' => $product->image_quality_badge,
+            ];
         } catch (Throwable $e) {
             Log::error("Error saving image for product #{$product->id}: " . $e->getMessage());
             return null;
@@ -1281,7 +1315,7 @@ class OfficialProductImageService
      * Search 4K / Ultra-HD studio master images for a product.
      * Searches official manufacturer databases AND open-web distributors / retailers.
      */
-    public function find4kCandidates(string $productName, ?string $brand = null, int $minWidth = 1000, int $limit = 16): array
+    public function find4kCandidates(string $productName, ?string $brand = null, int $minWidth = 800, int $limit = 48): array
     {
         $brand = $brand ?: $this->detectBrand($productName);
         $candidates = [];
@@ -1312,7 +1346,16 @@ class OfficialProductImageService
             $seenUrls[$officialUrl] = true;
         }
 
-        // 2. Wikimedia Commons high-res studio equipment asset
+        // 2. Search local SQLite catalog for additional matching views/accessories
+        $catalogMatches = $this->searchCatalogCandidates($productName, $brand, 12);
+        foreach ($catalogMatches as $cm) {
+            if (!isset($seenUrls[$cm['url']])) {
+                $seenUrls[$cm['url']] = true;
+                $candidates[] = $cm;
+            }
+        }
+
+        // 3. Wikimedia Commons high-res studio equipment asset
         $wikiUrl = $this->searchWikimediaCommons($productName, $brand);
         if ($wikiUrl && !isset($seenUrls[$wikiUrl])) {
             $info = @getimagesize($wikiUrl);
@@ -1335,10 +1378,10 @@ class OfficialProductImageService
             $seenUrls[$wikiUrl] = true;
         }
 
-        // 3. Open Web, Retailers, Distributors & Camera Shops
+        // 4. Open Web, Retailers, Distributors & Camera Shops
         $webLimit = $limit - count($candidates);
         if ($webLimit > 0) {
-            $webCandidates = $this->searchWebCandidates($productName, $brand, $webLimit + 4);
+            $webCandidates = $this->searchWebCandidates($productName, $brand, $limit);
             foreach ($webCandidates as $wc) {
                 if (!isset($seenUrls[$wc['url']])) {
                     $seenUrls[$wc['url']] = true;
@@ -1360,9 +1403,69 @@ class OfficialProductImageService
     }
 
     /**
+     * Search multiple high-res candidates from SQLite catalog.
+     */
+    public function searchCatalogCandidates(string $productName, ?string $brand = null, int $limit = 12): array
+    {
+        if (!$this->sqlite) {
+            return [];
+        }
+
+        $brand = $brand ?: $this->detectBrand($productName);
+        $cleanName = $this->cleanText($productName);
+        $nameNoParens = trim(preg_replace('/\([^)]*\)/', '', $productName));
+        $cleanModel = trim(preg_replace('/\b\d+(\.\d+)?\s*(mm|cm|m|kg|g|w|v|mah|hz|khz|fps|bit|gb|tb|in|inch|pouces)\b/i', '', $nameNoParens));
+
+        $candidates = [];
+        $seen = [];
+
+        try {
+            $searchTerms = array_unique(array_filter([$cleanName, $cleanModel, $productName]));
+            foreach ($searchTerms as $term) {
+                if (strlen($term) < 3) continue;
+                $stmt = $this->sqlite->prepare("
+                    SELECT title, image_url, source FROM official_catalog
+                    WHERE (title_clean LIKE ? OR title LIKE ?)
+                      AND image_url NOT LIKE '%default.jpg'
+                      AND image_url NOT LIKE '%-91.jpg'
+                      AND image_url NOT LIKE '%AcePro&Ace.jpg'
+                      AND image_url NOT LIKE '%placeholder%'
+                      AND image_url NOT LIKE '%category-banner%'
+                    LIMIT ?
+                ");
+                $stmt->execute(['%' . $term . '%', '%' . $term . '%', $limit]);
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    $rawUrl = $row['image_url'];
+                    $upgraded = $this->findOfficial4kMaster($productName, $brand, $rawUrl);
+                    if (!isset($seen[$upgraded])) {
+                        $seen[$upgraded] = true;
+                        $candidates[] = [
+                            'url' => $upgraded,
+                            'thumbnail' => $upgraded,
+                            'width' => 2000,
+                            'height' => 2000,
+                            'title' => $row['title'],
+                            'source' => 'Catalogue Officiel (' . ($row['source'] ?? 'Fabricant') . ')',
+                            'is_official' => true,
+                            'is_4k' => true,
+                            'is_fhd' => true,
+                            'score' => 98,
+                        ];
+                    }
+                    if (count($candidates) >= $limit) break 2;
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::info("Catalog candidate search error: " . $e->getMessage());
+        }
+
+        return $candidates;
+    }
+
+    /**
      * Search high-resolution product images across the open web (retailers, distributors, camera shops).
      */
-    public function searchWebCandidates(string $productName, ?string $brand = null, int $limit = 12): array
+    public function searchWebCandidates(string $productName, ?string $brand = null, int $limit = 48): array
     {
         $brand = $brand ?: $this->detectBrand($productName);
         $cleanName = trim(preg_replace('/\([^)]*\)/', '', $productName));
@@ -1371,11 +1474,15 @@ class OfficialProductImageService
 
         $queries = [
             $cleanName . ' studio packshot white background',
-            $cleanName . ' official high resolution product',
+            $cleanName . ' official photography high resolution',
+            $cleanName . ' camera angle front back side',
+            $cleanName . ' packshot 4k',
+            $cleanName . ' studio photography',
         ];
 
         if ($brand && stripos($cleanName, $brand) === false) {
             $queries[] = $brand . ' ' . $cleanName . ' camera';
+            $queries[] = $brand . ' ' . $cleanName . ' studio packshot';
         }
 
         $candidates = [];
@@ -1393,7 +1500,7 @@ class OfficialProductImageService
                 curl_setopt_array($ch, [
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_FOLLOWLOCATION => true,
-                    CURLOPT_TIMEOUT => 5,
+                    CURLOPT_TIMEOUT => 6,
                     CURLOPT_USERAGENT => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
                     CURLOPT_HTTPHEADER => [
                         'Accept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
@@ -1553,11 +1660,11 @@ class OfficialProductImageService
     }
 
     /**
-     * Apply a specific 4K image directly to a product.
+     * Apply a specific 4K image directly to a product (primary or gallery).
      */
-    public function apply4kImage(Product $product, string $imageUrl): ?string
+    public function apply4kImage(Product $product, string $imageUrl, bool $isPrimary = true): ?array
     {
-        return $this->downloadAndAttachImage($product, $imageUrl, $this->detectBrand($product->name));
+        return $this->downloadAndAttachImage($product, $imageUrl, $this->detectBrand($product->name), $isPrimary);
     }
 
     /**
@@ -1574,7 +1681,8 @@ class OfficialProductImageService
             $candidates = $this->find4kCandidates($product->name, $product->category_name, $minWidth, 1);
             if (!empty($candidates)) {
                 $oldWidth = $product->image_width ?? 0;
-                $savedPath = $this->apply4kImage($product, $candidates[0]['url']);
+                $saved = $this->apply4kImage($product, $candidates[0]['url'], true);
+                $savedPath = is_array($saved) ? ($saved['path'] ?? null) : $saved;
                 if ($savedPath) {
                     $product->refresh();
                     $upgraded++;

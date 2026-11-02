@@ -135,18 +135,18 @@
             <tbody>
                 @forelse($alerts as $alert)
                 <tr>
-                    <td>
+                    <td class="td-product-details" data-label="Produit">
                         <div class="d-flex align-items-center gap-2">
-                            <div style="width: 38px; height: 38px; border-radius: 6px; overflow: hidden; flex-shrink: 0; background: #f1f5f9; display: inline-flex; align-items: center; justify-content: center;">
+                            <div style="width: 44px; height: 44px; border-radius: 8px; overflow: hidden; flex-shrink: 0; background: #f1f5f9; display: inline-flex; align-items: center; justify-content: center;">
                                 <img src="{{ $alert->product->thumbnail }}" alt="{{ $alert->product->name }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                             </div>
                             <div>
-                                <strong>{{ $alert->product->name }}</strong>
+                                <strong class="product-title-text">{{ $alert->product->name }}</strong>
                                 <br><small class="text-muted"><code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 11px;">{{ $alert->product->sku }}</code></small>
                             </div>
                         </div>
                     </td>
-                    <td>
+                    <td data-label="Type d'alerte">
                         @if($alert->alert_type === 'out_of_stock')
                             <span class="badge badge-danger">
                                 <i class="fas fa-times-circle"></i> Rupture de stock
@@ -157,16 +157,16 @@
                             </span>
                         @endif
                     </td>
-                    <td>
+                    <td data-label="Stock actuel">
                         <span class="badge {{ $alert->current_stock <= 0 ? 'badge-danger' : 'badge-warning' }}">
                             {{ $alert->current_stock }}
                         </span>
                     </td>
-                    <td>{{ $alert->threshold_value }}</td>
-                    <td>
+                    <td data-label="Seuil minimal">{{ $alert->threshold_value }}</td>
+                    <td data-label="Déclenchée">
                         <small class="text-muted">{{ $alert->triggered_at->diffForHumans() }}</small>
                     </td>
-                    <td>
+                    <td data-label="Statut">
                         @if($alert->acknowledged_at)
                             <span class="badge badge-success">
                                 <i class="fas fa-check"></i> Traitée
@@ -177,18 +177,18 @@
                             </span>
                         @endif
                     </td>
-                    <td>
+                    <td class="td-actions">
                         <div class="action-buttons">
                             @if(!$alert->acknowledged_at)
                             <form action="{{ route('inventory.acknowledge-alert', $alert) }}" method="POST" style="display:inline;">
                                 @csrf
                                 <button type="submit" class="btn-action btn-action-edit" title="Marquer comme traitée">
-                                    <i class="fas fa-check"></i>
+                                    <i class="fas fa-check me-1"></i> Traiter
                                 </button>
                             </form>
                             @endif
                             <a href="{{ route('inventory.adjust', $alert->product) }}" class="btn-action btn-action-view" title="Ajuster le stock">
-                                <i class="fas fa-edit"></i>
+                                <i class="fas fa-edit me-1"></i> Ajuster
                             </a>
                         </div>
                     </td>

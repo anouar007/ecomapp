@@ -24,9 +24,10 @@ class ShopController extends Controller
             });
         }
 
-        // Search across name, sku, description, and category
-        if ($request->filled('q')) {
-            $search = trim($request->q);
+        // Search across name, sku, description, and category (supports ?q= or ?search= or ?brand=)
+        $searchParam = $request->input('q') ?? $request->input('search') ?? $request->input('brand');
+        if (!empty($searchParam)) {
+            $search = trim($searchParam);
             $query->where(function ($b) use ($search) {
                 $b->where('name', 'like', '%' . $search . '%')
                   ->orWhere('sku', 'like', '%' . $search . '%')

@@ -176,14 +176,14 @@
                         <tbody>
                             @foreach($lowStockProducts as $product)
                             <tr>
-                                <td style="padding-left: 1.5rem;">
-                                    <div class="fw-bold text-dark">{{ $product->name }}</div>
+                                <td class="td-product-details" data-label="Produit" style="padding-left: 1.5rem;">
+                                    <div class="fw-bold text-dark product-title-text">{{ $product->name }}</div>
                                     <div class="text-muted small">SKU: {{ $product->sku }}</div>
                                 </td>
-                                <td>{{ $product->category->name ?? 'N/A' }}</td>
-                                <td class="text-center fw-bold text-danger">{{ $product->stock }}</td>
-                                <td class="text-center text-muted">{{ $product->min_stock }}</td>
-                                <td class="text-end" style="padding-right: 1.5rem;">
+                                <td data-label="Catégorie">{{ $product->category->name ?? 'N/A' }}</td>
+                                <td class="text-center fw-bold text-danger" data-label="Disponible">{{ $product->stock }}</td>
+                                <td class="text-center text-muted" data-label="Minimum">{{ $product->min_stock }}</td>
+                                <td class="text-end" data-label="Statut" style="padding-right: 1.5rem;">
                                     <span class="brand-badge danger">REPLENISH</span>
                                 </td>
                             </tr>
@@ -217,14 +217,14 @@
                         <tbody>
                             @foreach($recentOrders as $order)
                             <tr>
-                                <td style="padding-left: 1.5rem;">
-                                    <span class="fw-bold text-primary">#{{ $order->order_number }}</span>
+                                <td class="td-product-details" data-label="Commande #" style="padding-left: 1.5rem;">
+                                    <span class="fw-bold text-primary product-title-text">#{{ $order->order_number }}</span>
                                 </td>
-                                <td>{{ $order->customer_name }}</td>
-                                <td class="text-muted small">{{ $order->created_at->format('M d, Y H:i') }}</td>
-                                <td class="text-center">{{ $order->items->count() }}</td>
-                                <td class="text-end fw-bold text-dark">{{ currency($order->total) }}</td>
-                                <td class="text-center" style="padding-right: 1.5rem;">
+                                <td data-label="Client">{{ $order->customer_name }}</td>
+                                <td class="text-muted small" data-label="Date">{{ $order->created_at->format('M d, Y H:i') }}</td>
+                                <td class="text-center" data-label="Articles">{{ $order->items->count() }}</td>
+                                <td class="text-end fw-bold text-dark" data-label="Total">{{ currency($order->total) }}</td>
+                                <td class="text-center" data-label="Statut" style="padding-right: 1.5rem;">
                                     <span class="brand-badge {{ $order->status === 'completed' ? 'success' : 'info' }}">
                                         {{ ucfirst($order->status) }}
                                     </span>

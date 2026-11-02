@@ -31,9 +31,11 @@
                     <tbody>
                         @foreach($accounts as $account)
                         <tr>
-                            <td class="font-weight-bold">{{ $account->code }}</td>
-                            <td>{{ $account->name }}</td>
-                            <td>
+                            <td class="td-product-details font-weight-bold" data-label="Compte">
+                                <strong class="product-title-text">{{ $account->code }} - {{ $account->name }}</strong>
+                            </td>
+                            <td data-label="Intitulé">{{ $account->name }}</td>
+                            <td data-label="Type">
                                 <span class="badge 
                                     @if($account->type == 'Asset') bg-info
                                     @elseif($account->type == 'Liability') bg-warning
@@ -45,8 +47,8 @@
                                     {{ $account->type }}
                                 </span>
                             </td>
-                            <td>{{ $account->class }}</td>
-                            <td>
+                            <td data-label="Classe">{{ $account->class }}</td>
+                            <td data-label="Statut">
                                 @if($account->is_active)
                                     <span class="badge bg-success">Active</span>
                                 @else

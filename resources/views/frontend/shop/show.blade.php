@@ -106,9 +106,11 @@
                             <img src="{{ $product->thumbnail }}" alt="{{ __('Product') }}" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                         </div>
                         @foreach($product->images as $img)
-                        <div class="pdp-thumb" onclick="pdpChangeImage('{{ $img->url }}', this)">
-                            <img src="{{ $img->url }}" alt="{{ __('View') }} {{ $loop->iteration + 1 }}" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
-                        </div>
+                            @if($img->url !== $product->thumbnail)
+                            <div class="pdp-thumb" onclick="pdpChangeImage('{{ $img->url }}', this)">
+                                <img src="{{ $img->url }}" alt="{{ __('View') }} {{ $loop->iteration }}" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                            </div>
+                            @endif
                         @endforeach
                     </div>
                     @endif

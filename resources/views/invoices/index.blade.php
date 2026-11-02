@@ -152,7 +152,7 @@
                 <tbody>
                     @forelse($invoices as $invoice)
                     <tr>
-                        <td style="padding-left: 1.5rem;">
+                        <td data-label="N° Document">
                             <a href="{{ route('invoices.show', $invoice) }}" class="fw-bold text-primary text-decoration-none d-flex align-items-center gap-2">
                                 {{ $invoice->invoice_number }}
                                 @if($invoice->isQuote())
@@ -160,20 +160,20 @@
                                 @endif
                             </a>
                         </td>
-                        <td>
+                        <td data-label="Client">
                             <div class="fw-bold text-dark">{{ $invoice->customer_name }}</div>
                             @if($invoice->customer_email)
                                 <div class="text-muted small">{{ $invoice->customer_email }}</div>
                             @endif
                         </td>
-                        <td>
+                        <td data-label="Date">
                             <div class="text-dark">{{ $invoice->issued_at->format('M d, Y') }}</div>
                             <div class="text-muted small">{{ $invoice->issued_at->format('h:i A') }}</div>
                         </td>
-                        <td class="text-end fw-bold text-dark fs-6">
+                        <td data-label="Montant Total" class="text-end fw-bold text-dark fs-6">
                             {{ $invoice->formatted_total_amount }}
                         </td>
-                        <td class="text-center">
+                        <td data-label="Paiement" class="text-center">
                             @php
                                 $statusClasses = [
                                     'paid' => 'success',
@@ -187,21 +187,21 @@
                                 {{ $invoice->status_label }}
                             </span>
                         </td>
-                        <td class="text-center">
+                        <td data-label="Cachet" class="text-center">
                             @if($invoice->with_stamp)
                                 <span style="background: #e0e7ff; color: #4338ca; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
-                                    <i class="fas fa-stamp" style="font-size: 9px;"></i> Yes
+                                    <i class="fas fa-stamp" style="font-size: 9px;"></i> Oui
                                 </span>
                             @else
                                 <span style="background: #f1f5f9; color: #64748b; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600;">
-                                    No
+                                    Non
                                 </span>
                             @endif
                         </td>
-                        <td class="text-muted small">
+                        <td data-label="Méthode" class="text-muted small">
                             <span class="text-uppercase" style="letter-spacing: 0.02em;">{{ str_replace('_', ' ', $invoice->payment_method) }}</span>
                         </td>
-                        <td style="padding-right: 1.5rem;">
+                        <td class="td-actions" style="padding-right: 1.5rem;">
                             <div class="d-flex justify-content-end gap-1">
                                 <button type="button" class="btn-action-icon text-primary" title="Aperçu Rapide" 
                                         onclick="openInvoicePreview('{{ $invoice->id }}', '{{ $invoice->display_number ?? $invoice->invoice_number }}', '{{ $invoice->isQuote() ? 'devis' : 'facture' }}', {{ $invoice->with_stamp ? 'true' : 'false' }})">

@@ -639,9 +639,14 @@
                         ${cand.title || 'Master Packshot'}
                     </div>
 
-                    <button type="button" onclick="applySelected4kImage('${cand.url.replace(/'/g, "\\'")}', this)" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; border: none; border-radius: 8px; padding: 9px 12px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; box-shadow: 0 2px 6px rgba(79, 70, 229, 0.2);">
-                        <i class="fas fa-check-circle"></i> Choisir cette image 4K
-                    </button>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 4px;">
+                        <button type="button" onclick="applySelected4kImage('${cand.url.replace(/'/g, "\\'")}', this, false)" style="background: #10b981; color: white; border: none; border-radius: 8px; padding: 8px 6px; font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s;">
+                            <i class="fas fa-plus"></i> + Galerie
+                        </button>
+                        <button type="button" onclick="applySelected4kImage('${cand.url.replace(/'/g, "\\'")}', this, true)" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; border: none; border-radius: 8px; padding: 8px 6px; font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s; box-shadow: 0 2px 6px rgba(79, 70, 229, 0.2);">
+                            <i class="fas fa-star"></i> Principale
+                        </button>
+                    </div>
                 </div>
             `;
             grid.appendChild(card);
@@ -795,12 +800,12 @@
         });
     }
 
-    function applySelected4kImage(imageUrl, button = null) {
+    function applySelected4kImage(imageUrl, button = null, asPrimary = true) {
         let origHtml = '';
         if (button) {
             origHtml = button.innerHTML;
             button.disabled = true;
-            button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Téléchargement 4K...';
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>';
         }
 
         const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]')?.value;
@@ -813,7 +818,10 @@
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'application/json'
             },
-            body: JSON.stringify({ image_url: imageUrl })
+            body: JSON.stringify({ 
+                image_url: imageUrl,
+                as_primary: asPrimary
+            })
         })
         .then(res => res.json())
         .then(data => {
@@ -823,14 +831,21 @@
             }
 
             if (data.success) {
-                updateCardInHub(current4kProductId, data);
-                close4kImageModal();
+                if (button) {
+                    button.style.background = '#059669';
+                    button.innerHTML = '<i class="fas fa-check"></i> OK!';
+                }
+
+                if (asPrimary) {
+                    updateCardInHub(current4kProductId, data);
+                    setTimeout(() => close4kImageModal(), 600);
+                }
 
                 Swal.fire({
-                    title: 'Image 4K Appliquée !',
+                    title: asPrimary ? 'Image Principale 4K Appliquée !' : 'Image Ajoutée à la Galerie !',
                     text: `Résolution : ${data.width}×${data.height} pixels (${data.quality.toUpperCase()})`,
                     icon: 'success',
-                    timer: 2500,
+                    timer: 2000,
                     showConfirmButton: false,
                     toast: true,
                     position: 'top-end'

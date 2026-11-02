@@ -1,5 +1,5 @@
 <tr>
-    <td>
+    <td class="td-category-details">
         <div class="d-flex align-items-center gap-3" style="{{ $level > 0 ? 'padding-left: ' . ($level * 40) . 'px;' : '' }}">
             @if($level > 0)
                 <span class="text-muted fw-bold" style="opacity: 0.5;">└─</span>
@@ -28,17 +28,17 @@
             </div>
         </div>
     </td>
-    <td>
+    <td data-label="Identifiant Slug">
         <span class="badge bg-light text-secondary font-monospace" style="font-size: 0.7rem; border: 1px solid #e2e8f0;">
             {{ $category->slug }}
         </span>
     </td>
-    <td class="text-center">
+    <td data-label="Produits associés" class="text-center">
         <span class="brand-badge info">
             <i class="fas fa-box me-1"></i> {{ $category->products_count }} {{ $category->products_count > 1 ? 'Produits' : 'Produit' }}
         </span>
     </td>
-    <td class="text-center">
+    <td data-label="Statut" class="text-center">
         @php
             $catStatus = strtolower($category->status);
             $catStatusText = match($catStatus) {
@@ -51,7 +51,7 @@
             {{ $catStatusText }}
         </span>
     </td>
-    <td style="padding-right: 1.5rem;">
+    <td class="td-actions" style="padding-right: 1.5rem;">
         <div class="d-flex justify-content-end gap-2">
             <a href="{{ route('categories.edit', $category) }}" class="btn-action-icon" title="Modifier la catégorie">
                 <i class="fas fa-edit"></i>

@@ -41,7 +41,7 @@
 <body>
     <!-- Navbar -->
     <nav class="navbar">
-        <button class="navbar-toggler">
+        <button class="navbar-toggler" id="sidebar-toggle-btn" aria-label="Toggle navigation">
             <i class="fas fa-bars"></i>
         </button>
         <a href="{{ route('dashboard') }}" class="navbar-brand">
@@ -50,7 +50,7 @@
             @else
                 <i class="fas fa-shopping-cart" style="margin-right: 8px;"></i>
             @endif
-            {{ setting('app_name', 'E-commerce') }}
+            <span class="navbar-brand-text">{{ setting('app_name', 'E-commerce') }}</span>
         </a>
         
         <div class="navbar-user">
@@ -87,8 +87,25 @@
         </div>
     </nav>
 
+    <!-- Sidebar Mobile Backdrop -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
     <!-- Sidebar -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="app-sidebar">
+        <!-- Mobile Sidebar Header with Close Button -->
+        <div class="sidebar-mobile-header d-lg-none">
+            <div class="d-flex align-items-center gap-2">
+                @if(setting('app_logo'))
+                    <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="{{ setting('app_name') }}" style="height: 28px;">
+                @else
+                    <i class="fas fa-shopping-cart text-primary"></i>
+                @endif
+                <span class="fw-bold text-dark text-truncate" style="max-width: 170px;">{{ setting('app_name', 'E-commerce') }}</span>
+            </div>
+            <button type="button" class="sidebar-close-btn" id="sidebar-close-btn" aria-label="Fermer le menu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
         <ul class="sidebar-menu">
             <li class="sidebar-menu-item">
                 <a href="{{ route('dashboard') }}" class="sidebar-menu-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">

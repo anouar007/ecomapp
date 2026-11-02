@@ -221,8 +221,19 @@ class ProductController extends Controller
             if ($request->has('remove_images')) {
                 $imagesToRemove = ProductImage::whereIn('id', $request->remove_images)->get();
                 foreach ($imagesToRemove as $img) {
+                    if ($product->image === $img->image_path) {
+                        $product->image = null;
+                    }
                     Storage::disk('public')->delete($img->image_path);
                     $img->delete();
+                }
+                if (empty($product->image) || !file_exists(storage_path('app/public/' . $product->image))) {
+                    $nextPrimary = $product->images()->first();
+                    if ($nextPrimary) {
+                        $nextPrimary->update(['is_primary' => true]);
+                        $product->image = $nextPrimary->image_path;
+                        $product->save();
+                    }
                 }
             }
 
@@ -447,8 +458,11 @@ class ProductController extends Controller
     public function search4kImages(Request $request, Product $product)
     {
         $query = $request->input('q', $product->name);
+        $limit = (int)$request->input('limit', 48);
+        $limit = max(12, min(80, $limit));
+
         $service = app(\App\Services\OfficialProductImageService::class);
-        $candidates = $service->find4kCandidates($query, $product->category_name);
+        $candidates = $service->find4kCandidates($query, $product->category_name, 800, $limit);
 
         return response()->json([
             'success' => true,
@@ -459,36 +473,117 @@ class ProductController extends Controller
     }
 
     /**
-     * Apply a selected 4K image directly to a product.
+     * Apply selected 4K image(s) directly to a product (as primary or gallery).
      */
     public function apply4kImage(Request $request, Product $product)
     {
         $request->validate([
-            'image_url' => ['required', 'url'],
+            'image_url' => ['nullable', 'url'],
+            'image_urls' => ['nullable', 'array'],
+            'image_urls.*' => ['url'],
+            'as_primary' => ['nullable'],
         ]);
 
         $service = app(\App\Services\OfficialProductImageService::class);
-        $path = $service->apply4kImage($product, $request->input('image_url'));
+        $asPrimaryExplicit = $request->has('as_primary') ? filter_var($request->input('as_primary'), FILTER_VALIDATE_BOOLEAN) : null;
 
-        if (!$path) {
+        // Bulk import multiple 4K images
+        if ($request->has('image_urls') && is_array($request->input('image_urls'))) {
+            $urls = array_values(array_filter($request->input('image_urls')));
+            $imported = [];
+            $failed = 0;
+            $firstAsPrimary = ($asPrimaryExplicit === true);
+
+            foreach ($urls as $idx => $url) {
+                $isPrimaryForThis = ($idx === 0 && $firstAsPrimary);
+                $res = $service->apply4kImage($product, $url, $isPrimaryForThis);
+                if ($res) {
+                    $imported[] = $res;
+                } else {
+                    $failed++;
+                }
+            }
+
+            $product->refresh();
+
+            return response()->json([
+                'success' => count($imported) > 0,
+                'count' => count($imported),
+                'failed' => $failed,
+                'images' => $imported,
+                'message' => count($imported) . ' image(s) 4K importée(s) avec succès !',
+                'badge_html' => $product->image_quality_badge,
+            ]);
+        }
+
+        // Single image import
+        $imageUrl = $request->input('image_url');
+        if (!$imageUrl) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to download or apply 4K image. Please select another image.',
+                'message' => 'Aucune image spécifiée.',
+            ], 422);
+        }
+
+        // Default to true for single image if not specified (backward compatibility)
+        $isPrimary = ($asPrimaryExplicit !== null) ? $asPrimaryExplicit : true;
+
+        $res = $service->apply4kImage($product, $imageUrl, $isPrimary);
+
+        if (!$res) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Impossible de télécharger ou d\'appliquer l\'image 4K. Veuillez essayer une autre image.',
             ], 422);
         }
 
         $product->refresh();
-        $fullUrl = asset('storage/' . $path);
 
         return response()->json([
             'success' => true,
-            'message' => 'Image 4K Ultra-HD appliquée avec succès !',
-            'image_path' => $path,
-            'image_url' => $fullUrl,
-            'width' => $product->image_width,
-            'height' => $product->image_height,
-            'quality' => $product->image_quality,
+            'message' => $isPrimary ? 'Image 4K principale définie avec succès !' : 'Image 4K ajoutée à la galerie du produit !',
+            'image_path' => $res['path'],
+            'image_url' => $res['image_url'],
+            'image_id' => $res['image_id'],
+            'is_primary' => $res['is_primary'],
+            'sort_order' => $res['sort_order'],
+            'width' => $res['width'],
+            'height' => $res['height'],
+            'quality' => $res['quality'],
             'badge_html' => $product->image_quality_badge,
+        ]);
+    }
+
+    /**
+     * Delete a specific product image via AJAX.
+     */
+    public function deleteImage(Product $product, \App\Models\ProductImage $image)
+    {
+        if ($image->product_id !== $product->id) {
+            return response()->json(['success' => false, 'message' => 'Image non trouvée pour ce produit.'], 404);
+        }
+
+        \Illuminate\Support\Facades\Storage::disk('public')->delete($image->image_path);
+        $wasPrimary = $image->is_primary;
+        $image->delete();
+
+        if ($wasPrimary || $product->image === $image->image_path) {
+            $next = $product->images()->first();
+            if ($next) {
+                $next->update(['is_primary' => true]);
+                $product->update([
+                    'image' => $next->image_path,
+                ]);
+            } else {
+                $product->update([
+                    'image' => null,
+                ]);
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Image supprimée avec succès.',
         ]);
     }
 

@@ -47,12 +47,12 @@
             <tbody>
                 @forelse($permissions as $permission)
                 <tr>
-                    <td>
-                        <strong>{{ ucwords(str_replace('_', ' ', $permission->name)) }}</strong>
+                    <td class="td-product-details" data-label="Permission">
+                        <strong class="product-title-text">{{ ucwords(str_replace('_', ' ', $permission->name)) }}</strong>
                         <br>
                         <small class="text-muted">{{ $permission->name }}</small>
                     </td>
-                    <td>
+                    <td data-label="Rôles assignés">
                         @if($permission->roles->count() > 0)
                             <div class="role-tags">
                                 @foreach($permission->roles as $role)
@@ -63,7 +63,7 @@
                             <span class="text-muted">Not assigned to any role</span>
                         @endif
                     </td>
-                    <td>
+                    <td class="td-actions">
                         <div class="action-buttons">
                             <a href="{{ route('permissions.edit', $permission) }}" class="btn-action btn-action-edit" title="Edit">
                                 <i class="fas fa-edit"></i>

@@ -265,17 +265,51 @@ ashed #cbd5e1;
     @media (max-width: 968px) {
         .settings-layout {
             grid-template-columns: 1fr;
+            gap: 16px;
         }
 
         .settings-tabs {
             position: static;
             display: flex;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
             gap: 8px;
+            padding: 8px;
+            border-radius: 12px;
+            scrollbar-width: none;
+        }
+
+        .settings-tabs::-webkit-scrollbar {
+            display: none;
         }
 
         .settings-tab {
             flex-shrink: 0;
+            width: auto;
+            white-space: nowrap;
+            padding: 10px 14px;
+            font-size: 13px;
+        }
+
+        .settings-content {
+            padding: 18px 16px;
+            border-radius: 12px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .form-actions button,
+        .form-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .form-input,
+        .form-select {
+            font-size: 16px !important;
         }
     }
 </style>

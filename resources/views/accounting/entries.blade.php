@@ -151,23 +151,23 @@
                 <tbody>
                     @forelse($entries as $entry)
                     <tr class="journal-entry-row" style="border-bottom: 1px solid #f1f5f9;" data-entry-id="{{ $entry->id }}">
-                        <td style="padding: 1.25rem 0 1.25rem 1.5rem;">
+                        <td class="td-checkbox" style="padding: 1.25rem 0 1.25rem 1.5rem;">
                             <button class="btn btn-sm toggle-details" style="background: transparent; border: none; color: #6366f1; padding: 0; transition: transform 0.2s;" onclick="toggleDetails({{ $entry->id }})" title="Show/Hide Details">
                                 <i class="fas fa-chevron-right" id="icon-{{ $entry->id }}"></i>
                             </button>
                         </td>
-                        <td style="padding: 1.25rem 0; white-space: nowrap;">
+                        <td data-label="Date" style="padding: 1.25rem 0; white-space: nowrap;">
                             <div class="d-flex flex-column">
                                 <span class="text-dark fw-bold" style="font-size: 0.9rem;">{{ $entry->date->format('M d, Y') }}</span>
                                 <span class="text-muted small">{{ $entry->date->format('D') }}</span>
                             </div>
                         </td>
-                        <td style="padding: 1.25rem 0;">
-                            <span class="badge bg-light text-primary font-monospace py-2 px-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e0e7ff; font-size: 0.8rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#6366f1'; this.style.backgroundColor='#f0f0ff';" onmouseout="this.style.borderColor='#e0e7ff'; this.style.backgroundColor='';" title="Click to view details">
+                        <td class="td-product-details" data-label="Référence" style="padding: 1.25rem 0;">
+                            <span class="badge bg-light text-primary font-monospace py-2 px-3 shadow-sm product-title-text" style="border-radius: 8px; border: 1px solid #e0e7ff; font-size: 0.8rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#6366f1'; this.style.backgroundColor='#f0f0ff';" onmouseout="this.style.borderColor='#e0e7ff'; this.style.backgroundColor='';" title="Click to view details">
                                 {{ $entry->reference }}
                             </span>
                         </td>
-                        <td style="padding: 1.25rem 0;">
+                        <td data-label="Description" style="padding: 1.25rem 0;">
                             <div class="d-flex flex-column">
                                 <span class="text-dark fw-semibold">{{ $entry->description }}</span>
                                 <span class="text-muted small">
@@ -176,7 +176,7 @@
                                 </span>
                             </div>
                         </td>
-                        <td style="padding: 1.25rem 0;">
+                        <td data-label="Journal" style="padding: 1.25rem 0;">
                             <span class="brand-badge 
                                 @if($entry->journal_type === 'SALES') success
                                 @elseif($entry->journal_type === 'PURCHASES') warning
@@ -186,7 +186,7 @@
                                 {{ $entry->journal_type }}
                             </span>
                         </td>
-                        <td style="padding: 1.25rem 0; text-align: center;">
+                        <td data-label="Débit / Crédit" style="padding: 1.25rem 0; text-align: center;">
                             <div class="d-flex flex-column align-items-center gap-1">
                                 <span class="badge shadow-sm" style="background: #dcfce7; color: #166534; font-weight: 600; font-size: 0.75rem; min-width: 80px;">
                                     {{ number_format($entry->total_debit, 2) }}
@@ -196,17 +196,12 @@
                                 </span>
                             </div>
                         </td>
-                        <td style="padding: 1.25rem 1.5rem 1.25rem 0; text-align: center;">
+                        <td class="td-actions" style="padding: 1.25rem 1.5rem 1.25rem 0; text-align: center;">
                             <div class="d-flex gap-1 justify-content-center">
                                 <button class="btn btn-sm shadow-sm" style="background: white; border: 1px solid #e5e7eb; color: #6366f1; padding: 0.4rem 0.7rem; border-radius: 6px; transition: all 0.2s;" onmouseover="this.style.background='#f0f0ff'; this.style.borderColor='#6366f1';" onmouseout="this.style.background='white'; this.style.borderColor='#e5e7eb';" title="View Entry Details" onclick="toggleDetails({{ $entry->id }})">
                                     <i class="fas fa-eye" style="font-size: 0.85rem;"></i>
                                 </button>
-                                {{-- Edit button commented out until edit route is created
-                                <a href="{{ route('accounting.entries.edit', $entry->id) }}" class="btn btn-sm shadow-sm" style="background: white; border: 1px solid #e5e7eb; color: #059669; padding: 0.4rem 0.7rem; border-radius: 6px; transition: all 0.2s; text-decoration: none;" onmouseover="this.style.background='#ecfdf5'; this.style.borderColor='#059669';" onmouseout="this.style.background='white'; this.style.borderColor='#e5e7eb';" title="Edit This Entry">
-                                    <i class="fas fa-edit" style="font-size: 0.85rem;"></i>
-                                </a>
-                                --}}
-                                <button class="btn btn-sm shadow-sm" style="background: white; border: 1px solid #e5e7eb; color: #dc2626; padding: 0.4rem 0.7rem; border-radius: 6px; transition: all 0.2s;" onmouseover="this.style.background='#fef2f2'; this.style.borderColor='#dc2626';" onmouseout="this.style.background='white'; this.style.borderColor='#e5e7eb';" title="Delete Entry (Ctrl+D)" onclick="confirmDelete({{ $entry->id }})">
+                                <button class="btn btn-sm shadow-sm" style="background: white; border: 1px solid #e5e7eb; color: #dc2626; padding: 0.4rem 0.7rem; border-radius: 6px; transition: all 0.2s;" onmouseover="this.style.background='#fef2f2'; this.style.borderColor='#dc2626';" onmouseout="this.style.background='white'; this.style.borderColor='#e5e7eb';" title="Delete Entry" onclick="confirmDelete({{ $entry->id }})">
                                     <i class="fas fa-trash-alt" style="font-size: 0.85rem;"></i>
                                 </button>
                             </div>

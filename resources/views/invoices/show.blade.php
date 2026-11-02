@@ -478,6 +478,50 @@
         font-weight: 500;
         letter-spacing: 0.3px;
     }
+
+    /* ── Mobile Responsive Overrides ── */
+    @media (max-width: 768px) {
+        .invoice-view-wrapper {
+            padding: 12px 4px 40px 4px;
+        }
+        .doc-body {
+            padding: 16px 12px;
+        }
+        .header-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 14px;
+        }
+        .doc-badge-block {
+            align-items: flex-start;
+            text-align: left;
+            width: 100%;
+        }
+        .doc-meta-grid {
+            justify-content: flex-start;
+        }
+        .parties-row {
+            flex-direction: column;
+            gap: 12px;
+        }
+        .summary-row {
+            flex-direction: column;
+            gap: 16px;
+        }
+        .summary-left,
+        .summary-right {
+            width: 100%;
+            max-width: 100%;
+        }
+        .doc-footer {
+            padding: 12px 14px;
+            font-size: 10px;
+        }
+        .items-table {
+            min-width: 0 !important;
+            width: 100% !important;
+        }
+    }
 </style>
 
 <div class="invoice-view-wrapper" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
@@ -836,33 +880,35 @@
             </div>
 
             {{-- ══════════ ITEMS TABLE ══════════ --}}
-            <table class="items-table">
-                <thead>
-                    <tr>
-                        <th style="width:5%; text-align:center;">N°</th>
-                        <th style="width:52%;">Désignation / Description</th>
-                        <th style="width:15%; text-align:right;">P.U. HT</th>
-                        <th style="width:10%; text-align:center;">Qté</th>
-                        <th style="width:18%; text-align:right;">Total HT</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($invoice->items as $i => $item)
-                    <tr>
-                        <td style="text-align:center; color:#94a3b8; font-size:11px;">{{ $i + 1 }}</td>
-                        <td>
-                            <div class="item-name">{{ $item->product_name }}</div>
-                            @if($item->product_sku)
-                            <div class="item-sku">Réf : {{ $item->product_sku }}</div>
-                            @endif
-                        </td>
-                        <td style="text-align:right; font-size:12.5px;">{{ $item->formatted_unit_price_ht }}</td>
-                        <td style="text-align:center; font-weight:700; font-size:13px;">{{ $item->quantity }}</td>
-                        <td style="text-align:right; font-weight:800; font-size:13px; color:#0f172a;">{{ $item->formatted_total_price_ht }}</td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="items-table-wrapper" style="overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; margin-bottom: 18px;">
+                <table class="items-table" style="margin-bottom: 0;">
+                    <thead>
+                        <tr>
+                            <th style="width:5%; text-align:center;">N°</th>
+                            <th style="width:52%;">Désignation / Description</th>
+                            <th style="width:15%; text-align:right;">P.U. HT</th>
+                            <th style="width:10%; text-align:center;">Qté</th>
+                            <th style="width:18%; text-align:right;">Total HT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($invoice->items as $i => $item)
+                        <tr>
+                            <td data-label="N°" style="text-align:center; color:#94a3b8; font-size:11px;">{{ $i + 1 }}</td>
+                            <td class="td-product-details">
+                                <div class="item-name">{{ $item->product_name }}</div>
+                                @if($item->product_sku)
+                                <div class="item-sku">Réf : {{ $item->product_sku }}</div>
+                                @endif
+                            </td>
+                            <td data-label="P.U. HT" style="text-align:right; font-size:12.5px;">{{ $item->formatted_unit_price_ht }}</td>
+                            <td data-label="Quantité" style="text-align:center; font-weight:700; font-size:13px;">{{ $item->quantity }}</td>
+                            <td data-label="Total HT" style="text-align:right; font-weight:800; font-size:13px; color:#0f172a;">{{ $item->formatted_total_price_ht }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
 
             {{-- ══════════ SUMMARY ROW (BALANCED SPACE USAGE) ══════════ --}}
             <div class="summary-row">

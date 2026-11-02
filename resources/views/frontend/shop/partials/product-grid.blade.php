@@ -55,14 +55,6 @@
                                 <h4 class="pcard-name">
                                     <a href="{{ route('shop.show', $product->id) }}" title="{{ $product->name }}">{{ $product->name }}</a>
                                 </h4>
-                                <div class="pcard-rating">
-                                    <div class="pcard-stars">
-                                        @for($i = 0; $i < 5; $i++)
-                                            <i class="fa{{ $i < round($product->reviews_avg_rating ?? 0) ? 's' : 'r' }} fa-star text-warning"></i>
-                                        @endfor
-                                    </div>
-                                    <span class="pcard-reviews">({{ $product->reviews_count ?? 0 }})</span>
-                                </div>
                                 
                                 {{-- Price & Quick Cart Button --}}
                                 <div class="pcard-bottom-row mt-auto">
@@ -125,14 +117,6 @@
                 <h4 class="pcard-name">
                     <a href="{{ route('shop.show', $product->id) }}" title="{{ $product->name }}">{{ $product->name }}</a>
                 </h4>
-                <div class="pcard-rating">
-                    <div class="pcard-stars">
-                        @for($i = 0; $i < 5; $i++)
-                            <i class="fa{{ $i < round($product->reviews_avg_rating ?? 0) ? 's' : 'r' }} fa-star text-warning"></i>
-                        @endfor
-                    </div>
-                    <span class="pcard-reviews">({{ $product->reviews_count ?? 0 }})</span>
-                </div>
                 
                 {{-- Price & Quick Cart Button --}}
                 <div class="pcard-bottom-row mt-auto">

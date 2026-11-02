@@ -69,6 +69,33 @@
 .section-title i {
     color: #667eea;
 }
+
+@media (max-width: 768px) {
+    .customer-hero {
+        padding: 1.25rem 1rem;
+        margin-bottom: 1.25rem;
+    }
+    .customer-hero .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 16px;
+    }
+    .customer-hero .d-flex.gap-2 {
+        width: 100%;
+    }
+    .customer-hero .btn {
+        flex: 1;
+        justify-content: center;
+    }
+    .stat-box {
+        padding: 1rem;
+    }
+    .credit-card {
+        padding: 1.25rem 1rem;
+    }
+    .credit-card .row > div {
+        margin-bottom: 12px;
+    }
+}
 </style>
 @endpush
 
@@ -290,18 +317,20 @@
             <tbody>
                 @foreach($recentOrders as $order)
                 <tr>
-                    <td class="fw-semibold">{{ $order->order_number }}</td>
-                    <td>{{ $order->created_at->format('M d, Y') }}</td>
-                    <td>{{ $order->items->count() }} items</td>
-                    <td class="text-end fw-bold">{{ currency($order->total) }}</td>
-                    <td class="text-center">
+                    <td class="td-product-details fw-semibold" data-label="Commande #">
+                        <strong class="product-title-text">{{ $order->order_number }}</strong>
+                    </td>
+                    <td data-label="Date">{{ $order->created_at->format('M d, Y') }}</td>
+                    <td data-label="Articles">{{ $order->items->count() }} items</td>
+                    <td class="text-end fw-bold" data-label="Total">{{ currency($order->total) }}</td>
+                    <td class="text-center" data-label="Statut">
                         <span class="badge bg-{{ $order->status_badge_class ?? 'secondary' }}">
                             {{ ucfirst($order->status) }}
                         </span>
                     </td>
-                    <td class="text-end">
+                    <td class="td-actions text-end">
                         <a href="{{ route('orders.show', $order) }}" class="btn btn-sm btn-outline-primary">
-                            <i class="fas fa-eye"></i> View
+                            <i class="fas fa-eye me-1"></i> View
                         </a>
                     </td>
                 </tr>
@@ -338,18 +367,20 @@
                     $status = $statusColors[$invoice->payment_status] ?? ['bg' => '#f1f5f9', 'text' => '#475569'];
                 @endphp
                 <tr>
-                    <td class="fw-semibold">{{ $invoice->invoice_number }}</td>
-                    <td>{{ $invoice->issued_at->format('M d, Y') }}</td>
-                    <td class="text-end fw-bold">{{ $invoice->formatted_total_amount }}</td>
-                    <td class="text-end text-success fw-semibold">{{ currency($invoice->total_amount - $invoice->remaining_balance) }}</td>
-                    <td class="text-center">
+                    <td class="td-product-details fw-semibold" data-label="Facture #">
+                        <strong class="product-title-text">{{ $invoice->invoice_number }}</strong>
+                    </td>
+                    <td data-label="Date">{{ $invoice->issued_at->format('M d, Y') }}</td>
+                    <td class="text-end fw-bold" data-label="Montant Total">{{ $invoice->formatted_total_amount }}</td>
+                    <td class="text-end text-success fw-semibold" data-label="Payé">{{ currency($invoice->total_amount - $invoice->remaining_balance) }}</td>
+                    <td class="text-center" data-label="Statut">
                         <span style="background: {{ $status['bg'] }}; color: {{ $status['text'] }}; padding: 0.25rem 0.75rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">
                             {{ ucfirst($invoice->payment_status) }}
                         </span>
                     </td>
-                    <td class="text-end">
+                    <td class="td-actions text-end">
                         <a href="{{ route('invoices.show', $invoice) }}" class="btn btn-sm btn-outline-primary">
-                            <i class="fas fa-eye"></i> View
+                            <i class="fas fa-eye me-1"></i> View
                         </a>
                     </td>
                 </tr>

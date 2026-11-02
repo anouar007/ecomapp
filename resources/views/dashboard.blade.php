@@ -133,12 +133,12 @@
                         <tbody>
                             @forelse($recentOrders as $order)
                             <tr style="cursor: pointer;" onclick="window.location='{{ route('orders.show', $order) }}'">
-                                <td style="padding-left: 1.5rem;">
+                                <td data-label="Commande">
                                     <span class="badge bg-light text-primary font-monospace py-2 px-3" style="border-radius: 8px; border: 1px solid #e0e7ff;">
                                         #{{ $order->order_number }}
                                     </span>
                                 </td>
-                                <td>
+                                <td data-label="Client">
                                     <div class="d-flex align-items-center gap-3">
                                         <div class="brand-avatar" style="width: 36px; height: 36px; background: var(--gradient-primary); color: white; font-size: 0.8rem; font-weight: 700;">
                                             {{ strtoupper(substr($order->customer_name, 0, 1)) }}
@@ -149,12 +149,12 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="text-center">
+                                <td data-label="Articles" class="text-center">
                                     <span class="brand-badge info px-2 py-1" style="font-size: 0.65rem;">
                                         {{ $order->items_count }} {{ $order->items_count > 1 ? 'Articles' : 'Article' }}
                                     </span>
                                 </td>
-                                <td>
+                                <td data-label="Statut">
                                     @php
                                         $st = strtolower($order->status);
                                         $statusClass = match($st) {
@@ -178,7 +178,7 @@
                                         {{ $statusLabel }}
                                     </span>
                                 </td>
-                                <td class="text-end fw-bold text-dark" style="padding-right: 1.5rem;">
+                                <td data-label="Total" class="text-end fw-bold text-dark">
                                     {{ currency($order->total) }}
                                 </td>
                             </tr>

@@ -96,24 +96,24 @@
                 <tbody>
                     @forelse($orders as $order)
                     <tr>
-                        <td style="padding-left: 1.5rem;">
+                        <td data-label="N° Commande">
                             <a href="{{ route('orders.show', $order) }}" class="fw-bold text-primary text-decoration-none">
                                 #{{ $order->order_number }}
                             </a>
                         </td>
-                        <td>
+                        <td data-label="Client">
                             <div class="fw-bold text-dark fs-6">{{ $order->customer_name }}</div>
                             <div class="text-muted small">{{ $order->customer_email }}</div>
                         </td>
-                        <td class="text-center">
+                        <td data-label="Articles" class="text-center">
                             <span class="badge bg-light text-secondary px-3 py-1" style="border-radius: 6px;">
-                                {{ $order->items->count() }}
+                                {{ $order->items->count() }} article(s)
                             </span>
                         </td>
-                        <td class="text-end fw-bold text-dark fs-6">
+                        <td data-label="Total" class="text-end fw-bold text-dark fs-6">
                             {{ $order->formatted_total }}
                         </td>
-                        <td class="text-center">
+                        <td data-label="Livraison" class="text-center">
                             @php
                                 $statusClass = match(strtolower($order->status)) {
                                     'delivered', 'livrée' => 'success',
@@ -135,7 +135,7 @@
                                 {{ $statusText }}
                             </span>
                         </td>
-                        <td class="text-center">
+                        <td data-label="Paiement" class="text-center">
                             @php
                                 $pClass = match(strtolower($order->payment_status)) {
                                     'paid', 'payé' => 'success',
@@ -155,10 +155,10 @@
                                 {{ $pText }}
                             </span>
                         </td>
-                        <td>
+                        <td data-label="Date">
                             <div class="text-muted small">{{ $order->created_at->format('d/m/Y') }}</div>
                         </td>
-                        <td style="padding-right: 1.5rem;">
+                        <td class="td-actions" style="padding-right: 1.5rem;">
                             <div class="d-flex justify-content-end gap-2">
                                 <a href="{{ route('orders.show', $order) }}" class="btn-action-icon" title="Voir la commande">
                                     <i class="fas fa-eye"></i>

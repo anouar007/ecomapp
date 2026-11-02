@@ -78,18 +78,14 @@
             <tbody>
                 @forelse($movements as $movement)
                 <tr>
-                    <td>
-                        <div>{{ $movement->created_at->format('M d, Y') }}</div>
-                        <small class="text-muted">{{ $movement->created_at->format('H:i:s') }}</small>
-                    </td>
-                    <td>
+                    <td class="td-product-details" data-label="Produit">
                         @if($movement->product)
                         <div class="d-flex align-items-center gap-2">
-                            <div style="width: 38px; height: 38px; border-radius: 6px; overflow: hidden; flex-shrink: 0; background: #f1f5f9; display: inline-flex; align-items: center; justify-content: center;">
+                            <div style="width: 44px; height: 44px; border-radius: 8px; overflow: hidden; flex-shrink: 0; background: #f1f5f9; display: inline-flex; align-items: center; justify-content: center;">
                                 <img src="{{ $movement->product->thumbnail }}" alt="{{ $movement->product->name }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                             </div>
                             <div>
-                                <strong>{{ $movement->product->name }}</strong>
+                                <strong class="product-title-text">{{ $movement->product->name }}</strong>
                                 <br><small class="text-muted"><code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 11px;">{{ $movement->product->sku }}</code></small>
                             </div>
                         </div>
@@ -97,19 +93,23 @@
                         <span class="text-muted">Product Removed</span>
                         @endif
                     </td>
-                    <td>
+                    <td data-label="Date">
+                        <div>{{ $movement->created_at->format('M d, Y') }}</div>
+                        <small class="text-muted">{{ $movement->created_at->format('H:i:s') }}</small>
+                    </td>
+                    <td data-label="Type">
                         <span class="badge badge-{{ $movement->type_color }}">
                             {{ $movement->type_label }}
                         </span>
                     </td>
-                    <td>
+                    <td data-label="Quantité">
                         <strong style="color: {{ $movement->quantity > 0 ? '#10b981' : '#ef4444' }};">
                             {{ $movement->quantity > 0 ? '+' : '' }}{{ $movement->quantity }}
                         </strong>
                     </td>
-                    <td><span class="badge badge-secondary">{{ $movement->stock_before }}</span></td>
-                    <td><span class="badge badge-primary">{{ $movement->stock_after }}</span></td>
-                    <td>
+                    <td data-label="Avant"><span class="badge badge-secondary">{{ $movement->stock_before }}</span></td>
+                    <td data-label="Après"><span class="badge badge-primary">{{ $movement->stock_after }}</span></td>
+                    <td data-label="Motif">
                         <div>{{ Str::limit($movement->reason ?? 'No reason provided', 50) }}</div>
                         @if($movement->reference_type && $movement->reference_id)
                             <small class="text-muted">
@@ -117,7 +117,7 @@
                             </small>
                         @endif
                     </td>
-                    <td>
+                    <td data-label="Par">
                         @if($movement->createdBy)
                             <div>{{ $movement->createdBy->name }}</div>
                             <small class="text-muted">{{ $movement->createdBy->email }}</small>

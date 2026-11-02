@@ -80,9 +80,59 @@
         grid-template-columns: 1fr 380px;
         gap: 24px;
     }
+    .order-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    .order-header-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
     @media (max-width: 1024px) {
         .order-grid {
             grid-template-columns: 1fr;
+        }
+    }
+    @media (max-width: 768px) {
+        .order-header-row {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+        }
+        .order-header-actions {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .order-header-actions > form,
+        .order-header-actions > a,
+        .order-header-actions > .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            text-align: center;
+            justify-content: center;
+        }
+        .order-header-actions form .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        .timeline-steps::before {
+            top: 14px;
+        }
+        .step-icon {
+            width: 28px;
+            height: 28px;
+            font-size: 11px;
+            margin-bottom: 6px;
+        }
+        .step-label {
+            font-size: 9.5px;
+            letter-spacing: 0;
         }
     }
 
@@ -110,7 +160,7 @@
 
 @section('content')
 <div class="page-header">
-    <div style="display: flex; justify-content: space-between; align-items: start;">
+    <div class="order-header-row">
         <div>
             <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
                 <a href="{{ route('orders.index') }}" class="btn-action btn-action-view" style="width: 32px; height: 32px; border-radius: 8px;">
@@ -123,7 +173,7 @@
                 Placed on {{ $order->created_at->format('F d, Y') }} at {{ $order->created_at->format('h:i A') }}
             </p>
         </div>
-        <div style="display: flex; gap: 10px;">
+        <div class="order-header-actions">
             <!-- Invoice Button -->
             @if(!$order->invoice)
             <form action="{{ route('orders.generate-invoice', $order) }}" method="POST">
@@ -220,7 +270,7 @@
                 </div>
             </div>
             <div class="card-body" style="padding: 0;">
-                <div class="table-container">
+                <div class="table-container table-responsive">
                     <table class="table">
                         <thead>
                             <tr>
@@ -233,7 +283,7 @@
                         <tbody>
                             @foreach($order->items as $item)
                             <tr>
-                                <td style="padding-left: 24px;">
+                                <td class="td-product-details" style="padding-left: 24px;">
                                     <div style="display: flex; align-items: center; gap: 16px;">
                                         <div style="width: 48px; height: 48px; background: #f1f5f9; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                                             @if($item->product)
@@ -248,11 +298,11 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="text-right" style="font-weight: 500;">{{ currency($item->price) }}</td>
-                                <td class="text-center">
+                                <td data-label="Prix Unitaire" class="text-right" style="font-weight: 500;">{{ currency($item->price) }}</td>
+                                <td data-label="Quantité" class="text-center">
                                     <span style="background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 13px;">{{ $item->quantity }}</span>
                                 </td>
-                                <td class="text-right" style="padding-right: 24px; font-weight: 700; color: #1e293b;">
+                                <td data-label="Total" class="text-right" style="padding-right: 24px; font-weight: 700; color: #1e293b;">
                                     {{ currency($item->price * $item->quantity) }}
                                 </td>
                             </tr>

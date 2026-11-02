@@ -48,13 +48,13 @@
             <tbody>
                 @forelse($roles as $role)
                 <tr>
-                    <td>
-                        <strong>{{ $role->name }}</strong>
+                    <td class="td-product-details" data-label="Rôle">
+                        <strong class="product-title-text">{{ $role->name }}</strong>
                         @if(in_array($role->name, ['Admin', 'Manager', 'Staff']))
                             <span class="badge badge-primary">System</span>
                         @endif
                     </td>
-                    <td>
+                    <td data-label="Permissions">
                         @if($role->permissions->count() > 0)
                             <div class="permission-tags">
                                 @foreach($role->permissions->take(3) as $permission)
@@ -68,8 +68,8 @@
                             <span class="text-muted">No permissions</span>
                         @endif
                     </td>
-                    <td>{{ $role->users->count() }} users</td>
-                    <td>
+                    <td data-label="Utilisateurs">{{ $role->users->count() }} users</td>
+                    <td class="td-actions">
                         <div class="action-buttons">
                             <a href="{{ route('roles.edit', $role) }}" class="btn-action btn-action-edit" title="Edit">
                                 <i class="fas fa-edit"></i>

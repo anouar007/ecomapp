@@ -129,23 +129,23 @@
         });
 
         tr.innerHTML = `
-            <td>
+            <td class="td-product-details" data-label="Compte">
                 <select name="lines[${index}][account_id]" class="form-select select2-account" required>
                     ${accountOptions}
                 </select>
             </td>
-            <td>
+            <td data-label="Description">
                 <input type="text" name="lines[${index}][description]" class="form-control" placeholder="Optional">
             </td>
-            <td>
+            <td data-label="Débit">
                 <input type="number" step="0.01" name="lines[${index}][debit]" class="form-control debit-input" value="0.00" oninput="calculateTotals()">
             </td>
-            <td>
+            <td data-label="Crédit">
                 <input type="number" step="0.01" name="lines[${index}][credit]" class="form-control credit-input" value="0.00" oninput="calculateTotals()">
             </td>
-            <td class="text-center">
+            <td class="td-actions text-center">
                 <button type="button" class="btn btn-danger btn-sm" onclick="removeLine(this)">
-                    <i class="fas fa-trash"></i>
+                    <i class="fas fa-trash me-1"></i> Supprimer
                 </button>
             </td>
         `;

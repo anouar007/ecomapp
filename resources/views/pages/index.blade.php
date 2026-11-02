@@ -33,24 +33,24 @@
                 <tbody>
                     @forelse($pages as $page)
                     <tr>
-                        <td style="padding-left: 1.5rem;">
-                            <div class="fw-bold text-dark">{{ $page->title }}</div>
+                        <td class="td-product-details" data-label="Titre de la page" style="padding-left: 1.5rem;">
+                            <div class="fw-bold text-dark product-title-text">{{ $page->title }}</div>
                             <div class="text-muted small">Disposition : {{ ucfirst($page->layout) }}</div>
                         </td>
-                        <td>
+                        <td data-label="Lien (Slug)">
                             <a href="{{ url($page->slug) }}" target="_blank" class="text-primary text-decoration-none">
                                 /{{ $page->slug }} <i class="fas fa-external-link-alt ms-1 small"></i>
                             </a>
                         </td>
-                        <td class="text-center">
+                        <td class="text-center" data-label="Statut">
                             <span class="brand-badge {{ $page->is_published ? 'success' : 'warning' }}">
                                 {{ $page->is_published ? 'Publiée' : 'Brouillon' }}
                             </span>
                         </td>
-                        <td>
+                        <td data-label="Mise à jour">
                             <div class="text-muted small">{{ $page->updated_at->format('d/m/Y H:i') }}</div>
                         </td>
-                        <td style="padding-right: 1.5rem;">
+                        <td class="td-actions" style="padding-right: 1.5rem;">
                             <div class="d-flex justify-content-end gap-2">
                                 <a href="{{ route('pages.edit', $page) }}" class="btn-action-icon" title="Modifier la page">
                                     <i class="fas fa-edit"></i>

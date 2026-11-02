@@ -43,11 +43,11 @@
                 <tbody>
                     @forelse($codes as $code)
                     <tr>
-                        <td style="padding-left: 1.5rem;">
-                            <div class="fw-bold text-dark">{{ $code->title }}</div>
+                        <td class="td-product-details" data-label="Extrait de code" style="padding-left: 1.5rem;">
+                            <div class="fw-bold text-dark product-title-text">{{ $code->title }}</div>
                             <div class="text-muted small">Mis à jour {{ $code->updated_at->diffForHumans() }}</div>
                         </td>
-                        <td>
+                        <td data-label="Type">
                             @php
                                 $typeColor = match($code->type) {
                                     'css' => 'info',
@@ -60,7 +60,7 @@
                                 {{ strtoupper($code->type) }}
                             </span>
                         </td>
-                        <td>
+                        <td data-label="Emplacement">
                             <span class="text-muted small">
                                 <i class="fas fa-map-marker-alt me-1"></i>
                                 @php
@@ -74,17 +74,17 @@
                                 {{ $pos }}
                             </span>
                         </td>
-                        <td>
+                        <td data-label="Priorité">
                             <span class="badge bg-light text-secondary font-monospace" style="border: 1px solid #e2e8f0;">
                                 {{ $code->priority }}
                             </span>
                         </td>
-                        <td>
+                        <td data-label="Statut">
                             <span class="brand-badge {{ $code->is_active ? 'success' : 'danger' }}">
                                 {{ $code->is_active ? 'Actif' : 'Inactif' }}
                             </span>
                         </td>
-                        <td style="padding-right: 1.5rem;">
+                        <td class="td-actions" style="padding-right: 1.5rem;">
                             <div class="d-flex justify-content-end gap-2">
                                 <a href="{{ route('custom-codes.edit', $code) }}" class="btn-action-icon" title="Modifier l'extrait">
                                     <i class="fas fa-edit"></i>

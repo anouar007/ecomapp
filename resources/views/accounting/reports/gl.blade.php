@@ -54,15 +54,15 @@
                 <tbody>
                     @foreach($accountData['lines'] as $line)
                     <tr>
-                        <td style="padding-left: 1.5rem;" class="text-muted">{{ $line->entry->date->format('Y-m-d') }}</td>
-                        <td>
-                            <span class="badge bg-light text-primary font-monospace border">
+                        <td data-label="Date" style="padding-left: 1.5rem;" class="text-muted">{{ $line->entry->date->format('Y-m-d') }}</td>
+                        <td class="td-product-details" data-label="Référence">
+                            <span class="badge bg-light text-primary font-monospace border product-title-text">
                                 {{ $line->entry->reference }}
                             </span>
                         </td>
-                        <td class="text-dark">{{ $line->entry->description }}</td>
-                        <td class="text-end">{{ $line->debit > 0 ? number_format($line->debit, 2) : '-' }}</td>
-                        <td class="text-end" style="padding-right: 1.5rem;">{{ $line->credit > 0 ? number_format($line->credit, 2) : '-' }}</td>
+                        <td data-label="Description" class="text-dark">{{ $line->entry->description }}</td>
+                        <td data-label="Débit" class="text-end">{{ $line->debit > 0 ? number_format($line->debit, 2) : '-' }}</td>
+                        <td data-label="Crédit" class="text-end" style="padding-right: 1.5rem;">{{ $line->credit > 0 ? number_format($line->credit, 2) : '-' }}</td>
                     </tr>
                     @endforeach
                     <tr class="bg-light fw-bold" style="border-top: 1px solid #e2e8f0;">

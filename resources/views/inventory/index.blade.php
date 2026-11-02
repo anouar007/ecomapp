@@ -134,17 +134,20 @@
                 <tbody>
                     @forelse($products as $product)
                     <tr>
-                        <td style="padding-left: 1.5rem;">
-                            <input type="checkbox" class="form-check-input product-check" value="{{ $product->id }}">
+                        <td class="td-checkbox" data-label="Sélection">
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox" class="form-check-input product-check" value="{{ $product->id }}">
+                                <span class="d-md-none small text-muted fw-semibold">Sélectionner</span>
+                            </div>
                         </td>
-                        <td>
+                        <td class="td-product-details">
                             <div class="d-flex align-items-center gap-3">
                                 <div class="brand-avatar">
                                     <img src="{{ $product->thumbnail }}" alt="{{ $product->name }}" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                                 </div>
                                 <div>
                                     <div class="fw-bold text-dark">{{ $product->name }}</div>
-                                    <div class="d-flex align-items-center gap-2 mt-1">
+                                    <div class="d-flex align-items-center gap-2 mt-1 flex-wrap">
                                         <span class="badge bg-light text-secondary font-monospace" style="font-size: 0.65rem;">{{ $product->sku ?? 'SANS-SKU' }}</span>
                                         <span class="text-muted small">•</span>
                                         <span class="text-muted small">{{ $product->category->name ?? 'Non classé' }}</span>
@@ -152,7 +155,7 @@
                                 </div>
                             </div>
                         </td>
-                        <td>
+                        <td data-label="Niveau de stock">
                             @if($product->track_inventory)
                                 <div class="d-flex flex-column gap-2" style="min-width: 120px;">
                                     <div class="d-flex align-items-center gap-2">
@@ -185,7 +188,7 @@
                                 <span class="brand-badge" style="background: #f1f5f9; color: #94a3b8;">Non suivi</span>
                             @endif
                         </td>
-                        <td class="text-center">
+                        <td data-label="Ventes (30j)" class="text-center">
                             @if($product->sold_last_30_days > 0)
                                 <div class="fw-bold">{{ number_format($product->sold_last_30_days) }}</div>
                                 <div class="text-muted small">unités/mois</div>
@@ -193,7 +196,7 @@
                                 <span class="text-muted">—</span>
                             @endif
                         </td>
-                        <td class="text-center">
+                        <td data-label="Prévision" class="text-center">
                             @php
                                 $daysText = '—';
                                 $badgeType = '';
@@ -226,7 +229,7 @@
                                 <span class="text-muted">—</span>
                             @endif
                         </td>
-                        <td class="text-center">
+                        <td data-label="Seuil réapp." class="text-center">
                             @php
                                 $reorderPt = '—';
                                 $reorderClass = '';
@@ -242,7 +245,7 @@
                             @endphp
                             <span class="{{ $reorderClass }}">{{ $reorderPt }}</span>
                         </td>
-                        <td>
+                        <td data-label="Valeur stock">
                             @if($product->track_inventory && $product->cost_price)
                                 <div class="fw-bold text-dark">{{ currency(($product->stock ?? 0) * $product->cost_price) }}</div>
                                 <div class="text-muted small">{{ currency($product->cost_price) }} / unité</div>
@@ -250,7 +253,7 @@
                                 <span class="text-muted">—</span>
                             @endif
                         </td>
-                        <td style="padding-right: 1.5rem;">
+                        <td class="td-actions" style="padding-right: 1.5rem;">
                             <div class="d-flex justify-content-end gap-2">
                                 @if($product->track_inventory)
                                 <button type="button" class="btn-action-icon" 

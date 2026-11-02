@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div style="padding: 24px; max-width: 1100px; margin: 0 auto;">
+<div class="invoice-editor-container" style="padding: 24px; max-width: 1100px; margin: 0 auto;">
     <div style="margin-bottom: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
         <div>
             <a href="{{ route('invoices.index') }}" style="color: #64748b; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 8px; font-weight: 600; font-size: 14px;">
@@ -218,8 +218,8 @@
                 </div>
             </div>
 
-            <div style="padding: 24px; overflow-x: auto;">
-                <table style="width: 100%; border-collapse: separate; border-spacing: 0; min-width: 780px;" id="itemsTable">
+            <div style="padding: 24px; overflow-x: auto;" class="invoice-items-table-wrapper">
+                <table style="width: 100%; border-collapse: separate; border-spacing: 0;" class="invoice-items-table" id="itemsTable">
                     <thead>
                         <tr style="background: #f8fafc;">
                             <th style="padding: 12px 14px; text-align: left; font-size: 12.5px; font-weight: 700; color: #475569; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; border-top: 1px solid #e2e8f0; border-radius: 8px 0 0 0;">
@@ -263,7 +263,7 @@
                     </div>
 
                     {{-- Totals Summary Box --}}
-                    <div style="min-width: 320px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px;">
+                    <div class="invoice-totals-box" style="min-width: 320px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px;">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px;">
                             <span style="color: #64748b; font-weight: 600;">{{ __('Total HT :') }}</span>
                             <span style="font-weight: 700; color: #334155;" id="summarySubtotal">0.00</span>
@@ -535,7 +535,7 @@
         tr.style.borderBottom = '1px solid #f1f5f9';
 
         tr.innerHTML = `
-            <td style="padding: 12px 14px; vertical-align: top; position: relative;">
+            <td class="td-product-details" data-label="Produit / Service" style="padding: 12px 14px; vertical-align: top; position: relative;">
                 <input type="hidden" name="items[${idx}][product_id]" class="product-id-input" value="${isManual ? '' : selectedProdId}">
                 
                 <div class="product-search-container" style="position: relative;">
@@ -569,26 +569,26 @@
                     </div>
                 </div>
             </td>
-            <td style="padding: 12px 14px; vertical-align: top;">
+            <td data-label="SKU / Ref" style="padding: 12px 14px; vertical-align: top;">
                 <input type="text" name="items[${idx}][product_sku]" class="product-sku-input" value="${escapeHtml(prodSku)}"
                        placeholder="SKU / Ref"
                        style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; color: #475569;">
             </td>
-            <td style="padding: 12px 14px; vertical-align: top;">
+            <td data-label="P.U. HT" style="padding: 12px 14px; vertical-align: top;">
                 <input type="number" name="items[${idx}][unit_price]" class="unit-price-input" value="${unitPrice !== null ? unitPrice.toFixed(2) : ''}" min="0" step="0.01" required
                        placeholder="0.00"
                        oninput="calculateRow(${idx})"
                        style="width: 100%; padding: 8px 10px; text-align: right; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13.5px; font-weight: 700; color: #0f172a; outline: none;">
             </td>
-            <td style="padding: 12px 14px; vertical-align: top;">
+            <td data-label="Quantité" style="padding: 12px 14px; vertical-align: top;">
                 <input type="number" name="items[${idx}][quantity]" class="quantity-input" value="${quantity}" min="1" step="1" required
                        oninput="calculateRow(${idx})"
                        style="width: 100%; padding: 8px 10px; text-align: center; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13.5px; font-weight: 600; outline: none;">
             </td>
-            <td style="padding: 12px 14px; vertical-align: top; text-align: right;">
+            <td data-label="Total HT" style="padding: 12px 14px; vertical-align: top; text-align: right;">
                 <span class="row-total-display" style="display: block; padding-top: 8px; font-size: 14px; font-weight: 700; color: #2563eb;">0.00</span>
             </td>
-            <td style="padding: 12px 14px; vertical-align: top; text-align: center;">
+            <td class="td-actions" style="padding: 12px 14px; vertical-align: top; text-align: center;">
                 <button type="button" onclick="removeRow(${idx})" title="{{ __('Remove') }}"
                         style="color: #94a3b8; background: none; border: none; cursor: pointer; padding: 8px; border-radius: 6px; transition: color 0.15s;"
                         onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#94a3b8'">

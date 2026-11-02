@@ -116,11 +116,13 @@
                         <tbody>
                             @forelse($recentEntries as $entry)
                             <tr>
-                                <td style="padding-left: 1.5rem;">{{ $entry->date->format('M d, Y') }}</td>
-                                <td><span class="badge bg-light text-primary font-monospace py-2 px-3" style="border-radius: 8px;">{{ $entry->reference }}</span></td>
-                                <td>{{ $entry->description }}</td>
-                                <td><span class="brand-badge secondary">{{ $entry->journal_type }}</span></td>
-                                <td class="text-end fw-bold text-dark" style="padding-right: 1.5rem;">{{ currency($entry->total_debit) }}</td>
+                                <td class="td-product-details" data-label="Date" style="padding-left: 1.5rem;">
+                                    <strong class="product-title-text">{{ $entry->date->format('M d, Y') }}</strong>
+                                </td>
+                                <td data-label="Réf"><span class="badge bg-light text-primary font-monospace py-2 px-3" style="border-radius: 8px;">{{ $entry->reference }}</span></td>
+                                <td data-label="Description">{{ $entry->description }}</td>
+                                <td data-label="Type"><span class="brand-badge secondary">{{ $entry->journal_type }}</span></td>
+                                <td class="text-end fw-bold text-dark" data-label="Montant" style="padding-right: 1.5rem;">{{ currency($entry->total_debit) }}</td>
                             </tr>
                             @empty
                             <tr>

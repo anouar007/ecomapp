@@ -135,16 +135,16 @@
             <tbody>
                 @forelse($coupons as $coupon)
                 <tr>
-                    <td>
+                    <td class="td-product-details" data-label="Code Promo">
                         <code style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; letter-spacing: 0.5px;">{{ $coupon->code }}</code>
                     </td>
-                    <td>
+                    <td data-label="Nom">
                         <strong>{{ $coupon->name }}</strong>
                         @if($coupon->description)
                             <br><small class="text-muted">{{ Str::limit($coupon->description, 50) }}</small>
                         @endif
                     </td>
-                    <td>
+                    <td data-label="Type">
                         @if($coupon->type == 'percentage')
                             <span class="badge badge-primary"><i class="fas fa-percent"></i> Percentage</span>
                         @elseif($coupon->type == 'fixed')
@@ -155,7 +155,7 @@
                             <span class="badge badge-warning"><i class="fas fa-gift"></i> Buy X Get Y</span>
                         @endif
                     </td>
-                    <td>
+                    <td data-label="Valeur">
                         @if($coupon->type == 'percentage')
                             <strong style="color: #3b82f6;">{{ $coupon->value }}%</strong>
                         @elseif($coupon->type == 'fixed')
@@ -166,7 +166,7 @@
                             <strong style="color: #f59e0b;">{{ $coupon->buy_quantity }} + {{ $coupon->get_quantity }}</strong>
                         @endif
                     </td>
-                    <td>
+                    <td data-label="Utilisation">
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <strong>{{ $coupon->usage_count }}</strong>
                             @if($coupon->usage_limit)
@@ -179,7 +179,7 @@
                             <small class="text-danger"><i class="fas fa-exclamation-triangle"></i> Limit reached</small>
                         @endif
                     </td>
-                    <td>
+                    <td data-label="Validité">
                         @if($coupon->valid_from)
                             <small>From: {{ $coupon->valid_from->format('M d, Y') }}</small><br>
                         @endif
@@ -189,7 +189,7 @@
                             <small class="text-muted">No expiry</small>
                         @endif
                     </td>
-                    <td>
+                    <td data-label="Statut">
                         @if($coupon->status == 'active')
                             <span class="badge badge-success"><i class="fas fa-check-circle"></i> Active</span>
                         @elseif($coupon->status == 'expired')
@@ -198,7 +198,7 @@
                             <span class="badge badge-secondary"><i class="fas fa-times-circle"></i> Inactive</span>
                         @endif
                     </td>
-                    <td>
+                    <td class="td-actions">
                         <div class="action-buttons">
                             <a href="{{ route('coupons.show', $coupon) }}" class="btn-action btn-action-view" title="View Details">
                                 <i class="fas fa-eye"></i>

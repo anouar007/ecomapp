@@ -125,19 +125,19 @@
                 <tbody>
                     @forelse($customers as $customer)
                     <tr>
-                        <td style="padding-left: 1.5rem;">
+                        <td class="td-customer-details">
                             <div>
                                 <div class="fw-bold text-dark fs-6">{{ $customer->name }}</div>
                                 <div class="text-muted small font-monospace mt-1">{{ $customer->customer_code }}</div>
                             </div>
                         </td>
-                        <td>
+                        <td data-label="Contact">
                             <div class="text-dark small">{{ $customer->email }}</div>
                             @if($customer->phone)
                                 <div class="text-muted" style="font-size: 0.75rem;">{{ $customer->phone }}</div>
                             @endif
                         </td>
-                        <td>
+                        <td data-label="Groupe">
                             @if($customer->customerGroup)
                                 <span class="brand-badge info" style="background: {{ $customer->customerGroup->color }}15; color: {{ $customer->customerGroup->color }};">
                                     {{ $customer->customerGroup->name }}
@@ -146,13 +146,13 @@
                                 <span class="text-muted small">Aucun groupe</span>
                             @endif
                         </td>
-                        <td class="text-center">
+                        <td data-label="Commandes" class="text-center">
                             <span class="fw-bold text-dark">{{ $customer->total_orders }}</span>
                         </td>
-                        <td class="text-end">
+                        <td data-label="Total Dépensé" class="text-end">
                             <span class="fw-bold text-dark fs-6">{{ $customer->formatted_total_spent }}</span>
                         </td>
-                        <td class="text-center">
+                        <td data-label="Statut" class="text-center">
                             @php
                                 $statusClasses = [
                                     'active' => 'success',
@@ -171,7 +171,7 @@
                                 {{ $custStatus }}
                             </span>
                         </td>
-                        <td style="padding-right: 1.5rem;">
+                        <td class="td-actions" style="padding-right: 1.5rem;">
                             <div class="d-flex justify-content-end gap-2">
                                 <a href="{{ route('customers.show', $customer) }}" class="btn-action-icon" title="Voir le client">
                                     <i class="fas fa-eye"></i>

@@ -129,24 +129,23 @@
             <tbody>
                 @forelse($logs as $log)
                 <tr>
-                    <td>
+                    <td class="td-customer-details" data-label="Utilisateur">
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            <div style="width: 32px; height: 32px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #475569;">
+                            <div style="width: 38px; height: 38px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #475569;">
                                 {{ $log->user ? substr($log->user->name, 0, 1) : '?' }}
                             </div>
                             <div>
-                                <span style="font-weight: 600; color: #334155;">{{ $log->user->name ?? 'System' }}</span>
-                                <br>
+                                <span class="customer-name" style="font-weight: 600; color: #334155; display: block;">{{ $log->user->name ?? 'System' }}</span>
                                 <small class="text-muted">{{ $log->user->email ?? '' }}</small>
                             </div>
                         </div>
                     </td>
-                    <td>
-                        <span class="badge badge-light" style="font-weight: normal; font-size: 13px; color: #334155;">
+                    <td data-label="Action">
+                        <span class="badge badge-light" style="font-weight: 600; font-size: 13px; color: #334155;">
                             {{ $log->description }}
                         </span>
                     </td>
-                    <td>
+                    <td data-label="Sujet">
                         @if($log->subject_type)
                             <span class="badge badge-secondary" style="font-size: 11px;">
                                 {{ class_basename($log->subject_type) }} #{{ $log->subject_id }}
@@ -155,7 +154,7 @@
                             <span class="text-muted">—</span>
                         @endif
                     </td>
-                    <td>
+                    <td data-label="Modifications">
                         @if(!empty($log->properties))
                             @php
                                 $props = is_array($log->properties) ? $log->properties : json_decode($log->properties, true);
@@ -171,15 +170,15 @@
                             <span class="text-muted">—</span>
                         @endif
                     </td>
-                    <td>
+                    <td data-label="Date & Heure">
                         <span style="color: #475569; font-size: 13px;">
                             {{ $log->created_at->format('M d, Y') }}<br>
                             <small class="text-muted">{{ $log->created_at->format('h:i A') }}</small>
                         </span>
                     </td>
-                    <td>
-                       <a href="{{ route('activity-logs.show', $log) }}" class="btn btn-sm btn-icon btn-light" title="View Details">
-                           <i class="fas fa-eye"></i>
+                    <td class="td-actions">
+                       <a href="{{ route('activity-logs.show', $log) }}" class="btn-action btn-action-view" title="View Details">
+                           <i class="fas fa-eye me-1"></i> {{ __('Détails') }}
                        </a>
                     </td>
                 </tr>

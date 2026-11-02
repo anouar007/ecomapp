@@ -41,16 +41,19 @@
             <tbody>
                 @forelse($users as $user)
                 <tr>
-                    <td>
+                    <td class="td-customer-details" data-label="Utilisateur">
                         <div style="display: flex; align-items: center; gap: 12px;">
                             <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
                                 {{ strtoupper(substr($user->name, 0, 1)) }}
                             </div>
-                            <strong>{{ $user->name }}</strong>
+                            <div>
+                                <strong class="customer-name" style="display: block;">{{ $user->name }}</strong>
+                                <small class="text-muted">{{ $user->email }}</small>
+                            </div>
                         </div>
                     </td>
-                    <td>{{ $user->email }}</td>
-                    <td>
+                    <td data-label="Email">{{ $user->email }}</td>
+                    <td data-label="Rôles">
                         @if($user->roles->count() > 0)
                             <div class="role-tags">
                                 @foreach($user->roles as $role)
@@ -61,12 +64,12 @@
                             <span class="text-muted">No roles assigned</span>
                         @endif
                     </td>
-                    <td>
+                    <td class="td-actions">
                         <button type="button" 
                                 class="btn-action btn-action-edit" 
                                 onclick="openRoleModal({{ $user->id }}, '{{ $user->name }}', {{ json_encode($user->roles->pluck('id')) }})" 
                                 title="Manage Roles">
-                            <i class="fas fa-user-shield"></i>
+                            <i class="fas fa-user-shield me-1"></i> {{ __('Gérer les rôles') }}
                         </button>
                     </td>
                 </tr>

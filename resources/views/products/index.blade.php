@@ -346,14 +346,17 @@
                     @forelse($products as $product)
                     <tr data-product-id="{{ $product->id }}" id="product-row-{{ $product->id }}">
                         <!-- 1. Checkbox -->
-                        <td class="text-center" style="padding-left: 0.75rem; padding-right: 0.5rem;">
-                            <input type="checkbox" class="form-check-input product-checkbox" 
-                                   value="{{ $product->id }}" 
-                                   onchange="updateSelection()">
+                        <td class="td-checkbox" data-label="Sélection">
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox" class="form-check-input product-checkbox" 
+                                       value="{{ $product->id }}" 
+                                       onchange="updateSelection()">
+                                <span class="d-md-none small text-muted fw-semibold">Sélectionner ce produit</span>
+                            </div>
                         </td>
 
                         <!-- 2. Détails du Produit (Thumbnail + Titre + SKU + Badge 4K) -->
-                        <td>
+                        <td class="td-product-details">
                             <div class="d-flex align-items-center gap-3">
                                 <!-- Vignette Produit avec badge 4K et hover action -->
                                 <div class="product-thumb-container position-relative flex-shrink-0" id="prod-avatar-wrap-{{ $product->id }}">
@@ -375,7 +378,7 @@
                                 <!-- Infos textuelles -->
                                 <div class="product-info-column min-w-0 flex-grow-1">
                                     <a href="{{ route('products.edit', $product) }}" 
-                                       class="product-title-link text-truncate d-block fw-bold mb-1" 
+                                       class="product-title-link d-block fw-bold mb-1" 
                                        title="{{ $product->name }}">
                                         {{ $product->name }}
                                     </a>
@@ -396,7 +399,7 @@
                         </td>
 
                         <!-- 3. Catégorie -->
-                        <td>
+                        <td data-label="Catégorie">
                             @if($product->category_name)
                                 <a href="{{ route('products.index', ['category' => $product->category_id]) }}" class="product-category-pill text-truncate d-inline-block text-decoration-none" title="Filtrer par catégorie : {{ $product->category_name }}">
                                     <i class="fas fa-folder me-1 opacity-50"></i>{{ $product->category_name }}
@@ -407,7 +410,7 @@
                         </td>
 
                         <!-- 4. Prix & Marge -->
-                        <td>
+                        <td data-label="Prix & Marge">
                             <div class="fw-bold text-dark" style="font-size: 0.95rem;">
                                 {{ currency($product->price) }}
                             </div>
@@ -419,7 +422,7 @@
                         </td>
 
                         <!-- 5. Stock & Disponibilité -->
-                        <td>
+                        <td data-label="Stock">
                             @php
                                 $stock = (int) $product->stock;
                                 $min = (int) ($product->min_stock ?? 5);
@@ -444,7 +447,7 @@
                         </td>
 
                         <!-- 6. Statut (Interrupteur interactif en 1 clic AJAX) -->
-                        <td class="text-center">
+                        <td data-label="Statut" class="td-status">
                             @php
                                 $st = strtolower($product->status);
                                 $isActive = ($st === 'active' || $st === 'actif');
@@ -460,7 +463,7 @@
                         </td>
 
                         <!-- 7. Actions -->
-                        <td style="padding-right: 1.25rem;">
+                        <td class="td-actions" data-label="Actions">
                             <div class="d-flex align-items-center justify-content-end gap-1">
                                 <!-- Bouton Studio 4K -->
                                 <button type="button" 
@@ -1591,9 +1594,12 @@
                             ${cand.source}
                         </span>
                     </div>
-                    <div style="padding: 12px; display: flex; flex-direction: column; gap: 8px; background: #ffffff; border-top: 1px solid #f1f5f9;">
-                        <button type="button" onclick="applySelected4kImage('${cand.url.replace(/'/g, "\\'")}', this)" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; border: none; border-radius: 8px; padding: 9px 12px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s;">
-                            <i class="fas fa-check-circle"></i> Choisir cette image 4K
+                    <div style="padding: 10px 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: #ffffff; border-top: 1px solid #f1f5f9;">
+                        <button type="button" onclick="applySelected4kImage('${cand.url.replace(/'/g, "\\'")}', this, false)" style="background: #10b981; color: white; border: none; border-radius: 8px; padding: 8px; font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s;">
+                            <i class="fas fa-plus"></i> + Galerie
+                        </button>
+                        <button type="button" onclick="applySelected4kImage('${cand.url.replace(/'/g, "\\'")}', this, true)" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; border: none; border-radius: 8px; padding: 8px; font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s;">
+                            <i class="fas fa-star"></i> Principale
                         </button>
                     </div>
                 `;
@@ -1608,10 +1614,10 @@
         });
     }
 
-    function applySelected4kImage(imageUrl, button) {
+    function applySelected4kImage(imageUrl, button, asPrimary = true) {
         const origHtml = button.innerHTML;
         button.disabled = true;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Téléchargement 4K...';
+        button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>';
 
         const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
 
@@ -1623,7 +1629,10 @@
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'application/json'
             },
-            body: JSON.stringify({ image_url: imageUrl })
+            body: JSON.stringify({ 
+                image_url: imageUrl,
+                as_primary: asPrimary
+            })
         })
         .then(res => res.json())
         .then(data => {
@@ -1631,23 +1640,28 @@
             button.innerHTML = origHtml;
 
             if (data.success) {
-                const prodImg = document.getElementById(`prod-img-${current4kProductId}`);
-                if (prodImg) {
-                    prodImg.src = data.image_url + '?t=' + new Date().getTime();
-                }
+                button.style.background = '#059669';
+                button.innerHTML = '<i class="fas fa-check"></i> OK!';
 
-                const prodBadge = document.getElementById(`prod-badge-${current4kProductId}`);
-                if (prodBadge && data.badge_html) {
-                    prodBadge.innerHTML = data.badge_html;
-                }
+                if (asPrimary) {
+                    const prodImg = document.getElementById(`prod-img-${current4kProductId}`);
+                    if (prodImg) {
+                        prodImg.src = data.image_url + '?t=' + new Date().getTime();
+                    }
 
-                close4kImageModal();
+                    const prodBadge = document.getElementById(`prod-badge-${current4kProductId}`);
+                    if (prodBadge && data.badge_html) {
+                        prodBadge.innerHTML = data.badge_html;
+                    }
+
+                    setTimeout(() => close4kImageModal(), 600);
+                }
 
                 Swal.fire({
-                    title: 'Image 4K Appliquée !',
+                    title: asPrimary ? 'Image Principale 4K !' : 'Image Ajoutée à la Galerie !',
                     text: `Résolution : ${data.width}×${data.height} pixels (${data.quality.toUpperCase()})`,
                     icon: 'success',
-                    timer: 2500,
+                    timer: 2000,
                     showConfirmButton: false,
                     toast: true,
                     position: 'top-end'

@@ -333,10 +333,10 @@
                     $riskClass = ['high' => 'risk-high', 'medium' => 'risk-medium', 'low' => 'risk-low'][$riskLevel];
                 @endphp
                 <tr class="debtor-row">
-                    <td style="padding-left: 1.5rem;">
+                    <td class="td-checkbox" data-label="Sélection" style="padding-left: 1.5rem;">
                         <input type="checkbox" class="form-check-input debtor-checkbox" value="{{ $debtor->id }}">
                     </td>
-                    <td>
+                    <td class="td-customer-details" data-label="Client">
                         <div class="d-flex align-items-center gap-3">
                             <div class="flex-shrink-0">
                                 <div class="rounded-circle d-flex align-items-center justify-content-center" 
@@ -345,12 +345,12 @@
                                 </div>
                             </div>
                             <div>
-                                <div class="fw-semibold text-dark">{{ $debtor->name }}</div>
+                                <div class="fw-semibold text-dark customer-name">{{ $debtor->name }}</div>
                                 <div class="small text-muted">{{ $debtor->email }}</div>
                             </div>
                         </div>
                     </td>
-                    <td>
+                    <td data-label="Contact">
                         <div class="small">
                             @if($debtor->phone)
                                 <i class="fas fa-phone text-muted me-1"></i> {{ $debtor->phone }}
@@ -359,19 +359,19 @@
                             @endif
                         </div>
                     </td>
-                    <td class="text-end">
+                    <td class="text-end" data-label="Limite de crédit">
                         @if($debtor->credit_limit > 0)
                             <span class="fw-semibold">{{ currency($debtor->credit_limit) }}</span>
                         @else
                             <span class="badge bg-secondary">Unlimited</span>
                         @endif
                     </td>
-                    <td class="text-end">
+                    <td class="text-end" data-label="Solde dû">
                         <span class="fw-bold" style="color: #ef4444; font-size: 1.1rem;">
                             {{ currency($debtor->current_balance) }}
                         </span>
                     </td>
-                    <td>
+                    <td data-label="Utilisation">
                         <div style="min-width: 120px;">
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <span class="small text-muted">{{ number_format($utilization, 0) }}%</span>
@@ -382,13 +382,13 @@
                             </div>
                         </div>
                     </td>
-                    <td class="text-center">
+                    <td class="text-center" data-label="Risque">
                         <span class="risk-badge {{ $riskClass }}">
                             <i class="fas fa-{{ $riskLevel == 'high' ? 'exclamation-circle' : ($riskLevel == 'medium' ? 'exclamation-triangle' : 'check-circle') }}"></i>
                             {{ ucfirst($riskLevel) }}
                         </span>
                     </td>
-                    <td style="padding-right: 1.5rem;">
+                    <td class="td-actions" style="padding-right: 1.5rem;">
                         <div class="d-flex justify-content-end gap-2">
                             <a href="{{ route('customers.show', $debtor) }}" 
                                class="btn btn-sm btn-outline-primary" title="View Details">

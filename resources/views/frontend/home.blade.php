@@ -21,39 +21,52 @@
     <div class="swiper hero-swiper">
         <div class="swiper-wrapper">
             @php
+            $isAr = app()->getLocale() === 'ar';
             $cameraSlides = [
                 [
-                    'badge' => app()->getLocale() === 'ar' ? 'سينما واحترافية' : 'CINÉMA & BROADCAST PRO',
-                    'title' => __('Cinematic Excellence for Creators & Directors'),
-                    'desc'  => app()->getLocale() === 'ar'
-                        ? 'كاميرات سينما 6K/8K، مستشعرات كاملة المنظر ومنصات احترافية مصممة للمخرجين ومنشئي المحتوى الأكثر صرامة.'
-                        : 'Caméras cinéma 6K/8K, capteurs plein format et rigs professionnels conçus pour les réalisateurs et créateurs de contenu les plus exigeants.',
-                    'img'   => asset('images/camera/hero_cinema_rig.jpg'),
-                    'tag1'  => 'RAW 8K',
-                    'tag2'  => '120 FPS',
-                    'tag3'  => 'DUAL ISO',
+                    'brand'      => 'Sony',
+                    'title'      => 'Sony',
+                    'desc'       => $isAr
+                        ? 'كاميرات سينمائية ألفا ومجموعة عدسات G-Master الاحترافية.'
+                        : 'Caméras cinéma FX, hybrides Alpha et optiques professionnelles G-Master.',
+                    'img'        => asset('images/camera/hero_brand_sony.jpg'),
+                    'shop_url'   => route('shop.index', ['brand' => 'Sony']),
                 ],
                 [
-                    'badge' => app()->getLocale() === 'ar' ? 'عدسات استثنائية' : 'OPTIQUES D\'EXCEPTION',
-                    'title' => app()->getLocale() === 'ar' ? 'عدسات ثابتة وزوم مضيئة' : 'Objectifs Prime & Zooms Lumineux',
-                    'desc'  => app()->getLocale() === 'ar'
-                        ? 'عدسات أنامورفيك، بُعد ثابت f/1.2 وزوم G-Master لنحت الضوء بحدة استثنائية وبوكيه سينمائي.'
-                        : 'Optiques anamorphiques, focales fixes f/1.2 et zooms G-Master pour sculpter la lumière avec un piqué chirurgical et un bokeh cinématographique.',
-                    'img'   => asset('images/camera/hero_lens_optics.jpg'),
-                    'tag1'  => 'f/1.2 APERTURE',
-                    'tag2'  => 'NANO AR',
-                    'tag3'  => 'E-MOUNT / RF',
+                    'brand'      => 'Canon',
+                    'title'      => 'Canon',
+                    'desc'       => $isAr
+                        ? 'أنظمة EOS R الهجينة والسينمائية مع عدسات RF المرموقة.'
+                        : 'Système EOS R, caméras cinéma et objectifs RF Série L de haute précision.',
+                    'img'        => asset('images/camera/hero_brand_canon.jpg'),
+                    'shop_url'   => route('shop.index', ['brand' => 'Canon']),
                 ],
                 [
-                    'badge' => app()->getLocale() === 'ar' ? 'نظام التصوير' : 'ÉCOSYSTÈME TOURNAGE',
-                    'title' => app()->getLocale() === 'ar' ? 'أجهزة الاستقرار، الإضاءة والصوت' : 'Stabilisateurs, Éclairage & Audio Studio',
-                    'desc'  => app()->getLocale() === 'ar'
-                        ? 'جيمبال 3 محاور DJI RS 4 Pro، مصابيح LED COB Aputure وميكروفونات HF 32-bit float لتحويل كل لقطة إلى تحفة.'
-                        : 'Gimbals 3 axes DJI RS 4 Pro, projecteurs LED COB Aputure et microphones HF 32-bit float pour transformer chaque prise de vue en chef-d\'œuvre.',
-                    'img'   => asset('images/camera/hero_studio_crew.jpg'),
-                    'tag1'  => '32-BIT FLOAT',
-                    'tag2'  => 'CARBON RIG',
-                    'tag3'  => 'WIRELESS VIDEO',
+                    'brand'      => 'Insta360',
+                    'title'      => 'Insta360',
+                    'desc'       => $isAr
+                        ? 'كاميرات الأكشن وتقنية التصوير 360 درجة بدقة 8K مع ثبات FlowState.'
+                        : 'Caméras d\'action et 360° en 8K ultra-stabilisées avec optiques Leica.',
+                    'img'        => asset('images/camera/hero_brand_insta360.jpg'),
+                    'shop_url'   => route('shop.index', ['brand' => 'Insta360']),
+                ],
+                [
+                    'brand'      => 'DJI',
+                    'title'      => 'DJI',
+                    'desc'       => $isAr
+                        ? 'مثبتات رونين الاحترافية والدرونز الجوية المزودة بعدسات هاسيلبلاد.'
+                        : 'Stabilisateurs Ronin RS, drones professionnels et audio sans fil DJI Mic.',
+                    'img'        => asset('images/camera/hero_brand_dji.jpg'),
+                    'shop_url'   => route('shop.index', ['brand' => 'DJI']),
+                ],
+                [
+                    'brand'      => 'Godox',
+                    'title'      => 'Godox',
+                    'desc'       => $isAr
+                        ? 'حلول إضاءة الاستوديو المتطورة وفلاشات التصوير الاحترافي.'
+                        : 'Flashs autonomes, projecteurs LED COB et éclairage professionnel de studio.',
+                    'img'        => asset('images/camera/hero_brand_godox.jpg'),
+                    'shop_url'   => route('shop.index', ['brand' => 'Godox']),
                 ],
             ];
             @endphp
@@ -62,56 +75,24 @@
             <div class="swiper-slide">
                 <div class="hero-slide" style="background-image: url('{{ $slide['img'] }}');">
                     <div class="hero-slide-overlay"></div>
-                    <div class="hud-reticle-top-left"></div>
-                    <div class="hud-reticle-top-right"></div>
-                    <div class="hud-reticle-bottom-left"></div>
-                    <div class="hud-reticle-bottom-right"></div>
-
-                    <div class="hud-status-strip">
-                        <span class="hud-badge rec"><span class="tally-dot"></span> REC ●</span>
-                        <span class="hud-badge">{{ $slide['tag1'] }}</span>
-                        <span class="hud-badge">{{ $slide['tag2'] }}</span>
-                        <span class="hud-badge">{{ $slide['tag3'] }}</span>
-                    </div>
 
                     <div class="container position-relative" style="z-index: 4;">
-                        <div class="row align-items-center">
-                            <div class="col-lg-8 col-xl-7">
-                                <div class="hero-slide-content">
-                                    <span class="hero-badge-tag">
-                                        <i class="fas fa-video"></i>
-                                        {{ $slide['badge'] }}
-                                    </span>
-                                    @if($loop->first)
-                                    <h1 class="hero-slide-title">{{ $slide['title'] }}</h1>
-                                    @else
-                                    <h2 class="hero-slide-title">{{ $slide['title'] }}</h2>
-                                    @endif
-                                    <p class="hero-slide-desc">{{ $slide['desc'] }}</p>
+                        <div class="hero-slide-content">
+                            <span class="hero-badge-tag">
+                                {{ $slide['brand'] }}
+                            </span>
+                            @if($loop->first)
+                            <h1 class="hero-slide-title">{{ $slide['title'] }}</h1>
+                            @else
+                            <h2 class="hero-slide-title">{{ $slide['title'] }}</h2>
+                            @endif
+                            <p class="hero-slide-desc">{{ $slide['desc'] }}</p>
 
-                                    <div class="hero-actions-wrap d-flex align-items-center flex-wrap gap-2">
-                                        <a href="{{ route('shop.index') }}" class="hero-btn-primary">
-                                            <i class="fas fa-camera"></i>
-                                            <span>{{ __('Explore the Catalogue') }}</span>
-                                        </a>
-                                        <a href="{{ route('shop.index', ['category' => 'camera']) }}" class="hero-btn-secondary">
-                                            <i class="fas fa-play-circle"></i>
-                                            <span>{{ __('Pro Cameras') }}</span>
-                                        </a>
-                                    </div>
-
-                                    <div class="hero-trust-bar">
-                                        <div class="hero-trust-pill">
-                                            <i class="fas fa-shield-halved"></i> {{ __('2-Year Warranty') }}
-                                        </div>
-                                        <div class="hero-trust-pill">
-                                            <i class="fas fa-truck-fast"></i> {{ __('Secure Morocco Delivery') }}
-                                        </div>
-                                        <div class="hero-trust-pill">
-                                            <i class="fas fa-file-invoice"></i> {{ __('Official ICE Invoicing') }}
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="hero-actions-wrap">
+                                <a href="{{ $slide['shop_url'] }}" class="hero-btn-primary">
+                                    <span>{{ __('Découvrir') }} {{ $slide['brand'] }}</span>
+                                    <i class="fas fa-arrow-{{ $isAr ? 'left' : 'right' }} ms-1"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -338,15 +319,6 @@
                                         <span class="badge-v2 badge-sale">-{{ $product->discount_percentage }}%</span>
                                     @endif
                                 </div>
-                                {{-- Quick Actions on Image Hover --}}
-                                <div class="product-v2-quick-actions">
-                                    <button type="button" class="btn-card-quick-cart" onclick="addToCart({{ $product->id }})" title="{{ __('Ajouter au panier') }}">
-                                        <i class="fas fa-cart-plus"></i> <span>{{ __('Ajouter') }}</span>
-                                    </button>
-                                    <a href="{{ route('shop.show', $product->id) }}" class="btn-card-quick-view" title="{{ __('Voir détails') }}">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                </div>
                             </div>
                             <div class="product-v2-body">
                                 <div class="d-flex align-items-center justify-content-between mb-1">
@@ -362,15 +334,6 @@
                                         {{ Str::limit($product->name, 45) }}
                                     </a>
                                 </h4>
-                                <div class="product-v2-rating">
-                                    @php $rating = round($product->reviews_avg_rating ?: 5); @endphp
-                                    <div class="stars-row">
-                                        @for($i = 0; $i < 5; $i++)
-                                            <i class="fas fa-star{{ $i < $rating ? '' : ' opacity-25' }}"></i>
-                                        @endfor
-                                    </div>
-                                    <span class="reviews-count">({{ $product->reviews_count > 0 ? $product->reviews_count : 5 }})</span>
-                                </div>
                                 <div class="product-v2-price-row">
                                     <div class="product-v2-price mb-0">
                                         @if($product->isOnSale())

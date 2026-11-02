@@ -21,12 +21,18 @@
                     <tbody>
                         @foreach($returns as $return)
                         <tr>
-                            <td>{{ $return->return_number }}</td>
-                            <td>{{ $return->order->order_number }}</td>
-                            <td>{{ $return->customer->name }}</td>
-                            <td>{{ $return->reason }}</td>
-                            <td>{{ ucfirst($return->status) }}</td>
-                            <td>Actions</td>
+                            <td class="td-product-details" data-label="Retour #">
+                                <strong class="product-title-text">{{ $return->return_number }}</strong>
+                            </td>
+                            <td data-label="Commande #">{{ $return->order->order_number ?? 'N/A' }}</td>
+                            <td data-label="Client">{{ $return->customer->name ?? 'N/A' }}</td>
+                            <td data-label="Motif">{{ $return->reason }}</td>
+                            <td data-label="Statut">
+                                <span class="badge bg-secondary">{{ ucfirst($return->status) }}</span>
+                            </td>
+                            <td class="td-actions">
+                                <span class="text-muted">—</span>
+                            </td>
                         </tr>
                         @endforeach
                     </tbody>

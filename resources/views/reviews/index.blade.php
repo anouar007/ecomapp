@@ -141,29 +141,29 @@
             <tbody>
                 @forelse($reviews as $review)
                 <tr data-review-id="{{ $review->id }}">
-                    <td>
+                    <td class="td-product-details" data-label="Produit">
                         <strong>{{ $review->product->name }}</strong>
                         <br><small class="text-muted">ID: #{{ $review->product->id }}</small>
                     </td>
-                    <td>
+                    <td data-label="Client">
                         {{ $review->customer_name }}
                         <br><small class="text-muted">{{ $review->customer_email }}</small>
                     </td>
-                    <td>
+                    <td data-label="Note">
                         <div style="color: #f59e0b; font-size: 16px;">
                             {!! str_repeat('★', $review->rating) !!}{!! str_repeat('☆', 5 - $review->rating) !!}
                         </div>
                         <small class="text-muted">{{ $review->rating }}/5</small>
                     </td>
-                    <td style="max-width: 300px;">
+                    <td data-label="Commentaire" style="max-width: 300px;">
                         <strong>{{ $review->title }}</strong>
                         <br><small>{{ Str::limit($review->comment, 80) }}</small>
                     </td>
-                    <td>
+                    <td data-label="Date">
                         <small>{{ $review->created_at->format('d/m/Y') }}</small>
                         <br><small class="text-muted">{{ $review->created_at->diffForHumans() }}</small>
                     </td>
-                    <td data-status>
+                    <td data-label="Statut" data-status>
                         @if($review->status == 'approved')
                             <span class="badge badge-success"><i class="fas fa-check-circle"></i> Approuvé</span>
                         @elseif($review->status == 'pending')
@@ -172,7 +172,7 @@
                             <span class="badge badge-danger"><i class="fas fa-times-circle"></i> Rejeté</span>
                         @endif
                     </td>
-                    <td>
+                    <td class="td-actions">
                         <div class="action-buttons">
                             @if($review->status == 'pending')
                             <form action="{{ route('reviews.approve', $review) }}" method="POST" style="display: inline;" onsubmit="event.preventDefault(); approveReview({{ $review->id }});">
