@@ -465,10 +465,23 @@
 <body>
     <!-- Navbar -->
     <nav class="navbar">
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center gap-2">
             <button class="navbar-toggler" aria-label="Toggle menu" id="navbar-menu-toggler">
                 <i class="fas fa-bars" id="navbar-toggler-icon"></i>
             </button>
+            <!-- Desktop Brand Logo (Hidden on mobile <992px to keep mobile navbar clean) -->
+            <a href="{{ route('dashboard') }}" class="navbar-brand d-none d-lg-inline-flex align-items-center ms-2 text-decoration-none">
+                @php
+                    $winaLogo = site_logo_url('admin');
+                    $adminLogoHeight = max(24, min(80, (int) setting('admin_logo_height', 48)));
+                @endphp
+                @if($winaLogo)
+                    <img src="{{ $winaLogo }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="110" height="{{ $adminLogoHeight }}" style="height: {{ $adminLogoHeight }}px; max-width: 160px; object-fit: contain;">
+                @else
+                    <i class="fas fa-camera text-danger me-2"></i>
+                    <span style="font-weight: 800; color: #0f172a; font-size: 1.25rem;">WINA<span style="color: #dc2626;">SHOP</span></span>
+                @endif
+            </a>
         </div>
         
         <div class="navbar-user d-flex align-items-center gap-2 flex-nowrap" style="flex-shrink: 0;">
@@ -547,18 +560,6 @@
         @php
             $winaLogo = site_logo_url('admin');
         @endphp
-        <!-- Desktop Sidebar Brand Header -->
-        <div class="sidebar-desktop-brand d-none d-lg-flex align-items-center px-4 pb-3 mb-3 border-bottom">
-            <a href="{{ route('dashboard') }}" class="text-decoration-none d-inline-flex align-items-center">
-                @if($winaLogo)
-                    <img src="{{ $winaLogo }}" alt="{{ setting('app_name', 'WINA SHOP') }}" style="height: 34px; max-width: 175px; object-fit: contain;">
-                @else
-                    <i class="fas fa-camera text-danger me-2 fs-5"></i>
-                    <span style="font-weight: 800; color: #0f172a; font-size: 1.15rem;">WINA<span style="color: #dc2626;">SHOP</span></span>
-                @endif
-            </a>
-        </div>
-
         <!-- Mobile Sidebar Drawer Header -->
         <div class="sidebar-mobile-header d-lg-none d-flex align-items-center justify-content-between p-3 border-bottom bg-light">
             <div class="d-flex align-items-center gap-2">
