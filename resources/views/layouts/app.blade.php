@@ -62,9 +62,14 @@
             font-weight: 700 !important;
         }
 
-        /* Standardize headings, badges, and buttons to clean modern weight */
-        .fw-bolder, .fw-extrabold, h1, h2, h3, h4, h5, h6, .brand-title, .page-title, .navbar-brand, th, dt, .btn, .nav-link, .stat-value-pro, .order-ref-badge, .font-heading, .brand-subtitle strong, .stat-kpi-value, .stat-sub-text strong, .card-title, .stat-title, .badge {
+        /* Standardize headings, badges, and text to clean modern weight, preserve button weights */
+        .fw-bolder, .fw-extrabold, h1, h2, h3, h4, h5, h6, .brand-title, .page-title, .navbar-brand, th, dt, .nav-link, .stat-value-pro, .order-ref-badge, .font-heading, .brand-subtitle strong, .stat-kpi-value, .stat-sub-text strong, .card-title, .stat-title, .badge {
             font-weight: 400 !important;
+        }
+
+        .btn-brand-primary,
+        .btn-primary {
+            font-weight: 600 !important;
         }
 
         /* Protect FontAwesome icon font and solid weights */

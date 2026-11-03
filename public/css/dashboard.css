@@ -1717,56 +1717,217 @@ body {
     padding-left: 2.75rem !important;
 }
 
-.btn-brand-primary {
-    background: var(--gradient-primary);
-    border: none;
-    color: white;
-    border-radius: var(--radius-md);
-    padding: 0.625rem 1.25rem;
+/* ==========================================================================
+   STANDARDIZED BUTTON SYSTEM (PRODUCTS PAGE STANDARD)
+   Premium gradient-primary, soft-hover, pill/rounded-8px, crisp typography
+   ========================================================================== */
+.btn-brand-primary,
+.btn-primary:not(.action-btn):not(.btn-link-arrow):not(.btn-hero-primary) {
+    background: var(--gradient-primary) !important;
+    border: 1px solid transparent !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    padding: 0.55rem 1.15rem;
     font-weight: 600;
-    font-size: 0.875rem;
-    transition: var(--transition-base);
-}
-
-.btn-brand-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
-    color: white;
-}
-
-.btn-brand-light {
-    background: #f1f5f9;
-    border: none;
-    color: #64748b;
-    border-radius: var(--radius-md);
-    padding: 0.625rem 1rem;
-    font-weight: 500;
-    font-size: 0.875rem;
-    transition: var(--transition-base);
-}
-
-.btn-brand-light:hover {
-    background: #e2e8f0;
-    color: #475569;
-}
-
-.btn-brand-outline {
-    background: white;
-    border: 1px solid #e2e8f0;
-    color: #475569;
-    border-radius: var(--radius-md);
-    padding: 0.625rem 1rem;
-    font-weight: 500;
-    font-size: 0.875rem;
-    display: flex;
+    font-size: 0.84rem;
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
-    transition: var(--transition-base);
+    text-decoration: none !important;
+    box-shadow: 0 1px 2px rgba(220, 38, 38, 0.2);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    cursor: pointer;
+    line-height: 1.3;
+    white-space: nowrap;
 }
 
-.btn-brand-outline:hover {
-    background: #f8fafc;
-    border-color: #cbd5e1;
+.btn-brand-primary:hover,
+.btn-brand-primary:focus,
+.btn-primary:not(.action-btn):not(.btn-link-arrow):not(.btn-hero-primary):hover,
+.btn-primary:not(.action-btn):not(.btn-link-arrow):not(.btn-hero-primary):focus {
+    background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35) !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+}
+
+.btn-brand-primary:active,
+.btn-primary:not(.action-btn):not(.btn-link-arrow):not(.btn-hero-primary):active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25) !important;
+}
+
+.btn-brand-light,
+.btn-light:not(.action-btn):not(.navbar-toggler):not(.user-avatar) {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #475569 !important;
+    border-radius: 8px !important;
+    padding: 0.55rem 1rem;
+    font-weight: 500;
+    font-size: 0.84rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    text-decoration: none !important;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    cursor: pointer;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+
+.btn-brand-light:hover,
+.btn-light:not(.action-btn):not(.navbar-toggler):not(.user-avatar):hover {
+    background: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+}
+
+.btn-brand-outline,
+.btn-outline-secondary:not(.action-btn) {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #475569 !important;
+    border-radius: 8px !important;
+    padding: 0.55rem 1.05rem;
+    font-weight: 500;
+    font-size: 0.84rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    text-decoration: none !important;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    cursor: pointer;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+
+.btn-brand-outline:hover,
+.btn-outline-secondary:not(.action-btn):hover {
+    background: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(15, 23, 42, 0.08);
+}
+
+.btn-secondary:not(.action-btn) {
+    background: #64748b !important;
+    border: 1px solid #64748b !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    padding: 0.55rem 1.05rem;
+    font-weight: 500;
+    font-size: 0.84rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    text-decoration: none !important;
+    transition: all 0.2s ease !important;
+}
+
+.btn-secondary:not(.action-btn):hover {
+    background: #475569 !important;
+    border-color: #475569 !important;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+}
+
+.btn-outline-danger:not(.action-btn) {
+    background: #ffffff !important;
+    border: 1px solid #fecaca !important;
+    color: #dc2626 !important;
+    border-radius: 8px !important;
+    padding: 0.55rem 1.05rem;
+    font-weight: 500;
+    font-size: 0.84rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    text-decoration: none !important;
+    transition: all 0.2s ease !important;
+}
+
+.btn-outline-danger:not(.action-btn):hover {
+    background: #fef2f2 !important;
+    border-color: #dc2626 !important;
+    color: #dc2626 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(220, 38, 38, 0.12);
+}
+
+.btn-danger:not(.action-btn) {
+    background: #dc2626 !important;
+    border: 1px solid #dc2626 !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    padding: 0.55rem 1.15rem;
+    font-weight: 600;
+    font-size: 0.84rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    text-decoration: none !important;
+    transition: all 0.2s ease !important;
+}
+
+.btn-danger:not(.action-btn):hover {
+    background: #b91c1c !important;
+    border-color: #b91c1c !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3) !important;
+}
+
+.btn-outline-primary:not(.action-btn) {
+    background: #ffffff !important;
+    border: 1px solid #bfdbfe !important;
+    color: #2563eb !important;
+    border-radius: 8px !important;
+    padding: 0.55rem 1.05rem;
+    font-weight: 500;
+    font-size: 0.84rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    text-decoration: none !important;
+    transition: all 0.2s ease !important;
+}
+
+.btn-outline-primary:not(.action-btn):hover {
+    background: #eff6ff !important;
+    border-color: #2563eb !important;
+    color: #1d4ed8 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(37, 99, 235, 0.12);
+}
+
+/* Button sizing standards (aligned with products page) */
+.btn-sm,
+.btn-brand-primary.btn-sm,
+.btn-brand-light.btn-sm,
+.btn-brand-outline.btn-sm {
+    padding: 0.45rem 0.85rem !important;
+    font-size: 0.78rem !important;
+    border-radius: 7px !important;
+}
+
+.btn-lg,
+.btn-brand-primary.btn-lg {
+    padding: 0.75rem 1.5rem !important;
+    font-size: 0.95rem !important;
+    border-radius: 10px !important;
 }
 
 /* Premium Tables */
