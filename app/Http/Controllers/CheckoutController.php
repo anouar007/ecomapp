@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\Coupon;
+use App\Models\Customer;
 use App\Services\DeliveryService;
 use App\Services\MailConfigService;
 use App\Mail\OrderConfirmation;
@@ -20,7 +22,7 @@ class CheckoutController extends Controller
     /**
      * Show the checkout form.
      */
-    public function index()
+    public function index(Request $request)
     {
         $cart = session()->get('cart', []);
         
@@ -28,14 +30,69 @@ class CheckoutController extends Controller
             return redirect()->route('shop.index')->with('error', 'Votre panier est vide.');
         }
 
-        $total = 0;
-        foreach ($cart as $id => $details) {
-            $total += (float)$details['price'] * (int)$details['quantity'];
+        // Support referral or promo code passed in URL (e.g. ?promo=CODE or ?ref=CODE)
+        $urlPromo = $request->input('promo') ?? $request->input('ref');
+        if (!empty($urlPromo)) {
+            $code = strtoupper(trim($urlPromo));
+            $coupon = Coupon::where('code', $code)->first();
+            if ($coupon) {
+                $subtotal = 0;
+                foreach ($cart as $d) {
+                    $subtotal += (float)$d['price'] * (int)$d['quantity'];
+                }
+                $validation = $coupon->isValid($subtotal, auth()->check() ? auth()->user()->email : null, array_values($cart));
+                if ($validation['valid']) {
+                    $discount = $coupon->calculateDiscount($subtotal, array_values($cart));
+                    session()->put('applied_coupon', [
+                        'id' => $coupon->id,
+                        'code' => $coupon->code,
+                        'name' => $coupon->name,
+                        'type' => $coupon->type,
+                        'value' => (float)$coupon->value,
+                        'is_free_shipping' => $coupon->isFreeShipping(),
+                        'discount' => $discount,
+                    ]);
+                }
+            }
         }
 
+        $subtotal = 0;
+        foreach ($cart as $id => $details) {
+            $subtotal += (float)$details['price'] * (int)$details['quantity'];
+        }
+
+        // Verify currently applied coupon
+        $appliedCoupon = null;
+        $discount = 0.0;
+        if (session()->has('applied_coupon')) {
+            $sessionCoupon = session()->get('applied_coupon');
+            $coupon = Coupon::find($sessionCoupon['id'] ?? null) ?? Coupon::where('code', $sessionCoupon['code'] ?? '')->first();
+            if ($coupon) {
+                $validation = $coupon->isValid($subtotal, auth()->check() ? auth()->user()->email : null, array_values($cart));
+                if ($validation['valid']) {
+                    $discount = $coupon->calculateDiscount($subtotal, array_values($cart));
+                    $appliedCoupon = [
+                        'id' => $coupon->id,
+                        'code' => $coupon->code,
+                        'name' => $coupon->name,
+                        'type' => $coupon->type,
+                        'value' => (float)$coupon->value,
+                        'is_free_shipping' => $coupon->isFreeShipping(),
+                        'discount' => $discount,
+                    ];
+                    session()->put('applied_coupon', $appliedCoupon);
+                } else {
+                    session()->forget('applied_coupon');
+                }
+            } else {
+                session()->forget('applied_coupon');
+            }
+        }
+
+        $total = max(0, $subtotal - $discount);
         $cities = DeliveryService::getCities();
 
-        return view('frontend.checkout.index', compact('cart', 'total', 'cities'));
+        return view('frontend.checkout.index', compact('cart', 'subtotal', 'discount', 'appliedCoupon', 'total', 'cities'));
     }
 
     /**
@@ -105,16 +162,32 @@ class CheckoutController extends Controller
             $subtotal += (float)$details['price'] * (int)$details['quantity'];
         }
 
-        // Calculate dynamic delivery fee from resolved city (defaulting to standard 40 DH if unlisted)
-        $shippingCost = DeliveryService::getDeliveryCost($cityName, 40.0);
+        // Resolve coupon if submitted or stored in session
+        $couponCode = strtoupper(trim($request->input('coupon_code') ?? session('applied_coupon.code', '')));
+        $coupon = !empty($couponCode) ? Coupon::where('code', $couponCode)->first() : null;
+        $discount = 0.0;
+        $isFreeShipping = false;
+
+        if ($coupon) {
+            $validation = $coupon->isValid($subtotal, $request->customer_email, array_values($cart));
+            if ($validation['valid']) {
+                $discount = $coupon->calculateDiscount($subtotal, array_values($cart));
+                $isFreeShipping = $coupon->isFreeShipping();
+            } else {
+                $coupon = null; // Ineligible coupon ignored
+            }
+        }
+
+        // Calculate dynamic delivery fee from resolved city (or 0 if free shipping coupon)
+        $shippingCost = $isFreeShipping ? 0.0 : DeliveryService::getDeliveryCost($cityName, 40.0);
 
         $taxRateSetting = floatval(setting('tax_rate', 20)) / 100;
         $tax = $taxRateSetting > 0 ? ($subtotal - ($subtotal / (1 + $taxRateSetting))) : 0;
         $subtotalNet = $subtotal - $tax;
-        $total = $subtotal + $shippingCost; // Total TTC including shipping
+        $total = max(0, $subtotal + $shippingCost - $discount); // Total TTC including shipping minus discount
 
         try {
-            $order = DB::transaction(function () use ($request, $cleanPhone, $cityName, $subtotalNet, $tax, $shippingCost, $total, $cart) {
+            $order = DB::transaction(function () use ($request, $cleanPhone, $cityName, $subtotalNet, $tax, $shippingCost, $discount, $coupon, $total, $cart, $subtotal) {
                 // Create Order
                 $order = Order::create([
                     'order_number' => 'ORD-' . strtoupper(Str::random(10)),
@@ -131,6 +204,9 @@ class CheckoutController extends Controller
                     'subtotal' => $subtotalNet,
                     'tax' => $tax,
                     'shipping_cost' => $shippingCost,
+                    'discount' => $discount,
+                    'coupon_id' => $coupon?->id,
+                    'coupon_code' => $coupon?->code,
                     'total' => $total,
                     'status' => 'pending',
                     'payment_status' => 'pending',
@@ -170,6 +246,14 @@ class CheckoutController extends Controller
                     }
                 }
 
+                // Record coupon usage and award affiliate points
+                if ($coupon) {
+                    $matchedCustomer = Customer::where('email', $request->customer_email)
+                        ->orWhere('phone', $cleanPhone)
+                        ->first();
+                    $coupon->recordUsage($order->id, $request->customer_email, $discount, $subtotal, $matchedCustomer?->id);
+                }
+
                 return $order;
             });
         } catch (\Exception $e) {
@@ -177,8 +261,9 @@ class CheckoutController extends Controller
             return back()->withInput()->with('error', 'Une erreur est survenue lors de la création de votre commande. Veuillez réessayer.');
         }
 
-        // Clear Cart & remember order
+        // Clear Cart, coupon session & remember order
         session()->forget('cart');
+        session()->forget('applied_coupon');
         session()->put('last_order_id', $order->id);
 
         // Send Emails asynchronously / after response so the customer experiences instant order confirmation without SMTP delays

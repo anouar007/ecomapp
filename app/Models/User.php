@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'affiliate_points',
     ];
 
     /**
@@ -44,6 +45,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'affiliate_points' => 'integer',
         ];
     }
 
@@ -53,6 +55,14 @@ class User extends Authenticatable
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+
+    /**
+     * Get the affiliate coupons created for this user.
+     */
+    public function affiliateCoupons()
+    {
+        return $this->hasMany(Coupon::class, 'affiliate_user_id');
     }
 
     /**

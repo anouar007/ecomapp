@@ -54,6 +54,7 @@ class CustomerController extends Controller
 
         $customers = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
         $customerGroups = CustomerGroup::orderBy('sort_order')->get();
+        $allCustomersForBlacklist = Customer::where('is_blacklisted', false)->select('id', 'name', 'phone', 'email')->orderBy('name')->limit(100)->get();
 
         // Calculate statistics
         $stats = [
@@ -68,7 +69,7 @@ class CustomerController extends Controller
             'avg_order_value' => Customer::where('total_orders', '>', 0)->avg(DB::raw('total_spent / total_orders')) ?: 0,
         ];
 
-        return view('customers.index', compact('customers', 'customerGroups', 'stats', 'filter'));
+        return view('customers.index', compact('customers', 'customerGroups', 'allCustomersForBlacklist', 'stats', 'filter'));
     }
 
     /**

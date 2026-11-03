@@ -21,7 +21,9 @@ class CustomerDashboardController extends Controller
             ->take(5)
             ->get();
 
-        return view('frontend.dashboard.index', compact('user', 'recentOrders'));
+        $affiliateCoupons = $user->affiliateCoupons()->where('status', 'active')->get();
+
+        return view('frontend.dashboard.index', compact('user', 'recentOrders', 'affiliateCoupons'));
     }
 
     /**

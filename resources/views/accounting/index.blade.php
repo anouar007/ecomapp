@@ -98,12 +98,14 @@
     <div class="row">
         <div class="col-12">
             <div class="brand-table-card">
-                <div class="d-flex justify-content-between align-items-center p-4 border-bottom">
-                    <h5 class="fw-bold text-dark m-0">Recent Journal Entries</h5>
-                    <a href="{{ route('accounting.entries') }}" class="btn-brand-light">View All</a>
+                <div class="d-flex justify-content-between align-items-center p-3 p-md-4 border-bottom">
+                    <h5 class="fw-bold text-dark m-0 fs-6 fs-md-5">Recent Journal Entries</h5>
+                    <a href="{{ route('accounting.entries') }}" class="btn-brand-light btn-sm">View All</a>
                 </div>
-                <div class="table-responsive">
-                    <table class="brand-table">
+
+                {{-- Desktop Table (d-none d-md-block) --}}
+                <div class="table-responsive d-none d-md-block">
+                    <table class="brand-table mb-0 align-middle">
                         <thead>
                             <tr>
                                 <th style="padding-left: 1.5rem;">Date</th>
@@ -134,6 +136,33 @@
                             @endforelse
                         </tbody>
                     </table>
+                </div>
+
+                {{-- Mobile Touch Cards (d-block d-md-none, zero horizontal scroll) --}}
+                <div class="d-block d-md-none p-2.5">
+                    @forelse($recentEntries as $entry)
+                    <div class="card border rounded-3 p-3 mb-2 bg-white shadow-xs">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="badge bg-light text-primary font-monospace border px-2 py-1" style="font-size: 0.76rem;">
+                                {{ $entry->reference }}
+                            </span>
+                            <span class="brand-badge secondary" style="font-size: 0.70rem;">
+                                {{ $entry->journal_type }}
+                            </span>
+                        </div>
+                        <div class="fw-semibold text-dark small mb-2 text-truncate">{{ $entry->description }}</div>
+                        <div class="d-flex align-items-center justify-content-between pt-1 border-top">
+                            <span class="text-muted small" style="font-size: 0.72rem;">
+                                <i class="far fa-calendar-alt me-1"></i>{{ $entry->date->format('d/m/Y') }}
+                            </span>
+                            <span class="fw-bold text-dark fs-6">{{ currency($entry->total_debit) }}</span>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="text-center py-4">
+                        <p class="text-muted small mb-0">No recent entries found.</p>
+                    </div>
+                    @endforelse
                 </div>
             </div>
         </div>

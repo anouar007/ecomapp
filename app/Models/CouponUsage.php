@@ -16,11 +16,13 @@ class CouponUsage extends Model
         'customer_email',
         'discount_amount',
         'order_total',
+        'affiliate_points_awarded',
     ];
 
     protected $casts = [
         'discount_amount' => 'decimal:2',
         'order_total' => 'decimal:2',
+        'affiliate_points_awarded' => 'integer',
     ];
 
     public function coupon()

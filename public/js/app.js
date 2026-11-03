@@ -6,9 +6,24 @@ document.addEventListener('DOMContentLoaded', function () {
     const userAvatar = document.querySelector('.user-avatar');
     const userDropdown = document.querySelector('.user-dropdown');
     const backdrop = document.querySelector('.sidebar-backdrop');
+    const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
 
     function isMobile() {
         return window.innerWidth <= 991;
+    }
+
+    function updateMobileTogglerState(isOpen) {
+        if (!sidebarToggle) return;
+        const icon = sidebarToggle.querySelector('i');
+        if (icon) {
+            if (isOpen) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-xmark');
+            } else {
+                icon.classList.remove('fa-xmark');
+                icon.classList.add('fa-bars');
+            }
+        }
     }
 
     // Toggle sidebar
@@ -18,8 +33,10 @@ document.addEventListener('DOMContentLoaded', function () {
             if (isMobile()) {
                 sidebar.classList.remove('collapsed');
                 sidebar.classList.toggle('show');
-                if (backdrop) backdrop.classList.toggle('show', sidebar.classList.contains('show'));
-                document.body.classList.toggle('sidebar-open', sidebar.classList.contains('show'));
+                const isOpen = sidebar.classList.contains('show');
+                if (backdrop) backdrop.classList.toggle('show', isOpen);
+                document.body.classList.toggle('sidebar-open', isOpen);
+                updateMobileTogglerState(isOpen);
             } else {
                 sidebar.classList.toggle('collapsed');
                 if (mainContent) mainContent.classList.toggle('expanded');
@@ -40,12 +57,24 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Close mobile sidebar on drawer close button click
+    if (sidebarCloseBtn) {
+        sidebarCloseBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            if (sidebar) sidebar.classList.remove('show');
+            if (backdrop) backdrop.classList.remove('show');
+            document.body.classList.remove('sidebar-open');
+            updateMobileTogglerState(false);
+        });
+    }
+
     // Close mobile sidebar on backdrop click or outside click
     if (backdrop) {
         backdrop.addEventListener('click', function () {
             if (sidebar) sidebar.classList.remove('show');
             backdrop.classList.remove('show');
             document.body.classList.remove('sidebar-open');
+            updateMobileTogglerState(false);
         });
     }
 
@@ -55,6 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 sidebar.classList.remove('show');
                 if (backdrop) backdrop.classList.remove('show');
                 document.body.classList.remove('sidebar-open');
+                updateMobileTogglerState(false);
             }
         }
     });

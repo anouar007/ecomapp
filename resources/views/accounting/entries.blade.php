@@ -63,63 +63,63 @@
     </div>
 
 
-    <!-- Quick Stats Summary -->
+    <!-- Quick Stats Summary (2 columns on mobile, 4 on desktop) -->
     @if($entries->total() > 0)
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
+    <div class="row g-2 g-md-3 mb-3 mb-md-4">
+        <div class="col-6 col-md-3">
             <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px;">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <p class="text-white-50 mb-1 small">Total Entries</p>
-                            <h4 class="text-white fw-bold mb-0">{{ $entries->total() }}</h4>
+                            <h4 class="text-white fw-bold mb-0 fs-5 fs-md-4">{{ $entries->total() }}</h4>
                         </div>
-                        <div class="brand-avatar" style="background: rgba(255,255,255,0.2); color: white; width: 48px; height: 48px; font-size: 20px;">
+                        <div class="brand-avatar d-none d-sm-flex" style="background: rgba(255,255,255,0.2); color: white; width: 40px; height: 40px; font-size: 16px;">
                             <i class="fas fa-receipt"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-6 col-md-3">
             <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 12px;">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <p class="text-white-50 mb-1 small">This Page</p>
-                            <h4 class="text-white fw-bold mb-0">{{ $entries->count() }}</h4>
+                            <h4 class="text-white fw-bold mb-0 fs-5 fs-md-4">{{ $entries->count() }}</h4>
                         </div>
-                        <div class="brand-avatar" style="background: rgba(255,255,255,0.2); color: white; width: 48px; height: 48px; font-size: 20px;">
+                        <div class="brand-avatar d-none d-sm-flex" style="background: rgba(255,255,255,0.2); color: white; width: 40px; height: 40px; font-size: 16px;">
                             <i class="fas fa-file-invoice"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-6 col-md-3">
             <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 12px;">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <p class="text-white-50 mb-1 small">Current Page</p>
-                            <h4 class="text-white fw-bold mb-0">{{ $entries->currentPage() }} / {{ $entries->lastPage() }}</h4>
+                            <h4 class="text-white fw-bold mb-0 fs-5 fs-md-4">{{ $entries->currentPage() }} / {{ $entries->lastPage() }}</h4>
                         </div>
-                        <div class="brand-avatar" style="background: rgba(255,255,255,0.2); color: white; width: 48px; height: 48px; font-size: 20px;">
+                        <div class="brand-avatar d-none d-sm-flex" style="background: rgba(255,255,255,0.2); color: white; width: 40px; height: 40px; font-size: 16px;">
                             <i class="fas fa-layer-group"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-6 col-md-3">
             <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); border-radius: 12px;">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <p class="text-white-50 mb-1 small">Filters Active</p>
-                            <h4 class="text-white fw-bold mb-0">{{ (request('start_date') || request('end_date') || request('journal_type') || request('search')) ? 'Yes' : 'No' }}</h4>
+                            <h4 class="text-white fw-bold mb-0 fs-5 fs-md-4">{{ (request('start_date') || request('end_date') || request('journal_type') || request('search')) ? 'Yes' : 'No' }}</h4>
                         </div>
-                        <div class="brand-avatar" style="background: rgba(255,255,255,0.2); color: white; width: 48px; height: 48px; font-size: 20px;">
+                        <div class="brand-avatar d-none d-sm-flex" style="background: rgba(255,255,255,0.2); color: white; width: 40px; height: 40px; font-size: 16px;">
                             <i class="fas fa-filter"></i>
                         </div>
                     </div>
@@ -129,10 +129,10 @@
     </div>
     @endif
 
-    <!-- Entries Table -->
-    <div class="brand-table-card">
+    <!-- Entries Desktop Table (d-none d-md-block, Zero horizontal scroll) -->
+    <div class="brand-table-card d-none d-md-block shadow-sm rounded-4 overflow-hidden bg-white mb-4">
         <div class="table-responsive">
-            <table class="brand-table">
+            <table class="brand-table mb-0 align-middle">
                 <thead>
                     <tr>
                         <th style="padding-left: 1.5rem; width: 50px;">
@@ -331,6 +331,66 @@
         </div>
         @if($entries->hasPages())
         <div class="p-4 border-top" style="background: #fafbfc;">
+            {{ $entries->links() }}
+        </div>
+        @endif
+    </div>
+
+    <!-- Entries Mobile Touch Cards (d-block d-md-none, Zero horizontal scroll) -->
+    <div class="d-block d-md-none mb-4">
+        @forelse($entries as $entry)
+        <div class="card border rounded-3 p-3 mb-2.5 bg-white shadow-xs">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="badge bg-light text-primary font-monospace border px-2 py-1" style="font-size: 0.78rem;">
+                    {{ $entry->reference }}
+                </span>
+                <span class="brand-badge 
+                    @if($entry->journal_type === 'SALES') success
+                    @elseif($entry->journal_type === 'PURCHASES') warning
+                    @elseif(in_array($entry->journal_type, ['BANK', 'CASH'])) info
+                    @else secondary
+                    @endif" style="font-size: 0.70rem;">
+                    {{ $entry->journal_type }}
+                </span>
+            </div>
+
+            <div class="fw-semibold text-dark small mb-2">{{ $entry->description }}</div>
+
+            <!-- Balances -->
+            <div class="bg-light rounded-3 p-2 mb-2 border d-flex justify-content-between align-items-center">
+                <div class="text-center flex-grow-1 border-end pe-2">
+                    <div class="text-muted small" style="font-size: 0.68rem;">DÉBIT</div>
+                    <span class="fw-bold text-success" style="font-size: 0.85rem;">{{ number_format($entry->total_debit, 2) }}</span>
+                </div>
+                <div class="text-center flex-grow-1 ps-2">
+                    <div class="text-muted small" style="font-size: 0.68rem;">CRÉDIT</div>
+                    <span class="fw-bold text-danger" style="font-size: 0.85rem;">{{ number_format($entry->total_credit, 2) }}</span>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between pt-1 border-top">
+                <span class="text-muted small" style="font-size: 0.72rem;">
+                    <i class="far fa-calendar-alt me-1"></i>{{ $entry->date->format('d/m/Y') }}
+                </span>
+                <div class="d-flex gap-1.5">
+                    <button class="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-1" style="font-size: 0.76rem;" onclick="toggleDetails({{ $entry->id }})">
+                        <i class="fas fa-eye me-1"></i> {{ $entry->lines->count() }} lignes
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger rounded-circle" style="width: 30px; height: 30px; padding: 0; display: inline-flex; align-items: center; justify-content: center;" onclick="confirmDelete({{ $entry->id }})">
+                        <i class="fas fa-trash-alt" style="font-size: 0.78rem;"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        @empty
+        <div class="text-center py-5 bg-white rounded-3 border">
+            <i class="fas fa-file-invoice text-muted opacity-50 fa-3x mb-3"></i>
+            <p class="text-muted small mb-0">Aucune écriture comptable trouvée</p>
+        </div>
+        @endforelse
+
+        @if($entries->hasPages())
+        <div class="p-3 d-flex justify-content-center">
             {{ $entries->links() }}
         </div>
         @endif

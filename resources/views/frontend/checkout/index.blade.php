@@ -37,6 +37,7 @@
 
                         <form action="{{ route('checkout.store') }}" method="POST" id="checkout-form">
                             @csrf
+                            <input type="hidden" name="coupon_code" id="checkout_coupon_code_hidden" value="{{ $appliedCoupon['code'] ?? '' }}">
                             <div class="row g-3">
                                 <div class="col-12">
                                     <label for="customer_name" class="form-label fw-semibold text-dark mb-1.5">
@@ -167,20 +168,79 @@
                         </div>
                         @endforeach
                         
-                        <hr class="my-4 opacity-10">
+                        <hr class="my-3 opacity-10">
                         
+                        <!-- Promo Code Section -->
+                        <div class="checkout-promo-box p-3 bg-light rounded-4 mb-3 border">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <label for="checkout_promo_input" class="form-label fw-bold small text-uppercase text-muted mb-0">
+                                    <i class="fas fa-ticket-alt text-primary me-1"></i> {{ __('Code Promo / Réduction') }}
+                                </label>
+                                <span class="badge bg-success-subtle text-success small {{ !empty($appliedCoupon) ? '' : 'd-none' }}" id="checkout-coupon-active-badge">
+                                    <i class="fas fa-check-circle me-1"></i> {{ __('Actif') }}
+                                </span>
+                            </div>
+
+                            <div id="promo-input-container" class="{{ !empty($appliedCoupon) ? 'd-none' : '' }}">
+                                <div class="input-group">
+                                    <input type="text" id="checkout_promo_input" class="form-control text-uppercase font-monospace fw-bold" placeholder="{{ __('EX: PROMO10') }}" style="letter-spacing: 1px;">
+                                    <button class="btn btn-dark fw-bold px-3" type="button" id="btn-apply-promo">
+                                        {{ __('Appliquer') }}
+                                    </button>
+                                </div>
+                                <div id="promo-error-msg" class="text-danger small mt-1.5 d-none"></div>
+                            </div>
+
+                            <div id="promo-applied-container" class="{{ !empty($appliedCoupon) ? '' : 'd-none' }}">
+                                <div class="d-flex align-items-center justify-content-between p-2.5 bg-white rounded-3 border border-success-subtle">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="rounded-circle bg-success-subtle text-success p-1.5" style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-check small"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold font-monospace text-success" id="applied-code-text">{{ $appliedCoupon['code'] ?? '' }}</div>
+                                            <div class="text-muted small" style="font-size: 0.75rem;" id="applied-discount-hint">
+                                                @if(!empty($appliedCoupon))
+                                                    @if($appliedCoupon['is_free_shipping'])
+                                                        {{ __('Livraison gratuite offerte') }}
+                                                    @else
+                                                        -{{ currency($appliedCoupon['discount']) }} {{ __('appliqués') }}
+                                                    @endif
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger border-0 rounded-pill" id="btn-remove-promo" title="{{ __('Retirer le code') }}">
+                                        <i class="fas fa-times me-1"></i> <span class="small">{{ __('Retirer') }}</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-3 opacity-10">
+
                         <div class="d-flex justify-content-between mb-2">
                             <span class="text-muted">{{ __('Articles') }}</span>
                             <span class="fw-bold" id="checkout-subtotal" 
-                                  data-subtotal="{{ $total }}"
+                                  data-subtotal="{{ $subtotal }}"
+                                  data-discount="{{ $discount }}"
+                                  data-is-free-shipping="{{ !empty($appliedCoupon['is_free_shipping']) ? '1' : '0' }}"
                                   data-currency-symbol="{{ setting('currency_symbol', 'DH') }}"
                                   data-currency-decimals="{{ setting('currency_decimals', 2) }}"
                                   data-decimal-separator="{{ setting('decimal_separator', '.') }}"
                                   data-thousands-separator="{{ setting('thousands_separator', ' ') }}"
                                   data-currency-position="{{ setting('currency_position', 'after') }}">
-                                {{ currency($total) }}
+                                {{ currency($subtotal) }}
                             </span>
                         </div>
+
+                        <div class="d-flex justify-content-between mb-2 align-items-center {{ $discount > 0 ? '' : 'd-none' }}" id="checkout-discount-row">
+                            <span class="text-success fw-semibold">
+                                <i class="fas fa-tag me-1"></i> {{ __('Réduction') }}
+                            </span>
+                            <span class="fw-bold text-success" id="checkout-discount-cost">-{{ currency($discount) }}</span>
+                        </div>
+
                         <div class="d-flex justify-content-between mb-2 align-items-center">
                             <span class="text-muted">{{ __('Shipping Fee') }}</span>
                             <span class="fw-bold" id="checkout-shipping-cost">
@@ -227,6 +287,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const allCities = @json($cities);
     const subtotal = parseFloat(subtotalEl.getAttribute('data-subtotal')) || 0;
+    let currentDiscount = parseFloat(subtotalEl.getAttribute('data-discount')) || 0;
+    let isFreeShipping = subtotalEl.getAttribute('data-is-free-shipping') === '1';
+    let currentShipping = null;
     const symbol = subtotalEl.getAttribute('data-currency-symbol') || 'DH';
     const decimals = parseInt(subtotalEl.getAttribute('data-currency-decimals')) || 2;
     const decSep = subtotalEl.getAttribute('data-decimal-separator') || '.';
@@ -245,16 +308,136 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateSummary(price) {
-        if (price !== null && !isNaN(price)) {
-            shippingEl.innerHTML = '<span class="text-danger fw-bold">' + formatCurrency(price) + '</span>';
-            const grandTotal = subtotal + price;
-            totalEl.textContent = formatCurrency(grandTotal);
-            if (btnTotalEl) btnTotalEl.textContent = formatCurrency(grandTotal);
+        if (price !== undefined) currentShipping = price;
+        const effectiveShipping = isFreeShipping ? 0 : (currentShipping !== null && !isNaN(currentShipping) ? currentShipping : null);
+
+        if (isFreeShipping) {
+            shippingEl.innerHTML = '<span class="text-success fw-bold"><i class="fas fa-gift me-1"></i>{{ __("Gratuit") }}</span>';
+        } else if (effectiveShipping !== null) {
+            shippingEl.innerHTML = '<span class="text-danger fw-bold">' + formatCurrency(effectiveShipping) + '</span>';
         } else {
             shippingEl.innerHTML = '<span class="text-muted small">{{ __('Type your city') }}</span>';
-            totalEl.textContent = formatCurrency(subtotal);
-            if (btnTotalEl) btnTotalEl.textContent = formatCurrency(subtotal);
         }
+
+        const grandTotal = Math.max(0, subtotal + (effectiveShipping || 0) - currentDiscount);
+        totalEl.textContent = formatCurrency(grandTotal);
+        if (btnTotalEl) btnTotalEl.textContent = formatCurrency(grandTotal);
+    }
+
+    // --- PROMO CODE LOGIC ---
+    const btnApplyPromo = document.getElementById('btn-apply-promo');
+    const promoInput = document.getElementById('checkout_promo_input');
+    const promoError = document.getElementById('promo-error-msg');
+    const promoInputContainer = document.getElementById('promo-input-container');
+    const promoAppliedContainer = document.getElementById('promo-applied-container');
+    const appliedCodeText = document.getElementById('applied-code-text');
+    const appliedDiscountHint = document.getElementById('applied-discount-hint');
+    const btnRemovePromo = document.getElementById('btn-remove-promo');
+    const hiddenCouponInput = document.getElementById('checkout_coupon_code_hidden');
+    const discountRow = document.getElementById('checkout-discount-row');
+    const discountCost = document.getElementById('checkout-discount-cost');
+    const couponBadge = document.getElementById('checkout-coupon-active-badge');
+
+    if (btnApplyPromo && promoInput) {
+        btnApplyPromo.addEventListener('click', function() {
+            const code = promoInput.value.trim();
+            if (!code) return;
+
+            promoError.classList.add('d-none');
+            btnApplyPromo.disabled = true;
+            btnApplyPromo.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+            fetch("{{ route('cart.applyCoupon') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ code: code })
+            })
+            .then(res => res.json())
+            .then(data => {
+                btnApplyPromo.disabled = false;
+                btnApplyPromo.textContent = '{{ __("Appliquer") }}';
+
+                if (data.success) {
+                    currentDiscount = data.coupon.discount || 0;
+                    isFreeShipping = data.coupon.is_free_shipping || false;
+
+                    if (hiddenCouponInput) hiddenCouponInput.value = data.coupon.code;
+                    if (appliedCodeText) appliedCodeText.textContent = data.coupon.code;
+                    if (appliedDiscountHint) {
+                        appliedDiscountHint.textContent = isFreeShipping 
+                            ? '{{ __("Livraison gratuite offerte") }}' 
+                            : '-' + data.coupon.formatted_discount + ' {{ __("appliqués") }}';
+                    }
+
+                    if (promoInputContainer) promoInputContainer.classList.add('d-none');
+                    if (promoAppliedContainer) promoAppliedContainer.classList.remove('d-none');
+                    if (couponBadge) couponBadge.classList.remove('d-none');
+
+                    if (discountRow) {
+                        if (currentDiscount > 0) {
+                            discountRow.classList.remove('d-none');
+                            if (discountCost) discountCost.textContent = '-' + data.coupon.formatted_discount;
+                        } else {
+                            discountRow.classList.add('d-none');
+                        }
+                    }
+
+                    updateSummary();
+                } else {
+                    promoError.textContent = data.message || '{{ __("Code promo invalide.") }}';
+                    promoError.classList.remove('d-none');
+                }
+            })
+            .catch(() => {
+                btnApplyPromo.disabled = false;
+                btnApplyPromo.textContent = '{{ __("Appliquer") }}';
+                promoError.textContent = '{{ __("Erreur lors de la validation du code promo.") }}';
+                promoError.classList.remove('d-none');
+            });
+        });
+
+        promoInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                btnApplyPromo.click();
+            }
+        });
+    }
+
+    if (btnRemovePromo) {
+        btnRemovePromo.addEventListener('click', function() {
+            btnRemovePromo.disabled = true;
+            fetch("{{ route('cart.removeCoupon') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                btnRemovePromo.disabled = false;
+                currentDiscount = 0;
+                isFreeShipping = false;
+
+                if (hiddenCouponInput) hiddenCouponInput.value = '';
+                if (promoInput) promoInput.value = '';
+                if (promoInputContainer) promoInputContainer.classList.remove('d-none');
+                if (promoAppliedContainer) promoAppliedContainer.classList.add('d-none');
+                if (couponBadge) couponBadge.classList.add('d-none');
+                if (discountRow) discountRow.classList.add('d-none');
+
+                updateSummary();
+            })
+            .catch(() => {
+                btnRemovePromo.disabled = false;
+            });
+        });
     }
 
     function normalizeText(str) {

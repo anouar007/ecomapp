@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\Coupon;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
@@ -11,16 +12,65 @@ class CartController extends Controller
     /**
      * Display the cart.
      */
-    public function index()
+    public function index(Request $request)
     {
         $cart = session()->get('cart', []);
         $total = 0;
         
         foreach ($cart as $id => $details) {
-            $total += $details['price'] * $details['quantity'];
+            $total += (float)$details['price'] * (int)$details['quantity'];
         }
 
-        return view('frontend.cart.index', compact('cart', 'total'));
+        // Support ?promo=CODE or ?ref=CODE in URL
+        $urlPromo = $request->input('promo') ?? $request->input('ref');
+        if (!empty($urlPromo) && !empty($cart)) {
+            $code = strtoupper(trim($urlPromo));
+            $coupon = Coupon::where('code', $code)->first();
+            if ($coupon) {
+                $validation = $coupon->isValid($total, auth()->check() ? auth()->user()->email : null, array_values($cart));
+                if ($validation['valid']) {
+                    $discount = $coupon->calculateDiscount($total, array_values($cart));
+                    session()->put('applied_coupon', [
+                        'id' => $coupon->id,
+                        'code' => $coupon->code,
+                        'name' => $coupon->name,
+                        'type' => $coupon->type,
+                        'value' => (float)$coupon->value,
+                        'is_free_shipping' => $coupon->isFreeShipping(),
+                        'discount' => $discount,
+                    ]);
+                }
+            }
+        }
+
+        $appliedCoupon = null;
+        $discount = 0.0;
+        if (session()->has('applied_coupon')) {
+            $sessionCoupon = session()->get('applied_coupon');
+            $coupon = Coupon::find($sessionCoupon['id'] ?? null) ?? Coupon::where('code', $sessionCoupon['code'] ?? '')->first();
+            if ($coupon) {
+                $validation = $coupon->isValid($total, auth()->check() ? auth()->user()->email : null, array_values($cart));
+                if ($validation['valid']) {
+                    $discount = $coupon->calculateDiscount($total, array_values($cart));
+                    $appliedCoupon = [
+                        'id' => $coupon->id,
+                        'code' => $coupon->code,
+                        'name' => $coupon->name,
+                        'type' => $coupon->type,
+                        'value' => (float)$coupon->value,
+                        'is_free_shipping' => $coupon->isFreeShipping(),
+                        'discount' => $discount,
+                    ];
+                    session()->put('applied_coupon', $appliedCoupon);
+                } else {
+                    session()->forget('applied_coupon');
+                }
+            } else {
+                session()->forget('applied_coupon');
+            }
+        }
+
+        return view('frontend.cart.index', compact('cart', 'total', 'discount', 'appliedCoupon'));
     }
 
     /**
@@ -274,5 +324,94 @@ class CartController extends Controller
         }
         
         return view('frontend.cart.partials.mini-cart-footer', compact('total'));
+    }
+
+    /**
+     * Apply promo code to cart session.
+     */
+    public function applyCoupon(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string',
+        ]);
+
+        $code = strtoupper(trim($request->code));
+        $coupon = Coupon::where('code', $code)->first();
+
+        if (!$coupon) {
+            return response()->json([
+                'success' => false,
+                'message' => __('Code promo invalide ou introuvable.')
+            ], 404);
+        }
+
+        $cart = session()->get('cart', []);
+        if (empty($cart)) {
+            return response()->json([
+                'success' => false,
+                'message' => __('Votre panier est vide.')
+            ], 400);
+        }
+
+        $subtotal = 0;
+        foreach ($cart as $item) {
+            $subtotal += (float)$item['price'] * (int)$item['quantity'];
+        }
+
+        $customerEmail = auth()->check() ? auth()->user()->email : $request->customer_email;
+        $validation = $coupon->isValid($subtotal, $customerEmail, array_values($cart));
+
+        if (!$validation['valid']) {
+            return response()->json([
+                'success' => false,
+                'message' => $validation['message']
+            ], 422);
+        }
+
+        $discount = $coupon->calculateDiscount($subtotal, array_values($cart));
+
+        session()->put('applied_coupon', [
+            'id' => $coupon->id,
+            'code' => $coupon->code,
+            'name' => $coupon->name,
+            'type' => $coupon->type,
+            'value' => (float)$coupon->value,
+            'is_free_shipping' => $coupon->isFreeShipping(),
+            'discount' => $discount,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => __('Code promo ":code" appliqué avec succès !', ['code' => $coupon->code]),
+            'coupon' => [
+                'code' => $coupon->code,
+                'discount' => $discount,
+                'formatted_discount' => currency($discount),
+                'is_free_shipping' => $coupon->isFreeShipping(),
+            ],
+            'subtotal' => currency($subtotal),
+            'newTotal' => currency(max(0, $subtotal - $discount)),
+            'rawDiscount' => $discount,
+        ]);
+    }
+
+    /**
+     * Remove applied promo code from session.
+     */
+    public function removeCoupon()
+    {
+        session()->forget('applied_coupon');
+        $cart = session()->get('cart', []);
+        $subtotal = 0;
+        foreach ($cart as $item) {
+            $subtotal += (float)$item['price'] * (int)$item['quantity'];
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => __('Code promo retiré.'),
+            'cartTotal' => currency($subtotal),
+            'rawTotal' => $subtotal,
+        ]);
     }
 }
