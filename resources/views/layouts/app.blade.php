@@ -157,48 +157,57 @@
         }
 
         /* ── High-Priority Navbar Action Buttons (Top Bar) ── */
+        .navbar {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+        }
+
         .navbar-user {
             margin-left: auto !important;
             display: flex !important;
+            flex-wrap: nowrap !important;
             align-items: center !important;
             gap: 10px !important;
             position: relative !important;
+            flex-shrink: 0 !important;
         }
 
         .nav-btn-pro {
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            gap: 7px !important;
-            height: 36px !important;
-            padding: 0 14px !important;
-            border-radius: 9999px !important;
-            font-size: 12.5px !important;
-            font-weight: 500 !important;
-            text-decoration: none !important;
-            border: 1px solid #cbd5e1 !important;
-            background: #ffffff !important;
-            color: #334155 !important;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05) !important;
-            cursor: pointer !important;
-            line-height: 1 !important;
-            outline: none !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            height: 36px;
+            padding: 0 14px;
+            border-radius: 9999px;
+            font-size: 12.5px;
+            font-weight: 500;
+            text-decoration: none;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            color: #334155;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+            cursor: pointer;
+            line-height: 1;
+            outline: none;
             user-select: none;
-            white-space: nowrap !important;
-            margin: 0 !important;
+            white-space: nowrap;
+            margin: 0;
         }
 
         .nav-btn-pro:hover {
-            color: #0f172a !important;
-            background: #f8fafc !important;
-            border-color: #94a3b8 !important;
+            color: #0f172a;
+            background: #f8fafc;
+            border-color: #94a3b8;
             transform: translateY(-1px);
-            box-shadow: 0 3px 8px rgba(15, 23, 42, 0.08) !important;
+            box-shadow: 0 3px 8px rgba(15, 23, 42, 0.08);
         }
 
         .nav-btn-shop {
-            border-color: #cbd5e1 !important;
+            border-color: #cbd5e1;
         }
 
         .nav-btn-shop .nav-live-pulse {
@@ -230,9 +239,9 @@
         }
 
         .nav-btn-guide {
-            background: #ffffff !important;
-            color: #334155 !important;
-            border-color: #cbd5e1 !important;
+            background: #ffffff;
+            color: #334155;
+            border-color: #cbd5e1;
         }
 
         .nav-btn-guide i {
@@ -249,6 +258,7 @@
             position: relative !important;
             display: inline-flex !important;
             align-items: center !important;
+            flex-shrink: 0 !important;
         }
 
         .user-avatar {
@@ -270,6 +280,7 @@
             margin: 0 !important;
             outline: none !important;
             line-height: 1 !important;
+            flex-shrink: 0 !important;
         }
 
         .user-avatar:hover {
@@ -277,37 +288,217 @@
             border-color: #dc2626 !important;
             box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25) !important;
         }
+
+        /* ── Mobile Navbar Executive Polish (Touch-First) ── */
+        .nav-btn-shop-mobile {
+            width: 36px !important;
+            height: 36px !important;
+            min-width: 36px !important;
+            padding: 0 !important;
+            border-radius: 10px !important;
+            position: relative !important;
+            background: #ffffff !important;
+            border: 1px solid #cbd5e1 !important;
+            color: #334155 !important;
+            display: inline-flex;
+            align-items: center !important;
+            justify-content: center !important;
+            text-decoration: none !important;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05) !important;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            flex-shrink: 0 !important;
+            margin: 0 !important;
+        }
+
+        .nav-btn-shop-mobile i {
+            font-size: 14px !important;
+            color: #475569 !important;
+            transition: transform 0.15s, color 0.15s;
+        }
+
+        .nav-btn-shop-mobile:active {
+            transform: scale(0.95);
+            background: #f8fafc !important;
+        }
+
+        .nav-btn-shop-mobile .nav-live-pulse {
+            width: 7px !important;
+            height: 7px !important;
+            border-radius: 50% !important;
+            background: #10b981 !important;
+            position: absolute !important;
+            top: 5px !important;
+            right: 5px !important;
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: navLivePulse 2s infinite ease-out;
+            display: inline-block !important;
+        }
+
+        /* ── Strict Responsive Visibility: Phone vs Desktop ── */
+        @media (max-width: 991.98px) {
+            .nav-btn-shop,
+            .nav-btn-guide {
+                display: none !important;
+            }
+            .nav-btn-shop-mobile {
+                display: inline-flex !important;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .nav-btn-shop-mobile {
+                display: none !important;
+            }
+            .nav-btn-shop {
+                display: inline-flex !important;
+            }
+            .nav-btn-guide {
+                display: inline-flex !important;
+            }
+        }
+
+        @media (max-width: 991.98px) {
+            :root {
+                --navbar-height: 60px !important;
+            }
+
+            .navbar {
+                height: 60px !important;
+                padding: 0 12px !important;
+                background: rgba(255, 255, 255, 0.98) !important;
+                backdrop-filter: blur(12px) !important;
+                -webkit-backdrop-filter: blur(12px) !important;
+                border-bottom: 1px solid rgba(226, 232, 240, 0.9) !important;
+                box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05) !important;
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                z-index: 1000 !important;
+            }
+
+            .navbar-toggler {
+                width: 38px !important;
+                height: 38px !important;
+                min-width: 38px !important;
+                padding: 0 !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                background: #f8fafc !important;
+                border: 1px solid #cbd5e1 !important;
+                border-radius: 10px !important;
+                color: #1e293b !important;
+                font-size: 15px !important;
+                margin-right: 8px !important;
+                transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+                box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+            }
+
+            .navbar-toggler:active,
+            body.sidebar-open .navbar-toggler {
+                background: #fee2e2 !important;
+                border-color: #fca5a5 !important;
+                color: #dc2626 !important;
+                transform: scale(0.95);
+            }
+
+            .navbar-brand {
+                font-size: 15px !important;
+                max-width: calc(100vw - 160px) !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .navbar-brand img {
+                height: 32px !important;
+                max-width: 125px !important;
+                object-fit: contain !important;
+                margin-right: 0 !important;
+            }
+
+            .navbar-user {
+                gap: 8px !important;
+                margin-left: auto !important;
+            }
+
+            .user-avatar {
+                width: 36px !important;
+                height: 36px !important;
+                font-size: 13px !important;
+                border-radius: 10px !important;
+            }
+
+            .dropdown-menu.user-dropdown {
+                position: absolute !important;
+                top: calc(100% + 8px) !important;
+                right: 0 !important;
+                left: auto !important;
+                width: 260px !important;
+                max-width: calc(100vw - 20px) !important;
+                border-radius: 14px !important;
+                border: 1px solid rgba(226, 232, 240, 0.9) !important;
+                box-shadow: 0 12px 30px -4px rgba(15, 23, 42, 0.16) !important;
+                overflow: hidden !important;
+            }
+
+            .sidebar {
+                top: 60px !important;
+                height: calc(100vh - 60px) !important;
+                width: 280px !important;
+                max-width: 85vw !important;
+                box-shadow: 4px 0 24px rgba(15, 23, 42, 0.15) !important;
+            }
+
+            .sidebar-backdrop {
+                top: 60px !important;
+            }
+
+            .main-content {
+                margin-top: 60px !important;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Navbar -->
     <nav class="navbar">
-        <button class="navbar-toggler" aria-label="Toggle menu">
-            <i class="fas fa-bars"></i>
-        </button>
-        <a href="{{ route('dashboard') }}" class="navbar-brand">
-            @php
-                $winaLogo = site_logo_url('admin');
-                $adminLogoHeight = max(24, min(80, (int) setting('admin_logo_height', 48)));
-            @endphp
-            @if($winaLogo)
-                <img src="{{ $winaLogo }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="110" height="{{ $adminLogoHeight }}" style="height: {{ $adminLogoHeight }}px; max-width: 180px; object-fit: contain; margin-right: 10px;">
-            @else
-                <i class="fas fa-camera text-danger me-2"></i>
-                <span style="font-weight: 800; color: #0f172a;">WINA<span style="color: #dc2626;">SHOP</span></span>
-            @endif
-        </a>
+        <div class="d-flex align-items-center gap-1.5 min-w-0" style="flex: 0 1 auto; overflow: hidden;">
+            <button class="navbar-toggler" aria-label="Toggle menu" id="navbar-menu-toggler">
+                <i class="fas fa-bars" id="navbar-toggler-icon"></i>
+            </button>
+            <a href="{{ route('dashboard') }}" class="navbar-brand text-truncate" style="max-width: calc(100vw - 140px);">
+                @php
+                    $winaLogo = site_logo_url('admin');
+                    $adminLogoHeight = max(24, min(80, (int) setting('admin_logo_height', 48)));
+                @endphp
+                @if($winaLogo)
+                    <img src="{{ $winaLogo }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="110" height="{{ $adminLogoHeight }}" style="height: {{ $adminLogoHeight }}px; max-width: 130px; object-fit: contain; margin-right: 8px;">
+                @else
+                    <i class="fas fa-camera text-danger me-2"></i>
+                    <span style="font-weight: 800; color: #0f172a;">WINA<span style="color: #dc2626;">SHOP</span></span>
+                @endif
+            </a>
+        </div>
         
-        <div class="navbar-user d-flex align-items-center gap-2">
-            <!-- Link to Frontend -->
-            <a href="{{ route('home') }}" target="_blank" class="nav-btn-pro nav-btn-shop d-none d-sm-inline-flex align-items-center text-decoration-none" title="Voir la boutique en direct">
+        <div class="navbar-user d-flex align-items-center gap-2 flex-nowrap" style="flex-shrink: 0;">
+            <!-- Mobile Store Button: Icon + Pulse (visible on <992px) -->
+            <a href="{{ route('home') }}" target="_blank" class="nav-btn-shop-mobile" title="Voir la boutique en direct">
+                <span class="nav-live-pulse"></span>
+                <i class="fas fa-store"></i>
+            </a>
+
+            <!-- Desktop Store Button: Full Pill (visible on >=992px) -->
+            <a href="{{ route('home') }}" target="_blank" class="nav-btn-pro nav-btn-shop" title="Voir la boutique en direct">
                 <span class="nav-live-pulse"></span>
                 <span>Boutique en direct</span>
                 <i class="fas fa-arrow-up-right-from-square"></i>
             </a>
 
-            <!-- Help/Tour Button -->
-            <button type="button" onclick="startTour()" class="nav-btn-pro nav-btn-guide d-none d-md-inline-flex align-items-center" title="Guide interactif">
+            <!-- Desktop Help/Tour Button (visible on >=992px) -->
+            <button type="button" onclick="startTour()" class="nav-btn-pro nav-btn-guide" title="Guide interactif">
                 <i class="fas fa-circle-question"></i>
                 <span>Guide</span>
             </button>
@@ -337,6 +528,11 @@
                         </div>
                         @endif
                     </div>
+                    <!-- Guide link for mobile screen users -->
+                    <button type="button" onclick="startTour()" class="user-dropdown-item d-lg-none border-0 bg-transparent text-start w-100" style="cursor: pointer;">
+                        <i class="fas fa-circle-question text-muted me-2"></i>
+                        <span>Guide interactif</span>
+                    </button>
                     <a href="{{ route('profile.show') }}" class="user-dropdown-item">
                         <i class="fas fa-user text-muted me-2"></i>
                         <span>Mon Profil</span>
@@ -360,6 +556,19 @@
 
     <!-- Sidebar -->
     <aside class="sidebar">
+        <!-- Mobile Sidebar Drawer Header -->
+        <div class="sidebar-mobile-header d-lg-none d-flex align-items-center justify-content-between p-3 border-bottom bg-light">
+            <div class="d-flex align-items-center gap-2">
+                @if($winaLogo)
+                    <img src="{{ $winaLogo }}" alt="{{ setting('app_name', 'WINA SHOP') }}" style="height: 28px; width: auto; object-fit: contain;">
+                @else
+                    <span class="fw-bold text-dark"><i class="fas fa-camera text-danger me-1.5"></i>WINA<span class="text-danger">SHOP</span></span>
+                @endif
+            </div>
+            <button type="button" class="btn btn-sm btn-light rounded-circle border" id="sidebar-close-btn" style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;" aria-label="Fermer le menu">
+                <i class="fas fa-xmark text-muted"></i>
+            </button>
+        </div>
         <ul class="sidebar-menu">
             <li class="sidebar-menu-item">
                 <a href="{{ route('dashboard') }}" class="sidebar-menu-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
@@ -435,6 +644,14 @@
                 </a>
             </li>
             @endcan
+            @if(auth()->check() && (auth()->user()->can('manage_coupons') || auth()->user()->hasRole('Admin')))
+            <li class="sidebar-menu-item">
+                <a href="{{ route('coupons.index') }}" class="sidebar-menu-link {{ request()->routeIs('coupons.*') ? 'active' : '' }}">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span>Codes Promo & Affiliation</span>
+                </a>
+            </li>
+            @endif
             @can('manage_reviews')
             <li class="sidebar-menu-item">
                 <a href="{{ route('reviews.index') }}" class="sidebar-menu-link {{ request()->routeIs('reviews.*') ? 'active' : '' }}">
