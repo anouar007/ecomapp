@@ -171,47 +171,65 @@
                         <hr class="my-3 opacity-10">
                         
                         <!-- Promo Code Section -->
-                        <div class="checkout-promo-box p-3 bg-light rounded-4 mb-3 border">
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <label for="checkout_promo_input" class="form-label fw-bold small text-uppercase text-muted mb-0">
-                                    <i class="fas fa-ticket-alt text-primary me-1"></i> {{ __('Code Promo / Réduction') }}
+                        <div class="checkout-promo-box mb-3.5">
+                            <div class="promo-box-header d-flex align-items-center justify-content-between mb-2.5">
+                                <label for="checkout_promo_input" class="promo-label mb-0 d-inline-flex align-items-center gap-2">
+                                    <span class="promo-icon-badge">
+                                        <i class="fas fa-ticket-alt"></i>
+                                    </span>
+                                    <span class="promo-title-text">{{ __('Code Promo / Réduction') }}</span>
                                 </label>
-                                <span class="badge bg-success-subtle text-success small {{ !empty($appliedCoupon) ? '' : 'd-none' }}" id="checkout-coupon-active-badge">
+                                <span class="promo-status-badge {{ !empty($appliedCoupon) ? '' : 'd-none' }}" id="checkout-coupon-active-badge">
                                     <i class="fas fa-check-circle me-1"></i> {{ __('Actif') }}
                                 </span>
                             </div>
 
+                            <!-- Input State -->
                             <div id="promo-input-container" class="{{ !empty($appliedCoupon) ? 'd-none' : '' }}">
-                                <div class="input-group">
-                                    <input type="text" id="checkout_promo_input" class="form-control text-uppercase font-monospace fw-bold" placeholder="{{ __('EX: PROMO10') }}" style="letter-spacing: 1px;">
-                                    <button class="btn btn-dark fw-bold px-3" type="button" id="btn-apply-promo">
-                                        {{ __('Appliquer') }}
+                                <div class="promo-input-wrapper">
+                                    <div class="promo-input-affix">
+                                        <i class="fas fa-receipt"></i>
+                                    </div>
+                                    <input type="text" 
+                                           id="checkout_promo_input" 
+                                           class="form-control promo-field text-uppercase font-monospace fw-bold" 
+                                           placeholder="{{ __('EX: PROMO10') }}" 
+                                           autocomplete="off"
+                                           spellcheck="false">
+                                    <button class="btn btn-apply-promo" type="button" id="btn-apply-promo">
+                                        <span>{{ __('Appliquer') }}</span>
+                                        <i class="fas fa-arrow-right ms-1"></i>
                                     </button>
                                 </div>
-                                <div id="promo-error-msg" class="text-danger small mt-1.5 d-none"></div>
+                                <div id="promo-error-msg" class="promo-feedback-error d-none mt-1.5 small text-danger"></div>
                             </div>
 
+                            <!-- Applied State -->
                             <div id="promo-applied-container" class="{{ !empty($appliedCoupon) ? '' : 'd-none' }}">
-                                <div class="d-flex align-items-center justify-content-between p-2.5 bg-white rounded-3 border border-success-subtle">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <div class="rounded-circle bg-success-subtle text-success p-1.5" style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
-                                            <i class="fas fa-check small"></i>
+                                <div class="promo-applied-card">
+                                    <div class="promo-applied-left">
+                                        <div class="promo-applied-check">
+                                            <i class="fas fa-check"></i>
                                         </div>
-                                        <div>
-                                            <div class="fw-bold font-monospace text-success" id="applied-code-text">{{ $appliedCoupon['code'] ?? '' }}</div>
-                                            <div class="text-muted small" style="font-size: 0.75rem;" id="applied-discount-hint">
+                                        <div class="promo-applied-info">
+                                            <div class="promo-code-display">
+                                                <span class="promo-code-name" id="applied-code-text">{{ $appliedCoupon['code'] ?? '' }}</span>
+                                                <span class="promo-applied-pill">{{ __('Appliqué') }}</span>
+                                            </div>
+                                            <div class="promo-saving-hint" id="applied-discount-hint">
                                                 @if(!empty($appliedCoupon))
                                                     @if($appliedCoupon['is_free_shipping'])
-                                                        {{ __('Livraison gratuite offerte') }}
+                                                        <i class="fas fa-truck-moving text-success me-1"></i> {{ __('Livraison offerte') }}
                                                     @else
-                                                        -{{ currency($appliedCoupon['discount']) }} {{ __('appliqués') }}
+                                                        <i class="fas fa-arrow-down text-success me-1"></i> -{{ currency($appliedCoupon['discount']) }} {{ __('appliqués') }}
                                                     @endif
                                                 @endif
                                             </div>
                                         </div>
                                     </div>
-                                    <button type="button" class="btn btn-sm btn-outline-danger border-0 rounded-pill" id="btn-remove-promo" title="{{ __('Retirer le code') }}">
-                                        <i class="fas fa-times me-1"></i> <span class="small">{{ __('Retirer') }}</span>
+                                    <button type="button" class="btn-remove-promo" id="btn-remove-promo" title="{{ __('Retirer le code') }}">
+                                        <i class="fas fa-times me-1"></i>
+                                        <span>{{ __('Retirer') }}</span>
                                     </button>
                                 </div>
                             </div>
@@ -368,9 +386,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (hiddenCouponInput) hiddenCouponInput.value = data.coupon.code;
                     if (appliedCodeText) appliedCodeText.textContent = data.coupon.code;
                     if (appliedDiscountHint) {
-                        appliedDiscountHint.textContent = isFreeShipping 
-                            ? '{{ __("Livraison gratuite offerte") }}' 
-                            : '-' + data.coupon.formatted_discount + ' {{ __("appliqués") }}';
+                        appliedDiscountHint.innerHTML = isFreeShipping 
+                            ? '<i class="fas fa-truck-moving text-success me-1"></i> {{ __("Livraison offerte") }}' 
+                            : '<i class="fas fa-arrow-down text-success me-1"></i> -' + data.coupon.formatted_discount + ' {{ __("appliqués") }}';
                     }
 
                     if (promoInputContainer) promoInputContainer.classList.add('d-none');
@@ -877,6 +895,338 @@ document.addEventListener('DOMContentLoaded', function() {
 
     .checkout-input::placeholder {
         letter-spacing: 2px !important;
+    }
+}
+
+/* ================================================================
+   PROMO CODE / DISCOUNT BOX PRO STYLING
+   Aligned with WINA SHOP Camera Brand Aesthetic
+   ================================================================ */
+.checkout-promo-box {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    transition: all 0.2s ease;
+}
+
+.checkout-promo-box:hover {
+    border-color: #cbd5e1;
+}
+
+.promo-box-header {
+    padding-bottom: 8px;
+}
+
+.promo-label {
+    cursor: default;
+}
+
+.promo-icon-badge {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: #fef2f2;
+    color: #dc2626;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+}
+
+.promo-title-text {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #334155;
+}
+
+.promo-status-badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #059669;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    padding: 2px 8px;
+    border-radius: 9999px;
+}
+
+/* Promo Input Group */
+.promo-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 3px;
+    transition: all 0.2s ease;
+}
+
+.promo-input-wrapper:focus-within {
+    border-color: #dc2626;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.promo-input-affix {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
+    color: #94a3b8;
+    font-size: 0.85rem;
+}
+
+.promo-input-wrapper:focus-within .promo-input-affix {
+    color: #dc2626;
+}
+
+.promo-field {
+    border: none !important;
+    background: transparent !important;
+    padding: 8px 6px !important;
+    font-size: 0.88rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 1.5px !important;
+    color: #0f172a !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.promo-field::placeholder {
+    font-size: 0.8rem;
+    font-weight: 400;
+    letter-spacing: 0;
+    color: #94a3b8 !important;
+    text-transform: none;
+}
+
+.btn-apply-promo {
+    background: #0f172a !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 6px 14px !important;
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    transition: all 0.2s ease !important;
+    white-space: nowrap !important;
+}
+
+.btn-apply-promo:hover:not(:disabled) {
+    background: #dc2626 !important;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(220, 38, 38, 0.25);
+}
+
+.btn-apply-promo:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.promo-feedback-error {
+    font-size: 0.78rem;
+    color: #dc2626;
+    font-weight: 500;
+}
+
+/* Applied Voucher Card */
+.promo-applied-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+    border: 1.5px dashed #86efac;
+    border-radius: 10px;
+    gap: 8px;
+}
+
+.promo-applied-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.promo-applied-check {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #22c55e;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    box-shadow: 0 2px 5px rgba(34, 197, 94, 0.3);
+}
+
+.promo-applied-info {
+    min-width: 0;
+}
+
+.promo-code-display {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.2;
+}
+
+.promo-code-name {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.92rem;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    color: #15803d;
+}
+
+.promo-applied-pill {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: #dcfce7;
+    color: #166534;
+    padding: 1px 6px;
+    border-radius: 4px;
+    border: 1px solid #bbf7d0;
+}
+
+.promo-saving-hint {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #475569;
+    margin-top: 2px;
+}
+
+.btn-remove-promo {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.btn-remove-promo:hover {
+    background: #dc2626;
+    color: #ffffff;
+    border-color: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
+}
+
+.btn-remove-promo:active {
+    transform: translateY(0);
+}
+
+/* ================================================================
+   MOBILE-SPECIFIC REFINEMENTS (< 576px / iPhone SE 375px)
+   ================================================================ */
+@media (max-width: 575.98px) {
+    .checkout-promo-box {
+        padding: 10px 12px;
+        border-radius: 12px;
+    }
+
+    .promo-title-text {
+        font-size: 0.72rem;
+        letter-spacing: 0.4px;
+    }
+
+    .promo-status-badge {
+        font-size: 0.68rem;
+        padding: 1px 7px;
+    }
+
+    /* Promo Applied Card on Mobile */
+    .promo-applied-card {
+        padding: 8px 10px;
+        gap: 6px;
+    }
+
+    .promo-applied-left {
+        gap: 8px;
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .promo-applied-check {
+        width: 24px;
+        height: 24px;
+        font-size: 0.7rem;
+    }
+
+    .promo-code-name {
+        font-size: 0.82rem;
+        letter-spacing: 0.8px;
+    }
+
+    .promo-applied-pill {
+        font-size: 0.6rem;
+        padding: 1px 4px;
+    }
+
+    .promo-saving-hint {
+        font-size: 0.7rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .btn-remove-promo {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+        border-radius: 6px;
+    }
+
+    .btn-remove-promo i {
+        font-size: 0.68rem;
+    }
+
+    /* Input mode on Mobile */
+    .promo-input-wrapper {
+        border-radius: 8px;
+        padding: 2px;
+    }
+
+    .promo-input-affix {
+        padding: 0 8px;
+        font-size: 0.8rem;
+    }
+
+    .promo-field {
+        font-size: 0.82rem !important;
+        letter-spacing: 1px !important;
+        padding: 7px 4px !important;
+    }
+
+    .promo-field::placeholder {
+        font-size: 0.75rem !important;
+    }
+
+    .btn-apply-promo {
+        padding: 6px 10px !important;
+        font-size: 0.78rem !important;
+        border-radius: 6px !important;
     }
 }
 </style>
