@@ -336,6 +336,9 @@
 
         /* ── Strict Responsive Visibility: Phone vs Desktop ── */
         @media (max-width: 991.98px) {
+            .navbar-brand {
+                display: none !important;
+            }
             .nav-btn-shop,
             .nav-btn-guide {
                 display: none !important;
@@ -346,6 +349,9 @@
         }
 
         @media (min-width: 992px) {
+            .navbar-brand {
+                display: inline-flex !important;
+            }
             .nav-btn-shop-mobile {
                 display: none !important;
             }
@@ -375,6 +381,12 @@
                 left: 0 !important;
                 right: 0 !important;
                 z-index: 1000 !important;
+                display: flex !important;
+                flex-direction: row !important;
+                flex-wrap: nowrap !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                overflow: hidden !important;
             }
 
             .navbar-toggler {
@@ -393,6 +405,7 @@
                 margin-right: 8px !important;
                 transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
                 box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+                flex-shrink: 0 !important;
             }
 
             .navbar-toggler:active,
@@ -403,25 +416,19 @@
                 transform: scale(0.95);
             }
 
+            /* Clean mobile navbar: logo is intentionally hidden from top bar on phones */
             .navbar-brand {
-                font-size: 15px !important;
-                max-width: calc(100vw - 160px) !important;
-                display: inline-flex !important;
-                align-items: center !important;
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-
-            .navbar-brand img {
-                height: 32px !important;
-                max-width: 125px !important;
-                object-fit: contain !important;
-                margin-right: 0 !important;
+                display: none !important;
             }
 
             .navbar-user {
                 gap: 8px !important;
                 margin-left: auto !important;
+                display: flex !important;
+                flex-direction: row !important;
+                flex-wrap: nowrap !important;
+                align-items: center !important;
+                flex-shrink: 0 !important;
             }
 
             .user-avatar {
@@ -465,7 +472,7 @@
 <body>
     <!-- Navbar -->
     <nav class="navbar">
-        <div class="d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2 flex-nowrap flex-shrink-0">
             <button class="navbar-toggler" aria-label="Toggle menu" id="navbar-menu-toggler">
                 <i class="fas fa-bars" id="navbar-toggler-icon"></i>
             </button>
@@ -486,20 +493,20 @@
         
         <div class="navbar-user d-flex align-items-center gap-2 flex-nowrap" style="flex-shrink: 0;">
             <!-- Mobile Store Button: Icon + Pulse (visible on <992px) -->
-            <a href="{{ route('home') }}" target="_blank" class="nav-btn-shop-mobile" title="Voir la boutique en direct">
+            <a href="{{ route('home') }}" target="_blank" class="nav-btn-shop-mobile d-inline-flex d-lg-none" title="Voir la boutique en direct">
                 <span class="nav-live-pulse"></span>
                 <i class="fas fa-store"></i>
             </a>
 
             <!-- Desktop Store Button: Full Pill (visible on >=992px) -->
-            <a href="{{ route('home') }}" target="_blank" class="nav-btn-pro nav-btn-shop" title="Voir la boutique en direct">
+            <a href="{{ route('home') }}" target="_blank" class="nav-btn-pro nav-btn-shop d-none d-lg-inline-flex" title="Voir la boutique en direct">
                 <span class="nav-live-pulse"></span>
                 <span>Boutique en direct</span>
                 <i class="fas fa-arrow-up-right-from-square"></i>
             </a>
 
             <!-- Desktop Help/Tour Button (visible on >=992px) -->
-            <button type="button" onclick="startTour()" class="nav-btn-pro nav-btn-guide" title="Guide interactif">
+            <button type="button" onclick="startTour()" class="nav-btn-pro nav-btn-guide d-none d-lg-inline-flex" title="Guide interactif">
                 <i class="fas fa-circle-question"></i>
                 <span>Guide</span>
             </button>

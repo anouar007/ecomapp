@@ -528,6 +528,7 @@ body {
         height: 60px !important;
         padding: 0 14px !important;
         display: flex !important;
+        flex-direction: row !important;
         flex-wrap: nowrap !important;
         align-items: center !important;
         justify-content: space-between !important;
@@ -536,6 +537,7 @@ body {
         -webkit-backdrop-filter: blur(12px) !important;
         border-bottom: 1px solid rgba(226, 232, 240, 0.85) !important;
         box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+        overflow: hidden !important;
     }
 
     .navbar-toggler {
@@ -554,6 +556,7 @@ body {
         margin-right: 8px !important;
         transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
         box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+        flex-shrink: 0 !important;
     }
 
     .navbar-toggler:active,
@@ -564,20 +567,18 @@ body {
         transform: scale(0.95);
     }
 
+    /* Hide logo from mobile navbar (<992px) - brand is accessible inside the sidebar drawer */
     .navbar-brand {
-        font-size: 15px !important;
-        max-width: calc(100vw - 160px) !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        margin: 0 !important;
-        padding: 0 !important;
+        display: none !important;
     }
 
-    .navbar-brand img {
-        height: 32px !important;
-        max-width: 125px !important;
-        object-fit: contain !important;
-        margin-right: 0 !important;
+    .nav-btn-shop,
+    .nav-btn-guide {
+        display: none !important;
+    }
+
+    .nav-btn-shop-mobile {
+        display: inline-flex !important;
     }
 
     .user-avatar {
