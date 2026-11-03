@@ -11,10 +11,19 @@
             </div>
             <div>
                 <h1 class="brand-title">Gestion des commandes</h1>
-                <p class="brand-subtitle">Suivez et gérez les commandes clients, l'état de livraison et les règlements en temps réel</p>
+                <p class="brand-subtitle d-flex align-items-center gap-2 flex-wrap mb-0">
+                    <span>Suivez et gérez vos commandes selon leur statut de livraison</span>
+                    <span class="badge bg-light text-dark border px-2 py-1"><i class="fas fa-receipt text-primary me-1"></i> <strong id="kpi-total-orders">{{ number_format($stats['total'] ?? $orders->total(), 0, ',', ' ') }}</strong> total</span>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1"><i class="fas fa-coins me-1"></i> <strong id="kpi-revenue-orders">{{ currency($stats['revenue'] ?? 0) }}</strong> encaissés</span>
+                </p>
             </div>
         </div>
         <div class="brand-header-actions">
+            @if(request('status') || request('payment_status') || request('search'))
+                <a href="{{ route('orders.index') }}" class="btn btn-outline-danger shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
+                    <i class="fas fa-rotate-left"></i> <span>Toutes ({{ number_format($stats['total'] ?? 0, 0, ',', ' ') }})</span>
+                </a>
+            @endif
             <a href="{{ route('export.orders') }}" class="btn btn-outline-secondary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
                 <i class="fas fa-file-csv text-success"></i> <span>Exporter CSV</span>
             </a>
@@ -24,67 +33,93 @@
         </div>
     </div>
 
-    <!-- KPI Metric Stat Cards -->
-    <div class="row g-3 mb-4">
-        <!-- Total Commandes -->
-        <div class="col-6 col-lg-3">
-            <a href="{{ route('orders.index') }}" class="stat-kpi-card text-decoration-none {{ !request('status') && !request('payment_status') && !request('search') ? 'active-filter' : '' }}">
+    <!-- 5 Delivery Status Cards (Interactive Filters) -->
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-xl-5 g-2.5 g-md-3 mb-4">
+        <!-- 1. En attente (pending) -->
+        <div class="col">
+            <a href="{{ request('status') === 'pending' ? route('orders.index') : route('orders.index', array_merge(request()->except('page'), ['status' => 'pending'])) }}" 
+               class="stat-kpi-card text-decoration-none h-100 {{ request('status') === 'pending' ? 'active-filter' : '' }}"
+               title="Filtrer : Commandes en attente">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <div class="stat-kpi-label">Total Commandes</div>
-                        <div class="stat-kpi-value text-dark" id="kpi-total-orders">{{ number_format($stats['total'] ?? $orders->total(), 0, ',', ' ') }}</div>
-                        <div class="stat-kpi-sub text-muted"><span class="badge bg-light text-secondary border">Toutes périodes</span></div>
-                    </div>
-                    <div class="stat-kpi-icon bg-primary-subtle text-primary">
-                        <i class="fas fa-receipt"></i>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <!-- En Cours / Attente -->
-        <div class="col-6 col-lg-3">
-            <a href="{{ route('orders.index', ['status' => 'pending']) }}" class="stat-kpi-card text-decoration-none {{ in_array(request('status'), ['pending', 'processing']) ? 'active-filter' : '' }}">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <div class="stat-kpi-label">À Traiter / En Cours</div>
+                        <div class="stat-kpi-label text-warning">En attente</div>
                         <div class="stat-kpi-value text-warning" id="kpi-pending-orders">{{ number_format($stats['pending'] ?? 0, 0, ',', ' ') }}</div>
-                        <div class="stat-kpi-sub text-muted"><i class="fas fa-clock text-warning me-1"></i>En attente</div>
+                        <div class="stat-kpi-sub text-muted"><i class="fas fa-clock text-warning me-1"></i>À traiter</div>
                     </div>
-                    <div class="stat-kpi-icon bg-warning-subtle text-warning">
+                    <div class="stat-kpi-icon" style="background: #fef3c7; color: #d97706;">
                         <i class="fas fa-hourglass-half"></i>
                     </div>
                 </div>
             </a>
         </div>
 
-        <!-- Livrées -->
-        <div class="col-6 col-lg-3">
-            <a href="{{ route('orders.index', ['status' => 'delivered']) }}" class="stat-kpi-card text-decoration-none {{ request('status') === 'delivered' ? 'active-filter' : '' }}">
+        <!-- 2. En cours (processing) -->
+        <div class="col">
+            <a href="{{ request('status') === 'processing' ? route('orders.index') : route('orders.index', array_merge(request()->except('page'), ['status' => 'processing'])) }}" 
+               class="stat-kpi-card text-decoration-none h-100 {{ request('status') === 'processing' ? 'active-filter' : '' }}"
+               title="Filtrer : Commandes en cours de préparation">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <div class="stat-kpi-label">Commandes Livrées</div>
-                        <div class="stat-kpi-value text-success" id="kpi-delivered-orders">{{ number_format($stats['delivered'] ?? 0, 0, ',', ' ') }}</div>
-                        <div class="stat-kpi-sub text-muted"><i class="fas fa-check-circle text-success me-1"></i>Finalisées</div>
+                        <div class="stat-kpi-label" style="color: #0284c7;">En cours</div>
+                        <div class="stat-kpi-value" id="kpi-processing-orders" style="color: #0284c7;">{{ number_format($stats['processing'] ?? 0, 0, ',', ' ') }}</div>
+                        <div class="stat-kpi-sub text-muted"><i class="fas fa-box-archive me-1" style="color: #0284c7;"></i>En préparation</div>
                     </div>
-                    <div class="stat-kpi-icon bg-success-subtle text-success">
+                    <div class="stat-kpi-icon" style="background: #e0f2fe; color: #0284c7;">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- 3. Expédiée (shipped) -->
+        <div class="col">
+            <a href="{{ request('status') === 'shipped' ? route('orders.index') : route('orders.index', array_merge(request()->except('page'), ['status' => 'shipped'])) }}" 
+               class="stat-kpi-card text-decoration-none h-100 {{ request('status') === 'shipped' ? 'active-filter' : '' }}"
+               title="Filtrer : Commandes expédiées en acheminement">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label" style="color: #6366f1;">Expédiée</div>
+                        <div class="stat-kpi-value" id="kpi-shipped-orders" style="color: #6366f1;">{{ number_format($stats['shipped'] ?? 0, 0, ',', ' ') }}</div>
+                        <div class="stat-kpi-sub text-muted"><i class="fas fa-truck-fast me-1" style="color: #6366f1;"></i>En livraison</div>
+                    </div>
+                    <div class="stat-kpi-icon" style="background: #ede9fe; color: #6366f1;">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- 4. Livrée (delivered) -->
+        <div class="col">
+            <a href="{{ request('status') === 'delivered' ? route('orders.index') : route('orders.index', array_merge(request()->except('page'), ['status' => 'delivered'])) }}" 
+               class="stat-kpi-card text-decoration-none h-100 {{ request('status') === 'delivered' ? 'active-filter' : '' }}"
+               title="Filtrer : Commandes livrées avec succès">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label text-success">Livrée</div>
+                        <div class="stat-kpi-value text-success" id="kpi-delivered-orders">{{ number_format($stats['delivered'] ?? 0, 0, ',', ' ') }}</div>
+                        <div class="stat-kpi-sub text-muted"><i class="fas fa-circle-check text-success me-1"></i>Finalisée</div>
+                    </div>
+                    <div class="stat-kpi-icon" style="background: #d1fae5; color: #059669;">
                         <i class="fas fa-truck-ramp-box"></i>
                     </div>
                 </div>
             </a>
         </div>
 
-        <!-- Chiffre d'Affaires Encaissé -->
-        <div class="col-6 col-lg-3">
-            <a href="{{ route('orders.index', ['payment_status' => 'paid']) }}" class="stat-kpi-card text-decoration-none {{ request('payment_status') === 'paid' ? 'active-filter' : '' }}">
+        <!-- 5. Annulée (cancelled) -->
+        <div class="col">
+            <a href="{{ request('status') === 'cancelled' ? route('orders.index') : route('orders.index', array_merge(request()->except('page'), ['status' => 'cancelled'])) }}" 
+               class="stat-kpi-card text-decoration-none h-100 {{ request('status') === 'cancelled' ? 'active-filter' : '' }}"
+               title="Filtrer : Commandes annulées ou rejetées">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <div class="stat-kpi-label">Revenu Encaissé</div>
-                        <div class="stat-kpi-value" id="kpi-revenue-orders" style="color: #059669;">{{ currency($stats['revenue'] ?? 0) }}</div>
-                        <div class="stat-kpi-sub text-muted"><i class="fas fa-credit-card text-success me-1"></i>Règlements payés</div>
+                        <div class="stat-kpi-label text-danger">Annulée</div>
+                        <div class="stat-kpi-value text-danger" id="kpi-cancelled-orders">{{ number_format($stats['cancelled'] ?? 0, 0, ',', ' ') }}</div>
+                        <div class="stat-kpi-sub text-muted"><i class="fas fa-ban text-danger me-1"></i>Non aboutie</div>
                     </div>
-                    <div class="stat-kpi-icon" style="background: #ecfdf5; color: #059669;">
-                        <i class="fas fa-coins"></i>
+                    <div class="stat-kpi-icon" style="background: #fee2e2; color: #dc2626;">
+                        <i class="fas fa-circle-xmark"></i>
                     </div>
                 </div>
             </a>
@@ -835,7 +870,7 @@
     }
 
     /**
-     * Update real-time KPI metrics
+     * Update real-time KPI metrics for all 5 delivery statuses
      */
     function updateKPIStats(stats) {
         if (!stats) return;
@@ -847,9 +882,21 @@
             const el = document.getElementById('kpi-pending-orders');
             if (el) el.textContent = new Intl.NumberFormat('fr-FR').format(stats.pending);
         }
+        if (stats.processing !== undefined) {
+            const el = document.getElementById('kpi-processing-orders');
+            if (el) el.textContent = new Intl.NumberFormat('fr-FR').format(stats.processing);
+        }
+        if (stats.shipped !== undefined) {
+            const el = document.getElementById('kpi-shipped-orders');
+            if (el) el.textContent = new Intl.NumberFormat('fr-FR').format(stats.shipped);
+        }
         if (stats.delivered !== undefined) {
             const el = document.getElementById('kpi-delivered-orders');
             if (el) el.textContent = new Intl.NumberFormat('fr-FR').format(stats.delivered);
+        }
+        if (stats.cancelled !== undefined) {
+            const el = document.getElementById('kpi-cancelled-orders');
+            if (el) el.textContent = new Intl.NumberFormat('fr-FR').format(stats.cancelled);
         }
         if (stats.revenue_formatted !== undefined) {
             const el = document.getElementById('kpi-revenue-orders');

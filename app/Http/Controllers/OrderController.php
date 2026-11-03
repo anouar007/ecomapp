@@ -40,8 +40,11 @@ class OrderController extends Controller
 
         $stats = [
             'total' => Order::count(),
-            'pending' => Order::whereIn('status', ['pending', 'processing'])->count(),
+            'pending' => Order::where('status', 'pending')->count(),
+            'processing' => Order::where('status', 'processing')->count(),
+            'shipped' => Order::where('status', 'shipped')->count(),
             'delivered' => Order::where('status', 'delivered')->count(),
+            'cancelled' => Order::where('status', 'cancelled')->count(),
             'revenue' => Order::where('payment_status', 'paid')->sum('total'),
         ];
 
@@ -286,8 +289,11 @@ class OrderController extends Controller
         // Recalculate KPIs
         $stats = [
             'total' => Order::count(),
-            'pending' => Order::whereIn('status', ['pending', 'processing'])->count(),
+            'pending' => Order::where('status', 'pending')->count(),
+            'processing' => Order::where('status', 'processing')->count(),
+            'shipped' => Order::where('status', 'shipped')->count(),
             'delivered' => Order::where('status', 'delivered')->count(),
+            'cancelled' => Order::where('status', 'cancelled')->count(),
             'revenue' => Order::where('payment_status', 'paid')->sum('total'),
         ];
 
@@ -316,7 +322,10 @@ class OrderController extends Controller
             'stats' => [
                 'total' => $stats['total'],
                 'pending' => $stats['pending'],
+                'processing' => $stats['processing'],
+                'shipped' => $stats['shipped'],
                 'delivered' => $stats['delivered'],
+                'cancelled' => $stats['cancelled'],
                 'revenue_formatted' => currency($stats['revenue']),
             ]
         ]);
