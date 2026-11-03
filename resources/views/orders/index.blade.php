@@ -527,16 +527,16 @@
                             <div class="text-muted" style="font-size: 0.72rem;">{{ $order->created_at->format('H:i') }}</div>
                         </td>
                         <td class="text-end" style="padding-right: 1.25rem;">
-                            <div class="d-flex justify-content-end gap-1.5">
-                                <a href="{{ route('orders.show', $order) }}" class="btn-action-icon" title="Détails de la commande">
-                                    <i class="fas fa-eye text-primary"></i>
+                            <div class="action-buttons-group justify-content-end">
+                                <a href="{{ route('orders.show', $order) }}" class="action-btn action-btn-view" title="Détails de la commande">
+                                    <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{{ route('orders.edit', $order) }}" class="btn-action-icon" title="Modifier la commande">
-                                    <i class="fas fa-pencil-alt text-info"></i>
+                                <a href="{{ route('orders.edit', $order) }}" class="action-btn action-btn-edit" title="Modifier la commande">
+                                    <i class="fas fa-pencil-alt"></i>
                                 </a>
                                 @if($order->invoice)
-                                    <a href="{{ route('invoices.show', $order->invoice) }}" class="btn-action-icon" title="Voir la facture">
-                                        <i class="fas fa-file-invoice text-success"></i>
+                                    <a href="{{ route('invoices.show', $order->invoice) }}" class="action-btn action-btn-success" title="Voir la facture">
+                                        <i class="fas fa-file-invoice"></i>
                                     </a>
                                 @endif
                                 @if(in_array($order->status, ['pending', 'cancelled']))
@@ -548,7 +548,7 @@
                                           data-item-name="Commande #{{ $order->order_number }}">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn-action-icon danger" title="Supprimer la commande">
+                                        <button type="submit" class="action-btn action-btn-delete" title="Supprimer la commande">
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </form>

@@ -270,14 +270,14 @@
 
                             <!-- Actions -->
                             <td class="pe-3 text-end">
-                                <div class="btn-group btn-group-sm">
-                                    <a href="{{ route('brands.edit', $brand) }}" class="btn btn-outline-secondary" title="Modifier la marque">
+                                <div class="action-buttons-group justify-content-end">
+                                    <a href="{{ route('brands.edit', $brand) }}" class="action-btn action-btn-edit" title="Modifier la marque">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <form action="{{ route('brands.destroy', $brand) }}" method="POST" class="d-inline" onsubmit="return confirm('Supprimer définitivement la marque « {{ addslashes($brand->name) }} » ? Les produits associés ne seront pas supprimés mais n\'auront plus de marque.');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-outline-danger" title="Supprimer la marque">
+                                        <button type="submit" class="action-btn action-btn-delete" title="Supprimer la marque">
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </form>

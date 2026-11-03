@@ -3,7 +3,7 @@
 @section('title', 'Gestion des pages')
 
 @section('content')
-    <div class="brand-header">
+    <div class="brand-header mb-3 mb-md-4">
         <div>
             <h1 class="brand-title">
                 <div class="brand-header-icon">
@@ -18,9 +18,10 @@
         </a>
     </div>
 
-    <div class="brand-table-card">
+    <!-- Desktop Table (d-none d-md-block, Zero horizontal scroll) -->
+    <div class="brand-table-card d-none d-md-block shadow-sm rounded-4 overflow-hidden bg-white mb-4">
         <div class="table-responsive">
-            <table class="brand-table">
+            <table class="brand-table mb-0 align-middle">
                 <thead>
                     <tr>
                         <th style="padding-left: 1.5rem;">Titre de la page</th>
@@ -50,9 +51,9 @@
                         <td>
                             <div class="text-muted small">{{ $page->updated_at->format('d/m/Y H:i') }}</div>
                         </td>
-                        <td style="padding-right: 1.5rem;">
-                            <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ route('pages.edit', $page) }}" class="btn-action-icon" title="Modifier la page">
+                        <td style="padding-right: 1.5rem;" class="text-end">
+                            <div class="action-buttons-group justify-content-end">
+                                <a href="{{ route('pages.edit', $page) }}" class="action-btn action-btn-edit" title="Modifier la page">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <form method="POST" action="{{ route('pages.destroy', $page) }}" 
@@ -62,7 +63,7 @@
                                       data-item-name="{{ $page->title }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn-action-icon danger" title="Supprimer">
+                                    <button type="submit" class="action-btn action-btn-delete" title="Supprimer">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </form>
@@ -90,6 +91,69 @@
         </div>
         @if($pages->hasPages())
         <div class="px-4 py-3 border-top">
+            {{ $pages->links() }}
+        </div>
+        @endif
+    </div>
+
+    <!-- Mobile Touch Cards (d-block d-md-none, Zero horizontal scroll) -->
+    <div class="d-block d-md-none mb-4">
+        @forelse($pages as $page)
+        <div class="card border rounded-3 p-3 mb-2.5 bg-white shadow-xs">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="badge bg-light text-secondary border px-2 py-0.5 small">
+                    <i class="fas fa-layer-group me-1"></i>{{ ucfirst($page->layout) }}
+                </span>
+                <span class="brand-badge {{ $page->is_published ? 'success' : 'warning' }}" style="font-size: 0.72rem;">
+                    {{ $page->is_published ? 'Publiée' : 'Brouillon' }}
+                </span>
+            </div>
+
+            <h6 class="fw-bold text-dark mb-1">{{ $page->title }}</h6>
+            <div class="mb-2.5">
+                <a href="{{ url($page->slug) }}" target="_blank" class="text-primary text-decoration-none small d-inline-flex align-items-center gap-1 font-monospace">
+                    <span>/{{ $page->slug }}</span>
+                    <i class="fas fa-external-link-alt" style="font-size: 0.7rem;"></i>
+                </a>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                <span class="text-muted small" style="font-size: 0.72rem;">
+                    <i class="far fa-clock me-1"></i>{{ $page->updated_at->format('d/m/Y') }}
+                </span>
+                <div class="d-flex gap-1.5">
+                    <a href="{{ route('pages.edit', $page) }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1" style="font-size: 0.78rem;">
+                        <i class="fas fa-edit me-1"></i> Modifier
+                    </a>
+                    <form method="POST" action="{{ route('pages.destroy', $page) }}" 
+                          class="d-inline"
+                          data-confirm-delete="true"
+                          data-item-type="page"
+                          data-item-name="{{ $page->title }}">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle" style="width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center;" title="Supprimer">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        @empty
+        <div class="text-center py-5 bg-white rounded-3 border">
+            <div class="brand-avatar mx-auto mb-3" style="width: 56px; height: 56px; font-size: 22px;">
+                <i class="fas fa-file-code text-muted"></i>
+            </div>
+            <h6 class="fw-bold text-dark">Aucune page créée</h6>
+            <p class="text-muted small">Commencez par créer votre première page client.</p>
+            <a href="{{ route('pages.create') }}" class="btn btn-brand-primary btn-sm rounded-pill px-3 mt-2">
+                Créer une page
+            </a>
+        </div>
+        @endforelse
+
+        @if($pages->hasPages())
+        <div class="p-3 d-flex justify-content-center">
             {{ $pages->links() }}
         </div>
         @endif

@@ -355,15 +355,15 @@
 
                             <!-- Actions -->
                             <td class="pe-3 text-end">
-                                <div class="btn-group btn-group-sm">
-                                    <a href="{{ route('product-tags.edit', $tag) }}" class="btn btn-outline-secondary" title="Personnaliser le style et la taille">
+                                <div class="action-buttons-group justify-content-end">
+                                    <a href="{{ route('product-tags.edit', $tag) }}" class="action-btn action-btn-edit" title="Personnaliser le style et la taille">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     @if(!$tag->is_discount_tag)
                                         <form action="{{ route('product-tags.destroy', $tag) }}" method="POST" class="d-inline" onsubmit="return confirm('Supprimer définitivement le tag « {{ addslashes($tag->name) }} » ? Il sera retiré des produits associés.');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-outline-danger" title="Supprimer le tag">
+                                            <button type="submit" class="action-btn action-btn-delete" title="Supprimer le tag">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </form>
