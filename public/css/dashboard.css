@@ -4142,8 +4142,8 @@ i.fa-sparkles:before {
 .orders-table-card .brand-table,
 .brand-table-card.orders-table-card .brand-table {
     width: 100% !important;
-    min-width: 940px !important;
-    table-layout: fixed !important;
+    min-width: 1020px !important;
+    table-layout: auto !important;
     margin-bottom: 0;
 }
 
@@ -4583,8 +4583,9 @@ i.fa-sparkles:before {
 
 .customers-table-card .table-responsive,
 .brand-table-card.customers-table-card .table-responsive {
-    overflow-x: hidden !important;
+    overflow-x: auto !important;
     overflow-y: visible !important;
+    -webkit-overflow-scrolling: touch;
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 !important;
@@ -4593,9 +4594,9 @@ i.fa-sparkles:before {
 
 .customers-table-card .brand-table,
 .brand-table-card.customers-table-card .brand-table {
-    table-layout: fixed !important;
     width: 100% !important;
-    max-width: 100% !important;
+    min-width: 1050px !important;
+    table-layout: auto !important;
     margin-bottom: 0 !important;
 }
 

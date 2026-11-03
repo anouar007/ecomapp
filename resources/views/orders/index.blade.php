@@ -329,17 +329,17 @@
     <!-- Tableau des commandes Desktop (d-none d-md-block) -->
     <div class="brand-table-card orders-table-card d-none d-md-block">
         <div class="table-responsive">
-            <table class="brand-table align-middle">
+            <table class="brand-table align-middle" style="width: 100%; min-width: 1020px;">
                 <thead>
                     <tr>
-                        <th style="width: 15%; padding-left: 1.25rem;">N° Commande</th>
-                        <th style="width: 20%;">Client</th>
-                        <th class="text-center" style="width: 8%;">Articles</th>
-                        <th class="text-end" style="width: 12%;">Total TTC</th>
-                        <th class="text-center" style="width: 13%;">Livraison</th>
-                        <th class="text-center" style="width: 13%;">Paiement</th>
-                        <th style="width: 9%;">Date</th>
-                        <th class="text-end" style="width: 10%; padding-right: 1.25rem;">Actions</th>
+                        <th style="min-width: 130px; padding-left: 1.25rem;">N° Commande</th>
+                        <th style="min-width: 220px;">Client</th>
+                        <th class="text-center" style="min-width: 80px;">Articles</th>
+                        <th class="text-end" style="min-width: 120px;">Total TTC</th>
+                        <th class="text-center" style="min-width: 130px;">Livraison</th>
+                        <th class="text-center" style="min-width: 130px;">Paiement</th>
+                        <th style="min-width: 100px;">Date</th>
+                        <th class="text-end" style="min-width: 110px; padding-right: 1.25rem;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>

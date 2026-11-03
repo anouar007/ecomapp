@@ -657,21 +657,17 @@
 
 @push('styles')
 <style>
-    /* Prevent horizontal scrolling & optimize products table */
+    /* Responsive products table with full content visibility */
     .products-table-wrapper {
         width: 100%;
         overflow-x: auto;
-    }
-    
-    @media (min-width: 992px) {
-        .products-table-wrapper {
-            overflow-x: hidden; /* Strict removal of horizontal scroll on desktop */
-        }
+        -webkit-overflow-scrolling: touch;
     }
 
     .brand-table-products {
         width: 100%;
-        table-layout: fixed;
+        min-width: 1060px;
+        table-layout: auto;
         border-collapse: separate;
         border-spacing: 0;
         margin: 0;
@@ -795,21 +791,18 @@
 
     .prod-name {
         font-weight: 600;
-        font-size: 0.84rem;
+        font-size: 0.86rem;
         color: #0f172a;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        line-height: 1.3;
+        white-space: normal;
+        line-height: 1.35;
+        word-break: break-word;
     }
 
     .prod-desc-text {
         font-size: 0.72rem;
         color: #94a3b8;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 130px;
+        white-space: normal;
+        line-height: 1.25;
         display: inline-block;
     }
 

@@ -11,7 +11,11 @@
             </div>
             <div>
                 <h1 class="brand-title">Gestion des Clients</h1>
-                <p class="brand-subtitle">Gérez vos clients, badges de fidélité, liste noire et relances d'inactivité</p>
+                <p class="brand-subtitle d-flex align-items-center gap-2 flex-wrap mb-0">
+                    <span>Gérez vos relations clients, fidélisation et liste noire</span>
+                    <span class="badge bg-light text-dark border px-2 py-0.5"><i class="fas fa-wallet text-success me-1"></i> <strong style="color: #059669;">{{ currency($stats['total_revenue']) }}</strong> de volume d'affaires</span>
+                    <span class="badge bg-light text-dark border px-2 py-0.5"><i class="fas fa-shopping-basket text-primary me-1"></i> Panier moyen : <strong>{{ currency($stats['avg_order_value']) }}</strong></span>
+                </p>
             </div>
         </div>
         <div class="brand-header-actions d-flex align-items-center gap-2 flex-wrap">
@@ -28,16 +32,16 @@
     </div>
 
     <!-- Cartes KPI Statistiques Spécialisées (Row of 4) -->
-    <div class="row g-3 mb-4">
-        <!-- Total Clients -->
+    <div class="row g-2.5 g-md-3 mb-4">
+        <!-- 1. Total Clients -->
         <div class="col-6 col-lg-3">
-            <a href="{{ route('customers.index') }}" class="stat-kpi-card text-decoration-none {{ empty($filter) && !request('status') && !request('search') ? 'active-filter' : '' }}">
+            <a href="{{ route('customers.index') }}" class="stat-kpi-card text-decoration-none {{ empty($filter) && !request('status') && !request('search') && !request('customer_group_id') ? 'active-filter' : '' }}">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <div class="stat-kpi-label">Total Clients</div>
                         <div class="stat-kpi-value text-dark">{{ number_format($stats['total_customers'], 0, ',', ' ') }}</div>
                         <div class="stat-kpi-sub text-muted">
-                            <span class="badge bg-light text-secondary border">Tous les comptes</span>
+                            <span class="badge bg-light text-secondary border">Tous les comptes inscrits</span>
                         </div>
                     </div>
                     <div class="stat-kpi-icon bg-primary-subtle text-primary">
@@ -47,9 +51,9 @@
             </a>
         </div>
 
-        <!-- Clients Fidèles / VIP -->
+        <!-- 2. Clients Fidèles / VIP -->
         <div class="col-6 col-lg-3">
-            <a href="{{ route('customers.index', ['filter' => 'vip']) }}" class="stat-kpi-card text-decoration-none {{ request('filter') === 'vip' ? 'active-filter' : '' }}">
+            <a href="{{ route('customers.index', ['filter' => 'vip']) }}" class="stat-kpi-card text-decoration-none {{ request('filter') === 'vip' ? 'active-filter' : '' }}" style="{{ request('filter') === 'vip' ? 'border-color: #f59e0b !important; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2) !important;' : '' }}">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <div class="stat-kpi-label" style="color: #d97706;">Fidèles / VIP</div>
@@ -65,9 +69,9 @@
             </a>
         </div>
 
-        <!-- Clients à relancer (Dormants 30+ jours) -->
+        <!-- 3. Clients à relancer (Dormants 30+ jours) -->
         <div class="col-6 col-lg-3">
-            <a href="{{ route('customers.index', ['filter' => 'dormant']) }}" class="stat-kpi-card text-decoration-none {{ request('filter') === 'dormant' ? 'active-filter' : '' }}" title="Clients habituels sans commande depuis 30+ jours">
+            <a href="{{ route('customers.index', ['filter' => 'dormant']) }}" class="stat-kpi-card text-decoration-none {{ request('filter') === 'dormant' ? 'active-filter' : '' }}" style="{{ request('filter') === 'dormant' ? 'border-color: #6366f1 !important; box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;' : '' }}" title="Clients habituels sans commande depuis 30+ jours">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <div class="stat-kpi-label" style="color: #6366f1;">À Relancer</div>
@@ -83,15 +87,15 @@
             </a>
         </div>
 
-        <!-- Liste Noire (Blacklist) -->
+        <!-- 4. Liste Noire (Blacklist) -->
         <div class="col-6 col-lg-3">
-            <a href="{{ route('customers.index', ['filter' => 'blacklist']) }}" class="stat-kpi-card text-decoration-none {{ request('filter') === 'blacklist' ? 'active-filter' : '' }}" title="Clients sur liste noire">
+            <a href="{{ route('customers.index', ['filter' => 'blacklist']) }}" class="stat-kpi-card text-decoration-none {{ request('filter') === 'blacklist' ? 'active-filter' : '' }}" style="{{ request('filter') === 'blacklist' ? 'border-color: #ef4444 !important; box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;' : '' }}" title="Clients sur liste noire">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <div class="stat-kpi-label text-danger">Liste Noire</div>
                         <div class="stat-kpi-value text-danger">{{ number_format($stats['blacklisted_customers'], 0, ',', ' ') }}</div>
                         <div class="stat-kpi-sub text-muted">
-                            <i class="fas fa-ban text-danger me-1"></i>Bloqués / Signalés
+                            <i class="fas fa-ban text-danger me-1"></i>Bloqués & Signalés
                         </div>
                     </div>
                     <div class="stat-kpi-icon" style="background: #fee2e2; color: #dc2626;">
@@ -102,7 +106,7 @@
         </div>
     </div>
 
-    <!-- Tabs Navigation Pills -->
+    <!-- Tabs Navigation Pills (Filtres Rapides) -->
     <div class="d-flex align-items-center gap-2 mb-3 overflow-auto pb-1 flex-nowrap" style="scrollbar-width: thin;">
         <a href="{{ route('customers.index') }}" class="btn btn-sm rounded-pill px-3 py-1.5 fw-semibold text-nowrap {{ empty($filter) && !request('status') ? 'btn-brand-primary' : 'btn-light border text-secondary' }}">
             <i class="fas fa-list me-1"></i> Tous ({{ $stats['total_customers'] }})
@@ -116,14 +120,23 @@
         <a href="{{ route('customers.index', ['filter' => 'blacklist']) }}" class="btn btn-sm rounded-pill px-3 py-1.5 fw-semibold text-nowrap {{ request('filter') === 'blacklist' ? 'btn-danger text-white shadow-2xs' : 'btn-light border text-secondary' }}">
             <i class="fas fa-ban me-1"></i> Liste Noire ({{ $stats['blacklisted_customers'] }})
         </a>
+        @if(request('search') || request('status') || request('customer_group_id') || request('filter'))
+            <a href="{{ route('customers.index') }}" class="btn btn-sm btn-link text-muted text-decoration-none ms-auto text-nowrap">
+                <i class="fas fa-times me-1"></i>Effacer filtres
+            </a>
+        @endif
     </div>
 
     <!-- Barre de filtres unifiée (Desktop & Mobile) -->
     <div class="brand-filter-bar mb-3">
         <form method="GET" action="{{ route('customers.index') }}" id="customerFilterForm">
+            @if(request('filter'))
+                <input type="hidden" name="filter" value="{{ request('filter') }}">
+            @endif
+
             <!-- Row 1 : Recherche + Bouton Drawer Mobile + Actions Desktop -->
-            <div class="d-flex align-items-center mb-3 gap-2 flex-wrap">
-                <div class="brand-search-wrapper flex-grow-1" style="min-width: 240px;">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <div class="brand-search-wrapper flex-grow-1" style="min-width: 220px;">
                     <i class="fas fa-search"></i>
                     <input type="text" name="search" class="form-control" 
                            placeholder="Rechercher par nom, email, téléphone ou code client..."
@@ -150,11 +163,11 @@
                 </button>
 
                 <!-- Actions Desktop Principales -->
-                <div class="d-none d-md-flex align-items-center gap-2">
+                <div class="d-none d-md-flex align-items-center gap-2 ms-md-auto">
                     <button type="submit" class="btn-brand-primary btn-sm px-3 py-2 d-inline-flex align-items-center gap-1.5" title="Appliquer les filtres">
                         <i class="fas fa-filter"></i> <span>Filtrer</span>
                     </button>
-                    @if(request('search') || $hasActiveFilters)
+                    @if(request('search') || $hasActiveFilters || request('filter'))
                         <a href="{{ route('customers.index') }}" class="btn-brand-light btn-sm px-2.5 py-2 text-decoration-none" title="Réinitialiser tous les filtres">
                             <i class="fas fa-redo"></i>
                         </a>
@@ -167,10 +180,10 @@
 
             <!-- Row 2 / Drawer Filtres Mobile & Filtres Avancés Desktop -->
             <div class="collapse d-md-block" id="customerFiltersCollapse">
-                <div class="row g-2 pt-2 pt-md-0 border-top border-md-0 mt-2 mt-md-0">
-                    <!-- Statut -->
+                <div class="row g-2 pt-2 pt-md-3 border-top border-md-0 mt-2 mt-md-0 align-items-center">
+                    <!-- Statut Compte -->
                     <div class="col-6 col-md-3">
-                        <label class="form-label text-muted small fw-semibold mb-1" style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em;">Statut</label>
+                        <label class="form-label text-muted small fw-semibold mb-1" style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em;">Statut Compte</label>
                         <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
                             <option value="">Tous les statuts</option>
                             <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Actif</option>
@@ -198,7 +211,7 @@
                             <button type="submit" class="btn btn-brand-primary btn-sm px-3">
                                 <i class="fas fa-check me-1"></i> Appliquer
                             </button>
-                            @if(request('search') || $hasActiveFilters)
+                            @if(request('search') || $hasActiveFilters || request('filter'))
                                 <a href="{{ route('customers.index') }}" class="btn btn-light btn-sm border">
                                     <i class="fas fa-redo me-1"></i> Réinitialiser
                                 </a>
@@ -218,15 +231,37 @@
         @forelse($customers as $customer)
             @include('customers.partials.mobile-customer-card', ['customer' => $customer])
         @empty
-            <div class="card border-0 shadow-sm rounded-4 p-4 text-center my-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-center my-3 bg-white">
                 <div class="brand-avatar mx-auto mb-3" style="width: 56px; height: 56px; font-size: 20px; background: #f8fafc; color: #94a3b8; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
-                    <i class="fas fa-users-slash"></i>
+                    @if(request('filter') === 'blacklist')
+                        <i class="fas fa-shield-halved text-success"></i>
+                    @elseif(request('filter') === 'dormant')
+                        <i class="fas fa-user-check text-primary"></i>
+                    @else
+                        <i class="fas fa-users-slash"></i>
+                    @endif
                 </div>
-                <h6 class="fw-bold text-dark mb-1">Aucun client trouvé</h6>
-                <p class="text-muted small mb-3">Aucun profil ne correspond à vos critères de recherche.</p>
+                <h6 class="fw-bold text-dark mb-1">
+                    @if(request('filter') === 'blacklist')
+                        Aucun client sur la liste noire
+                    @elseif(request('filter') === 'dormant')
+                        Aucun client à relancer
+                    @else
+                        Aucun client trouvé
+                    @endif
+                </h6>
+                <p class="text-muted small mb-3">
+                    @if(request('filter') === 'blacklist')
+                        Félicitations, tous vos clients ont un statut sain sans incident signalé !
+                    @elseif(request('filter') === 'dormant')
+                        Tous vos clients réguliers sont actifs et ont commandé récemment.
+                    @else
+                        Aucun compte ne correspond à vos filtres actuels.
+                    @endif
+                </p>
                 <div>
                     <a href="{{ route('customers.index') }}" class="btn btn-sm btn-brand-light rounded-pill px-3">
-                        <i class="fas fa-redo me-1"></i> Réinitialiser les filtres
+                        <i class="fas fa-redo me-1"></i> Voir tous les clients
                     </a>
                 </div>
             </div>
@@ -239,20 +274,20 @@
         @endif
     </div>
 
-    <!-- VUE DESKTOP (Tableau Haute Définition - Zéro scroll horizontal) -->
+    <!-- VUE DESKTOP (Tableau Haute Définition - Contenu Complet) -->
     <div class="d-none d-md-block">
-        <div class="brand-table-card customers-table-card shadow-sm border" style="overflow: hidden !important;">
-            <div style="overflow-x: hidden !important; width: 100% !important;">
-                <table class="brand-table align-middle" style="table-layout: fixed !important; width: 100% !important; margin: 0 !important;">
+        <div class="brand-table-card customers-table-card shadow-sm border">
+            <div class="table-responsive">
+                <table class="brand-table align-middle mb-0" style="width: 100%; min-width: 1060px;">
                     <thead>
                         <tr>
-                            <th style="width: 25%; padding-left: 1.25rem;">Client</th>
-                            <th style="width: 21%;">Contact</th>
-                            <th style="width: 13%;">Groupe</th>
-                            <th style="width: 8%;" class="text-center">Commandes</th>
-                            <th style="width: 12%;" class="text-end">Dépensé</th>
-                            <th style="width: 9%;" class="text-center">Statut</th>
-                            <th style="width: 12%; padding-right: 1.25rem;" class="text-end">Actions</th>
+                            <th style="min-width: 230px; padding-left: 1.25rem;">Client & Rang</th>
+                            <th style="min-width: 210px;">Contact</th>
+                            <th style="min-width: 120px;">Groupe</th>
+                            <th style="min-width: 100px;" class="text-center">Commandes</th>
+                            <th style="min-width: 130px;" class="text-end">Dépensé (LTV)</th>
+                            <th style="min-width: 130px;" class="text-center">Statut</th>
+                            <th style="min-width: 170px; padding-right: 1.25rem;" class="text-end">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -266,24 +301,24 @@
                             $statusInfo = $statusClasses[$customer->status] ?? ['class' => 'secondary', 'dot' => 'dot-gray', 'label' => ucfirst($customer->status_label)];
                             $initials = collect(explode(' ', $customer->name))->map(fn($w) => mb_substr($w, 0, 1))->take(2)->join('');
                         @endphp
-                        <tr>
+                        <tr class="hover-row">
                             <!-- Client: Avatar + Nom + Tier Badge + Code -->
                             <td style="padding-left: 1.25rem;">
-                                <div class="d-flex align-items-center gap-2.5 min-w-0">
-                                    <div class="mobile-cust-avatar" style="width: 36px; height: 36px; min-width: 36px; font-size: 0.85rem; border-radius: 10px; {{ $customer->is_blacklisted ? 'background: #fee2e2; color: #dc2626; border: 1.5px solid #fca5a5;' : '' }}">
+                                <div class="d-flex align-items-center gap-2.5">
+                                    <div class="mobile-cust-avatar" style="width: 38px; height: 38px; min-width: 38px; font-size: 0.88rem; border-radius: 10px; {{ $customer->is_blacklisted ? 'background: #fee2e2; color: #dc2626; border: 1.5px solid #fca5a5;' : '' }}">
                                         @if($customer->is_blacklisted)
                                             <i class="fas fa-ban"></i>
                                         @else
                                             {{ strtoupper($initials ?: 'CL') }}
                                         @endif
                                     </div>
-                                    <div class="min-w-0 flex-grow-1" style="max-width: calc(100% - 46px);">
+                                    <div class="flex-grow-1">
                                         <div class="d-flex align-items-center gap-1.5 flex-wrap">
-                                            <a href="{{ route('customers.show', $customer) }}" class="text-decoration-none fw-bold text-dark text-truncate" style="font-size: 0.88rem;" title="{{ $customer->name }}">
+                                            <a href="{{ route('customers.show', $customer) }}" class="text-decoration-none fw-bold text-dark" style="font-size: 0.88rem; line-height: 1.35;" title="{{ $customer->name }}">
                                                 {{ $customer->name }}
                                             </a>
                                             @if($customer->is_blacklisted)
-                                                <span class="badge bg-danger text-white fw-bold py-0.5 px-1.5" style="font-size: 0.65rem;" title="Liste Noire : {{ $customer->blacklist_reason ?: 'Sans motif' }}">
+                                                <span class="badge bg-danger text-white fw-bold py-0.5 px-1.5" style="font-size: 0.65rem;" title="Liste Noire : {{ $customer->blacklist_reason ?: 'Sans motif spécifié' }}">
                                                     <i class="fas fa-ban me-0.5"></i>Blacklist
                                                 </span>
                                             @endif
@@ -299,17 +334,24 @@
                                 </div>
                             </td>
 
-                            <!-- Contact: Email + Téléphone -->
+                            <!-- Contact: Email + Téléphone + Ville -->
                             <td>
-                                <div class="min-w-0" style="max-width: 100%;">
-                                    <div class="text-truncate" style="font-size: 0.82rem;">
+                                <div>
+                                    <div style="font-size: 0.82rem; word-break: break-all;">
                                         <a href="mailto:{{ $customer->email }}" class="text-dark text-decoration-none" title="{{ $customer->email }}">
                                             <i class="fas fa-envelope text-muted me-1" style="font-size: 0.72rem;"></i>{{ $customer->email }}
                                         </a>
                                     </div>
                                     @if($customer->phone)
-                                        <div class="text-muted font-monospace mt-0.5 text-truncate" style="font-size: 0.74rem;">
-                                            <i class="fas fa-phone-alt me-1 text-muted" style="font-size: 0.65rem;"></i>{{ $customer->phone }}
+                                        <div class="text-muted font-monospace mt-0.5 d-flex align-items-center gap-1.5 flex-wrap" style="font-size: 0.74rem;">
+                                            <a href="tel:{{ $customer->phone }}" class="text-secondary text-decoration-none text-nowrap">
+                                                <i class="fas fa-phone-alt me-1 text-muted" style="font-size: 0.65rem;"></i>{{ $customer->phone }}
+                                            </a>
+                                            @if($customer->city)
+                                                <span class="badge bg-light text-muted border px-1.5 py-0.5 text-nowrap" style="font-size: 0.65rem;">
+                                                    <i class="fas fa-map-marker-alt text-danger me-0.5"></i>{{ $customer->city }}
+                                                </span>
+                                            @endif
                                         </div>
                                     @endif
                                 </div>
@@ -317,9 +359,9 @@
 
                             <!-- Groupe Client -->
                             <td>
-                                <div class="text-truncate">
+                                <div>
                                     @if($customer->customerGroup)
-                                        <span class="badge rounded-pill px-2 py-1 text-truncate d-inline-block" style="max-width: 100%; font-size: 0.74rem; background-color: {{ $customer->customerGroup->color }}18; color: {{ $customer->customerGroup->color }}; border: 1px solid {{ $customer->customerGroup->color }}40;">
+                                        <span class="badge rounded-pill px-2 py-1 d-inline-block" style="font-size: 0.74rem; background-color: {{ $customer->customerGroup->color }}18; color: {{ $customer->customerGroup->color }}; border: 1px solid {{ $customer->customerGroup->color }}40;">
                                             {{ $customer->customerGroup->name }}
                                         </span>
                                     @else
@@ -330,16 +372,16 @@
 
                             <!-- Commandes -->
                             <td class="text-center">
-                                <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 fw-bold" style="font-size: 0.80rem;">
+                                <a href="{{ route('customers.show', $customer) }}" class="badge bg-light text-dark border rounded-pill px-2.5 py-1 fw-bold text-decoration-none hover-primary" style="font-size: 0.80rem;" title="Voir historique">
                                     {{ $customer->total_orders }}
-                                </span>
+                                </a>
                             </td>
 
-                            <!-- Total Dépensé -->
+                            <!-- Total Dépensé (LTV) -->
                             <td class="text-end">
-                                <div class="fw-bold text-dark" style="font-size: 0.88rem;">{{ $customer->formatted_total_spent }}</div>
+                                <div class="fw-bold text-dark text-nowrap" style="font-size: 0.88rem;">{{ $customer->formatted_total_spent }}</div>
                                 @if($customer->loyalty_points > 0)
-                                    <div class="mt-0.5" style="font-size: 0.68rem; color: #8b5cf6 !important; font-weight: 600;">
+                                    <div class="mt-0.5 text-nowrap" style="font-size: 0.68rem; color: #8b5cf6 !important; font-weight: 600;">
                                         <i class="fas fa-star me-0.5" style="font-size: 0.62rem;"></i>{{ number_format($customer->loyalty_points) }} pts
                                     </div>
                                 @endif
@@ -348,15 +390,15 @@
                             <!-- Statut / Blacklist / Dormant -->
                             <td class="text-center">
                                 @if($customer->is_blacklisted)
-                                    <span class="badge bg-danger text-white rounded-pill px-2 py-1 fw-bold" style="font-size: 0.70rem;" title="{{ $customer->blacklist_reason }}">
+                                    <span class="badge bg-danger text-white rounded-pill px-2 py-1 fw-bold text-nowrap" style="font-size: 0.70rem;" title="{{ $customer->blacklist_reason }}">
                                         <i class="fas fa-ban me-1"></i>Liste Noire
                                     </span>
                                 @elseif($customer->is_dormant)
-                                    <span class="badge rounded-pill px-2 py-1" style="font-size: 0.70rem; background: #ede9fe; color: #4f46e5; border: 1px solid #c7d2fe;" title="Dernière commande il y a {{ $customer->days_since_last_order }} jours">
+                                    <span class="badge rounded-pill px-2 py-1 text-nowrap" style="font-size: 0.70rem; background: #ede9fe; color: #4f46e5; border: 1px solid #c7d2fe;" title="Dernière commande il y a {{ $customer->days_since_last_order }} jours">
                                         <i class="fas fa-user-clock me-1"></i>Inactif ({{ $customer->days_since_last_order }}j)
                                     </span>
                                 @else
-                                    <span class="badge bg-{{ $statusInfo['class'] }}-subtle text-{{ $statusInfo['class'] }} border border-{{ $statusInfo['class'] }}-subtle rounded-pill px-2 py-1 d-inline-flex align-items-center gap-1.5" style="font-size: 0.72rem; font-weight: 600;">
+                                    <span class="badge bg-{{ $statusInfo['class'] }}-subtle text-{{ $statusInfo['class'] }} border border-{{ $statusInfo['class'] }}-subtle rounded-pill px-2 py-1 d-inline-flex align-items-center gap-1.5 text-nowrap" style="font-size: 0.72rem; font-weight: 600;">
                                         <span class="status-dot {{ $statusInfo['dot'] }}"></span>
                                         <span>{{ $statusInfo['label'] }}</span>
                                     </span>
@@ -365,7 +407,7 @@
 
                             <!-- Actions -->
                             <td style="padding-right: 1.25rem;" class="text-end">
-                                <div class="action-buttons-group justify-content-end">
+                                <div class="action-buttons-group justify-content-end flex-nowrap" style="gap: 4px;">
                                     @if($customer->phone)
                                         @php
                                             $cleanPhone = preg_replace('/[^0-9]/', '', $customer->phone);
@@ -405,10 +447,32 @@
                             <td colspan="7">
                                 <div class="text-center py-5">
                                     <div class="brand-avatar mx-auto mb-3" style="width: 56px; height: 56px; font-size: 22px; background: #f8fafc; color: #94a3b8; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
-                                        <i class="fas fa-users-slash"></i>
+                                        @if(request('filter') === 'blacklist')
+                                            <i class="fas fa-shield-halved text-success"></i>
+                                        @elseif(request('filter') === 'dormant')
+                                            <i class="fas fa-user-check text-primary"></i>
+                                        @else
+                                            <i class="fas fa-users-slash"></i>
+                                        @endif
                                     </div>
-                                    <h6 class="fw-bold text-dark mb-1">Aucun client trouvé</h6>
-                                    <p class="text-muted small mb-3">Aucun enregistrement ne correspond à vos filtres actuels.</p>
+                                    <h6 class="fw-bold text-dark mb-1">
+                                        @if(request('filter') === 'blacklist')
+                                            Aucun client sur la liste noire
+                                        @elseif(request('filter') === 'dormant')
+                                            Aucun client à relancer
+                                        @else
+                                            Aucun client trouvé
+                                        @endif
+                                    </h6>
+                                    <p class="text-muted small mb-3">
+                                        @if(request('filter') === 'blacklist')
+                                            Tous vos comptes clients ont un statut régulier et sain.
+                                        @elseif(request('filter') === 'dormant')
+                                            Vos clients réguliers ont tous passé commande récemment !
+                                        @else
+                                            Aucun enregistrement ne correspond à vos filtres actuels.
+                                        @endif
+                                    </p>
                                     <a href="{{ route('customers.index') }}" class="btn btn-sm btn-brand-light rounded-pill px-3">
                                         <i class="fas fa-redo me-1"></i> Réinitialiser les filtres
                                     </a>
@@ -439,7 +503,7 @@
                         </div>
                         <div>
                             <h5 class="modal-title fw-bold text-danger mb-0" id="newBlacklistModalLabel">Inscrire un Client sur Liste Noire</h5>
-                            <div class="text-muted small">Ce profil sera bloqué et signalé lors de toute commande</div>
+                            <div class="text-muted small">Ce profil sera bloqué et signalé lors de toute commande future</div>
                         </div>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
@@ -447,21 +511,44 @@
                 <form method="POST" action="{{ route('customers.blacklist.store') }}">
                     @csrf
                     <div class="modal-body p-4">
+                        @if(isset($allCustomersForBlacklist) && $allCustomersForBlacklist->count() > 0)
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark small">Choisir un client existant (Optionnel)</label>
+                            <select class="form-select form-select-sm" onchange="
+                                if (this.value) {
+                                    const opt = this.options[this.selectedIndex];
+                                    document.getElementById('blNameInput').value = opt.dataset.name || '';
+                                    document.getElementById('blPhoneInput').value = opt.dataset.phone || '';
+                                    document.getElementById('blEmailInput').value = opt.dataset.email || '';
+                                }
+                            ">
+                                <option value="">-- Ou saisir manuellement ci-dessous --</option>
+                                @foreach($allCustomersForBlacklist as $ac)
+                                    <option value="{{ $ac->id }}" data-name="{{ $ac->name }}" data-phone="{{ $ac->phone }}" data-email="{{ $ac->email }}">
+                                        {{ $ac->name }} ({{ $ac->phone ?: $ac->email }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @endif
+
                         <div class="mb-3">
                             <label class="form-label fw-semibold text-dark small">Nom ou Raison Sociale <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control" placeholder="Ex: Mohammed Alami" required>
+                            <input type="text" name="name" id="blNameInput" class="form-control" placeholder="Ex: Mohammed Alami" required>
                         </div>
+
                         <div class="row g-2 mb-3">
                             <div class="col-6">
                                 <label class="form-label fw-semibold text-dark small">Numéro de Téléphone</label>
-                                <input type="text" name="phone" class="form-control font-monospace" placeholder="Ex: 0612345678">
+                                <input type="text" name="phone" id="blPhoneInput" class="form-control font-monospace" placeholder="Ex: 0612345678">
                             </div>
                             <div class="col-6">
                                 <label class="form-label fw-semibold text-dark small">Adresse Email</label>
-                                <input type="email" name="email" class="form-control" placeholder="client@domaine.com">
+                                <input type="email" name="email" id="blEmailInput" class="form-control" placeholder="client@domaine.com">
                             </div>
                             <div class="col-12 form-text small">Renseignez au moins le téléphone ou l'email pour que le système identifie le client lors de futures commandes.</div>
                         </div>
+
                         <div class="mb-2">
                             <label class="form-label fw-semibold text-dark small">Motif du blacklistage <span class="text-danger">*</span></label>
                             <select class="form-select form-select-sm mb-2" onchange="if(this.value){ document.getElementById('modalBlacklistReason').value = this.value; }">
