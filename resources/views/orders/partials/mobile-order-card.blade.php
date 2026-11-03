@@ -88,12 +88,27 @@
 
     <!-- Customer Info Row -->
     <div class="mobile-order-customer">
-        <div class="mobile-order-cust-avatar">
-            {{ strtoupper(substr($order->customer_name ?: 'C', 0, 1)) }}
+        <div class="mobile-order-cust-avatar" style="{{ $order->is_blacklisted ? 'background: #fee2e2; color: #dc2626; border-color: #fca5a5;' : '' }}">
+            @if($order->is_blacklisted)
+                <i class="fas fa-ban"></i>
+            @else
+                {{ strtoupper(substr($order->customer_name ?: 'C', 0, 1)) }}
+            @endif
         </div>
         <div class="min-w-0 flex-grow-1">
-            <div class="mobile-order-cust-name text-truncate">
-                {{ $order->customer_name ?: 'Client invité' }}
+            <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                <span class="mobile-order-cust-name text-truncate">
+                    {{ $order->customer_name ?: 'Client invité' }}
+                </span>
+                @if($order->is_blacklisted)
+                    <span class="badge bg-danger text-white fw-bold py-0.5 px-1.5" style="font-size: 0.65rem;" title="Client sur liste noire : {{ $order->blacklist_reason ?: 'Sans motif' }}">
+                        <i class="fas fa-ban me-0.5"></i>Liste Noire
+                    </span>
+                @endif
+                @php $tier = $order->customer_tier; @endphp
+                <span class="badge {{ $tier['badge_class'] }} py-0.5 px-1.5" style="font-size: 0.65rem;" title="{{ $tier['description'] }}">
+                    <i class="fas {{ $tier['icon'] }} me-0.5"></i>{{ $tier['short'] }}
+                </span>
             </div>
             <div class="mobile-order-cust-sub text-truncate d-flex align-items-center gap-2">
                 <span>
@@ -103,6 +118,11 @@
                     <span class="text-muted opacity-75">
                         <i class="fas fa-map-marker-alt text-danger me-0.5"></i>{{ $order->shipping_city }}
                     </span>
+                @endif
+                @if($order->customer_record)
+                    <a href="{{ route('customers.show', $order->customer_record) }}" class="text-primary text-decoration-none ms-auto" title="Voir fiche client">
+                        <i class="fas fa-user-circle"></i>
+                    </a>
                 @endif
             </div>
         </div>

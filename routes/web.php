@@ -107,6 +107,9 @@ Route::middleware('auth')->group(function () {
     
     // Customers Management
     Route::middleware('permission:manage_customers')->group(function () {
+        Route::post('customers/blacklist/store', [\App\Http\Controllers\CustomerController::class, 'storeBlacklist'])->name('customers.blacklist.store');
+        Route::post('customers/{customer}/toggle-blacklist', [\App\Http\Controllers\CustomerController::class, 'toggleBlacklist'])->name('customers.toggle-blacklist');
+        Route::post('orders/{order}/toggle-blacklist', [\App\Http\Controllers\CustomerController::class, 'toggleBlacklistFromOrder'])->name('orders.toggle-blacklist');
         Route::resource('customers', \App\Http\Controllers\CustomerController::class);
         Route::post('customers/{customer}/add-points', [\App\Http\Controllers\CustomerController::class, 'addPoints'])->name('customers.add-points');
         Route::post('customers/{customer}/redeem-points', [\App\Http\Controllers\CustomerController::class, 'redeemPoints'])->name('customers.redeem-points');
@@ -132,7 +135,7 @@ Route::middleware('auth')->group(function () {
     // Coupons & Promotions
     Route::middleware('permission:manage_coupons')->group(function () {
         Route::resource('coupons', \App\Http\Controllers\CouponController::class);
-        Route::post('/coupons/validate-code', [\App\Http\Controllers\CouponController::class, 'validate'])->name('coupons.validate');
+        Route::post('/coupons/validate-code', [\App\Http\Controllers\CouponController::class, 'validateCode'])->name('coupons.validate');
         Route::get('/coupons/generate-code/random', [\App\Http\Controllers\CouponController::class, 'generate'])->name('coupons.generate');
     });
     

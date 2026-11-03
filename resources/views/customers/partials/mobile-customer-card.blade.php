@@ -8,24 +8,37 @@
     $initials = collect(explode(' ', $customer->name))->map(fn($w) => mb_substr($w, 0, 1))->take(2)->join('');
 @endphp
 
-<div class="mobile-customer-card">
+<div class="mobile-customer-card {{ $customer->is_blacklisted ? 'border-danger' : '' }}">
     <!-- Header: Avatar + Identity + Status -->
     <div class="d-flex align-items-start justify-content-between gap-2.5 mb-2.5">
         <div class="d-flex align-items-center gap-2.5 flex-grow-1 min-w-0">
-            <div class="mobile-cust-avatar">
-                {{ strtoupper($initials ?: 'CL') }}
+            <div class="mobile-cust-avatar" style="{{ $customer->is_blacklisted ? 'background: #fee2e2; color: #dc2626; border: 1.5px solid #fca5a5;' : '' }}">
+                @if($customer->is_blacklisted)
+                    <i class="fas fa-ban"></i>
+                @else
+                    {{ strtoupper($initials ?: 'CL') }}
+                @endif
             </div>
             <div class="min-w-0 flex-grow-1">
                 <a href="{{ route('customers.show', $customer) }}" class="text-decoration-none d-block">
                     <h6 class="fw-bold text-dark mb-0.5 text-truncate" style="font-size: 0.96rem;">{{ $customer->name }}</h6>
                 </a>
-                <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <span class="badge bg-light text-secondary border font-monospace px-1.5 py-0.5" style="font-size: 0.72rem;">
+                <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                    @if($customer->is_blacklisted)
+                        <span class="badge bg-danger text-white fw-bold py-0.5 px-1.5" style="font-size: 0.65rem;" title="Liste Noire">
+                            <i class="fas fa-ban me-0.5"></i>Blacklist
+                        </span>
+                    @endif
+                    @php $tier = $customer->tier; @endphp
+                    <span class="badge {{ $tier['badge_class'] }} py-0.5 px-1.5" style="font-size: 0.65rem;" title="{{ $tier['description'] }}">
+                        <i class="fas {{ $tier['icon'] }} me-0.5"></i>{{ $tier['short'] }}
+                    </span>
+                    <span class="badge bg-light text-secondary border font-monospace px-1.5 py-0.5" style="font-size: 0.70rem;">
                         {{ $customer->customer_code }}
                     </span>
                     @if($customer->customerGroup)
-                        <span class="badge px-1.5 py-0.5 rounded-pill" style="font-size: 0.7rem; background-color: {{ $customer->customerGroup->color }}18; color: {{ $customer->customerGroup->color }}; border: 1px solid {{ $customer->customerGroup->color }}40;">
-                            <i class="fas fa-tag me-1" style="font-size: 0.65rem;"></i>{{ $customer->customerGroup->name }}
+                        <span class="badge px-1.5 py-0.5 rounded-pill" style="font-size: 0.68rem; background-color: {{ $customer->customerGroup->color }}18; color: {{ $customer->customerGroup->color }}; border: 1px solid {{ $customer->customerGroup->color }}40;">
+                            <i class="fas fa-tag me-0.5" style="font-size: 0.62rem;"></i>{{ $customer->customerGroup->name }}
                         </span>
                     @endif
                 </div>
@@ -34,10 +47,20 @@
 
         <!-- Status Dot Pill -->
         <div class="flex-shrink-0">
-            <span class="badge bg-{{ $statusInfo['class'] }}-subtle text-{{ $statusInfo['class'] }} border border-{{ $statusInfo['class'] }}-subtle rounded-pill px-2 py-1 d-inline-flex align-items-center gap-1.5" style="font-size: 0.72rem; font-weight: 600;">
-                <span class="status-dot {{ $statusInfo['dot'] }}"></span>
-                <span>{{ $statusInfo['label'] }}</span>
-            </span>
+            @if($customer->is_blacklisted)
+                <span class="badge bg-danger text-white rounded-pill px-2 py-1 fw-bold" style="font-size: 0.70rem;">
+                    <i class="fas fa-ban me-1"></i>Bloqué
+                </span>
+            @elseif($customer->is_dormant)
+                <span class="badge rounded-pill px-2 py-1" style="font-size: 0.70rem; background: #ede9fe; color: #4f46e5; border: 1px solid #c7d2fe;">
+                    <i class="fas fa-user-clock me-0.5"></i>{{ $customer->days_since_last_order }}j inactif
+                </span>
+            @else
+                <span class="badge bg-{{ $statusInfo['class'] }}-subtle text-{{ $statusInfo['class'] }} border border-{{ $statusInfo['class'] }}-subtle rounded-pill px-2 py-1 d-inline-flex align-items-center gap-1.5" style="font-size: 0.72rem; font-weight: 600;">
+                    <span class="status-dot {{ $statusInfo['dot'] }}"></span>
+                    <span>{{ $statusInfo['label'] }}</span>
+                </span>
+            @endif
         </div>
     </div>
 
@@ -84,19 +107,35 @@
     </div>
 
     <!-- Bottom Actions Row -->
-    <div class="d-flex align-items-center justify-content-between pt-2 border-top gap-2" style="border-color: #f1f5f9 !important;">
+    <div class="d-flex align-items-center justify-content-between pt-2 border-top gap-1.5 flex-wrap" style="border-color: #f1f5f9 !important;">
         <div class="d-flex align-items-center gap-1.5 flex-grow-1">
             <a href="{{ route('customers.show', $customer) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1.5 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 fw-semibold" style="font-size: 0.78rem;">
                 <i class="fas fa-eye"></i> <span>Détails</span>
             </a>
-            <a href="{{ route('customers.edit', $customer) }}" class="btn btn-sm btn-light border rounded-pill px-2.5 py-1.5 d-inline-flex align-items-center justify-content-center gap-1 text-secondary" style="font-size: 0.78rem;" title="Modifier">
-                <i class="fas fa-edit"></i>
-            </a>
             @if($customer->phone)
-                <a href="tel:{{ $customer->phone }}" class="btn btn-sm btn-outline-success rounded-pill px-2.5 py-1.5 d-inline-flex align-items-center justify-content-center" style="font-size: 0.78rem;" title="Appeler">
+                @php
+                    $cleanPhone = preg_replace('/[^0-9]/', '', $customer->phone);
+                    if (str_starts_with($cleanPhone, '0')) {
+                        $cleanPhone = '212' . substr($cleanPhone, 1);
+                    }
+                    $waMsg = urlencode("Bonjour {$customer->name}, l'équipe WINA SHOP espère que vous allez bien ! Avez-vous besoin d'un renseignement sur nos produits ?");
+                @endphp
+                <a href="https://wa.me/{{ $cleanPhone }}?text={{ $waMsg }}" target="_blank" class="btn btn-sm btn-outline-success rounded-pill px-2.5 py-1.5 d-inline-flex align-items-center justify-content-center" style="font-size: 0.78rem;" title="WhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+                <a href="tel:{{ $customer->phone }}" class="btn btn-sm btn-light border rounded-pill px-2.5 py-1.5 d-inline-flex align-items-center justify-content-center text-secondary" style="font-size: 0.78rem;" title="Appeler">
                     <i class="fas fa-phone-alt"></i>
                 </a>
             @endif
+            <form action="{{ route('customers.toggle-blacklist', $customer) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ $customer->is_blacklisted ? 'Retirer de la liste noire ?' : 'Mettre sur liste noire ?' }}');">
+                @csrf
+                <button type="submit" class="btn btn-sm {{ $customer->is_blacklisted ? 'btn-outline-success' : 'btn-outline-danger' }} rounded-circle p-1.5 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="{{ $customer->is_blacklisted ? 'Retirer de la Liste Noire' : 'Liste Noire' }}">
+                    <i class="fas {{ $customer->is_blacklisted ? 'fa-check' : 'fa-ban' }}" style="font-size: 0.78rem;"></i>
+                </button>
+            </form>
+            <a href="{{ route('customers.edit', $customer) }}" class="btn btn-sm btn-light border rounded-circle p-1.5 d-inline-flex align-items-center justify-content-center text-secondary" style="width: 32px; height: 32px;" title="Modifier">
+                <i class="fas fa-edit" style="font-size: 0.78rem;"></i>
+            </a>
         </div>
 
         <form action="{{ route('customers.destroy', $customer) }}" method="POST" class="d-inline" onsubmit="return confirm('Voulez-vous vraiment supprimer le client {{ $customer->name }} ?');">

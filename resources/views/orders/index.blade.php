@@ -351,8 +351,26 @@
                             </a>
                         </td>
                         <td>
-                            <div class="fw-bold text-dark fs-6">{{ $order->customer_name ?: 'Client invité' }}</div>
-                            <div class="text-muted small">{{ $order->customer_email ?: ($order->customer_phone ?: 'Aucun contact') }}</div>
+                            <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                                <span class="fw-bold text-dark fs-6">{{ $order->customer_name ?: 'Client invité' }}</span>
+                                @if($order->is_blacklisted)
+                                    <span class="badge bg-danger text-white border border-danger-subtle fw-bold" style="font-size: 0.68rem; padding: 2px 7px;" title="Client sur liste noire : {{ $order->blacklist_reason ?: 'Sans motif spécifié' }}">
+                                        <i class="fas fa-ban me-1"></i>Liste Noire
+                                    </span>
+                                @endif
+                                @php $tier = $order->customer_tier; @endphp
+                                <span class="badge {{ $tier['badge_class'] }}" style="font-size: 0.68rem; padding: 2px 6px;" title="{{ $tier['description'] }}">
+                                    <i class="fas {{ $tier['icon'] }} me-0.5"></i>{{ $tier['short'] }}
+                                </span>
+                            </div>
+                            <div class="text-muted small d-flex align-items-center gap-2">
+                                <span>{{ $order->customer_email ?: ($order->customer_phone ?: 'Aucun contact') }}</span>
+                                @if($order->customer_record)
+                                    <a href="{{ route('customers.show', $order->customer_record) }}" class="text-primary text-decoration-none" title="Consulter la fiche client et ses statistiques">
+                                        <i class="fas fa-arrow-up-right-from-square" style="font-size: 10px;"></i>
+                                    </a>
+                                @endif
+                            </div>
                         </td>
                         <td class="text-center">
                             <span class="badge bg-light text-secondary px-3 py-1 border" style="border-radius: 6px;">

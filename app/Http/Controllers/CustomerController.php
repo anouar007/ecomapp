@@ -27,6 +27,21 @@ class CustomerController extends Controller
             });
         }
 
+        // Filter by tab / special view
+        $filter = $request->get('filter');
+        if ($filter === 'blacklist') {
+            $query->where('is_blacklisted', true);
+        } elseif ($filter === 'dormant') {
+            $query->dormant(30);
+        } elseif ($filter === 'vip') {
+            $query->where(function($q) {
+                $q->where('total_orders', '>=', 4)
+                  ->orWhere('total_spent', '>=', 5000);
+            })->where('is_blacklisted', false);
+        } elseif ($filter === 'active') {
+            $query->where('status', 'active')->where('is_blacklisted', false);
+        }
+
         // Filter by status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -37,18 +52,23 @@ class CustomerController extends Controller
             $query->where('customer_group_id', $request->customer_group_id);
         }
 
-        $customers = $query->orderBy('created_at', 'desc')->paginate(15);
+        $customers = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
         $customerGroups = CustomerGroup::orderBy('sort_order')->get();
 
         // Calculate statistics
         $stats = [
             'total_customers' => Customer::count(),
-            'active_customers' => Customer::active()->count(),
+            'active_customers' => Customer::where('status', 'active')->where('is_blacklisted', false)->count(),
+            'dormant_customers' => Customer::dormant(30)->count(),
+            'blacklisted_customers' => Customer::where('is_blacklisted', true)->count(),
+            'vip_customers' => Customer::where('is_blacklisted', false)->where(function($q) {
+                $q->where('total_orders', '>=', 4)->orWhere('total_spent', '>=', 5000);
+            })->count(),
             'total_revenue' => Customer::sum('total_spent'),
-            'avg_order_value' => Customer::where('total_orders', '>', 0)->avg(DB::raw('total_spent / total_orders')),
+            'avg_order_value' => Customer::where('total_orders', '>', 0)->avg(DB::raw('total_spent / total_orders')) ?: 0,
         ];
 
-        return view('customers.index', compact('customers', 'customerGroups', 'stats'));
+        return view('customers.index', compact('customers', 'customerGroups', 'stats', 'filter'));
     }
 
     /**
@@ -93,13 +113,112 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
-        $customer->load(['customerGroup', 'orders.items', 'invoices']);
+        $customer->load(['customerGroup', 'invoices']);
         
-        // Customer statistics
-        $recentOrders = $customer->orders()->orderBy('created_at', 'desc')->limit(10)->get();
-        $recentInvoices = $customer->invoices()->orderBy('created_at', 'desc')->limit(5)->get();
+        // Recalculate metrics to keep real-time accuracy
+        $customer->recalculateMetrics();
+
+        // Customer statistics and order history
+        $recentOrders = $customer->allOrders()->with('items.product')->orderBy('created_at', 'desc')->paginate(15);
+        $recentInvoices = $customer->invoices()->orderBy('created_at', 'desc')->limit(10)->get();
+
+        $allOrdersQuery = $customer->allOrders();
+        $totalOrdersCount = (clone $allOrdersQuery)->count();
+        $totalSpentSum = (clone $allOrdersQuery)->sum('total');
+
+        $customerStats = [
+            'total_orders' => $totalOrdersCount,
+            'total_spent' => $totalSpentSum,
+            'delivered_orders' => (clone $allOrdersQuery)->where('status', 'delivered')->count(),
+            'cancelled_orders' => (clone $allOrdersQuery)->where('status', 'cancelled')->count(),
+            'paid_orders' => (clone $allOrdersQuery)->where('payment_status', 'paid')->count(),
+            'avg_order_value' => $totalOrdersCount > 0 ? ($totalSpentSum / $totalOrdersCount) : 0,
+            'first_order_date' => (clone $allOrdersQuery)->min('created_at'),
+            'last_order_date' => (clone $allOrdersQuery)->max('created_at'),
+            'days_since_last_order' => $customer->days_since_last_order,
+        ];
         
-        return view('customers.show', compact('customer', 'recentOrders', 'recentInvoices'));
+        return view('customers.show', compact('customer', 'recentOrders', 'recentInvoices', 'customerStats'));
+    }
+
+    /**
+     * Toggle customer blacklist status.
+     */
+    public function toggleBlacklist(Request $request, Customer $customer)
+    {
+        if ($customer->is_blacklisted) {
+            $customer->unblacklist();
+            return back()->with('success', "Le client {$customer->name} a été retiré de la liste noire.");
+        }
+
+        $reason = $request->input('reason', 'Client placé sur liste noire administrative.');
+        $customer->blacklist($reason);
+
+        return back()->with('warning', "Le client {$customer->name} a été placé sur liste noire. Un badge d'alerte s'affichera sur toutes ses commandes.");
+    }
+
+    /**
+     * Toggle blacklist directly from an Order view.
+     */
+    public function toggleBlacklistFromOrder(Request $request, \App\Models\Order $order)
+    {
+        $customer = $order->customer_record;
+        if (!$customer) {
+            $customer = Customer::findOrCreateFromOrder($order);
+            $order->customer_id = $customer->id;
+            $order->saveQuietly();
+        }
+
+        if ($customer->is_blacklisted) {
+            $customer->unblacklist();
+            return back()->with('success', "Le client {$customer->name} a été retiré de la liste noire.");
+        }
+
+        $reason = $request->input('reason', "Client blacklisté depuis la commande #{$order->order_number}.");
+        $customer->blacklist($reason);
+
+        return back()->with('warning', "Le client {$customer->name} est désormais sur la liste noire. Un badge rouge Liste Noire s'affiche désormais sur la commande.");
+    }
+
+    /**
+     * Create or mark a customer as blacklisted directly.
+     */
+    public function storeBlacklist(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:30',
+            'email' => 'nullable|email|max:255',
+            'reason' => 'required|string|max:500',
+        ]);
+
+        $phone = !empty($validated['phone']) ? trim($validated['phone']) : null;
+        $email = !empty($validated['email']) ? trim($validated['email']) : null;
+
+        $customer = null;
+        if ($phone) {
+            $customer = Customer::where('phone', $phone)->first();
+        }
+        if (!$customer && $email) {
+            $customer = Customer::where('email', $email)->first();
+        }
+
+        if ($customer) {
+            $customer->blacklist($validated['reason']);
+        } else {
+            $cleanEmail = $email ?: ('blacklist_' . ($phone ? preg_replace('/[^0-9]/', '', $phone) : uniqid()) . '@wina.local');
+            $customer = Customer::create([
+                'name' => $validated['name'],
+                'email' => $cleanEmail,
+                'phone' => $phone,
+                'status' => 'blocked',
+                'is_blacklisted' => true,
+                'blacklist_reason' => $validated['reason'],
+                'blacklisted_at' => now(),
+            ]);
+        }
+
+        return back()->with('success', "Le client {$customer->name} a été ajouté à la liste noire avec succès.");
     }
 
     /**

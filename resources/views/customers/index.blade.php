@@ -11,10 +11,13 @@
             </div>
             <div>
                 <h1 class="brand-title">Gestion des Clients</h1>
-                <p class="brand-subtitle">Gérez vos relations clients, groupes, limites de crédit et fidélité</p>
+                <p class="brand-subtitle">Gérez vos clients, badges de fidélité, liste noire et relances d'inactivité</p>
             </div>
         </div>
         <div class="brand-header-actions d-flex align-items-center gap-2 flex-wrap">
+            <button type="button" class="btn btn-outline-danger shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 fw-semibold" style="font-size: 0.84rem;" data-bs-toggle="modal" data-bs-target="#newBlacklistModal">
+                <i class="fas fa-ban"></i> <span>+ Liste Noire</span>
+            </button>
             <a href="{{ route('export.customers') }}" class="btn btn-outline-secondary shadow-sm rounded-pill px-3 py-2 d-none d-md-inline-flex align-items-center justify-content-center gap-1.5 fw-semibold" style="font-size: 0.84rem;">
                 <i class="fas fa-file-csv text-success"></i> <span>Exporter CSV</span>
             </a>
@@ -24,17 +27,17 @@
         </div>
     </div>
 
-    <!-- Cartes KPI Statistiques (Row of 4) -->
+    <!-- Cartes KPI Statistiques Spécialisées (Row of 4) -->
     <div class="row g-3 mb-4">
         <!-- Total Clients -->
         <div class="col-6 col-lg-3">
-            <a href="{{ route('customers.index') }}" class="stat-kpi-card text-decoration-none {{ !request('status') && !request('search') && !request('customer_group_id') ? 'active-filter' : '' }}">
+            <a href="{{ route('customers.index') }}" class="stat-kpi-card text-decoration-none {{ empty($filter) && !request('status') && !request('search') ? 'active-filter' : '' }}">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <div class="stat-kpi-label">Total Clients</div>
                         <div class="stat-kpi-value text-dark">{{ number_format($stats['total_customers'], 0, ',', ' ') }}</div>
                         <div class="stat-kpi-sub text-muted">
-                            <span class="badge bg-light text-secondary border">Inscrits au registre</span>
+                            <span class="badge bg-light text-secondary border">Tous les comptes</span>
                         </div>
                     </div>
                     <div class="stat-kpi-icon bg-primary-subtle text-primary">
@@ -44,59 +47,75 @@
             </a>
         </div>
 
-        <!-- Clients Actifs -->
+        <!-- Clients Fidèles / VIP -->
         <div class="col-6 col-lg-3">
-            <a href="{{ route('customers.index', ['status' => 'active']) }}" class="stat-kpi-card text-decoration-none {{ request('status') === 'active' ? 'active-filter' : '' }}">
+            <a href="{{ route('customers.index', ['filter' => 'vip']) }}" class="stat-kpi-card text-decoration-none {{ request('filter') === 'vip' ? 'active-filter' : '' }}">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <div class="stat-kpi-label">Clients Actifs</div>
-                        <div class="stat-kpi-value text-success">{{ number_format($stats['active_customers'], 0, ',', ' ') }}</div>
+                        <div class="stat-kpi-label" style="color: #d97706;">Fidèles / VIP</div>
+                        <div class="stat-kpi-value text-warning">{{ number_format($stats['vip_customers'], 0, ',', ' ') }}</div>
                         <div class="stat-kpi-sub text-muted">
-                            <i class="fas fa-check-circle text-success me-1"></i>Comptes actifs
+                            <i class="fas fa-crown text-warning me-1"></i>Or, Platine & Diamant
                         </div>
                     </div>
-                    <div class="stat-kpi-icon bg-success-subtle text-success">
-                        <i class="fas fa-user-check"></i>
+                    <div class="stat-kpi-icon" style="background: #fef3c7; color: #d97706;">
+                        <i class="fas fa-crown"></i>
                     </div>
                 </div>
             </a>
         </div>
 
-        <!-- Volume d'Affaires -->
+        <!-- Clients à relancer (Dormants 30+ jours) -->
         <div class="col-6 col-lg-3">
-            <div class="stat-kpi-card">
+            <a href="{{ route('customers.index', ['filter' => 'dormant']) }}" class="stat-kpi-card text-decoration-none {{ request('filter') === 'dormant' ? 'active-filter' : '' }}" title="Clients habituels sans commande depuis 30+ jours">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <div class="stat-kpi-label">Volume d'Affaires</div>
-                        <div class="stat-kpi-value text-info" style="font-size: clamp(0.95rem, 3.2vw, 1.35rem);">{{ currency($stats['total_revenue']) }}</div>
+                        <div class="stat-kpi-label" style="color: #6366f1;">À Relancer</div>
+                        <div class="stat-kpi-value" style="color: #4f46e5;">{{ number_format($stats['dormant_customers'], 0, ',', ' ') }}</div>
                         <div class="stat-kpi-sub text-muted">
-                            <i class="fas fa-chart-line text-info me-1"></i>Total facturé
+                            <i class="fas fa-bell text-indigo me-1"></i>Inactifs 30+ jours
                         </div>
                     </div>
-                    <div class="stat-kpi-icon bg-info-subtle text-info">
-                        <i class="fas fa-wallet"></i>
+                    <div class="stat-kpi-icon" style="background: #ede9fe; color: #6366f1;">
+                        <i class="fas fa-user-clock"></i>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
 
-        <!-- Panier Moyen -->
+        <!-- Liste Noire (Blacklist) -->
         <div class="col-6 col-lg-3">
-            <div class="stat-kpi-card">
+            <a href="{{ route('customers.index', ['filter' => 'blacklist']) }}" class="stat-kpi-card text-decoration-none {{ request('filter') === 'blacklist' ? 'active-filter' : '' }}" title="Clients sur liste noire">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <div class="stat-kpi-label">Panier Moyen</div>
-                        <div class="stat-kpi-value text-warning" style="font-size: clamp(0.95rem, 3.2vw, 1.35rem);">{{ currency($stats['avg_order_value'] ?? 0) }}</div>
+                        <div class="stat-kpi-label text-danger">Liste Noire</div>
+                        <div class="stat-kpi-value text-danger">{{ number_format($stats['blacklisted_customers'], 0, ',', ' ') }}</div>
                         <div class="stat-kpi-sub text-muted">
-                            <i class="fas fa-calculator text-warning me-1"></i>Moy. / commande
+                            <i class="fas fa-ban text-danger me-1"></i>Bloqués / Signalés
                         </div>
                     </div>
-                    <div class="stat-kpi-icon bg-warning-subtle text-warning">
-                        <i class="fas fa-shopping-bag"></i>
+                    <div class="stat-kpi-icon" style="background: #fee2e2; color: #dc2626;">
+                        <i class="fas fa-ban"></i>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
+    </div>
+
+    <!-- Tabs Navigation Pills -->
+    <div class="d-flex align-items-center gap-2 mb-3 overflow-auto pb-1 flex-nowrap" style="scrollbar-width: thin;">
+        <a href="{{ route('customers.index') }}" class="btn btn-sm rounded-pill px-3 py-1.5 fw-semibold text-nowrap {{ empty($filter) && !request('status') ? 'btn-brand-primary' : 'btn-light border text-secondary' }}">
+            <i class="fas fa-list me-1"></i> Tous ({{ $stats['total_customers'] }})
+        </a>
+        <a href="{{ route('customers.index', ['filter' => 'vip']) }}" class="btn btn-sm rounded-pill px-3 py-1.5 fw-semibold text-nowrap {{ request('filter') === 'vip' ? 'btn-warning text-dark shadow-2xs' : 'btn-light border text-secondary' }}">
+            <i class="fas fa-crown text-warning me-1"></i> Fidèles & VIP ({{ $stats['vip_customers'] }})
+        </a>
+        <a href="{{ route('customers.index', ['filter' => 'dormant']) }}" class="btn btn-sm rounded-pill px-3 py-1.5 fw-semibold text-nowrap {{ request('filter') === 'dormant' ? 'text-white shadow-2xs' : 'btn-light border text-secondary' }}" style="{{ request('filter') === 'dormant' ? 'background: #4f46e5; border-color: #4f46e5;' : '' }}">
+            <i class="fas fa-user-clock me-1"></i> À Relancer ({{ $stats['dormant_customers'] }})
+        </a>
+        <a href="{{ route('customers.index', ['filter' => 'blacklist']) }}" class="btn btn-sm rounded-pill px-3 py-1.5 fw-semibold text-nowrap {{ request('filter') === 'blacklist' ? 'btn-danger text-white shadow-2xs' : 'btn-light border text-secondary' }}">
+            <i class="fas fa-ban me-1"></i> Liste Noire ({{ $stats['blacklisted_customers'] }})
+        </a>
     </div>
 
     <!-- Barre de filtres unifiée (Desktop & Mobile) -->
@@ -248,16 +267,31 @@
                             $initials = collect(explode(' ', $customer->name))->map(fn($w) => mb_substr($w, 0, 1))->take(2)->join('');
                         @endphp
                         <tr>
-                            <!-- Client: Avatar + Nom + Code -->
+                            <!-- Client: Avatar + Nom + Tier Badge + Code -->
                             <td style="padding-left: 1.25rem;">
                                 <div class="d-flex align-items-center gap-2.5 min-w-0">
-                                    <div class="mobile-cust-avatar" style="width: 36px; height: 36px; min-width: 36px; font-size: 0.85rem; border-radius: 10px;">
-                                        {{ strtoupper($initials ?: 'CL') }}
+                                    <div class="mobile-cust-avatar" style="width: 36px; height: 36px; min-width: 36px; font-size: 0.85rem; border-radius: 10px; {{ $customer->is_blacklisted ? 'background: #fee2e2; color: #dc2626; border: 1.5px solid #fca5a5;' : '' }}">
+                                        @if($customer->is_blacklisted)
+                                            <i class="fas fa-ban"></i>
+                                        @else
+                                            {{ strtoupper($initials ?: 'CL') }}
+                                        @endif
                                     </div>
                                     <div class="min-w-0 flex-grow-1" style="max-width: calc(100% - 46px);">
-                                        <a href="{{ route('customers.show', $customer) }}" class="text-decoration-none fw-bold text-dark text-truncate d-block" style="font-size: 0.88rem;" title="{{ $customer->name }}">
-                                            {{ $customer->name }}
-                                        </a>
+                                        <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                                            <a href="{{ route('customers.show', $customer) }}" class="text-decoration-none fw-bold text-dark text-truncate" style="font-size: 0.88rem;" title="{{ $customer->name }}">
+                                                {{ $customer->name }}
+                                            </a>
+                                            @if($customer->is_blacklisted)
+                                                <span class="badge bg-danger text-white fw-bold py-0.5 px-1.5" style="font-size: 0.65rem;" title="Liste Noire : {{ $customer->blacklist_reason ?: 'Sans motif' }}">
+                                                    <i class="fas fa-ban me-0.5"></i>Blacklist
+                                                </span>
+                                            @endif
+                                            @php $tier = $customer->tier; @endphp
+                                            <span class="badge {{ $tier['badge_class'] }} py-0.5 px-1.5" style="font-size: 0.65rem;" title="{{ $tier['description'] }}">
+                                                <i class="fas {{ $tier['icon'] }} me-0.5"></i>{{ $tier['short'] }}
+                                            </span>
+                                        </div>
                                         <span class="badge bg-light text-secondary border font-monospace px-1.5 py-0.5 mt-0.5" style="font-size: 0.7rem;">
                                             {{ $customer->customer_code }}
                                         </span>
@@ -311,20 +345,48 @@
                                 @endif
                             </td>
 
-                            <!-- Statut -->
+                            <!-- Statut / Blacklist / Dormant -->
                             <td class="text-center">
-                                <span class="badge bg-{{ $statusInfo['class'] }}-subtle text-{{ $statusInfo['class'] }} border border-{{ $statusInfo['class'] }}-subtle rounded-pill px-2 py-1 d-inline-flex align-items-center gap-1.5" style="font-size: 0.72rem; font-weight: 600;">
-                                    <span class="status-dot {{ $statusInfo['dot'] }}"></span>
-                                    <span>{{ $statusInfo['label'] }}</span>
-                                </span>
+                                @if($customer->is_blacklisted)
+                                    <span class="badge bg-danger text-white rounded-pill px-2 py-1 fw-bold" style="font-size: 0.70rem;" title="{{ $customer->blacklist_reason }}">
+                                        <i class="fas fa-ban me-1"></i>Liste Noire
+                                    </span>
+                                @elseif($customer->is_dormant)
+                                    <span class="badge rounded-pill px-2 py-1" style="font-size: 0.70rem; background: #ede9fe; color: #4f46e5; border: 1px solid #c7d2fe;" title="Dernière commande il y a {{ $customer->days_since_last_order }} jours">
+                                        <i class="fas fa-user-clock me-1"></i>Inactif ({{ $customer->days_since_last_order }}j)
+                                    </span>
+                                @else
+                                    <span class="badge bg-{{ $statusInfo['class'] }}-subtle text-{{ $statusInfo['class'] }} border border-{{ $statusInfo['class'] }}-subtle rounded-pill px-2 py-1 d-inline-flex align-items-center gap-1.5" style="font-size: 0.72rem; font-weight: 600;">
+                                        <span class="status-dot {{ $statusInfo['dot'] }}"></span>
+                                        <span>{{ $statusInfo['label'] }}</span>
+                                    </span>
+                                @endif
                             </td>
 
                             <!-- Actions -->
                             <td style="padding-right: 1.25rem;" class="text-end">
-                                <div class="action-buttons-group">
-                                    <a href="{{ route('customers.show', $customer) }}" class="action-btn action-btn-primary" title="Consulter le profil 360">
+                                <div class="action-buttons-group justify-content-end">
+                                    @if($customer->phone)
+                                        @php
+                                            $cleanPhone = preg_replace('/[^0-9]/', '', $customer->phone);
+                                            if (str_starts_with($cleanPhone, '0')) {
+                                                $cleanPhone = '212' . substr($cleanPhone, 1);
+                                            }
+                                            $waMsg = urlencode("Bonjour {$customer->name}, l'équipe WINA SHOP espère que vous allez bien ! Avez-vous besoin d'un renseignement sur nos nouveaux produits ?");
+                                        @endphp
+                                        <a href="https://wa.me/{{ $cleanPhone }}?text={{ $waMsg }}" target="_blank" class="action-btn text-success" title="Contacter sur WhatsApp" style="background: #f0fdf4; border-color: #bbf7d0;">
+                                            <i class="fab fa-whatsapp"></i>
+                                        </a>
+                                    @endif
+                                    <a href="{{ route('customers.show', $customer) }}" class="action-btn action-btn-primary" title="Consulter l'historique et profil 360">
                                         <i class="fas fa-eye"></i>
                                     </a>
+                                    <form action="{{ route('customers.toggle-blacklist', $customer) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ $customer->is_blacklisted ? 'Retirer ce client de la liste noire ?' : 'Placer ce client sur liste noire ?' }}');">
+                                        @csrf
+                                        <button type="submit" class="action-btn {{ $customer->is_blacklisted ? 'text-success' : 'text-danger' }}" title="{{ $customer->is_blacklisted ? 'Retirer de la Liste Noire' : 'Mettre sur Liste Noire' }}">
+                                            <i class="fas {{ $customer->is_blacklisted ? 'fa-check' : 'fa-ban' }}"></i>
+                                        </button>
+                                    </form>
                                     <a href="{{ route('customers.edit', $customer) }}" class="action-btn" title="Modifier le client">
                                         <i class="fas fa-edit"></i>
                                     </a>
@@ -363,6 +425,64 @@
                 {{ $customers->links() }}
             </div>
             @endif
+        </div>
+    </div>
+
+    <!-- Modal : Ajouter un client à la Liste Noire -->
+    <div class="modal fade" id="newBlacklistModal" tabindex="-1" aria-labelledby="newBlacklistModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+                <div class="modal-header border-bottom px-4 pt-4 pb-3" style="background: #fef2f2; border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                    <div class="d-flex align-items-center gap-2.5">
+                        <div style="width: 38px; height: 38px; border-radius: 10px; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; border: 1px solid #fecaca;">
+                            <i class="fas fa-ban"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold text-danger mb-0" id="newBlacklistModalLabel">Inscrire un Client sur Liste Noire</h5>
+                            <div class="text-muted small">Ce profil sera bloqué et signalé lors de toute commande</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <form method="POST" action="{{ route('customers.blacklist.store') }}">
+                    @csrf
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark small">Nom ou Raison Sociale <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control" placeholder="Ex: Mohammed Alami" required>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-semibold text-dark small">Numéro de Téléphone</label>
+                                <input type="text" name="phone" class="form-control font-monospace" placeholder="Ex: 0612345678">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-semibold text-dark small">Adresse Email</label>
+                                <input type="email" name="email" class="form-control" placeholder="client@domaine.com">
+                            </div>
+                            <div class="col-12 form-text small">Renseignez au moins le téléphone ou l'email pour que le système identifie le client lors de futures commandes.</div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold text-dark small">Motif du blacklistage <span class="text-danger">*</span></label>
+                            <select class="form-select form-select-sm mb-2" onchange="if(this.value){ document.getElementById('modalBlacklistReason').value = this.value; }">
+                                <option value="">-- Choisir un motif prédéfini --</option>
+                                <option value="Colis refusé à la livraison sans motif">Colis refusé à la livraison sans motif</option>
+                                <option value="Fausse commande / Numéro injoignable">Fausse commande / Numéro injoignable</option>
+                                <option value="Impayé / Chèque rejeté">Impayé / Chèque rejeté</option>
+                                <option value="Comportement abusif / Harcèlement">Comportement abusif / Harcèlement</option>
+                                <option value="Retours répétés injustifiés">Retours répétés injustifiés</option>
+                            </select>
+                            <textarea name="reason" id="modalBlacklistReason" class="form-control" rows="3" placeholder="Décrivez le motif..." required>Colis refusé à la livraison sans motif</textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top px-4 py-3 bg-light" style="border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;">
+                        <button type="button" class="btn btn-sm btn-light border rounded-pill px-3 py-1.5" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-sm btn-danger rounded-pill px-4 py-1.5 fw-semibold shadow-xs" style="background: #dc2626; border-color: #dc2626;">
+                            <i class="fas fa-ban me-1.5"></i> Enregistrer sur Liste Noire
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 @endsection
