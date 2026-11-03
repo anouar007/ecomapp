@@ -223,7 +223,6 @@
                                         <div class="promo-applied-info">
                                             <div class="promo-code-display">
                                                 <span class="promo-code-name" id="cart-applied-code">{{ $appliedCoupon['code'] ?? '' }}</span>
-                                                <span class="promo-applied-pill">{{ __('Appliqué') }}</span>
                                             </div>
                                             <div class="promo-saving-hint" id="cart-applied-hint">
                                                 @if(!empty($appliedCoupon))
@@ -306,7 +305,7 @@
    PROMO CODE / DISCOUNT BOX PRO STYLING
    ================================================================ */
 .checkout-promo-box {
-    background: #ffffff;
+    background: #e2e8f0;
     border: 1px solid #e2e8f0;
     border-radius: 14px;
     padding: 14px;
@@ -362,8 +361,8 @@
     position: relative;
     display: flex;
     align-items: stretch;
-    background: #f8fafc;
-    border: 1.5px solid #e2e8f0;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
     border-radius: 10px;
     padding: 3px;
     transition: all 0.2s ease;
@@ -409,7 +408,7 @@
 }
 
 .btn-apply-promo {
-    background: #0f172a !important;
+    background: #006b9f !important;
     color: #ffffff !important;
     border: none !important;
     border-radius: 8px !important;

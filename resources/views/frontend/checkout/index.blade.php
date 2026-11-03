@@ -214,14 +214,13 @@
                                         <div class="promo-applied-info">
                                             <div class="promo-code-display">
                                                 <span class="promo-code-name" id="applied-code-text">{{ $appliedCoupon['code'] ?? '' }}</span>
-                                                <span class="promo-applied-pill">{{ __('Appliqué') }}</span>
                                             </div>
                                             <div class="promo-saving-hint" id="applied-discount-hint">
                                                 @if(!empty($appliedCoupon))
                                                     @if($appliedCoupon['is_free_shipping'])
                                                         <i class="fas fa-truck-moving text-success me-1"></i> {{ __('Livraison offerte') }}
                                                     @else
-                                                        <i class="fas fa-arrow-down text-success me-1"></i> -{{ currency($appliedCoupon['discount']) }} {{ __('appliqués') }}
+                                                        -{{ currency($appliedCoupon['discount']) }}
                                                     @endif
                                                 @endif
                                             </div>
@@ -377,7 +376,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(res => res.json())
             .then(data => {
                 btnApplyPromo.disabled = false;
-                btnApplyPromo.textContent = '{{ __("Appliquer") }}';
+                btnApplyPromo.textContent = '';
 
                 if (data.success) {
                     currentDiscount = data.coupon.discount || 0;
@@ -388,7 +387,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (appliedDiscountHint) {
                         appliedDiscountHint.innerHTML = isFreeShipping 
                             ? '<i class="fas fa-truck-moving text-success me-1"></i> {{ __("Livraison offerte") }}' 
-                            : '<i class="fas fa-arrow-down text-success me-1"></i> -' + data.coupon.formatted_discount + ' {{ __("appliqués") }}';
+                            : ' -' + data.coupon.formatted_discount + ' {{ __("appliqués") }}';
                     }
 
                     if (promoInputContainer) promoInputContainer.classList.add('d-none');
@@ -903,7 +902,7 @@ document.addEventListener('DOMContentLoaded', function() {
    Aligned with WINA SHOP Camera Brand Aesthetic
    ================================================================ */
 .checkout-promo-box {
-    background: #ffffff;
+    background: #e2e8f0;
     border: 1px solid #e2e8f0;
     border-radius: 14px;
     padding: 14px;
@@ -960,8 +959,8 @@ document.addEventListener('DOMContentLoaded', function() {
     position: relative;
     display: flex;
     align-items: stretch;
-    background: #f8fafc;
-    border: 1.5px solid #e2e8f0;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
     border-radius: 10px;
     padding: 3px;
     transition: all 0.2s ease;
@@ -1007,7 +1006,7 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .btn-apply-promo {
-    background: #0f172a !important;
+    background: #006b9f !important;
     color: #ffffff !important;
     border: none !important;
     border-radius: 8px !important;
