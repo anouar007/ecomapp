@@ -87,21 +87,11 @@
 # Cache-Control and Keep-Alive Headers
 <IfModule mod_headers.c>
     Header set Connection keep-alive
-
-    # Static assets long-term caching
     <FilesMatch "\.(ico|jpe?g|png|gif|webp|svg|woff2?|ttf|otf)$">
         Header set Cache-Control "public, max-age=31536000, immutable"
     </FilesMatch>
     <FilesMatch "\.(css|js)$">
         Header set Cache-Control "public, max-age=2592000"
-    </FilesMatch>
-
-    # Force fresh delivery of all dynamic pages across iOS Safari, Android, Chrome & in-app WebViews
-    <FilesMatch "\.(php|html?)$">
-        Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0, post-check=0, pre-check=0"
-        Header set Pragma "no-cache"
-        Header set Expires "Wed, 11 Jan 1984 05:00:00 GMT"
-        Header set Clear-Site-Data '"cache"'
     </FilesMatch>
 </IfModule>
 

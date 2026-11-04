@@ -297,6 +297,10 @@
         margin-top: 14px;
         position: relative;
     }
+    .pdp-slider-carousel-wrap {
+        position: relative;
+        width: 100%;
+    }
     .btn-slider-nav {
         width: 32px;
         height: 32px;
@@ -331,6 +335,51 @@
         box-shadow: none !important;
         cursor: not-allowed !important;
         pointer-events: none !important;
+    }
+
+    /* Desktop Left/Right Side Arrows for Sliders */
+    @media (min-width: 992px) {
+        .pdp-slider-side-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            width: 38px;
+            height: 38px;
+            font-size: 0.85rem;
+            background: #ffffff !important;
+            color: #0f172a !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12) !important;
+            opacity: 0.95;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .pdp-slider-side-nav:hover:not(.swiper-button-disabled) {
+            background: #c8102e !important;
+            color: #ffffff !important;
+            border-color: #c8102e !important;
+            box-shadow: 0 6px 18px rgba(200, 16, 46, 0.35) !important;
+            transform: translateY(-50%) scale(1.1) !important;
+            opacity: 1;
+        }
+        .pdp-slider-side-nav.swiper-button-disabled {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+        .pdp-slider-side-prev {
+            left: -16px;
+        }
+        .pdp-slider-side-next {
+            right: -16px;
+        }
+        [dir="rtl"] .pdp-slider-side-prev {
+            left: auto;
+            right: -16px;
+        }
+        [dir="rtl"] .pdp-slider-side-next {
+            right: auto;
+            left: -16px;
+        }
     }
     .pdp-products-swiper {
         overflow: hidden;
@@ -1297,7 +1346,7 @@
                         <span>{{ __('Voir plus') }}</span>
                         <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }}" style="font-size: 10px;"></i>
                     </a>
-                    <div class="d-flex align-items-center gap-1.5">
+                    <div class="d-flex d-lg-none align-items-center gap-1.5">
                         <button type="button" class="btn-slider-nav pdp-swiper-prev-related" aria-label="{{ __('Précédent') }}" title="{{ __('Précédent') }}">
                             <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-chevron-right' : 'fa-chevron-left' }}"></i>
                         </button>
@@ -1308,13 +1357,23 @@
                 </div>
             </div>
 
-            <div class="swiper pdp-products-swiper pdp-related-swiper">
-                <div class="swiper-wrapper">
-                    @foreach($relatedProducts as $relatedItem)
-                        <div class="swiper-slide">
-                            @include('frontend.partials.product_card_slider', ['product' => $relatedItem])
-                        </div>
-                    @endforeach
+            <div class="pdp-slider-carousel-wrap">
+                {{-- Desktop Side Navigation Buttons --}}
+                <button type="button" class="btn-slider-nav pdp-slider-side-nav pdp-slider-side-prev pdp-swiper-prev-related d-none d-lg-flex" aria-label="{{ __('Précédent') }}" title="{{ __('Précédent') }}">
+                    <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-chevron-right' : 'fa-chevron-left' }}"></i>
+                </button>
+                <button type="button" class="btn-slider-nav pdp-slider-side-nav pdp-slider-side-next pdp-swiper-next-related d-none d-lg-flex" aria-label="{{ __('Suivant') }}" title="{{ __('Suivant') }}">
+                    <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-chevron-left' : 'fa-chevron-right' }}"></i>
+                </button>
+
+                <div class="swiper pdp-products-swiper pdp-related-swiper">
+                    <div class="swiper-wrapper">
+                        @foreach($relatedProducts as $relatedItem)
+                            <div class="swiper-slide">
+                                @include('frontend.partials.product_card_slider', ['product' => $relatedItem])
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
             </div>
             <div class="pdp-slider-pagination pdp-related-pagination"></div>
@@ -1337,7 +1396,7 @@
                         <span>{{ __('Tout le catalogue') }}</span>
                         <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }}" style="font-size: 10px;"></i>
                     </a>
-                    <div class="d-flex align-items-center gap-1.5">
+                    <div class="d-flex d-lg-none align-items-center gap-1.5">
                         <button type="button" class="btn-slider-nav pdp-swiper-prev-random" aria-label="{{ __('Précédent') }}" title="{{ __('Précédent') }}">
                             <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-chevron-right' : 'fa-chevron-left' }}"></i>
                         </button>
@@ -1348,13 +1407,23 @@
                 </div>
             </div>
 
-            <div class="swiper pdp-products-swiper pdp-random-swiper">
-                <div class="swiper-wrapper">
-                    @foreach($randomProducts as $randomItem)
-                        <div class="swiper-slide">
-                            @include('frontend.partials.product_card_slider', ['product' => $randomItem])
-                        </div>
-                    @endforeach
+            <div class="pdp-slider-carousel-wrap">
+                {{-- Desktop Side Navigation Buttons --}}
+                <button type="button" class="btn-slider-nav pdp-slider-side-nav pdp-slider-side-prev pdp-swiper-prev-random d-none d-lg-flex" aria-label="{{ __('Précédent') }}" title="{{ __('Précédent') }}">
+                    <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-chevron-right' : 'fa-chevron-left' }}"></i>
+                </button>
+                <button type="button" class="btn-slider-nav pdp-slider-side-nav pdp-slider-side-next pdp-swiper-next-random d-none d-lg-flex" aria-label="{{ __('Suivant') }}" title="{{ __('Suivant') }}">
+                    <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-chevron-left' : 'fa-chevron-right' }}"></i>
+                </button>
+
+                <div class="swiper pdp-products-swiper pdp-random-swiper">
+                    <div class="swiper-wrapper">
+                        @foreach($randomProducts as $randomItem)
+                            <div class="swiper-slide">
+                                @include('frontend.partials.product_card_slider', ['product' => $randomItem])
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
             </div>
             <div class="pdp-slider-pagination pdp-random-pagination"></div>

@@ -13,65 +13,6 @@
     <meta name="theme-color" content="#ffffff">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <!-- Universal Cache Busting Meta Tags (iOS Safari, Android Chrome, WebViews, Desktop) -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-
-    <!-- One-Time Universal Client Cache Purge Script (iOS / Android / Instagram / Safari / Chrome) -->
-    <script>
-    (function() {
-        try {
-            var CACHE_VER = 'wina_global_purge_v3';
-            var hasPurged = false;
-            try { hasPurged = !!localStorage.getItem(CACHE_VER); } catch(e) {}
-
-            if (!hasPurged) {
-                // 1. Unregister all service workers across all browser scopes
-                if ('serviceWorker' in navigator && navigator.serviceWorker.getRegistrations) {
-                    navigator.serviceWorker.getRegistrations().then(function(regs) {
-                        for (var i = 0; i < regs.length; i++) {
-                            try { regs[i].unregister(); } catch(e) {}
-                        }
-                    });
-                }
-
-                // 2. Clear HTML5 CacheStorage (PWAs & WebViews)
-                if (window.caches && caches.keys) {
-                    caches.keys().then(function(keys) {
-                        for (var j = 0; j < keys.length; j++) {
-                            try { caches.delete(keys[j]); } catch(e) {}
-                        }
-                    });
-                }
-
-                // 3. Clear sessionStorage
-                try { sessionStorage.clear(); } catch(e) {}
-
-                // 4. Mark device as cleaned so this only runs once
-                try { localStorage.setItem(CACHE_VER, Date.now().toString()); } catch(e) {}
-
-                // 5. Force reload if the device restored this page from iOS/Android disk or memory cache
-                if (window.performance && performance.getEntriesByType) {
-                    var nav = performance.getEntriesByType('navigation')[0];
-                    if (nav && (nav.type === 'back_forward' || nav.type === 'reload')) {
-                        window.location.reload(true);
-                    }
-                }
-            }
-
-            // 6. Handle iOS Safari / Instagram WebView back-forward cache (bfcache)
-            window.addEventListener('pageshow', function(event) {
-                if (event.persisted) {
-                    window.location.reload(true);
-                }
-            });
-        } catch(err) {
-            // Failsafe: never break page rendering
-        }
-    })();
-    </script>
-
     <!-- Google Search Console & Webmaster Verification -->
     <meta name="google-site-verification" content="{{ setting('google_site_verification', 'mu1RdcICWNrWA2JcMpphobUwRmzCX1_Z9pAl51hs-Jg') }}">
     @if(setting('bing_site_verification'))
