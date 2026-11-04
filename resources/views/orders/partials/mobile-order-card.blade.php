@@ -97,16 +97,16 @@
         </div>
         <div class="min-w-0 flex-grow-1">
             <div class="d-flex align-items-center gap-1.5 flex-wrap">
-                <span class="mobile-order-cust-name text-truncate">
+                <span class="mobile-order-cust-name text-truncate {{ $order->is_blacklisted ? 'text-danger' : '' }}" style="{{ $order->is_blacklisted ? 'color: #dc2626 !important;' : '' }}">
                     {{ $order->customer_name ?: 'Client invité' }}
                 </span>
                 @if($order->is_blacklisted)
-                    <span class="badge bg-danger text-white fw-bold py-0.5 px-1.5" style="font-size: 0.65rem;" title="Client sur liste noire : {{ $order->blacklist_reason ?: 'Sans motif' }}">
+                    <span class="badge bg-danger text-white fw-bold py-0.5 px-1.5 d-none" style="font-size: 0.65rem;" title="Client sur liste noire : {{ $order->blacklist_reason ?: 'Sans motif' }}">
                         <i class="fas fa-ban me-0.5"></i>Liste Noire
                     </span>
                 @endif
                 @php $tier = $order->customer_tier; @endphp
-                <span class="badge {{ $tier['badge_class'] }} py-0.5 px-1.5" style="font-size: 0.65rem;" title="{{ $tier['description'] }}">
+                <span class="badge {{ $tier['badge_class'] }} py-0.5 px-1.5 d-none" style="font-size: 0.65rem;" title="{{ $tier['description'] }}">
                     <i class="fas {{ $tier['icon'] }} me-0.5"></i>{{ $tier['short'] }}
                 </span>
             </div>

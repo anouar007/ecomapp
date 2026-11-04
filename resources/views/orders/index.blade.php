@@ -352,14 +352,14 @@
                         </td>
                         <td>
                             <div class="d-flex align-items-center gap-1.5 flex-wrap">
-                                <span class="fw-bold text-dark fs-6">{{ $order->customer_name ?: 'Client invité' }}</span>
+                                <span class="fw-bold fs-6 {{ $order->is_blacklisted ? 'text-danger' : 'text-dark' }}" style="{{ $order->is_blacklisted ? 'color: #dc2626 !important;' : '' }}">{{ $order->customer_name ?: 'Client invité' }}</span>
                                 @if($order->is_blacklisted)
-                                    <span class="badge bg-danger text-white border border-danger-subtle fw-bold" style="font-size: 0.68rem; padding: 2px 7px;" title="Client sur liste noire : {{ $order->blacklist_reason ?: 'Sans motif spécifié' }}">
+                                    <span class="badge bg-danger text-white border border-danger-subtle fw-bold d-none" style="font-size: 0.68rem; padding: 2px 7px;" title="Client sur liste noire : {{ $order->blacklist_reason ?: 'Sans motif spécifié' }}">
                                         <i class="fas fa-ban me-1"></i>Liste Noire
                                     </span>
                                 @endif
                                 @php $tier = $order->customer_tier; @endphp
-                                <span class="badge {{ $tier['badge_class'] }}" style="font-size: 0.68rem; padding: 2px 6px;" title="{{ $tier['description'] }}">
+                                <span class="badge {{ $tier['badge_class'] }} d-none" style="font-size: 0.68rem; padding: 2px 6px;" title="{{ $tier['description'] }}">
                                     <i class="fas {{ $tier['icon'] }} me-0.5"></i>{{ $tier['short'] }}
                                 </span>
                             </div>
