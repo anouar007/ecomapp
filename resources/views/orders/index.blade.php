@@ -33,11 +33,29 @@
         </div>
     </div>
 
-    <!-- 5 Delivery Status Cards (Interactive Filters) -->
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-xl-5 g-2.5 g-md-3 mb-4">
+    <!-- 6 Delivery Status Cards (Interactive Filters with All Orders) -->
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-xl-6 g-2.5 g-md-3 mb-4">
+        <!-- 0. Toutes les commandes (All orders) -->
+        <div class="col">
+            <a href="{{ route('orders.index', request()->except(['status', 'page'])) }}" 
+               class="stat-kpi-card text-decoration-none h-100 {{ !request('status') ? 'active-filter' : '' }}"
+               title="Voir toutes les commandes">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label text-dark">Toutes</div>
+                        <div class="stat-kpi-value text-dark" id="kpi-all-orders-card">{{ number_format($stats['total'] ?? 0, 0, ',', ' ') }}</div>
+                        <div class="stat-kpi-sub text-muted"><i class="fas fa-boxes-stacked text-primary me-1"></i>Total</div>
+                    </div>
+                    <div class="stat-kpi-icon" style="background: #f1f5f9; color: #1e293b;">
+                        <i class="fas fa-shopping-bag"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+
         <!-- 1. En attente (pending) -->
         <div class="col">
-            <a href="{{ request('status') === 'pending' ? route('orders.index') : route('orders.index', array_merge(request()->except('page'), ['status' => 'pending'])) }}" 
+            <a href="{{ request('status') === 'pending' ? route('orders.index', request()->except(['status', 'page'])) : route('orders.index', array_merge(request()->except('page'), ['status' => 'pending'])) }}" 
                class="stat-kpi-card text-decoration-none h-100 {{ request('status') === 'pending' ? 'active-filter' : '' }}"
                title="Filtrer : Commandes en attente">
                 <div class="d-flex align-items-center justify-content-between">
@@ -55,7 +73,7 @@
 
         <!-- 2. En cours (processing) -->
         <div class="col">
-            <a href="{{ request('status') === 'processing' ? route('orders.index') : route('orders.index', array_merge(request()->except('page'), ['status' => 'processing'])) }}" 
+            <a href="{{ request('status') === 'processing' ? route('orders.index', request()->except(['status', 'page'])) : route('orders.index', array_merge(request()->except('page'), ['status' => 'processing'])) }}" 
                class="stat-kpi-card text-decoration-none h-100 {{ request('status') === 'processing' ? 'active-filter' : '' }}"
                title="Filtrer : Commandes en cours de préparation">
                 <div class="d-flex align-items-center justify-content-between">
@@ -73,7 +91,7 @@
 
         <!-- 3. Expédiée (shipped) -->
         <div class="col">
-            <a href="{{ request('status') === 'shipped' ? route('orders.index') : route('orders.index', array_merge(request()->except('page'), ['status' => 'shipped'])) }}" 
+            <a href="{{ request('status') === 'shipped' ? route('orders.index', request()->except(['status', 'page'])) : route('orders.index', array_merge(request()->except('page'), ['status' => 'shipped'])) }}" 
                class="stat-kpi-card text-decoration-none h-100 {{ request('status') === 'shipped' ? 'active-filter' : '' }}"
                title="Filtrer : Commandes expédiées en acheminement">
                 <div class="d-flex align-items-center justify-content-between">
@@ -91,7 +109,7 @@
 
         <!-- 4. Livrée (delivered) -->
         <div class="col">
-            <a href="{{ request('status') === 'delivered' ? route('orders.index') : route('orders.index', array_merge(request()->except('page'), ['status' => 'delivered'])) }}" 
+            <a href="{{ request('status') === 'delivered' ? route('orders.index', request()->except(['status', 'page'])) : route('orders.index', array_merge(request()->except('page'), ['status' => 'delivered'])) }}" 
                class="stat-kpi-card text-decoration-none h-100 {{ request('status') === 'delivered' ? 'active-filter' : '' }}"
                title="Filtrer : Commandes livrées avec succès">
                 <div class="d-flex align-items-center justify-content-between">
@@ -109,7 +127,7 @@
 
         <!-- 5. Annulée (cancelled) -->
         <div class="col">
-            <a href="{{ request('status') === 'cancelled' ? route('orders.index') : route('orders.index', array_merge(request()->except('page'), ['status' => 'cancelled'])) }}" 
+            <a href="{{ request('status') === 'cancelled' ? route('orders.index', request()->except(['status', 'page'])) : route('orders.index', array_merge(request()->except('page'), ['status' => 'cancelled'])) }}" 
                class="stat-kpi-card text-decoration-none h-100 {{ request('status') === 'cancelled' ? 'active-filter' : '' }}"
                title="Filtrer : Commandes annulées ou rejetées">
                 <div class="d-flex align-items-center justify-content-between">
@@ -139,8 +157,9 @@
                 </div>
 
                 @php
-                    $hasActiveFilters = request('status') || request('payment_status');
-                    $activeFilterCount = collect(['status', 'payment_status'])->filter(fn($k) => request()->filled($k))->count();
+                    $hasDateFilter = request('date_preset') || request('date_from') || request('date_to') || request('date');
+                    $hasActiveFilters = request('status') || request('payment_status') || $hasDateFilter;
+                    $activeFilterCount = collect(['status', 'payment_status', 'date_preset', 'date_from', 'date_to', 'date'])->filter(fn($k) => request()->filled($k))->count();
                 @endphp
 
                 <!-- Bouton Drawer Filtres Mobile (d-md-none) -->
@@ -163,7 +182,7 @@
                             {{ $orders->total() }} résultat(s)
                         </span>
                     @endif
-                    <a href="{{ route('export.orders') }}" class="btn-brand-outline">
+                    <a href="{{ route('export.orders', request()->all()) }}" class="btn-brand-outline">
                         <i class="fas fa-file-csv me-1.5" style="color: var(--success-color)"></i>Exporter CSV
                     </a>
                 </div>
@@ -174,8 +193,8 @@
                 <div class="row g-2 align-items-center">
                     <!-- Statut de livraison -->
                     <div class="col-6 col-md-auto">
-                        <select name="status" class="form-select form-select-sm" style="min-width: 170px;">
-                            <option value="">Tous les statuts de livraison</option>
+                        <select name="status" class="form-select form-select-sm" style="min-width: 160px;">
+                            <option value="">Tous les statuts</option>
                             @php
                                 $statusNames = [
                                     'pending' => '⏳ En attente',
@@ -193,7 +212,7 @@
 
                     <!-- Statut de paiement -->
                     <div class="col-6 col-md-auto">
-                        <select name="payment_status" class="form-select form-select-sm" style="min-width: 165px;">
+                        <select name="payment_status" class="form-select form-select-sm" style="min-width: 155px;">
                             <option value="">Tous les paiements</option>
                             @php
                                 $paymentStatusNames = [
@@ -209,6 +228,39 @@
                         </select>
                     </div>
 
+                    <!-- Filtre de Date (Preset) -->
+                    <div class="col-12 col-md-auto">
+                        <select name="date_preset" id="orderDatePreset" class="form-select form-select-sm" style="min-width: 165px;">
+                            <option value="">📅 Toutes les dates</option>
+                            <option value="today" {{ request('date_preset') == 'today' ? 'selected' : '' }}>Aujourd'hui</option>
+                            <option value="yesterday" {{ request('date_preset') == 'yesterday' ? 'selected' : '' }}>Hier</option>
+                            <option value="this_week" {{ request('date_preset') == 'this_week' ? 'selected' : '' }}>Cette semaine</option>
+                            <option value="this_month" {{ request('date_preset') == 'this_month' ? 'selected' : '' }}>Ce mois-ci</option>
+                            <option value="last_month" {{ request('date_preset') == 'last_month' ? 'selected' : '' }}>Mois dernier</option>
+                            <option value="custom" {{ request('date_preset') == 'custom' || (!request('date_preset') && (request('date_from') || request('date_to'))) ? 'selected' : '' }}>Période personnalisée...</option>
+                        </select>
+                    </div>
+
+                    <!-- Date de début (Du) -->
+                    <div class="col-6 col-md-auto">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-light text-muted px-2" style="font-size: 0.72rem;">Du</span>
+                            <input type="date" name="date_from" id="orderDateFrom" class="form-control form-control-sm" 
+                                   value="{{ request('date_from', request('date_preset') ? ($stats['date_from'] ?? '') : '') }}" 
+                                   title="Date de début">
+                        </div>
+                    </div>
+
+                    <!-- Date de fin (Au) -->
+                    <div class="col-6 col-md-auto">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-light text-muted px-2" style="font-size: 0.72rem;">Au</span>
+                            <input type="date" name="date_to" id="orderDateTo" class="form-control form-control-sm" 
+                                   value="{{ request('date_to', request('date_preset') ? ($stats['date_to'] ?? '') : '') }}" 
+                                   title="Date de fin">
+                        </div>
+                    </div>
+
                     <!-- Boutons Filtrer / Réinitialiser -->
                     <div class="col-12 col-md-auto d-flex gap-2">
                         <button type="submit" class="btn-brand-primary btn-sm flex-grow-1 flex-md-grow-0 justify-content-center" title="Appliquer les filtres">
@@ -221,7 +273,7 @@
 
                     <!-- Bouton Exporter sur Mobile (d-md-none) -->
                     <div class="col-12 d-md-none mt-2 pt-2 border-top">
-                        <a href="{{ route('export.orders') }}" class="btn btn-sm btn-outline-secondary w-100 justify-content-center">
+                        <a href="{{ route('export.orders', request()->all()) }}" class="btn btn-sm btn-outline-secondary w-100 justify-content-center">
                             <i class="fas fa-file-csv me-1 text-success"></i> Exporter les commandes (CSV)
                         </a>
                     </div>
@@ -269,6 +321,36 @@
                 @endphp
                 <a href="{{ request()->fullUrlWithQuery(['payment_status' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
                     Paiement : {{ $payBadgeLabels[request('payment_status')] ?? request('payment_status') }} <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
+            @if($hasDateFilter)
+                @php
+                    $presetLabels = [
+                        'today' => "Aujourd'hui",
+                        'yesterday' => 'Hier',
+                        'this_week' => 'Cette semaine',
+                        'this_month' => 'Ce mois-ci',
+                        'last_month' => 'Mois dernier',
+                        'custom' => 'Personnalisé'
+                    ];
+                    $presetName = $presetLabels[request('date_preset')] ?? '';
+                    $dateRangeFormatted = '';
+                    if (!empty($stats['date_from']) && !empty($stats['date_to'])) {
+                        if ($stats['date_from'] === $stats['date_to']) {
+                            $dateRangeFormatted = \Carbon\Carbon::parse($stats['date_from'])->format('d/m/Y');
+                        } else {
+                            $dateRangeFormatted = \Carbon\Carbon::parse($stats['date_from'])->format('d/m/Y') . ' → ' . \Carbon\Carbon::parse($stats['date_to'])->format('d/m/Y');
+                        }
+                    } elseif (!empty($stats['date_from'])) {
+                        $dateRangeFormatted = 'Depuis le ' . \Carbon\Carbon::parse($stats['date_from'])->format('d/m/Y');
+                    } elseif (!empty($stats['date_to'])) {
+                        $dateRangeFormatted = "Jusqu'au " . \Carbon\Carbon::parse($stats['date_to'])->format('d/m/Y');
+                    }
+                    $dateBadgeTitle = $presetName ? ($presetName . ($dateRangeFormatted ? " ({$dateRangeFormatted})" : '')) : $dateRangeFormatted;
+                @endphp
+                <a href="{{ request()->fullUrlWithQuery(['date_preset' => null, 'date_from' => null, 'date_to' => null, 'date' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer le filtre de date">
+                    <i class="far fa-calendar-alt text-primary me-0.5"></i> Date : {{ $dateBadgeTitle }} <i class="fas fa-times text-muted ms-0.5"></i>
                 </a>
             @endif
 
@@ -654,17 +736,23 @@
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
 
-        fetch(`/orders/${orderId}/quick-status`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                [field]: value
+            const urlParams = new URLSearchParams(window.location.search);
+            const bodyPayload = {
+                [field]: value,
+                date_from: urlParams.get('date_from') || '{{ $stats['date_from'] ?? '' }}',
+                date_to: urlParams.get('date_to') || '{{ $stats['date_to'] ?? '' }}',
+                date_preset: urlParams.get('date_preset') || ''
+            };
+
+            fetch(`/orders/${orderId}/quick-status`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(bodyPayload)
             })
-        })
         .then(response => {
             if (!response.ok) {
                 return response.json().then(err => { throw err; });
@@ -833,6 +921,8 @@
         if (stats.total !== undefined) {
             const el = document.getElementById('kpi-total-orders');
             if (el) el.textContent = new Intl.NumberFormat('fr-FR').format(stats.total);
+            const elCard = document.getElementById('kpi-all-orders-card');
+            if (elCard) elCard.textContent = new Intl.NumberFormat('fr-FR').format(stats.total);
         }
         if (stats.pending !== undefined) {
             const el = document.getElementById('kpi-pending-orders');
@@ -917,6 +1007,61 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         initStatusDropdowns();
+
+        // Auto-handle Date Preset Selection
+        const datePresetSelect = document.getElementById('orderDatePreset');
+        const fromInput = document.getElementById('orderDateFrom');
+        const toInput = document.getElementById('orderDateTo');
+        const form = document.getElementById('orderFilterForm');
+
+        if (datePresetSelect && form) {
+            datePresetSelect.addEventListener('change', function() {
+                const val = this.value;
+                const today = new Date();
+                const pad = (n) => String(n).padStart(2, '0');
+                const formatDate = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+                if (val === 'today') {
+                    const todayStr = formatDate(today);
+                    if (fromInput) fromInput.value = todayStr;
+                    if (toInput) toInput.value = todayStr;
+                    form.submit();
+                } else if (val === 'yesterday') {
+                    const y = new Date(today);
+                    y.setDate(y.getDate() - 1);
+                    const yStr = formatDate(y);
+                    if (fromInput) fromInput.value = yStr;
+                    if (toInput) toInput.value = yStr;
+                    form.submit();
+                } else if (val === 'this_week') {
+                    const curr = new Date(today);
+                    const day = curr.getDay();
+                    const diff = curr.getDate() - (day === 0 ? 6 : day - 1); // Monday
+                    const firstDay = new Date(curr.setDate(diff));
+                    const lastDay = new Date(firstDay);
+                    lastDay.setDate(lastDay.getDate() + 6);
+                    if (fromInput) fromInput.value = formatDate(firstDay);
+                    if (toInput) toInput.value = formatDate(lastDay);
+                    form.submit();
+                } else if (val === 'this_month') {
+                    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+                    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                    if (fromInput) fromInput.value = formatDate(firstDay);
+                    if (toInput) toInput.value = formatDate(lastDay);
+                    form.submit();
+                } else if (val === 'last_month') {
+                    const firstDay = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                    const lastDay = new Date(today.getFullYear(), today.getMonth(), 0);
+                    if (fromInput) fromInput.value = formatDate(firstDay);
+                    if (toInput) toInput.value = formatDate(lastDay);
+                    form.submit();
+                } else if (val === '') {
+                    if (fromInput) fromInput.value = '';
+                    if (toInput) toInput.value = '';
+                    form.submit();
+                }
+            });
+        }
     });
 </script>
 @endpush

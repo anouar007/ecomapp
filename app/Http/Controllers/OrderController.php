@@ -18,7 +18,7 @@ class OrderController extends Controller
     {
         $query = Order::with(['user', 'items.product', 'invoice', 'quote']);
 
-        // Filter by status
+        // Filter by delivery status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
@@ -26,6 +26,39 @@ class OrderController extends Controller
         // Filter by payment status
         if ($request->filled('payment_status')) {
             $query->where('payment_status', $request->payment_status);
+        }
+
+        // Resolve date range / presets
+        $datePreset = $request->input('date_preset');
+        $dateFrom = $request->input('date_from');
+        $dateTo = $request->input('date_to');
+
+        if ($datePreset === 'today') {
+            $dateFrom = now()->toDateString();
+            $dateTo = now()->toDateString();
+        } elseif ($datePreset === 'yesterday') {
+            $dateFrom = now()->subDay()->toDateString();
+            $dateTo = now()->subDay()->toDateString();
+        } elseif ($datePreset === 'this_week') {
+            $dateFrom = now()->startOfWeek()->toDateString();
+            $dateTo = now()->endOfWeek()->toDateString();
+        } elseif ($datePreset === 'this_month') {
+            $dateFrom = now()->startOfMonth()->toDateString();
+            $dateTo = now()->endOfMonth()->toDateString();
+        } elseif ($datePreset === 'last_month') {
+            $dateFrom = now()->subMonth()->startOfMonth()->toDateString();
+            $dateTo = now()->subMonth()->endOfMonth()->toDateString();
+        } elseif ($request->filled('date')) {
+            $dateFrom = $request->date;
+            $dateTo = $request->date;
+        }
+
+        // Filter orders listing by date
+        if (!empty($dateFrom)) {
+            $query->whereDate('created_at', '>=', $dateFrom);
+        }
+        if (!empty($dateTo)) {
+            $query->whereDate('created_at', '<=', $dateTo);
         }
 
         // Search by order number or customer name
@@ -38,14 +71,38 @@ class OrderController extends Controller
             });
         }
 
+        // Base query for top cards (All Orders, En attente, En cours, Expédiée, Livrée, Annulée)
+        // Dynamically updated based on active date range and search/payment filters!
+        $statsQuery = Order::query();
+        if (!empty($dateFrom)) {
+            $statsQuery->whereDate('created_at', '>=', $dateFrom);
+        }
+        if (!empty($dateTo)) {
+            $statsQuery->whereDate('created_at', '<=', $dateTo);
+        }
+        if ($request->filled('payment_status')) {
+            $statsQuery->where('payment_status', $request->payment_status);
+        }
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $statsQuery->where(function($q) use ($search) {
+                $q->where('order_number', 'like', "%{$search}%")
+                  ->orWhere('customer_name', 'like', "%{$search}%")
+                  ->orWhere('customer_email', 'like', "%{$search}%");
+            });
+        }
+
         $stats = [
-            'total' => Order::count(),
-            'pending' => Order::where('status', 'pending')->count(),
-            'processing' => Order::where('status', 'processing')->count(),
-            'shipped' => Order::where('status', 'shipped')->count(),
-            'delivered' => Order::where('status', 'delivered')->count(),
-            'cancelled' => Order::where('status', 'cancelled')->count(),
-            'revenue' => Order::where('payment_status', 'paid')->sum('total'),
+            'total' => (clone $statsQuery)->count(),
+            'pending' => (clone $statsQuery)->where('status', 'pending')->count(),
+            'processing' => (clone $statsQuery)->where('status', 'processing')->count(),
+            'shipped' => (clone $statsQuery)->where('status', 'shipped')->count(),
+            'delivered' => (clone $statsQuery)->where('status', 'delivered')->count(),
+            'cancelled' => (clone $statsQuery)->where('status', 'cancelled')->count(),
+            'revenue' => (clone $statsQuery)->where('payment_status', 'paid')->sum('total'),
+            'date_from' => $dateFrom,
+            'date_to' => $dateTo,
+            'date_preset' => $datePreset,
         ];
 
         $orders = $query->latest()->paginate(15)->withQueryString();
@@ -302,15 +359,23 @@ class OrderController extends Controller
 
         $order->save();
 
-        // Recalculate KPIs
+        // Recalculate KPIs with active date filter if present
+        $statsQuery = Order::query();
+        if ($request->filled('date_from')) {
+            $statsQuery->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $statsQuery->whereDate('created_at', '<=', $request->date_to);
+        }
+
         $stats = [
-            'total' => Order::count(),
-            'pending' => Order::where('status', 'pending')->count(),
-            'processing' => Order::where('status', 'processing')->count(),
-            'shipped' => Order::where('status', 'shipped')->count(),
-            'delivered' => Order::where('status', 'delivered')->count(),
-            'cancelled' => Order::where('status', 'cancelled')->count(),
-            'revenue' => Order::where('payment_status', 'paid')->sum('total'),
+            'total' => (clone $statsQuery)->count(),
+            'pending' => (clone $statsQuery)->where('status', 'pending')->count(),
+            'processing' => (clone $statsQuery)->where('status', 'processing')->count(),
+            'shipped' => (clone $statsQuery)->where('status', 'shipped')->count(),
+            'delivered' => (clone $statsQuery)->where('status', 'delivered')->count(),
+            'cancelled' => (clone $statsQuery)->where('status', 'cancelled')->count(),
+            'revenue' => (clone $statsQuery)->where('payment_status', 'paid')->sum('total'),
         ];
 
         return response()->json([

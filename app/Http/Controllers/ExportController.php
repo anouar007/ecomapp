@@ -53,11 +53,14 @@ class ExportController extends Controller
     {
         $query = Order::with('user');
         
-        if ($request->filled('start_date')) {
-            $query->whereDate('created_at', '>=', $request->start_date);
+        $startDate = $request->input('date_from') ?: $request->input('start_date');
+        $endDate = $request->input('date_to') ?: $request->input('end_date');
+
+        if ($startDate) {
+            $query->whereDate('created_at', '>=', $startDate);
         }
-        if ($request->filled('end_date')) {
-            $query->whereDate('created_at', '<=', $request->end_date);
+        if ($endDate) {
+            $query->whereDate('created_at', '<=', $endDate);
         }
         
         $orders = $query->get();
