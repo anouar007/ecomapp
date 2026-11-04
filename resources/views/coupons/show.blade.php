@@ -11,7 +11,15 @@
         </div>
         <div>
             <div class="d-flex align-items-center gap-2 flex-wrap">
-                <h1 class="brand-title font-monospace">{{ $coupon->code }}</h1>
+                <h1 class="brand-title font-monospace m-0">{{ $coupon->code }}</h1>
+                <button type="button" 
+                        class="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-1 d-inline-flex align-items-center gap-1.5 fw-semibold shadow-2xs"
+                        onclick="copyCodeText('{{ $coupon->code }}', this)"
+                        title="{{ __('Copier le code promo') }}"
+                        style="font-size: 0.78rem;">
+                    <i class="fas fa-copy"></i>
+                    <span>{{ __('Copier') }}</span>
+                </button>
                 <span class="badge bg-{{ $coupon->status == 'active' ? 'success' : ($coupon->status == 'expired' ? 'danger' : 'secondary') }}-subtle text-{{ $coupon->status == 'active' ? 'success' : ($coupon->status == 'expired' ? 'danger' : 'secondary') }} border border-{{ $coupon->status == 'active' ? 'success' : ($coupon->status == 'expired' ? 'danger' : 'secondary') }}-subtle text-uppercase px-2.5 py-1 rounded-pill" style="font-size: 0.72rem;">
                     {{ ucfirst($coupon->status) }}
                 </span>
@@ -25,6 +33,10 @@
         </div>
     </div>
     <div class="brand-header-actions">
+        <button type="button" class="btn btn-outline-primary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center gap-1.5 fw-semibold" onclick="copyCodeText('{{ $coupon->code }}', this)" style="font-size: 0.84rem;">
+            <i class="fas fa-copy"></i>
+            <span>{{ __('Copier le code') }}</span>
+        </button>
         <a href="{{ route('coupons.index') }}" class="btn-brand-light">
             <i class="fas fa-arrow-left me-1"></i> {{ __('Retour') }}
         </a>
@@ -378,20 +390,58 @@
 
 @push('scripts')
 <script>
-function copyCodeText(text) {
-    navigator.clipboard.writeText(text).then(() => {
-        if (typeof Swal !== 'undefined') {
+function copyCodeText(text, btn) {
+    if (!text) return;
+
+    const fallbackCopy = (str) => {
+        const temp = document.createElement('textarea');
+        temp.value = str;
+        temp.style.position = 'fixed';
+        temp.style.opacity = '0';
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        document.body.removeChild(temp);
+    };
+
+    const doSuccessFeedback = () => {
+        if (btn) {
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check text-success"></i>' + (btn.innerText && btn.innerText.trim().length > 0 ? ' <span class="text-success">Copié !</span>' : '');
+            btn.classList.add('border-success');
+            setTimeout(() => {
+                btn.innerHTML = originalHtml;
+                btn.classList.remove('border-success');
+            }, 2000);
+        }
+
+        if (typeof Toast !== 'undefined') {
+            Toast.fire({
+                icon: 'success',
+                title: '{{ __("Code copié :") }} ' + text
+            });
+        } else if (typeof Swal !== 'undefined') {
             Swal.fire({
                 icon: 'success',
                 title: '{{ __("Code copié !") }}',
                 text: text,
                 timer: 1500,
-                showConfirmButton: false
+                showConfirmButton: false,
+                toast: true,
+                position: 'top-end'
             });
-        } else {
-            alert('{{ __("Code copié dans le presse-papier !") }}');
         }
-    });
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(doSuccessFeedback).catch(() => {
+            fallbackCopy(text);
+            doSuccessFeedback();
+        });
+    } else {
+        fallbackCopy(text);
+        doSuccessFeedback();
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {

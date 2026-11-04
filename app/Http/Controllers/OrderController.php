@@ -61,14 +61,38 @@ class OrderController extends Controller
             $query->whereDate('created_at', '<=', $dateTo);
         }
 
-        // Search by order number or customer name
+        // Search by phone number, city, customer name, email, and order number
         if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('order_number', 'like', "%{$search}%")
-                  ->orWhere('customer_name', 'like', "%{$search}%")
-                  ->orWhere('customer_email', 'like', "%{$search}%");
-            });
+            $search = trim($request->search);
+            $cleanPhone = preg_replace('/[^0-9]/', '', $search);
+
+            $applySearch = function($q) use ($search, $cleanPhone) {
+                $q->where(function($sub) use ($search, $cleanPhone) {
+                    $sub->where('order_number', 'like', "%{$search}%")
+                        ->orWhere('customer_name', 'like', "%{$search}%")
+                        ->orWhere('customer_email', 'like', "%{$search}%")
+                        ->orWhere('customer_phone', 'like', "%{$search}%")
+                        ->orWhere('shipping_city', 'like', "%{$search}%")
+                        ->orWhere('shipping_address', 'like', "%{$search}%");
+
+                    if (!empty($cleanPhone) && strlen($cleanPhone) >= 4) {
+                        $sub->orWhere('customer_phone', 'like', "%{$cleanPhone}%");
+                    }
+
+                    // Also match in linked customer profile
+                    $sub->orWhereHas('customer', function($cq) use ($search, $cleanPhone) {
+                        $cq->where('name', 'like', "%{$search}%")
+                           ->orWhere('email', 'like', "%{$search}%")
+                           ->orWhere('phone', 'like', "%{$search}%")
+                           ->orWhere('city', 'like', "%{$search}%");
+                        if (!empty($cleanPhone) && strlen($cleanPhone) >= 4) {
+                            $cq->orWhere('phone', 'like', "%{$cleanPhone}%");
+                        }
+                    });
+                });
+            };
+
+            $applySearch($query);
         }
 
         // Base query for top cards (All Orders, En attente, En cours, Expédiée, Livrée, Annulée)
@@ -83,13 +107,8 @@ class OrderController extends Controller
         if ($request->filled('payment_status')) {
             $statsQuery->where('payment_status', $request->payment_status);
         }
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $statsQuery->where(function($q) use ($search) {
-                $q->where('order_number', 'like', "%{$search}%")
-                  ->orWhere('customer_name', 'like', "%{$search}%")
-                  ->orWhere('customer_email', 'like', "%{$search}%");
-            });
+        if ($request->filled('search') && isset($applySearch)) {
+            $applySearch($statsQuery);
         }
 
         $stats = [

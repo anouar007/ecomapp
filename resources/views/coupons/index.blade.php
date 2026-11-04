@@ -232,6 +232,14 @@
         <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
             <div class="d-flex align-items-center gap-2">
                 <span class="font-monospace fw-bold fs-6 text-primary">{{ $coupon->code }}</span>
+                <button type="button" 
+                        class="btn btn-sm btn-light border text-muted px-2 py-0.5 rounded-pill d-inline-flex align-items-center gap-1"
+                        onclick="copyCodeText('{{ $coupon->code }}', this)"
+                        title="{{ __('Copier le code') }}"
+                        style="font-size: 0.72rem;">
+                    <i class="fas fa-copy"></i>
+                    <span>{{ __('Copier') }}</span>
+                </button>
                 <span class="badge bg-{{ $coupon->status == 'active' ? 'success' : ($coupon->status == 'expired' ? 'danger' : 'secondary') }}-subtle text-{{ $coupon->status == 'active' ? 'success' : ($coupon->status == 'expired' ? 'danger' : 'secondary') }} border text-uppercase" style="font-size: 0.65rem; padding: 2px 6px;">
                     {{ ucfirst($coupon->status) }}
                 </span>
@@ -336,9 +344,18 @@
                 @forelse($coupons as $coupon)
                 <tr>
                     <td style="padding-left: 1.25rem;">
-                        <a href="{{ route('coupons.show', $coupon) }}" class="fw-bold font-monospace text-primary text-decoration-none fs-6">
-                            {{ $coupon->code }}
-                        </a>
+                        <div class="d-flex align-items-center gap-1.5">
+                            <a href="{{ route('coupons.show', $coupon) }}" class="fw-bold font-monospace text-primary text-decoration-none fs-6">
+                                {{ $coupon->code }}
+                            </a>
+                            <button type="button" 
+                                    class="btn btn-sm btn-outline-secondary border-0 p-1 rounded-circle"
+                                    onclick="copyCodeText('{{ $coupon->code }}', this)"
+                                    title="{{ __('Copier le code promo') }}"
+                                    style="width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
                         <div class="text-muted small text-truncate" style="max-width: 180px;" title="{{ $coupon->name }}">
                             {{ $coupon->name }}
                         </div>
@@ -444,4 +461,62 @@
     </div>
     @endif
 </div>
+
+@push('scripts')
+<script>
+function copyCodeText(text, btn) {
+    if (!text) return;
+
+    const fallbackCopy = (str) => {
+        const temp = document.createElement('textarea');
+        temp.value = str;
+        temp.style.position = 'fixed';
+        temp.style.opacity = '0';
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        document.body.removeChild(temp);
+    };
+
+    const doSuccessFeedback = () => {
+        if (btn) {
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check text-success"></i>' + (btn.innerText && btn.innerText.trim().length > 0 ? ' <span class="text-success">Copié !</span>' : '');
+            btn.classList.add('border-success');
+            setTimeout(() => {
+                btn.innerHTML = originalHtml;
+                btn.classList.remove('border-success');
+            }, 2000);
+        }
+
+        if (typeof Toast !== 'undefined') {
+            Toast.fire({
+                icon: 'success',
+                title: 'Code copié : ' + text
+            });
+        } else if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'success',
+                title: 'Code copié !',
+                text: text,
+                timer: 1500,
+                showConfirmButton: false,
+                toast: true,
+                position: 'top-end'
+            });
+        }
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(doSuccessFeedback).catch(() => {
+            fallbackCopy(text);
+            doSuccessFeedback();
+        });
+    } else {
+        fallbackCopy(text);
+        doSuccessFeedback();
+    }
+}
+</script>
+@endpush
 @endsection

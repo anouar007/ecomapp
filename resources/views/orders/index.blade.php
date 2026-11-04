@@ -152,7 +152,7 @@
                 <div class="brand-search-wrapper flex-grow-1" style="min-width: 170px;">
                     <i class="fas fa-search"></i>
                     <input type="text" name="search" class="form-control" 
-                           placeholder="N° commande, client..."
+                           placeholder="Client, téléphone, ville, email, N° commande..."
                            value="{{ request('search') }}">
                 </div>
 
