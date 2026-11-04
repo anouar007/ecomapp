@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\ProductView;
 use App\Models\CategoryView;
 use App\Models\SearchLog;
+use App\Models\SiteTrafficPeak;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -147,6 +148,12 @@ class ViewsAnalyticsController extends Controller
             'guest_online' => max(0, $totalOnline - $onlineAuthClients),
         ];
 
+        // Save traffic peak snapshot
+        SiteTrafficPeak::recordCurrentTraffic($totalOnline);
+
+        // 9. Top Records / Traffic Peaks (Day, Week, Month, Year) filtered by date
+        $trafficPeaks = $this->getTrafficPeakRecords($startDateStr, $endDateStr);
+
         // All active categories for filter dropdown
         $allCategories = Category::orderBy('name')->get(['id', 'name']);
 
@@ -169,7 +176,8 @@ class ViewsAnalyticsController extends Controller
             'productSearch',
             'categoryId',
             'searchWord',
-            'onlineStats'
+            'onlineStats',
+            'trafficPeaks'
         ));
     }
 
@@ -549,6 +557,9 @@ class ViewsAnalyticsController extends Controller
         $totalOnline = max(1, $onlineVisitors);
         $guestsOnline = max(0, $totalOnline - $onlineAuthClients);
 
+        // Record traffic peak snapshot continuously in real-time
+        SiteTrafficPeak::recordCurrentTraffic($totalOnline);
+
         return response()->json([
             'online_clients' => $totalOnline,
             'online_auth_clients' => $onlineAuthClients,
@@ -556,6 +567,79 @@ class ViewsAnalyticsController extends Controller
             'total_registered_clients' => $totalRegisteredClients ?: \App\Models\User::count(),
             'updated_at' => now()->format('H:i:s'),
         ]);
+    }
+
+    /**
+     * Compute Top Peak Users for Day, Week, Month and Year within the filtered date range.
+     */
+    protected function getTrafficPeakRecords(string $startDateStr, string $endDateStr): array
+    {
+        $query = SiteTrafficPeak::whereBetween('record_date', [$startDateStr, $endDateStr]);
+
+        // 1. Top Day
+        $topDay = (clone $query)->orderByDesc('peak_concurrent_users')
+            ->orderByDesc('unique_visitors')
+            ->first();
+
+        // 2. Top Week
+        $topWeek = (clone $query)->selectRaw('year, week, MAX(peak_concurrent_users) as max_concurrent, SUM(unique_visitors) as total_unique, SUM(total_views) as total_hits, MIN(record_date) as week_start, MAX(record_date) as week_end')
+            ->groupBy('year', 'week')
+            ->orderByDesc('max_concurrent')
+            ->orderByDesc('total_unique')
+            ->first();
+
+        // 3. Top Month
+        $topMonth = (clone $query)->selectRaw('year, month, MAX(peak_concurrent_users) as max_concurrent, SUM(unique_visitors) as total_unique, SUM(total_views) as total_hits')
+            ->groupBy('year', 'month')
+            ->orderByDesc('max_concurrent')
+            ->orderByDesc('total_unique')
+            ->first();
+
+        // 4. Top Year
+        $topYear = (clone $query)->selectRaw('year, MAX(peak_concurrent_users) as max_concurrent, SUM(unique_visitors) as total_unique, SUM(total_views) as total_hits')
+            ->groupBy('year')
+            ->orderByDesc('max_concurrent')
+            ->orderByDesc('total_unique')
+            ->first();
+
+        // All-Time Records (for comparison badge)
+        $allTimePeak = SiteTrafficPeak::orderByDesc('peak_concurrent_users')->first();
+
+        return [
+            'top_day' => $topDay ? [
+                'concurrent' => $topDay->peak_concurrent_users,
+                'unique_users' => $topDay->unique_visitors,
+                'total_views' => $topDay->total_views,
+                'date' => $topDay->record_date ? Carbon::parse($topDay->record_date)->translatedFormat('d F Y') : '-',
+                'raw_date' => $topDay->record_date ? Carbon::parse($topDay->record_date)->format('Y-m-d') : null,
+                'time' => $topDay->peak_time ? Carbon::parse($topDay->peak_time)->format('H:i') : null,
+            ] : null,
+            'top_week' => $topWeek ? [
+                'concurrent' => (int)$topWeek->max_concurrent,
+                'unique_users' => (int)$topWeek->total_unique,
+                'total_views' => (int)$topWeek->total_hits,
+                'week_num' => $topWeek->week,
+                'year' => $topWeek->year,
+                'label' => 'Semaine ' . $topWeek->week . ' (' . $topWeek->year . ')',
+                'range' => Carbon::parse($topWeek->week_start)->format('d/m') . ' - ' . Carbon::parse($topWeek->week_end)->format('d/m'),
+            ] : null,
+            'top_month' => $topMonth ? [
+                'concurrent' => (int)$topMonth->max_concurrent,
+                'unique_users' => (int)$topMonth->total_unique,
+                'total_views' => (int)$topMonth->total_hits,
+                'month_num' => $topMonth->month,
+                'year' => $topMonth->year,
+                'label' => Carbon::createFromDate($topMonth->year, $topMonth->month, 1)->translatedFormat('F Y'),
+            ] : null,
+            'top_year' => $topYear ? [
+                'concurrent' => (int)$topYear->max_concurrent,
+                'unique_users' => (int)$topYear->total_unique,
+                'total_views' => (int)$topYear->total_hits,
+                'year' => $topYear->year,
+                'label' => 'Année ' . $topYear->year,
+            ] : null,
+            'all_time_record' => $allTimePeak ? (int)$allTimePeak->peak_concurrent_users : 0,
+        ];
     }
 }
 

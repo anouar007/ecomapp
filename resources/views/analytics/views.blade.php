@@ -37,9 +37,54 @@
     .kpi-accent-teal   { --kpi-accent: #14b8a6; }
     .kpi-accent-rose   { --kpi-accent: #f43f5e; }
     .kpi-accent-emerald { --kpi-accent: #10b981; }
+    .kpi-accent-amber   { --kpi-accent: #f59e0b; }
+    .kpi-accent-violet  { --kpi-accent: #8b5cf6; }
 
     .bg-emerald-subtle { background-color: #ecfdf5 !important; }
     .text-emerald { color: #059669 !important; }
+    .bg-amber-subtle { background-color: #fffbeb !important; }
+    .text-amber { color: #d97706 !important; }
+    .bg-violet-subtle { background-color: #f5f3ff !important; }
+    .text-violet { color: #7c3aed !important; }
+
+    /* Peak Traffic Records Cards */
+    .peak-record-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.95rem 1rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .peak-record-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+        border-color: #cbd5e1;
+    }
+    .peak-record-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--peak-color, #2563eb);
+    }
+    .peak-theme-day   { --peak-color: #f59e0b; }
+    .peak-theme-week  { --peak-color: #0ea5e9; }
+    .peak-theme-month { --peak-color: #8b5cf6; }
+    .peak-theme-year  { --peak-color: #10b981; }
+
+    .peak-badge-tag {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 2px 7px;
+        border-radius: 9999px;
+    }
 
     /* Live Pulse Dot Animation */
     .live-pulse-dot {
@@ -449,6 +494,170 @@
                 <div class="views-kpi-value text-danger">{{ number_format($kpi['zero_result_searches'], 0, ',', ' ') }}</div>
                 <div class="text-danger small mt-1.5 text-truncate fw-semibold" style="font-size: 0.72rem;">
                     <i class="fas fa-exclamation-triangle me-0.5"></i> Demandes 0 stock
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Traffic Records: Peak Users by Day, Week, Month & Year -->
+    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white mb-3 mb-md-4">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2.5 pb-2 border-bottom">
+            <div class="d-flex align-items-center gap-2">
+                <div class="views-kpi-icon bg-warning-subtle text-amber" style="width: 34px; height: 34px; font-size: 0.95rem;">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold text-dark mb-0" style="font-size: 0.92rem;">
+                        Records d'Affluence & Top Utilisateurs sur le Site
+                    </h6>
+                    <span class="text-muted small" style="font-size: 0.72rem;">
+                        Pointe maximale d'utilisateurs connectés et visiteurs uniques sur la période : <strong>{{ $periodLabel }}</strong>
+                    </span>
+                </div>
+            </div>
+            @if(!empty($trafficPeaks['all_time_record']))
+                <span class="badge bg-light text-dark border px-2.5 py-1 fw-semibold" style="font-size: 0.72rem;">
+                    <i class="fas fa-trophy text-warning me-1"></i>Record absolu : <strong class="text-primary">{{ $trafficPeaks['all_time_record'] }}</strong> utilisateurs simultanés
+                </span>
+            @endif
+        </div>
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-2.5">
+            <!-- Top Jour -->
+            <div class="col">
+                <div class="peak-record-card peak-theme-day h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-1.5">
+                        <span class="peak-badge-tag bg-amber-subtle text-amber">
+                            <i class="fas fa-calendar-day me-1"></i>Top Jour
+                        </span>
+                        <div class="views-kpi-icon bg-amber-subtle text-amber" style="width: 32px; height: 32px; font-size: 0.85rem;">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                    </div>
+                    @if(!empty($trafficPeaks['top_day']))
+                        <div class="d-flex align-items-baseline gap-1.5">
+                            <span class="views-kpi-value text-dark" style="font-size: 1.45rem;">
+                                {{ number_format($trafficPeaks['top_day']['concurrent'], 0, ',', ' ') }}
+                            </span>
+                            <span class="text-muted small" style="font-size: 0.74rem;">en simultané</span>
+                        </div>
+                        <div class="text-muted small mt-1 d-flex flex-column gap-0.5" style="font-size: 0.72rem;">
+                            <span class="fw-semibold text-dark">
+                                <i class="far fa-calendar text-amber me-1"></i>{{ $trafficPeaks['top_day']['date'] }}
+                                @if(!empty($trafficPeaks['top_day']['time']))
+                                    <span class="text-muted font-monospace">({{ $trafficPeaks['top_day']['time'] }})</span>
+                                @endif
+                            </span>
+                            <span class="text-muted">
+                                <i class="fas fa-users me-1 text-secondary"></i><strong>{{ number_format($trafficPeaks['top_day']['unique_users'], 0, ',', ' ') }}</strong> visiteurs uniques · {{ number_format($trafficPeaks['top_day']['total_views'], 0, ',', ' ') }} vues
+                            </span>
+                        </div>
+                    @else
+                        <div class="views-kpi-value text-muted" style="font-size: 1.3rem;">-</div>
+                        <span class="text-muted small" style="font-size: 0.72rem;">Aucun enregistrement sur ces dates</span>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Top Semaine -->
+            <div class="col">
+                <div class="peak-record-card peak-theme-week h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-1.5">
+                        <span class="peak-badge-tag bg-info-subtle text-info">
+                            <i class="fas fa-calendar-week me-1"></i>Top Semaine
+                        </span>
+                        <div class="views-kpi-icon bg-info-subtle text-info" style="width: 32px; height: 32px; font-size: 0.85rem;">
+                            <i class="fas fa-chart-simple"></i>
+                        </div>
+                    </div>
+                    @if(!empty($trafficPeaks['top_week']))
+                        <div class="d-flex align-items-baseline gap-1.5">
+                            <span class="views-kpi-value text-dark" style="font-size: 1.45rem;">
+                                {{ number_format($trafficPeaks['top_week']['concurrent'], 0, ',', ' ') }}
+                            </span>
+                            <span class="text-muted small" style="font-size: 0.74rem;">en simultané</span>
+                        </div>
+                        <div class="text-muted small mt-1 d-flex flex-column gap-0.5" style="font-size: 0.72rem;">
+                            <span class="fw-semibold text-dark">
+                                <i class="fas fa-calendar-days text-info me-1"></i>{{ $trafficPeaks['top_week']['label'] }}
+                                @if(!empty($trafficPeaks['top_week']['range']))
+                                    <span class="text-muted">({{ $trafficPeaks['top_week']['range'] }})</span>
+                                @endif
+                            </span>
+                            <span class="text-muted">
+                                <i class="fas fa-users me-1 text-secondary"></i><strong>{{ number_format($trafficPeaks['top_week']['unique_users'], 0, ',', ' ') }}</strong> visiteurs uniques · {{ number_format($trafficPeaks['top_week']['total_views'], 0, ',', ' ') }} vues
+                            </span>
+                        </div>
+                    @else
+                        <div class="views-kpi-value text-muted" style="font-size: 1.3rem;">-</div>
+                        <span class="text-muted small" style="font-size: 0.72rem;">Aucun enregistrement sur ces dates</span>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Top Mois -->
+            <div class="col">
+                <div class="peak-record-card peak-theme-month h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-1.5">
+                        <span class="peak-badge-tag bg-violet-subtle text-violet">
+                            <i class="far fa-calendar-alt me-1"></i>Top Mois
+                        </span>
+                        <div class="views-kpi-icon bg-violet-subtle text-violet" style="width: 32px; height: 32px; font-size: 0.85rem;">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                    </div>
+                    @if(!empty($trafficPeaks['top_month']))
+                        <div class="d-flex align-items-baseline gap-1.5">
+                            <span class="views-kpi-value text-dark" style="font-size: 1.45rem;">
+                                {{ number_format($trafficPeaks['top_month']['concurrent'], 0, ',', ' ') }}
+                            </span>
+                            <span class="text-muted small" style="font-size: 0.74rem;">en simultané</span>
+                        </div>
+                        <div class="text-muted small mt-1 d-flex flex-column gap-0.5" style="font-size: 0.72rem;">
+                            <span class="fw-semibold text-dark text-capitalize">
+                                <i class="fas fa-calendar text-violet me-1"></i>{{ $trafficPeaks['top_month']['label'] }}
+                            </span>
+                            <span class="text-muted">
+                                <i class="fas fa-users me-1 text-secondary"></i><strong>{{ number_format($trafficPeaks['top_month']['unique_users'], 0, ',', ' ') }}</strong> visiteurs uniques · {{ number_format($trafficPeaks['top_month']['total_views'], 0, ',', ' ') }} vues
+                            </span>
+                        </div>
+                    @else
+                        <div class="views-kpi-value text-muted" style="font-size: 1.3rem;">-</div>
+                        <span class="text-muted small" style="font-size: 0.72rem;">Aucun enregistrement sur ces dates</span>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Top Année -->
+            <div class="col">
+                <div class="peak-record-card peak-theme-year h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-1.5">
+                        <span class="peak-badge-tag bg-emerald-subtle text-emerald">
+                            <i class="fas fa-award me-1"></i>Top Année
+                        </span>
+                        <div class="views-kpi-icon bg-emerald-subtle text-emerald" style="width: 32px; height: 32px; font-size: 0.85rem;">
+                            <i class="fas fa-medal"></i>
+                        </div>
+                    </div>
+                    @if(!empty($trafficPeaks['top_year']))
+                        <div class="d-flex align-items-baseline gap-1.5">
+                            <span class="views-kpi-value text-dark" style="font-size: 1.45rem;">
+                                {{ number_format($trafficPeaks['top_year']['concurrent'], 0, ',', ' ') }}
+                            </span>
+                            <span class="text-muted small" style="font-size: 0.74rem;">en simultané</span>
+                        </div>
+                        <div class="text-muted small mt-1 d-flex flex-column gap-0.5" style="font-size: 0.72rem;">
+                            <span class="fw-semibold text-dark">
+                                <i class="fas fa-star text-emerald me-1"></i>{{ $trafficPeaks['top_year']['label'] }}
+                            </span>
+                            <span class="text-muted">
+                                <i class="fas fa-users me-1 text-secondary"></i><strong>{{ number_format($trafficPeaks['top_year']['unique_users'], 0, ',', ' ') }}</strong> visiteurs uniques · {{ number_format($trafficPeaks['top_year']['total_views'], 0, ',', ' ') }} vues
+                            </span>
+                        </div>
+                    @else
+                        <div class="views-kpi-value text-muted" style="font-size: 1.3rem;">-</div>
+                        <span class="text-muted small" style="font-size: 0.72rem;">Aucun enregistrement sur ces dates</span>
+                    @endif
                 </div>
             </div>
         </div>
