@@ -16,9 +16,97 @@
     /* Disable zoom on product image */
     .pdp-main-image-wrap {
         cursor: default !important;
+        position: relative;
     }
     .pdp-main-image-wrap:hover .pdp-main-image {
         transform: none !important;
+    }
+
+    /* PDP Main Gallery Swiper */
+    .pdp-gallery-swiper {
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+    .pdp-gallery-swiper .swiper-wrapper {
+        align-items: center;
+    }
+    .pdp-gallery-swiper .swiper-slide {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        background: transparent;
+    }
+    .pdp-gallery-swiper .pdp-main-image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+    .pdp-gallery-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        color: #0f172a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        opacity: 0.85;
+    }
+    .pdp-gallery-nav:hover {
+        background: #ffffff;
+        opacity: 1;
+        transform: translateY(-50%) scale(1.08);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16);
+    }
+    .pdp-gallery-prev {
+        left: 10px;
+    }
+    .pdp-gallery-next {
+        right: 10px;
+    }
+    .pdp-gallery-nav.swiper-button-disabled {
+        opacity: 0;
+        pointer-events: none;
+    }
+    .pdp-gallery-pagination {
+        position: absolute;
+        bottom: 10px !important;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+    }
+    .pdp-gallery-bullet {
+        width: 8px;
+        height: 8px;
+        border-radius: 9999px;
+        background: rgba(15, 23, 42, 0.25);
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+    .pdp-gallery-bullet-active {
+        width: 22px;
+        background: var(--accent, #011962);
+    }
+    @media (min-width: 992px) {
+        .pdp-gallery-pagination {
+            display: none; /* Desktop uses thumbnails below */
+        }
     }
 
     /* Pixel-perfect alignment for Row 1 (Qty + AddToCart) & Row 2 (Partager + Acheter) */
@@ -804,6 +892,18 @@
                     $pdpDiscountCorner = $pdpTagsByPos->has($pdpPrefDiscountPos) ? $pdpPrefDiscountPos : ($pdpTagsByPos->keys()->first() ?? $pdpPrefDiscountPos);
                 @endphp
                 <div class="col-lg-6 pdp-image-panel">
+                    @php
+                        $galleryItems = collect();
+                        if ($product->images && $product->images->count() > 0) {
+                            $galleryItems = $product->images->take(6);
+                        } else {
+                            $galleryItems->push((object)[
+                                'url' => $product->thumbnail,
+                                'image_padding_style' => $product->primary_image_padding_style,
+                            ]);
+                        }
+                    @endphp
+
                     <div class="pdp-main-image-wrap product-card-tag-container" id="zoomWrap">
                         @foreach(['top-left', 'top-right', 'bottom-left', 'bottom-right'] as $cornerPos)
                             @php
@@ -811,7 +911,7 @@
                                 $showPdpDiscountHere = $pdpHasDiscount && $pdpDiscountCorner === $cornerPos;
                             @endphp
                             @if($pdpCornerTags->isNotEmpty() || $showPdpDiscountHere)
-                                <div class="product-card-tags-slot pdp-image-tags-slot pos-{{ $cornerPos }}">
+                                <div class="product-card-tags-slot pdp-image-tags-slot pos-{{ $cornerPos }}" style="z-index: 15;">
                                     @foreach($pdpCornerTags as $pTag)
                                         <span class="product-card-tag-badge pdp-image-tag-badge {{ $pTag->pulse_animation ? 'tag-pulse' : '' }}" style="{{ $pTag->inline_style }}">
                                             @if(!empty($pTag->icon))
@@ -832,26 +932,39 @@
                             @endif
                         @endforeach
 
-                        <img id="mainImage" src="{{ $product->thumbnail }}"
-                             alt="{{ $product->name }}" width="600" height="600" class="pdp-main-image" fetchpriority="high" decoding="async" @if($product->primary_image_padding_style) style="padding: {{ $product->primary_image_padding_style }} !important;" @endif>
+                        @if($galleryItems->count() > 1)
+                            <div class="swiper pdp-gallery-swiper" id="pdpGallerySwiper">
+                                <div class="swiper-wrapper">
+                                    @foreach($galleryItems as $idx => $gImg)
+                                        <div class="swiper-slide" data-index="{{ $idx }}" data-url="{{ $gImg->url }}" data-padding="{{ $gImg->image_padding_style }}">
+                                            <img src="{{ $gImg->url }}"
+                                                 alt="{{ $product->name }} {{ $loop->iteration }}" 
+                                                 width="600" height="600" 
+                                                 class="pdp-main-image" 
+                                                 {!! $loop->first ? 'fetchpriority="high" decoding="async" id="mainImage"' : 'loading="lazy" decoding="async"' !!}
+                                                 onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';"
+                                                 @if($gImg->image_padding_style) style="padding: {{ $gImg->image_padding_style }} !important;" @endif>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <button type="button" class="pdp-gallery-nav pdp-gallery-prev" aria-label="{{ __('Précédent') }}">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button type="button" class="pdp-gallery-nav pdp-gallery-next" aria-label="{{ __('Suivant') }}">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                                <div class="pdp-gallery-pagination"></div>
+                            </div>
+                        @else
+                            <img id="mainImage" src="{{ $product->thumbnail }}"
+                                 alt="{{ $product->name }}" width="600" height="600" class="pdp-main-image" fetchpriority="high" decoding="async" @if($product->primary_image_padding_style) style="padding: {{ $product->primary_image_padding_style }} !important;" @endif>
+                        @endif
                     </div>
-
-                    @php
-                        $galleryItems = collect();
-                        if ($product->images && $product->images->count() > 0) {
-                            $galleryItems = $product->images->take(6);
-                        } else {
-                            $galleryItems->push((object)[
-                                'url' => $product->thumbnail,
-                                'image_padding_style' => $product->primary_image_padding_style,
-                            ]);
-                        }
-                    @endphp
 
                     @if($galleryItems->count() > 1)
                     <div class="pdp-thumbs" id="pdpThumbs">
-                        @foreach($galleryItems as $gImg)
-                        <div class="pdp-thumb {{ $loop->first ? 'active' : '' }}" onclick="pdpChangeImage('{{ $gImg->url }}', this)" data-padding="{{ $gImg->image_padding_style }}" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')pdpChangeImage('{{ $gImg->url }}', this)" aria-label="{{ $product->name }} {{ $loop->iteration }}">
+                        @foreach($galleryItems as $idx => $gImg)
+                        <div class="pdp-thumb {{ $loop->first ? 'active' : '' }}" onclick="pdpSelectGallerySlide({{ $idx }}, this)" data-index="{{ $idx }}" data-padding="{{ $gImg->image_padding_style }}" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')pdpSelectGallerySlide({{ $idx }}, this)" aria-label="{{ $product->name }} {{ $loop->iteration }}">
                             <img src="{{ $gImg->url }}" alt="{{ $product->name }} {{ $loop->iteration }}" width="76" height="76" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';" @if($gImg->image_padding_style) style="padding: {{ $gImg->image_padding_style }} !important;" @endif>
                         </div>
                         @endforeach
@@ -1478,6 +1591,66 @@
 
 @push('scripts')
 <script>
+let pdpGallerySwiperInstance = null;
+
+function initPdpGallerySwiper() {
+    const swiperEl = document.getElementById('pdpGallerySwiper');
+    if (!swiperEl || typeof Swiper === 'undefined') return;
+
+    pdpGallerySwiperInstance = new Swiper(swiperEl, {
+        slidesPerView: 1,
+        spaceBetween: 0,
+        speed: 350,
+        grabCursor: true,
+        touchRatio: 1.15,
+        resistanceRatio: 0.85,
+        watchSlidesProgress: true,
+        navigation: {
+            prevEl: '.pdp-gallery-prev',
+            nextEl: '.pdp-gallery-next',
+        },
+        pagination: {
+            el: '.pdp-gallery-pagination',
+            clickable: true,
+            bulletClass: 'pdp-gallery-bullet',
+            bulletActiveClass: 'pdp-gallery-bullet-active',
+        },
+        keyboard: {
+            enabled: true,
+            onlyInViewport: true,
+        },
+        on: {
+            slideChange: function() {
+                const activeIndex = this.activeIndex;
+                const thumbs = document.querySelectorAll('.pdp-thumb');
+                thumbs.forEach((t, idx) => {
+                    if (idx === activeIndex) {
+                        t.classList.add('active');
+                        t.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    } else {
+                        t.classList.remove('active');
+                    }
+                });
+            }
+        }
+    });
+}
+
+function pdpSelectGallerySlide(index, thumb) {
+    if (pdpGallerySwiperInstance && !pdpGallerySwiperInstance.destroyed) {
+        pdpGallerySwiperInstance.slideTo(index);
+    } else {
+        // Fallback if swiper is not available
+        const mainImg = document.getElementById('mainImage');
+        const imgInside = thumb ? thumb.querySelector('img') : null;
+        if (mainImg && imgInside) {
+            mainImg.src = imgInside.src;
+        }
+        document.querySelectorAll('.pdp-thumb').forEach(t => t.classList.remove('active'));
+        if (thumb) thumb.classList.add('active');
+    }
+}
+
 function pdpZoom(e) {
     // Zoom disabled on product image
 }
@@ -1905,6 +2078,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     initPdpSliders();
+    initPdpGallerySwiper();
 });
 
 // PDP Collapsible Description
