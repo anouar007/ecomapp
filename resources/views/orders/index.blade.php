@@ -36,7 +36,7 @@
     <!-- 6 Delivery Status Cards (Interactive Filters with All Orders) -->
     <div class="row row-cols-2 row-cols-sm-3 row-cols-xl-6 g-2.5 g-md-3 mb-4">
         <!-- 0. Toutes les commandes (All orders) -->
-        <div class="col">
+        <div class="col mb-2">
             <a href="{{ route('orders.index', request()->except(['status', 'page'])) }}" 
                class="stat-kpi-card text-decoration-none h-100 {{ !request('status') ? 'active-filter' : '' }}"
                title="Voir toutes les commandes">
@@ -54,7 +54,7 @@
         </div>
 
         <!-- 1. En attente (pending) -->
-        <div class="col">
+        <div class="col mb-2">
             <a href="{{ request('status') === 'pending' ? route('orders.index', request()->except(['status', 'page'])) : route('orders.index', array_merge(request()->except('page'), ['status' => 'pending'])) }}" 
                class="stat-kpi-card text-decoration-none h-100 {{ request('status') === 'pending' ? 'active-filter' : '' }}"
                title="Filtrer : Commandes en attente">
@@ -72,7 +72,7 @@
         </div>
 
         <!-- 2. En cours (processing) -->
-        <div class="col">
+        <div class="col mb-2">
             <a href="{{ request('status') === 'processing' ? route('orders.index', request()->except(['status', 'page'])) : route('orders.index', array_merge(request()->except('page'), ['status' => 'processing'])) }}" 
                class="stat-kpi-card text-decoration-none h-100 {{ request('status') === 'processing' ? 'active-filter' : '' }}"
                title="Filtrer : Commandes en cours de préparation">
@@ -90,7 +90,7 @@
         </div>
 
         <!-- 3. Expédiée (shipped) -->
-        <div class="col">
+        <div class="col mb-2">
             <a href="{{ request('status') === 'shipped' ? route('orders.index', request()->except(['status', 'page'])) : route('orders.index', array_merge(request()->except('page'), ['status' => 'shipped'])) }}" 
                class="stat-kpi-card text-decoration-none h-100 {{ request('status') === 'shipped' ? 'active-filter' : '' }}"
                title="Filtrer : Commandes expédiées en acheminement">
@@ -108,7 +108,7 @@
         </div>
 
         <!-- 4. Livrée (delivered) -->
-        <div class="col">
+        <div class="col mb-2">
             <a href="{{ request('status') === 'delivered' ? route('orders.index', request()->except(['status', 'page'])) : route('orders.index', array_merge(request()->except('page'), ['status' => 'delivered'])) }}" 
                class="stat-kpi-card text-decoration-none h-100 {{ request('status') === 'delivered' ? 'active-filter' : '' }}"
                title="Filtrer : Commandes livrées avec succès">
@@ -126,7 +126,7 @@
         </div>
 
         <!-- 5. Annulée (cancelled) -->
-        <div class="col">
+        <div class="col mb-2">
             <a href="{{ request('status') === 'cancelled' ? route('orders.index', request()->except(['status', 'page'])) : route('orders.index', array_merge(request()->except('page'), ['status' => 'cancelled'])) }}" 
                class="stat-kpi-card text-decoration-none h-100 {{ request('status') === 'cancelled' ? 'active-filter' : '' }}"
                title="Filtrer : Commandes annulées ou rejetées">
