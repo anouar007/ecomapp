@@ -13,6 +13,47 @@
     <meta name="theme-color" content="#ffffff">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <!-- One-Time User Cache Purge Script (Runs exactly once per visitor/device) -->
+    <script>
+    (function() {
+        try {
+            var CACHE_VERSION = 'wina_cache_clean_20261104';
+            if (!localStorage.getItem(CACHE_VERSION)) {
+                // 1. Unregister all service workers to clear worker proxies
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                        for (var i = 0; i < registrations.length; i++) {
+                            registrations[i].unregister();
+                        }
+                    });
+                }
+                // 2. Delete all browser CacheStorage data (PWA/HTTP caches)
+                if ('caches' in window) {
+                    caches.keys().then(function(keys) {
+                        for (var j = 0; j < keys.length; j++) {
+                            caches.delete(keys[j]);
+                        }
+                    });
+                }
+                // 3. Clear session storage
+                try { sessionStorage.clear(); } catch(e) {}
+
+                // 4. Mark as purged so it never runs again for this user
+                localStorage.setItem(CACHE_VERSION, Date.now());
+
+                // 5. If restored from stale back/forward browser cache (bfcache), force fresh reload
+                window.addEventListener('pageshow', function(evt) {
+                    if (evt.persisted) {
+                        window.location.reload();
+                    }
+                });
+            }
+        } catch (err) {
+            // Silently fail if localStorage is restricted
+        }
+    })();
+    </script>
+
     <!-- Google Search Console & Webmaster Verification -->
     <meta name="google-site-verification" content="{{ setting('google_site_verification', 'mu1RdcICWNrWA2JcMpphobUwRmzCX1_Z9pAl51hs-Jg') }}">
     @if(setting('bing_site_verification'))
