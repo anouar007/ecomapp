@@ -40,48 +40,14 @@
                     default => 'fa-clock'
                 };
             @endphp
-            <!-- Interactive Quick Payment Switcher -->
-            <div class="dropdown">
-                <button type="button" 
-                        class="mobile-order-pay-pill {{ $payPillClass }} border-0 dropdown-toggle" 
-                        data-bs-toggle="dropdown" 
-                        data-bs-auto-close="true"
-                        data-bs-boundary="viewport"
-                        data-bs-popper-config='{"strategy":"fixed"}'
-                        aria-expanded="false"
-                        id="mob-pay-pill-{{ $order->id }}"
-                        title="Changer le paiement">
+            <!-- Static Payment Status Badge (Auto-updated on delivery) -->
+            <div class="d-inline-block">
+                <span class="mobile-order-pay-pill {{ $payPillClass }} border-0"
+                      id="mob-pay-pill-{{ $order->id }}"
+                      title="Statut de paiement : {{ $payPillLabel }}">
                     <i class="fas {{ $payPillIcon }}" id="mob-pay-icon-{{ $order->id }}"></i>
                     <span id="mob-pay-label-{{ $order->id }}">{{ $payPillLabel }}</span>
-                    <i class="fas fa-chevron-down opacity-50 ms-0.5" style="font-size: 0.55rem;"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow-lg border rounded-3 p-1.5 status-dropdown-menu" aria-labelledby="mob-pay-pill-{{ $order->id }}">
-                    <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem; letter-spacing: 0.05em;">État du paiement</li>
-                    <li>
-                        <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $payStatus === 'pending' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'payment_status', 'pending')">
-                            <span><i class="fas fa-clock text-warning me-1.5"></i> En attente</span>
-                            @if($payStatus === 'pending') <i class="fas fa-check text-warning small"></i> @endif
-                        </button>
-                    </li>
-                    <li>
-                        <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $isPaid ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'payment_status', 'paid')">
-                            <span><i class="fas fa-check-circle text-success me-1.5"></i> Payé</span>
-                            @if($isPaid) <i class="fas fa-check text-success small"></i> @endif
-                        </button>
-                    </li>
-                    <li>
-                        <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $payStatus === 'failed' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'payment_status', 'failed')">
-                            <span><i class="fas fa-exclamation-circle text-danger me-1.5"></i> Échoué</span>
-                            @if($payStatus === 'failed') <i class="fas fa-check text-danger small"></i> @endif
-                        </button>
-                    </li>
-                    <li>
-                        <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $payStatus === 'refunded' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'payment_status', 'refunded')">
-                            <span><i class="fas fa-undo text-secondary me-1.5"></i> Remboursé</span>
-                            @if($payStatus === 'refunded') <i class="fas fa-check text-secondary small"></i> @endif
-                        </button>
-                    </li>
-                </ul>
+                </span>
             </div>
         </div>
     </div>

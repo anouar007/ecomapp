@@ -213,6 +213,14 @@ class OrderController extends Controller
         $originalStatus = $order->status;
         $order->update($validated);
         
+        // Auto-mark as paid on delivery
+        if ($validated['status'] === 'delivered') {
+            $order->update(['payment_status' => 'paid']);
+            if ($order->invoice) {
+                $order->invoice->update(['payment_status' => 'paid']);
+            }
+        }
+
         // Handle stock deduction on delivery
         if ($validated['status'] === 'delivered' && !$order->stock_deducted) {
             foreach ($order->items as $item) {
@@ -257,6 +265,14 @@ class OrderController extends Controller
             $originalStatus = $order->status;
             $newStatus = $validated['status'];
             $order->status = $newStatus;
+
+            // Auto-mark as paid when order is delivered
+            if ($newStatus === 'delivered') {
+                $order->payment_status = 'paid';
+                if ($order->invoice) {
+                    $order->invoice->update(['payment_status' => 'paid']);
+                }
+            }
 
             // Stock deduction if newly delivered
             if ($newStatus === 'delivered' && !$order->stock_deducted) {

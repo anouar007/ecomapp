@@ -337,7 +337,7 @@
                         <th class="text-center" style="min-width: 80px;">Articles</th>
                         <th class="text-end" style="min-width: 120px;">Total TTC</th>
                         <th class="text-center" style="min-width: 130px;">Livraison</th>
-                        <th class="text-center" style="min-width: 130px;">Paiement</th>
+                        <th class="text-center d-none" style="min-width: 130px;">Paiement</th>
                         <th style="min-width: 100px;">Date</th>
                         <th class="text-end" style="min-width: 110px; padding-right: 1.25rem;">Actions</th>
                     </tr>
@@ -456,7 +456,7 @@
                                 </ul>
                             </div>
                         </td>
-                        <td class="text-center">
+                        <td class="text-center d-none">
                             @php
                                 $payStatus = strtolower($order->payment_status);
                                 $isPaid = in_array($payStatus, ['paid', 'payé']);
@@ -479,47 +479,13 @@
                                     default => 'fa-clock'
                                 };
                             @endphp
-                            <div class="dropdown d-inline-block">
-                                <button type="button" 
-                                        class="brand-badge brand-badge-btn pay-badge-{{ $pClass }} dropdown-toggle" 
-                                        data-bs-toggle="dropdown" 
-                                        data-bs-auto-close="true"
-                                        data-bs-boundary="viewport"
-                                        data-bs-popper-config='{"strategy":"fixed"}'
-                                        aria-expanded="false"
-                                        id="dt-pay-pill-{{ $order->id }}"
-                                        title="Changer le statut de paiement">
+                            <div class="d-inline-block">
+                                <span class="brand-badge pay-badge-{{ $pClass }} py-1 px-2.5" 
+                                      id="dt-pay-pill-{{ $order->id }}"
+                                      title="Statut de paiement : {{ $pText }}">
                                     <i class="fas {{ $pIcon }}" id="dt-pay-icon-{{ $order->id }}"></i>
                                     <span id="dt-pay-label-{{ $order->id }}">{{ $pText }}</span>
-                                    <i class="fas fa-chevron-down opacity-50 ms-0.5" style="font-size: 0.6rem;"></i>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end shadow-lg border rounded-3 p-1.5 status-dropdown-menu" aria-labelledby="dt-pay-pill-{{ $order->id }}">
-                                    <li class="dropdown-header text-uppercase text-muted fw-bold px-2 py-1" style="font-size: 0.65rem; letter-spacing: 0.05em;">État du paiement</li>
-                                    <li>
-                                        <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $payStatus === 'pending' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'payment_status', 'pending')">
-                                            <span><i class="fas fa-clock text-warning me-1.5"></i> En attente</span>
-                                            @if($payStatus === 'pending') <i class="fas fa-check text-warning small"></i> @endif
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $isPaid ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'payment_status', 'paid')">
-                                            <span><i class="fas fa-check-circle text-success me-1.5"></i> Payé</span>
-                                            @if($isPaid) <i class="fas fa-check text-success small"></i> @endif
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $payStatus === 'failed' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'payment_status', 'failed')">
-                                            <span><i class="fas fa-exclamation-circle text-danger me-1.5"></i> Échoué</span>
-                                            @if($payStatus === 'failed') <i class="fas fa-check text-danger small"></i> @endif
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $payStatus === 'refunded' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'payment_status', 'refunded')">
-                                            <span><i class="fas fa-undo text-secondary me-1.5"></i> Remboursé</span>
-                                            @if($payStatus === 'refunded') <i class="fas fa-check text-secondary small"></i> @endif
-                                        </button>
-                                    </li>
-                                </ul>
+                                </span>
                             </div>
                         </td>
                         <td>
@@ -838,52 +804,24 @@
         };
         const pInfo = pstMap[pst] || { label: order.payment_status_label || pst, icon: 'fa-clock', badgeClass: 'pending', textClass: 'text-warning', mobClass: 'pending' };
 
-        // Desktop Payment Badge
+        // Desktop Payment Badge (Static read-only pill)
         const dtPayPill = document.getElementById(`dt-pay-pill-${orderId}`);
         if (dtPayPill) {
-            dtPayPill.className = `brand-badge brand-badge-btn pay-badge-${pInfo.badgeClass} dropdown-toggle`;
+            dtPayPill.className = `brand-badge pay-badge-${pInfo.badgeClass} py-1 px-2.5`;
             const dtPayLabel = document.getElementById(`dt-pay-label-${orderId}`);
             if (dtPayLabel) dtPayLabel.textContent = pInfo.label;
             const dtPayIcon = document.getElementById(`dt-pay-icon-${orderId}`);
             if (dtPayIcon) dtPayIcon.className = `fas ${pInfo.icon}`;
-
-            const dtMenu = dtPayPill.closest('.dropdown')?.querySelector('.dropdown-menu');
-            if (dtMenu) {
-                dtMenu.querySelectorAll('.dropdown-item').forEach(item => {
-                    const fn = item.getAttribute('onclick') || '';
-                    const isSelected = fn.includes(`'${pst}'`);
-                    item.classList.toggle('active', isSelected);
-                    const check = item.querySelector('.fa-check');
-                    if (check) check.remove();
-                    if (isSelected) {
-                        item.insertAdjacentHTML('beforeend', ` <i class="fas fa-check ${pInfo.textClass} small"></i>`);
-                    }
-                });
-            }
         }
 
-        // Mobile Payment Pill
+        // Mobile Payment Pill (Static read-only pill)
         const mobPayPill = document.getElementById(`mob-pay-pill-${orderId}`);
         if (mobPayPill) {
-            mobPayPill.className = `mobile-order-pay-pill ${pInfo.mobClass} border-0 dropdown-toggle`;
+            mobPayPill.className = `mobile-order-pay-pill ${pInfo.mobClass} border-0`;
             const mobPayLabel = document.getElementById(`mob-pay-label-${orderId}`);
             if (mobPayLabel) mobPayLabel.textContent = pInfo.label;
             const mobPayIcon = document.getElementById(`mob-pay-icon-${orderId}`);
             if (mobPayIcon) mobPayIcon.className = `fas ${pInfo.icon}`;
-
-            const mobMenu = mobPayPill.closest('.dropdown')?.querySelector('.dropdown-menu');
-            if (mobMenu) {
-                mobMenu.querySelectorAll('.dropdown-item').forEach(item => {
-                    const fn = item.getAttribute('onclick') || '';
-                    const isSelected = fn.includes(`'${pst}'`);
-                    item.classList.toggle('active', isSelected);
-                    const check = item.querySelector('.fa-check');
-                    if (check) check.remove();
-                    if (isSelected) {
-                        item.insertAdjacentHTML('beforeend', ` <i class="fas fa-check ${pInfo.textClass} small"></i>`);
-                    }
-                });
-            }
         }
     }
 

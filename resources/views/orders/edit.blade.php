@@ -244,4 +244,20 @@
             </div>
         </div>
     </form>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const statusSelect = document.getElementById('status');
+    const paySelect = document.getElementById('payment_status');
+    if (statusSelect && paySelect) {
+        statusSelect.addEventListener('change', function() {
+            if (this.value === 'delivered') {
+                paySelect.value = 'paid';
+            }
+        });
+    }
+});
+</script>
+@endpush
 @endsection
