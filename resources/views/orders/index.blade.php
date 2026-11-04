@@ -39,7 +39,7 @@
         <div class="col mb-2">
             <a href="{{ route('orders.index', request()->except(['status', 'page'])) }}" 
                class="stat-kpi-card text-decoration-none h-100 {{ !request('status') ? 'active-filter' : '' }}"
-               title="Voir toutes les commandes">
+               title="Voir toutes les commandes" style="background: #3090cd;">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <div class="stat-kpi-label text-white">Total</div>

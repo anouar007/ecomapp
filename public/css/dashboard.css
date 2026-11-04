@@ -3509,7 +3509,7 @@ i.fa-sparkles:before {
 
 .stat-kpi-card.active-filter {
     border-color: #2563eb;
-    background: #2563eb;
+    background: #ecf2ff;
     box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15), 0 4px 12px rgba(37, 99, 235, 0.06);
 }
 
