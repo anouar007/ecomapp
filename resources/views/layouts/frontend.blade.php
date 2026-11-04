@@ -2498,22 +2498,400 @@
 
 
 
-    <!-- Main Header / Navbar (Single Clean Row) -->
-    <div class="header-main sticky-top bg-white shadow-sm w-100" style="position: sticky !important; top: 0 !important; z-index: 1065; border-bottom: 1px solid #f1f3f5;">
-        <div class="container py-0 py-lg-0">
-            <div class="d-flex align-items-center justify-content-between gap-3 gap-xl-4">
+    <!-- Cameralik Modern Navigation System -->
+    <style>
+        /* ── Cameralik Creative Header & Navigation ── */
+        :root {
+            --clk-nav-h: 80px;
+            --clk-nav-h-scrolled: 68px;
+            --clk-ink: #0d0d0d;
+            --clk-accent: #ef2727;
+            --clk-line: rgba(0, 0, 0, 0.07);
+            --clk-bg-glass: rgba(255, 255, 255, 0.88);
+            --clk-pill-bg: #f5f5f3;
+        }
+
+        .clk-navbar-wrap {
+            height: var(--clk-nav-h);
+            background: var(--clk-bg-glass);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--clk-line);
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 1065;
+            transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .clk-navbar-wrap.is-scrolled {
+            height: var(--clk-nav-h-scrolled);
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+            border-bottom-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .clk-nav-inner {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        /* Brand & Shutter Badge */
+        .clk-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none !important;
+            flex-shrink: 0;
+        }
+
+        .clk-brand-logo {
+            height: 38px;
+            width: auto;
+            max-width: 165px;
+            object-fit: contain;
+            display: block;
+            transition: transform 0.25s ease;
+        }
+
+        .clk-brand:hover .clk-brand-logo {
+            transform: scale(1.02);
+        }
+
+        /* Floating Pill Menu Capsule (Center) */
+        .clk-nav-capsule {
+            display: flex;
+            align-items: center;
+            background: var(--clk-pill-bg);
+            border: 1px solid var(--clk-line);
+            padding: 4px;
+            border-radius: 999px;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .clk-nav-capsule:hover {
+            border-color: rgba(0,0,0,0.12);
+        }
+
+        .clk-capsule-item {
+            color: #444 !important;
+            font-size: 13.5px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            text-decoration: none !important;
+            padding: 7px 18px;
+            border-radius: 999px;
+            transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            line-height: 1;
+        }
+
+        .clk-capsule-item:hover {
+            color: var(--clk-ink) !important;
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        .clk-capsule-item.active {
+            color: #ffffff !important;
+            background: var(--clk-ink) !important;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        }
+
+        .clk-live-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--clk-accent);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px var(--clk-accent);
+            animation: clkPulse 2s infinite ease-in-out;
+        }
+
+        @keyframes clkPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        /* Gear Mega Menu Pill Trigger */
+        .clk-gear-trigger {
+            background: #ffffff;
+            border: 1px solid var(--clk-line);
+            border-radius: 999px;
+            padding: 6px 14px 6px 10px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--clk-ink) !important;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+
+        .clk-gear-trigger:hover,
+        .clk-gear-trigger[aria-expanded="true"] {
+            background: var(--clk-ink);
+            color: #ffffff !important;
+            border-color: var(--clk-ink);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+        }
+
+        .clk-gear-trigger .clk-shutter-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #f0f0ee;
+            display: grid;
+            place-items: center;
+            color: #111;
+            font-size: 10px;
+            transition: transform 0.35s ease, background 0.2s ease, color 0.2s ease;
+        }
+
+        .clk-gear-trigger:hover .clk-shutter-icon,
+        .clk-gear-trigger[aria-expanded="true"] .clk-shutter-icon {
+            background: var(--clk-accent);
+            color: #fff;
+            transform: rotate(90deg);
+        }
+
+        /* Gear Mega Menu Dropdown */
+        .clk-mega-dropdown {
+            border-radius: 24px !important;
+            border: 1px solid var(--clk-line) !important;
+            box-shadow: 0 24px 60px -10px rgba(0, 0, 0, 0.16) !important;
+            padding: 24px !important;
+            width: 580px;
+            background: #ffffff;
+            margin-top: 14px !important;
+            animation: clkDropdownIn 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes clkDropdownIn {
+            from { opacity: 0; transform: translateY(8px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .clk-cat-card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .clk-cat-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-radius: 14px;
+            background: #fafaf9;
+            border: 1px solid transparent;
+            text-decoration: none !important;
+            color: var(--clk-ink) !important;
+            transition: all 0.2s ease;
+        }
+
+        .clk-cat-card:hover {
+            background: #ffffff;
+            border-color: var(--clk-line);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+            transform: translateY(-1px);
+        }
+
+        .clk-cat-card-name {
+            font-size: 13.5px;
+            font-weight: 650;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .clk-cat-badge {
+            font-size: 11px;
+            font-weight: 700;
+            color: #777;
+            background: #eeeee9;
+            padding: 2px 7px;
+            border-radius: 999px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Action Buttons (Right) */
+        .clk-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .clk-action-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50% !important;
+            border: 1px solid var(--clk-line) !important;
+            background: #ffffff;
+            color: var(--clk-ink) !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-decoration: none !important;
+            position: relative;
+            transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+            font-size: 15px;
+            padding: 0;
+        }
+
+        .clk-action-btn:hover {
+            border-color: var(--clk-ink) !important;
+            background: var(--clk-ink);
+            color: #ffffff !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .clk-action-btn .clk-badge-counter {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            min-width: 19px;
+            height: 19px;
+            border-radius: 999px;
+            background: var(--clk-accent);
+            color: #ffffff;
+            font-size: 10.5px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            border: 2px solid #ffffff;
+            box-shadow: 0 2px 6px rgba(239, 39, 39, 0.4);
+        }
+
+        /* Creative Floating Search Bar */
+        .clk-search-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .clk-search-floating {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%) scale(0.95);
+            width: 0;
+            opacity: 0;
+            pointer-events: none;
+            background: #ffffff;
+            border-radius: 999px;
+            border: 1px solid var(--clk-line);
+            padding: 0 14px 0 16px;
+            display: flex;
+            align-items: center;
+            height: 46px;
+            z-index: 20;
+            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.14);
+            transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .clk-search-floating.is-open {
+            width: 360px;
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(-50%) scale(1);
+        }
+
+        @media (max-width: 576px) {
+            .clk-search-floating.is-open {
+                width: 290px;
+            }
+        }
+
+        .clk-search-input {
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 550;
+            color: var(--clk-ink);
+            width: 100%;
+            padding: 0 10px;
+            outline: none;
+        }
+
+        .clk-search-input::placeholder {
+            color: #8e8e8e;
+            font-weight: 450;
+        }
+
+        .clk-search-close {
+            background: #f5f5f3;
+            border: none;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            color: #666;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+        }
+
+        .clk-search-close:hover {
+            background: var(--clk-ink);
+            color: #fff;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 992px) {
+            .clk-nav-capsule,
+            .clk-gear-trigger-wrap {
+                display: none !important;
+            }
+            .clk-navbar-wrap {
+                height: 70px;
+            }
+            .clk-navbar-wrap.is-scrolled {
+                height: 64px;
+            }
+        }
+    </style>
+
+    <!-- Main Header / Cameralik Navbar -->
+    @php
+        $searchHistoryEnabled = (bool) setting('frontend_search_history_enabled', true);
+        $searchFrequentEnabled = (bool) setting('frontend_search_frequent_enabled', true);
+        $searchFrequentTitle = setting('frontend_search_frequent_title', __('Frequent Searches'));
+        $searchFrequentRaw = setting('frontend_search_frequent_tags', 'Sony Alpha, DJI Osmo, Godox, Rode, Insta360');
+        $searchFrequentTags = array_values(array_filter(array_map('trim', preg_split('/[,
+]+/', (string) $searchFrequentRaw))));
+        if (empty($searchFrequentTags) && setting('frontend_search_frequent_tags') === null) {
+            $searchFrequentTags = ['Sony Alpha', 'DJI Osmo', 'Godox', 'Rode', 'Insta360'];
+        }
+        $headerInitialCartCount = array_sum(array_column(session('cart', []), 'quantity'));
+    @endphp
+
+    <header class="clk-navbar-wrap" id="clkNavbar">
+        <div class="clk-wrap h-100">
+            <div class="clk-nav-inner">
                 
-                <!-- Left: Logo + Categories Button + Navigation Links on its right -->
-                <div class="d-flex align-items-center gap-2 gap-lg-3 gap-xl-4 flex-nowrap">
-                    <!-- Brand Logo (Enlarged) -->
-                    @php
-                        $headerLogoHeight = max(28, min(140, (int) setting('header_logo_height', 96)));
-                    @endphp
-                    <a class="navbar-brand m-0 p-0 d-flex align-items-center me-1 me-lg-2" href="{{ url('/') }}" style="flex-shrink: 0;" title="{{ setting('app_name', 'WINA SHOP') }}" aria-label="{{ setting('app_name', 'WINA SHOP') }} - {{ __('Accueil') }}">
-                        <img src="{{ site_logo_url('header') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="{{ $headerLogoHeight }}" height="{{ $headerLogoHeight }}" class="brand-logo-img" style="height: {{ $headerLogoHeight }}px; max-height: {{ $headerLogoHeight + 10 }}px; width: auto; max-width: 280px; object-fit: contain;">
-                        <span class="visually-hidden">{{ setting('app_name', 'WINA SHOP') }}</span>
+                <!-- Left: Cameralik Brand & Gear Catalog Popover -->
+                <div class="d-flex align-items-center gap-3">
+                    <a class="clk-brand" href="{{ url('/') }}" aria-label="{{ setting('app_name', 'cameralik') }}">
+                        <img src="{{ site_logo_url('header') }}" alt="{{ setting('app_name', 'cameralik') }}" class="clk-brand-logo" onerror="this.onerror=null; this.src='{{ asset('images/camera/logo.png') }}';">
                     </a>
 
+                    <!-- Creative Gear Shutter Popover Trigger -->
                     @php
                         $navCategories = \Illuminate\Support\Facades\Cache::remember('frontend_nav_categories', 3600, function() {
                             return \App\Models\Category::where('status', 'active')
@@ -2524,226 +2902,121 @@
                                 ->orderBy('sort_order', 'asc')
                                 ->get();
                         });
-
-                        $catIcons = [
-                            'camera'                      => 'fas fa-camera',
-                            'cameras-hybrides'            => 'fas fa-video',
-                            'objectifs'                   => 'fas fa-circle-notch',
-                            'objectifs-optiques'          => 'fas fa-circle-notch',
-                            'lumieres-materiel-de-studio' => 'fas fa-lightbulb',
-                            'eclairage-studio'            => 'fas fa-lightbulb',
-                            'son'                         => 'fas fa-microphone-lines',
-                            'audio-micros-sans-fil'       => 'fas fa-microphone',
-                            'stabilisateurs'              => 'fas fa-arrows-to-dot',
-                            'stabilisateurs-gimbals'      => 'fas fa-arrows-to-dot',
-                            'drones-cine'                 => 'fas fa-helicopter',
-                            'sacs-de-camera'              => 'fas fa-bag-shopping',
-                            'trepieds'                    => 'fas fa-braille',
-                            'batterie-chargeur'           => 'fas fa-bolt',
-                            'carte-memoire-lecteur'       => 'fas fa-sd-card',
-                            'accessoires'                 => 'fas fa-sliders',
-                            'materiel-de-podcast'         => 'fas fa-podcast',
-                            'filtres-nd-cpl-polarise'     => 'fas fa-circle-half-stroke',
-                            'matte-box'                   => 'fas fa-cube',
-                            'accessoires-insta360'        => 'fas fa-camera-rotate',
-                            'kit-de-nettoyage'            => 'fas fa-spray-can-sparkles',
-                            'occasion'                    => 'fas fa-tag',
-                        ];
                     @endphp
-
-                    <!-- Red Categories Button (Immediately after logo) -->
-                    <div class="dropdown header-categories-dropdown d-none d-lg-inline-block">
-                        <button class="btn btn-categories-red text-white fw-bold d-flex align-items-center gap-2" 
-                                type="button" 
-                                id="headerCategoriesBtn" 
-                                data-bs-toggle="dropdown" 
-                                aria-expanded="false">
-                            {!! site_icon_html('icon_nav_categories', 'fas fa-bars', '', '', 16) !!}
-                            <span>CATÉGORIES</span>
-                            <i class="fas fa-chevron-down ms-1" style="font-size: 10px;"></i>
+                    <div class="dropdown clk-gear-trigger-wrap d-none d-lg-inline-block">
+                        <button class="clk-gear-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="clk-shutter-icon">◓</span>
+                            <span>{{ __('Catalog') }}</span>
+                            <i class="fas fa-chevron-down ms-1" style="font-size: 8px; opacity: 0.5;"></i>
                         </button>
-
-                        <!-- Pro Categories Mega Dropdown -->
-                        <div class="dropdown-menu categories-mega-menu shadow-lg border-0 p-0" aria-labelledby="headerCategoriesBtn">
-                            <!-- Mega Menu Header -->
-                            <div class="categories-menu-header d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
-                                <a href="{{ route('shop.index') }}" class="btn btn-categories-red py-1 px-2 text-white fw-bold text-decoration-none d-flex align-items-center gap-1 hover-underline" style="font-size: 12px;" id="allCategoriesLinkNavbar">
-                                    <span>{{ __('Tout le produits') }}</span>
-                                    <i class="fas fa-arrow-right" style="font-size: 10px;"></i>
+                        <div class="dropdown-menu clk-mega-dropdown">
+                            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="clk-live-dot"></span>
+                                    <span class="fw-bold text-uppercase" style="font-size: 11px; letter-spacing: 0.1em; color: var(--clk-accent);">{{ __('Camera & Optics Gear') }}</span>
+                                </div>
+                                <a href="{{ route('shop.index') }}" class="text-dark small fw-bold text-decoration-none d-flex align-items-center gap-1">
+                                    <span>{{ __('Explore All') }}</span>
+                                    <span style="font-size: 13px;">→</span>
                                 </a>
                             </div>
-
-                            <!-- Mega Menu Body: 3 Clean Balanced Columns Grid (No scroll) -->
-                            <div class="categories-menu-grid p-3">
-                                <div class="row g-2">
-                                    @php
-                                        $perColumn = ceil($navCategories->count() / 3);
-                                        $chunks = $navCategories->chunk($perColumn);
-                                    @endphp
-                                    @foreach($chunks as $columnCategories)
-                                        <div class="col-4">
-                                            <div class="d-flex flex-column gap-1">
-                                                @foreach($columnCategories as $cat)
-                                                    @php
-                                                        $catImg = null;
-                                                        $catIconClass = null;
-
-                                                        // Check if user uploaded a custom image from dashboard
-                                                        if (!empty($cat->image) && (str_starts_with($cat->image, 'categories/') || str_starts_with($cat->image, 'storage/') || str_starts_with($cat->image, 'http'))) {
-                                                            $catImg = $cat->image_url;
-                                                        }
-                                                        // Check if icon field points to an image/svg file
-                                                        elseif (!empty($cat->icon) && (str_ends_with($cat->icon, '.svg') || str_ends_with($cat->icon, '.png') || str_ends_with($cat->icon, '.webp') || str_contains($cat->icon, '/'))) {
-                                                            $catImg = asset($cat->icon);
-                                                        }
-                                                        // Check if icon field is a FontAwesome class from dashboard
-                                                        elseif (!empty($cat->icon)) {
-                                                            $rawIcon = trim($cat->icon);
-                                                            $catIconClass = str_starts_with($rawIcon, 'fa') ? $rawIcon : 'fas fa-' . $rawIcon;
-                                                        }
-                                                        // Fallback to image if set
-                                                        elseif (!empty($cat->image_url)) {
-                                                            $catImg = $cat->image_url;
-                                                        }
-                                                        // Fallback to preset or default icon
-                                                        else {
-                                                            $catIconClass = $catIcons[$cat->slug] ?? 'fas fa-folder';
-                                                        }
-                                                    @endphp
-                                                    <a href="{{ route('shop.index', ['category' => $cat->slug]) }}" 
-                                                       class="cat-mega-item d-flex align-items-center justify-content-between text-decoration-none">
-                                                        <div class="d-flex align-items-center gap-2 text-truncate me-2">
-                                                            <span class="cat-slot-box">
-                                                                @if($catImg)
-                                                                    <img src="{{ $catImg }}" alt="{{ $cat->name }}" width="30" height="30" loading="lazy" decoding="async" class="cat-slot-media" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
-                                                                    <i class="fas fa-folder cat-slot-icon" style="display: none;"></i>
-                                                                @else
-                                                                    <i class="{{ $catIconClass }} cat-slot-icon"></i>
-                                                                @endif
-                                                            </span>
-                                                            <span class="cat-mega-name">{{ $cat->name }}</span>
-                                                        </div>
-                                                        <span class="badge cat-mega-count rounded-pill">{{ $cat->products_count }}</span>
-                                                    </a>
-                                                @endforeach
-                                            </div>
+                            <div class="clk-cat-card-grid">
+                                @foreach($navCategories->take(8) as $nCat)
+                                    <a href="{{ route('shop.index', ['category' => $nCat->slug]) }}" class="clk-cat-card">
+                                        <div class="clk-cat-card-name">
+                                            <span style="color: var(--clk-accent); font-size: 11px;">✦</span>
+                                            <span>{{ $nCat->name }}</span>
                                         </div>
-                                    @endforeach
-                                </div>
+                                        <span class="clk-cat-badge">{{ $nCat->products_count }}</span>
+                                    </a>
+                                @endforeach
                             </div>
                         </div>
                     </div>
-
-                    <!-- Navigation Links directly on the right of the red categories button -->
-                    <nav class="d-none d-lg-flex align-items-center gap-3 gap-xl-4 ms-1 flex-nowrap">
-                        <a href="{{ route('home') }}" class="nav-link-item text-decoration-none fw-bold {{ request()->routeIs('home') ? 'text-dark active' : 'text-secondary' }}" style="font-size: 13.5px; letter-spacing: 0.5px; white-space: nowrap;">ACCUEIL</a>
-                        <a href="{{ route('shop.index') }}" class="nav-link-item text-decoration-none fw-bold {{ request()->routeIs('shop.*') && !request('category') ? 'text-dark active' : 'text-secondary' }}" style="font-size: 13.5px; letter-spacing: 0.5px; white-space: nowrap;">BOUTIQUE</a>
-                        <a href="{{ route('about') }}" class="nav-link-item text-decoration-none fw-bold {{ request()->routeIs('about') ? 'text-dark active' : 'text-secondary' }}" style="font-size: 13.5px; letter-spacing: 0.5px; white-space: nowrap;">À PROPOS</a>
-                        <a href="{{ route('contact') }}" class="nav-link-item text-decoration-none fw-bold {{ request()->routeIs('contact') ? 'text-dark active' : 'text-secondary' }}" style="font-size: 13.5px; letter-spacing: 0.5px; white-space: nowrap;">CONTACT</a>
-                    </nav>
                 </div>
 
-                <!-- Right: Search Bar + Cart Icon -->
-                <div class="d-flex align-items-center gap-2 gap-md-3 gap-xl-4 flex-grow-1 justify-content-end header-actions-wrap" style="max-width: 580px;">
-                    
-                    <!-- Mobile Menu Toggler -->
-                    <button class="navbar-toggler border-0 p-1 d-lg-none text-dark ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNavDrawer" aria-controls="mobileNavDrawer" aria-label="Menu">
-                        {!! site_icon_html('icon_nav_mobile_menu', 'fas fa-bars', '', 'font-size: 20px;', 22) !!}
-                    </button>    
-                
-                    @php
-                        $searchHistoryEnabled = (bool) setting('frontend_search_history_enabled', true);
-                        $searchFrequentEnabled = (bool) setting('frontend_search_frequent_enabled', true);
-                        $searchFrequentTitle = setting('frontend_search_frequent_title', __('Frequent Searches'));
-                        $searchFrequentRaw = setting('frontend_search_frequent_tags', 'Sony Alpha, DJI Osmo, Godox, Rode, Insta360');
-                        $searchFrequentTags = array_values(array_filter(array_map('trim', preg_split('/[,\r\n]+/', (string) $searchFrequentRaw))));
-                        if (empty($searchFrequentTags) && setting('frontend_search_frequent_tags') === null) {
-                            $searchFrequentTags = ['Sony Alpha', 'DJI Osmo', 'Godox', 'Rode', 'Insta360'];
-                        }
-                    @endphp
+                <!-- Center: Creative Floating Pill Navigation Capsule -->
+                <nav class="clk-nav-capsule d-none d-lg-flex" aria-label="Main Navigation">
+                    <a href="{{ route('home') }}" class="clk-capsule-item {{ request()->routeIs('home') ? 'active' : '' }}">
+                        <span>{{ __('Home') }}</span>
+                    </a>
+                    <a href="{{ route('shop.index') }}" class="clk-capsule-item {{ request()->routeIs('shop.*') && !request('category') ? 'active' : '' }}">
+                        <span>{{ __('Shop') }}</span>
+                        <span class="clk-live-dot"></span>
+                    </a>
+                    <a href="{{ route('about') }}" class="clk-capsule-item {{ request()->routeIs('about') ? 'active' : '' }}">
+                        <span>{{ __('About') }}</span>
+                    </a>
+                    <a href="{{ route('contact') }}" class="clk-capsule-item {{ request()->routeIs('contact') ? 'active' : '' }}">
+                        <span>{{ __('Contact') }}</span>
+                    </a>
+                </nav>
 
-                    <!-- Search Input (Pill shape #f1f3f5) -->
-                    <form action="{{ route('shop.index') }}" method="GET" class="header-search-wrap w-100 position-relative" style="max-width: 380px;" id="headerSearchForm" autocomplete="off">
-                        <div class="position-relative d-flex align-items-center header-search-box" style="background: #f1f3f5; border-radius: 9999px; padding: 0 14px; height: 42px;">
-                            {!! site_icon_html('icon_nav_search', 'fas fa-search', 'text-muted me-2', 'font-size: 13px;', 15) !!}
-                            <input class="form-control border-0 bg-transparent shadow-none p-0 header-search-input" 
-                                   type="search" 
+                <!-- Right: Cameralik Action Suite (Search & Cart) -->
+                <div class="clk-actions">
+                    <!-- Expandable Search Form -->
+                    <div class="clk-search-wrapper">
+                        <button type="button" class="clk-action-btn" id="clkSearchToggleBtn" aria-label="{{ __('Search') }}" title="{{ __('Search') }}">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </button>
+
+                        <form action="{{ route('shop.index') }}" method="GET" class="clk-search-floating" id="clkSearchPanel" autocomplete="off">
+                            <i class="fas fa-search text-muted" style="font-size: 13px;"></i>
+                            <input type="search" 
                                    name="q" 
                                    id="headerSearchInput" 
-                                   placeholder="{{ __('Rechercher un produit, code SKU...') }}" 
-                                   aria-label="{{ __('Search') }}" 
-                                   value="{{ request('q') }}" 
-                                   autocomplete="off" 
-                                   spellcheck="false"
-                                   style="font-size: 16px; color: #334155;">
-                            <button class="btn btn-search-clear d-none p-0 border-0 bg-transparent text-muted" type="button" id="headerSearchClear" aria-label="{{ __('Effacer la recherche') }}">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
+                                   class="clk-search-input" 
+                                   placeholder="{{ __('Search camera, lens, gear...') }}" 
+                                   value="{{ request('q') }}"
+                                   autocomplete="off">
+                            <button type="button" class="clk-search-close" id="clkSearchCloseBtn" aria-label="Close">✕</button>
 
-                        <!-- Live Search Floating Dropdown -->
-                        <div class="header-search-dropdown shadow-lg d-none" id="headerSearchDropdown" role="region" aria-label="{{ __('Search Results') }}">
-                            <div class="search-quick-tags p-3 border-bottom {{ (!$searchHistoryEnabled && (!$searchFrequentEnabled || empty($searchFrequentTags))) ? 'd-none' : '' }}" id="headerSearchTags">
-                                @if($searchHistoryEnabled)
-                                <!-- Client Recent Searches (history) -->
-                                <div class="search-history-block" id="headerSearchHistory">
-                                    <div class="search-history-head">
-                                        <div class="search-section-label m-0">
-                                            <i class="fas fa-history me-1 text-danger"></i> {{ strtoupper(__('Recent Searches')) }}
-                                        </div>
-                                        <button type="button" class="search-history-clear d-none" data-history-clear>{{ __('Clear all') }}</button>
-                                    </div>
-                                    <ul class="search-history-list" id="headerSearchHistoryList"></ul>
-                                </div>
-                                @endif
-
-                                @if($searchFrequentEnabled && !empty($searchFrequentTags))
-                                <div class="search-section-label {{ $searchHistoryEnabled ? 'mt-3' : '' }}">
-                                    <i class="fas fa-fire me-1 text-danger"></i> {{ strtoupper($searchFrequentTitle) }}
-                                </div>
-                                <div class="d-flex flex-wrap gap-2 mt-2">
-                                    @foreach($searchFrequentTags as $chipTag)
-                                        <button type="button" class="search-tag-chip" data-search="{{ $chipTag }}">{{ $chipTag }}</button>
-                                    @endforeach
-                                </div>
-                                @endif
+                            <!-- Hidden Live Search Form Trigger for Compatibility -->
+                            <div class="d-none">
+                                <div id="headerSearchTags"></div>
+                                <div id="headerSearchResultsList"></div>
+                                <div id="headerSearchEmpty"></div>
+                                <div id="headerSearchFooter"><a href="#" id="headerSearchViewAll"><span id="headerSearchCountBadge">0</span></a></div>
+                                <button type="button" id="headerSearchClear"></button>
                             </div>
-                            <div class="search-results-list" id="headerSearchResultsList"></div>
-                            <div class="search-empty-state text-center py-4 px-3 d-none" id="headerSearchEmpty">
-                                <div class="search-empty-icon mb-2">
-                                    <i class="fas fa-search-minus fa-2x text-muted opacity-50"></i>
-                                </div>
-                                <div class="fw-bold text-dark mb-1">{{ __('No product found') }}</div>
-                            </div>
-                            <div class="search-dropdown-footer p-2 text-center border-top d-none" id="headerSearchFooter">
-                                <a href="#" class="search-view-all-link" id="headerSearchViewAll">
-                                    <span>{{ __('View all results') }}</span>
-                                    <span class="search-count-pill badge bg-danger ms-1" id="headerSearchCountBadge">0</span>
-                                    <i class="fas fa-arrow-right ms-1"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </form>
-
-                    <!-- Dummy button to preserve any JS bindings -->
-                    <button class="d-none" type="button" id="mobileSearchTriggerBtn" aria-hidden="true"></button>
-
-                    <!-- Cart Icon with Red Badge -->
-                    <div class="position-relative ms-1">
-                        <button class="bg-transparent border-0 p-1 text-dark d-flex align-items-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart" title="{{ __('My Cart') }}" style="cursor: pointer;">
-                            {!! site_icon_html('icon_nav_cart', 'fas fa-shopping-bag', '', 'font-size: 22px;', 22) !!}
-                        </button>
-                        @php
-                            $headerInitialCartCount = array_sum(array_column(session('cart', []), 'quantity'));
-                        @endphp
-                        <span id="header-cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white {{ $headerInitialCartCount > 0 ? '' : 'd-none' }}" style="font-size: 0.65rem; padding: 2px 6px;">
-                            {{ $headerInitialCartCount }}
-                        </span>
+                        </form>
                     </div>
+
+                    <!-- Cart Icon Button with Count Badge -->
+                    <button type="button" class="clk-action-btn clk-cart-btn" data-bs-toggle="offcanvas" data-bs-target="#miniCart" aria-label="{{ __('Cart') }}" title="{{ __('Cart') }}">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                        @if($headerInitialCartCount > 0)
+                            <span class="clk-badge-counter" id="header-cart-count">{{ $headerInitialCartCount }}</span>
+                        @else
+                            <span class="clk-badge-counter d-none" id="header-cart-count">0</span>
+                        @endif
+                    </button>
+
+                    <!-- Mobile Menu Drawer Toggle -->
+                    <button class="clk-action-btn d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNavDrawer" aria-controls="mobileNavDrawer" aria-label="Menu">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
                 </div>
             </div>
         </div>
-    </div>
+    </header>
+
+    <!-- Invisible bindings to prevent breaking legacy live-search triggers -->
+    <div class="d-none" id="headerSearchDropdown"></div>
+    <button class="d-none" type="button" id="mobileSearchTriggerBtn" aria-hidden="true"></button>
+
+    <!-- Mobile Navigation Offcanvas Drawer (Cameralik styled) -->
 
     <!-- Mobile Navigation Offcanvas Drawer -->
     @php
@@ -4826,14 +5099,65 @@
             });
         }
 
+        // Cameralik Expandable Header Search
+        function initCameralikSearch() {
+            var toggleBtn = document.getElementById('clkSearchToggleBtn');
+            var panel = document.getElementById('clkSearchPanel');
+            var closeBtn = document.getElementById('clkSearchCloseBtn');
+            var input = document.getElementById('headerSearchInput');
+
+            if (!toggleBtn || !panel) return;
+
+            toggleBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                panel.classList.toggle('is-open');
+                if (panel.classList.contains('is-open') && input) {
+                    input.focus();
+                }
+            });
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    panel.classList.remove('is-open');
+                });
+            }
+
+            document.addEventListener('click', function(e) {
+                if (!panel.contains(e.target) && e.target !== toggleBtn) {
+                    panel.classList.remove('is-open');
+                }
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && panel.classList.contains('is-open')) {
+                    panel.classList.remove('is-open');
+                }
+            });
+        }
+
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', function() {
                 initNavbarLiveSearch();
                 initProMobileSearch();
+                initCameralikSearch();
+                
+                // Navbar scroll state
+                const clkNav = document.getElementById('clkNavbar');
+                if (clkNav) {
+                    window.addEventListener('scroll', function() {
+                        if (window.scrollY > 20) {
+                            clkNav.classList.add('is-scrolled');
+                        } else {
+                            clkNav.classList.remove('is-scrolled');
+                        }
+                    }, { passive: true });
+                }
             });
         } else {
             initNavbarLiveSearch();
             initProMobileSearch();
+            initCameralikSearch();
         }
     </script>
     @stack('scripts')

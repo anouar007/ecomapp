@@ -1,1139 +1,1035 @@
 @extends('layouts.frontend')
 
-@section('meta_title', setting('app_name', 'WINA SHOP') . ' — ' . __('Matériel Photo, Vidéo & Caméras au Maroc'))
-@section('meta_description', __('Votre référence au Maroc pour le matériel photo & vidéo professionnel — Caméras Sony, Canon, drones & stabilisateurs DJI, optiques et éclairage studio.'))
+@section('meta_title', 'cameralik — Camera. Create. Capture.')
+@section('meta_description', __('Camera, lenses, accessories and creative gear for photographers and filmmakers.'))
 
-@section('json_ld')
-<script type="application/ld+json">
-[
-  {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    "@id": "{{ url('/') }}#webpage",
-    "url": "{{ url('/') }}",
-    "name": {!! json_encode(setting('app_name', 'WINA SHOP') . ' — Matériel Photo, Vidéo, Caméras & Drones au Maroc') !!},
-    "description": {!! json_encode(setting('app_description', 'Votre référence au Maroc pour le matériel photo & vidéo professionnel — Caméras Sony, Canon, drones & stabilisateurs DJI, optiques et éclairage studio.')) !!},
-    "inLanguage": ["fr-MA", "ar-MA", "en-MA"],
-    "about": { "@id": "{{ url('/') }}#organization" },
-    "speakable": {
-      "@type": "SpeakableSpecification",
-      "cssSelector": ["h1", ".selection-title", ".reassurance-box"]
+@push('styles')
+<style>
+/* ==========================================================================
+   CAMERALIK DESIGN SYSTEM (Scoped for Homepage & Modern Components)
+   ========================================================================== */
+:root {
+    --clk-ink: #101010;
+    --clk-muted: #6d6d6d;
+    --clk-line: #e8e8e8;
+    --clk-soft: #f6f6f4;
+    --clk-accent: #ef2727;
+    --clk-white: #ffffff;
+    --clk-radius: 24px;
+    --clk-max: 1240px;
+}
+
+body {
+    background-color: #ffffff !important;
+    color: var(--clk-ink) !important;
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+}
+
+.clk-wrap {
+    max-width: var(--clk-max);
+    margin: 0 auto;
+    padding: 0 28px;
+}
+
+@media (max-width: 620px) {
+    .clk-wrap {
+        padding: 0 18px;
     }
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    "name": "Sélection de Matériel Photo & Vidéo Professionnel au Maroc",
-    "numberOfItems": {{ isset($featuredProducts) ? $featuredProducts->take(10)->count() : 0 }},
-    "itemListElement": [
-      @if(isset($featuredProducts))
-      @foreach($featuredProducts->take(10) as $idx => $fp)
-      {
-        "@type": "ListItem",
-        "position": {{ $idx + 1 }},
-        "url": "{{ route('shop.show', $fp->slug ?: $fp->id) }}",
-        "name": {!! json_encode($fp->name) !!}
-      }@if(!$loop->last),@endif
-      @endforeach
-      @endif
-    ]
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "Où acheter du matériel photo, vidéo et caméras professionnelles au Maroc ?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "WINA SHOP est le magasin de référence au Maroc pour l'équipement audiovisuel professionnel (Sony, Canon, Nikon, DJI, Godox, RØDE). Notre showroom est situé à Casablanca (Al Oulfa), avec livraison express 24h à 48h partout au Maroc avec suivi et garantie officielle."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Comment obtenir un devis proforma INDH ou une facture avec ICE pour du matériel vidéo ?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "WINA SHOP délivre immédiatement des devis proforma certifiés conformes pour les porteurs de projets INDH, coopératives et créateurs d'entreprises, ainsi que des factures officielles avec identifiant fiscal (ICE) pour toutes les sociétés et professionnels."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Les caméras, drones et objectifs vendus chez WINA SHOP sont-ils originaux et garantis ?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "100% des produits neufs vendus chez WINA SHOP sont neufs sous emballage d'origine scellé, authentiques et accompagnés d'une garantie constructeur officielle avec SAV dédié."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Quels sont les délais et les frais de livraison au Maroc ?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Nous livrons sous 24h à 48h dans toutes les villes du Maroc (Casablanca, Rabat, Marrakech, Tanger, Fès, Agadir, Oujda, Meknès, etc.). Votre colis est minutieusement protégé et suivi jusqu'à sa réception."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "أين يمكنني شراء كاميرات ومعدات تصوير احترافية في المغرب بالضمان والتوصيل السريع؟",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "متجر WINA SHOP بالدار البيضاء هو خيارك الأول لشراء كاميرات سوني، كانون، نيكون، درون دي جي اي، ومعدات إضاءة غودوكس بالمغرب. نوفر ضماناً رسمياً، فواتير قانونية مع ICE، وفواتير شكلية INDH، مع التوصيل السريع والموثوق بكافة مدن المملكة."
-        }
-      }
-    ]
-  }
-]
-</script>
-@endsection
+}
+
+/* ── Typography & Helpers ── */
+.clk-kicker {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--clk-accent);
+}
+
+.clk-h2 {
+    font-size: clamp(32px, 4vw, 52px);
+    letter-spacing: -.045em;
+    line-height: 1.05;
+    margin: 8px 0 0;
+    color: var(--clk-ink);
+    font-weight: 800;
+}
+
+.clk-see {
+    font-size: 14px;
+    font-weight: 750;
+    border-bottom: 1.5px solid var(--clk-ink);
+    padding-bottom: 4px;
+    color: var(--clk-ink);
+    text-decoration: none !important;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.clk-see:hover {
+    color: var(--clk-accent);
+    border-color: var(--clk-accent);
+}
+
+.clk-btn {
+    padding: 13px 22px;
+    border-radius: 999px;
+    border: 1px solid var(--clk-ink);
+    font-size: 14px;
+    font-weight: 750;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none !important;
+    transition: all 0.25s ease;
+    cursor: pointer;
+}
+
+.clk-btn.primary {
+    background: var(--clk-ink);
+    color: #fff !important;
+}
+
+.clk-btn.primary:hover {
+    background: #292929;
+    border-color: #292929;
+    color: #fff !important;
+    transform: translateY(-2px);
+}
+
+.clk-btn.secondary {
+    background: #fff;
+    color: var(--clk-ink) !important;
+}
+
+.clk-btn.secondary:hover {
+    border-color: var(--clk-accent);
+    color: var(--clk-accent) !important;
+    transform: translateY(-2px);
+}
+
+/* ── Hero Section ── */
+.clk-hero {
+    padding: 56px 0 28px;
+}
+
+.clk-hero-grid {
+    display: grid;
+    grid-template-columns: 1.05fr .95fr;
+    gap: 42px;
+    align-items: center;
+}
+
+.clk-eyebrow {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    padding: 7px 14px;
+    border: 1px solid #ddd;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: #333;
+}
+
+.clk-eyebrow i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--clk-accent);
+    display: inline-block;
+}
+
+.clk-hero h1 {
+    font-size: clamp(46px, 6.5vw, 86px);
+    line-height: .94;
+    letter-spacing: -.065em;
+    margin: 20px 0 22px;
+    max-width: 760px;
+    font-weight: 900;
+    color: var(--clk-ink);
+}
+
+.clk-hero p {
+    font-size: 18px;
+    line-height: 1.65;
+    color: var(--clk-muted);
+    max-width: 580px;
+    margin: 0;
+}
+
+.clk-cta {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+}
+
+.clk-hero-art {
+    min-height: 460px;
+    border-radius: 32px;
+    background: #111;
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.18);
+}
+
+.clk-hero-art:before {
+    content: "";
+    position: absolute;
+    width: 520px;
+    height: 520px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.14);
+    box-shadow: 0 0 0 70px rgba(255,255,255,.025), 0 0 0 140px rgba(255,255,255,.018);
+}
+
+.clk-hero-art:after {
+    content: "";
+    position: absolute;
+    width: 190px;
+    height: 190px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 34% 28%, #fff 0 3%, #e8e8e8 4% 8%, #242424 9% 48%, #0b0b0b 49% 64%, #222 65% 70%, #ef2727 71% 73%, #111 74%);
+    box-shadow: 0 24px 80px rgba(0,0,0,.45);
+}
+
+.clk-hero-mark {
+    position: absolute;
+    bottom: 26px;
+    left: 28px;
+    color: #fff;
+    font-size: 12px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    font-weight: 700;
+    z-index: 2;
+}
+
+.clk-hero-mark span {
+    color: var(--clk-accent);
+}
+
+/* ── Four-Point Value Strip ── */
+.clk-strip {
+    border-top: 1px solid var(--clk-line);
+    border-bottom: 1px solid var(--clk-line);
+    padding: 18px 0;
+    margin-top: 28px;
+}
+
+.clk-strip-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    color: #666;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+}
+
+.clk-strip-row b {
+    color: #111;
+}
+
+/* ── Section Structure ── */
+.clk-section {
+    padding: 76px 0;
+}
+
+.clk-section-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+/* ── Category Swiper Carousel ── */
+.clk-cat-slider-wrap {
+    position: relative;
+    width: 100%;
+}
+
+.clk-cat-swiper {
+    width: 100%;
+    padding: 8px 4px 16px;
+    overflow: hidden;
+}
+
+.clk-cat {
+    height: 240px;
+    background: var(--clk-soft);
+    border-radius: 22px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    position: relative;
+    text-decoration: none !important;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    border: 1px solid transparent;
+    user-select: none;
+}
+
+.clk-cat:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 36px rgba(0,0,0,0.06);
+    border-color: #e5e5e0;
+}
+
+.clk-cat h3 {
+    font-size: 21px;
+    letter-spacing: -.03em;
+    margin: 0;
+    position: relative;
+    z-index: 2;
+    color: var(--clk-ink);
+    font-weight: 800;
+    line-height: 1.15;
+}
+
+.clk-cat p {
+    font-size: 13px;
+    color: var(--clk-muted);
+    max-width: 170px;
+    position: relative;
+    z-index: 2;
+    margin: 6px 0 0;
+    line-height: 1.45;
+}
+
+.clk-cat .shape {
+    position: absolute;
+    right: -28px;
+    bottom: -35px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 26px solid #111;
+    transition: transform 0.3s ease;
+}
+
+.clk-cat:hover .shape {
+    transform: scale(1.06);
+}
+
+.clk-cat.shape-square .shape {
+    border-radius: 30px;
+    border-width: 18px;
+    transform: rotate(25deg);
+}
+.clk-cat.shape-square:hover .shape {
+    transform: rotate(32deg) scale(1.06);
+}
+
+.clk-cat.shape-disc .shape {
+    border: 0;
+    background: #111;
+    width: 120px;
+    height: 120px;
+}
+
+.clk-cat.shape-ring .shape {
+    border-width: 14px;
+    width: 125px;
+    height: 125px;
+}
+
+.clk-cat.shape-aperture .shape {
+    border-radius: 50%;
+    border: 18px double var(--clk-accent);
+    width: 135px;
+    height: 135px;
+}
+
+/* Category Slider Controls */
+.clk-slider-nav {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.clk-nav-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--clk-line);
+    background: #fff;
+    color: var(--clk-ink);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.clk-nav-btn:hover {
+    background: var(--clk-ink);
+    color: #fff;
+    border-color: var(--clk-ink);
+}
+
+.clk-nav-btn:disabled,
+.clk-nav-btn.swiper-button-disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.clk-cat-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+}
+
+.clk-cat-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ddd;
+    transition: all 0.25s ease;
+    cursor: pointer;
+}
+
+.clk-cat-dot-active {
+    width: 24px;
+    border-radius: 999px;
+    background: var(--clk-ink);
+}
+
+/* ── Product Grid ── */
+.clk-products {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+@media (max-width: 1100px) {
+    .clk-products {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.clk-product {
+    border: 1px solid var(--clk-line);
+    border-radius: 24px;
+    overflow: hidden;
+    background: #fff;
+    transition: transform .25s ease, box-shadow .25s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+}
+
+.clk-product:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 45px rgba(0,0,0,.08);
+}
+
+.clk-product-visual {
+    height: 250px;
+    background: #f5f5f3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 16px;
+    overflow: hidden;
+}
+
+.clk-product-visual img {
+    max-width: 85%;
+    max-height: 85%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.clk-product:hover .clk-product-visual img {
+    transform: scale(1.05);
+}
+
+.clk-product-info {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+}
+
+.clk-tag {
+    font-size: 11px;
+    color: var(--clk-accent);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.clk-product h3 {
+    font-size: 16px;
+    margin: 4px 0 14px;
+    font-weight: 700;
+    color: var(--clk-ink);
+    line-height: 1.35;
+    height: 2.7em;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.clk-product h3 a {
+    color: inherit !important;
+    text-decoration: none !important;
+}
+
+.clk-product h3 a:hover {
+    color: var(--clk-accent) !important;
+}
+
+.clk-price {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--clk-ink);
+    margin-top: auto;
+}
+
+.clk-price-old {
+    text-decoration: line-through;
+    color: var(--clk-muted);
+    font-size: 12px;
+    font-weight: 500;
+    margin-left: 6px;
+}
+
+.clk-add-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #111;
+    color: #fff !important;
+    display: grid;
+    place-items: center;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.clk-add-btn:hover {
+    background: var(--clk-accent);
+    transform: scale(1.08);
+}
+
+.clk-add-btn.is-in-cart {
+    background: #166534;
+}
+
+/* ── Dark Service Banner ── */
+.clk-banner {
+    background: #111;
+    color: #fff;
+    border-radius: 32px;
+    padding: 56px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 30px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.clk-banner:before {
+    content: "";
+    position: absolute;
+    right: -100px;
+    top: -100px;
+    width: 380px;
+    height: 380px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.06);
+    pointer-events: none;
+}
+
+.clk-banner h2 {
+    max-width: 720px;
+    color: #fff;
+    margin: 8px 0 12px;
+    font-size: clamp(28px, 3.5vw, 44px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.04em;
+}
+
+.clk-banner p {
+    color: #bcbcbc;
+    max-width: 650px;
+    line-height: 1.6;
+    margin: 0;
+    font-size: 15px;
+}
+
+.clk-banner .clk-btn {
+    border-color: #fff;
+    color: #fff !important;
+    background: transparent;
+}
+
+.clk-banner .clk-btn:hover {
+    background: #fff;
+    color: #111 !important;
+    transform: translateY(-2px);
+}
+
+/* ── 3-Column Value Features ── */
+.clk-features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--clk-line);
+    border-bottom: 1px solid var(--clk-line);
+}
+
+.clk-feature {
+    padding: 34px 26px;
+    border-right: 1px solid var(--clk-line);
+}
+
+.clk-feature:last-child {
+    border-right: 0;
+}
+
+.clk-feature .num {
+    font-size: 12px;
+    color: var(--clk-accent);
+    font-weight: 800;
+    letter-spacing: 0.1em;
+}
+
+.clk-feature h3 {
+    font-size: 20px;
+    margin: 16px 0 8px;
+    font-weight: 800;
+    color: var(--clk-ink);
+    letter-spacing: -0.02em;
+}
+
+.clk-feature p {
+    font-size: 14px;
+    color: var(--clk-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ── Mobile & Responsive ── */
+@media (max-width: 980px) {
+    .clk-hero-grid {
+        grid-template-columns: 1fr;
+    }
+    .clk-hero-art {
+        min-height: 380px;
+    }
+    .clk-products {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .clk-banner {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 620px) {
+    .clk-hero {
+        padding-top: 36px;
+    }
+    .clk-hero-art {
+        min-height: 280px;
+    }
+    .clk-products,
+    .clk-features {
+        grid-template-columns: 1fr;
+    }
+    .clk-feature {
+        border-right: 0;
+        border-bottom: 1px solid var(--clk-line);
+    }
+    .clk-feature:last-child {
+        border-bottom: 0;
+    }
+    .clk-section {
+        padding: 52px 0;
+    }
+    .clk-banner {
+        padding: 34px 24px;
+    }
+    .clk-strip-row {
+        justify-content: flex-start;
+    }
+    .clk-hero p {
+        font-size: 16px;
+    }
+}
+</style>
+@endpush
 
 @section('content')
 
 {{-- =========================================================================
-     1. HERO SECTION (DJI Osmo 360 + Osmo Pocket 4 + Godox AD800Pro)
+     1. CAMERALIK HERO SECTION
      ========================================================================= --}}
-<section class="hero-winashop-section py-3">
-    <div class="container">
-        <h1 class="visually-hidden">{{ setting('app_name', 'WINA SHOP') }} — {{ __('Matériel Photo, Vidéo, Caméras & Drones au Maroc') }}</h1>
-        <div class="row g-3">
-            {{-- Big Hero Banner Slider on Left --}}
-            <div class="col-lg-8">
-                <div class="hero-main-card position-relative overflow-hidden">
-                    <div class="swiper hero-main-swiper">
-                        <div class="swiper-wrapper">
-                            @forelse($heroSlides as $slide)
-                            <div class="swiper-slide hero-slide-item" style="background-color: #0b0f19;">
-                                <div class="hero-main-bg" style="background-image: url('{{ $slide->image_url }}');"></div>
-                                <div class="hero-main-overlay"></div>
-                                <a href="{{ $slide->link ?: route('shop.index') }}" class="stretched-link" aria-label="{{ $slide->title }}"></a>
-                                
-                                @if($slide->badge)
-                                <div class="hero-glass-badge" style="color: #ffffff !important;">
-                                    <span class="hero-live-dot"></span>
-                                    <span style="color: #ffffff !important;">{{ $slide->badge }}</span>
-                                </div>
-                                @endif
-
-                                <div class="hero-slide-content">
-                                    <h2 class="hero-slide-title" style="color: #ffffff !important; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9);">{{ $slide->title }}</h2>
-                                    @if($slide->description)
-                                    <p class="hero-slide-desc d-none d-md-block">{{ $slide->description }}</p>
-                                    @endif
-                                </div>
-                            </div>
-                            @empty
-                            <div class="swiper-slide hero-slide-item" style="background-color: #0b0f19;">
-                                <div class="hero-main-bg" style="background-image: url('{{ asset('images/camera/hero_winashop.jpg') }}');"></div>
-                                <div class="hero-main-overlay"></div>
-                                <a href="{{ route('shop.index', ['q' => 'DJI Osmo 360']) }}" class="stretched-link" aria-label="DJI Osmo 360 All in One"></a>
-                                
-                                <div class="hero-glass-badge" style="color: #ffffff !important;">
-                                    <span class="hero-live-dot"></span>
-                                    <span style="color: #ffffff !important;">NOUVEAUTÉ EXCLUSIVE • DJI OSMO 360</span>
-                                </div>
-
-                                <div class="hero-slide-content">
-                                    <h2 class="hero-slide-title" style="color: #ffffff !important; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9);">DJI Osmo 360 All-In-One</h2>
-                                    <p class="hero-slide-desc d-none d-md-block">Capteur 1 pouce, double optique 8K et stabilisation RockSteady 3.0.</p>
-                                </div>
-                            </div>
-                            @endforelse
-                        </div>
-
-                        {{-- Subtle Frosted Glass Navigation Arrows --}}
-                        <button type="button" class="hero-swiper-nav hero-swiper-prev" aria-label="Diapositive précédente">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <button type="button" class="hero-swiper-nav hero-swiper-next" aria-label="Diapositive suivante">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-
-                        {{-- Dash Pagination (Custom Swiper Bullets) --}}
-                        <div class="hero-dash-pagination"></div>
-                    </div>
-                </div>
+<section class="clk-hero">
+    <div class="clk-wrap clk-hero-grid">
+        <div>
+            <div class="clk-eyebrow">
+                <i></i> {{ __('Camera gear for creators') }}
             </div>
-
-            {{-- 2 Stacked Cards on Right (Side-by-side on tablet, stacked on desktop) --}}
-            <div class="col-lg-4">
-                <div class="d-flex flex-column flex-sm-row flex-lg-column gap-3 h-100">
-                    {{-- Top Card: e.g. DJI Osmo Pocket 4 --}}
-                    @php 
-                        $topImg = $heroSideTop?->image_url ?? asset('images/camera/banner_osmo_pocket.jpg');
-                        $topTag = $heroSideTop?->badge ?? 'GIMBAL 4K COMPACT';
-                        $topLink = $heroSideTop?->link ?? route('shop.index', ['q' => 'Osmo Pocket']);
-                        $topBtn = $heroSideTop?->button_text ?? 'Acheter';
-                    @endphp
-                    <div class="hero-side-card position-relative overflow-hidden flex-fill" title="{{ $heroSideTop?->title ?? '' }}">
-                        <div class="hero-side-bg" style="background-image: url('{{ $topImg }}');"></div>
-                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(15,23,42,0.15) 0%, rgba(15,23,42,0.6) 100%); pointer-events: none;"></div>
-                        <span class="hero-side-tag">{{ $topTag }}</span>
-                        @if(!empty($heroSideTop?->title))
-                            <span class="visually-hidden">{{ $heroSideTop->title }}</span>
-                        @endif
-                        <div class="position-absolute bottom-0 start-0 m-3 z-2">
-                            <a href="{{ $topLink }}" class="btn hero-action-btn" aria-label="{{ $heroSideTop?->title ?? $topBtn }}">
-                                <span>{{ $topBtn }}</span>
-                                <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    {{-- Bottom Card: e.g. Godox AD800Pro --}}
-                    @php 
-                        $botImg = $heroSideBottom?->image_url ?? asset('images/camera/banner_godox_ad800.jpg');
-                        $botTag = $heroSideBottom?->badge ?? 'OUTDOOR FLASH 800W';
-                        $botLink = $heroSideBottom?->link ?? route('shop.index', ['q' => 'Godox AD800']);
-                        $botBtn = $heroSideBottom?->button_text ?? 'Découvrez la GODOX AD800 PRO';
-                    @endphp
-                    <div class="hero-side-card position-relative overflow-hidden flex-fill" title="{{ $heroSideBottom?->title ?? '' }}">
-                        <div class="hero-side-bg" style="background-image: url('{{ $botImg }}');"></div>
-                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(15,23,42,0.15) 0%, rgba(15,23,42,0.6) 100%); pointer-events: none;"></div>
-                        <span class="hero-side-tag">{{ $botTag }}</span>
-                        @if(!empty($heroSideBottom?->title))
-                            <span class="visually-hidden">{{ $heroSideBottom->title }}</span>
-                        @endif
-                        <div class="position-absolute bottom-0 start-0 m-3 z-2">
-                            <a href="{{ $botLink }}" class="btn hero-action-btn" aria-label="{{ $heroSideBottom?->title ?? $botBtn }}">
-                                <span>{{ $botBtn }}</span>
-                                <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
+            <h1>
+                {{ __('See it.') }}<br>
+                <span style="color: var(--clk-accent);">{{ __('Capture it.') }}</span>
+            </h1>
+            <p>
+                {{ __('Premium cameras, lenses and creative gear selected for photographers, filmmakers and creators who care about the shot.') }}
+            </p>
+            <div class="clk-cta">
+                <a class="clk-btn primary" href="{{ route('shop.index') }}">
+                    <span>{{ __('Explore gear') }}</span>
+                    <span>↗</span>
+                </a>
+                <a class="clk-btn secondary" href="#categories">
+                    <span>{{ __('Browse categories') }}</span>
+                </a>
             </div>
+        </div>
+
+        {{-- Hero Visual Shutter Art --}}
+        <div class="clk-hero-art">
+            <div class="clk-hero-mark">
+                cameralik <span>/</span> {{ __('create without limits') }}
+            </div>
+        </div>
+    </div>
+
+    {{-- Value Proposition Strip --}}
+    <div class="clk-wrap clk-strip">
+        <div class="clk-strip-row">
+            <span><b>01</b> {{ __('Curated gear') }}</span>
+            <span><b>02</b> {{ __('Expert advice') }}</span>
+            <span><b>03</b> {{ __('Fast delivery') }}</span>
+            <span><b>04</b> {{ __('Creator support') }}</span>
         </div>
     </div>
 </section>
 
-
 {{-- =========================================================================
-     2. CATÉGORIES POPULAIRES (Modern Smooth Swiper Slider)
+     2. SHOP BY CATEGORY (Cameralik Smooth Swiper Slider)
      ========================================================================= --}}
-<section class="popular-categories-section py-3 py-md-4">
-    <div class="container position-relative">
-        <div class="d-flex align-items-center justify-content-between mb-3 mb-md-4">
+<section class="clk-section" id="categories">
+    <div class="clk-wrap">
+        <div class="clk-section-head">
             <div>
-                <h2 class="fw-bold text-dark mb-0 mb-md-1" style="font-size: clamp(1.25rem, 3.5vw, 1.65rem); letter-spacing: -0.4px;">Catégories Populaires</h2>
-                <p class="text-secondary small mb-0 d-none d-md-block" style="font-size: 0.88rem;">Explorez nos rayons phares et équipements audiovisuels certifiés au Maroc</p>
+                <div class="clk-kicker">{{ __('Shop by category') }}</div>
+                <h2 class="clk-h2">{{ __('Everything behind') }}<br>{{ __('the perfect shot.') }}</h2>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="clk-slider-nav">
+                    <button type="button" class="clk-nav-btn" id="clkCatPrev" aria-label="{{ __('Previous') }}" title="{{ __('Précédent') }}">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button type="button" class="clk-nav-btn" id="clkCatNext" aria-label="{{ __('Next') }}" title="{{ __('Suivant') }}">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <a class="clk-see d-none d-sm-inline-flex" href="{{ route('shop.index') }}">
+                    <span>{{ __('View all') }}</span>
+                    <span>→</span>
+                </a>
             </div>
         </div>
-        
-        {{-- Swiper Container --}}
-        <div class="swiper popular-cats-swiper pb-2">
-            <div class="swiper-wrapper align-items-stretch">
-                @foreach($popularCategories as $cat)
-                    <div class="swiper-slide h-auto">
-                        <a href="{{ $cat['url'] }}" 
-                           class="cat-slide-item text-decoration-none d-flex flex-column align-items-center w-100 {{ !empty($cat['highlight']) ? 'cat-item-highlight' : '' }}">
-                            
-                            {{-- Category Card (Full Image Background) --}}
-                            <div class="cat-item-card bg-white position-relative overflow-hidden w-100">
-                                {{-- Category Image as Card Background --}}
-                                <img src="{{ $cat['image'] ?? $cat['icon'] }}" 
-                                     alt="{{ $cat['title'] }}" 
-                                     width="120" 
-                                     height="120" 
-                                     class="cat-card-bg-img" 
-                                     loading="lazy"
-                                     onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
 
-                                {{-- Item Count Badge at Top Right --}}
-                                <span class="cat-badge-counter badge text-white fw-bold">
-                                    {{ $cat['count'] }}
-                                </span>
-                            </div>
+        {{-- Swiper Slider with all Active Categories --}}
+        <div class="clk-cat-slider-wrap">
+            <div class="swiper clk-cat-swiper">
+                <div class="swiper-wrapper">
+                    @php
+                        // Filter categories (exclude general/test-cat if needed or show all valid ones)
+                        $sliderCats = $allCategories->filter(function($c) {
+                            return !in_array($c->slug, ['general', 'test-cat']);
+                        });
 
-                            {{-- Category Name OUTSIDE the Card --}}
-                            <div class="cat-caption-outside text-center w-100 mt-2">
-                                <span class="cat-label text-uppercase text-center d-block">
-                                    {{ $cat['title'] }}
-                                </span>
-                            </div>
+                        // Array of shape classes to cycle through Cameralik styling
+                        $shapeClasses = ['', 'shape-square', 'shape-disc', 'shape-ring', 'shape-aperture'];
+
+                        // Helpful category micro-descriptions matching the cameralik vibe
+                        $catDescriptions = [
+                            'camera' => __('Mirrorless, full-frame & creator bodies.'),
+                            'objectifs' => __('Prime, zoom and specialty glass.'),
+                            'stabilisateurs' => __('Gimbals, rigs & cinema stabilization.'),
+                            'lumieres-materiel-de-studio' => __('Continuous LED, flashes & softboxes.'),
+                            'son' => __('Wireless mics, shotguns & 32-bit audio.'),
+                            'sacs-de-camera' => __('Protective backpacks, hard cases & bags.'),
+                            'trepieds' => __('Carbon fiber tripods & fluid heads.'),
+                            'batterie-chargeur' => __('V-mounts, batteries & fast chargers.'),
+                            'carte-memoire-lecteur' => __('High-speed CFexpress & SD cards.'),
+                            'accessoires' => __('Cables, cages, filters and studio tools.'),
+                            'materiel-de-podcast' => __('All-in-one broadcast & audio setups.'),
+                            'filtres-nd-cpl-polarise' => __('Variable ND, polarizing & mist filters.'),
+                            'matte-box' => __('Mini matte boxes & carbon fiber hoods.'),
+                            'accessoires-insta360' => __('Action mounts, invisible poles & cases.'),
+                            'kit-de-nettoyage' => __('Sensor cleaning kits, blowers & swabs.'),
+                        ];
+                    @endphp
+
+                    @foreach($sliderCats as $idx => $cat)
+                        @php
+                            $shapeClass = $shapeClasses[$idx % count($shapeClasses)];
+                            $catDesc = $catDescriptions[$cat->slug] ?? ($cat->description ?: __('Explore professional equipment.'));
+                        @endphp
+                        <div class="swiper-slide h-auto">
+                            <a class="clk-cat {{ $shapeClass }}" href="{{ route('shop.index', ['category' => $cat->slug]) }}">
+                                <div>
+                                    <h3>{{ $cat->name }}</h3>
+                                    <p>{{ \Illuminate\Support\Str::limit($catDesc, 65) }}</p>
+                                </div>
+                                <div class="shape"></div>
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            {{-- Swiper Pagination Dots --}}
+            <div class="clk-cat-pagination"></div>
+        </div>
+    </div>
+</section>
+
+{{-- =========================================================================
+     3. FEATURED GEAR (Dynamic Products from Catalog)
+     ========================================================================= --}}
+<section class="clk-section" id="shop" style="padding-top: 10px;">
+    <div class="clk-wrap">
+        <div class="clk-section-head">
+            <div>
+                <div class="clk-kicker">{{ __('Featured gear') }}</div>
+                <h2 class="clk-h2">{{ __('Built for the next frame.') }}</h2>
+            </div>
+            <a class="clk-see" href="{{ route('shop.index') }}">
+                <span>{{ __('Shop all') }}</span>
+                <span>→</span>
+            </a>
+        </div>
+
+        <div class="clk-products">
+            @foreach($featuredProducts->take(8) as $product)
+                @php
+                    $isInCart = isset(session('cart', [])[$product->id]);
+                    $categoryName = $product->productCategory?->name ?? __('Creator essentials');
+                @endphp
+                <article class="clk-product">
+                    <div class="clk-product-visual">
+                        <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" class="w-100 h-100 d-flex align-items-center justify-content-center">
+                            <img src="{{ $product->thumbnail }}" 
+                                 alt="{{ $product->name }}" 
+                                 loading="lazy" 
+                                 onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                         </a>
                     </div>
-                @endforeach
-            </div>
-        </div>
-
-        {{-- Dots pagination below categories --}}
-        <div class="popular-cats-pagination text-center mt-2 mt-md-3 d-flex justify-content-center align-items-center gap-2"></div>
-
-        {{-- Slider Controls under pagination dots --}}
-        <div class="cat-slider-nav-wrap d-flex align-items-center justify-content-center gap-2 mt-2">
-            <button type="button" 
-                    class="btn btn-cat-swiper-arrow d-flex align-items-center justify-content-center" 
-                    id="catSwiperPrev" 
-                    aria-label="Précédent" 
-                    title="Catégories précédentes">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            <button type="button" 
-                    class="btn btn-cat-swiper-arrow d-flex align-items-center justify-content-center" 
-                    id="catSwiperNext" 
-                    aria-label="Suivant" 
-                    title="Catégories suivantes">
-                <i class="fas fa-chevron-right"></i>
-            </button>
-        </div>
-    </div>
-</section>
-
-{{-- =========================================================================
-     3. NOTRE SÉLECTION DE PRODUITS (Signature Red Box Showcase - Screenshot 3)
-     ========================================================================= --}}
-<section class="featured-products-section py-3 py-md-4">
-    <div class="container">
-        <div class="selection-showcase-box">
-            {{-- Header Bar --}}
-            <div class="selection-showcase-header d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3 mb-md-4 pb-2 border-bottom">
-                <div class="d-flex align-items-center gap-2">
-                    <span class="selection-accent-badge"></span>
-                    <h2 class="fw-bold text-dark mb-0 selection-title" style="font-size: clamp(1.25rem, 3vw, 1.55rem); letter-spacing: -0.4px;">
-                        {{ setting('home_section_featured_title', __('Notre sélection de produits')) }}
-                    </h2>
-                </div>
-                <div>
-                    <a href="{{ route('shop.index') }}" 
-                       class="btn btn-outline-danger fw-bold px-3 py-1 text-nowrap d-inline-flex align-items-center gap-2" 
-                       style="border-radius: 8px; font-size: 0.82rem; border-color: #c8102e;">
-                        <span>Voir tout le catalogue</span>
-                        <i class="fas fa-arrow-right" style="font-size: 10px;"></i>
-                    </a>
-                </div>
-            </div>
-
-            {{-- Products Grid (5-column on desktop matching Screenshot 3, 2-column on mobile) --}}
-            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-2 home-products-grid">
-                @foreach($featuredProducts as $product)
-                    <div class="col">
-                        @include('frontend.partials.product_card_slider', ['product' => $product])
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
-</section>
-
-
-{{-- =========================================================================
-     4. NOUVELLE ARRIVAGE & COIN OCCASION (Matching Screenshot 4)
-     ========================================================================= --}}
-<section class="new-arrivals-and-occasion-section py-3 py-md-4">
-    <div class="container">
-        {{-- High-Tech Promotional Banner (Insta360 Exclusive Promo) --}}
-        @php
-            $promoImg = $promoMiddleBanner?->image_url ?? asset('images/camera/banner_insta360_promo.jpg');
-            $promoTag1 = $promoMiddleBanner?->badge ?? 'PRODUIT TENDANCE';
-            $promoTag2 = $promoMiddleBanner?->subtitle ?? 'PROMOTION EXCLUSIVE';
-            $promoTitle = $promoMiddleBanner?->title ?? 'Promotion Exclusive sur Insta360';
-            $promoDesc = $promoMiddleBanner?->description ?? "Capturez l'impossible avec les caméras d'action et 360° les plus innovantes du marché. Remises jusqu'à 25% disponibles sur le showroom.";
-            $promoBtn = $promoMiddleBanner?->button_text ?? 'Voir la Promotion';
-            $promoLink = $promoMiddleBanner?->link ?? route('shop.index', ['category' => 'accessoires-insta360']);
-            $promoFeatures = !empty($promoMiddleBanner?->features_list) ? $promoMiddleBanner->features_list : ['VIDÉO 360° IMMERSIVE', 'STABILISATION AVANCÉE', 'RÉSOLUTION 5.7K ULTRA HD'];
-        @endphp
-        <div class="insta360-promo-banner position-relative mb-4 mb-md-5" style="background-image: url('{{ $promoImg }}');">
-            <div class="insta360-promo-overlay"></div>
-            <div class="position-relative z-2 d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-4">
-                <div>
-                    <div class="d-flex align-items-center gap-2 mb-2">
-                        @if($promoTag1)<span class="promo-tag-red">{{ $promoTag1 }}</span>@endif
-                        @if($promoTag2)<span class="promo-tag-dark">{{ $promoTag2 }}</span>@endif
-                    </div>
-                    <h3 class="fw-bold text-white mb-2" style="font-size: 1.85rem; letter-spacing: -0.4px;">
-                        {{ $promoTitle }}
-                    </h3>
-                    @if($promoDesc)
-                    <p class="text-white-50 mb-0 d-none d-md-block" style="max-width: 600px; font-size: 0.95rem;">
-                        {{ $promoDesc }}
-                    </p>
-                    @endif
-                    @if(!empty($promoFeatures))
-                    <div class="d-flex flex-wrap align-items-center gap-3 gap-md-4 mt-2">
-                        @foreach($promoFeatures as $feature)
-                        <span class="promo-bullet"><i class="fas fa-check text-danger"></i> {{ $feature }}</span>
-                        @endforeach
-                    </div>
-                    @endif
-                </div>
-                <div class="flex-shrink-0">
-                    <a href="{{ $promoLink }}" class="promo-cta-btn">
-                        <span>{{ $promoBtn }}</span>
-                        <i class="fas fa-arrow-up-right-from-square" style="font-size: 12px;"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        {{-- Row 1: Nouvelle Arrivage (Full Row) --}}
-        <div class="mb-4 mb-md-5">
-            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
-                <div class="d-flex align-items-center gap-2">
-                    <span class="selection-accent-badge"></span>
-                    <h2 class="fw-bold text-dark mb-0" style="font-size: clamp(1.2rem, 2.5vw, 1.45rem); letter-spacing: -0.3px;">
-                        {{ setting('home_section_new_arrivals_title', __('Nouvelle Arrivage')) }}
-                    </h2>
-                </div>
-                <a href="{{ route('shop.index') }}" class="text-secondary text-decoration-none small fw-semibold hover-red">
-                    <span>Voir tout</span>
-                    <i class="fas fa-chevron-right ms-1" style="font-size: 10px;"></i>
-                </a>
-            </div>
-
-            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-2 home-products-grid">
-                @foreach($newArrivalProducts as $product)
-                    <div class="col">
-                        @include('frontend.partials.product_card_slider', ['product' => $product])
-                    </div>
-                @endforeach
-            </div>
-        </div>
-
-        {{-- Row 2: Coin Occasion (Moved under Nouvelle Arrivage - Full Row) --}}
-        <div>
-            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
-                <div class="d-flex align-items-center gap-2">
-                    <h2 class="fw-bold text-dark mb-0" style="font-size: clamp(1.2rem, 2.5vw, 1.45rem); letter-spacing: -0.3px;">
-                        {{ setting('home_section_occasion_title', __('Coin Occasion (Reconditionné & Certifié)')) }}
-                    </h2>
-                </div>
-                <a href="{{ route('shop.index', ['category' => 'occasion']) }}" class="text-secondary text-decoration-none small fw-semibold hover-red">
-                    <span>Voir tout</span>
-                    <i class="fas fa-chevron-right ms-1" style="font-size: 10px;"></i>
-                </a>
-            </div>
-
-            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-2 home-products-grid">
-                @foreach($occasionProducts as $product)
-                    <div class="col">
-                        @include('frontend.partials.product_card_slider', ['product' => $product])
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
-</section>
-
-
-{{-- =========================================================================
-     5. DOUBLE BANNERS (Microphones Sound + Studio Lighting)
-     ========================================================================= --}}
-<section class="double-banners-section py-4">
-    <div class="container">
-        <div class="row g-4">
-            {{-- Left Banner: Microphones --}}
-            <div class="col-md-6">
-                <div class="banner-box position-relative p-4 p-md-5 d-flex flex-column justify-content-center align-items-start" 
-                     style="background: #0b0f19 url('{{ asset('images/camera/banner_mic_sound.jpg') }}') center/cover no-repeat;">
-                    <div class="banner-box-overlay banner-mic-overlay"></div>
-                    <div class="position-relative z-2">
-                        <span class="badge text-white px-2 py-1 mb-2 d-inline-block" style="background: rgba(255,255,255,0.14); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2); font-size: 0.68rem; letter-spacing: 0.8px;">
-                            PRO AUDIO & PODCAST
-                        </span>
-                        <h3 class="fw-bold text-white mb-2" style="font-size: 1.45rem; line-height: 1.35; max-width: 360px;">
-                            Élevez Votre Son : Microphones de Qualité pour Tous Vos Besoins
-                        </h3>
-                        <p class="text-white-50 small mb-3 d-none d-sm-block" style="max-width: 340px; font-size: 0.82rem;">
-                            Micros canon, HF cravate & enregistreurs 32-bit float pour tournages exigeants.
-                        </p>
-                        <span class="banner-pill-btn">
-                            <span>Explorer la Gamme Audio</span>
-                            <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
-                        </span>
-                    </div>
-                    <a href="{{ route('shop.index', ['category' => 'materiel-de-podcast']) }}" class="stretched-link" aria-label="Microphones"></a>
-                </div>
-            </div>
-
-            {{-- Right Banner: Lighting --}}
-            <div class="col-md-6">
-                <div class="banner-box position-relative p-4 p-md-5 d-flex flex-column justify-content-center align-items-start" 
-                     style="background: #0b0f19 url('{{ asset('images/camera/banner_studio_lighting.jpg') }}') center/cover no-repeat;">
-                    <div class="banner-box-overlay banner-light-overlay"></div>
-                    <div class="position-relative z-2">
-                        <span class="badge text-white px-2 py-1 mb-2 d-inline-block" style="background: rgba(255,255,255,0.14); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2); font-size: 0.68rem; letter-spacing: 0.8px;">
-                            BEST PRODUCTS • STUDIO LIGHTING
-                        </span>
-                        <h3 class="fw-bold text-white mb-2" style="font-size: 1.45rem; line-height: 1.35; max-width: 360px;">
-                            Tout le matériel nécessaire pour votre éclairage.
-                        </h3>
-                        <p class="text-white-50 small mb-3 d-none d-sm-block" style="max-width: 340px; font-size: 0.82rem;">
-                            Flashes haute puissance Godox AD, projecteurs continus LED et softboxes paraboliques.
-                        </p>
-                        <span class="banner-pill-btn">
-                            <span>Explorer l'Éclairage Studio</span>
-                            <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
-                        </span>
-                    </div>
-                    <a href="{{ route('shop.index', ['category' => 'eclairage-studio']) }}" class="stretched-link" aria-label="Éclairage Studio"></a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-{{-- =========================================================================
-     6. FINANCEMENTS PUBLICS & PROGRAMMES DE L'ÉTAT (INDH, FORSA, COOPÉRATIVES)
-     ========================================================================= --}}
-<section class="state-funding-section">
-    <div class="container">
-        <div class="state-funding-wrapper">
-
-            {{-- 1. Hero Block --}}
-            <div class="row align-items-center g-4 mb-4 mb-lg-5 pb-3 pb-lg-4 border-bottom">
-                <div class="col-12 col-lg-6">
-                    <div class="indh-hero-badge mb-3">
-                        <i class="fas fa-landmark text-danger" style="font-size: 0.75rem;"></i>
-                        <span class="indh-hero-badge-text">{{ __('INDH & PROJETS SOUTENUS') }}</span>
-                    </div>
-
-                    <h2 class="indh-hero-title mb-3">
-                        {{ __('Bénéficiaires de') }}<br>
-                        <span class="text-danger">{{ __('Financements Publics') }}</span>
-                    </h2>
-
-                    <p class="indh-hero-sub mb-0">
-                        {{ __('Composez votre panier de matériel photo/vidéo, validez votre sélection et recevez votre devis officiel cacheté avec ICE et TVA 20%.') }}
-                    </p>
-                </div>
-
-                <div class="col-12 col-lg-6 text-center text-lg-end">
-                    <img src="{{ asset('images/indh/hero_gear.jpg') }}" 
-                         alt="{{ __('Équipements photo vidéo cinéma pro subventionnés') }}" 
-                         class="indh-hero-gear-img img-fluid">
-                </div>
-            </div>
-
-            {{-- 2. Three Connected Step Cards --}}
-            <div class="row g-3 g-xl-4 mb-4 align-items-stretch position-relative">
-                {{-- Step 1 --}}
-                <div class="col-12 col-lg-4 position-relative">
-                    <div class="indh-step-card-pro p-0">
-                        <div class="row g-0 h-100">
-                            <div class="col-7 p-3 p-xl-3.5 d-flex flex-column justify-content-between">
-                                <div>
-                                    <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <div class="indh-step-badge-num">01</div>
-                                    </div>
-                                    <h3 class="indh-step-title mb-1.5">
-                                        {{ __('Composez votre panier') }}
-                                    </h3>
-                                    <p class="indh-step-desc mb-2">
-                                        {{ __('Choisissez votre matériel photo/vidéo parmi notre large sélection de marques et d\'équipements professionnels.') }}
-                                    </p>
-                                </div>
-                                <div class="pt-2">
-                                    <a href="{{ route('shop.index') }}" class="indh-step-btn-pro text-decoration-none">
-                                        <i class="fas fa-cart-shopping indh-btn-icon"></i>
-                                        <span>{{ __('Découvrir le matériel') }}</span>
-                                        <i class="fas fa-chevron-right indh-btn-arrow"></i>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-5 indh-step-img-col">
-                                <img src="{{ asset('images/indh/step1_laptop.jpg') }}" alt="{{ __('Composez votre panier') }}" class="indh-step-card-img">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Step 2 --}}
-                <div class="col-12 col-lg-4 position-relative">
-                    <div class="indh-step-card-pro p-0">
-                        <div class="row g-0 h-100">
-                            <div class="col-7 p-3 p-xl-3.5 d-flex flex-column justify-content-between">
-                                <div>
-                                    <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <div class="indh-step-badge-num">02</div>
-                                    </div>
-                                    <h3 class="indh-step-title mb-1.5">
-                                        {{ __('Validez votre sélection') }}
-                                    </h3>
-                                    <p class="indh-step-desc mb-2">
-                                        {{ __('Confirmez votre commande en toute simplicité pour générer votre devis proforma officiel.') }}
-                                    </p>
-                                </div>
-                                <div class="pt-2">
-                                    <a href="{{ route('cart.index') }}" class="indh-step-btn-pro text-decoration-none">
-                                        <i class="fas fa-file-invoice indh-btn-icon"></i>
-                                        <span>{{ __('Valider ma commande') }}</span>
-                                        <i class="fas fa-chevron-right indh-btn-arrow"></i>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-5 indh-step-img-col">
-                                <img src="{{ asset('images/indh/step2_phone.jpg') }}" alt="{{ __('Validez votre sélection') }}" class="indh-step-card-img">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Step 3 --}}
-                <div class="col-12 col-lg-4 position-relative">
-                    <div class="indh-step-card-pro p-0">
-                        <div class="row g-0 h-100">
-                            <div class="col-7 p-3 p-xl-3.5 d-flex flex-column justify-content-between">
-                                <div>
-                                    <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <div class="indh-step-badge-num">03</div>
-                                    </div>
-                                    <h3 class="indh-step-title mb-1.5">
-                                        {{ __('Recevez votre devis cacheté') }}
-                                    </h3>
-                                    <p class="indh-step-desc mb-2">
-                                        {{ __('Recevez par WhatsApp votre devis officiel cacheté avec ICE et TVA 20%, sous 2h.') }}
-                                    </p>
-                                </div>
-                                <div class="pt-2">
-                                    <a href="https://wa.me/212629035777?text={{ urlencode('Bonjour, j\'ai sélectionné mon matériel pour mon projet INDH / Financement Public. Je souhaite recevoir mon devis officiel cacheté.') }}" 
-                                       target="_blank" 
-                                       rel="noopener noreferrer" 
-                                       class="indh-step-btn-pro btn-whatsapp-step text-decoration-none">
-                                        <i class="fab fa-whatsapp indh-btn-icon"></i>
-                                        <span>{{ __('Recevoir mon devis') }}</span>
-                                        <i class="fas fa-chevron-right indh-btn-arrow"></i>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-5 indh-step-img-col">
-                                <img src="{{ asset('images/indh/step3_devis.jpg') }}" alt="{{ __('Recevez votre devis cacheté') }}" class="indh-step-card-img">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- 4. Dark Bottom Banner --}}
-            <div class="indh-banner-cta">
-                <div class="row align-items-center g-3 g-lg-4">
-                    <div class="col-12 col-lg-7">
-                        <span class="indh-banner-badge d-inline-block mb-2">{{ __('DEMANDE URGENTE ?') }}</span>
-                        <h3 class="indh-banner-title mb-2">
-                            {{ __('Besoin d\'un devis urgent pour votre dossier de subvention ?') }}
-                        </h3>
-                        <p class="indh-banner-desc mb-0">
-                            {{ __('Notre équipe est à votre disposition pour vous accompagner et vous envoyer votre devis sous 2h.') }}
-                        </p>
-                    </div>
-                    <div class="col-12 col-lg-5">
-                        <div class="indh-banner-cta-actions">
-                            <a href="{{ route('shop.index') }}" class="indh-btn-choose w-100 w-sm-auto">
-                                <i class="fas fa-camera" style="font-size: 0.85rem;"></i>
-                                <span>{{ __('Choisir mon matériel') }}</span>
-                                <i class="fas fa-chevron-right" style="font-size: 0.65rem;"></i>
-                            </a>
-                            <a href="https://wa.me/212629035777?text={{ urlencode('Bonjour, je suis bénéficiaire d\'un financement (INDH / Programme État) et je souhaite obtenir un devis proforma pour mon projet.') }}" 
-                               target="_blank" 
-                               rel="noopener noreferrer" 
-                               class="indh-btn-devis w-100 w-sm-auto">
-                                <i class="fab fa-whatsapp text-success" style="font-size: 1.05rem;"></i>
-                                <span>{{ __('Demander mon devis') }}</span>
-                                <i class="fas fa-chevron-right" style="font-size: 0.65rem;"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-{{-- =========================================================================
-     7. RÉASSURANCE & AVIS CLIENTS VÉRIFIÉS
-     ========================================================================= --}}
-<section class="trust-and-reviews-section py-4">
-    <div class="container">
-        {{-- 4 Pillars of Reassurance (2x2 on mobile, 4 in row on desktop) --}}
-        <div class="row row-cols-2 row-cols-lg-4 g-2 g-md-3 mb-4">
-            <div class="col">
-                <div class="reassurance-box">
-                    <div class="reassurance-icon icon-red">
-                        {!! site_icon_html('icon_trust_1', 'fas fa-truck-fast', '', '', 22) !!}
-                    </div>
-                    <div>
-                        <span class="d-block fw-bold text-dark mb-1" style="font-size: 0.95rem;">{{ setting('trust_1_title', 'Livraison Express 24-48h') }}</span>
-                        <p class="text-secondary mb-0" style="font-size: 0.8rem; line-height: 1.45;">
-                            {{ setting('trust_1_desc', 'Expédition rapide et sécurisée avec emballage renforcé anti-chocs dans tout le Maroc.') }}
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="reassurance-box">
-                    <div class="reassurance-icon icon-blue">
-                        {!! site_icon_html('icon_trust_2', 'fas fa-shield-halved', '', '', 22) !!}
-                    </div>
-                    <div>
-                        <span class="d-block fw-bold text-dark mb-1" style="font-size: 0.95rem;">{{ setting('trust_2_title', '100% Neuf & Scellé') }}</span>
-                        <p class="text-secondary mb-0" style="font-size: 0.8rem; line-height: 1.45;">
-                            {{ setting('trust_2_desc', "Matériel d'origine constructeur sous garantie officielle avec SAV réactif à Casablanca.") }}
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="reassurance-box">
-                    <div class="reassurance-icon icon-amber">
-                        {!! site_icon_html('icon_trust_3', 'fas fa-headset', '', '', 22) !!}
-                    </div>
-                    <div>
-                        <span class="d-block fw-bold text-dark mb-1" style="font-size: 0.95rem;">{{ setting('trust_3_title', 'Conseil Technique Pro') }}</span>
-                        <p class="text-secondary mb-0" style="font-size: 0.8rem; line-height: 1.45;">
-                            {{ setting('trust_3_desc', 'Une équipe de vidéastes et photographes vous aide à choisir la configuration idéale.') }}
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="reassurance-box">
-                    <div class="reassurance-icon icon-green">
-                        {!! site_icon_html('icon_trust_4', 'fas fa-file-invoice', '', '', 22) !!}
-                    </div>
-                    <div>
-                        <span class="d-block fw-bold text-dark mb-1" style="font-size: 0.95rem;">{{ setting('trust_4_title', 'Facture & Devis avec ICE') }}</span>
-                        <p class="text-secondary mb-0" style="font-size: 0.8rem; line-height: 1.45;">
-                            {{ setting('trust_4_desc', 'Facturation conforme avec TVA 20%, devis proforma pour professionnels et dossiers INDH.') }}
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Verified Customer Reviews --}}
-        <div class="bg-white p-3 p-md-5 rounded-4 border shadow-sm">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-                <div>
-                    <h2 class="fw-bold text-dark mb-1" style="font-size: clamp(1.2rem, 2.8vw, 1.45rem); letter-spacing: -0.3px;">
-                        La Confiance des Professionnels de l'Image
-                    </h2>
-                    <p class="text-secondary mb-0" style="font-size: 0.88rem;">
-                        Découvrez les retours d'expérience de nos clients photographes, vidéastes et créateurs au Maroc.
-                    </p>
-                </div>
-                <div class="d-inline-flex align-items-center gap-2 px-3 py-2 bg-light rounded-pill border flex-shrink-0 text-nowrap">
-                    <div class="d-inline-flex align-items-center gap-1 text-warning stars-row text-nowrap">
-                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                    </div>
-                    <span class="fw-bold text-dark text-nowrap" style="font-size: 0.95rem;">4.9 / 5</span>
-                    <span class="text-muted small text-nowrap d-none d-sm-inline">(Plus de 200 avis vérifiés)</span>
-                </div>
-            </div>
-
-            <div class="row row-cols-1 row-cols-md-3 g-3">
-                <div class="col">
-                    <div class="client-review-box">
+                    <div class="clk-product-info">
                         <div>
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <div class="d-inline-flex align-items-center gap-1 text-warning stars-row text-nowrap">
-                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                                </div>
-                                <span class="badge px-2 py-1" style="background: #dcfce7; color: #166534; border-radius: 999px; font-size: 0.68rem; font-weight: 600;">
-                                    <i class="fas fa-check-circle me-1"></i> Achat Vérifié
-                                </span>
-                            </div>
-                            <p class="client-review-text mb-0" style="font-size: 0.85rem; line-height: 1.55; color: #334155;">
-                                "Livraison en 24h chrono à Marrakech pour ma Sony FX3A. Matériel impeccable, scellé d'origine. Les conseillers Wina Shop m'ont même guidé pour le choix de la poignée XLR."
-                            </p>
+                            <span class="clk-tag">{{ $categoryName }}</span>
+                            <h3>
+                                <a href="{{ route('shop.show', $product->slug ?: $product->id) }}">
+                                    {{ $product->name }}
+                                </a>
+                            </h3>
                         </div>
-                        <div class="d-flex align-items-center gap-3 mt-3 pt-3 border-top">
-                            <div class="client-avatar-initials text-white" style="background: #0f172a; color: #ffffff !important;">YB</div>
-                            <div>
-                                <h3 class="fw-bold text-dark mb-0 fs-6">Youssef B.</h3>
-                                <span class="text-muted small" style="font-size: 0.74rem;">Réalisateur & Cadreur • Marrakech</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="col">
-                    <div class="client-review-box">
-                        <div>
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <div class="d-inline-flex align-items-center gap-1 text-warning stars-row text-nowrap">
-                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                                </div>
-                                <span class="badge px-2 py-1" style="background: #dcfce7; color: #166534; border-radius: 999px; font-size: 0.68rem; font-weight: 600;">
-                                    <i class="fas fa-check-circle me-1"></i> Achat Vérifié
-                                </span>
-                            </div>
-                            <p class="client-review-text mb-0" style="font-size: 0.85rem; line-height: 1.55; color: #334155;">
-                                "Pack DJI Mic 2 reçu à Casablanca le jour même. Une réactivité exemplaire au Maroc pour du matériel de son professionnel. Très satisfaite du service !"
-                            </p>
-                        </div>
-                        <div class="d-flex align-items-center gap-3 mt-3 pt-3 border-top">
-                            <div class="client-avatar-initials text-white" style="background: #991b1b; color: #ffffff !important;">SM</div>
+                        <div class="clk-price">
                             <div>
-                                <h3 class="fw-bold text-dark mb-0 fs-6">Sara M.</h3>
-                                <span class="text-muted small" style="font-size: 0.74rem;">Créatrice de Contenu • Casablanca</span>
+                                @if($product->isOnSale())
+                                    <span>{{ $product->formatted_sale_price }}</span>
+                                    <span class="clk-price-old">{{ $product->formatted_price }}</span>
+                                @elseif($product->price && $product->price > 0)
+                                    <span>{{ $product->formatted_price }}</span>
+                                @else
+                                    <span>{{ __('Sur devis') }}</span>
+                                @endif
                             </div>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="col">
-                    <div class="client-review-box">
-                        <div>
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <div class="d-inline-flex align-items-center gap-1 text-warning stars-row text-nowrap">
-                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                                </div>
-                                <span class="badge px-2 py-1" style="background: #dcfce7; color: #166534; border-radius: 999px; font-size: 0.68rem; font-weight: 600;">
-                                    <i class="fas fa-check-circle me-1"></i> Achat Vérifié
-                                </span>
-                            </div>
-                            <p class="client-review-text mb-0" style="font-size: 0.85rem; line-height: 1.55; color: #334155;">
-                                "Le plus grand choix de flashs Godox et d'accessoires SmallRig avec des tarifs justes et la disponibilité immédiate. Le support technique est toujours au rendez-vous."
-                            </p>
-                        </div>
-                        <div class="d-flex align-items-center gap-3 mt-3 pt-3 border-top">
-                            <div class="client-avatar-initials text-white" style="background: #0369a1; color: #ffffff !important;">KT</div>
-                            <div>
-                                <h3 class="fw-bold text-dark mb-0 fs-6">Karim T.</h3>
-                                <span class="text-muted small" style="font-size: 0.74rem;">Photographe Studio • Rabat</span>
-                            </div>
+                            @if($product->isInStock())
+                                <button type="button" 
+                                        class="clk-add-btn {{ $isInCart ? 'is-in-cart' : '' }}" 
+                                        onclick="addToCart({{ $product->id }}, 1, this)"
+                                        data-product-id="{{ $product->id }}"
+                                        aria-label="{{ $isInCart ? __('Dans le panier') : __('Ajouter au panier') }}"
+                                        title="{{ $isInCart ? __('Dans le panier') : __('Ajouter au panier') }}">
+                                    @if($isInCart)
+                                        <i class="fas fa-check" style="font-size: 13px;"></i>
+                                    @else
+                                        <span>+</span>
+                                    @endif
+                                </button>
+                            @else
+                                <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" 
+                                   class="clk-add-btn" 
+                                   style="background: #e2e8f0; color: #64748b !important;" 
+                                   title="{{ __('Voir le produit') }}">
+                                    <i class="fas fa-eye" style="font-size: 12px;"></i>
+                                </a>
+                            @endif
                         </div>
                     </div>
-                </div>
-            </div>
+                </article>
+            @endforeach
         </div>
     </div>
 </section>
-
-
 
 {{-- =========================================================================
-     8. NEWSLETTER PRIVILÈGE & CONSEILS D'EXPERTS
+     4. NEW ARRIVALS (Curated Stream)
      ========================================================================= --}}
-<section class="newsletter-pro-section py-4 mb-5">
-    <div class="container">
-        <div class="newsletter-banner position-relative">
-            <div class="newsletter-glow"></div>
-            <div class="newsletter-glow-secondary"></div>
-            <div class="row align-items-center position-relative z-2 g-4">
-                <div class="col-lg-7">
-                    <div class="d-flex align-items-center gap-2 mb-2">
-                        <span class="badge text-white fw-bold px-3 py-1" 
-                              style="background: #c8102e; border-radius: 999px; font-size: 0.72rem; letter-spacing: 0.6px;">
-                            COMMUNAUTÉ PRO
-                        </span>
-                        <span class="text-white-50 small">Restez à la pointe de l'audiovisuel</span>
-                    </div>
-                    <h2 class="fw-bold text-white mb-2" style="font-size: clamp(1.3rem, 3vw, 1.75rem); letter-spacing: -0.4px;">
-                        Rejoignez le Cercle Privilège Wina Shop
-                    </h2>
-                    <p class="text-white-50 mb-0" style="font-size: 0.9rem; max-width: 540px; line-height: 1.55;">
-                        Recevez nos alertes arrivages, bancs d'essai exclusifs, tutoriels d'étalonnage et offres privées réservées aux professionnels au Maroc.
-                    </p>
-                </div>
-                <div class="col-lg-5">
-                    <form action="{{ route('contact') }}" method="GET" class="d-flex flex-column flex-sm-row gap-2">
-                        <div class="position-relative flex-grow-1">
-                            <input type="email" 
-                                   name="newsletter_email" 
-                                   placeholder="Votre adresse email professionnelle..." 
-                                   class="form-control px-3 py-2 border-0 bg-white" 
-                                   style="border-radius: 10px; font-size: 0.88rem; min-height: 48px;" 
-                                   required>
-                        </div>
-                        <button type="submit" 
-                                class="btn text-white fw-bold px-4 py-2 text-nowrap d-inline-flex align-items-center justify-content-center gap-2 shadow" 
-                                style="background: linear-gradient(135deg, #c8102e, #a80c26); border-radius: 10px; font-size: 0.88rem; min-height: 48px;">
-                            <span>S'inscrire</span>
-                            <i class="fas fa-paper-plane" style="font-size: 11px;"></i>
-                        </button>
-                    </form>
-                    <div class="text-white-50 small mt-2 d-flex align-items-center gap-2" style="font-size: 0.75rem;">
-                        <i class="fas fa-lock text-white-50"></i>
-                        <span>Pas de spam. Désinscription possible à tout moment en 1 clic.</span>
-                    </div>
-                </div>
+@if(isset($newArrivalProducts) && $newArrivalProducts->count() > 0)
+<section class="clk-section" style="padding-top: 10px;">
+    <div class="clk-wrap">
+        <div class="clk-section-head">
+            <div>
+                <div class="clk-kicker">{{ __('Fresh in studio') }}</div>
+                <h2 class="clk-h2">{{ __('New Arrivals') }}</h2>
             </div>
+            <a class="clk-see" href="{{ route('shop.index') }}">
+                <span>{{ __('See all new') }}</span>
+                <span>→</span>
+            </a>
+        </div>
+
+        <div class="clk-products">
+            @foreach($newArrivalProducts->take(4) as $product)
+                @php
+                    $isInCart = isset(session('cart', [])[$product->id]);
+                    $categoryName = $product->productCategory?->name ?? __('New release');
+                @endphp
+                <article class="clk-product">
+                    <div class="clk-product-visual">
+                        <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" class="w-100 h-100 d-flex align-items-center justify-content-center">
+                            <img src="{{ $product->thumbnail }}" 
+                                 alt="{{ $product->name }}" 
+                                 loading="lazy" 
+                                 onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                        </a>
+                    </div>
+                    <div class="clk-product-info">
+                        <div>
+                            <span class="clk-tag">{{ $categoryName }}</span>
+                            <h3>
+                                <a href="{{ route('shop.show', $product->slug ?: $product->id) }}">
+                                    {{ $product->name }}
+                                </a>
+                            </h3>
+                        </div>
+
+                        <div class="clk-price">
+                            <div>
+                                @if($product->isOnSale())
+                                    <span>{{ $product->formatted_sale_price }}</span>
+                                    <span class="clk-price-old">{{ $product->formatted_price }}</span>
+                                @elseif($product->price && $product->price > 0)
+                                    <span>{{ $product->formatted_price }}</span>
+                                @else
+                                    <span>{{ __('Sur devis') }}</span>
+                                @endif
+                            </div>
+
+                            @if($product->isInStock())
+                                <button type="button" 
+                                        class="clk-add-btn {{ $isInCart ? 'is-in-cart' : '' }}" 
+                                        onclick="addToCart({{ $product->id }}, 1, this)"
+                                        data-product-id="{{ $product->id }}"
+                                        aria-label="{{ $isInCart ? __('Dans le panier') : __('Ajouter au panier') }}"
+                                        title="{{ $isInCart ? __('Dans le panier') : __('Ajouter au panier') }}">
+                                    @if($isInCart)
+                                        <i class="fas fa-check" style="font-size: 13px;"></i>
+                                    @else
+                                        <span>+</span>
+                                    @endif
+                                </button>
+                            @else
+                                <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" 
+                                   class="clk-add-btn" 
+                                   style="background: #e2e8f0; color: #64748b !important;" 
+                                   title="{{ __('Voir le produit') }}">
+                                    <i class="fas fa-eye" style="font-size: 12px;"></i>
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                </article>
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
+{{-- =========================================================================
+     5. SERVICES BANNER (Advice & Pro Workflow)
+     ========================================================================= --}}
+<section class="clk-section" id="services" style="padding-top: 10px;">
+    <div class="clk-wrap">
+        <div class="clk-banner">
+            <div>
+                <div class="clk-kicker" style="color: var(--clk-accent);">{{ __('More than a store') }}</div>
+                <h2>{{ __('Get the gear. Get the right advice.') }}</h2>
+                <p>
+                    {{ __('Not sure what to buy? Our team helps you choose the right setup for your photography, video, studio or content workflow.') }}
+                </p>
+            </div>
+            <a class="clk-btn" href="{{ route('contact') }}">
+                <span>{{ __('Talk to an expert') }}</span>
+                <span>↗</span>
+            </a>
         </div>
     </div>
 </section>
 
-{{-- Floating Persistent Bottom-Center "Voir tous les produits" CTA Pill --}}
-@php
-    $isRtl = app()->getLocale() === 'ar';
-    $allProductsLabel = $isRtl ? 'عرض جميع المنتجات' : (app()->getLocale() === 'en' ? 'View all products' : 'Voir tous les produits');
-@endphp
-<div class="home-floating-catalog-wrap" id="homeFloatingCatalogWrap">
-    <a href="{{ route('shop.index') }}" 
-       class="home-floating-catalog-btn" 
-       id="homeFloatingCatalogBtn"
-       title="{{ $allProductsLabel }}">
-        <span class="home-floating-catalog-icon">
-            <i class="fas fa-layer-group"></i>
-        </span>
-        <span class="home-floating-catalog-text">{{ $allProductsLabel }}</span>
-        <span class="home-floating-catalog-arrow">
-            <i class="fas {{ $isRtl ? 'fa-arrow-left' : 'fa-arrow-right' }}"></i>
-        </span>
-    </a>
-</div>
-
-@push('styles')
-<style>
-    /* ── Floating Persistent Bottom-Left "Voir tous les produits" Button ── */
-    .home-floating-catalog-wrap {
-        position: fixed;
-        bottom: 24px;
-        left: 24px;
-        z-index: 9998;
-        pointer-events: auto;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        text-align: left;
-    }
-
-    html[dir="rtl"] .home-floating-catalog-wrap {
-        left: auto;
-        right: 24px;
-        text-align: right;
-    }
-
-    /* Ambient pulse glow halo around the button */
-    .home-floating-catalog-wrap::before {
-        content: '';
-        position: absolute;
-        inset: -4px;
-        border-radius: 999px;
-        background: radial-gradient(circle, rgba(229, 0, 39, 0.5) 0%, rgba(229, 0, 39, 0) 70%);
-        opacity: 0.8;
-        z-index: -1;
-        animation: catalogPulseHalo 2.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        pointer-events: none;
-    }
-
-    .home-floating-catalog-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 9px 22px;
-        border-radius: 999px;
-        background: linear-gradient(135deg, #e50027 0%, #9e0018 100%);
-        color: #ffffff !important;
-        font-family: inherit;
-        font-weight: 700;
-        font-size: 0.84rem;
-        letter-spacing: 0.2px;
-        text-decoration: none !important;
-        border: 1px solid rgba(255, 255, 255, 0.28);
-        box-shadow: 0 8px 24px rgba(229, 0, 39, 0.42), 0 2px 6px rgba(0, 0, 0, 0.15);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        cursor: pointer;
-        user-select: none;
-        white-space: nowrap;
-        position: relative;
-        overflow: hidden;
-        animation: catalogAttentionNudge 4.5s ease-in-out infinite;
-    }
-
-    /* Shimmer light sweep reflection passing through the button */
-    .home-floating-catalog-btn::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -120%;
-        width: 60%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
-        transform: skewX(-22deg);
-        animation: catalogShimmerSweep 4.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-        pointer-events: none;
-    }
-
-    .home-floating-catalog-btn:hover {
-        background: linear-gradient(135deg, #c8102e 0%, #7a000a 100%);
-        border-color: rgba(255, 255, 255, 0.5);
-        color: #ffffff !important;
-        transform: translateY(-3px) scale(1.03);
-        box-shadow: 0 14px 36px rgba(200, 16, 46, 0.6), 0 4px 10px rgba(0, 0, 0, 0.2);
-        animation-play-state: paused;
-    }
-
-    .home-floating-catalog-btn:active {
-        transform: translateY(0) scale(0.98);
-    }
-
-    .home-floating-catalog-icon {
-        width: 22px;
-        height: 22px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.22);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.70rem;
-        transition: all 0.25s ease;
-        animation: catalogIconBounce 4.5s ease-in-out infinite;
-    }
-
-    .home-floating-catalog-btn:hover .home-floating-catalog-icon {
-        background: rgba(255, 255, 255, 0.32);
-        transform: rotate(8deg);
-        animation-play-state: paused;
-    }
-
-    .home-floating-catalog-arrow {
-        font-size: 0.70rem;
-        transition: transform 0.25s ease;
-        animation: catalogArrowNudge 4.5s ease-in-out infinite;
-    }
-
-    .home-floating-catalog-btn:hover .home-floating-catalog-arrow {
-        transform: translateX(4px);
-        animation-play-state: paused;
-    }
-
-    html[dir="rtl"] .home-floating-catalog-btn:hover .home-floating-catalog-arrow {
-        transform: translateX(-4px);
-    }
-
-    /* ── Attention Catching Keyframe Animations ── */
-    @keyframes catalogPulseHalo {
-        0% {
-            transform: scale(0.92);
-            opacity: 0.8;
-            box-shadow: 0 0 0 0 rgba(229, 0, 39, 0.55);
-        }
-        70% {
-            transform: scale(1.12);
-            opacity: 0;
-            box-shadow: 0 0 0 14px rgba(229, 0, 39, 0);
-        }
-        100% {
-            transform: scale(1.15);
-            opacity: 0;
-            box-shadow: 0 0 0 0 rgba(229, 0, 39, 0);
-        }
-    }
-
-    @keyframes catalogAttentionNudge {
-        0%, 75%, 100% {
-            transform: translateY(0) scale(1);
-        }
-        80% {
-            transform: translateY(-4px) scale(1.04);
-        }
-        85% {
-            transform: translateY(-1px) scale(1.02);
-        }
-        90% {
-            transform: translateY(-3px) scale(1.03);
-        }
-        95% {
-            transform: translateY(0) scale(1);
-        }
-    }
-
-    @keyframes catalogShimmerSweep {
-        0%, 75% {
-            left: -120%;
-        }
-        88%, 100% {
-            left: 180%;
-        }
-    }
-
-    @keyframes catalogIconBounce {
-        0%, 75%, 100% {
-            transform: scale(1) rotate(0deg);
-        }
-        82% {
-            transform: scale(1.18) rotate(12deg);
-        }
-        90% {
-            transform: scale(1.08) rotate(-8deg);
-        }
-        95% {
-            transform: scale(1) rotate(0deg);
-        }
-    }
-
-    @keyframes catalogArrowNudge {
-        0%, 75%, 100% {
-            transform: translateX(0);
-        }
-        82% {
-            transform: translateX(4px);
-        }
-        88% {
-            transform: translateX(1px);
-        }
-        94% {
-            transform: translateX(3px);
-        }
-    }
-
-    html[dir="rtl"] @keyframes catalogArrowNudge {
-        0%, 75%, 100% {
-            transform: translateX(0);
-        }
-        82% {
-            transform: translateX(-4px);
-        }
-        88% {
-            transform: translateX(-1px);
-        }
-        94% {
-            transform: translateX(-3px);
-        }
-    }
-
-    /* Hide when offcanvas or miniCart is open so it never interferes */
-    body.mini-cart-open .home-floating-catalog-wrap,
-    body:has(#miniCart.show) .home-floating-catalog-wrap,
-    body:has(#miniCart.showing) .home-floating-catalog-wrap,
-    body:has(.offcanvas.show) .home-floating-catalog-wrap,
-    body:has(.offcanvas.showing) .home-floating-catalog-wrap {
-        opacity: 0 !important;
-        visibility: hidden !important;
-        pointer-events: none !important;
-        transform: translateY(20px) scale(0.85) !important;
-    }
-
-    /* Mobile screens: compact padding and safe-area support */
-    @media (max-width: 768px) {
-        .home-floating-catalog-wrap {
-            bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-            left: 12px;
-            right: auto;
-            width: auto;
-            max-width: calc(100vw - 80px);
-        }
-
-        html[dir="rtl"] .home-floating-catalog-wrap {
-            left: auto;
-            right: 12px;
-        }
-
-        .home-floating-catalog-btn {
-            padding: 7px 15px;
-            font-size: 0.78rem;
-            gap: 6px;
-            box-shadow: 0 6px 18px rgba(200, 16, 46, 0.4);
-        }
-
-        .home-floating-catalog-icon {
-            width: 19px;
-            height: 19px;
-            font-size: 0.64rem;
-        }
-
-        .home-floating-catalog-arrow {
-            font-size: 0.64rem;
-        }
-    }
-</style>
-@endpush
+{{-- =========================================================================
+     6. ABOUT / THREE CORE VALUES
+     ========================================================================= --}}
+<section class="clk-section" id="about" style="padding-top: 10px; padding-bottom: 60px;">
+    <div class="clk-wrap">
+        <div class="clk-features">
+            <div class="clk-feature">
+                <div class="num">01 / {{ __('TRUST') }}</div>
+                <h3>{{ __('Curated, not crowded.') }}</h3>
+                <p>{{ __('Focused selection of reliable gear instead of endless options.') }}</p>
+            </div>
+            <div class="clk-feature">
+                <div class="num">02 / {{ __('SUPPORT') }}</div>
+                <h3>{{ __('Advice that makes sense.') }}</h3>
+                <p>{{ __('Real-world guidance for your exact camera and creative goals.') }}</p>
+            </div>
+            <div class="clk-feature">
+                <div class="num">03 / {{ __('COMMUNITY') }}</div>
+                <h3>{{ __('Made for creators.') }}</h3>
+                <p>{{ __('A store built around people who shoot, edit, publish and create.') }}</p>
+            </div>
+        </div>
+    </div>
+</section>
 
 @endsection
 
@@ -1141,87 +1037,39 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof Swiper !== 'undefined') {
-        // 1. Hero Main Banner Swiper Slider (Left Box)
-        const heroSlideCount = document.querySelectorAll('.hero-main-swiper .swiper-slide').length;
-        const heroSwiper = new Swiper('.hero-main-swiper', {
-            slidesPerView: 1,
-            loop: heroSlideCount > 1,
-            speed: 750,
-            effect: 'fade',
-            fadeEffect: {
-                crossFade: true
-            },
-            autoplay: heroSlideCount > 1 ? {
-                delay: 5000,
-                disableOnInteraction: false,
-                pauseOnMouseEnter: true,
-            } : false,
+        const catSwiper = new Swiper('.clk-cat-swiper', {
+            slidesPerView: 1.2,
+            slidesPerGroup: 1,
+            spaceBetween: 14,
             grabCursor: true,
-            pagination: {
-                el: '.hero-dash-pagination',
-                clickable: true,
-                bulletClass: 'hero-dash-item',
-                bulletActiveClass: 'active',
-                renderBullet: function(index, className) {
-                    return '<button type="button" class="' + className + '" aria-label="Diapositive ' + (index + 1) + '"></button>';
-                }
-            },
+            loop: false,
+            speed: 550,
             navigation: {
-                prevEl: '.hero-swiper-prev',
-                nextEl: '.hero-swiper-next',
-            },
-            keyboard: {
-                enabled: true,
-                onlyInViewport: true,
-            },
-        });
-
-        // 2. Popular Categories Swiper Slider
-        const catSwiper = new Swiper('.popular-cats-swiper', {
-            slidesPerView: 3,
-            slidesPerGroup: 3,
-            spaceBetween: 8,
-            watchSlidesProgress: true,
-            grabCursor: true,
-            loop: true,
-            loopAddBlankSlides: true,
-            speed: 500,
-            navigation: {
-                prevEl: '#catSwiperPrev',
-                nextEl: '#catSwiperNext',
+                prevEl: '#clkCatPrev',
+                nextEl: '#clkCatNext',
             },
             pagination: {
-                el: '.popular-cats-pagination',
+                el: '.clk-cat-pagination',
                 clickable: true,
-                bulletClass: 'cat-swiper-dot',
-                bulletActiveClass: 'cat-swiper-dot-active',
+                bulletClass: 'clk-cat-dot',
+                bulletActiveClass: 'clk-cat-dot-active',
             },
             breakpoints: {
                 480: {
-                    slidesPerView: 3,
-                    slidesPerGroup: 3,
-                    spaceBetween: 10,
-                },
-                576: {
-                    slidesPerView: 4,
-                    slidesPerGroup: 4,
-                    spaceBetween: 10,
-                },
-                768: {
-                    slidesPerView: 5,
-                    slidesPerGroup: 5,
-                    spaceBetween: 12,
-                },
-                992: {
-                    slidesPerView: 6,
-                    slidesPerGroup: 6,
+                    slidesPerView: 2,
+                    slidesPerGroup: 2,
                     spaceBetween: 14,
                 },
-                1200: {
-                    slidesPerView: 8,
-                    slidesPerGroup: 8,
+                768: {
+                    slidesPerView: 3,
+                    slidesPerGroup: 3,
                     spaceBetween: 16,
                 },
+                1024: {
+                    slidesPerView: 4,
+                    slidesPerGroup: 4,
+                    spaceBetween: 18,
+                }
             },
             keyboard: {
                 enabled: true,
