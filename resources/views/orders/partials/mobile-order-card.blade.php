@@ -40,8 +40,8 @@
                     default => 'fa-clock'
                 };
             @endphp
-            <!-- Static Payment Status Badge (Auto-updated on delivery) -->
-            <div class="d-inline-block">
+            <!-- Static Payment Status Badge (Hidden on mobile) -->
+            <div class="d-inline-block d-none">
                 <span class="mobile-order-pay-pill {{ $payPillClass }} border-0"
                       id="mob-pay-pill-{{ $order->id }}"
                       title="Statut de paiement : {{ $payPillLabel }}">

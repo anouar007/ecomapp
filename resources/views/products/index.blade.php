@@ -913,7 +913,7 @@
     }
     .stat-kpi-card.active-filter {
         border-color: #6366f1;
-        background: #fafafe;
+        background: #2563eb;
         box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
     }
     .stat-kpi-label {

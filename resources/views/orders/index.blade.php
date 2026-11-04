@@ -42,9 +42,9 @@
                title="Voir toutes les commandes">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <div class="stat-kpi-label text-dark">Toutes</div>
-                        <div class="stat-kpi-value text-dark" id="kpi-all-orders-card">{{ number_format($stats['total'] ?? 0, 0, ',', ' ') }}</div>
-                        <div class="stat-kpi-sub text-muted"><i class="fas fa-boxes-stacked text-primary me-1"></i>Total</div>
+                        <div class="stat-kpi-label text-white">Total</div>
+                        <div class="stat-kpi-value text-white" id="kpi-all-orders-card">{{ number_format($stats['total'] ?? 0, 0, ',', ' ') }}</div>
+                        <div class="stat-kpi-sub text-light"><i class="fas fa-boxes-stacked text-white me-1"></i></div>
                     </div>
                     <div class="stat-kpi-icon" style="background: #f1f5f9; color: #1e293b;">
                         <i class="fas fa-shopping-bag"></i>
@@ -60,12 +60,12 @@
                title="Filtrer : Commandes en attente">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <div class="stat-kpi-label text-warning">En attente</div>
-                        <div class="stat-kpi-value text-warning" id="kpi-pending-orders">{{ number_format($stats['pending'] ?? 0, 0, ',', ' ') }}</div>
-                        <div class="stat-kpi-sub text-muted"><i class="fas fa-clock text-warning me-1"></i>À traiter</div>
+                        <div class="stat-kpi-label" style="color: #d97706;">En attente</div>
+                        <div class="stat-kpi-value" id="kpi-pending-orders" style="color: #d97706;">{{ number_format($stats['pending'] ?? 0, 0, ',', ' ') }}</div>
+                        <div class="stat-kpi-sub text-muted"><i class="fas fa-clock me-1" style="color: #d97706;"></i>À traiter</div>
                     </div>
                     <div class="stat-kpi-icon" style="background: #fef3c7; color: #d97706;">
-                        <i class="fas fa-hourglass-half"></i>
+                        <i class="fas fa-clock"></i>
                     </div>
                 </div>
             </a>

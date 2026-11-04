@@ -3509,7 +3509,7 @@ i.fa-sparkles:before {
 
 .stat-kpi-card.active-filter {
     border-color: #2563eb;
-    background: #f8fafc;
+    background: #2563eb;
     box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15), 0 4px 12px rgba(37, 99, 235, 0.06);
 }
 
@@ -5630,7 +5630,9 @@ dt,
    MOBILE RESPONSIVENESS & TOUCH HARDENING (ZERO HORIZONTAL SCROLL)
    ========================================================================== */
 @media (max-width: 768px) {
-    html, body {
+
+    html,
+    body {
         max-width: 100vw !important;
         overflow-x: hidden !important;
     }
@@ -5642,7 +5644,8 @@ dt,
         box-sizing: border-box !important;
     }
 
-    .container, .container-fluid {
+    .container,
+    .container-fluid {
         padding-left: 8px !important;
         padding-right: 8px !important;
         max-width: 100vw !important;
@@ -5664,13 +5667,15 @@ dt,
         flex-wrap: wrap !important;
     }
 
-    .brand-header-actions > * {
+    .brand-header-actions>* {
         flex: 1 1 auto !important;
         text-align: center !important;
         justify-content: center !important;
     }
 
-    .btn, .form-control, .form-select {
+    .btn,
+    .form-control,
+    .form-select {
         touch-action: manipulation;
     }
 
