@@ -134,7 +134,7 @@
 
 <!-- Filtres de recherche -->
 <div class="brand-card mb-4">
-    <div class="brand-card-body p-3">
+    <div class="brand-card-body p-3 bg-white">
         <form action="{{ route('coupons.index') }}" method="GET" id="couponsFilterForm">
             <div class="row g-2 align-items-center">
                 <!-- Recherche Rapide -->

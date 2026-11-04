@@ -1,3 +1,239 @@
+@push('styles')
+<style>
+    /* Professional Order KPI Cards Design */
+    .order-kpi-card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 14px 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        text-decoration: none !important;
+        overflow: hidden;
+        min-height: 110px;
+    }
+    .order-kpi-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--kpi-accent, #3b82f6);
+        opacity: 0.85;
+        transition: height 0.2s ease, opacity 0.2s ease;
+    }
+    .order-kpi-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+        border-color: var(--kpi-border, #cbd5e1);
+    }
+    .order-kpi-card:hover::before {
+        height: 4px;
+        opacity: 1;
+    }
+    .order-kpi-card.active-filter {
+        border-color: var(--kpi-accent, #2563eb) !important;
+        background: var(--kpi-active-bg, #f8fafc) !important;
+        box-shadow: 0 0 0 2px var(--kpi-ring, rgba(37, 99, 235, 0.18)), 0 6px 16px -2px rgba(15, 23, 42, 0.08) !important;
+    }
+    .order-kpi-card.active-filter::before {
+        height: 4px;
+        opacity: 1;
+    }
+    .order-kpi-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 6px;
+    }
+    .order-kpi-label {
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        color: #64748b;
+        text-transform: capitalize;
+        line-height: 1.2;
+    }
+    .order-kpi-badge {
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 9999px;
+        line-height: 1.2;
+        letter-spacing: 0.02em;
+    }
+    .order-kpi-body {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+    .order-kpi-value {
+        font-family: var(--font-heading, 'Outfit', sans-serif);
+        font-size: 1.55rem;
+        font-weight: 800;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        color: #0f172a;
+    }
+    .order-kpi-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.05rem;
+        flex-shrink: 0;
+        transition: transform 0.2s ease;
+    }
+    .order-kpi-card:hover .order-kpi-icon {
+        transform: scale(1.08);
+    }
+    .order-kpi-footer {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.7rem;
+        font-weight: 500;
+        color: #94a3b8;
+        margin-top: 6px;
+        line-height: 1.2;
+    }
+
+    /* Status Color Themes */
+    .kpi-theme-all {
+        --kpi-accent: #2563eb;
+        --kpi-border: #bfdbfe;
+        --kpi-active-bg: #eff6ff;
+        --kpi-ring: rgba(37, 99, 235, 0.25);
+    }
+    .kpi-theme-all .order-kpi-icon {
+        background: #eff6ff;
+        color: #2563eb;
+    }
+    .kpi-theme-all .order-kpi-badge {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .kpi-theme-pending {
+        --kpi-accent: #d97706;
+        --kpi-border: #fde68a;
+        --kpi-active-bg: #fffbeb;
+        --kpi-ring: rgba(217, 119, 6, 0.25);
+    }
+    .kpi-theme-pending .order-kpi-icon {
+        background: #fef3c7;
+        color: #d97706;
+    }
+    .kpi-theme-pending .order-kpi-badge {
+        background: #fef3c7;
+        color: #b45309;
+    }
+    .kpi-theme-pending .order-kpi-value {
+        color: #b45309;
+    }
+
+    .kpi-theme-processing {
+        --kpi-accent: #0284c7;
+        --kpi-border: #bae6fd;
+        --kpi-active-bg: #f0f9ff;
+        --kpi-ring: rgba(2, 132, 199, 0.25);
+    }
+    .kpi-theme-processing .order-kpi-icon {
+        background: #e0f2fe;
+        color: #0284c7;
+    }
+    .kpi-theme-processing .order-kpi-badge {
+        background: #e0f2fe;
+        color: #0369a1;
+    }
+    .kpi-theme-processing .order-kpi-value {
+        color: #0369a1;
+    }
+
+    .kpi-theme-shipped {
+        --kpi-accent: #6366f1;
+        --kpi-border: #ddd6fe;
+        --kpi-active-bg: #f5f3ff;
+        --kpi-ring: rgba(99, 102, 241, 0.25);
+    }
+    .kpi-theme-shipped .order-kpi-icon {
+        background: #ede9fe;
+        color: #6366f1;
+    }
+    .kpi-theme-shipped .order-kpi-badge {
+        background: #ede9fe;
+        color: #4f46e5;
+    }
+    .kpi-theme-shipped .order-kpi-value {
+        color: #4f46e5;
+    }
+
+    .kpi-theme-delivered {
+        --kpi-accent: #10b981;
+        --kpi-border: #a7f3d0;
+        --kpi-active-bg: #ecfdf5;
+        --kpi-ring: rgba(16, 185, 129, 0.25);
+    }
+    .kpi-theme-delivered .order-kpi-icon {
+        background: #d1fae5;
+        color: #059669;
+    }
+    .kpi-theme-delivered .order-kpi-badge {
+        background: #d1fae5;
+        color: #047857;
+    }
+    .kpi-theme-delivered .order-kpi-value {
+        color: #047857;
+    }
+
+    .kpi-theme-cancelled {
+        --kpi-accent: #ef4444;
+        --kpi-border: #fecaca;
+        --kpi-active-bg: #fef2f2;
+        --kpi-ring: rgba(239, 68, 68, 0.25);
+    }
+    .kpi-theme-cancelled .order-kpi-icon {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+    .kpi-theme-cancelled .order-kpi-badge {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+    .kpi-theme-cancelled .order-kpi-value {
+        color: #dc2626;
+    }
+
+    @media (max-width: 767.98px) {
+        .order-kpi-card {
+            padding: 10px 12px;
+            min-height: 94px;
+            border-radius: 12px;
+        }
+        .order-kpi-value {
+            font-size: 1.25rem;
+        }
+        .order-kpi-icon {
+            width: 32px;
+            height: 32px;
+            font-size: 0.9rem;
+            border-radius: 8px;
+        }
+        .order-kpi-footer {
+            display: none;
+        }
+    }
+</style>
+@endpush
+
 @extends('layouts.app')
 
 @section('title', 'Gestion des commandes')
@@ -33,22 +269,36 @@
         </div>
     </div>
 
+    @php
+        $totalOrdersCount = $stats['total'] ?? 0;
+        $pendingPct = $totalOrdersCount > 0 ? round(($stats['pending'] / $totalOrdersCount) * 100, 1) : 0;
+        $processingPct = $totalOrdersCount > 0 ? round(($stats['processing'] / $totalOrdersCount) * 100, 1) : 0;
+        $shippedPct = $totalOrdersCount > 0 ? round(($stats['shipped'] / $totalOrdersCount) * 100, 1) : 0;
+        $deliveredPct = $totalOrdersCount > 0 ? round(($stats['delivered'] / $totalOrdersCount) * 100, 1) : 0;
+        $cancelledPct = $totalOrdersCount > 0 ? round(($stats['cancelled'] / $totalOrdersCount) * 100, 1) : 0;
+    @endphp
+
     <!-- 6 Delivery Status Cards (Interactive Filters with All Orders) -->
     <div class="row row-cols-2 row-cols-sm-3 row-cols-xl-6 g-2.5 g-md-3 mb-4">
         <!-- 0. Toutes les commandes (All orders) -->
         <div class="col mb-2">
             <a href="{{ route('orders.index', request()->except(['status', 'page'])) }}" 
-               class="stat-kpi-card text-decoration-none h-100 {{ !request('status') ? 'active-filter' : '' }}"
-               title="Voir toutes les commandes" style="background: #3090cd;">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <div class="stat-kpi-label text-white">Total</div>
-                        <div class="stat-kpi-value text-white" id="kpi-all-orders-card">{{ number_format($stats['total'] ?? 0, 0, ',', ' ') }}</div>
-                        <div class="stat-kpi-sub text-light"><i class="fas fa-boxes-stacked text-white me-1"></i></div>
+               class="order-kpi-card kpi-theme-all h-100 {{ !request('status') ? 'active-filter' : '' }}"
+               title="Voir toutes les commandes">
+                <div>
+                    <div class="order-kpi-top">
+                        <span class="order-kpi-label">Total</span>
+                        <span class="order-kpi-badge" id="kpi-all-orders-pct">100%</span>
                     </div>
-                    <div class="stat-kpi-icon" style="background: #f1f5f9; color: #1e293b;">
-                        <i class="fas fa-shopping-bag"></i>
+                    <div class="order-kpi-body">
+                        <div class="order-kpi-value" id="kpi-all-orders-card">{{ number_format($stats['total'] ?? 0, 0, ',', ' ') }}</div>
+                        <div class="order-kpi-icon">
+                            <i class="fas fa-boxes-stacked"></i>
+                        </div>
                     </div>
+                </div>
+                <div class="order-kpi-footer">
+                    <i class="fas fa-layer-group"></i> <span>Toutes les commandes</span>
                 </div>
             </a>
         </div>
@@ -56,17 +306,22 @@
         <!-- 1. En attente (pending) -->
         <div class="col mb-2">
             <a href="{{ request('status') === 'pending' ? route('orders.index', request()->except(['status', 'page'])) : route('orders.index', array_merge(request()->except('page'), ['status' => 'pending'])) }}" 
-               class="stat-kpi-card text-decoration-none h-100 {{ request('status') === 'pending' ? 'active-filter' : '' }}"
+               class="order-kpi-card kpi-theme-pending h-100 {{ request('status') === 'pending' ? 'active-filter' : '' }}"
                title="Filtrer : Commandes en attente">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <div class="stat-kpi-label" style="color: #d97706;">En attente</div>
-                        <div class="stat-kpi-value" id="kpi-pending-orders" style="color: #d97706;">{{ number_format($stats['pending'] ?? 0, 0, ',', ' ') }}</div>
-                        <div class="stat-kpi-sub text-muted"><i class="fas fa-clock me-1" style="color: #d97706;"></i>À traiter</div>
+                <div>
+                    <div class="order-kpi-top">
+                        <span class="order-kpi-label" style="color: #d97706;">En attente</span>
+                        <span class="order-kpi-badge" id="kpi-pending-pct">{{ $pendingPct }}%</span>
                     </div>
-                    <div class="stat-kpi-icon" style="background: #fef3c7; color: #d97706;">
-                        <i class="fas fa-clock"></i>
+                    <div class="order-kpi-body">
+                        <div class="order-kpi-value" id="kpi-pending-orders">{{ number_format($stats['pending'] ?? 0, 0, ',', ' ') }}</div>
+                        <div class="order-kpi-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
                     </div>
+                </div>
+                <div class="order-kpi-footer">
+                    <i class="fas fa-hourglass-half"></i> <span>À traiter</span>
                 </div>
             </a>
         </div>
@@ -74,17 +329,22 @@
         <!-- 2. En cours (processing) -->
         <div class="col mb-2">
             <a href="{{ request('status') === 'processing' ? route('orders.index', request()->except(['status', 'page'])) : route('orders.index', array_merge(request()->except('page'), ['status' => 'processing'])) }}" 
-               class="stat-kpi-card text-decoration-none h-100 {{ request('status') === 'processing' ? 'active-filter' : '' }}"
+               class="order-kpi-card kpi-theme-processing h-100 {{ request('status') === 'processing' ? 'active-filter' : '' }}"
                title="Filtrer : Commandes en cours de préparation">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <div class="stat-kpi-label" style="color: #0284c7;">En cours</div>
-                        <div class="stat-kpi-value" id="kpi-processing-orders" style="color: #0284c7;">{{ number_format($stats['processing'] ?? 0, 0, ',', ' ') }}</div>
-                        <div class="stat-kpi-sub text-muted"><i class="fas fa-box-archive me-1" style="color: #0284c7;"></i>En préparation</div>
+                <div>
+                    <div class="order-kpi-top">
+                        <span class="order-kpi-label" style="color: #0284c7;">En cours</span>
+                        <span class="order-kpi-badge" id="kpi-processing-pct">{{ $processingPct }}%</span>
                     </div>
-                    <div class="stat-kpi-icon" style="background: #e0f2fe; color: #0284c7;">
-                        <i class="fas fa-box-open"></i>
+                    <div class="order-kpi-body">
+                        <div class="order-kpi-value" id="kpi-processing-orders">{{ number_format($stats['processing'] ?? 0, 0, ',', ' ') }}</div>
+                        <div class="order-kpi-icon">
+                            <i class="fas fa-box-open"></i>
+                        </div>
                     </div>
+                </div>
+                <div class="order-kpi-footer">
+                    <i class="fas fa-dolly"></i> <span>En préparation</span>
                 </div>
             </a>
         </div>
@@ -92,17 +352,22 @@
         <!-- 3. Expédiée (shipped) -->
         <div class="col mb-2">
             <a href="{{ request('status') === 'shipped' ? route('orders.index', request()->except(['status', 'page'])) : route('orders.index', array_merge(request()->except('page'), ['status' => 'shipped'])) }}" 
-               class="stat-kpi-card text-decoration-none h-100 {{ request('status') === 'shipped' ? 'active-filter' : '' }}"
+               class="order-kpi-card kpi-theme-shipped h-100 {{ request('status') === 'shipped' ? 'active-filter' : '' }}"
                title="Filtrer : Commandes expédiées en acheminement">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <div class="stat-kpi-label" style="color: #6366f1;">Expédiée</div>
-                        <div class="stat-kpi-value" id="kpi-shipped-orders" style="color: #6366f1;">{{ number_format($stats['shipped'] ?? 0, 0, ',', ' ') }}</div>
-                        <div class="stat-kpi-sub text-muted"><i class="fas fa-truck-fast me-1" style="color: #6366f1;"></i>En livraison</div>
+                <div>
+                    <div class="order-kpi-top">
+                        <span class="order-kpi-label" style="color: #6366f1;">Expédiée</span>
+                        <span class="order-kpi-badge" id="kpi-shipped-pct">{{ $shippedPct }}%</span>
                     </div>
-                    <div class="stat-kpi-icon" style="background: #ede9fe; color: #6366f1;">
-                        <i class="fas fa-truck"></i>
+                    <div class="order-kpi-body">
+                        <div class="order-kpi-value" id="kpi-shipped-orders">{{ number_format($stats['shipped'] ?? 0, 0, ',', ' ') }}</div>
+                        <div class="order-kpi-icon">
+                            <i class="fas fa-truck-fast"></i>
+                        </div>
                     </div>
+                </div>
+                <div class="order-kpi-footer">
+                    <i class="fas fa-route"></i> <span>En livraison</span>
                 </div>
             </a>
         </div>
@@ -110,17 +375,22 @@
         <!-- 4. Livrée (delivered) -->
         <div class="col mb-2">
             <a href="{{ request('status') === 'delivered' ? route('orders.index', request()->except(['status', 'page'])) : route('orders.index', array_merge(request()->except('page'), ['status' => 'delivered'])) }}" 
-               class="stat-kpi-card text-decoration-none h-100 {{ request('status') === 'delivered' ? 'active-filter' : '' }}"
+               class="order-kpi-card kpi-theme-delivered h-100 {{ request('status') === 'delivered' ? 'active-filter' : '' }}"
                title="Filtrer : Commandes livrées avec succès">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <div class="stat-kpi-label text-success">Livrée</div>
-                        <div class="stat-kpi-value text-success" id="kpi-delivered-orders">{{ number_format($stats['delivered'] ?? 0, 0, ',', ' ') }}</div>
-                        <div class="stat-kpi-sub text-muted"><i class="fas fa-circle-check text-success me-1"></i>Finalisée</div>
+                <div>
+                    <div class="order-kpi-top">
+                        <span class="order-kpi-label" style="color: #059669;">Livrée</span>
+                        <span class="order-kpi-badge" id="kpi-delivered-pct">{{ $deliveredPct }}%</span>
                     </div>
-                    <div class="stat-kpi-icon" style="background: #d1fae5; color: #059669;">
-                        <i class="fas fa-truck-ramp-box"></i>
+                    <div class="order-kpi-body">
+                        <div class="order-kpi-value" id="kpi-delivered-orders">{{ number_format($stats['delivered'] ?? 0, 0, ',', ' ') }}</div>
+                        <div class="order-kpi-icon">
+                            <i class="fas fa-circle-check"></i>
+                        </div>
                     </div>
+                </div>
+                <div class="order-kpi-footer">
+                    <i class="fas fa-clipboard-check"></i> <span>Finalisée</span>
                 </div>
             </a>
         </div>
@@ -128,17 +398,22 @@
         <!-- 5. Annulée (cancelled) -->
         <div class="col mb-2">
             <a href="{{ request('status') === 'cancelled' ? route('orders.index', request()->except(['status', 'page'])) : route('orders.index', array_merge(request()->except('page'), ['status' => 'cancelled'])) }}" 
-               class="stat-kpi-card text-decoration-none h-100 {{ request('status') === 'cancelled' ? 'active-filter' : '' }}"
+               class="order-kpi-card kpi-theme-cancelled h-100 {{ request('status') === 'cancelled' ? 'active-filter' : '' }}"
                title="Filtrer : Commandes annulées ou rejetées">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <div class="stat-kpi-label text-danger">Annulée</div>
-                        <div class="stat-kpi-value text-danger" id="kpi-cancelled-orders">{{ number_format($stats['cancelled'] ?? 0, 0, ',', ' ') }}</div>
-                        <div class="stat-kpi-sub text-muted"><i class="fas fa-ban text-danger me-1"></i>Non aboutie</div>
+                <div>
+                    <div class="order-kpi-top">
+                        <span class="order-kpi-label" style="color: #dc2626;">Annulée</span>
+                        <span class="order-kpi-badge" id="kpi-cancelled-pct">{{ $cancelledPct }}%</span>
                     </div>
-                    <div class="stat-kpi-icon" style="background: #fee2e2; color: #dc2626;">
-                        <i class="fas fa-circle-xmark"></i>
+                    <div class="order-kpi-body">
+                        <div class="order-kpi-value" id="kpi-cancelled-orders">{{ number_format($stats['cancelled'] ?? 0, 0, ',', ' ') }}</div>
+                        <div class="order-kpi-icon">
+                            <i class="fas fa-circle-xmark"></i>
+                        </div>
                     </div>
+                </div>
+                <div class="order-kpi-footer">
+                    <i class="fas fa-ban"></i> <span>Non aboutie</span>
                 </div>
             </a>
         </div>
@@ -914,35 +1189,54 @@
     }
 
     /**
-     * Update real-time KPI metrics for all 5 delivery statuses
+     * Update real-time KPI metrics for all delivery statuses
      */
     function updateKPIStats(stats) {
         if (!stats) return;
-        if (stats.total !== undefined) {
+        const total = stats.total !== undefined ? Number(stats.total) : null;
+
+        if (total !== null) {
             const el = document.getElementById('kpi-total-orders');
-            if (el) el.textContent = new Intl.NumberFormat('fr-FR').format(stats.total);
+            if (el) el.textContent = new Intl.NumberFormat('fr-FR').format(total);
             const elCard = document.getElementById('kpi-all-orders-card');
-            if (elCard) elCard.textContent = new Intl.NumberFormat('fr-FR').format(stats.total);
+            if (elCard) elCard.textContent = new Intl.NumberFormat('fr-FR').format(total);
         }
+
+        const calcPct = (val) => {
+            if (!total || total <= 0 || val === undefined || val === null) return '0%';
+            const pct = Math.round((Number(val) / total) * 100 * 10) / 10;
+            return pct + '%';
+        };
+
         if (stats.pending !== undefined) {
             const el = document.getElementById('kpi-pending-orders');
             if (el) el.textContent = new Intl.NumberFormat('fr-FR').format(stats.pending);
+            const pctEl = document.getElementById('kpi-pending-pct');
+            if (pctEl) pctEl.textContent = calcPct(stats.pending);
         }
         if (stats.processing !== undefined) {
             const el = document.getElementById('kpi-processing-orders');
             if (el) el.textContent = new Intl.NumberFormat('fr-FR').format(stats.processing);
+            const pctEl = document.getElementById('kpi-processing-pct');
+            if (pctEl) pctEl.textContent = calcPct(stats.processing);
         }
         if (stats.shipped !== undefined) {
             const el = document.getElementById('kpi-shipped-orders');
             if (el) el.textContent = new Intl.NumberFormat('fr-FR').format(stats.shipped);
+            const pctEl = document.getElementById('kpi-shipped-pct');
+            if (pctEl) pctEl.textContent = calcPct(stats.shipped);
         }
         if (stats.delivered !== undefined) {
             const el = document.getElementById('kpi-delivered-orders');
             if (el) el.textContent = new Intl.NumberFormat('fr-FR').format(stats.delivered);
+            const pctEl = document.getElementById('kpi-delivered-pct');
+            if (pctEl) pctEl.textContent = calcPct(stats.delivered);
         }
         if (stats.cancelled !== undefined) {
             const el = document.getElementById('kpi-cancelled-orders');
             if (el) el.textContent = new Intl.NumberFormat('fr-FR').format(stats.cancelled);
+            const pctEl = document.getElementById('kpi-cancelled-pct');
+            if (pctEl) pctEl.textContent = calcPct(stats.cancelled);
         }
         if (stats.revenue_formatted !== undefined) {
             const el = document.getElementById('kpi-revenue-orders');
