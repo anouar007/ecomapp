@@ -45,11 +45,18 @@ class Category extends Model
             }
         });
 
-        static::saved(function () {
+        static::saved(function (?Category $category = null) {
+            if ($category && $category->wasChanged()) {
+                $changedKeys = array_keys($category->getChanges());
+                if (empty(array_diff($changedKeys, ['views_count', 'updated_at']))) {
+                    return;
+                }
+            }
             \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
             \Illuminate\Support\Facades\Cache::forget('frontend_nav_categories');
             \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
             \Illuminate\Support\Facades\Cache::forget('home_popular_categories_v2');
+            \App\Http\Middleware\FastGuestPageCache::flush();
         });
 
         static::deleted(function () {
@@ -57,6 +64,7 @@ class Category extends Model
             \Illuminate\Support\Facades\Cache::forget('frontend_nav_categories');
             \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
             \Illuminate\Support\Facades\Cache::forget('home_popular_categories_v2');
+            \App\Http\Middleware\FastGuestPageCache::flush();
         });
     }
 

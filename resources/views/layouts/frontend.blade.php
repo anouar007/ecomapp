@@ -2533,9 +2533,10 @@
             border: 0.08em solid #fb923c !important;
         }
     </style>
-    <!-- Custom Head & Body Codes (Cached) -->
+    <!-- Custom Head & Body Codes (Cached in local file store) -->
     @php
-        $activeCustomCodes = \Illuminate\Support\Facades\Cache::remember('active_custom_codes_v1', 86400, function() {
+        $layoutCacheVer = \App\Http\Middleware\FastGuestPageCache::getVersion();
+        $activeCustomCodes = \Illuminate\Support\Facades\Cache::store('file')->remember("active_custom_codes_v2_{$layoutCacheVer}", 86400, function() {
             return \App\Models\CustomCode::where('is_active', true)->orderBy('priority', 'desc')->get();
         });
         $headCodes = $activeCustomCodes->where('position', 'head');
@@ -2578,7 +2579,7 @@
                     </a>
 
                     @php
-                        $navCategories = \Illuminate\Support\Facades\Cache::remember('frontend_nav_categories', 3600, function() {
+                        $navCategories = \Illuminate\Support\Facades\Cache::store('file')->remember("frontend_nav_categories_v2_{$layoutCacheVer}", 3600, function() {
                             return \App\Models\Category::where('status', 'active')
                                 ->where('slug', '!=', 'general')
                                 ->withCount(['products' => function($q) {
@@ -4900,14 +4901,28 @@
         }
     </script>
 
-    <!-- 100% Accurate Real-Time Presence Heartbeat & Leave Beacon -->
+    <!-- 100% Accurate Real-Time Presence Heartbeat & Leave Beacon (Optimized for 100k+ Concurrency) -->
     <script>
     (function() {
+        if (navigator.webdriver || /bot|crawl|slurp|spider|lighthouse/i.test(navigator.userAgent || '')) {
+            return;
+        }
         var token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
         var heartbeatUrl = '{{ route("presence.heartbeat") }}';
         var leaveUrl = '{{ route("presence.leave") }}';
+        var isInternalNavigation = false;
+
+        document.addEventListener('click', function(e) {
+            var link = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+            if (link && link.href && link.href.indexOf(window.location.origin) === 0 && link.target !== '_blank') {
+                isInternalNavigation = true;
+            }
+        }, true);
 
         function sendPresence(isLeave) {
+            if (isLeave && isInternalNavigation) {
+                return;
+            }
             var url = isLeave ? leaveUrl : heartbeatUrl;
             var data = JSON.stringify({
                 _token: token,
@@ -4935,28 +4950,22 @@
             } catch(e) {}
         }
 
-        // Initial heartbeat on page load
-        sendPresence(false);
+        // Deferred initial heartbeat after page load so rendering & LCP have zero contention
+        setTimeout(function() {
+            if (!document.hidden) {
+                sendPresence(false);
+            }
+        }, 3500);
 
-        // Periodic heartbeat every 20 seconds while page is active
+        // Periodic heartbeat every 45 seconds while page is active
         var heartbeatInterval = setInterval(function() {
             if (!document.hidden) {
                 sendPresence(false);
             }
-        }, 20000);
+        }, 45000);
 
-        // Resume heartbeat immediately when tab becomes visible
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
-                sendPresence(false);
-            }
-        });
-
-        // Instant leave beacon when closing window/navigating away
+        // Instant leave beacon only when closing tab/leaving site
         window.addEventListener('pagehide', function() {
-            sendPresence(true);
-        });
-        window.addEventListener('beforeunload', function() {
             sendPresence(true);
         });
     })();

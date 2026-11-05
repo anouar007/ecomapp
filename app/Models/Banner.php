@@ -28,10 +28,12 @@ class Banner extends Model
     {
         static::saved(function () {
             \Illuminate\Support\Facades\Cache::forget('home_active_banners_v1');
+            \App\Http\Middleware\FastGuestPageCache::flush();
         });
 
         static::deleted(function () {
             \Illuminate\Support\Facades\Cache::forget('home_active_banners_v1');
+            \App\Http\Middleware\FastGuestPageCache::flush();
         });
     }
 

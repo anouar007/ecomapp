@@ -54,19 +54,38 @@ class Product extends Model
     ];
 
     /**
-     * Booted method to flush relevant front-end caches.
+     * Booted method to flush relevant front-end caches (except on simple view counter increments).
      */
     protected static function booted(): void
     {
-        $flushCaches = function () {
+        $flushCaches = function (?Product $product = null) {
+            // Do not wipe caches if only views_count was updated
+            if ($product && $product->wasChanged()) {
+                $changedKeys = array_keys($product->getChanges());
+                $nonViewChanges = array_diff($changedKeys, ['views_count', 'updated_at']);
+                if (empty($nonViewChanges)) {
+                    return;
+                }
+            }
+
+            $fileCache = \Illuminate\Support\Facades\Cache::store('file');
             \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
             \Illuminate\Support\Facades\Cache::forget('frontend_nav_categories');
             \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
-            \Illuminate\Support\Facades\Cache::store('file')->forget('seo_sitemap_xml');
-            \Illuminate\Support\Facades\Cache::store('file')->forget('seo_google_merchant_xml');
-            \Illuminate\Support\Facades\Cache::store('file')->forget('seo_llms_txt');
-            \Illuminate\Support\Facades\Cache::store('file')->forget('seo_llms_full_txt');
-            \Illuminate\Support\Facades\Cache::store('file')->forget('seo_ai_catalog_json');
+            $fileCache->forget('frontend_nav_categories');
+            $fileCache->forget('shop_catalog_categories');
+            $fileCache->forget('total_active_products_count');
+            $fileCache->forget('all_active_product_names_map_v1');
+            $fileCache->forget('shop_instock_pool_v1');
+            $fileCache->forget('home_featured_products_v1');
+            $fileCache->forget('home_new_arrival_products_v1');
+            $fileCache->forget('home_occasion_products_v1');
+            $fileCache->forget('seo_sitemap_xml');
+            $fileCache->forget('seo_google_merchant_xml');
+            $fileCache->forget('seo_llms_txt');
+            $fileCache->forget('seo_llms_full_txt');
+            $fileCache->forget('seo_ai_catalog_json');
+            \App\Http\Middleware\FastGuestPageCache::flush();
         };
         static::saved($flushCaches);
         static::deleted($flushCaches);
@@ -1129,17 +1148,19 @@ class Product extends Model
             return $this->attributes['image'];
         }
 
-        // 4. Fallback to dynamic relation only if not eager-loaded
-        if ($this->primaryImage && !$isGenericLogo($this->primaryImage->image_path)) {
-            return $this->primaryImage->image_path;
-        }
-
-        if ($this->images && $this->images->count() > 0) {
-            $nonLogo = $this->images->first(fn($img) => !$isGenericLogo($img->image_path));
-            if ($nonLogo) {
-                return $nonLogo->image_path;
+        // 4. Fallback to dynamic relation ONLY if neither 'images' nor 'primaryImage' was eager-loaded
+        if (!$this->relationLoaded('images') && !$this->relationLoaded('primaryImage')) {
+            if ($this->primaryImage && !$isGenericLogo($this->primaryImage->image_path)) {
+                return $this->primaryImage->image_path;
             }
-            return $this->images->first()->image_path;
+
+            if ($this->images && $this->images->count() > 0) {
+                $nonLogo = $this->images->first(fn($img) => !$isGenericLogo($img->image_path));
+                if ($nonLogo) {
+                    return $nonLogo->image_path;
+                }
+                return $this->images->first()->image_path;
+            }
         }
 
         if (!empty($this->attributes['image'])) {

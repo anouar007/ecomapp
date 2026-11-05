@@ -22,10 +22,12 @@ class CustomCode extends Model
     {
         static::saved(function () {
             \Illuminate\Support\Facades\Cache::forget('active_custom_codes_v1');
+            \App\Http\Middleware\FastGuestPageCache::flush();
         });
 
         static::deleted(function () {
             \Illuminate\Support\Facades\Cache::forget('active_custom_codes_v1');
+            \App\Http\Middleware\FastGuestPageCache::flush();
         });
     }
 }

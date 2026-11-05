@@ -59,7 +59,7 @@ class ProductImage extends Model
     {
         $val = trim((string) ($this->image_padding ?? ''));
         if ($val === '' || $val === '0' || $val === '0%' || $val === '0px') {
-            return $this->product?->image_padding_style ?? '';
+            return $this->relationLoaded('product') ? ($this->product?->image_padding_style ?? '') : '';
         }
         if (is_numeric($val)) {
             return $val . '%';

@@ -325,19 +325,25 @@ class ProductSearchService
         }
 
         $minSim = round($threshold * 100, 1);
-        $cacheKey = 'prod_search_name_v6_' . ($activeOnly ? 'act_' : 'all_') . $minSim . '_' . md5(mb_strtolower($raw));
-        return Cache::remember($cacheKey, 60, function () use ($raw, $threshold, $minSim, $activeOnly) {
-            $q = Product::select(['id', 'name']);
-            if ($activeOnly) {
-                $q->where('status', 'active');
-            }
-            $products = $q->get();
+        $fileCache = Cache::store('file');
+        $cacheVer = \App\Http\Middleware\FastGuestPageCache::getVersion();
+        $cacheKey = 'prod_search_name_v7_' . $cacheVer . '_' . ($activeOnly ? 'act_' : 'all_') . $minSim . '_' . md5(mb_strtolower($raw));
+
+        return $fileCache->remember($cacheKey, 600, function () use ($raw, $threshold, $minSim, $activeOnly, $fileCache, $cacheVer) {
+            $namesMapKey = 'all_product_names_map_v1_' . $cacheVer . '_' . ($activeOnly ? 'act' : 'all');
+            $productNames = $fileCache->remember($namesMapKey, 1800, function () use ($activeOnly) {
+                $q = Product::select(['id', 'name']);
+                if ($activeOnly) {
+                    $q->where('status', 'active');
+                }
+                return $q->pluck('name', 'id')->all();
+            });
 
             $matched = [];
-            foreach ($products as $prod) {
-                $score = self::calculateNameMatchScore($raw, (string) $prod->name, $minSim);
+            foreach ($productNames as $prodId => $prodName) {
+                $score = self::calculateNameMatchScore($raw, (string) $prodName, $minSim);
                 if ($score >= $threshold) {
-                    $matched[$prod->id] = $score;
+                    $matched[$prodId] = $score;
                 }
             }
 
@@ -569,8 +575,9 @@ class ProductSearchService
             ];
         }
 
-        $cacheKey = 'live_search_v4_' . md5(mb_strtolower($raw));
-        return Cache::remember($cacheKey, 180, function () use ($raw, $limit) {
+        $cacheVer = \App\Http\Middleware\FastGuestPageCache::getVersion();
+        $cacheKey = 'live_search_v5_' . $cacheVer . '_' . md5(mb_strtolower($raw));
+        return Cache::store('file')->remember($cacheKey, 600, function () use ($raw, $limit) {
             $categories = self::getMatchingCategories($raw, 3);
             $query = self::buildQuery($raw);
 
@@ -625,68 +632,73 @@ class ProductSearchService
      */
     public static function getSmartBrands(?string $categorySlug = null, string $search = ''): Collection
     {
-        $productQuery = Product::where('products.status', 'active')
-            ->whereNotNull('products.brand_id');
+        $cacheVer = \App\Http\Middleware\FastGuestPageCache::getVersion();
+        $cacheKey = 'smart_brands_v2_' . $cacheVer . '_' . md5((string) $categorySlug . '|' . mb_strtolower(trim($search)));
 
-        // Apply category filter if provided
-        if (!empty($categorySlug)) {
-            if ($categorySlug === 'occasion') {
-                $productQuery->where(function ($q) {
-                    $q->whereHas('categories', function ($c) {
-                        $c->where('slug', 'occasion');
-                    })->orWhereHas('productCategory', function ($c) {
-                        $c->where('slug', 'occasion');
-                    })->orWhere('products.name', 'like', '%(occasion)%')
-                      ->orWhere('products.name', 'like', '%occasion%');
-                });
-            } else {
-                $productQuery->where(function ($q) use ($categorySlug) {
-                    $q->whereHas('categories', function ($sub) use ($categorySlug) {
-                        $sub->where('slug', $categorySlug);
-                    })->orWhereHas('productCategory', function ($sub) use ($categorySlug) {
-                        $sub->where('slug', $categorySlug);
+        return Cache::store('file')->remember($cacheKey, 1800, function () use ($categorySlug, $search) {
+            $productQuery = Product::where('products.status', 'active')
+                ->whereNotNull('products.brand_id');
+
+            // Apply category filter if provided
+            if (!empty($categorySlug)) {
+                if ($categorySlug === 'occasion') {
+                    $productQuery->where(function ($q) {
+                        $q->whereHas('categories', function ($c) {
+                            $c->where('slug', 'occasion');
+                        })->orWhereHas('productCategory', function ($c) {
+                            $c->where('slug', 'occasion');
+                        })->orWhere('products.name', 'like', '%(occasion)%')
+                          ->orWhere('products.name', 'like', '%occasion%');
                     });
-                });
+                } else {
+                    $productQuery->where(function ($q) use ($categorySlug) {
+                        $q->whereHas('categories', function ($sub) use ($categorySlug) {
+                            $sub->where('slug', $categorySlug);
+                        })->orWhereHas('productCategory', function ($sub) use ($categorySlug) {
+                            $sub->where('slug', $categorySlug);
+                        });
+                    });
+                }
             }
-        }
 
-        // Apply search filter if provided (name, SKU, brand)
-        $cleanSearch = trim($search);
-        if (mb_strlen($cleanSearch) > 0) {
-            $matchedIds = self::getSearchProductIds($cleanSearch, true);
+            // Apply search filter if provided (name, SKU, brand)
+            $cleanSearch = trim($search);
+            if (mb_strlen($cleanSearch) > 0) {
+                $matchedIds = self::getSearchProductIds($cleanSearch, true);
 
-            if (empty($matchedIds)) {
+                if (empty($matchedIds)) {
+                    return collect();
+                }
+
+                $productQuery->whereIn('products.id', $matchedIds);
+            }
+
+            // Count products per brand
+            $brandCounts = $productQuery->select('products.brand_id')
+                ->selectRaw('COUNT(*) as count')
+                ->groupBy('products.brand_id')
+                ->pluck('count', 'products.brand_id');
+
+            if ($brandCounts->isEmpty()) {
                 return collect();
             }
 
-            $productQuery->whereIn('products.id', $matchedIds);
-        }
+            $brands = Brand::where('status', 'active')
+                ->whereIn('id', $brandCounts->keys())
+                ->get()
+                ->map(function ($brand) use ($brandCounts) {
+                    $brand->products_count = (int) ($brandCounts[$brand->id] ?? 0);
+                    return $brand;
+                });
 
-        // Count products per brand
-        $brandCounts = $productQuery->select('products.brand_id')
-            ->selectRaw('COUNT(*) as count')
-            ->groupBy('products.brand_id')
-            ->pluck('count', 'products.brand_id');
-
-        if ($brandCounts->isEmpty()) {
-            return collect();
-        }
-
-        $brands = Brand::where('status', 'active')
-            ->whereIn('id', $brandCounts->keys())
-            ->get()
-            ->map(function ($brand) use ($brandCounts) {
-                $brand->products_count = (int) ($brandCounts[$brand->id] ?? 0);
-                return $brand;
-            });
-
-        return $brands->sort(function ($a, $b) {
-            $orderA = (int) ($a->sort_order ?? 0);
-            $orderB = (int) ($b->sort_order ?? 0);
-            if ($orderA !== $orderB) {
-                return $orderA <=> $orderB;
-            }
-            return strcasecmp($a->name, $b->name);
-        })->values();
+            return $brands->sort(function ($a, $b) {
+                $orderA = (int) ($a->sort_order ?? 0);
+                $orderB = (int) ($b->sort_order ?? 0);
+                if ($orderA !== $orderB) {
+                    return $orderA <=> $orderB;
+                }
+                return strcasecmp($a->name, $b->name);
+            })->values();
+        });
     }
 }

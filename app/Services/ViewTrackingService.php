@@ -14,42 +14,74 @@ use Illuminate\Support\Str;
 class ViewTrackingService
 {
     /**
-     * Record a product view with date and device telemetry.
-     * Throttles identical views from the same session/IP within 15 minutes.
+     * Check if the user-agent belongs to an automated bot or crawler.
      */
-    public static function trackProductView(Product $product, Request $request): void
+    public static function isBot(?string $userAgent): bool
+    {
+        if (empty($userAgent)) {
+            return true;
+        }
+        return (bool) preg_match('/bot|crawl|slurp|spider|mediapartners|facebookexternalhit|whatsapp|curl|python|lighthouse|gtmetrix|pingdom|headless/i', $userAgent);
+    }
+
+    /**
+     * Record a product view by ID (used by FastGuestPageCache & standard controller).
+     * Throttles identical views from the same session/IP within 15 minutes using the file cache
+     * and defers database writes until after the HTTP response is sent.
+     */
+    public static function trackProductViewById(int $productId, Request $request): void
     {
         try {
-            $sessionId = $request->session()->getId() ?? 'guest';
-            $ip = $request->ip() ?? '127.0.0.1';
-            $today = now()->toDateString();
-            
-            // Deduplicate same product view from same session/IP within 15 minutes
-            $cacheKey = "pv_throttle_{$product->id}_{$sessionId}_" . md5($ip);
-            if (Cache::has($cacheKey)) {
+            $ua = $request->userAgent();
+            if (static::isBot($ua)) {
                 return;
             }
 
-            Cache::put($cacheKey, true, now()->addMinutes(15));
+            $sessionId = $request->hasSession() ? ($request->session()->getId() ?? 'guest') : 'guest';
+            $ip = $request->ip() ?? '127.0.0.1';
+            $cacheKey = "pv_throttle_{$productId}_{$sessionId}_" . md5($ip);
 
-            $deviceType = static::detectDevice($request->userAgent());
+            $fileCache = Cache::store('file');
+            if ($fileCache->has($cacheKey)) {
+                return;
+            }
+            $fileCache->put($cacheKey, true, now()->addMinutes(15));
+
+            $userId = $request->user()?->id;
+            $deviceType = static::detectDevice($ua);
             $referer = static::cleanReferer($request->header('referer'));
+            $today = now()->toDateString();
 
-            ProductView::create([
-                'product_id' => $product->id,
-                'user_id' => $request->user()?->id,
-                'ip_address' => $ip,
-                'session_id' => $sessionId,
-                'device_type' => $deviceType,
-                'referer' => $referer,
-                'viewed_date' => $today,
-            ]);
+            app()->terminating(function () use ($productId, $userId, $ip, $sessionId, $deviceType, $referer, $today) {
+                try {
+                    ProductView::create([
+                        'product_id' => $productId,
+                        'user_id' => $userId,
+                        'ip_address' => $ip,
+                        'session_id' => $sessionId,
+                        'device_type' => $deviceType,
+                        'referer' => $referer,
+                        'viewed_date' => $today,
+                    ]);
 
-            // Increment all-time counter on the product table
-            $product->increment('views_count');
+                    \Illuminate\Support\Facades\DB::table('products')
+                        ->where('id', $productId)
+                        ->increment('views_count');
+                } catch (\Throwable $e) {
+                    // Fail silently in post-response telemetry
+                }
+            });
         } catch (\Throwable $e) {
-            report($e);
+            // Fail silently
         }
+    }
+
+    /**
+     * Record a product view with date and device telemetry.
+     */
+    public static function trackProductView(Product $product, Request $request): void
+    {
+        static::trackProductViewById((int) $product->id, $request);
     }
 
     /**
@@ -59,31 +91,46 @@ class ViewTrackingService
     public static function trackCategoryView(Category $category, Request $request): void
     {
         try {
-            $sessionId = $request->session()->getId() ?? 'guest';
-            $ip = $request->ip() ?? '127.0.0.1';
-            $today = now()->toDateString();
-
-            $cacheKey = "cv_throttle_{$category->id}_{$sessionId}_" . md5($ip);
-            if (Cache::has($cacheKey)) {
+            $ua = $request->userAgent();
+            if (static::isBot($ua)) {
                 return;
             }
 
-            Cache::put($cacheKey, true, now()->addMinutes(15));
+            $sessionId = $request->hasSession() ? ($request->session()->getId() ?? 'guest') : 'guest';
+            $ip = $request->ip() ?? '127.0.0.1';
+            $categoryId = (int) $category->id;
 
-            $deviceType = static::detectDevice($request->userAgent());
+            $cacheKey = "cv_throttle_{$categoryId}_{$sessionId}_" . md5($ip);
+            $fileCache = Cache::store('file');
+            if ($fileCache->has($cacheKey)) {
+                return;
+            }
+            $fileCache->put($cacheKey, true, now()->addMinutes(15));
 
-            CategoryView::create([
-                'category_id' => $category->id,
-                'user_id' => $request->user()?->id,
-                'ip_address' => $ip,
-                'session_id' => $sessionId,
-                'device_type' => $deviceType,
-                'viewed_date' => $today,
-            ]);
+            $userId = $request->user()?->id;
+            $deviceType = static::detectDevice($ua);
+            $today = now()->toDateString();
 
-            $category->increment('views_count');
+            app()->terminating(function () use ($categoryId, $userId, $ip, $sessionId, $deviceType, $today) {
+                try {
+                    CategoryView::create([
+                        'category_id' => $categoryId,
+                        'user_id' => $userId,
+                        'ip_address' => $ip,
+                        'session_id' => $sessionId,
+                        'device_type' => $deviceType,
+                        'viewed_date' => $today,
+                    ]);
+
+                    \Illuminate\Support\Facades\DB::table('categories')
+                        ->where('id', $categoryId)
+                        ->increment('views_count');
+                } catch (\Throwable $e) {
+                    // Fail silently
+                }
+            });
         } catch (\Throwable $e) {
-            report($e);
+            // Fail silently
         }
     }
 
@@ -93,37 +140,50 @@ class ViewTrackingService
     public static function trackSearch(?string $query, int $resultsCount, Request $request): void
     {
         try {
+            $ua = $request->userAgent();
+            if (static::isBot($ua)) {
+                return;
+            }
+
             $cleaned = trim(preg_replace('/\s+/u', ' ', (string) $query));
             if (mb_strlen($cleaned) < 2) {
                 return;
             }
 
             $normalized = Str::lower($cleaned);
-            $sessionId = $request->session()->getId() ?? 'guest';
+            $sessionId = $request->hasSession() ? ($request->session()->getId() ?? 'guest') : 'guest';
             $ip = $request->ip() ?? '127.0.0.1';
             $today = now()->toDateString();
 
-            // Throttle identical query from same session/IP within 2 minutes (prevents duplicate live-search typing spam)
+            // Throttle identical query from same session/IP within 2 minutes
             $cacheKey = "sq_throttle_" . md5($normalized) . "_{$sessionId}";
-            if (Cache::has($cacheKey)) {
+            $fileCache = Cache::store('file');
+            if ($fileCache->has($cacheKey)) {
                 return;
             }
-            Cache::put($cacheKey, true, now()->addMinutes(2));
+            $fileCache->put($cacheKey, true, now()->addMinutes(2));
 
-            $deviceType = static::detectDevice($request->userAgent());
+            $userId = $request->user()?->id;
+            $deviceType = static::detectDevice($ua);
 
-            SearchLog::create([
-                'query' => Str::limit($cleaned, 190, ''),
-                'query_normalized' => Str::limit($normalized, 190, ''),
-                'results_count' => max(0, $resultsCount),
-                'user_id' => $request->user()?->id,
-                'ip_address' => $ip,
-                'session_id' => $sessionId,
-                'device_type' => $deviceType,
-                'searched_date' => $today,
-            ]);
+            app()->terminating(function () use ($cleaned, $normalized, $resultsCount, $userId, $ip, $sessionId, $deviceType, $today) {
+                try {
+                    SearchLog::create([
+                        'query' => Str::limit($cleaned, 190, ''),
+                        'query_normalized' => Str::limit($normalized, 190, ''),
+                        'results_count' => max(0, $resultsCount),
+                        'user_id' => $userId,
+                        'ip_address' => $ip,
+                        'session_id' => $sessionId,
+                        'device_type' => $deviceType,
+                        'searched_date' => $today,
+                    ]);
+                } catch (\Throwable $e) {
+                    // Fail silently
+                }
+            });
         } catch (\Throwable $e) {
-            report($e);
+            // Fail silently
         }
     }
 

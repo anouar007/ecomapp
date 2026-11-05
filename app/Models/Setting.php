@@ -29,7 +29,7 @@ class Setting extends Model
         }
 
         try {
-            static::$runtimeCache = Cache::remember('all_settings_map', 86400, function () {
+            static::$runtimeCache = Cache::store('file')->remember('all_settings_map', 86400, function () {
                 return static::all()->mapWithKeys(function ($setting) {
                     return [$setting->key => $setting->getCastedValue()];
                 })->all();
@@ -84,7 +84,9 @@ class Setting extends Model
         
         static::$runtimeCache = null;
         Cache::forget('all_settings_map');
+        Cache::store('file')->forget('all_settings_map');
         Cache::forget("setting_{$key}");
+        \App\Http\Middleware\FastGuestPageCache::flush();
         
         return $setting;
     }

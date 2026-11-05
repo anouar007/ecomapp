@@ -34,28 +34,42 @@ class ShopController extends Controller
         $maxPrice = $request->filled('max_price') ? (float) $request->max_price : null;
         $sort = $request->get('sort');
 
-        // Build intelligent search query with relevance ranking
-        $query = ProductSearchService::buildQuery(
-            search: $search,
-            categorySlug: $categorySlug,
-            brandSlug: $brandSlug,
-            minPrice: $minPrice,
-            maxPrice: $maxPrice,
-            sort: $sort
-        );
+        $fileCache = Cache::store('file');
+        $cacheVer = \App\Http\Middleware\FastGuestPageCache::getVersion();
+        $pageNum = (int) $request->get('page', 1);
+        $productsCacheKey = 'shop_grid_v2_' . $cacheVer . '_' . md5(json_encode([
+            $search, $categorySlug, $brandSlug, $minPrice, $maxPrice, $sort, $pageNum,
+        ]));
 
-        $products = $query->with(['images', 'productCategory', 'brand', 'activeTags'])
-            ->withCount('reviews')
-            ->withAvg('reviews', 'rating')
-            ->paginate(32)->withQueryString();
+        $products = $fileCache->remember($productsCacheKey, 600, function () use ($search, $categorySlug, $brandSlug, $minPrice, $maxPrice, $sort) {
+            $query = ProductSearchService::buildQuery(
+                search: $search,
+                categorySlug: $categorySlug,
+                brandSlug: $brandSlug,
+                minPrice: $minPrice,
+                maxPrice: $maxPrice,
+                sort: $sort
+            );
 
-        $categories = Cache::remember('shop_catalog_categories', 3600, function () {
+            return $query->with(['images', 'productCategory', 'brand', 'activeTags'])
+                ->withCount('reviews')
+                ->withAvg('reviews', 'rating')
+                ->paginate(32)->withQueryString();
+        });
+
+        $categories = $fileCache->remember("shop_catalog_categories_{$cacheVer}", 3600, function () {
             return Category::withCount('products')->get();
+        });
+
+        $totalActiveProducts = (int) $fileCache->remember("total_active_products_count_{$cacheVer}", 1800, function () {
+            return Product::where('status', 'active')->count();
         });
 
         // Smart brands contextually calculated based on active category & search
         $smartBrands = ProductSearchService::getSmartBrands($categorySlug, $search);
-        $activeBrand = !empty($brandSlug) ? Brand::where('slug', $brandSlug)->first() : null;
+        $activeBrand = !empty($brandSlug)
+            ? $fileCache->remember("active_brand_{$brandSlug}_{$cacheVer}", 3600, fn() => Brand::where('slug', $brandSlug)->first())
+            : null;
 
         // Get matching categories for search chips if searching
         $matchingCategories = $request->filled('q')
@@ -80,6 +94,7 @@ class ShopController extends Controller
         $viewData = compact(
             'products',
             'categories',
+            'totalActiveProducts',
             'activeCategory',
             'activeCategoryTitle',
             'matchingCategories',
@@ -110,78 +125,125 @@ class ShopController extends Controller
     }
 
     /**
-     * Display the specified product.
+     * Display the specified product (Ultra-Fast Cached Data & Zero ORDER BY RAND()).
      */
     public function show(Request $request, $id)
     {
-        $product = is_numeric($id)
-            ? Product::with(['images', 'productCategory', 'categories', 'inventoryMovements', 'variants', 'brand', 'activeTags'])->findOrFail($id)
-            : Product::with(['images', 'productCategory', 'categories', 'inventoryMovements', 'variants', 'brand', 'activeTags'])->where('slug', $id)->firstOrFail();
-        
-        // Track product view with date and device telemetry
-        \App\Services\ViewTrackingService::trackProductView($product, $request);
+        $fileCache = Cache::store('file');
+        $cacheVer = \App\Http\Middleware\FastGuestPageCache::getVersion();
+        $pdpCacheKey = 'pdp_bundle_v2_' . $cacheVer . '_' . md5((string) $id);
 
-        // Paginate approved reviews separately - 5 per page
-        $reviews = ProductReview::where('product_id', $product->id)
-            ->where('status', 'approved')
-            ->orderBy('created_at', 'desc')
-            ->paginate(5);
-        
-        // 1. Related products — find items in stock sharing any assigned category (10 products on slider)
-        $categoryIds = $product->category_ids;
-        $relatedProducts = Product::with(['images', 'activeTags', 'productCategory', 'brand'])
-            ->where('status', 'active')
-            ->where('stock', '>', 0)
-            ->where('id', '!=', $product->id)
-            ->where(function($q) use ($categoryIds) {
-                if (!empty($categoryIds)) {
-                    $q->whereIn('category_id', $categoryIds)
-                      ->orWhereHas('categories', function($sub) use ($categoryIds) {
-                          $sub->whereIn('categories.id', $categoryIds);
-                      });
-                }
-            })
-            ->take(10)
-            ->get();
+        $bundle = $fileCache->remember($pdpCacheKey, 1800, function () use ($id, $fileCache, $cacheVer) {
+            $product = is_numeric($id)
+                ? Product::with(['images', 'productCategory', 'categories', 'variants', 'brand', 'activeTags'])->find($id)
+                : Product::with(['images', 'productCategory', 'categories', 'variants', 'brand', 'activeTags'])->where('slug', $id)->first();
 
-        // If fewer than 10 related in same category, supplement with same brand or latest active in-stock products
-        if ($relatedProducts->count() < 10) {
-            $excludeIds = $relatedProducts->pluck('id')->push($product->id)->all();
-            $fillQuery = Product::with(['images', 'activeTags', 'productCategory', 'brand'])
-                ->where('status', 'active')
-                ->where('stock', '>', 0)
-                ->whereNotIn('id', $excludeIds);
-
-            if ($product->brand_id) {
-                $fillQuery->orderByRaw("CASE WHEN brand_id = {$product->brand_id} THEN 0 ELSE 1 END");
+            if (!$product) {
+                return null;
             }
 
-            $moreRelated = $fillQuery->latest()->take(10 - $relatedProducts->count())->get();
-            $relatedProducts = $relatedProducts->concat($moreRelated);
-        }
-
-        // 2. Random products / Suggestions pour vous (10 in-stock products on slider)
-        $excludeIdsForRandom = $relatedProducts->pluck('id')->push($product->id)->all();
-        $randomProducts = Product::with(['images', 'activeTags', 'productCategory', 'brand'])
-            ->where('status', 'active')
-            ->where('stock', '>', 0)
-            ->whereNotIn('id', $excludeIdsForRandom)
-            ->inRandomOrder()
-            ->take(10)
-            ->get();
-
-        if ($randomProducts->count() < 10) {
-            $fallbackRandom = Product::with(['images', 'activeTags', 'productCategory', 'brand'])
+            // 1. Related products — find items in stock sharing any assigned category (10 products on slider)
+            $categoryIds = $product->category_ids;
+            $relatedProducts = Product::with(['images', 'activeTags', 'productCategory', 'brand'])
                 ->where('status', 'active')
                 ->where('stock', '>', 0)
                 ->where('id', '!=', $product->id)
-                ->inRandomOrder()
+                ->where(function ($q) use ($categoryIds) {
+                    if (!empty($categoryIds)) {
+                        $q->whereIn('category_id', $categoryIds)
+                          ->orWhereHas('categories', function ($sub) use ($categoryIds) {
+                              $sub->whereIn('categories.id', $categoryIds);
+                          });
+                    }
+                })
                 ->take(10)
                 ->get();
-            $randomProducts = $fallbackRandom;
+
+            // If fewer than 10 related in same category, supplement with same brand or latest active in-stock products
+            if ($relatedProducts->count() < 10) {
+                $excludeIds = $relatedProducts->pluck('id')->push($product->id)->all();
+                $fillQuery = Product::with(['images', 'activeTags', 'productCategory', 'brand'])
+                    ->where('status', 'active')
+                    ->where('stock', '>', 0)
+                    ->whereNotIn('id', $excludeIds);
+
+                if ($product->brand_id) {
+                    $fillQuery->orderByRaw("CASE WHEN brand_id = " . (int) $product->brand_id . " THEN 0 ELSE 1 END");
+                }
+
+                $moreRelated = $fillQuery->latest()->take(10 - $relatedProducts->count())->get();
+                $relatedProducts = $relatedProducts->concat($moreRelated);
+            }
+
+            // 2. Suggested products ("Suggestions pour vous") — Fast In-Memory Pool (0ms, no ORDER BY RAND() table scan!)
+            $inStockPool = $fileCache->remember("shop_instock_pool_v1_{$cacheVer}", 1800, function () {
+                return Product::with(['images', 'activeTags', 'productCategory', 'brand'])
+                    ->where('status', 'active')
+                    ->where('stock', '>', 0)
+                    ->latest('updated_at')
+                    ->take(80)
+                    ->get();
+            });
+
+            $excludeIdsForRandom = $relatedProducts->pluck('id')->push($product->id)->all();
+            $filteredPool = $inStockPool->whereNotIn('id', $excludeIdsForRandom)->values();
+            if ($filteredPool->count() < 10) {
+                $filteredPool = $inStockPool->where('id', '!=', $product->id)->values();
+            }
+            $randomProducts = $filteredPool->count() > 10
+                ? $filteredPool->random(10)->values()
+                : $filteredPool;
+
+            // 3. Pre-calculate review stats so Blade doesn't run AVG() and COUNT() on every page view
+            $reviewStats = ProductReview::where('product_id', $product->id)
+                ->where('status', 'approved')
+                ->selectRaw('COUNT(*) as total_count, COALESCE(AVG(rating), 0) as avg_rating')
+                ->first();
+
+            return [
+                'product' => $product,
+                'relatedProducts' => $relatedProducts,
+                'randomProducts' => $randomProducts,
+                'avgRating' => (float) ($reviewStats->avg_rating ?? 0),
+                'reviewCount' => (int) ($reviewStats->total_count ?? 0),
+            ];
+        });
+
+        if (!$bundle || empty($bundle['product'])) {
+            abort(404);
         }
 
-        return view('frontend.shop.show', compact('product', 'relatedProducts', 'randomProducts', 'reviews'));
+        $product = $bundle['product'];
+        $relatedProducts = $bundle['relatedProducts'];
+        $randomProducts = $bundle['randomProducts'];
+        $avgRating = $bundle['avgRating'];
+        $reviewCount = $bundle['reviewCount'];
+
+        // Track product view asynchronously after response is sent
+        \App\Services\ViewTrackingService::trackProductView($product, $request);
+
+        // Paginate approved reviews (cached for page 1 when reviewCount === 0 to skip DB query completely!)
+        $reviewPage = (int) $request->get('page', 1);
+        if ($reviewCount === 0 && $reviewPage <= 1) {
+            $reviews = new \Illuminate\Pagination\LengthAwarePaginator(collect(), 0, 5, 1, [
+                'path' => $request->url(),
+                'query' => $request->query(),
+            ]);
+        } else {
+            $reviews = ProductReview::where('product_id', $product->id)
+                ->where('status', 'approved')
+                ->orderBy('created_at', 'desc')
+                ->paginate(5);
+        }
+
+        return view('frontend.shop.show', compact(
+            'product',
+            'relatedProducts',
+            'randomProducts',
+            'reviews',
+            'avgRating',
+            'reviewCount'
+        ));
     }
 
     /**

@@ -20,8 +20,11 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $fileCache = Cache::store('file');
+        $cacheVer = \App\Http\Middleware\FastGuestPageCache::getVersion();
+
         // 1. Hero Data & Banners (Single cached query)
-        $banners = Cache::remember('home_active_banners_v1', 3600, function () {
+        $banners = $fileCache->remember("home_active_banners_v2_{$cacheVer}", 3600, function () {
             return Banner::where('status', 'active')
                 ->orderBy('sort_order', 'asc')
                 ->get();
@@ -52,7 +55,7 @@ class HomeController extends Controller
             'occasion' => asset('images/camera/icons/cat_occasion.svg'),
         ];
 
-        $popularCategories = Cache::remember('home_popular_categories_v2', 1800, function () use ($defaultIcons) {
+        $popularCategories = $fileCache->remember("home_popular_categories_v3_{$cacheVer}", 1800, function () use ($defaultIcons) {
             $categories = Category::where('status', 'active')
                 ->whereNull('parent_id')
                 ->where('slug', '!=', 'test-cat')
@@ -88,7 +91,7 @@ class HomeController extends Controller
         }
         $featuredIds = (!empty($savedFeatured) && is_array($savedFeatured)) ? $savedFeatured : $defaultFeaturedIds;
 
-        $featuredProducts = Cache::remember('home_featured_products_v1', 1800, function () use ($featuredIds) {
+        $featuredProducts = $fileCache->remember("home_featured_products_v2_{$cacheVer}", 1800, function () use ($featuredIds) {
             $prods = Product::where('status', 'active')
                 ->whereIn('id', $featuredIds)
                 ->with(['images', 'productCategory', 'activeTags', 'brand'])
@@ -121,7 +124,7 @@ class HomeController extends Controller
         }
         $newArrivalIds = (!empty($savedNewArrival) && is_array($savedNewArrival)) ? $savedNewArrival : $defaultNewArrivalIds;
 
-        $newArrivalProducts = Cache::remember('home_new_arrival_products_v1', 1800, function () use ($newArrivalIds) {
+        $newArrivalProducts = $fileCache->remember("home_new_arrival_products_v2_{$cacheVer}", 1800, function () use ($newArrivalIds) {
             $prods = Product::where('status', 'active')
                 ->whereIn('id', $newArrivalIds)
                 ->with(['images', 'productCategory', 'activeTags', 'brand'])
@@ -151,7 +154,7 @@ class HomeController extends Controller
         }
         $occasionIds = (!empty($savedOccasion) && is_array($savedOccasion)) ? $savedOccasion : null;
 
-        $occasionProducts = Cache::remember('home_occasion_products_v1', 1800, function () use ($occasionIds) {
+        $occasionProducts = $fileCache->remember("home_occasion_products_v2_{$cacheVer}", 1800, function () use ($occasionIds) {
             if (!empty($occasionIds)) {
                 $prods = Product::where('status', 'active')
                     ->whereIn('id', $occasionIds)
@@ -179,7 +182,7 @@ class HomeController extends Controller
         });
 
         // General categories for navbar / footer (cached)
-        $allCategories = Cache::remember('all_active_categories_sorted_v1', 3600, function () {
+        $allCategories = $fileCache->remember("all_active_categories_sorted_v2_{$cacheVer}", 3600, function () {
             return Category::where('status', 'active')
                 ->orderBy('sort_order', 'asc')
                 ->get();

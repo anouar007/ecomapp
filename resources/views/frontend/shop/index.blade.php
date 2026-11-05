@@ -218,7 +218,7 @@
                 <button type="button" class="mobile-cat-pill {{ !request('category') ? 'active' : '' }}" data-slug="" data-name="{{ __('Tout le catalogue') }}">
                     <i class="fas fa-th-large"></i>
                     <span>{{ __('Tous') }}</span>
-                    <span class="mobile-cat-badge">{{ \App\Models\Product::where('status','active')->count() }}</span>
+                    <span class="mobile-cat-badge">{{ $totalActiveProducts ?? $products->total() }}</span>
                 </button>
                 @foreach($categories as $cat)
                 @php
@@ -684,7 +684,7 @@
                             <i class="fas fa-th-large"></i>
                         </span>
                         <span class="sheet-cat-card-name">{{ __('Tout le catalogue') }}</span>
-                        <span class="sheet-chip-count sheet-cat-card-count">{{ \App\Models\Product::where('status','active')->count() }}</span>
+                        <span class="sheet-chip-count sheet-cat-card-count">{{ $totalActiveProducts ?? $products->total() }}</span>
                     </button>
                     @foreach($categories as $cat)
                     @php
@@ -809,7 +809,7 @@ const categoryNamesMap = {
 
 // Category Counts Map
 const categoryCountsMap = {
-    '': '{{ \App\Models\Product::where('status','active')->count() }}',
+    '': '{{ $totalActiveProducts ?? $products->total() }}',
     @foreach($categories as $cat)
         '{{ $cat->slug }}': '{{ $cat->products_count }}',
     @endforeach

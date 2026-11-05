@@ -861,8 +861,8 @@
 
 @section('json_ld')
 @php
-    $avgRating = $product->reviews()->avg('rating') ?? 0;
-    $reviewCount = $product->reviews()->count();
+    $avgRating = $avgRating ?? ($product->reviews()->avg('rating') ?? 0);
+    $reviewCount = $reviewCount ?? ($product->reviews()->count() ?? 0);
 @endphp
 <script type="application/ld+json">
 [

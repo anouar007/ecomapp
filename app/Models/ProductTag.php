@@ -41,6 +41,11 @@ class ProductTag extends Model
         'sort_order' => 'integer',
     ];
 
+    /**
+     * In-memory singleton cache for the current request lifecycle (0ms / 0 queries).
+     */
+    protected static ?self $runtimeDiscountTag = null;
+
     protected static function booted()
     {
         static::saving(function ($tag) {
@@ -62,12 +67,15 @@ class ProductTag extends Model
         });
 
         $clearCaches = function () {
+            static::$runtimeDiscountTag = null;
             Cache::forget('frontend_home_data');
             Cache::forget('home_featured_products_v1');
             Cache::forget('home_new_arrival_products_v1');
             Cache::forget('home_occasion_products_v1');
             Cache::forget('active_product_tags_v1');
             Cache::forget('auto_discount_product_tag_v1');
+            Cache::store('file')->forget('auto_discount_product_tag_v1');
+            \App\Http\Middleware\FastGuestPageCache::flush();
         };
 
         static::saved($clearCaches);
@@ -79,7 +87,11 @@ class ProductTag extends Model
      */
     public static function discountTag(): self
     {
-        return Cache::remember('auto_discount_product_tag_v1', 3600, function () {
+        if (static::$runtimeDiscountTag !== null) {
+            return static::$runtimeDiscountTag;
+        }
+
+        return static::$runtimeDiscountTag = Cache::store('file')->remember('auto_discount_product_tag_v1', 3600, function () {
             $tag = static::where('is_discount_tag', true)->first();
             if (!$tag) {
                 $tag = static::create([

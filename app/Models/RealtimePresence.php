@@ -31,43 +31,62 @@ class RealtimePresence extends Model
 
     /**
      * Heartbeat timeout window in seconds.
-     * Users sending a heartbeat every 20s; consider active if seen within 60s.
+     * Users sending a heartbeat every 45s; consider active if seen within 90s.
      */
-    public const ACTIVE_WINDOW_SECONDS = 60;
+    public const ACTIVE_WINDOW_SECONDS = 90;
 
     /**
-     * Record a heartbeat from a client.
+     * Record a heartbeat from a client (throttled and non-blocking for high concurrency).
      */
     public static function heartbeat(Request $request): void
     {
         try {
+            $ua = $request->userAgent() ?? '';
+            if (\App\Services\ViewTrackingService::isBot($ua)) {
+                return;
+            }
+
             $sessionId = $request->session()->getId();
             if (empty($sessionId)) return;
 
-            $now = time();
-            $user = $request->user();
-            $ip = $request->ip();
-            $ua = substr($request->userAgent() ?? '', 0, 255);
             $url = substr($request->input('url', $request->fullUrl()), 0, 255);
+            $throttleKey = "hb_throttle_{$sessionId}_" . md5($url);
+            $fileCache = \Illuminate\Support\Facades\Cache::store('file');
+            if ($fileCache->has($throttleKey)) {
+                return;
+            }
+            $fileCache->put($throttleKey, true, 25);
+
+            $now = time();
+            $userId = $request->user()?->id;
+            $isAuth = $userId !== null;
+            $ip = $request->ip();
+            $uaTrimmed = substr($ua, 0, 255);
             $title = substr($request->input('title', ''), 0, 255);
 
-            static::updateOrCreate(
-                ['session_id' => $sessionId],
-                [
-                    'user_id' => $user?->id,
-                    'ip_address' => $ip,
-                    'user_agent' => $ua,
-                    'current_url' => $url,
-                    'page_title' => $title,
-                    'is_auth' => $user !== null,
-                    'last_seen_at' => $now,
-                ]
-            );
+            app()->terminating(function () use ($sessionId, $userId, $ip, $uaTrimmed, $url, $title, $isAuth, $now) {
+                try {
+                    static::updateOrCreate(
+                        ['session_id' => $sessionId],
+                        [
+                            'user_id' => $userId,
+                            'ip_address' => $ip,
+                            'user_agent' => $uaTrimmed,
+                            'current_url' => $url,
+                            'page_title' => $title,
+                            'is_auth' => $isAuth,
+                            'last_seen_at' => $now,
+                        ]
+                    );
 
-            // Clean up stale presences (older than 10 minutes) with 5% lottery chance
-            if (random_int(1, 20) === 1) {
-                static::where('last_seen_at', '<', $now - 600)->delete();
-            }
+                    // Clean up stale presences (older than 10 minutes) with 1% lottery chance
+                    if (random_int(1, 100) === 1) {
+                        static::where('last_seen_at', '<', $now - 600)->delete();
+                    }
+                } catch (\Throwable $e) {
+                    // Failsafe
+                }
+            });
         } catch (\Throwable $e) {
             // Failsafe
         }
