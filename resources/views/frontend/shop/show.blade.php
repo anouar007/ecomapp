@@ -467,6 +467,43 @@
         margin-top: 12px;
         min-height: 20px;
     }
+    .pdp-mobile-pagination-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 12px;
+        width: 100%;
+    }
+    .pdp-mobile-pagination-wrap .pdp-slider-pagination {
+        margin-top: 0 !important;
+        flex: 0 0 auto;
+    }
+    .pdp-slider-mobile-nav {
+        width: 30px;
+        height: 30px;
+        font-size: 0.72rem;
+        background: #ffffff !important;
+        color: #0f172a !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+    }
+    .pdp-slider-mobile-nav:active:not(.swiper-button-disabled) {
+        transform: scale(0.92);
+    }
+    .pdp-slider-mobile-nav:hover:not(.swiper-button-disabled) {
+        background: #c8102e !important;
+        color: #ffffff !important;
+        border-color: #c8102e !important;
+    }
+    .pdp-slider-mobile-nav.swiper-button-disabled {
+        opacity: 0.3 !important;
+        background: #f1f5f9 !important;
+        color: #94a3b8 !important;
+        box-shadow: none !important;
+    }
     .pdp-slider-pagination .cat-swiper-dot,
     .pdp-slider-pagination .swiper-pagination-bullet {
         width: 9px !important;
@@ -996,13 +1033,13 @@
                                         </div>
                                     @endforeach
                                 </div>
-                                <button type="button" class="pdp-gallery-nav pdp-gallery-prev" aria-label="{{ __('Précédent') }}">
+                                <button type="button" class="pdp-gallery-nav pdp-gallery-prev d-none" aria-label="{{ __('Précédent') }}">
                                     <i class="fas fa-chevron-left"></i>
                                 </button>
-                                <button type="button" class="pdp-gallery-nav pdp-gallery-next" aria-label="{{ __('Suivant') }}">
+                                <button type="button" class="pdp-gallery-nav pdp-gallery-next d-none" aria-label="{{ __('Suivant') }}">
                                     <i class="fas fa-chevron-right"></i>
                                 </button>
-                                <div class="pdp-gallery-pagination"></div>
+                                <div class="pdp-gallery-pagination d-none"></div>
                             </div>
                         @else
                             <img id="mainImage" src="{{ $product->thumbnail }}"
@@ -1339,21 +1376,13 @@
                         <i class="fas fa-layer-group text-danger me-2"></i>{{ __('Produits similaires') }}
                     </h2>
                 </div>
-                <div class="d-flex align-items-center gap-2">
+                <div>
                     <a href="{{ route('shop.index', ['category' => $product->category?->slug]) }}" 
-                       class="btn btn-outline-danger fw-bold px-3 py-1 text-nowrap d-none d-sm-inline-flex align-items-center gap-2" 
+                       class="btn btn-outline-danger fw-bold px-3 py-1 text-nowrap d-inline-flex align-items-center gap-2" 
                        style="border-radius: 8px; font-size: 0.82rem; border-color: #c8102e;">
                         <span>{{ __('Voir plus') }}</span>
                         <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }}" style="font-size: 10px;"></i>
                     </a>
-                    <div class="d-flex d-lg-none align-items-center gap-1.5">
-                        <button type="button" class="btn-slider-nav pdp-swiper-prev-related" aria-label="{{ __('Précédent') }}" title="{{ __('Précédent') }}">
-                            <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-chevron-right' : 'fa-chevron-left' }}"></i>
-                        </button>
-                        <button type="button" class="mx-2 btn-slider-nav pdp-swiper-next-related" aria-label="{{ __('Suivant') }}" title="{{ __('Suivant') }}">
-                            <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-chevron-left' : 'fa-chevron-right' }}"></i>
-                        </button>
-                    </div>
                 </div>
             </div>
 
@@ -1376,7 +1405,17 @@
                     </div>
                 </div>
             </div>
-            <div class="pdp-slider-pagination pdp-related-pagination"></div>
+
+            <!-- Dots & Navigation Arrows on Left and Right of Dots for Mobile -->
+            <div class="pdp-mobile-pagination-wrap">
+                <button type="button" class="btn btn-slider-nav pdp-slider-mobile-nav pdp-swiper-prev-related d-lg-none" aria-label="{{ __('Précédent') }}" title="{{ __('Précédent') }}">
+                    <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-chevron-right' : 'fa-chevron-left' }}"></i>
+                </button>
+                <div class="pdp-slider-pagination pdp-related-pagination"></div>
+                <button type="button" class="btn btn-slider-nav pdp-slider-mobile-nav pdp-swiper-next-related d-lg-none" aria-label="{{ __('Suivant') }}" title="{{ __('Suivant') }}">
+                    <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-chevron-left' : 'fa-chevron-right' }}"></i>
+                </button>
+            </div>
         </div>
         @endif
 
@@ -1389,21 +1428,13 @@
                         <i class="fas fa-fire text-warning me-2"></i>{{ __('Suggestions pour vous') }}
                     </h2>
                 </div>
-                <div class="d-flex align-items-center gap-2">
+                <div>
                     <a href="{{ route('shop.index') }}" 
-                       class="btn btn-outline-danger fw-bold px-3 py-1 text-nowrap d-none d-sm-inline-flex align-items-center gap-2" 
+                       class="btn btn-outline-danger fw-bold px-3 py-1 text-nowrap d-inline-flex align-items-center gap-2" 
                        style="border-radius: 8px; font-size: 0.82rem; border-color: #c8102e;">
                         <span>{{ __('Tout le catalogue') }}</span>
                         <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }}" style="font-size: 10px;"></i>
                     </a>
-                    <div class="d-flex d-lg-none align-items-center gap-1.5">
-                        <button type="button" class="btn-slider-nav pdp-swiper-prev-random" aria-label="{{ __('Précédent') }}" title="{{ __('Précédent') }}">
-                            <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-chevron-right' : 'fa-chevron-left' }}"></i>
-                        </button>
-                        <button type="button" class="mx-2 btn-slider-nav pdp-swiper-next-random" aria-label="{{ __('Suivant') }}" title="{{ __('Suivant') }}">
-                            <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-chevron-left' : 'fa-chevron-right' }}"></i>
-                        </button>
-                    </div>
                 </div>
             </div>
 
@@ -1426,7 +1457,17 @@
                     </div>
                 </div>
             </div>
-            <div class="pdp-slider-pagination pdp-random-pagination"></div>
+
+            <!-- Dots & Navigation Arrows on Left and Right of Dots for Mobile -->
+            <div class="pdp-mobile-pagination-wrap">
+                <button type="button" class="btn btn-slider-nav pdp-slider-mobile-nav pdp-swiper-prev-random d-lg-none" aria-label="{{ __('Précédent') }}" title="{{ __('Précédent') }}">
+                    <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-chevron-right' : 'fa-chevron-left' }}"></i>
+                </button>
+                <div class="pdp-slider-pagination pdp-random-pagination"></div>
+                <button type="button" class="btn btn-slider-nav pdp-slider-mobile-nav pdp-swiper-next-random d-lg-none" aria-label="{{ __('Suivant') }}" title="{{ __('Suivant') }}">
+                    <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-chevron-left' : 'fa-chevron-right' }}"></i>
+                </button>
+            </div>
         </div>
         @endif
 
