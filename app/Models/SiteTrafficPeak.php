@@ -47,6 +47,8 @@ class SiteTrafficPeak extends Model
             $entry->week = (int)$today->format('W');
             $entry->peak_concurrent_users = max(1, $currentConcurrent);
             $entry->peak_time = $today->format('H:i:s');
+            $entry->unique_visitors = 0;
+            $entry->total_views = 0;
         } else {
             if ($currentConcurrent > $entry->peak_concurrent_users) {
                 $entry->peak_concurrent_users = $currentConcurrent;
@@ -67,8 +69,8 @@ class SiteTrafficPeak extends Model
                 ) as daily_union
             ", [$dateStr, $dateStr, $dateStr]);
 
-            $entry->unique_visitors = max($entry->unique_visitors, (int)($dailyStats->unique_ips ?? 0));
-            $entry->total_views = max($entry->total_views, (int)($dailyStats->total_hits ?? 0));
+            $entry->unique_visitors = max((int)$entry->unique_visitors, (int)($dailyStats->unique_ips ?? 0));
+            $entry->total_views = max((int)$entry->total_views, (int)($dailyStats->total_hits ?? 0));
         } catch (\Throwable $e) {
             // Failsafe
         }

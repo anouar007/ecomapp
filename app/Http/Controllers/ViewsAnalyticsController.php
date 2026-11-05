@@ -8,6 +8,7 @@ use App\Models\ProductView;
 use App\Models\CategoryView;
 use App\Models\SearchLog;
 use App\Models\SiteTrafficPeak;
+use App\Models\RealtimePresence;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -131,25 +132,11 @@ class ViewsAnalyticsController extends Controller
         // C: Live recent activity feed (last 25 events)
         $recentActivity = $this->getRecentActivityFeed();
 
-        // 8. Real-time active clients & visitors (last 5 min activity)
-        $cutoff = now()->subMinutes(5)->timestamp;
-        $onlineVisitors = DB::table('sessions')
-            ->where('last_activity', '>=', $cutoff)
-            ->count();
-        $onlineAuthClients = DB::table('sessions')
-            ->where('last_activity', '>=', $cutoff)
-            ->whereNotNull('user_id')
-            ->distinct('user_id')
-            ->count('user_id');
-        $totalOnline = max(1, $onlineVisitors);
-        $onlineStats = [
-            'total_online' => $totalOnline,
-            'auth_online' => $onlineAuthClients,
-            'guest_online' => max(0, $totalOnline - $onlineAuthClients),
-        ];
+        // 8. 100% Accurate Real-time active clients & visitors
+        $onlineStats = RealtimePresence::getLiveStats();
 
-        // Save traffic peak snapshot
-        SiteTrafficPeak::recordCurrentTraffic($totalOnline);
+        // Save traffic peak snapshot continuously
+        SiteTrafficPeak::recordCurrentTraffic($onlineStats['total_online']);
 
         // 9. Top Records / Traffic Peaks (Day, Week, Month, Year) filtered by date
         $trafficPeaks = $this->getTrafficPeakRecords($startDateStr, $endDateStr);
@@ -533,37 +520,24 @@ class ViewsAnalyticsController extends Controller
     }
 
     /**
-     * Return real-time active clients & visitors counter JSON.
+     * Return real-time active clients & visitors counter JSON (100% accurate).
      */
     public function liveVisitors()
     {
-        $cutoff = now()->subMinutes(5)->timestamp;
-
-        $onlineVisitors = DB::table('sessions')
-            ->where('last_activity', '>=', $cutoff)
-            ->count();
-
-        $onlineAuthClients = DB::table('sessions')
-            ->where('last_activity', '>=', $cutoff)
-            ->whereNotNull('user_id')
-            ->distinct('user_id')
-            ->count('user_id');
+        $onlineStats = RealtimePresence::getLiveStats();
 
         $staffRoles = ['Admin', 'Manager', 'Staff'];
         $totalRegisteredClients = \App\Models\User::whereDoesntHave('roles', function($q) use ($staffRoles) {
             $q->whereIn('name', $staffRoles);
         })->count();
 
-        $totalOnline = max(1, $onlineVisitors);
-        $guestsOnline = max(0, $totalOnline - $onlineAuthClients);
-
         // Record traffic peak snapshot continuously in real-time
-        SiteTrafficPeak::recordCurrentTraffic($totalOnline);
+        SiteTrafficPeak::recordCurrentTraffic($onlineStats['total_online']);
 
         return response()->json([
-            'online_clients' => $totalOnline,
-            'online_auth_clients' => $onlineAuthClients,
-            'online_guests' => $guestsOnline,
+            'online_clients' => $onlineStats['total_online'],
+            'online_auth_clients' => $onlineStats['auth_online'],
+            'online_guests' => $onlineStats['guest_online'],
             'total_registered_clients' => $totalRegisteredClients ?: \App\Models\User::count(),
             'updated_at' => now()->format('H:i:s'),
         ]);

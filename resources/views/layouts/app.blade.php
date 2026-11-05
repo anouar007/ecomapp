@@ -772,6 +772,64 @@
             }
         });
     </script>
+
+    <!-- Real-Time Presence Heartbeat for Dashboard Users -->
+    <script>
+    (function() {
+        var token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        var heartbeatUrl = '{{ route("presence.heartbeat") }}';
+        var leaveUrl = '{{ route("presence.leave") }}';
+
+        function sendPresence(isLeave) {
+            var url = isLeave ? leaveUrl : heartbeatUrl;
+            var data = JSON.stringify({
+                _token: token,
+                url: window.location.href,
+                title: document.title
+            });
+
+            if (isLeave && navigator.sendBeacon) {
+                var blob = new Blob([data], { type: 'application/json' });
+                navigator.sendBeacon(url, blob);
+                return;
+            }
+
+            try {
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': token,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: data,
+                    keepalive: isLeave
+                }).catch(function() {});
+            } catch(e) {}
+        }
+
+        sendPresence(false);
+
+        setInterval(function() {
+            if (!document.hidden) {
+                sendPresence(false);
+            }
+        }, 20000);
+
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                sendPresence(false);
+            }
+        });
+
+        window.addEventListener('pagehide', function() {
+            sendPresence(true);
+        });
+        window.addEventListener('beforeunload', function() {
+            sendPresence(true);
+        });
+    })();
+    </script>
     @stack('scripts')
 </body>
 </html>

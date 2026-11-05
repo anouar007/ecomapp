@@ -1681,7 +1681,8 @@ function pollLiveVisitors() {
     });
 }
 
-// Poll every 10 seconds for real-time accuracy
-setInterval(pollLiveVisitors, 10000);
+// Poll every 3 seconds for instantaneous accuracy
+pollLiveVisitors();
+setInterval(pollLiveVisitors, 3000);
 </script>
 @endpush

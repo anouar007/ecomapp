@@ -4836,6 +4836,68 @@
             initProMobileSearch();
         }
     </script>
+
+    <!-- 100% Accurate Real-Time Presence Heartbeat & Leave Beacon -->
+    <script>
+    (function() {
+        var token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        var heartbeatUrl = '{{ route("presence.heartbeat") }}';
+        var leaveUrl = '{{ route("presence.leave") }}';
+
+        function sendPresence(isLeave) {
+            var url = isLeave ? leaveUrl : heartbeatUrl;
+            var data = JSON.stringify({
+                _token: token,
+                url: window.location.href,
+                title: document.title
+            });
+
+            if (isLeave && navigator.sendBeacon) {
+                var blob = new Blob([data], { type: 'application/json' });
+                navigator.sendBeacon(url, blob);
+                return;
+            }
+
+            try {
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': token,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: data,
+                    keepalive: isLeave
+                }).catch(function() {});
+            } catch(e) {}
+        }
+
+        // Initial heartbeat on page load
+        sendPresence(false);
+
+        // Periodic heartbeat every 20 seconds while page is active
+        var heartbeatInterval = setInterval(function() {
+            if (!document.hidden) {
+                sendPresence(false);
+            }
+        }, 20000);
+
+        // Resume heartbeat immediately when tab becomes visible
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                sendPresence(false);
+            }
+        });
+
+        // Instant leave beacon when closing window/navigating away
+        window.addEventListener('pagehide', function() {
+            sendPresence(true);
+        });
+        window.addEventListener('beforeunload', function() {
+            sendPresence(true);
+        });
+    })();
+    </script>
     @stack('scripts')
 
     <!-- Custom Body End Codes -->

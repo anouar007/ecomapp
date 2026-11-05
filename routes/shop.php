@@ -84,6 +84,17 @@ Route::get('/checkout/orders/{order}/live-status', [\App\Http\Controllers\Checko
 Route::get('/checkout/success/{order}/status', [\App\Http\Controllers\CheckoutController::class, 'liveStatus']);
 Route::get('/checkout/success/{order}', [\App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
 
+// Real-Time Visitor Presence Tracking (Heartbeat & Beacon)
+Route::post('/presence/heartbeat', function(\Illuminate\Http\Request $request) {
+    \App\Models\RealtimePresence::heartbeat($request);
+    return response()->json(['ok' => true]);
+})->name('presence.heartbeat');
+
+Route::post('/presence/leave', function(\Illuminate\Http\Request $request) {
+    \App\Models\RealtimePresence::leave($request->session()->getId());
+    return response()->json(['ok' => true]);
+})->name('presence.leave');
+
 // Dynamic Frontend Pages (Catch-all)
 Route::get('/{slug?}', [\App\Http\Controllers\FrontendController::class, 'show'])
     ->where('slug', '^(?!api|dashboard|pos|products|categories|orders|invoices|customers|inventory|coupons|roles|permissions|users|activity-logs|settings|my-account|login|register|logout).*')
