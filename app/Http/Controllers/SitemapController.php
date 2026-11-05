@@ -396,14 +396,10 @@ class SitemapController extends Controller
      * Authoritative IndexNow verification key for winashop.com.
      * Consistent across local CLI and production environments.
      */
-    public const DEFAULT_INDEXNOW_KEY = '1fa67d747e74974e838919c909c65098';
+    public const DEFAULT_INDEXNOW_KEY = 'a8c9e2f4b6d1e3a5c7f9b0d2e4a6c8f1';
 
     public static function getIndexNowKey(): string
     {
-        $key = setting('seo_indexnow_key') ?: setting('indexnow_api_key');
-        if (!empty($key) && preg_match('/^[a-zA-Z0-9\-]{8,128}$/', (string) $key)) {
-            return (string) $key;
-        }
         return self::DEFAULT_INDEXNOW_KEY;
     }
 

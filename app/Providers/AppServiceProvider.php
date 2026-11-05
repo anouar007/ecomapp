@@ -29,12 +29,13 @@ class AppServiceProvider extends ServiceProvider
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
 
-        // Canonical host safety: prevent internal mail.* or cpanel.* hostnames from polluting URLs in production
+        // Canonical host & path safety: always force https://winashop.com (non-www, no /public) in production
         if (!$this->app->environment('local')) {
             $reqHost = request()->getHost();
-            if ($reqHost === 'mail.winashop.com' || str_contains((string) config('app.url'), 'mail.winashop.com')) {
+            if (str_contains($reqHost, 'winashop.com') || str_contains((string) config('app.url'), 'winashop.com')) {
                 config(['app.url' => 'https://winashop.com']);
                 \Illuminate\Support\Facades\URL::forceRootUrl('https://winashop.com');
+                \Illuminate\Support\Facades\URL::forceScheme('https');
             }
         }
 

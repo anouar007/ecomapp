@@ -48,15 +48,9 @@ class LegacyProductRedirectController extends Controller
         // 2. Resolve the matching product
         $product = $this->resolveProduct($cleanSlug);
 
-        // 3. If product found, 301 redirect to the modern product route
+        // 3. If product found, 301 redirect to the modern canonical product route
         if ($product) {
             $targetUrl = route('shop.show', $product->slug ?: $product->id);
-            
-            // Preserve any incoming query parameters (e.g. UTM tracking codes, affiliate tags)
-            if ($request->getQueryString()) {
-                $targetUrl .= '?' . $request->getQueryString();
-            }
-
             return redirect()->to($targetUrl, 301);
         }
 
@@ -64,12 +58,14 @@ class LegacyProductRedirectController extends Controller
         $searchTerms = str_replace(['-', '_', '.', '+', '/'], ' ', $cleanSlug);
         $searchTerms = trim(preg_replace('/\s+/', ' ', $searchTerms));
 
-        return redirect()->route('shop.index', array_merge(['search' => $searchTerms], $request->query()), 301)
+        return redirect()->route('shop.index', ['search' => $searchTerms], 301)
             ->with('info', __('Le produit recherché a été mis à jour. Voici les articles correspondants dans notre catalogue.'));
     }
 
     /**
      * Redirect legacy WooCommerce category URLs (/categorie-produit/{slug} and /product-category/{slug})
+     * Strips legacy WooCommerce query parameters (column, rating_filter, per_page, stock_status, featured)
+     * so Google consolidates indexation onto clean canonical category URLs.
      */
     public function redirectCategory(Request $request, ?string $slug = null): RedirectResponse
     {
@@ -77,17 +73,19 @@ class LegacyProductRedirectController extends Controller
             return redirect()->route('shop.index', [], 301);
         }
 
-        $cleanSlug = strtolower(trim($slug, " /\t\n\r\0\x0B"));
-        
+        // If nested category path (e.g. camera/sony), take the last segment or match full
+        $segments = array_values(array_filter(explode('/', strtolower(trim($slug, " /\t\n\r\0\x0B")))));
+        $cleanSlug = end($segments) ?: strtolower(trim($slug, " /\t\n\r\0\x0B"));
+
         $category = Category::where('slug', $cleanSlug)
             ->orWhere('name', 'like', '%' . str_replace('-', ' ', $cleanSlug) . '%')
             ->first();
 
         if ($category) {
-            return redirect()->route('shop.index', array_merge(['category' => $category->slug], $request->query()), 301);
+            return redirect()->route('shop.index', ['category' => $category->slug], 301);
         }
 
-        return redirect()->route('shop.index', $request->query(), 301);
+        return redirect()->route('shop.index', [], 301);
     }
 
     /**

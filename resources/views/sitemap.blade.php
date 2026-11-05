@@ -8,14 +8,11 @@
 
   {{-- Home Page --}}
   <url>
-    <loc>{{ $siteUrl }}</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="{{ $siteUrl }}"/>
-    <xhtml:link rel="alternate" hreflang="fr-MA" href="{{ $siteUrl }}"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="{{ $siteUrl }}?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ $siteUrl }}?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="en" href="{{ $siteUrl }}?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="en-MA" href="{{ $siteUrl }}?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="{{ $siteUrl }}"/>
+    <loc>{{ $siteUrl }}/</loc>
+    <xhtml:link rel="alternate" hreflang="fr-MA" href="{{ $siteUrl }}/"/>
+    <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ $siteUrl }}/"/>
+    <xhtml:link rel="alternate" hreflang="en-MA" href="{{ $siteUrl }}/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="{{ $siteUrl }}/"/>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <lastmod>{{ now()->toAtomString() }}</lastmod>
@@ -25,12 +22,9 @@
   @php $shopUrl = $siteUrl . '/shop'; @endphp
   <url>
     <loc>{{ $shopUrl }}</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="{{ $shopUrl }}"/>
     <xhtml:link rel="alternate" hreflang="fr-MA" href="{{ $shopUrl }}"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="{{ $shopUrl }}?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ $shopUrl }}?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="en" href="{{ $shopUrl }}?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="en-MA" href="{{ $shopUrl }}?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ $shopUrl }}"/>
+    <xhtml:link rel="alternate" hreflang="en-MA" href="{{ $shopUrl }}"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="{{ $shopUrl }}"/>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
@@ -41,12 +35,9 @@
   @php $aboutUrl = $siteUrl . '/about'; @endphp
   <url>
     <loc>{{ $aboutUrl }}</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="{{ $aboutUrl }}"/>
     <xhtml:link rel="alternate" hreflang="fr-MA" href="{{ $aboutUrl }}"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="{{ $aboutUrl }}?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ $aboutUrl }}?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="en" href="{{ $aboutUrl }}?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="en-MA" href="{{ $aboutUrl }}?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ $aboutUrl }}"/>
+    <xhtml:link rel="alternate" hreflang="en-MA" href="{{ $aboutUrl }}"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="{{ $aboutUrl }}"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -57,12 +48,9 @@
   @php $contactUrl = $siteUrl . '/contact'; @endphp
   <url>
     <loc>{{ $contactUrl }}</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="{{ $contactUrl }}"/>
     <xhtml:link rel="alternate" hreflang="fr-MA" href="{{ $contactUrl }}"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="{{ $contactUrl }}?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ $contactUrl }}?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="en" href="{{ $contactUrl }}?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="en-MA" href="{{ $contactUrl }}?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ $contactUrl }}"/>
+    <xhtml:link rel="alternate" hreflang="en-MA" href="{{ $contactUrl }}"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="{{ $contactUrl }}"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -75,12 +63,9 @@
   @php $catUrl = $siteUrl . '/shop?category=' . urlencode($category->slug); @endphp
   <url>
     <loc>{{ $catUrl }}</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="{{ $catUrl }}"/>
     <xhtml:link rel="alternate" hreflang="fr-MA" href="{{ $catUrl }}"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="{{ $catUrl }}&amp;lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ $catUrl }}&amp;lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="en" href="{{ $catUrl }}&amp;lang=en"/>
-    <xhtml:link rel="alternate" hreflang="en-MA" href="{{ $catUrl }}&amp;lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ $catUrl }}"/>
+    <xhtml:link rel="alternate" hreflang="en-MA" href="{{ $catUrl }}"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="{{ $catUrl }}"/>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
@@ -96,12 +81,9 @@
   @php $brandUrl = $siteUrl . '/shop?brand=' . urlencode($brand->slug); @endphp
   <url>
     <loc>{{ $brandUrl }}</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="{{ $brandUrl }}"/>
     <xhtml:link rel="alternate" hreflang="fr-MA" href="{{ $brandUrl }}"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="{{ $brandUrl }}&amp;lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ $brandUrl }}&amp;lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="en" href="{{ $brandUrl }}&amp;lang=en"/>
-    <xhtml:link rel="alternate" hreflang="en-MA" href="{{ $brandUrl }}&amp;lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ $brandUrl }}"/>
+    <xhtml:link rel="alternate" hreflang="en-MA" href="{{ $brandUrl }}"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="{{ $brandUrl }}"/>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
@@ -125,12 +107,9 @@
   @endphp
   <url>
     <loc>{{ $prodUrl }}</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="{{ $prodUrl }}"/>
     <xhtml:link rel="alternate" hreflang="fr-MA" href="{{ $prodUrl }}"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="{{ $prodUrl }}?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ $prodUrl }}?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="en" href="{{ $prodUrl }}?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="en-MA" href="{{ $prodUrl }}?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ $prodUrl }}"/>
+    <xhtml:link rel="alternate" hreflang="en-MA" href="{{ $prodUrl }}"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="{{ $prodUrl }}"/>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>

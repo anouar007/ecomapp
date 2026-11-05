@@ -36,8 +36,18 @@
             'matériel photo f lmaghrib', 'camérat للبيع f casa', 'taman caméra f lmaghrib', 'chri caméra f casa', 'matériel dyal taswir f lmaghrib'
         ]);
     @endphp
+    @php
+        $hasDuplicateQueryParams = request()->hasAny([
+            'lang', 'column', 'rating_filter', 'per_page', 'stock_status', 'featured', 'orderby', 'sort', 'min_price', 'max_price', 'paged'
+        ]) || str_starts_with(request()->getRequestUri(), '/public');
+        $defaultRobotsDirective = $hasDuplicateQueryParams
+            ? 'noindex, follow'
+            : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
+    @endphp
     <meta name="keywords" content="@yield('meta_keywords', $defaultSiteKeywords)">
-    <meta name="robots" content="@yield('meta_robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')">
+    <meta name="robots" content="@yield('meta_robots', $defaultRobotsDirective)">
+    <meta name="googlebot" content="@yield('meta_robots', $defaultRobotsDirective)">
+    <meta name="bingbot" content="@yield('meta_robots', $defaultRobotsDirective)">
     <meta name="author" content="{{ setting('app_name', 'WINA SHOP') }}">
     <meta name="developer" content="Elegant Boost (https://elegantboost.com/)">
     <meta name="designer" content="Elegant Boost">
@@ -60,27 +70,36 @@
     </script>
     @endif
 
-    <!-- Canonical URL -->
+    <!-- Canonical URL (Strictly https://winashop.com without www. or /public) -->
     @php
         $rawCanonical = trim(View::yieldContent('canonical_url', ''));
         if (empty($rawCanonical)) {
             $rawCanonical = url()->current();
         }
-        if (!app()->environment('local')) {
-            $rawCanonical = str_replace('mail.winashop.com', 'winashop.com', $rawCanonical);
-        }
         $parsedUrl = parse_url($rawCanonical);
-        $cleanCanonicalUrl = ($parsedUrl['scheme'] ?? 'https') . '://' . ($parsedUrl['host'] ?? 'winashop.com') . ($parsedUrl['path'] ?? '/');
+        $canonicalHost = $parsedUrl['host'] ?? 'winashop.com';
+        $canonicalScheme = $parsedUrl['scheme'] ?? 'https';
+        if (!app()->environment('local') || str_contains($canonicalHost, 'winashop.com')) {
+            $canonicalHost = 'winashop.com';
+            $canonicalScheme = 'https';
+        }
+        $canonicalPath = $parsedUrl['path'] ?? '/';
+        $canonicalPath = preg_replace('#^/public(?=/|$)#', '', $canonicalPath) ?: '/';
+        if ($canonicalPath !== '/') {
+            $canonicalPath = rtrim($canonicalPath, '/');
+        }
+        $cleanCanonicalUrl = $canonicalScheme . '://' . $canonicalHost . $canonicalPath;
+        if (request()->routeIs('shop.index') && request()->filled('category') && !request()->hasAny(['search', 'q', 'sort', 'min_price', 'max_price', 'column', 'rating_filter'])) {
+            $cleanCanonicalUrl .= '?category=' . urlencode((string) request()->query('category'));
+        }
     @endphp
     <link rel="canonical" href="{{ $cleanCanonicalUrl }}">
 
-    <!-- Multi-Language Hreflang Tags (French, Arabic & English + x-default) -->
+    <!-- Multi-Language Hreflang Tags (Consolidated on Authoritative Canonical URL) -->
     <link rel="alternate" hreflang="fr" href="{{ $cleanCanonicalUrl }}">
     <link rel="alternate" hreflang="fr-MA" href="{{ $cleanCanonicalUrl }}">
-    <link rel="alternate" hreflang="ar" href="{{ $cleanCanonicalUrl }}?lang=ar">
-    <link rel="alternate" hreflang="ar-MA" href="{{ $cleanCanonicalUrl }}?lang=ar">
-    <link rel="alternate" hreflang="en" href="{{ $cleanCanonicalUrl }}?lang=en">
-    <link rel="alternate" hreflang="en-MA" href="{{ $cleanCanonicalUrl }}?lang=en">
+    <link rel="alternate" hreflang="ar-MA" href="{{ $cleanCanonicalUrl }}">
+    <link rel="alternate" hreflang="en-MA" href="{{ $cleanCanonicalUrl }}">
     <link rel="alternate" hreflang="x-default" href="{{ $cleanCanonicalUrl }}">
 
     <!-- AI Search, LLM Discovery & Google Shopping Feed Endpoints -->

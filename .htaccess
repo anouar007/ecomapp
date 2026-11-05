@@ -1,0 +1,34 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # 1. Force Canonical HTTPS & Non-WWW on winashop.com (Single 301 Redirect)
+    RewriteCond %{HTTP_HOST} ^(?:www\.|mail\.)?winashop\.com$ [NC]
+    RewriteCond %{HTTP_HOST} !^winashop\.com$ [NC,OR]
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{HTTP_X_FORWARDED_PROTO} !https [NC]
+    RewriteRule ^ https://winashop.com%{REQUEST_URI} [L,R=301]
+
+    # 2. Prevent /public/ URL Leak: 301 Redirect direct /public/... requests to clean root URL
+    RewriteCond %{THE_REQUEST} \s/+public(?:/([^\s?]*))? [NC]
+    RewriteRule ^ /%1 [L,R=301]
+
+    # 3. Redirect Trailing Slashes on Root Before Rewriting to public/ (Prevents /public/ in Location header)
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteCond %{REQUEST_URI} ^/(.+)/$
+    RewriteRule ^ /%1 [L,R=301]
+
+    # 4. Block access to hidden files (.env, .git, etc.)
+    RewriteRule (^|/)\.(?!well-known) - [F,L]
+
+    # 5. Block access to sensitive system files
+    RewriteRule ^(artisan|composer\.json|composer\.lock|package\.json|package-lock\.json|phpunit\.xml|vite\.config\.js) - [F,L]
+
+    # 6. Rewrite all requests to public/ folder internally
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>

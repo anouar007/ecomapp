@@ -61,10 +61,10 @@ class PingIndexNow extends Command
             $verifyResp = Http::timeout(8)->get($keyLocation);
             if (!$verifyResp->successful() || trim($verifyResp->body()) !== $indexNowKey) {
                 $this->warn("Note: {$keyLocation} returned HTTP " . $verifyResp->status() . " on the live server.");
-                $this->warn("Make sure you have pulled the latest code (git pull origin wina) on the production server winashop.com so that public/indexnow-{$indexNowKey}.txt is live before pinging IndexNow.");
-            } else {
-                $this->info("   Verified live key file on {$host}: HTTP 200 OK.");
+                $this->warn("Please run 'git pull origin wina' on the production server (winashop.com) first so that {$keyLocation} is live, then re-run 'php artisan seo:ping-index'.");
+                return 0;
             }
+            $this->info("   Verified live key file on {$host}: HTTP 200 OK.");
         } catch (\Throwable $e) {
             // Continue to IndexNow submission
         }

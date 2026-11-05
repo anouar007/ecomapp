@@ -4,6 +4,15 @@
     </IfModule>
 
     RewriteEngine On
+    RewriteBase /
+
+    # 1. Force Canonical Non-WWW & HTTPS on winashop.com
+    RewriteCond %{HTTP_HOST} ^www\.winashop\.com$ [NC]
+    RewriteRule ^ https://winashop.com%{REQUEST_URI} [L,R=301]
+
+    # 2. Prevent /public/ URL Leak if requested directly
+    RewriteCond %{THE_REQUEST} \s/+public(?:/([^\s?]*))? [NC]
+    RewriteRule ^ /%1 [L,R=301]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
@@ -13,10 +22,10 @@
     RewriteCond %{HTTP:x-xsrf-token} .
     RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
 
-    # Redirect Trailing Slashes If Not A Folder...
+    # Redirect Trailing Slashes If Not A Folder (Using clean root path without /public)...
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^ %1 [L,R=301]
+    RewriteCond %{REQUEST_URI} ^/(?:public/)?(.+)/$
+    RewriteRule ^ /%1 [L,R=301]
 
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
