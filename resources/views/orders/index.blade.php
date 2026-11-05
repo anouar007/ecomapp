@@ -691,7 +691,7 @@
                     <tr>
                         <th style="min-width: 130px; padding-left: 1.25rem;">N° Commande</th>
                         <th style="min-width: 220px;">Client</th>
-                        <th class="text-center" style="min-width: 80px;">Articles</th>
+                        <th style="min-width: 180px;">Articles</th>
                         <th class="text-end" style="min-width: 120px;">Total TTC</th>
                         <th class="text-center" style="min-width: 130px;">Livraison</th>
                         <th class="text-center d-none" style="min-width: 130px;">Paiement</th>
@@ -729,10 +729,40 @@
                                 @endif
                             </div>
                         </td>
-                        <td class="text-center">
-                            <span class="badge bg-light text-secondary px-3 py-1 border" style="border-radius: 6px;">
-                                {{ $order->items->count() }}
-                            </span>
+                        <td>
+                            @php $firstItem = $order->items->first(); @endphp
+                            @if($firstItem)
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="position-relative flex-shrink-0" style="width: 40px; height: 40px; border-radius: 8px; overflow: hidden; background: #ffffff; border: 1px solid #e2e8f0; padding: 2px; display: flex; align-items: center; justify-content: center;">
+                                        <img src="{{ $firstItem->product_image }}" 
+                                             alt="{{ $firstItem->product_name }}" 
+                                             style="width: 100%; height: 100%; object-fit: contain;" 
+                                             onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';"
+                                             loading="lazy">
+                                        @if($order->items->count() > 1)
+                                            <span class="position-absolute bottom-0 end-0 badge rounded-pill bg-dark text-white fw-bold" style="font-size: 0.58rem; padding: 1px 4px; transform: translate(15%, 15%); box-shadow: 0 1px 3px rgba(0,0,0,0.2);">
+                                                +{{ $order->items->count() - 1 }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <div class="min-w-0" style="max-width: 150px;">
+                                        <div class="text-truncate fw-semibold text-dark small" title="{{ $firstItem->displayName }}">
+                                            {{ $firstItem->product_name }}
+                                        </div>
+                                        <div class="text-muted" style="font-size: 0.70rem;">
+                                            @if($firstItem->variant_name)
+                                                <span class="badge bg-light text-secondary border px-1 py-0 me-1" style="font-size: 0.65rem;">{{ $firstItem->variant_name }}</span>
+                                            @endif
+                                            <span>x{{ $firstItem->quantity }}</span>
+                                            @if($order->items->count() > 1)
+                                                <span class="text-muted ms-1">({{ $order->items->count() }} art.)</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                <span class="badge bg-light text-secondary px-2.5 py-1 border" style="border-radius: 6px;">0 article</span>
+                            @endif
                         </td>
                         <td class="text-end fw-bold text-dark fs-6 font-heading">
                             {{ $order->formatted_total }}

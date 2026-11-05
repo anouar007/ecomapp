@@ -79,20 +79,61 @@ class OrderItem extends Model
 
     /**
      * Get resolved image URL for this order item.
-     * Priority: Variant Image -> Product Thumbnail / Image -> Fallback image.
+     * Priority:
+     * 1. Variant specific image (if item has a variant with an image)
+     * 2. Product's resolved thumbnail (variant parent or direct product)
+     * 3. Fallback matching by SKU or Name if product relation was unlinked
+     * 4. Safe default placeholder
      */
     public function getProductImageAttribute(): string
     {
-        if ($this->variant && !empty($this->variant->image_url)) {
-            return $this->variant->image_url;
+        // 1. Variant Image
+        $variant = $this->variant;
+        if (!$variant && $this->variant_id) {
+            $variant = ProductVariant::find($this->variant_id);
+        }
+        if ($variant && !empty($variant->image_url)) {
+            return $variant->image_url;
         }
 
-        if ($this->product) {
-            if (!empty($this->product->thumbnail)) {
-                return $this->product->thumbnail;
+        // 2. Direct Product Relation
+        $product = $this->product;
+        if (!$product && $this->product_id) {
+            $product = Product::find($this->product_id);
+        }
+
+        // 3. Fallback to product matching by SKU or Name if unlinked
+        if (!$product && !empty($this->product_sku)) {
+            $product = Product::where('sku', $this->product_sku)->first();
+        }
+        if (!$product && !empty($this->product_name)) {
+            $product = Product::where('name', $this->product_name)->first();
+        }
+
+        // If product found, get its best thumbnail
+        if ($product) {
+            // If item has a variant name but variant_id was missing/unlinked, try finding variant on product
+            if (!$variant && !empty($this->variant_name)) {
+                $matchedVariant = $product->variants ? $product->variants->firstWhere('name', $this->variant_name) : null;
+                if ($matchedVariant && !empty($matchedVariant->image_url)) {
+                    return $matchedVariant->image_url;
+                }
             }
-            if (!empty($this->product->image_url)) {
-                return $this->product->image_url;
+
+            $thumb = $product->thumbnail;
+            if (!empty($thumb) && !str_contains($thumb, 'cat_cameras.jpg')) {
+                return $thumb;
+            }
+        }
+
+        // Secondary fallback: if the assigned product had no image (e.g. duplicate test item),
+        // try finding any product with the same name that has a real image
+        if (!empty($this->product_name)) {
+            $sibling = Product::where('name', $this->product_name)
+                ->whereHas('images')
+                ->first();
+            if ($sibling && !empty($sibling->thumbnail) && !str_contains($sibling->thumbnail, 'cat_cameras.jpg')) {
+                return $sibling->thumbnail;
             }
         }
 

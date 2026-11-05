@@ -192,11 +192,12 @@
                                 <tr>
                                     <td class="ps-3 py-3">
                                         <div class="d-flex align-items-center gap-3">
-                                            <div style="width: 48px; height: 48px; border-radius: 10px; overflow: hidden; background: #f8fafc; border: 1px solid #e2e8f0; flex-shrink: 0;">
-                                                <img src="{{ $item->product ? $item->product->thumbnail : asset('images/camera/cat_cameras.jpg') }}" 
+                                            <div style="width: 52px; height: 52px; border-radius: 10px; overflow: hidden; background: #ffffff; border: 1px solid #e2e8f0; flex-shrink: 0; padding: 2px; display: flex; align-items: center; justify-content: center;">
+                                                <img src="{{ $item->product_image }}" 
                                                      alt="{{ $item->product_name }}" 
-                                                     style="width: 100%; height: 100%; object-fit: cover;"
-                                                     onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                                                     style="width: 100%; height: 100%; object-fit: contain;"
+                                                     onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';"
+                                                     loading="lazy">
                                             </div>
                                             <div>
                                                 @if($item->product)
@@ -239,11 +240,12 @@
                     @foreach($order->items as $item)
                         <div class="p-3 border rounded-3 mb-2 bg-light bg-opacity-25">
                             <div class="d-flex align-items-start gap-2.5">
-                                <div style="width: 50px; height: 50px; border-radius: 10px; overflow: hidden; background: #f8fafc; border: 1px solid #e2e8f0; flex-shrink: 0;">
-                                    <img src="{{ $item->product ? $item->product->thumbnail : asset('images/camera/cat_cameras.jpg') }}" 
+                                <div style="width: 52px; height: 52px; border-radius: 10px; overflow: hidden; background: #ffffff; border: 1px solid #e2e8f0; flex-shrink: 0; padding: 2px; display: flex; align-items: center; justify-content: center;">
+                                    <img src="{{ $item->product_image }}" 
                                          alt="{{ $item->product_name }}" 
-                                         style="width: 100%; height: 100%; object-fit: cover;"
-                                         onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                                         style="width: 100%; height: 100%; object-fit: contain;"
+                                         onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';"
+                                         loading="lazy">
                                 </div>
                                 <div class="flex-grow-1 min-w-0">
                                     @if($item->product)

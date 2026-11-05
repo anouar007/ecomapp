@@ -16,7 +16,7 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Order::with(['user', 'items.product', 'invoice', 'quote']);
+        $query = Order::with(['user', 'items.product.images', 'items.product.primaryImage', 'items.variant', 'invoice', 'quote']);
 
         // Filter by delivery status
         if ($request->filled('status')) {
@@ -260,7 +260,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        $order->load(['items.product', 'items.variant', 'user']);
+        $order->load(['items.product.images', 'items.product.primaryImage', 'items.variant', 'user']);
         return view('orders.show', compact('order'));
     }
 

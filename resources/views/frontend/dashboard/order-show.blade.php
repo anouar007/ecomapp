@@ -26,8 +26,12 @@
                         <tr>
                             <td class="ps-4 py-3">
                                 <div class="d-flex align-items-center">
-                                    <div class="bg-light rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
-                                        <i class="fas fa-cube text-muted opacity-50"></i>
+                                    <div class="rounded-3 border d-flex align-items-center justify-content-center me-3 flex-shrink-0 overflow-hidden bg-white" style="width: 52px; height: 52px; padding: 2px;">
+                                        <img src="{{ $item->product_image }}" 
+                                             alt="{{ $item->product_name }}" 
+                                             style="width: 100%; height: 100%; object-fit: contain;" 
+                                             onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';"
+                                             loading="lazy">
                                     </div>
                                     <div>
                                         <h6 class="fw-bold mb-0">{{ $item->product_name }}</h6>
@@ -68,8 +72,12 @@
                 @foreach($order->items as $item)
                 <div class="card border rounded-3 p-2.5 mb-2 bg-white shadow-xs">
                     <div class="d-flex align-items-start gap-2.5">
-                        <div class="bg-light rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 46px; height: 46px;">
-                            <i class="fas fa-cube text-muted opacity-50 fs-5"></i>
+                        <div class="rounded-3 border d-flex align-items-center justify-content-center flex-shrink-0 overflow-hidden bg-white" style="width: 48px; height: 48px; padding: 2px;">
+                            <img src="{{ $item->product_image }}" 
+                                 alt="{{ $item->product_name }}" 
+                                 style="width: 100%; height: 100%; object-fit: contain;" 
+                                 onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';"
+                                 loading="lazy">
                         </div>
                         <div class="min-w-0 flex-grow-1">
                             <h6 class="fw-bold mb-1 lh-sm" style="font-size: 0.88rem;">{{ $item->product_name }}</h6>

@@ -233,7 +233,7 @@
                                                         data-price="{{ $variant->price }}" 
                                                         data-sku="{{ $variant->sku ?: $prod->sku }}" 
                                                         data-stock="{{ $variant->stock }}"
-                                                        data-thumb="{{ $variant->image ?: $prod->thumbnail }}">
+                                                        data-thumb="{{ $variant->image_url ?: $prod->thumbnail }}">
                                                     {{ $prod->name }} — {{ $variant->name }} &bull; {{ currency($variant->price) }} (Stock: {{ $variant->stock }})
                                                 </option>
                                             @endforeach
@@ -492,8 +492,8 @@
             tr.innerHTML = `
                 <td class="ps-3 py-2.5">
                     <div class="d-flex align-items-center gap-2.5">
-                        <div style="width: 40px; height: 40px; border-radius: 8px; overflow: hidden; background: #f8fafc; border: 1px solid #e2e8f0; flex-shrink: 0;">
-                            <img src="${item.thumb || '/images/camera/cat_cameras.jpg'}" alt="${item.name}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='/images/camera/cat_cameras.jpg'">
+                        <div style="width: 42px; height: 42px; border-radius: 8px; overflow: hidden; background: #ffffff; border: 1px solid #e2e8f0; flex-shrink: 0; padding: 2px; display: flex; align-items: center; justify-content: center;">
+                            <img src="${item.thumb || '/images/camera/cat_cameras.jpg'}" alt="${item.name}" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.src='/images/camera/cat_cameras.jpg'">
                         </div>
                         <div>
                             <div class="fw-bold text-dark">${item.name}</div>
@@ -531,8 +531,8 @@
             card.innerHTML = `
                 <div class="d-flex justify-content-between align-items-start gap-2">
                     <div class="d-flex align-items-center gap-2 min-w-0 flex-grow-1">
-                        <div style="width: 44px; height: 44px; border-radius: 8px; overflow: hidden; background: #f8fafc; border: 1px solid #e2e8f0; flex-shrink: 0;">
-                            <img src="${item.thumb || '/images/camera/cat_cameras.jpg'}" alt="${item.name}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='/images/camera/cat_cameras.jpg'">
+                        <div style="width: 44px; height: 44px; border-radius: 8px; overflow: hidden; background: #ffffff; border: 1px solid #e2e8f0; flex-shrink: 0; padding: 2px; display: flex; align-items: center; justify-content: center;">
+                            <img src="${item.thumb || '/images/camera/cat_cameras.jpg'}" alt="${item.name}" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.src='/images/camera/cat_cameras.jpg'">
                         </div>
                         <div class="min-w-0 flex-grow-1">
                             <div class="fw-bold text-dark text-truncate">${item.name}</div>

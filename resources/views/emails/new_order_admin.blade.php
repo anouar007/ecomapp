@@ -95,10 +95,22 @@
                         @foreach($order->items as $item)
                         <tr>
                             <td>
-                                <div class="item-name">{{ $item->displayName }}</div>
-                                @if($item->product_sku && $item->product_sku !== 'N/A')
-                                    <div class="item-sku">SKU: {{ $item->product_sku }}</div>
-                                @endif
+                                <table style="border-collapse: collapse; width: 100%;">
+                                    <tr>
+                                        <td style="width: 44px; padding: 0 10px 0 0; vertical-align: middle; border: none;">
+                                            <img src="{{ $item->product_image }}" 
+                                                 alt="{{ $item->product_name }}" 
+                                                 width="40" height="40" 
+                                                 style="width: 40px; height: 40px; object-fit: contain; border-radius: 6px; border: 1px solid #e2e8f0; background: #ffffff; display: block; padding: 2px;">
+                                        </td>
+                                        <td style="padding: 0; vertical-align: middle; border: none;">
+                                            <div class="item-name">{{ $item->displayName }}</div>
+                                            @if($item->product_sku && $item->product_sku !== 'N/A')
+                                                <div class="item-sku">SKU: {{ $item->product_sku }}</div>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                </table>
                             </td>
                             <td style="text-align: center; font-weight: 700; color: #0f172a;">
                                 {{ $item->quantity }}

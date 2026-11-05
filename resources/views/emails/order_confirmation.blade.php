@@ -43,7 +43,21 @@
             <tbody>
                 @foreach($order->items as $item)
                 <tr>
-                    <td>{{ $item->displayName }}</td>
+                    <td>
+                        <table style="border-collapse: collapse; width: 100%;">
+                            <tr>
+                                <td style="width: 44px; padding: 0 10px 0 0; vertical-align: middle; border: none;">
+                                    <img src="{{ $item->product_image }}" 
+                                         alt="{{ $item->product_name }}" 
+                                         width="40" height="40" 
+                                         style="width: 40px; height: 40px; object-fit: contain; border-radius: 6px; border: 1px solid #e2e8f0; background: #ffffff; display: block; padding: 2px;">
+                                </td>
+                                <td style="padding: 0; vertical-align: middle; border: none; font-weight: 600; color: #0f172a;">
+                                    {{ $item->displayName }}
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
                     <td>{{ $item->quantity }}</td>
                     <td style="text-align: right;">{{ currency($item->subtotal ?: ($item->price * $item->quantity)) }}</td>
                 </tr>

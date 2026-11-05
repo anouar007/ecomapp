@@ -222,12 +222,15 @@ class CheckoutController extends Controller
                     $price = (float)$details['price'];
                     $qty = (int)$details['quantity'];
 
+                    $variantObj = $variantId ? \App\Models\ProductVariant::find($variantId) : null;
+                    $itemSku = $variantObj && !empty($variantObj->sku) ? $variantObj->sku : ($product && !empty($product->sku) ? $product->sku : 'N/A');
+
                     OrderItem::create([
                         'order_id' => $order->id,
                         'product_id' => $productId,
                         'variant_id' => $variantId,
                         'variant_name' => $variantName,
-                        'product_sku' => $product && !empty($product->sku) ? $product->sku : 'N/A',
+                        'product_sku' => $itemSku,
                         'product_name' => $details['name'],
                         'price' => $price,
                         'quantity' => $qty,

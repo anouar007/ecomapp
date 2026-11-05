@@ -888,33 +888,57 @@ class Product extends Model
      */
     public function getMainImageAttribute()
     {
+        $isGenericLogo = function(?string $path): bool {
+            if (empty($path)) return true;
+            $lower = strtolower($path);
+            return str_contains($lower, 'winashop.jpg') || 
+                   str_contains($lower, 'wina.png') || 
+                   str_contains($lower, 'wina-placeholder');
+        };
+
         // 1. Prioritize already-loaded 'images' relation in-memory (prevents N+1 queries)
-        if ($this->relationLoaded('images')) {
-            $img = $this->images->firstWhere('is_primary', 1) ?? $this->images->first();
-            if ($img) {
-                return $img->image_path;
+        if ($this->relationLoaded('images') && $this->images && $this->images->count() > 0) {
+            $primary = $this->images->firstWhere('is_primary', 1);
+            if ($primary && !$isGenericLogo($primary->image_path)) {
+                return $primary->image_path;
             }
+            $nonLogo = $this->images->first(fn($img) => !$isGenericLogo($img->image_path));
+            if ($nonLogo) {
+                return $nonLogo->image_path;
+            }
+            if ($primary) {
+                return $primary->image_path;
+            }
+            return $this->images->first()->image_path;
         }
 
         // 2. Prioritize already-loaded 'primaryImage' relation
-        if ($this->relationLoaded('primaryImage')) {
-            if ($this->primaryImage) {
+        if ($this->relationLoaded('primaryImage') && $this->primaryImage) {
+            if (!$isGenericLogo($this->primaryImage->image_path)) {
                 return $this->primaryImage->image_path;
             }
         }
 
-        // 3. Fallback to legacy image column on product
-        if (!empty($this->attributes['image'])) {
+        // 3. Fallback to legacy image column on product if not a generic logo
+        if (!empty($this->attributes['image']) && !$isGenericLogo($this->attributes['image'])) {
             return $this->attributes['image'];
         }
 
         // 4. Fallback to dynamic relation only if not eager-loaded
-        if ($this->primaryImage) {
+        if ($this->primaryImage && !$isGenericLogo($this->primaryImage->image_path)) {
             return $this->primaryImage->image_path;
         }
 
         if ($this->images && $this->images->count() > 0) {
+            $nonLogo = $this->images->first(fn($img) => !$isGenericLogo($img->image_path));
+            if ($nonLogo) {
+                return $nonLogo->image_path;
+            }
             return $this->images->first()->image_path;
+        }
+
+        if (!empty($this->attributes['image'])) {
+            return $this->attributes['image'];
         }
 
         return null;

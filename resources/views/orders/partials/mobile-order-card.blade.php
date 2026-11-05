@@ -101,16 +101,13 @@
     @endphp
     @if($firstItem)
         <div class="mobile-order-item-snippet">
-            @if($firstItem->product && $firstItem->product->thumbnail)
-                <img src="{{ $firstItem->product->thumbnail }}" 
+            <div style="width: 44px; height: 44px; border-radius: 8px; overflow: hidden; background: #ffffff; border: 1px solid #e2e8f0; flex-shrink: 0; padding: 2px; display: flex; align-items: center; justify-content: center;">
+                <img src="{{ $firstItem->product_image }}" 
                      alt="{{ $firstItem->product_name }}" 
-                     class="mobile-order-item-img"
-                     onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
-            @else
-                <div class="mobile-order-item-placeholder">
-                    <i class="fas fa-box"></i>
-                </div>
-            @endif
+                     style="width: 100%; height: 100%; object-fit: contain;"
+                     onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';"
+                     loading="lazy">
+            </div>
             <div class="min-w-0 flex-grow-1">
                 <div class="mobile-order-item-name text-truncate">
                     {{ $firstItem->product_name }}
