@@ -252,8 +252,8 @@ class Product extends Model
         $nameLower = mb_strtolower($name, 'UTF-8');
         $sku = trim((string)$this->sku);
 
-        // Detect brand
-        $brandName = $this->brand?->name;
+        // Detect brand without triggering lazy N+1 queries
+        $brandName = $this->relationLoaded('brand') ? $this->brand?->name : null;
         if (empty($brandName)) {
             $knownBrands = ['Sony', 'Canon', 'Nikon', 'DJI', 'Godox', 'SmallRig', 'Tamron', 'Sigma', 'RØDE', 'Hollyland', 'Fujifilm', 'Blackmagic Design', 'Insta360', 'GoPro', 'SanDisk', 'Lexar', 'Manfrotto', 'K&F Concept', 'Aputure', 'Nanlite', 'Zhiyun', 'Boya', 'Sennheiser', 'Tilta', 'FeelWorld', 'Peak Design', 'Profoto', 'Lowepro', 'Ulanzi'];
             foreach ($knownBrands as $kb) {
@@ -265,8 +265,14 @@ class Product extends Model
         }
         $brandName = $brandName ?: 'WINA SHOP';
 
-        // Detect category
-        $catName = $this->category?->name ?: 'Matériel Photo & Vidéo';
+        // Detect category without triggering lazy N+1 queries
+        $catName = null;
+        if ($this->relationLoaded('productCategory')) {
+            $catName = $this->productCategory?->name;
+        } elseif ($this->relationLoaded('category')) {
+            $catName = $this->getRelation('category')?->name;
+        }
+        $catName = $catName ?: ($this->getAttributes()['category'] ?? null) ?: 'Matériel Photo & Vidéo';
         $catLower = mb_strtolower($catName, 'UTF-8');
 
         // Dynamic equipment classification with French, Arabic & English keywords
@@ -412,12 +418,20 @@ class Product extends Model
     }
 
     /**
+     * Get compact comma-separated trilingual SEO keywords string for product cards & related sliders.
+     */
+    public function getCompactSeoKeywordsString(int $limit = 16): string
+    {
+        return implode(', ', array_slice($this->getSeoKeywords(), 0, $limit));
+    }
+
+    /**
      * Get multilingual alternate names for Schema.org JSON-LD.
      */
     public function getMultilingualAlternateNames(): array
     {
         $name = trim($this->name);
-        $brandName = $this->brand?->name ?: 'WINA SHOP';
+        $brandName = ($this->relationLoaded('brand') ? $this->brand?->name : null) ?: 'WINA SHOP';
 
         return [
             $name . ' Maroc',

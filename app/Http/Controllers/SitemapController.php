@@ -305,36 +305,52 @@ class SitemapController extends Controller
                 ])
                 : [];
 
-            $products = Product::where('status', 'active')
+            $rawProducts = Product::where('status', 'active')
                 ->with(['category:id,name,slug', 'brand:id,name,slug'])
                 ->select(['id', 'name', 'slug', 'sku', 'price', 'sale_price', 'stock', 'image', 'category_id', 'brand_id', 'updated_at'])
                 ->orderByDesc('id')
                 ->take(500)
-                ->get()
-                ->map(function ($p) use ($baseUrl) {
-                    $thumb = $p->thumbnail;
-                    $imgUrl = '';
-                    if (!empty($thumb)) {
-                        $imgUrl = str_starts_with($thumb, 'http')
-                            ? preg_replace('#^https?://[^/]+#', $baseUrl, $thumb)
-                            : ($baseUrl . '/' . ltrim($thumb, '/'));
-                    }
-                    return [
-                        'id' => $p->id,
-                        'sku' => $p->sku ?: ('WINA-' . $p->id),
-                        'name' => $p->name,
-                        'brand' => $p->brand?->name,
-                        'category' => $p->category?->name,
-                        'price_mad' => (float) $p->final_price,
-                        'currency' => setting('currency_code', 'MAD'),
-                        'in_stock' => $p->isInStock(),
-                        'condition' => str_contains(strtolower($p->name), 'occasion') ? 'used_certified' : 'new_sealed',
-                        'url' => $baseUrl . '/shop/' . ($p->slug ?: $p->id),
-                        'image' => $imgUrl,
-                        'keywords' => array_slice($p->getSeoKeywords(), 0, 15),
-                        'alternate_names' => $p->getMultilingualAlternateNames(),
-                    ];
-                });
+                ->get();
+
+            $byCategory = $rawProducts->groupBy('category_id');
+
+            $products = $rawProducts->map(function ($p) use ($baseUrl, $byCategory) {
+                $thumb = $p->thumbnail;
+                $imgUrl = '';
+                if (!empty($thumb)) {
+                    $imgUrl = str_starts_with($thumb, 'http')
+                        ? preg_replace('#^https?://[^/]+#', $baseUrl, $thumb)
+                        : ($baseUrl . '/' . ltrim($thumb, '/'));
+                }
+
+                $sameCatPeers = $byCategory->get($p->category_id, collect())
+                    ->where('id', '!=', $p->id)
+                    ->take(5)
+                    ->values()
+                    ->map(fn($rel) => [
+                        'name' => $rel->name,
+                        'price_mad' => (float) $rel->final_price,
+                        'url' => $baseUrl . '/shop/' . ($rel->slug ?: $rel->id),
+                    ])
+                    ->all();
+
+                return [
+                    'id' => $p->id,
+                    'sku' => $p->sku ?: ('WINA-' . $p->id),
+                    'name' => $p->name,
+                    'brand' => $p->brand?->name,
+                    'category' => $p->category?->name,
+                    'price_mad' => (float) $p->final_price,
+                    'currency' => setting('currency_code', 'MAD'),
+                    'in_stock' => $p->isInStock(),
+                    'condition' => str_contains(strtolower($p->name), 'occasion') ? 'used_certified' : 'new_sealed',
+                    'url' => $baseUrl . '/shop/' . ($p->slug ?: $p->id),
+                    'image' => $imgUrl,
+                    'keywords' => array_slice($p->getSeoKeywords(), 0, 18),
+                    'alternate_names' => $p->getMultilingualAlternateNames(),
+                    'related_products' => $sameCatPeers,
+                ];
+            });
 
             return [
                 'schema_version' => '2.0',

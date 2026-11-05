@@ -8,13 +8,30 @@
 @if($category->products->isNotEmpty())
 ## {{ $category->name }} ({{ $category->products->count() }} produits)
 
-@foreach($category->products as $product)
 @php
-    $prodUrl = route('shop.show', $product->slug ?: $product->id);
+    $categoryProducts = $category->products->values();
+    $catCount = $categoryProducts->count();
+@endphp
+@foreach($categoryProducts as $pIndex => $product)
+@php
+    $prodUrl = ($baseUrl ?? rtrim(url('/'), '/')) . '/shop/' . ($product->slug ?: $product->id);
     $price = number_format($product->final_price, 2, '.', ' ') . ' MAD';
-    $stock = $product->isInStock() ? 'En stock' : 'Rupture de stock';
+    $stock = $product->isInStock() ? 'En stock / متوفر / In stock' : 'Rupture de stock';
     $cond = str_contains(strtolower($product->name), 'occasion') ? 'Occasion certifiée' : 'Neuf sous emballage';
-    
+    $trilingualKws = method_exists($product, 'getCompactSeoKeywordsString') ? $product->getCompactSeoKeywordsString(10) : $product->name;
+
+    // Extract up to 3 related products from the same category
+    $relNames = [];
+    for ($offset = 1; $offset <= 3; $offset++) {
+        if ($catCount > $offset) {
+            $relProd = $categoryProducts[($pIndex + $offset) % $catCount];
+            if ($relProd->id !== $product->id) {
+                $relNames[] = $relProd->name . ' (' . number_format((float)$relProd->final_price, 2, '.', ' ') . ' MAD)';
+            }
+        }
+    }
+    $relatedSummary = !empty($relNames) ? ' | Produits similaires (Alternatives): ' . implode(', ', $relNames) : '';
+
     // Extract specs summary from enriched description
     $specsSummary = '';
     if (!empty($product->description) && preg_match_all('/<div class="pdp-spec-label"><i[^>]*><\/i>\s*([^<]+)<\/div>\s*<div class="pdp-spec-value">([^<]+)<\/div>/is', (string) $product->description, $mSpecs)) {
@@ -27,7 +44,7 @@
         }
     }
 @endphp
-- [{{ $product->name }}]({{ $prodUrl }}) : {{ $price }} | {{ $stock }} | {{ $cond }} | Réf: {{ $product->sku ?? ('WINA-' . $product->id) }}{{ $specsSummary }}
+- [{{ $product->name }}]({{ $prodUrl }}) : {{ $price }} | {{ $stock }} | {{ $cond }} | Réf: {{ $product->sku ?? ('WINA-' . $product->id) }} | Mots-clés (FR/AR/EN): {{ $trilingualKws }}{{ $specsSummary }}{{ $relatedSummary }}
 @endforeach
 
 @endif

@@ -754,9 +754,68 @@
         }
     }
     
-    // Tailored Multilingual SEO Keywords (French, Arabic, English & Darija)
-    $productKeywords = $product->getSeoKeywordsString();
+    // Tailored Multilingual SEO Keywords (French, Arabic, English & Darija) + Related & Suggested Products Keywords
+    $baseKeywordsList = $product->getSeoKeywords();
+    if (isset($relatedProducts) && $relatedProducts->isNotEmpty()) {
+        foreach ($relatedProducts->take(6) as $relProd) {
+            $baseKeywordsList[] = $relProd->name;
+            $baseKeywordsList[] = $relProd->name . ' Maroc';
+            $baseKeywordsList[] = 'شراء ' . $relProd->name . ' المغرب';
+            $baseKeywordsList[] = 'Buy ' . $relProd->name . ' Morocco';
+        }
+    }
+    if (isset($randomProducts) && $randomProducts->isNotEmpty()) {
+        foreach ($randomProducts->take(4) as $sugProd) {
+            $baseKeywordsList[] = $sugProd->name;
+        }
+    }
+    $productKeywords = implode(', ', array_values(array_unique(array_filter($baseKeywordsList))));
     $multilingualNames = $product->getMultilingualAlternateNames();
+
+    $similarProductsSchema = [];
+    if (isset($relatedProducts) && $relatedProducts->isNotEmpty()) {
+        foreach ($relatedProducts->take(10) as $rel) {
+            $relUrl = route('shop.show', $rel->slug ?: $rel->id);
+            $similarProductsSchema[] = [
+                '@type' => 'Product',
+                'name' => $rel->name,
+                'url' => $relUrl,
+                'image' => $rel->thumbnail,
+                'sku' => $rel->sku ?: ('WINA-' . $rel->id),
+                'keywords' => $rel->getCompactSeoKeywordsString(12),
+                'alternateName' => $rel->getMultilingualAlternateNames(),
+                'offers' => [
+                    '@type' => 'Offer',
+                    'url' => $relUrl,
+                    'priceCurrency' => setting('currency_code', 'MAD'),
+                    'price' => number_format((float) $rel->final_price, 2, '.', ''),
+                    'availability' => $rel->isInStock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+                ],
+            ];
+        }
+    }
+
+    $suggestedProductsSchema = [];
+    if (isset($randomProducts) && $randomProducts->isNotEmpty()) {
+        foreach ($randomProducts->take(10) as $rnd) {
+            $rndUrl = route('shop.show', $rnd->slug ?: $rnd->id);
+            $suggestedProductsSchema[] = [
+                '@type' => 'Product',
+                'name' => $rnd->name,
+                'url' => $rndUrl,
+                'image' => $rnd->thumbnail,
+                'sku' => $rnd->sku ?: ('WINA-' . $rnd->id),
+                'keywords' => $rnd->getCompactSeoKeywordsString(10),
+                'offers' => [
+                    '@type' => 'Offer',
+                    'url' => $rndUrl,
+                    'priceCurrency' => setting('currency_code', 'MAD'),
+                    'price' => number_format((float) $rnd->final_price, 2, '.', ''),
+                    'availability' => $rnd->isInStock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+                ],
+            ];
+        }
+    }
 
     $allImages = [$product->thumbnail];
     if ($product->relationLoaded('images') && $product->images) {
@@ -924,7 +983,33 @@
       "bestRating": "5",
       "worstRating": "1"
     }
+    @if(!empty($similarProductsSchema))
+    ,"isSimilarTo": {!! json_encode($similarProductsSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
+    @endif
+    @if(!empty($suggestedProductsSchema))
+    ,"isRelatedTo": {!! json_encode($suggestedProductsSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
+    @endif
   },
+  @if(!empty($similarProductsSchema) || !empty($suggestedProductsSchema))
+  @php
+      $combinedRelatedList = array_merge($similarProductsSchema, $suggestedProductsSchema);
+      $itemListElements = [];
+      foreach ($combinedRelatedList as $idxPos => $relItem) {
+          $itemListElements[] = [
+              '@type' => 'ListItem',
+              'position' => $idxPos + 1,
+              'item' => $relItem,
+          ];
+      }
+  @endphp
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": {!! json_encode('Produits similaires et suggestions pour ' . $product->name . ' — WINA SHOP Maroc', JSON_UNESCAPED_UNICODE) !!},
+    "numberOfItems": {{ count($itemListElements) }},
+    "itemListElement": {!! json_encode($itemListElements, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
+  },
+  @endif
   {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -960,7 +1045,28 @@
           "@type": "Answer",
           "text": {!! json_encode('يمكنك شراء ' . $product->name . ' مباشرة عبر متجر WINA SHOP أو بالتواصل عبر الواتساب على الرقم ' . setting('company_phone', '+212 629-035777') . '. نوفر منتجات أصلية مع ضمان رسمي وتوصيل سريع لكافة المدن المغربية.') !!}
         }
+      },
+      {
+        "@type": "Question",
+        "name": {!! json_encode('Where to buy ' . $product->name . ' in Morocco and what is the price in MAD?') !!},
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": {!! json_encode('You can buy ' . $product->name . ' at ' . setting('app_name', 'WINA SHOP') . ' in Casablanca, Morocco for ' . number_format($product->final_price, 2, '.', ' ') . ' MAD with official manufacturer warranty, 24h-48h nationwide express shipping, and B2B/INDH proforma invoicing.') !!}
+        }
       }
+      @if(isset($relatedProducts) && $relatedProducts->isNotEmpty())
+      @php
+          $relSummaryItems = $relatedProducts->take(6)->map(fn($r) => $r->name . ' (' . number_format((float)$r->final_price, 2, '.', ' ') . ' MAD)')->implode(', ');
+      @endphp
+      ,{
+        "@type": "Question",
+        "name": {!! json_encode('Quels sont les produits similaires et alternatives recommandées pour ' . $product->name . ' au Maroc ?') !!},
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": {!! json_encode('Les meilleurs produits similaires et accessoires complémentaires pour ' . $product->name . ' disponibles en stock chez WINA SHOP Maroc sont : ' . $relSummaryItems . '. المنتوجات المشابهة والبديلة متوفرة مع الضمان والتوصيل بالمغرب.') !!}
+        }
+      }
+      @endif
       @if(!empty($extractedSpecs))
       @php
           $specsAnswer = collect($extractedSpecs)->map(fn($s) => $s['name'] . ': ' . $s['value'])->implode(', ');
@@ -1705,7 +1811,7 @@
                 </div>
 
                 {{-- FAQ 4: Arabic summary --}}
-                <div class="accordion-item">
+                <div class="accordion-item border-bottom">
                     <h3 class="accordion-header" id="faqHeading4">
                         <button class="accordion-button collapsed fw-bold py-3 text-dark bg-transparent shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse4" aria-expanded="false" aria-controls="faqCollapse4">
                             كيف يمكنني شراء {{ $product->name }} في المغرب وما هي الضمانات؟
@@ -1716,6 +1822,60 @@
                             يمكنك طلب <strong>{{ $product->name }}</strong> عبر متجر WINA SHOP أو بالتواصل مباشرة على الواتساب على الرقم <strong>{{ setting('company_phone', '+212 629-035777') }}</strong>. نوفر لك منتجات أصلية مع ضمان رسمي، وتوصيل سريع في ظرف 24 إلى 48 ساعة لكافة ربوع المملكة المغربية.
                         </div>
                     </div>
+                </div>
+
+                {{-- FAQ 5: English summary --}}
+                <div class="accordion-item {{ (isset($relatedProducts) && $relatedProducts->isNotEmpty()) ? 'border-bottom' : '' }}">
+                    <h3 class="accordion-header" id="faqHeading5">
+                        <button class="accordion-button collapsed fw-bold py-3 text-dark bg-transparent shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse5" aria-expanded="false" aria-controls="faqCollapse5">
+                            Where to buy {{ $product->name }} in Morocco with official warranty?
+                        </button>
+                    </h3>
+                    <div id="faqCollapse5" class="accordion-collapse collapse" aria-labelledby="faqHeading5" data-bs-parent="#pdpFaqAccordion">
+                        <div class="accordion-body text-muted pt-0 pb-3" style="font-size: 0.95rem; line-height: 1.6;">
+                            You can purchase <strong>{{ $product->name }}</strong> directly from <strong>{{ setting('app_name', 'WINA SHOP') }}</strong> in Casablanca (Al Oulfa) or order online for <strong>{{ number_format($product->final_price, 2, '.', ' ') }} {{ setting('currency_code', 'MAD') }}</strong>. We provide authentic sealed equipment, official manufacturer warranty, certified B2B/INDH proforma invoices, and 24h-48h express delivery across all Moroccan cities.
+                        </div>
+                    </div>
+                </div>
+
+                @if(isset($relatedProducts) && $relatedProducts->isNotEmpty())
+                {{-- FAQ 6: Related & Similar Products in FR / AR / EN --}}
+                <div class="accordion-item">
+                    <h3 class="accordion-header" id="faqHeading6">
+                        <button class="accordion-button collapsed fw-bold py-3 text-dark bg-transparent shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse6" aria-expanded="false" aria-controls="faqCollapse6">
+                            {{ app()->getLocale() === 'ar' ? 'ما هي المنتجات المشابهة والبديلة لـ ' . $product->name . ' في المغرب؟' : (app()->getLocale() === 'en' ? 'What are the best similar products and alternatives to ' . $product->name . ' in Morocco?' : 'Quels sont les produits similaires et alternatives à ' . $product->name . ' au Maroc ?') }}
+                        </button>
+                    </h3>
+                    <div id="faqCollapse6" class="accordion-collapse collapse" aria-labelledby="faqHeading6" data-bs-parent="#pdpFaqAccordion">
+                        <div class="accordion-body text-muted pt-0 pb-3" style="font-size: 0.95rem; line-height: 1.6;">
+                            <p class="mb-2">
+                                Découvrez les meilleures alternatives et accessoires compatibles avec <strong>{{ $product->name }}</strong> disponibles en stock chez {{ setting('app_name', 'WINA SHOP') }} Maroc (المنتجات المشابهة والبديلة المتوفرة بالمغرب | Related products in stock in Morocco) :
+                            </p>
+                            <div class="d-flex flex-wrap gap-2">
+                                @foreach($relatedProducts->take(8) as $relFaqProd)
+                                    <a href="{{ route('shop.show', $relFaqProd->slug ?: $relFaqProd->id) }}"
+                                       class="badge bg-light text-dark border text-decoration-none px-2 py-1 fw-normal"
+                                       title="{{ $relFaqProd->name }} — {{ number_format((float)$relFaqProd->final_price, 2, '.', ' ') }} MAD | شراء في المغرب | Buy in Morocco">
+                                        {{ $relFaqProd->name }} ({{ number_format((float)$relFaqProd->final_price, 2, '.', ' ') }} MAD)
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
+            </div>
+
+            {{-- Multilingual Search Tags & Semantic Indexation Block (FR / AR / EN) --}}
+            <div class="mt-3 pt-3 border-top">
+                <div class="small text-muted mb-2 fw-semibold">
+                    <i class="fas fa-tags text-danger me-1"></i>
+                    {{ app()->getLocale() === 'ar' ? 'كلمات البحث الدلالية (FR / AR / EN) :' : (app()->getLocale() === 'en' ? 'Related Search Keywords (FR / AR / EN):' : 'Recherches associées & Mots-clés (FR / AR / EN) :') }}
+                </div>
+                <div class="d-flex flex-wrap gap-1">
+                    @foreach(array_slice($product->getSeoKeywords(), 0, 18) as $kwTag)
+                        <span class="badge bg-light text-secondary border fw-normal" style="font-size: 0.74rem;">{{ $kwTag }}</span>
+                    @endforeach
                 </div>
             </div>
         </div>

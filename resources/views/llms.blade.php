@@ -39,12 +39,13 @@
 @endphp
 @foreach($prodsToShow as $product)
 @php
-    $prodUrl = route('shop.show', $product->slug ?: $product->id);
+    $prodUrl = ($baseUrl ?? rtrim(url('/'), '/')) . '/shop/' . ($product->slug ?: $product->id);
     $price = number_format($product->final_price, 2, '.', ' ') . ' ' . setting('currency_code', 'MAD');
-    $stock = $product->isInStock() ? 'En stock' : 'Rupture de stock';
+    $stock = $product->isInStock() ? 'En stock / متوفر / In stock' : 'Rupture de stock';
     $cond = str_contains(strtolower($product->name), 'occasion') ? 'Occasion' : 'Neuf sous emballage';
+    $trilingualKws = method_exists($product, 'getCompactSeoKeywordsString') ? $product->getCompactSeoKeywordsString(10) : $product->name;
 @endphp
-- [{{ $product->name }}]({{ $prodUrl }}) : {{ $price }} | {{ $stock }} | {{ $cond }} (Réf: {{ $product->sku }})
+- [{{ $product->name }}]({{ $prodUrl }}) : {{ $price }} | {{ $stock }} | {{ $cond }} (Réf: {{ $product->sku ?: ('WINA-' . $product->id) }}) | Mots-clés (FR/AR/EN): {{ $trilingualKws }}
 @endforeach
 
 ## Catalogue Exhaustif (Tous les 1 077 Produits)

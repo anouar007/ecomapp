@@ -7,8 +7,22 @@
     $hasAutoDiscount = $product->isOnSale() && $product->discount_percentage > 0 && $autoDiscountTag->status === 'active';
     $prefDiscountPos = $autoDiscountTag->position ?: 'top-left';
     $discountCorner = $tagsByPosition->has($prefDiscountPos) ? $prefDiscountPos : ($tagsByPosition->keys()->first() ?? $prefDiscountPos);
+    $cardUrl = route('shop.show', $product->slug ?: $product->id);
+    $cardCompactKeywords = method_exists($product, 'getCompactSeoKeywordsString') ? $product->getCompactSeoKeywordsString(14) : $product->name;
+    $cardAltTitle = $product->name . ' — Prix Maroc WINA SHOP | شراء في المغرب | Buy in Morocco';
 @endphp
-<div class="featured-pro-card selection-card product-card-tag-container h-100 d-flex flex-column justify-content-between position-relative">
+<div class="featured-pro-card selection-card product-card-tag-container h-100 d-flex flex-column justify-content-between position-relative" itemscope itemtype="https://schema.org/Product">
+    <meta itemprop="name" content="{{ $product->name }}">
+    <meta itemprop="sku" content="{{ $product->sku ?: ('WINA-' . $product->id) }}">
+    <meta itemprop="keywords" content="{{ $cardCompactKeywords }}">
+    <link itemprop="url" href="{{ $cardUrl }}">
+    <div itemprop="offers" itemscope itemtype="https://schema.org/Offer" class="d-none">
+        <meta itemprop="url" content="{{ $cardUrl }}">
+        <meta itemprop="priceCurrency" content="{{ setting('currency_code', 'MAD') }}">
+        <meta itemprop="price" content="{{ number_format((float) $product->final_price, 2, '.', '') }}">
+        <link itemprop="availability" href="{{ $product->isInStock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}">
+        <link itemprop="itemCondition" href="{{ str_contains(strtolower($product->name), 'occasion') ? 'https://schema.org/UsedCondition' : 'https://schema.org/NewCondition' }}">
+    </div>
     {{-- Product Image with clean white background --}}
     <div class="featured-pro-img-box mb-2 position-relative">
         @foreach(['top-left', 'top-right', 'bottom-left', 'bottom-right'] as $cornerPos)
@@ -38,8 +52,8 @@
             @endif
         @endforeach
 
-        <a href="{{ route('shop.show', $product->slug ?: $product->id) }}" class="w-100 h-100 d-flex align-items-center justify-content-center" aria-label="{{ $product->name }}">
-            <img src="{{ $product->thumbnail }}" alt="{{ $product->name }}" width="220" height="220" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';" @if($product->primary_image_padding_style) style="padding: {{ $product->primary_image_padding_style }} !important;" @endif>
+        <a href="{{ $cardUrl }}" class="w-100 h-100 d-flex align-items-center justify-content-center" aria-label="{{ $product->name }}" title="{{ $cardAltTitle }}">
+            <img itemprop="image" src="{{ $product->thumbnail }}" alt="{{ $cardAltTitle }}" width="220" height="220" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';" @if($product->primary_image_padding_style) style="padding: {{ $product->primary_image_padding_style }} !important;" @endif>
         </a>
     </div>
 
@@ -47,7 +61,7 @@
     <div class="featured-pro-body mb-1 flex-grow-1 d-flex flex-column justify-content-between">
         <div>
             <h3 class="featured-pro-title">
-                <a href="{{ route('shop.show', $product->slug ?: $product->id) }}">
+                <a href="{{ $cardUrl }}" title="{{ $cardAltTitle }}">
                     {{ $product->name }}
                 </a>
             </h3>
