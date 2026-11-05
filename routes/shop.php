@@ -20,7 +20,8 @@ Route::get('/robots.txt', [\App\Http\Controllers\SitemapController::class, 'robo
 Route::get('/llms.txt', [\App\Http\Controllers\SitemapController::class, 'llmsTxt'])->name('llms.txt');
 Route::get('/.well-known/llms.txt', [\App\Http\Controllers\SitemapController::class, 'llmsTxt']);
 Route::get('/llms-full.txt', [\App\Http\Controllers\SitemapController::class, 'llmsFullTxt'])->name('llms.full.txt');
-Route::get('/indexnow-{key}.txt', [\App\Http\Controllers\SitemapController::class, 'indexNowKey'])->where('key', '[a-zA-Z0-9]+')->name('indexnow.key');
+Route::get('/indexnow-{key}.txt', [\App\Http\Controllers\SitemapController::class, 'indexNowKey'])->where('key', '[a-zA-Z0-9\-]+')->name('indexnow.key');
+Route::get('/{key}.txt', [\App\Http\Controllers\SitemapController::class, 'indexNowKey'])->where('key', '[a-f0-9]{32}')->name('indexnow.root.key');
 Route::get('/media/proxy', [\App\Http\Controllers\DiagramMediaController::class, 'proxy'])->name('media.proxy');
 // Google Search Console Automated HTML File Verification
 Route::get('/google{code}.html', function ($code) {

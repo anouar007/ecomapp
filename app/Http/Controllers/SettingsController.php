@@ -582,11 +582,8 @@ class SettingsController extends Controller
         $sitemapCtrl->aiCatalogJson();
 
         // Prepare URL list for IndexNow (Bing, ChatGPT Search, Copilot, Yandex)
-        $indexNowKey = setting('seo_indexnow_key');
-        if (!$indexNowKey) {
-            $indexNowKey = substr(md5(config('app.key', 'winashop') . '_indexnow_wina'), 0, 32);
-            Setting::set('seo_indexnow_key', $indexNowKey, 'string', 'seo');
-        }
+        $indexNowKey = \App\Http\Controllers\SitemapController::ensureIndexNowStaticFiles();
+        Setting::set('seo_indexnow_key', $indexNowKey, 'string', 'seo');
 
         $host = parse_url($baseUrl, PHP_URL_HOST) ?: 'winashop.com';
         $urls = [

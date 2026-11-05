@@ -44,6 +44,14 @@ class CheckComingSoonMode
         'lang/*',
         'newsletter*',
         'contact*',
+        'sitemap.xml',
+        'robots.txt',
+        'llms.txt',
+        'llms-full.txt',
+        'ai-catalog.json',
+        'google-merchant.xml',
+        'indexnow*',
+        '.well-known/*',
     ];
 
     /**

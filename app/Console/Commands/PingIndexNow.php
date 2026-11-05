@@ -23,16 +23,14 @@ class PingIndexNow extends Command
             Cache::store('file')->forget($key);
         }
 
-        $baseUrl = SitemapController::getCanonicalBaseUrl();
+        $baseUrl = 'https://winashop.com';
         $this->info("Canonical domain: {$baseUrl}");
 
-        $indexNowKey = setting('seo_indexnow_key');
-        if (!$indexNowKey) {
-            $indexNowKey = substr(md5(config('app.key', 'winashop') . '_indexnow_wina'), 0, 32);
-            Setting::set('seo_indexnow_key', $indexNowKey, 'string', 'seo');
-        }
+        $indexNowKey = SitemapController::ensureIndexNowStaticFiles();
+        Setting::set('seo_indexnow_key', $indexNowKey, 'string', 'seo');
 
         $host = parse_url($baseUrl, PHP_URL_HOST) ?: 'winashop.com';
+        $keyLocation = $baseUrl . "/indexnow-{$indexNowKey}.txt";
         $limit = (int) $this->option('limit');
 
         $urls = [
@@ -56,18 +54,27 @@ class PingIndexNow extends Command
 
         $uniqueUrls = array_values(array_unique($urls));
         $this->info("2. Prepared " . count($uniqueUrls) . " canonical URLs for submission.");
+        $this->info("   Key file URL: {$keyLocation}");
 
-        if (in_array($host, ['localhost', '127.0.0.1'], true)) {
-            $this->warn("Local environment detected. Skipping remote IndexNow HTTP POST.");
-            return 0;
+        // Pre-verify that the remote production server is serving the key file with 200 OK
+        try {
+            $verifyResp = Http::timeout(8)->get($keyLocation);
+            if (!$verifyResp->successful() || trim($verifyResp->body()) !== $indexNowKey) {
+                $this->warn("Note: {$keyLocation} returned HTTP " . $verifyResp->status() . " on the live server.");
+                $this->warn("Make sure you have pulled the latest code (git pull origin wina) on the production server winashop.com so that public/indexnow-{$indexNowKey}.txt is live before pinging IndexNow.");
+            } else {
+                $this->info("   Verified live key file on {$host}: HTTP 200 OK.");
+            }
+        } catch (\Throwable $e) {
+            // Continue to IndexNow submission
         }
 
         $this->info("3. Sending batch ping to https://api.indexnow.org/indexnow ...");
         try {
-            $response = Http::timeout(10)->post('https://api.indexnow.org/indexnow', [
+            $response = Http::timeout(15)->post('https://api.indexnow.org/indexnow', [
                 'host' => $host,
                 'key' => $indexNowKey,
-                'keyLocation' => $baseUrl . "/indexnow-{$indexNowKey}.txt",
+                'keyLocation' => $keyLocation,
                 'urlList' => $uniqueUrls,
             ]);
 

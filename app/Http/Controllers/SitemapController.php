@@ -393,21 +393,65 @@ class SitemapController extends Controller
     }
 
     /**
-     * Serve the IndexNow API verification key file (/indexnow-{key}.txt)
+     * Authoritative IndexNow verification key for winashop.com.
+     * Consistent across local CLI and production environments.
+     */
+    public const DEFAULT_INDEXNOW_KEY = '1fa67d747e74974e838919c909c65098';
+
+    public static function getIndexNowKey(): string
+    {
+        $key = setting('seo_indexnow_key') ?: setting('indexnow_api_key');
+        if (!empty($key) && preg_match('/^[a-zA-Z0-9\-]{8,128}$/', (string) $key)) {
+            return (string) $key;
+        }
+        return self::DEFAULT_INDEXNOW_KEY;
+    }
+
+    /**
+     * Ensure static verification files exist in public/ so web servers (Apache/Nginx)
+     * serve them with 200 OK text/plain and zero middleware overhead.
+     */
+    public static function ensureIndexNowStaticFiles(?string $key = null): string
+    {
+        $resolvedKey = $key ?: self::getIndexNowKey();
+        $paths = [
+            public_path("{$resolvedKey}.txt"),
+            public_path("indexnow-{$resolvedKey}.txt"),
+            public_path(self::DEFAULT_INDEXNOW_KEY . '.txt'),
+            public_path('indexnow-' . self::DEFAULT_INDEXNOW_KEY . '.txt'),
+        ];
+
+        foreach (array_unique($paths) as $filePath) {
+            $expectedContent = str_contains(basename($filePath), self::DEFAULT_INDEXNOW_KEY)
+                ? self::DEFAULT_INDEXNOW_KEY
+                : $resolvedKey;
+            if (!is_file($filePath) || trim((string) @file_get_contents($filePath)) !== $expectedContent) {
+                @file_put_contents($filePath, $expectedContent);
+            }
+        }
+
+        return $resolvedKey;
+    }
+
+    /**
+     * Serve the IndexNow API verification key file (/indexnow-{key}.txt and /{key}.txt)
      */
     public function indexNowKey(string $key): Response
     {
-        $configuredKey = setting('seo_indexnow_key') 
-            ?: setting('indexnow_api_key') 
-            ?: substr(md5(config('app.key', 'winashop') . '_indexnow_wina'), 0, 32);
+        $validKeys = array_filter(array_unique([
+            self::DEFAULT_INDEXNOW_KEY,
+            setting('seo_indexnow_key'),
+            setting('indexnow_api_key'),
+            substr(md5(config('app.key', 'winashop') . '_indexnow_wina'), 0, 32),
+            md5(config('app.url', 'winashop') . '_indexnow_v1'),
+        ]));
 
-        $fallbackKey = md5(config('app.url', 'winashop') . '_indexnow_v1');
-
-        if ($key !== $configuredKey && $key !== $fallbackKey) {
+        if (!in_array($key, $validKeys, true)) {
             abort(404);
         }
 
         return response($key, 200)
-            ->header('Content-Type', 'text/plain; charset=utf-8');
+            ->header('Content-Type', 'text/plain; charset=utf-8')
+            ->header('Cache-Control', 'public, max-age=86400');
     }
 }
