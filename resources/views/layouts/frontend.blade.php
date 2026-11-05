@@ -2532,6 +2532,310 @@
         .pdp-stock-badge--coming-soon {
             border: 0.08em solid #fb923c !important;
         }
+
+        /* ── Reusable Slider Styles (Product page & Zero-Search Suggestions) ── */
+        .pdp-slider-section {
+            background: #ffffff;
+            border: 1px solid #edf2f7;
+            border-radius: 14px !important;
+            padding: 12px 12px 10px 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+            margin-top: 14px;
+            position: relative;
+        }
+        .pdp-slider-carousel-wrap {
+            position: relative;
+            width: 100%;
+        }
+        .btn-slider-nav {
+            width: 32px;
+            height: 32px;
+            border-radius: 50% !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            background: #0f172a !important;
+            color: #ffffff !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.15) !important;
+            cursor: pointer;
+            padding: 0;
+        }
+        .btn-slider-nav:hover:not(.swiper-button-disabled) {
+            background: #c8102e !important;
+            color: #ffffff !important;
+            border-color: #c8102e !important;
+            box-shadow: 0 6px 18px rgba(200, 16, 46, 0.35) !important;
+            transform: translateY(-1px) scale(1.05);
+        }
+        .btn-slider-nav:active:not(.swiper-button-disabled) {
+            transform: translateY(0) scale(1);
+        }
+        .btn-slider-nav.swiper-button-disabled {
+            background: #e2e8f0 !important;
+            color: #94a3b8 !important;
+            border-color: transparent !important;
+            opacity: 0.35 !important;
+            box-shadow: none !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+        }
+        @media (min-width: 992px) {
+            .pdp-slider-side-nav {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                z-index: 10;
+                width: 38px;
+                height: 38px;
+                font-size: 0.85rem;
+                background: #ffffff !important;
+                color: #0f172a !important;
+                border: 1px solid #e2e8f0 !important;
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12) !important;
+                opacity: 0.95;
+                transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            .pdp-slider-side-nav:hover:not(.swiper-button-disabled) {
+                background: #c8102e !important;
+                color: #ffffff !important;
+                border-color: #c8102e !important;
+                box-shadow: 0 6px 18px rgba(200, 16, 46, 0.35) !important;
+                transform: translateY(-50%) scale(1.1) !important;
+                opacity: 1;
+            }
+            .pdp-slider-side-nav.swiper-button-disabled {
+                opacity: 0 !important;
+                pointer-events: none !important;
+            }
+            .pdp-slider-side-prev {
+                left: -16px;
+            }
+            .pdp-slider-side-next {
+                right: -16px;
+            }
+            [dir="rtl"] .pdp-slider-side-prev {
+                left: auto;
+                right: -16px;
+            }
+            [dir="rtl"] .pdp-slider-side-next {
+                right: auto;
+                left: -16px;
+            }
+        }
+        .pdp-products-swiper {
+            overflow: hidden;
+            width: 100%;
+            padding-bottom: 4px;
+        }
+        .pdp-products-swiper .swiper-wrapper {
+            align-items: stretch;
+        }
+        .pdp-products-swiper .swiper-slide {
+            height: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .pdp-products-swiper .swiper-slide .featured-pro-card {
+            height: 100% !important;
+            width: 100% !important;
+            margin-bottom: 0 !important;
+        }
+        .pdp-slider-section .featured-pro-card.selection-card {
+            padding: 7px !important;
+        }
+        .pdp-slider-section .featured-pro-img-box,
+        .pdp-slider-section .selection-card .featured-pro-img-box {
+            height: 135px !important;
+            min-height: 135px !important;
+            max-height: 135px !important;
+            margin-bottom: 5px !important;
+            padding: 3px !important;
+        }
+        .pdp-slider-section .featured-pro-title,
+        .pdp-slider-section .featured-pro-title a {
+            font-size: 0.74rem !important;
+            line-height: 1.25 !important;
+            height: 2.5em !important;
+            min-height: 2.5em !important;
+            max-height: 2.5em !important;
+            margin-bottom: 5px !important;
+        }
+        .pdp-slider-section .pcard-price {
+            height: 34px !important;
+            min-height: 34px !important;
+            max-height: 34px !important;
+        }
+        .pdp-slider-section .pcard-price-main-line {
+            height: 20px !important;
+            min-height: 20px !important;
+            max-height: 20px !important;
+            gap: 3px !important;
+        }
+        .pdp-slider-section .pcard-price-current {
+            font-size: 0.95rem !important;
+            height: 20px !important;
+            min-height: 20px !important;
+            max-height: 20px !important;
+        }
+        .pdp-slider-section .pcard-price-old {
+            font-size: 0.68rem !important;
+            height: 14px !important;
+            min-height: 14px !important;
+            max-height: 14px !important;
+        }
+        .pdp-slider-section .featured-pro-btn {
+            height: 30px !important;
+            min-height: 30px !important;
+            max-height: 30px !important;
+            font-size: 0.70rem !important;
+            padding: 0 6px !important;
+        }
+        .pdp-slider-section .product-card-tag-badge {
+            font-size: 0.62rem !important;
+            padding: 2px 5px !important;
+        }
+        .pdp-slider-section .featured-stock-pill {
+            font-size: 0.60rem !important;
+            padding: 1px 5px !important;
+        }
+        .pdp-slider-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            margin-top: 12px;
+            min-height: 20px;
+        }
+        .pdp-mobile-pagination-wrap {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 16px !important;
+            margin-top: 14px !important;
+            margin-bottom: 4px !important;
+            width: 100% !important;
+            position: relative !important;
+            z-index: 5 !important;
+        }
+        @media (min-width: 992px) {
+            .pdp-mobile-pagination-wrap {
+                display: none !important;
+            }
+        }
+        .pdp-mobile-pagination-wrap .pdp-slider-pagination,
+        .pdp-slider-pagination.swiper-pagination-bullets,
+        .pdp-slider-pagination.swiper-pagination-horizontal {
+            width: auto !important;
+            max-width: none !important;
+            flex: 0 0 auto !important;
+            position: static !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-height: 24px !important;
+            transform: none !important;
+            left: auto !important;
+            bottom: auto !important;
+        }
+        .pdp-slider-mobile-nav {
+            width: 32px !important;
+            height: 32px !important;
+            min-width: 32px !important;
+            min-height: 32px !important;
+            font-size: 0.72rem !important;
+            background: #0f172a !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 50% !important;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18) !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex: 0 0 32px !important;
+            padding: 0 !important;
+            cursor: pointer !important;
+        }
+        .pdp-slider-mobile-nav:hover:not(.swiper-button-disabled) {
+            background: #c8102e !important;
+            color: #ffffff !important;
+            border-color: #c8102e !important;
+            box-shadow: 0 4px 12px rgba(200, 16, 46, 0.35) !important;
+        }
+        .pdp-slider-mobile-nav.swiper-button-disabled {
+            background: #e2e8f0 !important;
+            color: #94a3b8 !important;
+            opacity: 0.3 !important;
+            pointer-events: none !important;
+            box-shadow: none !important;
+        }
+        @media (max-width: 575px) {
+            .pdp-slider-section {
+                padding: 8px 6px 6px 6px !important;
+                border-radius: 12px !important;
+                margin-top: 10px;
+            }
+            .pdp-slider-section .featured-pro-card.selection-card {
+                padding: 5px !important;
+            }
+            .pdp-slider-section .featured-pro-img-box,
+            .pdp-slider-section .selection-card .featured-pro-img-box {
+                height: 112px !important;
+                min-height: 112px !important;
+                max-height: 112px !important;
+                margin-bottom: 3px !important;
+                padding: 2px !important;
+            }
+            .pdp-slider-section .featured-pro-title,
+            .pdp-slider-section .featured-pro-title a {
+                font-size: 0.67rem !important;
+                line-height: 1.2 !important;
+                height: 2.4em !important;
+                min-height: 2.4em !important;
+                max-height: 2.4em !important;
+                margin-bottom: 3px !important;
+            }
+            .pdp-slider-section .pcard-price {
+                height: 30px !important;
+                min-height: 30px !important;
+                max-height: 30px !important;
+            }
+            .pdp-slider-section .pcard-price-main-line {
+                height: 18px !important;
+                min-height: 18px !important;
+                max-height: 18px !important;
+            }
+            .pdp-slider-section .pcard-price-current {
+                font-size: 0.85rem !important;
+                height: 18px !important;
+                min-height: 18px !important;
+                max-height: 18px !important;
+            }
+            .pdp-slider-section .featured-pro-btn {
+                height: 27px !important;
+                min-height: 27px !important;
+                max-height: 27px !important;
+                font-size: 0.65rem !important;
+                padding: 0 4px !important;
+            }
+            .btn-slider-nav {
+                width: 28px;
+                height: 28px;
+                font-size: 0.65rem;
+            }
+            .pdp-slider-mobile-nav {
+                width: 30px !important;
+                height: 30px !important;
+                min-width: 30px !important;
+                min-height: 30px !important;
+                font-size: 0.70rem !important;
+                flex: 0 0 30px !important;
+            }
+        }
     </style>
     <!-- Custom Head & Body Codes (Cached in local file store) -->
     @php

@@ -1239,6 +1239,11 @@ function fetchProducts(url = "{{ route('shop.index') }}", pushHistory = true) {
         applyViewMode(shopState.viewMode);
         updateUIState();
 
+        // Initialize empty search slider if present
+        if (typeof window.initShopEmptySlider === 'function') {
+            window.initShopEmptySlider();
+        }
+
         // Smooth scroll on mobile if triggered from sheet or filters
         if (window.innerWidth < 992) {
             const mobileToolbar = document.querySelector('.shop-mobile-toolbar');
@@ -1902,6 +1907,112 @@ document.addEventListener('DOMContentLoaded', function() {
             fetchProducts();
         });
     }
+
+    // Initialize empty search slider on initial page load
+    if (typeof window.initShopEmptySlider === 'function') {
+        window.initShopEmptySlider();
+    }
 });
+
+// Reusable function to initialize Swiper on zero-results random products slider
+window.initShopEmptySlider = function() {
+    const swiperEl = document.querySelector('.shop-empty-random-swiper');
+    if (!swiperEl || typeof Swiper === 'undefined') return;
+
+    if (swiperEl._swiperInstance) {
+        try { swiperEl._swiperInstance.destroy(true, true); } catch(e) {}
+    }
+
+    const isRtl = document.documentElement.getAttribute('dir') === 'rtl';
+    const emptySwiper = new Swiper(swiperEl, {
+        slidesPerView: 2.45,
+        slidesPerGroup: 2,
+        spaceBetween: 8,
+        watchOverflow: true,
+        threshold: 10,
+        pagination: {
+            el: '.shop-empty-random-pagination',
+            clickable: true,
+            bulletClass: 'cat-swiper-dot',
+            bulletActiveClass: 'cat-swiper-dot-active',
+        },
+        breakpoints: {
+            0: {
+                slidesPerView: 2.45,
+                slidesPerGroup: 2,
+                spaceBetween: 8,
+            },
+            480: {
+                slidesPerView: 2.65,
+                slidesPerGroup: 2,
+                spaceBetween: 8,
+            },
+            640: {
+                slidesPerView: 3.3,
+                slidesPerGroup: 2,
+                spaceBetween: 8,
+            },
+            768: {
+                slidesPerView: 3.6,
+                slidesPerGroup: 2,
+                spaceBetween: 8,
+            },
+            992: {
+                slidesPerView: 4.5,
+                slidesPerGroup: 2,
+                spaceBetween: 8,
+            },
+            1200: {
+                slidesPerView: 5.5,
+                slidesPerGroup: 2,
+                spaceBetween: 8,
+            }
+        }
+    });
+
+    swiperEl._swiperInstance = emptySwiper;
+
+    function updateEmptyNavState() {
+        const isBeg = emptySwiper.isBeginning;
+        const isEnd = emptySwiper.isEnd;
+        document.querySelectorAll('.shop-empty-swiper-prev').forEach(btn => {
+            btn.classList.toggle('swiper-button-disabled', isBeg);
+            if (isBeg) {
+                btn.setAttribute('disabled', 'disabled');
+                btn.setAttribute('aria-disabled', 'true');
+            } else {
+                btn.removeAttribute('disabled');
+                btn.setAttribute('aria-disabled', 'false');
+            }
+        });
+        document.querySelectorAll('.shop-empty-swiper-next').forEach(btn => {
+            btn.classList.toggle('swiper-button-disabled', isEnd);
+            if (isEnd) {
+                btn.setAttribute('disabled', 'disabled');
+                btn.setAttribute('aria-disabled', 'true');
+            } else {
+                btn.removeAttribute('disabled');
+                btn.setAttribute('aria-disabled', 'false');
+            }
+        });
+    }
+
+    document.querySelectorAll('.shop-empty-swiper-prev').forEach(btn => {
+        btn.onclick = function(e) {
+            e.preventDefault();
+            emptySwiper.slidePrev();
+        };
+    });
+    document.querySelectorAll('.shop-empty-swiper-next').forEach(btn => {
+        btn.onclick = function(e) {
+            e.preventDefault();
+            emptySwiper.slideNext();
+        };
+    });
+
+    emptySwiper.on('slideChange', updateEmptyNavState);
+    emptySwiper.on('update', updateEmptyNavState);
+    updateEmptyNavState();
+};
 </script>
 @endpush

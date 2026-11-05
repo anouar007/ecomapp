@@ -78,6 +78,19 @@ class ShopController extends Controller
 
         $popularSearches = ProductSearchService::getPopularSearches();
 
+        // 10 Random in-stock products for empty-search suggestions slider (Fast in-memory cache, 0 SQL table scan)
+        $randomProducts = $fileCache->remember("shop_random_slider_pool_{$cacheVer}", 1800, function () {
+            return Product::with(['images', 'activeTags', 'productCategory', 'brand'])
+                ->where('status', 'active')
+                ->where('stock', '>', 0)
+                ->latest('updated_at')
+                ->take(40)
+                ->get();
+        });
+        if ($randomProducts->count() > 10) {
+            $randomProducts = $randomProducts->random(10)->values();
+        }
+
         $activeCategory = $categories->where('slug', $categorySlug)->first();
         $activeCategoryTitle = $activeCategory 
             ? $activeCategory->name 
@@ -99,6 +112,7 @@ class ShopController extends Controller
             'activeCategoryTitle',
             'matchingCategories',
             'popularSearches',
+            'randomProducts',
             'smartBrands',
             'activeBrand',
             'brandSlug'
