@@ -331,6 +331,8 @@ class SitemapController extends Controller
                         'condition' => str_contains(strtolower($p->name), 'occasion') ? 'used_certified' : 'new_sealed',
                         'url' => $baseUrl . '/shop/' . ($p->slug ?: $p->id),
                         'image' => $imgUrl,
+                        'keywords' => array_slice($p->getSeoKeywords(), 0, 15),
+                        'alternate_names' => $p->getMultilingualAlternateNames(),
                     ];
                 });
 

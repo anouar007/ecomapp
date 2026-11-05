@@ -754,99 +754,9 @@
         }
     }
     
-    // Intelligent Trilingual (FR/AR/EN) & Moroccan Darija Keyword Expansion
-    $catName = $product->category ? $product->category->name : 'Matériel Photo & Vidéo';
-    $catLower = strtolower($catName);
-    $extraCatKeywordsFr = [];
-    $extraCatKeywordsAr = [];
-    $extraCatKeywordsEn = [];
-
-    // Equipment type detection
-    if (str_contains($nameLower, 'camera') || str_contains($nameLower, 'caméra') || str_contains($catLower, 'camera') || str_contains($catLower, 'caméra') || str_contains($nameLower, 'boîtier') || str_contains($nameLower, 'hybride') || str_contains($nameLower, 'fx3') || str_contains($nameLower, 'alpha') || str_contains($nameLower, 'eos') || str_contains($nameLower, 'nikon z')) {
-        $extraCatKeywordsFr = ['caméra professionnelle Maroc', 'appareil photo hybride plein format', 'caméra cinéma 4K 8K Casablanca', 'achat caméra vidéo Maroc', 'matériel tournage cinéma INDH'];
-        $extraCatKeywordsAr = ['كاميرا احترافية المغرب', 'كاميرات سينمائية للبيع الدار البيضاء', 'كاميرا تصوير فيديو 4K', 'شراء كاميرا كانون سوني نيكون'];
-        $extraCatKeywordsEn = ['professional cinema camera Morocco', 'full frame mirrorless camera Casablanca', 'buy digital camera Morocco', '4K video camera Morocco'];
-    } elseif (str_contains($nameLower, 'objectif') || str_contains($nameLower, 'lens') || str_contains($catLower, 'objectif') || str_contains($nameLower, 'f/')) {
-        $extraCatKeywordsFr = ['objectif photo Maroc', 'optique plein format Casablanca', 'focale fixe zoom téléobjectif', 'objectif photo professionnel Sony Canon Sigma Tamron'];
-        $extraCatKeywordsAr = ['عدسات تصوير احترافية المغرب', 'شراء عدسة كاميرا الدار البيضاء', 'عدسات سوني كانون سيغما تامرون', 'أفضل عدسة لتصوير البورتريه والمناسبات'];
-        $extraCatKeywordsEn = ['camera lens Morocco', 'buy lenses Casablanca', 'prime lens zoom lens Morocco', 'professional camera optics Casablanca'];
-    } elseif (str_contains($nameLower, 'drone') || str_contains($catLower, 'drone') || str_contains($nameLower, 'mavic') || str_contains($nameLower, 'avata') || str_contains($nameLower, 'mini 4')) {
-        $extraCatKeywordsFr = ['drone avec caméra 4K Maroc', 'drone professionnel DJI Casablanca', 'prise de vue aérienne Maroc', 'accessoires drone DJI'];
-        $extraCatKeywordsAr = ['طائرة درون تصوير جوي المغرب', 'شراء درون دي جي اي الدار البيضاء', 'درون احترافي 4k مع كاميرا'];
-        $extraCatKeywordsEn = ['camera drone Morocco', 'DJI drone Casablanca', 'aerial photography gear Morocco'];
-    } elseif (str_contains($nameLower, 'stabilisateur') || str_contains($nameLower, 'gimbal') || str_contains($nameLower, 'ronin') || str_contains($nameLower, 'osmo mobile') || str_contains($nameLower, 'rs3') || str_contains($nameLower, 'rs4')) {
-        $extraCatKeywordsFr = ['stabilisateur caméra gimbal Maroc', 'stabilisateur 3 axes Casablanca', 'gimbal smartphone et reflex DJI', 'accessoires vidéo tournage'];
-        $extraCatKeywordsAr = ['مانع اهتزاز كاميرا جيمبل المغرب', 'مثبت كاميرا احترافي الدار البيضاء', 'جيمبل دي جي اي رونين'];
-        $extraCatKeywordsEn = ['camera gimbal stabilizer Morocco', 'handheld 3-axis stabilizer Casablanca', 'DJI Ronin gimbal Morocco'];
-    } elseif (str_contains($nameLower, 'softbox') || str_contains($nameLower, 'light') || str_contains($nameLower, 'led') || str_contains($nameLower, 'éclairage') || str_contains($nameLower, 'flash') || str_contains($nameLower, 'projecteur') || str_contains($catLower, 'eclairage') || str_contains($catLower, 'éclairage') || str_contains($catLower, 'lumiere')) {
-        $extraCatKeywordsFr = ['éclairage studio photo Maroc', 'projecteur LED continu vidéo Casablanca', 'flash studio professionnel Godox', 'softbox boîte à lumière diffuseur', 'matériel éclairage tournage'];
-        $extraCatKeywordsAr = ['إضاءة استوديو تصوير المغرب', 'كشاف ليد مستمر الدار البيضاء', 'سوفت بوكس فلاش تصوير احترافي', 'معدات إضاءة الفيديو واليوتيوب'];
-        $extraCatKeywordsEn = ['studio lighting Morocco', 'continuous LED video light Casablanca', 'strobe flash softbox lighting kit Morocco'];
-    } elseif (str_contains($nameLower, 'mic') || str_contains($nameLower, 'micro') || str_contains($nameLower, 'audio') || str_contains($nameLower, 'son') || str_contains($catLower, 'audio') || str_contains($catLower, 'micro')) {
-        $extraCatKeywordsFr = ['microphone sans fil Maroc', 'micro cravate HF Casablanca', 'matériel prise de son podcast interview', 'micro RØDE Hollyland DJI'];
-        $extraCatKeywordsAr = ['ميكروفون لاسلكي المغرب', 'مايك كرافاط للمقابلات الدار البيضاء', 'معدات صوت وبودكاست ويوتيوب'];
-        $extraCatKeywordsEn = ['wireless microphone Morocco', 'lavalier lapel mic Casablanca', 'podcast interview recording audio Morocco'];
-    } elseif (str_contains($nameLower, 'trepied') || str_contains($nameLower, 'trépied') || str_contains($nameLower, 'tripod') || str_contains($nameLower, 'monopode') || str_contains($catLower, 'trepied')) {
-        $extraCatKeywordsFr = ['trépied vidéo professionnel Maroc', 'trépied carbone aluminium Casablanca', 'rotule fluide vidéo K&F Manfrotto', 'support caméra'];
-        $extraCatKeywordsAr = ['حامل ثلاثي ترايبود للكاميرا المغرب', 'ترايبود فيديو احترافي الدار البيضاء', 'حامل كاميرا احترافي'];
-        $extraCatKeywordsEn = ['professional video tripod Morocco', 'camera tripod fluid head Casablanca'];
-    } elseif (str_contains($nameLower, 'cage') || str_contains($nameLower, 'rig') || str_contains($nameLower, 'smallrig') || str_contains($catLower, 'accessoire') || str_contains($catLower, 'fixation')) {
-        $extraCatKeywordsFr = ['cage caméra SmallRig Maroc', 'accessoires rig vidéo Casablanca', 'poignée latérale fixation moniteur', 'tournage vidéo rig'];
-        $extraCatKeywordsAr = ['قفص كاميرا سمول ريج المغرب', 'اكسسوارات ريغ وتصوير سينمائي الدار البيضاء'];
-        $extraCatKeywordsEn = ['camera cage rig Morocco', 'SmallRig accessories Casablanca'];
-    }
-
-    $keywordsList = array_unique(array_filter(array_merge([
-        // Exact product & brand identification
-        $product->name,
-        $brandGuess . ' ' . $product->name,
-        $product->sku ? ($product->name . ' ' . $product->sku) : null,
-        
-        // French commercial intent & Moroccan cities
-        'Acheter ' . $product->name . ' au Maroc',
-        'Prix ' . $product->name . ' Casablanca',
-        'Meilleur prix ' . $product->name . ' Maroc',
-        $brandGuess . ' Maroc revendeur officiel',
-        $catName . ' Maroc',
-        'Vente ' . $product->name . ' garantie officielle constructeur',
-        'Devis proforma INDH ' . $product->name,
-        'Facture officielle avec ICE ' . $product->name,
-        'Magasin matériel photo Casablanca WINA SHOP',
-        'Livraison 24h 48h Casablanca Rabat Marrakech Tanger Agadir Fès Oujda Maroc',
-
-        // Arabic commercial intent
-        'شراء ' . $product->name . ' في المغرب',
-        'سعر ' . $product->name . ' في الدار البيضاء',
-        'أفضل ثمن ' . $product->name . ' بالمغرب',
-        'متجر كاميرات ومعدات تصوير المغرب وينا شوب',
-        'دوفيس وبروفورما المبادرة الوطنية للتنمية البشرية INDH',
-        'فاتورة رسمية مع الضمان بالمغرب',
-        'معدات تصوير احترافية كازابلانكا',
-        'توصيل سريع الدار البيضاء الرباط مراكش طنجة فاس أكادير',
-        'معدات صناع المحتوى واليوتيوب المغرب',
-
-        // English commercial intent
-        'Buy ' . $product->name . ' in Morocco',
-        $product->name . ' price in Casablanca Morocco',
-        'Best deal ' . $product->name . ' Morocco',
-        $brandGuess . ' official store Morocco',
-        'Camera shop Casablanca Morocco',
-        'Professional audiovisual equipment Morocco',
-        'Official warranty proforma invoice Morocco',
-        'Fast delivery Morocco 24-48h',
-
-        // Moroccan Darija search trends
-        'Taman ' . $product->name . ' f lmaghrib',
-        'Chri ' . $product->name . ' f casa',
-        'Matériel dyal taswir f lmaghrib',
-        'Bi3 camérat w matériel f lmaghrib',
-    ],
-        $extraCatKeywordsFr,
-        $extraCatKeywordsAr,
-        $extraCatKeywordsEn
-    )));
-
-    $productKeywords = implode(', ', $keywordsList);
+    // Tailored Multilingual SEO Keywords (French, Arabic, English & Darija)
+    $productKeywords = $product->getSeoKeywordsString();
+    $multilingualNames = $product->getMultilingualAlternateNames();
 
     $allImages = [$product->thumbnail];
     if ($product->relationLoaded('images') && $product->images) {
@@ -942,16 +852,7 @@
     "name": {!! json_encode($product->name) !!},
     "inLanguage": ["fr-MA", "ar-MA", "en-MA"],
     "keywords": {!! json_encode($productKeywords) !!},
-    "alternateName": [
-      {!! json_encode($product->name . ' Maroc') !!},
-      {!! json_encode('Acheter ' . $product->name . ' Casablanca') !!},
-      {!! json_encode('شراء ' . $product->name . ' المغرب') !!},
-      {!! json_encode('سعر ' . $product->name . ' في المغرب') !!},
-      {!! json_encode('Buy ' . $product->name . ' Morocco') !!},
-      {!! json_encode($brandGuess . ' ' . $product->name) !!},
-      {!! json_encode('ثمن ' . $product->name . ' الدار البيضاء') !!},
-      {!! json_encode('Best price ' . $product->name . ' Casablanca Morocco') !!}
-    ],
+    "alternateName": {!! json_encode($multilingualNames) !!},
     "image": {!! json_encode($allImages) !!},
     "description": {!! json_encode($cleanDesc) !!},
     "sku": "{{ $product->sku ?? 'WINA-' . $product->id }}",

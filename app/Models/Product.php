@@ -243,6 +243,195 @@ class Product extends Model
     }
 
     /**
+     * Get tailored multilingual SEO keywords (French, Arabic, English & Darija)
+     * specific to this exact product.
+     */
+    public function getSeoKeywords(): array
+    {
+        $name = trim($this->name);
+        $nameLower = mb_strtolower($name, 'UTF-8');
+        $sku = trim((string)$this->sku);
+
+        // Detect brand
+        $brandName = $this->brand?->name;
+        if (empty($brandName)) {
+            $knownBrands = ['Sony', 'Canon', 'Nikon', 'DJI', 'Godox', 'SmallRig', 'Tamron', 'Sigma', 'RØDE', 'Hollyland', 'Fujifilm', 'Blackmagic Design', 'Insta360', 'GoPro', 'SanDisk', 'Lexar', 'Manfrotto', 'K&F Concept', 'Aputure', 'Nanlite', 'Zhiyun', 'Boya', 'Sennheiser', 'Tilta', 'FeelWorld', 'Peak Design', 'Profoto', 'Lowepro', 'Ulanzi'];
+            foreach ($knownBrands as $kb) {
+                if (str_contains($nameLower, strtolower($kb))) {
+                    $brandName = $kb;
+                    break;
+                }
+            }
+        }
+        $brandName = $brandName ?: 'WINA SHOP';
+
+        // Detect category
+        $catName = $this->category?->name ?: 'Matériel Photo & Vidéo';
+        $catLower = mb_strtolower($catName, 'UTF-8');
+
+        // Dynamic equipment classification with French, Arabic & English keywords
+        $extraFr = [];
+        $extraAr = [];
+        $extraEn = [];
+
+        // 1. Cameras & Cinema
+        if (str_contains($nameLower, 'camera') || str_contains($nameLower, 'caméra') || str_contains($catLower, 'camera') || str_contains($catLower, 'caméra') || str_contains($nameLower, 'boîtier') || str_contains($nameLower, 'hybride') || str_contains($nameLower, 'fx3') || str_contains($nameLower, 'fx30') || str_contains($nameLower, 'alpha') || str_contains($nameLower, 'eos') || str_contains($nameLower, 'nikon z') || str_contains($nameLower, 'lumix')) {
+            $extraFr = ['caméra cinéma professionnelle', 'appareil photo hybride plein format', 'caméra vidéo 4K 8K Maroc', 'boîtier photo numérique Casablanca', 'matériel tournage cinéma INDH'];
+            $extraAr = ['كاميرا احترافية المغرب', 'كاميرا سينمائية فور كي', 'شراء كاميرا كانون سوني نيكون الدار البيضاء', 'كاميرات تصوير فيديو وسينما', 'كاميرا يوتيوب وفلوق'];
+            $extraEn = ['professional cinema camera Morocco', 'full frame mirrorless camera Casablanca', 'buy digital camera Morocco', '4K video camera Morocco'];
+        }
+        // 2. Lenses & Optics
+        if (str_contains($nameLower, 'objectif') || str_contains($nameLower, 'lens') || str_contains($catLower, 'objectif') || str_contains($nameLower, 'f/') || str_contains($nameLower, 'mm ') || str_contains($nameLower, 'f2.') || str_contains($nameLower, 'f1.') || str_contains($nameLower, 'f4')) {
+            $extraFr = array_merge($extraFr, ['objectif photo professionnel', 'optique plein format Casablanca', 'focale fixe zoom téléobjectif', 'objectif photo Sony Canon Sigma Tamron Maroc']);
+            $extraAr = array_merge($extraAr, ['عدسات تصوير احترافية المغرب', 'عدسة كاميرا سوني كانون سيغما', 'شراء عدسات تصوير الدار البيضاء', 'عدسة بورتريه وزووم فوتوغرافي']);
+            $extraEn = array_merge($extraEn, ['camera lens Morocco', 'prime lens zoom lens Casablanca', 'professional camera optics Morocco', 'buy camera lenses online']);
+        }
+        // 3. Drones & Aerial
+        if (str_contains($nameLower, 'drone') || str_contains($catLower, 'drone') || str_contains($nameLower, 'mavic') || str_contains($nameLower, 'avata') || str_contains($nameLower, 'mini 4') || str_contains($nameLower, 'air 3')) {
+            $extraFr = array_merge($extraFr, ['drone avec caméra 4K Maroc', 'drone professionnel DJI Casablanca', 'prise de vue aérienne Maroc', 'accessoires drone DJI']);
+            $extraAr = array_merge($extraAr, ['طائرة درون تصوير جوي المغرب', 'شراء درون دي جي اي الدار البيضاء', 'درون احترافي 4k مع كاميرا']);
+            $extraEn = array_merge($extraEn, ['camera drone Morocco', 'DJI drone Casablanca', 'aerial photography gear Morocco']);
+        }
+        // 4. Stabilizers & Gimbals
+        if (str_contains($nameLower, 'stabilisateur') || str_contains($nameLower, 'gimbal') || str_contains($nameLower, 'ronin') || str_contains($nameLower, 'osmo mobile') || str_contains($nameLower, 'rs3') || str_contains($nameLower, 'rs4') || str_contains($catLower, 'stabilisateur')) {
+            $extraFr = array_merge($extraFr, ['stabilisateur gimbal 3 axes Maroc', 'stabilisateur caméra reflex hybride', 'gimbal smartphone DJI Casablanca', 'poignée stabilisatrice vidéo']);
+            $extraAr = array_merge($extraAr, ['مانع اهتزاز كاميرا جيمبل المغرب', 'مثبت كاميرا احترافي الدار البيضاء', 'جيمبل دي جي اي رونين']);
+            $extraEn = array_merge($extraEn, ['camera gimbal stabilizer Morocco', 'handheld 3-axis stabilizer Casablanca', 'DJI Ronin gimbal Morocco']);
+        }
+        // 5. Lighting, Softbox, LED, Flashes
+        if (str_contains($nameLower, 'softbox') || str_contains($nameLower, 'light') || str_contains($nameLower, 'led') || str_contains($nameLower, 'éclairage') || str_contains($nameLower, 'flash') || str_contains($nameLower, 'projecteur') || str_contains($catLower, 'eclairage') || str_contains($catLower, 'éclairage') || str_contains($catLower, 'lumiere') || str_contains($catLower, 'studio')) {
+            $extraFr = array_merge($extraFr, ['éclairage studio photo Maroc', 'projecteur LED continu vidéo Casablanca', 'flash studio professionnel Godox', 'softbox boîte à lumière diffuseur', 'matériel éclairage tournage']);
+            $extraAr = array_merge($extraAr, ['إضاءة استوديو تصوير المغرب', 'كشاف ليد مستمر الدار البيضاء', 'سوفت بوكس فلاش تصوير احترافي', 'معدات إضاءة الفيديو واليوتيوب']);
+            $extraEn = array_merge($extraEn, ['studio lighting Morocco', 'continuous LED video light Casablanca', 'strobe flash softbox lighting kit Morocco']);
+        }
+        // 6. Audio, Microphones, Podcast
+        if (str_contains($nameLower, 'mic') || str_contains($nameLower, 'micro') || str_contains($nameLower, 'audio') || str_contains($nameLower, 'son') || str_contains($catLower, 'audio') || str_contains($catLower, 'micro') || str_contains($catLower, 'son') || str_contains($catLower, 'podcast')) {
+            $extraFr = array_merge($extraFr, ['microphone sans fil Maroc', 'micro cravate HF Casablanca', 'matériel prise de son podcast interview', 'micro RØDE Hollyland DJI']);
+            $extraAr = array_merge($extraAr, ['ميكروفون لاسلكي المغرب', 'مايك كرافاط للمقابلات الدار البيضاء', 'معدات صوت وبودكاست ويوتيوب']);
+            $extraEn = array_merge($extraEn, ['wireless microphone Morocco', 'lavalier lapel mic Casablanca', 'podcast interview recording audio Morocco']);
+        }
+        // 7. Tripods & Monopods
+        if (str_contains($nameLower, 'trepied') || str_contains($nameLower, 'trépied') || str_contains($nameLower, 'tripod') || str_contains($nameLower, 'monopode') || str_contains($catLower, 'trepied') || str_contains($catLower, 'trépied')) {
+            $extraFr = array_merge($extraFr, ['trépied vidéo professionnel Maroc', 'trépied carbone aluminium Casablanca', 'rotule fluide vidéo K&F Manfrotto', 'support caméra']);
+            $extraAr = array_merge($extraAr, ['حامل ثلاثي ترايبود للكاميرا المغرب', 'ترايبود فيديو احترافي الدار البيضاء', 'حامل كاميرا احترافي']);
+            $extraEn = array_merge($extraEn, ['professional video tripod Morocco', 'camera tripod fluid head Casablanca']);
+        }
+        // 8. Cages, Rigs, Matte Box & Accessories
+        if (str_contains($nameLower, 'cage') || str_contains($nameLower, 'rig') || str_contains($nameLower, 'smallrig') || str_contains($nameLower, 'matte box') || str_contains($catLower, 'accessoire') || str_contains($catLower, 'fixation') || str_contains($catLower, 'matte box')) {
+            $extraFr = array_merge($extraFr, ['cage caméra SmallRig Maroc', 'accessoires rig vidéo Casablanca', 'poignée latérale fixation moniteur', 'tournage vidéo rig']);
+            $extraAr = array_merge($extraAr, ['قفص كاميرا سمول ريج المغرب', 'اكسسوارات ريغ وتصوير سينمائي الدار البيضاء', 'مات بوكس واقي شمس للعدسة']);
+            $extraEn = array_merge($extraEn, ['camera cage rig Morocco', 'SmallRig accessories Casablanca', 'matte box sun hood camera']);
+        }
+        // 9. Batteries & Power
+        if (str_contains($nameLower, 'batterie') || str_contains($nameLower, 'battery') || str_contains($nameLower, 'chargeur') || str_contains($nameLower, 'v-mount') || str_contains($catLower, 'batterie')) {
+            $extraFr = array_merge($extraFr, ['batterie appareil photo Casablanca', 'chargeur batterie double rapide', 'batterie V-Mount cinéma Maroc', 'alimentation continue caméra']);
+            $extraAr = array_merge($extraAr, ['بطارية كاميرا أصلية المغرب', 'شاحن بطاريات كاميرا الدار البيضاء', 'بطارية في ماونت سينمائية']);
+            $extraEn = array_merge($extraEn, ['camera rechargeable battery Morocco', 'dual camera battery charger', 'V-mount cinema battery Casablanca']);
+        }
+        // 10. Memory Cards & Storage
+        if (str_contains($nameLower, 'carte mémoire') || str_contains($nameLower, 'sd') || str_contains($nameLower, 'cfexpress') || str_contains($nameLower, 'sandisk') || str_contains($nameLower, 'lexar') || str_contains($catLower, 'carte mémoire') || str_contains($catLower, 'lecteur')) {
+            $extraFr = array_merge($extraFr, ['carte mémoire SD 4K 8K Maroc', 'carte CFexpress Type A Type B Casablanca', 'lecteur de carte haute vitesse', 'stockage vidéo v90']);
+            $extraAr = array_merge($extraAr, ['بطاقة ذاكرة كاميرا سريعة المغرب', 'كارت ميموري فور كي الدار البيضاء', 'كارت سي اف اكسبريس']);
+            $extraEn = array_merge($extraEn, ['high speed SD memory card Morocco', 'CFexpress Type A Type B Casablanca', 'fast camera memory card reader']);
+        }
+        // 11. Filters (ND, CPL, UV)
+        if (str_contains($nameLower, 'filtre') || str_contains($nameLower, 'filter') || str_contains($nameLower, 'nd') || str_contains($nameLower, 'cpl') || str_contains($catLower, 'filtre')) {
+            $extraFr = array_merge($extraFr, ['filtre ND variable Maroc', 'filtre polarisant CPL Casablanca', 'filtre protection UV objectif photo', 'filtres cinématiques']);
+            $extraAr = array_merge($extraAr, ['فلتر ان دي متغير للكاميرا المغرب', 'فلتر بولارايزد سي بي ال الدار البيضاء', 'فلتر حماية العدسة']);
+            $extraEn = array_merge($extraEn, ['variable ND filter Morocco', 'circular polarizing CPL filter Casablanca', 'camera lens protection filter']);
+        }
+        // 12. Bags & Cases
+        if (str_contains($nameLower, 'sac') || str_contains($nameLower, 'bag') || str_contains($nameLower, 'valise') || str_contains($catLower, 'sac')) {
+            $extraFr = array_merge($extraFr, ['sac à dos appareil photo Maroc', 'sacoche transport caméra étanche Casablanca', 'valise rigide protection matériel photo']);
+            $extraAr = array_merge($extraAr, ['حقيبة كاميرا مقاومة للماء المغرب', 'شنطة ظهر لمعدات التصوير الدار البيضاء', 'حقيبة حماية الكاميرات']);
+            $extraEn = array_merge($extraEn, ['camera backpack Morocco', 'camera carry shoulder bag Casablanca', 'hard protective camera equipment case']);
+        }
+
+        // Assemble the full trilingual list
+        $keywords = array_unique(array_filter(array_merge([
+            // 1. EXACT PRODUCT IDENTITY
+            $name,
+            $brandName . ' ' . $name,
+            $sku ? ($name . ' ' . $sku) : null,
+            $sku ? ($brandName . ' ' . $sku) : null,
+
+            // 2. FRENCH COMMERCIAL INTENT
+            'Acheter ' . $name . ' au Maroc',
+            'Prix ' . $name . ' Casablanca',
+            'Meilleur prix ' . $name . ' Maroc',
+            $brandName . ' Maroc revendeur officiel',
+            $catName . ' Maroc',
+            'Vente ' . $name . ' sous garantie constructeur',
+            'Devis proforma INDH ' . $name,
+            'Facture officielle avec ICE ' . $name,
+            'Magasin matériel photo Casablanca WINA SHOP',
+            'Livraison 24h 48h ' . $name . ' Casablanca Rabat Marrakech Tanger Agadir Fès Oujda Maroc',
+
+            // 3. ARABIC COMMERCIAL INTENT (العربية)
+            'شراء ' . $name . ' في المغرب',
+            'سعر ' . $name . ' في الدار البيضاء',
+            'أفضل ثمن ' . $name . ' بالمغرب',
+            'متجر كاميرات ومعدات تصوير المغرب وينا شوب',
+            'دوفيس وبروفورما المبادرة الوطنية للتنمية البشرية INDH ' . $name,
+            'فاتورة رسمية مع الضمان بالمغرب ' . $name,
+            'معدات تصوير احترافية كازابلانكا',
+            'توصيل سريع الدار البيضاء الرباط مراكش طنجة فاس أكادير وجدة',
+            'معدات صناع المحتوى واليوتيوب المغرب',
+            $brandName . ' المغرب المتجر الرسمي',
+
+            // 4. ENGLISH COMMERCIAL INTENT (English)
+            'Buy ' . $name . ' in Morocco',
+            $name . ' price in Casablanca Morocco',
+            'Best deal ' . $name . ' Morocco',
+            $brandName . ' official distributor Morocco',
+            'Camera store Casablanca Morocco ' . $name,
+            'Professional audiovisual equipment Morocco',
+            'Official warranty & proforma invoice ' . $name . ' Morocco',
+            'Fast delivery Morocco 24-48h',
+
+            // 5. MOROCCAN DARIJA SEARCH TRENDS
+            'Taman ' . $name . ' f lmaghrib',
+            'Chri ' . $name . ' f casa',
+            'Matériel dyal taswir f lmaghrib',
+            'Bi3 camérat w matériel f lmaghrib',
+        ],
+            $extraFr,
+            $extraAr,
+            $extraEn
+        )));
+
+        return array_values($keywords);
+    }
+
+    /**
+     * Get comma-separated SEO keywords string.
+     */
+    public function getSeoKeywordsString(): string
+    {
+        return implode(', ', $this->getSeoKeywords());
+    }
+
+    /**
+     * Get multilingual alternate names for Schema.org JSON-LD.
+     */
+    public function getMultilingualAlternateNames(): array
+    {
+        $name = trim($this->name);
+        $brandName = $this->brand?->name ?: 'WINA SHOP';
+
+        return [
+            $name . ' Maroc',
+            'Acheter ' . $name . ' Casablanca',
+            'شراء ' . $name . ' المغرب',
+            'سعر ' . $name . ' في المغرب',
+            'ثمن ' . $name . ' الدار البيضاء',
+            'Buy ' . $name . ' Morocco',
+            'Best price ' . $name . ' Casablanca Morocco',
+            $brandName . ' ' . $name,
+        ];
+    }
+
+    /**
      * Get all product tags/badges assigned to the product.
      */
     public function tags()

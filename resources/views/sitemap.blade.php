@@ -136,12 +136,12 @@
     <priority>0.9</priority>
     <lastmod>{{ $product->updated_at ? $product->updated_at->toAtomString() : now()->toAtomString() }}</lastmod>
     
-    {{-- Primary Product Image --}}
+    {{-- Primary Product Image with Trilingual SEO Caption --}}
     @if(!empty($primaryImg))
     <image:image>
       <image:loc>{{ $primaryImg }}</image:loc>
-      <image:title>{{ htmlspecialchars($product->name, ENT_XML1, 'UTF-8') }}</image:title>
-      <image:caption>{{ htmlspecialchars($product->name . ' au Maroc — ' . setting('app_name', 'WINA SHOP') . ' Casablanca', ENT_XML1, 'UTF-8') }}</image:caption>
+      <image:title>{{ htmlspecialchars($product->name . ' — Prix au Maroc | ' . setting('app_name', 'WINA SHOP'), ENT_XML1, 'UTF-8') }}</image:title>
+      <image:caption>{{ htmlspecialchars($product->name . ' au Maroc — Achat, Prix & Garantie WINA SHOP Casablanca | شراء ' . $product->name . ' في المغرب | Buy ' . $product->name . ' Morocco', ENT_XML1, 'UTF-8') }}</image:caption>
     </image:image>
     @endif
 
