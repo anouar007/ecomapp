@@ -5,7 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('meta_title', setting('app_name', 'WINA SHOP') . ' — ' . __('Matériel Photo, Vidéo, Caméras & Drones au Maroc'))</title>
     <meta name="description" content="@yield('meta_description', setting('app_description', 'WINA SHOP Casablanca : Votre référence au Maroc pour le matériel photo & vidéo professionnel. Caméras Sony, Canon, drones & stabilisateurs DJI, optiques, éclairage studio Godox. Garantie, devis proforma INDH et livraison partout au Maroc.'))">
-    <meta name="keywords" content="@yield('meta_keywords', setting('app_name', 'WINA SHOP') . ', Winashop, matériel photo Maroc, vente caméras Casablanca, caméras cinéma, Sony Alpha Maroc, Canon EOS, DJI Osmo, drones DJI, stabilisateurs gimbals, éclairage Godox, objectifs photo, devis proforma INDH, facture avec ICE, matériel audiovisuel, كاميرات المغرب, بيع معدات التصوير الدار البيضاء, درون دي جي اي, إضاءة استوديو, شراء كاميرا كانون سوني')">
+    @php
+        $defaultSiteKeywords = implode(', ', [
+            // Brand & Identities
+            'WINA SHOP', 'Winashop', 'Wina Shop Maroc', 'وينا شوب', 'متجر وينا شوب كازابلانكا',
+            // French Top Photo & Video Keywords
+            'matériel photo Maroc', 'vente caméras Casablanca', 'magasin matériel photo vidéo Maroc', 'caméras cinéma professionnelles',
+            'appareils photo hybrides plein format', 'Sony Alpha Maroc', 'Sony FX3 FX30 A7 IV A7S III Maroc', 'Canon EOS R Maroc',
+            'Nikon Z Maroc', 'Blackmagic Design Maroc', 'Fujifilm Maroc', 'objectifs photo Sony Canon Sigma Tamron',
+            'drones DJI Maroc', 'DJI Mini 4 Pro', 'DJI Air 3', 'DJI Mavic 3 Pro', 'DJI Osmo Pocket 3', 'DJI Osmo Action',
+            'stabilisateurs DJI Ronin RS4 RS3', 'gimbal stabilisateur smartphone reflex', 'éclairage studio photo Godox',
+            'projecteurs LED continus vidéo', 'softbox diffuseurs lantern', 'flash cobra studio', 'microphones sans fil RØDE Hollyland',
+            'micro cravate HF sans fil interview podcast', 'trépieds vidéo professionnels K&F Manfrotto', 'rotule fluide vidéo',
+            'cages SmallRig rigs tournage', 'filtres ND variables polarisants', 'cartes mémoire SD CFexpress Sandisk Lexar',
+            'achat matériel photo en ligne Maroc', 'meilleur prix caméras Casablanca', 'devis proforma INDH Casablanca',
+            'facture officielle avec ICE matériel audiovisuel', 'matériel subvention INDH Forsa', 'livraison express 24h 48h Maroc',
+            // Arabic Top Keywords
+            'كاميرات المغرب', 'متجر معدات التصوير الدار البيضاء', 'بيع كاميرات فوتوغرافية وسينمائية بالمغرب',
+            'شراء كاميرا كانون سوني نيكون في المغرب', 'طائرات درون دي جي اي المغرب', 'مثبت كاميرا مانع اهتزاز جيمبل',
+            'إضاءة استوديو تصوير فوتوغرافي سوفت بوكس', 'ميكروفون لاسلكي للمقابلات واليوتيوب وبودكاست', 'عدسات تصوير احترافية',
+            'حامل كاميرا ترايبود احترافي', 'اكسسوارات تصوير سمول ريج', 'معدات صناع المحتوى واليوتيوبر في المغرب',
+            'ثمن كاميرا في المغرب', 'شراء معدات التصوير كازابلانكا', 'دوفيس وبروفورما المبادرة الوطنية للتنمية البشرية INDH',
+            'فاتورة قانونية مع الضمان الرسمي بالمغرب', 'توصيل لجميع المدن المغربية الدار البيضاء الرباط مراكش طنجة فاس أكادير',
+            // English Top Keywords
+            'camera store Morocco', 'photography equipment Casablanca', 'cinema cameras Morocco', 'buy Sony Alpha Canon EOS Morocco',
+            'DJI drones Morocco official distributor', 'DJI Ronin gimbal stabilizer Casablanca', 'Godox studio lighting Morocco',
+            'wireless lavalier microphone podcast Morocco', 'professional camera lenses Sigma Tamron', 'SmallRig camera cages Morocco',
+            'proforma invoice INDH Morocco', 'best price camera gear Casablanca', 'online camera shop Morocco fast delivery',
+            // Moroccan Darija Search Trends
+            'matériel photo f lmaghrib', 'camérat للبيع f casa', 'taman caméra f lmaghrib', 'chri caméra f casa', 'matériel dyal taswir f lmaghrib'
+        ]);
+    @endphp
+    <meta name="keywords" content="@yield('meta_keywords', $defaultSiteKeywords)">
     <meta name="robots" content="@yield('meta_robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')">
     <meta name="author" content="{{ setting('app_name', 'WINA SHOP') }}">
     <meta name="developer" content="Elegant Boost (https://elegantboost.com/)">
@@ -156,8 +187,10 @@
       "@type": ["CameraStore", "Store", "LocalBusiness"],
       "@id": "{{ url('/') }}#organization",
       "name": "{{ setting('company_name', setting('app_name', 'WINA SHOP')) }}",
-      "alternateName": ["Winashop", "Wina Shop Maroc", "وينا شوب"],
+      "alternateName": ["Winashop", "Wina Shop Maroc", "وينا شوب", "Wina Shop Casablanca", "Magasin Matériel Photo Maroc", "Camera Store Morocco"],
       "url": "{{ url('/') }}",
+      "inLanguage": ["fr-MA", "ar-MA", "en-MA"],
+      "keywords": "matériel photo Maroc, caméras cinéma, drones DJI, stabilisateurs, éclairage Godox, microphones RØDE, devis proforma INDH, كاميرات المغرب, بيع معدات التصوير, camera store Morocco",
       "logo": "{{ app_logo_url() }}",
       "image": "{{ asset('images/camera/hero_winashop.jpg') }}",
       "description": "{{ addslashes(setting('app_description', 'Votre référence au Maroc pour le matériel photo & vidéo professionnel — Caméras Sony, Canon, drones DJI, stabilisateurs et éclairage studio.')) }}",

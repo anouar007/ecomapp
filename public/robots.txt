@@ -115,3 +115,4 @@ Sitemap: https://winashop.com/google-merchant.xml
 # LLMs-Txt: https://winashop.com/llms.txt
 # LLMs-Full-Txt: https://winashop.com/llms-full.txt
 # AI-Catalog-JSON: https://winashop.com/ai-catalog.json
+

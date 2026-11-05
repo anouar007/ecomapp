@@ -84,3 +84,4 @@ class PingIndexNow extends Command
         return 0;
     }
 }
+

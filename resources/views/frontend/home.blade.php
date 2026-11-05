@@ -1,7 +1,8 @@
 @extends('layouts.frontend')
 
-@section('meta_title', setting('app_name', 'WINA SHOP') . ' — ' . __('Matériel Photo, Vidéo & Caméras au Maroc'))
-@section('meta_description', __('Votre référence au Maroc pour le matériel photo & vidéo professionnel — Caméras Sony, Canon, drones & stabilisateurs DJI, optiques et éclairage studio.'))
+@section('meta_title', setting('app_name', 'WINA SHOP') . ' — ' . __('Matériel Photo, Vidéo, Caméras & Drones au Maroc'))
+@section('meta_description', __('Votre référence au Maroc pour le matériel photo & vidéo professionnel — Caméras Sony, Canon, drones & stabilisateurs DJI, optiques, éclairage studio Godox et micros RØDE. Garantie officielle, devis INDH et livraison partout au Maroc.'))
+@section('meta_keywords', 'WINA SHOP Casablanca, magasin matériel photo Maroc, vente caméras professionnelles Casablanca, caméras cinéma Sony Canon Nikon, drones DJI Maroc, stabilisateurs DJI RS4, éclairage studio Godox, microphones sans fil RØDE Hollyland, objectifs photo plein format, accessoires tournage SmallRig, devis proforma INDH, facture avec ICE, matériel audiovisuel Casablanca, achat matériel photo en ligne Maroc, livraison 24h 48h partout au Maroc, وينا شوب المغرب, متجر كاميرات ومعدات تصوير الدار البيضاء, بيع كاميرات كانون وسوني بالمغرب, طائرات درون دي جي اي, إضاءة استوديو تصوير فوتوغرافي, مايكروفونات لاسلكية, عدسات كاميرا, دوفيس وبروفورما INDH, ثمن كاميرا في المغرب, camera store Casablanca Morocco, buy cameras online Morocco, professional photography gear Morocco, cinema equipment Casablanca, DJI official distributor Morocco, taman caméra f lmaghrib, matériel photo casa')
 
 @section('json_ld')
 <script type="application/ld+json">
@@ -14,6 +15,7 @@
     "name": {!! json_encode(setting('app_name', 'WINA SHOP') . ' — Matériel Photo, Vidéo, Caméras & Drones au Maroc') !!},
     "description": {!! json_encode(setting('app_description', 'Votre référence au Maroc pour le matériel photo & vidéo professionnel — Caméras Sony, Canon, drones & stabilisateurs DJI, optiques et éclairage studio.')) !!},
     "inLanguage": ["fr-MA", "ar-MA", "en-MA"],
+    "keywords": "matériel photo Maroc, caméras cinéma Casablanca, drones DJI, stabilisateurs, éclairage Godox, microphones RØDE, devis proforma INDH, كاميرات المغرب, بيع معدات التصوير, camera store Morocco",
     "about": { "@id": "{{ url('/') }}#organization" },
     "speakable": {
       "@type": "SpeakableSpecification",

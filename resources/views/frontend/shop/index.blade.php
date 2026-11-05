@@ -2,15 +2,73 @@
 
 @php
     $activeCategory = $categories->where('slug', request('category'))->first();
-    $pageTitle = $activeCategory
-        ? ($activeCategory->name . ' — ' . setting('app_name', 'WINA SHOP'))
-        : (request('q') ? 'Résultats pour "' . request('q') . '" — ' . setting('app_name', 'WINA SHOP') : 'Catalogue Matériel Photo & Vidéo — ' . setting('app_name', 'WINA SHOP'));
-    $pageDescription = $activeCategory
-        ? ('Découvrez notre gamme de ' . $activeCategory->name . '. Garantie constructeur, showroom à Casablanca et livraison express partout au Maroc.')
-        : 'Parcourez notre catalogue complet de matériel photo et vidéo, caméras, drones DJI, objectifs, stabilisateurs et éclairage studio au Maroc.';
-    $pageKeywords = $activeCategory
-        ? ($activeCategory->name . ', ' . setting('app_name', 'WINA SHOP') . ', acheter ' . $activeCategory->name . ' Maroc, prix ' . $activeCategory->name)
-        : setting('app_name', 'WINA SHOP') . ', caméras cinéma, objectifs photo, stabilisateurs DJI, éclairage vidéo, Casablanca, Maroc';
+    $activeBrandSlug = request('brand');
+    $queryTerm = request('q');
+
+    if ($activeCategory) {
+        $catName = $activeCategory->name;
+        $pageTitle = $catName . ' au Maroc — Prix, Achat & Garantie | ' . setting('app_name', 'WINA SHOP');
+        $pageDescription = 'Découvrez notre catalogue ' . $catName . ' au Maroc chez WINA SHOP Casablanca. Meilleur prix garanti, devis proforma INDH, facture avec ICE, matériel sous garantie constructeur et livraison express 24-48h partout au Maroc. شراء ' . $catName . ' في المغرب بأفضل سعر مع الضمان والتوصيل السريع.';
+        $pageKeywords = implode(', ', [
+            $catName,
+            $catName . ' Maroc',
+            'Acheter ' . $catName . ' Casablanca',
+            'Prix ' . $catName . ' Maroc',
+            'Meilleur prix ' . $catName,
+            'Vente ' . $catName . ' garantie officielle',
+            'Devis proforma INDH ' . $catName,
+            'Facture avec ICE ' . $catName,
+            'Livraison ' . $catName . ' Casablanca Rabat Marrakech Tanger Agadir',
+            'شراء ' . $catName . ' في المغرب',
+            'سعر ' . $catName . ' الدار البيضاء',
+            'أفضل ثمن ' . $catName . ' بالمغرب',
+            'متجر وينا شوب كازابلانكا ' . $catName,
+            'دوفيس وبروفورما INDH ' . $catName,
+            'توصيل سريع لجميع مدن المغرب',
+            'Buy ' . $catName . ' in Morocco',
+            $catName . ' price in Casablanca Morocco',
+            'Best deal ' . $catName . ' Morocco',
+            'Official camera store Morocco ' . $catName,
+            'Taman ' . $catName . ' f lmaghrib',
+            'Chri ' . $catName . ' f casa'
+        ]);
+    } elseif ($activeBrandSlug) {
+        $brandName = ucfirst($activeBrandSlug);
+        $pageTitle = $brandName . ' Maroc — Produits Officiels, Prix & Garantie | ' . setting('app_name', 'WINA SHOP');
+        $pageDescription = 'Découvrez toute la gamme officielle ' . $brandName . ' au Maroc chez WINA SHOP Casablanca. Caméras, optiques et accessoires garantis, devis INDH et livraison express partout au Maroc. منتجات ' . $brandName . ' الأصلية في المغرب مع الضمان الرسمي.';
+        $pageKeywords = implode(', ', [
+            $brandName . ' Maroc',
+            'Acheter ' . $brandName . ' Casablanca',
+            'Prix ' . $brandName . ' Maroc',
+            'Distributeur officiel ' . $brandName . ' Maroc',
+            'Garantie constructeur ' . $brandName,
+            'Devis proforma INDH ' . $brandName,
+            'Livraison express 24h ' . $brandName . ' Maroc',
+            'شراء ' . $brandName . ' في المغرب',
+            'سعر منتجات ' . $brandName . ' كازابلانكا',
+            'الضمان الرسمي ' . $brandName . ' الدار البيضاء',
+            'Buy ' . $brandName . ' in Morocco',
+            $brandName . ' official distributor Casablanca Morocco',
+            $brandName . ' price Morocco',
+            'Taman ' . $brandName . ' f lmaghrib'
+        ]);
+    } elseif ($queryTerm) {
+        $pageTitle = 'Recherche: "' . $queryTerm . '" — Matériel Photo & Vidéo Maroc | ' . setting('app_name', 'WINA SHOP');
+        $pageDescription = 'Résultats pour la recherche "' . $queryTerm . '" chez WINA SHOP Maroc. Caméras, objectifs, drones et accessoires audiovisuels avec garantie et livraison express.';
+        $pageKeywords = $queryTerm . ', ' . $queryTerm . ' Maroc, acheter ' . $queryTerm . ' Casablanca, prix ' . $queryTerm . ', شراء ' . $queryTerm . ' المغرب, ثمن ' . $queryTerm . ', buy ' . $queryTerm . ' Morocco';
+    } else {
+        $pageTitle = 'Catalogue Matériel Photo, Vidéo, Caméras & Drones au Maroc — ' . setting('app_name', 'WINA SHOP');
+        $pageDescription = 'Parcourez le catalogue complet de matériel audiovisuel professionnel chez WINA SHOP Casablanca : caméras cinéma Sony Canon, optiques, drones DJI, stabilisateurs, éclairage Godox et micros RØDE. Garantie, devis proforma INDH et livraison partout au Maroc. بيع وشراء معدات التصوير الاحترافية في المغرب بأفضل الأسعار.';
+        $pageKeywords = implode(', ', [
+            'catalogue matériel photo Maroc', 'vente caméras Casablanca', 'caméras cinéma Sony Canon', 'objectifs photo', 'drones DJI Maroc',
+            'stabilisateurs gimbals', 'éclairage studio Godox', 'microphones sans fil RØDE Hollyland', 'trépieds vidéo', 'cages SmallRig',
+            'devis proforma INDH Casablanca', 'facture avec ICE matériel photo', 'livraison partout au Maroc',
+            'كاميرات المغرب', 'متجر معدات التصوير الدار البيضاء', 'شراء كاميرات ومعدات فيديو', 'طائرات درون دي جي اي', 'إضاءة استوديو تصوير',
+            'ميكروفون لاسلكي', 'عدسات فوتوغرافية', 'دوفيس وبروفورما INDH', 'أفضل أسعار معدات التصوير بالمغرب',
+            'camera store Morocco', 'photography equipment catalog Casablanca', 'buy cinema cameras Morocco', 'DJI drones Morocco', 'studio lighting',
+            'taman caméra f lmaghrib', 'matériel photo casa', 'chri caméra f lmaghrib'
+        ]);
+    }
 @endphp
 
 @section('meta_title', $pageTitle)
@@ -45,6 +103,20 @@
       }
       @endif
     ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": {!! json_encode($pageTitle) !!},
+    "description": {!! json_encode($pageDescription) !!},
+    "url": "{{ url()->current() }}",
+    "keywords": {!! json_encode($pageKeywords) !!},
+    "inLanguage": ["fr-MA", "ar-MA", "en-MA"],
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "{{ setting('app_name', 'WINA SHOP') }}",
+      "url": "{{ url('/') }}"
+    }
   },
   {
     "@context": "https://schema.org",
