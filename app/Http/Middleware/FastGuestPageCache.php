@@ -144,3 +144,4 @@ class FastGuestPageCache
         return true;
     }
 }
+
