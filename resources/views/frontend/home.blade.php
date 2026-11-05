@@ -296,10 +296,10 @@
                 </div>
                 <div>
                     <a href="{{ route('shop.index') }}" 
-                       class="btn btn-outline-danger fw-bold px-3 py-1 text-nowrap d-inline-flex align-items-center gap-2" 
-                       style="border-radius: 8px; font-size: 0.82rem; border-color: #c8102e;">
+                       class="btn btn-selection-catalogue fw-bold px-3 py-1 text-nowrap d-inline-flex align-items-center gap-2" 
+                       style="background: linear-gradient(45deg, #e10126, #a50019); color: white; border-radius: 8px; font-size: 0.82rem; border: none; box-shadow: 0 4px 12px rgba(225, 1, 38, 0.25);">
                         <span>Voir tout le catalogue</span>
-                        <i class="fas fa-arrow-right" style="font-size: 10px;"></i>
+                        <i class="fas {{ app()->getLocale() === 'ar' ? 'fa-arrow-left' : 'fa-arrow-right' }}" style="font-size: 10px; color: white;"></i>
                     </a>
                 </div>
             </div>
@@ -1131,6 +1131,28 @@
         .home-floating-catalog-arrow {
             font-size: 0.64rem;
         }
+    }
+
+    .btn-selection-catalogue {
+        background: linear-gradient(45deg, #e10126, #a50019) !important;
+        color: #ffffff !important;
+        border: none !important;
+        border-radius: 8px !important;
+        box-shadow: 0 4px 12px rgba(225, 1, 38, 0.25) !important;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    .btn-selection-catalogue:hover {
+        background: linear-gradient(45deg, #c80122, #8b0015) !important;
+        color: #ffffff !important;
+        box-shadow: 0 6px 16px rgba(225, 1, 38, 0.35) !important;
+        transform: translateY(-1px);
+    }
+    .btn-selection-catalogue:active {
+        transform: translateY(0);
+    }
+    .btn-selection-catalogue i,
+    .btn-selection-catalogue span {
+        color: #ffffff !important;
     }
 </style>
 @endpush
