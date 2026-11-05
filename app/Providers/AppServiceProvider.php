@@ -29,6 +29,15 @@ class AppServiceProvider extends ServiceProvider
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
 
+        // Canonical host safety: prevent internal mail.* or cpanel.* hostnames from polluting URLs in production
+        if (!$this->app->environment('local')) {
+            $reqHost = request()->getHost();
+            if ($reqHost === 'mail.winashop.com' || str_contains((string) config('app.url'), 'mail.winashop.com')) {
+                config(['app.url' => 'https://winashop.com']);
+                \Illuminate\Support\Facades\URL::forceRootUrl('https://winashop.com');
+            }
+        }
+
         // Implicitly grant "Admin" role all permissions
         Gate::before(function ($user, $ability) {
             return $user->hasRole('Admin') ? true : null;

@@ -799,6 +799,7 @@
 @endphp
 
 @section('meta_url', $productShareUrl)
+@section('canonical_url', $productShareUrl)
 @section('meta_title', $product->name . ' — Prix au Maroc, Achat & Garantie | ' . setting('app_name', 'WINA SHOP'))
 @section('meta_description', $cleanDesc)
 @section('meta_keywords', $productKeywords)
@@ -812,7 +813,6 @@
 <meta property="product:condition" content="{{ $isOccasion ? 'used' : 'new' }}">
 <meta property="product:brand" content="{{ $brandGuess }}">
 <meta property="product:retailer_item_id" content="{{ $product->sku ?? ('PROD-' . $product->id) }}">
-<link rel="canonical" href="{{ $productShareUrl }}">
 @if(!empty($productMetaImage))
 <link rel="preload" as="image" href="{{ $productMetaImage }}" fetchpriority="high">
 @endif

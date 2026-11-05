@@ -11,13 +11,69 @@ use Illuminate\Http\JsonResponse;
 class SitemapController extends Controller
 {
     /**
+     * Get the authoritative canonical base URL (https://winashop.com in production).
+     * Prevents mail.* or localhost or misconfigured proxy host headers from polluting SEO.
+     */
+    public static function getCanonicalBaseUrl(): string
+    {
+        // 1. In local dev environment only, allow localhost
+        if (app()->environment('local')) {
+            $localHost = request()->getHost();
+            if (in_array($localHost, ['localhost', '127.0.0.1'], true) || str_contains($localHost, '.test')) {
+                return rtrim(url('/'), '/');
+            }
+        }
+
+        // 2. Production web requests with legitimate domain
+        $host = request()->getHost();
+        if (in_array($host, ['winashop.com', 'www.winashop.com'], true)) {
+            return 'https://' . $host;
+        }
+
+        // 3. Check APP_URL only if safe (not mail.* and not localhost)
+        $appUrl = config('app.url');
+        if (!empty($appUrl) 
+            && !str_contains($appUrl, 'mail.') 
+            && !str_contains($appUrl, 'localhost') 
+            && !str_contains($appUrl, '127.0.0.1')) {
+            return rtrim($appUrl, '/');
+        }
+
+        // 4. Authoritative production domain fallback
+        return 'https://winashop.com';
+    }
+
+    /**
+     * Force URL root and scheme for all generators.
+     */
+    protected function enforceCanonical(): string
+    {
+        $base = self::getCanonicalBaseUrl();
+        \Illuminate\Support\Facades\URL::forceRootUrl($base);
+        if (str_starts_with($base, 'https://')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+        return $base;
+    }
+
+    /**
      * Generate and return the XML sitemap.
      */
     public function index(): Response
     {
         @ini_set('memory_limit', '512M');
+        $baseUrl = $this->enforceCanonical();
 
-        $content = cache()->store('file')->remember('seo_sitemap_xml', 3600, function () {
+        // Automatically invalidate cache if it contains erroneous subdomain (e.g. mail.winashop.com)
+        // or if explicitly requested with ?fresh=1, ?rebuild=1 or ?clear=1
+        $cached = cache()->store('file')->get('seo_sitemap_xml');
+        if ($cached && (str_contains($cached, 'mail.winashop.com') || request()->has('fresh') || request()->has('rebuild') || request()->has('clear'))) {
+            cache()->store('file')->forget('seo_sitemap_xml');
+        }
+
+        $content = cache()->store('file')->remember('seo_sitemap_xml', 3600, function () use ($baseUrl) {
+            $this->enforceCanonical();
+
             $products = Product::where('status', 'active')
                 ->select(['id', 'name', 'slug', 'image', 'updated_at'])
                 ->with(['images' => function($q) {
@@ -38,7 +94,7 @@ class SitemapController extends Controller
                 ? \App\Models\Page::where('is_published', true)->select(['id', 'slug', 'updated_at'])->get()
                 : collect();
 
-            return view('sitemap', compact('products', 'categories', 'brands', 'pages'))->render();
+            return view('sitemap', compact('products', 'categories', 'brands', 'pages', 'baseUrl'))->render();
         });
 
         return response($content, 200)
@@ -50,11 +106,13 @@ class SitemapController extends Controller
      */
     public function robots(): Response
     {
-        $sitemapUrl = url('/sitemap.xml');
-        $merchantUrl = url('/google-merchant.xml');
-        $llmsUrl = url('/llms.txt');
-        $llmsFullUrl = url('/llms-full.txt');
-        $aiJsonUrl = url('/ai-catalog.json');
+        $baseUrl = $this->enforceCanonical();
+
+        $sitemapUrl = $baseUrl . '/sitemap.xml';
+        $merchantUrl = $baseUrl . '/google-merchant.xml';
+        $llmsUrl = $baseUrl . '/llms.txt';
+        $llmsFullUrl = $baseUrl . '/llms-full.txt';
+        $aiJsonUrl = $baseUrl . '/ai-catalog.json';
 
         $content = view('robots', compact('sitemapUrl', 'merchantUrl', 'llmsUrl', 'llmsFullUrl', 'aiJsonUrl'))->render();
 
@@ -67,7 +125,16 @@ class SitemapController extends Controller
      */
     public function llmsTxt(): Response
     {
-        $content = cache()->store('file')->remember('seo_llms_txt', 3600, function () {
+        $baseUrl = $this->enforceCanonical();
+
+        $cached = cache()->store('file')->get('seo_llms_txt');
+        if ($cached && (str_contains($cached, 'mail.winashop.com') || request()->has('fresh'))) {
+            cache()->store('file')->forget('seo_llms_txt');
+        }
+
+        $content = cache()->store('file')->remember('seo_llms_txt', 3600, function () use ($baseUrl) {
+            $this->enforceCanonical();
+
             $categories = Category::where('status', 'active')
                 ->withCount(['products' => function($q) {
                     $q->where('status', 'active');
@@ -86,7 +153,7 @@ class SitemapController extends Controller
 
             $totalProducts = Product::where('status', 'active')->count();
 
-            return view('llms', compact('featuredProducts', 'categories', 'brands', 'totalProducts'))->render();
+            return view('llms', compact('featuredProducts', 'categories', 'brands', 'totalProducts', 'baseUrl'))->render();
         });
 
         return response($content, 200)
@@ -99,8 +166,16 @@ class SitemapController extends Controller
     public function llmsFullTxt(): Response
     {
         @ini_set('memory_limit', '512M');
+        $baseUrl = $this->enforceCanonical();
 
-        $content = cache()->store('file')->remember('seo_llms_full_txt', 7200, function () {
+        $cached = cache()->store('file')->get('seo_llms_full_txt');
+        if ($cached && (str_contains($cached, 'mail.winashop.com') || request()->has('fresh'))) {
+            cache()->store('file')->forget('seo_llms_full_txt');
+        }
+
+        $content = cache()->store('file')->remember('seo_llms_full_txt', 7200, function () use ($baseUrl) {
+            $this->enforceCanonical();
+
             $categories = Category::where('status', 'active')
                 ->with(['products' => function($q) {
                     $q->where('status', 'active')->orderBy('name');
@@ -109,7 +184,7 @@ class SitemapController extends Controller
 
             $totalProducts = Product::where('status', 'active')->count();
 
-            return view('llms-full', compact('categories', 'totalProducts'))->render();
+            return view('llms-full', compact('categories', 'totalProducts', 'baseUrl'))->render();
         });
 
         return response($content, 200)
@@ -122,15 +197,23 @@ class SitemapController extends Controller
     public function googleMerchantFeed(): Response
     {
         @ini_set('memory_limit', '512M');
+        $baseUrl = $this->enforceCanonical();
 
-        $xml = cache()->store('file')->remember('seo_google_merchant_xml', 3600, function () {
+        $cached = cache()->store('file')->get('seo_google_merchant_xml');
+        if ($cached && (str_contains($cached, 'mail.winashop.com') || request()->has('fresh'))) {
+            cache()->store('file')->forget('seo_google_merchant_xml');
+        }
+
+        $xml = cache()->store('file')->remember('seo_google_merchant_xml', 3600, function () use ($baseUrl) {
+            $this->enforceCanonical();
+
             $products = Product::where('status', 'active')
                 ->with(['category', 'brand'])
                 ->latest('updated_at')
                 ->get();
 
             $appName = setting('app_name', 'WINA SHOP');
-            $siteUrl = url('/');
+            $siteUrl = $baseUrl;
             $currency = setting('currency_code', 'MAD');
 
             $out = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
@@ -141,8 +224,14 @@ class SitemapController extends Controller
             $out .= '    <description>' . htmlspecialchars(setting('app_description', 'Matériel photo, vidéo, caméras cinéma, drones DJI et éclairage studio au Maroc.'), ENT_XML1, 'UTF-8') . "</description>\n";
 
             foreach ($products as $product) {
-                $prodUrl = route('shop.show', $product->slug ?: $product->id);
-                $imgUrl = str_starts_with($product->thumbnail, 'http') ? $product->thumbnail : url($product->thumbnail);
+                $prodUrl = $baseUrl . '/shop/' . ($product->slug ?: $product->id);
+                $thumb = $product->thumbnail;
+                $imgUrl = '';
+                if (!empty($thumb)) {
+                    $imgUrl = str_starts_with($thumb, 'http')
+                        ? preg_replace('#^https?://[^/]+#', $baseUrl, $thumb)
+                        : ($baseUrl . '/' . ltrim($thumb, '/'));
+                }
                 $brandName = $product->brand?->name ?: 'WINA SHOP';
                 $isUsed = str_contains(strtolower($product->name), 'occasion');
                 $condition = $isUsed ? 'used' : 'new';
@@ -189,21 +278,30 @@ class SitemapController extends Controller
      */
     public function aiCatalogJson(): JsonResponse
     {
-        $data = cache()->store('file')->remember('seo_ai_catalog_json', 3600, function () {
+        $baseUrl = $this->enforceCanonical();
+
+        $cached = cache()->store('file')->get('seo_ai_catalog_json');
+        if ($cached && (str_contains(json_encode($cached), 'mail.winashop.com') || request()->has('fresh'))) {
+            cache()->store('file')->forget('seo_ai_catalog_json');
+        }
+
+        $data = cache()->store('file')->remember('seo_ai_catalog_json', 3600, function () use ($baseUrl) {
+            $this->enforceCanonical();
+
             $categories = Category::where('status', 'active')
                 ->withCount(['products' => fn($q) => $q->where('status', 'active')])
                 ->orderBy('sort_order')
                 ->get()
                 ->map(fn($c) => [
                     'name' => $c->name,
-                    'url' => route('shop.index', ['category' => $c->slug]),
+                    'url' => $baseUrl . '/shop?category=' . urlencode($c->slug),
                     'products_count' => $c->products_count,
                 ]);
 
             $brands = class_exists(Brand::class)
                 ? Brand::where('status', 'active')->orderBy('name')->get()->map(fn($b) => [
                     'name' => $b->name,
-                    'url' => route('shop.index', ['brand' => $b->slug]),
+                    'url' => $baseUrl . '/shop?brand=' . urlencode($b->slug),
                 ])
                 : [];
 
@@ -213,19 +311,28 @@ class SitemapController extends Controller
                 ->orderByDesc('id')
                 ->take(500)
                 ->get()
-                ->map(fn($p) => [
-                    'id' => $p->id,
-                    'sku' => $p->sku ?: ('WINA-' . $p->id),
-                    'name' => $p->name,
-                    'brand' => $p->brand?->name,
-                    'category' => $p->category?->name,
-                    'price_mad' => (float) $p->final_price,
-                    'currency' => setting('currency_code', 'MAD'),
-                    'in_stock' => $p->isInStock(),
-                    'condition' => str_contains(strtolower($p->name), 'occasion') ? 'used_certified' : 'new_sealed',
-                    'url' => route('shop.show', $p->slug ?: $p->id),
-                    'image' => str_starts_with($p->thumbnail, 'http') ? $p->thumbnail : url($p->thumbnail),
-                ]);
+                ->map(function ($p) use ($baseUrl) {
+                    $thumb = $p->thumbnail;
+                    $imgUrl = '';
+                    if (!empty($thumb)) {
+                        $imgUrl = str_starts_with($thumb, 'http')
+                            ? preg_replace('#^https?://[^/]+#', $baseUrl, $thumb)
+                            : ($baseUrl . '/' . ltrim($thumb, '/'));
+                    }
+                    return [
+                        'id' => $p->id,
+                        'sku' => $p->sku ?: ('WINA-' . $p->id),
+                        'name' => $p->name,
+                        'brand' => $p->brand?->name,
+                        'category' => $p->category?->name,
+                        'price_mad' => (float) $p->final_price,
+                        'currency' => setting('currency_code', 'MAD'),
+                        'in_stock' => $p->isInStock(),
+                        'condition' => str_contains(strtolower($p->name), 'occasion') ? 'used_certified' : 'new_sealed',
+                        'url' => $baseUrl . '/shop/' . ($p->slug ?: $p->id),
+                        'image' => $imgUrl,
+                    ];
+                });
 
             return [
                 'schema_version' => '2.0',
@@ -235,12 +342,12 @@ class SitemapController extends Controller
                     'legal_name' => setting('company_name', 'WINA SHOP'),
                     'type' => 'CameraStore & Professional Audiovisual Equipment Distributor in Morocco',
                     'primary_market' => 'Morocco (Casablanca, Rabat, Marrakech, Tangier, Agadir, Fes, Oujda, Meknes, Kenitra, Tetouan)',
-                    'url' => url('/'),
-                    'shop_url' => route('shop.index'),
-                    'llms_txt' => url('/llms.txt'),
-                    'llms_full_txt' => url('/llms-full.txt'),
-                    'google_merchant_xml' => url('/google-merchant.xml'),
-                    'sitemap_xml' => url('/sitemap.xml'),
+                    'url' => $baseUrl,
+                    'shop_url' => $baseUrl . '/shop',
+                    'llms_txt' => $baseUrl . '/llms.txt',
+                    'llms_full_txt' => $baseUrl . '/llms-full.txt',
+                    'google_merchant_xml' => $baseUrl . '/google-merchant.xml',
+                    'sitemap_xml' => $baseUrl . '/sitemap.xml',
                     'phone_whatsapp' => setting('company_phone', '+212629035777'),
                     'email' => setting('company_email', 'contact@winashop.com'),
                     'address' => setting('company_address', '01 Rue 102, Hay Wiam, Al Oulfa, Casablanca, Maroc'),
@@ -272,12 +379,17 @@ class SitemapController extends Controller
      */
     public function indexNowKey(string $key): Response
     {
-        $configuredKey = setting('indexnow_api_key', md5(config('app.url', 'winashop') . '_indexnow_v1'));
-        if ($key !== $configuredKey) {
+        $configuredKey = setting('seo_indexnow_key') 
+            ?: setting('indexnow_api_key') 
+            ?: substr(md5(config('app.key', 'winashop') . '_indexnow_wina'), 0, 32);
+
+        $fallbackKey = md5(config('app.url', 'winashop') . '_indexnow_v1');
+
+        if ($key !== $configuredKey && $key !== $fallbackKey) {
             abort(404);
         }
 
-        return response($configuredKey, 200)
+        return response($key, 200)
             ->header('Content-Type', 'text/plain; charset=utf-8');
     }
 }

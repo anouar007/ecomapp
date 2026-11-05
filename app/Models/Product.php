@@ -58,16 +58,18 @@ class Product extends Model
      */
     protected static function booted(): void
     {
-        static::saved(function () {
+        $flushCaches = function () {
             \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
             \Illuminate\Support\Facades\Cache::forget('frontend_nav_categories');
             \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
-        });
-        static::deleted(function () {
-            \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
-            \Illuminate\Support\Facades\Cache::forget('frontend_nav_categories');
-            \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
-        });
+            \Illuminate\Support\Facades\Cache::store('file')->forget('seo_sitemap_xml');
+            \Illuminate\Support\Facades\Cache::store('file')->forget('seo_google_merchant_xml');
+            \Illuminate\Support\Facades\Cache::store('file')->forget('seo_llms_txt');
+            \Illuminate\Support\Facades\Cache::store('file')->forget('seo_llms_full_txt');
+            \Illuminate\Support\Facades\Cache::store('file')->forget('seo_ai_catalog_json');
+        };
+        static::saved($flushCaches);
+        static::deleted($flushCaches);
         static::creating(function (Product $product) {
             if (empty($product->slug) && !empty($product->name)) {
                 $baseSlug = \Illuminate\Support\Str::slug($product->name);

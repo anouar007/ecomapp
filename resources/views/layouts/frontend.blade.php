@@ -30,16 +30,27 @@
     @endif
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="{{ url()->current() }}">
+    @php
+        $rawCanonical = trim(View::yieldContent('canonical_url', ''));
+        if (empty($rawCanonical)) {
+            $rawCanonical = url()->current();
+        }
+        if (!app()->environment('local')) {
+            $rawCanonical = str_replace('mail.winashop.com', 'winashop.com', $rawCanonical);
+        }
+        $parsedUrl = parse_url($rawCanonical);
+        $cleanCanonicalUrl = ($parsedUrl['scheme'] ?? 'https') . '://' . ($parsedUrl['host'] ?? 'winashop.com') . ($parsedUrl['path'] ?? '/');
+    @endphp
+    <link rel="canonical" href="{{ $cleanCanonicalUrl }}">
 
     <!-- Multi-Language Hreflang Tags (French, Arabic & English + x-default) -->
-    <link rel="alternate" hreflang="fr" href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}">
-    <link rel="alternate" hreflang="fr-MA" href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}">
-    <link rel="alternate" hreflang="ar" href="{{ request()->fullUrlWithQuery(['lang' => 'ar']) }}">
-    <link rel="alternate" hreflang="ar-MA" href="{{ request()->fullUrlWithQuery(['lang' => 'ar']) }}">
-    <link rel="alternate" hreflang="en" href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}">
-    <link rel="alternate" hreflang="en-MA" href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}">
-    <link rel="alternate" hreflang="x-default" href="{{ url()->current() }}">
+    <link rel="alternate" hreflang="fr" href="{{ $cleanCanonicalUrl }}">
+    <link rel="alternate" hreflang="fr-MA" href="{{ $cleanCanonicalUrl }}">
+    <link rel="alternate" hreflang="ar" href="{{ $cleanCanonicalUrl }}?lang=ar">
+    <link rel="alternate" hreflang="ar-MA" href="{{ $cleanCanonicalUrl }}?lang=ar">
+    <link rel="alternate" hreflang="en" href="{{ $cleanCanonicalUrl }}?lang=en">
+    <link rel="alternate" hreflang="en-MA" href="{{ $cleanCanonicalUrl }}?lang=en">
+    <link rel="alternate" hreflang="x-default" href="{{ $cleanCanonicalUrl }}">
 
     <!-- AI Search, LLM Discovery & Google Shopping Feed Endpoints -->
     <link rel="alternate" type="text/plain" href="{{ url('/llms.txt') }}" title="LLMs Context">

@@ -569,9 +569,11 @@ class SettingsController extends Controller
         ];
         foreach ($cacheKeys as $key) {
             Cache::forget($key);
+            Cache::store('file')->forget($key);
         }
 
-        // Warm up caches immediately via SitemapController
+        // Warm up caches immediately via SitemapController using canonical domain
+        $baseUrl = \App\Http\Controllers\SitemapController::getCanonicalBaseUrl();
         $sitemapCtrl = app(\App\Http\Controllers\SitemapController::class);
         $sitemapCtrl->index();
         $sitemapCtrl->googleMerchantFeed();
@@ -582,34 +584,36 @@ class SettingsController extends Controller
         // Prepare URL list for IndexNow (Bing, ChatGPT Search, Copilot, Yandex)
         $indexNowKey = setting('seo_indexnow_key');
         if (!$indexNowKey) {
-            $indexNowKey = substr(md5(config('app.key') . '_indexnow_wina'), 0, 32);
+            $indexNowKey = substr(md5(config('app.key', 'winashop') . '_indexnow_wina'), 0, 32);
             Setting::set('seo_indexnow_key', $indexNowKey, 'string', 'seo');
         }
 
-        $host = parse_url(url('/'), PHP_URL_HOST) ?: 'localhost';
+        $host = parse_url($baseUrl, PHP_URL_HOST) ?: 'winashop.com';
         $urls = [
-            url('/'),
-            url('/shop'),
-            url('/sitemap.xml'),
-            url('/llms.txt'),
-            url('/ai-catalog.json'),
+            $baseUrl . '/',
+            $baseUrl . '/shop',
+            $baseUrl . '/about',
+            $baseUrl . '/contact',
+            $baseUrl . '/sitemap.xml',
+            $baseUrl . '/llms.txt',
+            $baseUrl . '/ai-catalog.json',
         ];
 
-        $topProducts = \App\Models\Product::where('status', 'active')
+        $allProducts = \App\Models\Product::where('status', 'active')
             ->orderBy('updated_at', 'desc')
-            ->take(50)
-            ->get(['slug']);
-        foreach ($topProducts as $prod) {
-            $urls[] = route('shop.show', $prod->slug);
+            ->take(500)
+            ->get(['id', 'slug']);
+        foreach ($allProducts as $prod) {
+            $urls[] = $baseUrl . '/shop/' . ($prod->slug ?: $prod->id);
         }
 
         $pingStatus = 'Flux SEO, Google Shopping & IA régénérés avec succès !';
         if (!in_array($host, ['localhost', '127.0.0.1'], true)) {
             try {
-                \Illuminate\Support\Facades\Http::timeout(5)->post('https://api.indexnow.org/indexnow', [
+                \Illuminate\Support\Facades\Http::timeout(6)->post('https://api.indexnow.org/indexnow', [
                     'host' => $host,
                     'key' => $indexNowKey,
-                    'keyLocation' => url("/indexnow-{$indexNowKey}.txt"),
+                    'keyLocation' => $baseUrl . "/indexnow-{$indexNowKey}.txt",
                     'urlList' => array_values(array_unique($urls)),
                 ]);
                 $pingStatus .= ' Notification IndexNow envoyée à Bing, ChatGPT Search & Perplexity (' . count($urls) . ' URLs).';

@@ -1,74 +1,86 @@
 <?php echo '<?xml version="1.0" encoding="UTF-8"?>'; ?>
+@php
+  $siteUrl = isset($baseUrl) && !empty($baseUrl) ? rtrim($baseUrl, '/') : 'https://winashop.com';
+@endphp
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 
   {{-- Home Page --}}
   <url>
-    <loc>{{ url('/') }}</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="{{ url('/') }}"/>
-    <xhtml:link rel="alternate" hreflang="fr-MA" href="{{ url('/') }}"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="{{ url('/') }}?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ url('/') }}?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="{{ url('/') }}"/>
+    <loc>{{ $siteUrl }}</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="{{ $siteUrl }}"/>
+    <xhtml:link rel="alternate" hreflang="fr-MA" href="{{ $siteUrl }}"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="{{ $siteUrl }}?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ $siteUrl }}?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="en" href="{{ $siteUrl }}?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="en-MA" href="{{ $siteUrl }}?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="{{ $siteUrl }}"/>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <lastmod>{{ now()->toAtomString() }}</lastmod>
   </url>
 
   {{-- Shop Catalog --}}
+  @php $shopUrl = $siteUrl . '/shop'; @endphp
   <url>
-    <loc>{{ route('shop.index') }}</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="{{ route('shop.index') }}"/>
-    <xhtml:link rel="alternate" hreflang="fr-MA" href="{{ route('shop.index') }}"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="{{ route('shop.index') }}?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ route('shop.index') }}?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="{{ route('shop.index') }}"/>
+    <loc>{{ $shopUrl }}</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="{{ $shopUrl }}"/>
+    <xhtml:link rel="alternate" hreflang="fr-MA" href="{{ $shopUrl }}"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="{{ $shopUrl }}?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ $shopUrl }}?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="en" href="{{ $shopUrl }}?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="en-MA" href="{{ $shopUrl }}?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="{{ $shopUrl }}"/>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <lastmod>{{ now()->toAtomString() }}</lastmod>
   </url>
 
   {{-- About Page --}}
-  @if(Route::has('about'))
+  @php $aboutUrl = $siteUrl . '/about'; @endphp
   <url>
-    <loc>{{ route('about') }}</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="{{ route('about') }}"/>
-    <xhtml:link rel="alternate" hreflang="fr-MA" href="{{ route('about') }}"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="{{ route('about') }}?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ route('about') }}?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="{{ route('about') }}"/>
+    <loc>{{ $aboutUrl }}</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="{{ $aboutUrl }}"/>
+    <xhtml:link rel="alternate" hreflang="fr-MA" href="{{ $aboutUrl }}"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="{{ $aboutUrl }}?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ $aboutUrl }}?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="en" href="{{ $aboutUrl }}?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="en-MA" href="{{ $aboutUrl }}?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="{{ $aboutUrl }}"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <lastmod>{{ now()->toAtomString() }}</lastmod>
   </url>
-  @endif
 
   {{-- Contact & Showroom Page --}}
-  @if(Route::has('contact'))
+  @php $contactUrl = $siteUrl . '/contact'; @endphp
   <url>
-    <loc>{{ route('contact') }}</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="{{ route('contact') }}"/>
-    <xhtml:link rel="alternate" hreflang="fr-MA" href="{{ route('contact') }}"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="{{ route('contact') }}?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ route('contact') }}?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="{{ route('contact') }}"/>
+    <loc>{{ $contactUrl }}</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="{{ $contactUrl }}"/>
+    <xhtml:link rel="alternate" hreflang="fr-MA" href="{{ $contactUrl }}"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="{{ $contactUrl }}?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ $contactUrl }}?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="en" href="{{ $contactUrl }}?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="en-MA" href="{{ $contactUrl }}?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="{{ $contactUrl }}"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <lastmod>{{ now()->toAtomString() }}</lastmod>
   </url>
-  @endif
 
   {{-- Category Pages --}}
   @foreach($categories as $category)
   @if($category->slug)
-  @php $catUrl = route('shop.index', ['category' => $category->slug]); @endphp
+  @php $catUrl = $siteUrl . '/shop?category=' . urlencode($category->slug); @endphp
   <url>
     <loc>{{ $catUrl }}</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="{{ $catUrl }}"/>
     <xhtml:link rel="alternate" hreflang="fr-MA" href="{{ $catUrl }}"/>
     <xhtml:link rel="alternate" hreflang="ar" href="{{ $catUrl }}&amp;lang=ar"/>
     <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ $catUrl }}&amp;lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="en" href="{{ $catUrl }}&amp;lang=en"/>
+    <xhtml:link rel="alternate" hreflang="en-MA" href="{{ $catUrl }}&amp;lang=en"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="{{ $catUrl }}"/>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
@@ -81,13 +93,15 @@
   @if(isset($brands))
   @foreach($brands as $brand)
   @if($brand->slug)
-  @php $brandUrl = route('shop.index', ['brand' => $brand->slug]); @endphp
+  @php $brandUrl = $siteUrl . '/shop?brand=' . urlencode($brand->slug); @endphp
   <url>
     <loc>{{ $brandUrl }}</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="{{ $brandUrl }}"/>
     <xhtml:link rel="alternate" hreflang="fr-MA" href="{{ $brandUrl }}"/>
     <xhtml:link rel="alternate" hreflang="ar" href="{{ $brandUrl }}&amp;lang=ar"/>
     <xhtml:link rel="alternate" hreflang="ar-MA" href="{{ $brandUrl }}&amp;lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="en" href="{{ $brandUrl }}&amp;lang=en"/>
+    <xhtml:link rel="alternate" hreflang="en-MA" href="{{ $brandUrl }}&amp;lang=en"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="{{ $brandUrl }}"/>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
@@ -99,7 +113,16 @@
 
   {{-- Product Pages with Multilingual Links and Google Images --}}
   @foreach($products as $product)
-  @php $prodUrl = route('shop.show', $product->slug ?: $product->id); @endphp
+  @php
+    $prodUrl = $siteUrl . '/shop/' . ($product->slug ?: $product->id);
+    $thumb = $product->thumbnail;
+    $primaryImg = '';
+    if (!empty($thumb)) {
+        $primaryImg = str_starts_with($thumb, 'http')
+            ? preg_replace('#^https?://[^/]+#', $siteUrl, $thumb)
+            : ($siteUrl . '/' . ltrim($thumb, '/'));
+    }
+  @endphp
   <url>
     <loc>{{ $prodUrl }}</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="{{ $prodUrl }}"/>
@@ -114,9 +137,9 @@
     <lastmod>{{ $product->updated_at ? $product->updated_at->toAtomString() : now()->toAtomString() }}</lastmod>
     
     {{-- Primary Product Image --}}
-    @if($product->thumbnail)
+    @if(!empty($primaryImg))
     <image:image>
-      <image:loc>{{ str_starts_with($product->thumbnail, 'http') ? $product->thumbnail : url($product->thumbnail) }}</image:loc>
+      <image:loc>{{ $primaryImg }}</image:loc>
       <image:title>{{ htmlspecialchars($product->name, ENT_XML1, 'UTF-8') }}</image:title>
       <image:caption>{{ htmlspecialchars($product->name . ' au Maroc — ' . setting('app_name', 'WINA SHOP') . ' Casablanca', ENT_XML1, 'UTF-8') }}</image:caption>
     </image:image>
@@ -128,8 +151,8 @@
     @if(!empty($galImg->image_path))
     @php
       $galUrl = str_starts_with($galImg->image_path, 'http') 
-        ? $galImg->image_path 
-        : asset('storage/' . $galImg->image_path);
+        ? preg_replace('#^https?://[^/]+#', $siteUrl, $galImg->image_path)
+        : ($siteUrl . '/storage/' . ltrim($galImg->image_path, '/'));
     @endphp
     <image:image>
       <image:loc>{{ $galUrl }}</image:loc>
@@ -146,11 +169,12 @@
   @if(isset($pages))
   @foreach($pages as $page)
   @if($page->slug)
-  @php $pageUrl = url('/page/' . $page->slug); @endphp
+  @php $pageUrl = $siteUrl . '/page/' . $page->slug; @endphp
   <url>
     <loc>{{ $pageUrl }}</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="{{ $pageUrl }}"/>
     <xhtml:link rel="alternate" hreflang="ar" href="{{ $pageUrl }}?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="en" href="{{ $pageUrl }}?lang=en"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="{{ $pageUrl }}"/>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
