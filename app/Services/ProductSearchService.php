@@ -411,13 +411,14 @@ class ProductSearchService
      * Build search query for products supporting Product Name (fuzzy), Product SKU, Variant SKU, and Brand.
      */
     public static function buildQuery(
-        string $search = '',
+        ?string $search = '',
         ?string $categorySlug = null,
         ?string $brandSlug = null,
         ?float $minPrice = null,
         ?float $maxPrice = null,
         ?string $sort = null
     ): Builder {
+        $cleanSearch = trim((string) ($search ?? ''));
         $query = Product::where('products.status', 'active');
 
         // 1. Category Filter
@@ -519,9 +520,14 @@ class ProductSearchService
     /**
      * Get matching categories for a search query (based on category name/slug).
      */
-    public static function getMatchingCategories(string $rawQuery, int $limit = 4)
+    public static function getMatchingCategories(?string $rawQuery = '', int $limit = 4)
     {
-        $norm = self::normalizeQuery($rawQuery);
+        $queryString = trim((string) ($rawQuery ?? ''));
+        if (mb_strlen($queryString) === 0) {
+            return collect();
+        }
+
+        $norm = self::normalizeQuery($queryString);
         $clean = $norm['clean'];
         $tokens = $norm['tokens'];
 
@@ -560,9 +566,9 @@ class ProductSearchService
     /**
      * Perform live search for navbar / mobile search modal.
      */
-    public static function liveSearch(string $rawQuery, int $limit = 8): array
+    public static function liveSearch(?string $rawQuery = '', int $limit = 8): array
     {
-        $raw = trim($rawQuery);
+        $raw = trim((string) ($rawQuery ?? ''));
         if (mb_strlen($raw) === 0) {
             return [
                 'success' => true,
@@ -630,12 +636,13 @@ class ProductSearchService
      * @param string $search
      * @return \Illuminate\Support\Collection
      */
-    public static function getSmartBrands(?string $categorySlug = null, string $search = ''): Collection
+    public static function getSmartBrands(?string $categorySlug = null, ?string $search = ''): Collection
     {
+        $cleanSearch = trim((string) ($search ?? ''));
         $cacheVer = \App\Http\Middleware\FastGuestPageCache::getVersion();
-        $cacheKey = 'smart_brands_v2_' . $cacheVer . '_' . md5((string) $categorySlug . '|' . mb_strtolower(trim($search)));
+        $cacheKey = 'smart_brands_v2_' . $cacheVer . '_' . md5((string) $categorySlug . '|' . mb_strtolower($cleanSearch));
 
-        return Cache::store('file')->remember($cacheKey, 1800, function () use ($categorySlug, $search) {
+        return Cache::store('file')->remember($cacheKey, 1800, function () use ($categorySlug, $cleanSearch) {
             $productQuery = Product::where('products.status', 'active')
                 ->whereNotNull('products.brand_id');
 
@@ -662,7 +669,6 @@ class ProductSearchService
             }
 
             // Apply search filter if provided (name, SKU, brand)
-            $cleanSearch = trim($search);
             if (mb_strlen($cleanSearch) > 0) {
                 $matchedIds = self::getSearchProductIds($cleanSearch, true);
 

@@ -17,10 +17,10 @@ class ShopController extends Controller
      */
     public function index(Request $request)
     {
-        $search = $request->get('q', '');
+        $search = trim((string) ($request->get('q') ?? ''));
 
         // Save the search in the client's history (logged-in clients, first page only)
-        if ($request->user() && is_string($search) && trim($search) !== '' && (int) $request->get('page', 1) <= 1) {
+        if ($request->user() && $search !== '' && (int) $request->get('page', 1) <= 1) {
             try {
                 \App\Models\SearchHistory::record($request->user()->id, $search);
             } catch (\Throwable $e) {
@@ -28,11 +28,11 @@ class ShopController extends Controller
             }
         }
 
-        $categorySlug = $request->get('category');
-        $brandSlug = $request->get('brand');
+        $categorySlug = $request->filled('category') ? (string) $request->get('category') : null;
+        $brandSlug = $request->filled('brand') ? (string) $request->get('brand') : null;
         $minPrice = $request->filled('min_price') ? (float) $request->min_price : null;
         $maxPrice = $request->filled('max_price') ? (float) $request->max_price : null;
-        $sort = $request->get('sort');
+        $sort = $request->filled('sort') ? (string) $request->get('sort') : null;
 
         $fileCache = Cache::store('file');
         $cacheVer = \App\Http\Middleware\FastGuestPageCache::getVersion();

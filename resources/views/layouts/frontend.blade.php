@@ -4850,6 +4850,15 @@
                     closeDropdown();
                 }
             });
+
+            // Prevent submitting empty "?q=" when user clears search and submits
+            form.addEventListener('submit', function(e) {
+                const term = input.value.trim();
+                if (!term) {
+                    e.preventDefault();
+                    window.location.href = "{{ route('shop.index') }}";
+                }
+            });
         }
 
         // Pro Mobile Full-Screen Search Handler
@@ -5192,6 +5201,18 @@
                     closeOverlay();
                 }
             });
+
+            // Prevent submitting empty "?q=" when user clears search in mobile search modal
+            const mForm = document.getElementById('proMobileSearchForm');
+            if (mForm) {
+                mForm.addEventListener('submit', function(e) {
+                    const term = input.value.trim();
+                    if (!term) {
+                        e.preventDefault();
+                        window.location.href = "{{ route('shop.index') }}";
+                    }
+                });
+            }
         }
 
         if (document.readyState === 'loading') {
