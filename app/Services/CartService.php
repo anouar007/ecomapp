@@ -35,7 +35,7 @@ class CartService
                 'id' => $product->id,
                 'name' => $product->name,
                 'price' => $product->isOnSale() ? $product->sale_price : $product->price,
-                'image' => $product->thumbnail,
+                'image' => $product->card_thumbnail,
                 'quantity' => $quantity,
             ];
         }

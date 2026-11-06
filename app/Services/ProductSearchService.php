@@ -603,7 +603,7 @@ class ProductSearchService
                     'sale_price' => $product->isOnSale() ? $product->formatted_sale_price : null,
                     'discount' => $product->discount_percentage,
                     'in_stock' => $product->isInStock(),
-                    'image' => $product->thumbnail,
+                    'image' => $product->card_thumbnail,
                     'url' => route('shop.show', $product->slug ?: $product->id, false),
                 ];
             });

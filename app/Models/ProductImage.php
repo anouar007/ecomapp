@@ -51,6 +51,18 @@ class ProductImage extends Model
     }
 
     /**
+     * Get a lightweight WebP thumbnail URL for small gallery thumbs or cards,
+     * while $this->url remains 100% full resolution for the main product view & zoom.
+     */
+    public function getThumbUrlAttribute(): string
+    {
+        return \App\Services\ProductThumbnailService::getCardCoverUrl(
+            $this->image_path,
+            $this->url
+        );
+    }
+
+    /**
      * Get CSS padding value formatted for this specific product image.
      * Supports percentage (e.g. "10%"), pixels ("20px"), rem, or plain numbers (converted to %).
      * Falls back to product level padding if this image doesn't have custom padding.

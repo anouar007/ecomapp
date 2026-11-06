@@ -203,7 +203,7 @@
                     <div class="col-md-3">
                         <div class="card h-100 border-0 shadow-sm rounded-4 product-card overflow-hidden">
                             <a href="{{ route('shop.show', $prod->id) }}" class="position-relative d-block bg-white p-3 text-center">
-                                <img src="{{ $prod->thumbnail }}" class="img-fluid" alt="{{ $prod->name }}" style="height: 180px; object-fit: contain;" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                                <img src="{{ $prod->card_thumbnail }}" class="img-fluid" alt="{{ $prod->name }}" loading="lazy" decoding="async" style="height: 180px; object-fit: contain;" onerror="this.onerror=null; this.src='{{ $prod->thumbnail }}';">
                             </a>
                             <div class="card-body p-3 text-center">
                                 <h6 class="fw-bold mb-1"><a href="{{ route('shop.show', $prod->id) }}" class="text-decoration-none text-dark">{{ $prod->name }}</a></h6>

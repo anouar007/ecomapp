@@ -1204,6 +1204,18 @@ class Product extends Model
     }
 
     /**
+     * Get the lightweight WebP cover image URL (320px, quality 72) specifically for product cards,
+     * sliders, and live search results, while keeping $product->thumbnail at 100% full quality on the product page.
+     */
+    public function getCardThumbnailAttribute(): string
+    {
+        return \App\Services\ProductThumbnailService::getCardCoverUrl(
+            $this->main_image,
+            $this->thumbnail
+        );
+    }
+
+    /**
      * Get visual badge for image quality/resolution.
      */
     public function getImageQualityBadgeAttribute(): string
