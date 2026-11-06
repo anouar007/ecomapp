@@ -118,7 +118,7 @@
                     <span class="cat-mega-name">{{ __('Tout le catalogue') }}</span>
                 </div>
                 <div class="d-flex align-items-center gap-1 flex-shrink-0">
-                    <span class="badge cat-mega-count rounded-pill">{{ \App\Models\Product::where('status','active')->count() }}</span>
+                    <span class="badge cat-mega-count rounded-pill">{{ $totalActiveProducts ?? 0 }}</span>
                     <i class="fas fa-check cat-item-check"></i>
                 </div>
             </button>

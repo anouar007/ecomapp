@@ -70,7 +70,7 @@ class FastGuestPageCache
 
         $response = $next($request);
 
-        // Cache successful 200 HTML responses for 5 minutes (300s) using gzip compression (95% smaller on disk)
+        // Cache successful 200 HTML responses for 15 minutes (900s) using gzip compression (95% smaller on disk)
         if ($response->getStatusCode() === 200
             && str_contains((string) $response->headers->get('Content-Type', 'text/html'), 'text/html')
             && function_exists('gzcompress')
@@ -78,12 +78,14 @@ class FastGuestPageCache
             try {
                 $content = $response->getContent();
                 if (is_string($content) && strlen($content) > 500) {
-                    $compressed = @gzcompress($content, 6);
+                    $minified = SecurityHeaders::minifyHtml($content);
+                    $response->setContent($minified);
+                    $compressed = @gzcompress($minified, 6);
                     if ($compressed !== false) {
                         Cache::store('file')->put($cacheKey, [
                             'gz' => base64_encode($compressed),
                             'csrf' => csrf_token(),
-                        ], 300);
+                        ], 900);
 
                         $response->headers->set('X-Fast-Cache', 'MISS');
                     }
@@ -98,7 +100,7 @@ class FastGuestPageCache
 
     /**
      * Determine whether the request is eligible for full-page guest caching.
-     * Restricted to core high-traffic landing pages without query parameters to keep disk usage < 1MB.
+     * Covers Home, Shop, Product pages (/shop/{slug}), Single Category/Brand filters, About, and Contact.
      */
     protected function shouldCacheRequest(Request $request): bool
     {
@@ -106,19 +108,33 @@ class FastGuestPageCache
             return false;
         }
 
-        // Do not create separate full-page cache files for query string permutations
-        if (!empty($request->query())) {
-            return false;
+        $path = trim($request->path(), '/');
+        $query = $request->query();
+
+        // Allow empty query string, OR single category/brand/page filter on /shop
+        if (!empty($query)) {
+            if ($path !== 'shop') {
+                return false;
+            }
+            $allowedKeys = ['category', 'brand', 'page'];
+            foreach (array_keys($query) as $key) {
+                if (!in_array($key, $allowedKeys, true)) {
+                    return false;
+                }
+            }
+            if (isset($query['page']) && (int) $query['page'] > 5) {
+                return false;
+            }
         }
 
-        // Only cache core landing routes (home, main shop, about, contact) to prevent inode/disk exhaustion
-        $path = trim($request->path(), '/');
-        $isCorePage = $path === ''
+        // Eligible routes: Home, Shop, Product Detail (/shop/{slug}), About, Contact
+        $isEligiblePage = $path === ''
             || $path === 'shop'
+            || str_starts_with($path, 'shop/')
             || $path === 'about'
             || $path === 'contact';
 
-        if (!$isCorePage) {
+        if (!$isEligiblePage) {
             return false;
         }
 
