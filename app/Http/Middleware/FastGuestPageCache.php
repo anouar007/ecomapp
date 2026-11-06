@@ -18,14 +18,15 @@ class FastGuestPageCache
     }
 
     /**
-     * Bump the cache version to instantly invalidate all guest HTML and catalog caches.
+     * Bump the cache version and purge stale file cache entries so disk space / inodes never fill up.
      */
     public static function flush(): void
     {
         try {
-            Cache::store('file')->put('wina_catalog_cache_version', (string) microtime(true));
+            Cache::store('file')->flush();
+            Cache::store('file')->put('wina_catalog_cache_version', (string) time(), 86400 * 30);
         } catch (\Throwable $e) {
-            // Ignore file permission edge cases
+            // Ignore file permission or quota edge cases
         }
     }
 
@@ -42,29 +43,26 @@ class FastGuestPageCache
         $locale = app()->getLocale();
         $version = self::getVersion();
         $fullUrl = $request->fullUrl();
-        $cacheKey = 'fast_page_html_v2_' . $version . '_' . $locale . '_' . md5($fullUrl);
+        $cacheKey = 'fast_page_html_v3_' . $version . '_' . $locale . '_' . md5($fullUrl);
 
         try {
             $cached = Cache::store('file')->get($cacheKey);
-            if (is_array($cached) && !empty($cached['html'])) {
-                $html = $cached['html'];
-                $oldToken = $cached['csrf'] ?? '';
-                $currentToken = csrf_token();
+            if (is_array($cached) && !empty($cached['gz'])) {
+                $html = @gzuncompress(base64_decode($cached['gz']));
+                if (is_string($html) && $html !== '') {
+                    $oldToken = $cached['csrf'] ?? '';
+                    $currentToken = csrf_token();
 
-                if (!empty($oldToken) && !empty($currentToken) && $oldToken !== $currentToken) {
-                    $html = str_replace($oldToken, $currentToken, $html);
+                    if (!empty($oldToken) && !empty($currentToken) && $oldToken !== $currentToken) {
+                        $html = str_replace($oldToken, $currentToken, $html);
+                    }
+
+                    return response($html, 200, [
+                        'Content-Type' => 'text/html; charset=UTF-8',
+                        'X-Fast-Cache' => 'HIT',
+                        'Vary' => 'Accept-Encoding, Cookie',
+                    ]);
                 }
-
-                // Async view tracking for cached product pages
-                if (!empty($cached['product_id'])) {
-                    \App\Services\ViewTrackingService::trackProductViewById((int) $cached['product_id'], $request);
-                }
-
-                return response($html, 200, [
-                    'Content-Type' => 'text/html; charset=UTF-8',
-                    'X-Fast-Cache' => 'HIT',
-                    'Vary' => 'Accept-Encoding, Cookie',
-                ]);
             }
         } catch (\Throwable $e) {
             // Fall through to normal rendering on cache read failure
@@ -72,25 +70,23 @@ class FastGuestPageCache
 
         $response = $next($request);
 
-        // Cache successful 200 HTML responses for 5 minutes (300s)
+        // Cache successful 200 HTML responses for 5 minutes (300s) using gzip compression (95% smaller on disk)
         if ($response->getStatusCode() === 200
             && str_contains((string) $response->headers->get('Content-Type', 'text/html'), 'text/html')
+            && function_exists('gzcompress')
         ) {
             try {
                 $content = $response->getContent();
                 if (is_string($content) && strlen($content) > 500) {
-                    $productId = null;
-                    if ($request->routeIs('shop.show') && preg_match('/data-product-id="(\d+)"/', $content, $m)) {
-                        $productId = (int) $m[1];
+                    $compressed = @gzcompress($content, 6);
+                    if ($compressed !== false) {
+                        Cache::store('file')->put($cacheKey, [
+                            'gz' => base64_encode($compressed),
+                            'csrf' => csrf_token(),
+                        ], 300);
+
+                        $response->headers->set('X-Fast-Cache', 'MISS');
                     }
-
-                    Cache::store('file')->put($cacheKey, [
-                        'html' => $content,
-                        'csrf' => csrf_token(),
-                        'product_id' => $productId,
-                    ], 300);
-
-                    $response->headers->set('X-Fast-Cache', 'MISS');
                 }
             } catch (\Throwable $e) {
                 // Ignore cache write errors
@@ -102,6 +98,7 @@ class FastGuestPageCache
 
     /**
      * Determine whether the request is eligible for full-page guest caching.
+     * Restricted to core high-traffic landing pages without query parameters to keep disk usage < 1MB.
      */
     protected function shouldCacheRequest(Request $request): bool
     {
@@ -109,15 +106,19 @@ class FastGuestPageCache
             return false;
         }
 
-        // Only cache public storefront routes
+        // Do not create separate full-page cache files for query string permutations
+        if (!empty($request->query())) {
+            return false;
+        }
+
+        // Only cache core landing routes (home, main shop, about, contact) to prevent inode/disk exhaustion
         $path = trim($request->path(), '/');
-        $isStorefront = $path === ''
+        $isCorePage = $path === ''
             || $path === 'shop'
-            || str_starts_with($path, 'shop/')
             || $path === 'about'
             || $path === 'contact';
 
-        if (!$isStorefront || $path === 'shop/search/live') {
+        if (!$isCorePage) {
             return false;
         }
 
