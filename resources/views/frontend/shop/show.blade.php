@@ -739,12 +739,12 @@
     $isOccasion = str_contains($nameLower, 'occasion') || ($product->category && str_contains(strtolower($product->category->name), 'occasion'));
     $itemConditionUrl = $isOccasion ? 'https://schema.org/UsedCondition' : 'https://schema.org/NewCondition';
     
-    $firstLineDesc = trim(explode("\n", $product->clean_description)[0] ?? '');
+    $firstLineDesc = trim(explode("\n", (string) ($product->clean_description ?? ''))[0] ?? '');
     $cleanDesc = Str::limit($firstLineDesc, 140) ?: ($product->name . ' disponible au Maroc chez WINA SHOP Casablanca.');
     $cleanDesc .= ' Prix: ' . number_format($product->final_price, 2, '.', ' ') . ' MAD. Garantie officielle, devis proforma INDH, facture ICE, livraison 24h/48h partout au Maroc. شراء مع التوصيل السريع لجميع المدن المغربية.';
 
     $extractedSpecs = [];
-    if (preg_match_all('/<div class="pdp-spec-label"><i[^>]*><\/i>\s*([^<]+)<\/div>\s*<div class="pdp-spec-value">([^<]+)<\/div>/is', $product->description, $mSpecs)) {
+    if (!empty($product->description) && preg_match_all('/<div class="pdp-spec-label"><i[^>]*><\/i>\s*([^<]+)<\/div>\s*<div class="pdp-spec-value">([^<]+)<\/div>/is', (string) $product->description, $mSpecs)) {
         foreach ($mSpecs[1] as $idx => $sName) {
             $extractedSpecs[] = [
                 '@type' => 'PropertyValue',

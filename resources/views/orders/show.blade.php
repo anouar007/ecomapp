@@ -208,7 +208,7 @@
                                                     <span class="fw-bold text-dark d-block">{{ $item->product_name }}</span>
                                                 @endif
                                                 <div class="d-flex align-items-center gap-1.5 flex-wrap mt-0.5">
-                                                    <span class="text-muted small font-monospace">SKU: {{ $item->product_sku ?: ($item->product->sku ?? 'N/A') }}</span>
+                                                    <span class="text-muted small font-monospace">SKU: {{ $item->product_sku ?: ($item->product?->sku ?? 'N/A') }}</span>
                                                     @if($item->variant_name)
                                                         <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-normal" style="font-size: 0.72rem;">
                                                             <i class="fas fa-layer-group me-1"></i>{{ $item->variant_name }}
@@ -258,7 +258,7 @@
                                         </div>
                                     @endif
                                     <div class="d-flex align-items-center gap-1.5 flex-wrap mt-0.5">
-                                        <span class="text-muted small font-monospace">SKU: {{ $item->product_sku ?: ($item->product->sku ?? 'N/A') }}</span>
+                                        <span class="text-muted small font-monospace">SKU: {{ $item->product_sku ?: ($item->product?->sku ?? 'N/A') }}</span>
                                         @if($item->variant_name)
                                             <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-normal" style="font-size: 0.7rem;">
                                                 <i class="fas fa-layer-group me-1"></i>{{ $item->variant_name }}

@@ -25,6 +25,23 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrapFive();
         \App\Models\Order::observe(\App\Observers\OrderObserver::class);
 
+        // Ensure $errors is ALWAYS an instance of ViewErrorBag in all views
+        // to prevent fatal "Call to a member function getBag() on null" on @error directives
+        \Illuminate\Support\Facades\View::composer('*', function ($view) {
+            $data = $view->getData();
+            if (!isset($data['errors']) || !($data['errors'] instanceof \Illuminate\Support\ViewErrorBag)) {
+                $sessionErrors = null;
+                try {
+                    if (request()->hasSession()) {
+                        $sessionErrors = request()->session()->get('errors');
+                    }
+                } catch (\Throwable $e) {
+                    // Session not available
+                }
+                $view->with('errors', ($sessionErrors instanceof \Illuminate\Support\ViewErrorBag) ? $sessionErrors : new \Illuminate\Support\ViewErrorBag);
+            }
+        });
+
         if ($this->app->environment('production') || str_starts_with(config('app.url'), 'https://')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }

@@ -13,6 +13,18 @@ use Illuminate\Support\Str;
 
 class ViewTrackingService
 {
+    public static function safeSessionId(Request $request): string
+    {
+        try {
+            if ($request->hasSession()) {
+                return (string) ($request->session()->getId() ?: 'guest');
+            }
+        } catch (\Throwable $e) {
+            // Session not initialized on request
+        }
+        return 'guest';
+    }
+
     /**
      * Check if the user-agent belongs to an automated bot or crawler.
      */
@@ -37,7 +49,7 @@ class ViewTrackingService
                 return;
             }
 
-            $sessionId = $request->hasSession() ? ($request->session()->getId() ?? 'guest') : 'guest';
+            $sessionId = static::safeSessionId($request);
             $ip = $request->ip() ?? '127.0.0.1';
             $cacheKey = "pv_throttle_{$productId}_{$sessionId}_" . md5($ip);
 
@@ -96,7 +108,7 @@ class ViewTrackingService
                 return;
             }
 
-            $sessionId = $request->hasSession() ? ($request->session()->getId() ?? 'guest') : 'guest';
+            $sessionId = static::safeSessionId($request);
             $ip = $request->ip() ?? '127.0.0.1';
             $categoryId = (int) $category->id;
 
@@ -151,7 +163,7 @@ class ViewTrackingService
             }
 
             $normalized = Str::lower($cleaned);
-            $sessionId = $request->hasSession() ? ($request->session()->getId() ?? 'guest') : 'guest';
+            $sessionId = static::safeSessionId($request);
             $ip = $request->ip() ?? '127.0.0.1';
             $today = now()->toDateString();
 
