@@ -22,11 +22,23 @@
         transform: none !important;
     }
 
-    /* PDP Main Gallery Swiper */
+    /* PDP Main Gallery Swiper & Mobile Overflow Lock */
+    .pdp-body,
+    .pdp-card,
+    .pdp-image-panel,
+    .pdp-info-panel {
+        max-width: 100% !important;
+        min-width: 0 !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
+    }
     .pdp-gallery-swiper {
         width: 100%;
+        max-width: 100%;
         height: 100%;
         position: relative;
+        overflow: hidden !important;
+        touch-action: pan-y;
     }
     .pdp-gallery-swiper .swiper-wrapper {
         align-items: center;
@@ -1184,8 +1196,8 @@
                     @if($galleryItems->count() > 1)
                     <div class="pdp-thumbs" id="pdpThumbs">
                         @foreach($galleryItems as $idx => $gImg)
-                        <div class="pdp-thumb {{ $loop->first ? 'active' : '' }}" onclick="pdpSelectGallerySlide({{ $idx }}, this)" data-index="{{ $idx }}" data-padding="{{ $gImg->image_padding_style }}" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')pdpSelectGallerySlide({{ $idx }}, this)" aria-label="{{ $product->name }} {{ $loop->iteration }}">
-                            <img src="{{ $gImg->url }}" alt="{{ $product->name }} {{ $loop->iteration }}" width="76" height="76" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';" @if($gImg->image_padding_style) style="padding: {{ $gImg->image_padding_style }} !important;" @endif>
+                        <div class="pdp-thumb {{ $loop->first ? 'active' : '' }}" onclick="pdpSelectGallerySlide({{ $idx }}, this)" data-index="{{ $idx }}" data-full-src="{{ $gImg->url }}" data-padding="{{ $gImg->image_padding_style }}" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')pdpSelectGallerySlide({{ $idx }}, this)" aria-label="{{ $product->name }} {{ $loop->iteration }}">
+                            <img src="{{ $gImg->thumb_url ?? $gImg->url }}" alt="{{ $product->name }} {{ $loop->iteration }}" width="76" height="76" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='{{ $gImg->url }}';" @if($gImg->image_padding_style) style="padding: {{ $gImg->image_padding_style }} !important;" @endif>
                         </div>
                         @endforeach
                     </div>
@@ -1903,6 +1915,7 @@ function initPdpGallerySwiper() {
         touchRatio: 1.15,
         resistanceRatio: 0.85,
         watchSlidesProgress: true,
+        touchReleaseOnEdges: true,
         navigation: {
             prevEl: '.pdp-gallery-prev',
             nextEl: '.pdp-gallery-next',
@@ -1920,15 +1933,25 @@ function initPdpGallerySwiper() {
         on: {
             slideChange: function() {
                 const activeIndex = this.activeIndex;
+                const thumbsContainer = document.getElementById('pdpThumbs');
                 const thumbs = document.querySelectorAll('.pdp-thumb');
                 thumbs.forEach((t, idx) => {
                     if (idx === activeIndex) {
                         t.classList.add('active');
-                        t.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                        if (thumbsContainer && thumbsContainer.scrollWidth > thumbsContainer.clientWidth) {
+                            const targetScrollLeft = t.offsetLeft - (thumbsContainer.clientWidth / 2) + (t.clientWidth / 2);
+                            thumbsContainer.scrollTo({
+                                left: Math.max(0, targetScrollLeft),
+                                behavior: 'smooth'
+                            });
+                        }
                     } else {
                         t.classList.remove('active');
                     }
                 });
+                if (window.scrollX !== 0) {
+                    window.scrollTo(0, window.scrollY);
+                }
             }
         }
     });
@@ -1940,9 +1963,10 @@ function pdpSelectGallerySlide(index, thumb) {
     } else {
         // Fallback if swiper is not available
         const mainImg = document.getElementById('mainImage');
+        const fullSrc = thumb ? thumb.getAttribute('data-full-src') : null;
         const imgInside = thumb ? thumb.querySelector('img') : null;
-        if (mainImg && imgInside) {
-            mainImg.src = imgInside.src;
+        if (mainImg && (fullSrc || imgInside)) {
+            mainImg.src = fullSrc || imgInside.src;
         }
         document.querySelectorAll('.pdp-thumb').forEach(t => t.classList.remove('active'));
         if (thumb) thumb.classList.add('active');

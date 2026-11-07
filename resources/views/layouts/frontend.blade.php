@@ -1215,7 +1215,15 @@
             border-top: 1px solid var(--light-border-sub, #f1f5f9) !important;
             background: #f8fafc !important;
             width: 100% !important;
+            max-width: 100% !important;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
             box-sizing: border-box !important;
+        }
+        .pdp-thumbs::-webkit-scrollbar {
+            display: none;
         }
 
         .pdp-thumb {
