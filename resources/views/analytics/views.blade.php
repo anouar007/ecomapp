@@ -670,12 +670,13 @@
             <div class="card border-0 shadow-sm rounded-4 p-2.5 p-md-3 bg-white h-100">
                 <div class="mb-2.5">
                     <h6 class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">
-                        <i class="fas fa-chart-area text-primary me-1.5"></i>Évolution des Vues et Recherches par Jour
+                        <i class="fas fa-chart-area text-primary me-1.5"></i>Évolution des Visiteurs, Vues et Recherches par Jour
                     </h6>
                     <div class="d-flex align-items-center gap-1.5 flex-wrap" style="font-size: 0.72rem;">
-                        <span class="badge bg-primary-subtle text-primary border"><i class="fas fa-circle me-1" style="font-size: 7px;"></i> Vues Produits</span>
-                        <span class="badge bg-teal-subtle text-teal border"><i class="fas fa-circle me-1" style="font-size: 7px;"></i> Rayons</span>
-                        <span class="badge bg-info-subtle text-info border"><i class="fas fa-circle me-1" style="font-size: 7px;"></i> Recherches</span>
+                        <span class="badge bg-emerald-subtle text-emerald border chart-legend-toggle" style="cursor: pointer;" onclick="toggleViewsChartDataset(0)" title="Cliquer pour masquer/afficher"><i class="fas fa-circle me-1" style="font-size: 7px; color: #10b981;"></i> Visiteurs (Utilisateurs)</span>
+                        <span class="badge bg-primary-subtle text-primary border chart-legend-toggle" style="cursor: pointer;" onclick="toggleViewsChartDataset(1)" title="Cliquer pour masquer/afficher"><i class="fas fa-circle me-1" style="font-size: 7px; color: #6366f1;"></i> Vues Produits</span>
+                        <span class="badge bg-teal-subtle text-teal border chart-legend-toggle" style="cursor: pointer;" onclick="toggleViewsChartDataset(2)" title="Cliquer pour masquer/afficher"><i class="fas fa-circle me-1" style="font-size: 7px; color: #14b8a6;"></i> Rayons</span>
+                        <span class="badge bg-info-subtle text-info border chart-legend-toggle" style="cursor: pointer;" onclick="toggleViewsChartDataset(3)" title="Cliquer pour masquer/afficher"><i class="fas fa-circle me-1" style="font-size: 7px; color: #0ea5e9;"></i> Recherches</span>
                     </div>
                 </div>
                 <div style="height: 220px; position: relative;">
@@ -1456,22 +1457,34 @@ document.addEventListener('DOMContentLoaded', function () {
     const trendCtx = document.getElementById('viewsTrendChart');
     if (trendCtx) {
         const labels = @json($chartData['labels']);
+        const usersData = @json($chartData['users'] ?? []);
         const pvData = @json($chartData['product_views']);
         const cvData = @json($chartData['category_views']);
         const searchData = @json($chartData['searches']);
 
-        new Chart(trendCtx, {
+        window.viewsTrendChartInstance = new Chart(trendCtx, {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [
+                    {
+                        label: 'Visiteurs (Utilisateurs)',
+                        data: usersData,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                        borderWidth: 2.5,
+                        fill: false,
+                        tension: 0.35,
+                        pointRadius: 3,
+                        pointHoverRadius: 6,
+                    },
                     {
                         label: 'Vues Produits',
                         data: pvData,
                         borderColor: '#6366f1',
                         backgroundColor: 'rgba(99, 102, 241, 0.08)',
                         borderWidth: 2.5,
-                        fill: true,
+                        fill: false,
                         tension: 0.35,
                         pointRadius: 2.5,
                         pointHoverRadius: 5,
@@ -1525,6 +1538,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         });
+
+        window.toggleViewsChartDataset = function(index) {
+            if (!window.viewsTrendChartInstance) return;
+            const meta = window.viewsTrendChartInstance.getDatasetMeta(index);
+            const isHidden = meta.hidden === null ? !window.viewsTrendChartInstance.data.datasets[index].hidden : !meta.hidden;
+            meta.hidden = isHidden;
+            window.viewsTrendChartInstance.update();
+
+            const badges = document.querySelectorAll('.chart-legend-toggle');
+            if (badges[index]) {
+                badges[index].style.opacity = isHidden ? '0.35' : '1';
+                badges[index].style.textDecoration = isHidden ? 'line-through' : 'none';
+            }
+        };
     }
 
     // 2. Initialize Device Breakdown Doughnut Chart

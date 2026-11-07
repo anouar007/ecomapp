@@ -358,9 +358,24 @@ class ViewsAnalyticsController extends Controller
     protected function getKpiSummary(string $startDateStr, string $endDateStr): array
     {
         $productViews = ProductView::whereBetween('viewed_date', [$startDateStr, $endDateStr])->count();
-        $uniqueVisitors = ProductView::whereBetween('viewed_date', [$startDateStr, $endDateStr])
-            ->distinct('ip_address')
-            ->count('ip_address');
+        $uniqueVisitors = DB::table(function ($query) use ($startDateStr, $endDateStr) {
+            $query->select('ip_address')
+                ->from('product_views')
+                ->whereBetween('viewed_date', [$startDateStr, $endDateStr])
+                ->whereNotNull('ip_address')
+                ->union(
+                    DB::table('category_views')
+                        ->select('ip_address')
+                        ->whereBetween('viewed_date', [$startDateStr, $endDateStr])
+                        ->whereNotNull('ip_address')
+                )
+                ->union(
+                    DB::table('search_logs')
+                        ->select('ip_address')
+                        ->whereBetween('searched_date', [$startDateStr, $endDateStr])
+                        ->whereNotNull('ip_address')
+                );
+        }, 'all_visitors')->count();
 
         $categoryViews = CategoryView::whereBetween('viewed_date', [$startDateStr, $endDateStr])->count();
         
@@ -408,7 +423,38 @@ class ViewsAnalyticsController extends Controller
             ->groupBy('searched_date')
             ->pluck('count', 'searched_date');
 
+        // Daily Unique Visitors (Users that visit the website)
+        $dailyUV = DB::table(function ($query) use ($startDateStr, $endDateStr) {
+            $query->selectRaw('viewed_date as dt, ip_address')
+                ->from('product_views')
+                ->whereBetween('viewed_date', [$startDateStr, $endDateStr])
+                ->whereNotNull('ip_address')
+                ->union(
+                    DB::table('category_views')
+                        ->selectRaw('viewed_date as dt, ip_address')
+                        ->whereBetween('viewed_date', [$startDateStr, $endDateStr])
+                        ->whereNotNull('ip_address')
+                )
+                ->union(
+                    DB::table('search_logs')
+                        ->selectRaw('searched_date as dt, ip_address')
+                        ->whereBetween('searched_date', [$startDateStr, $endDateStr])
+                        ->whereNotNull('ip_address')
+                );
+        }, 'combined_visitors')
+        ->selectRaw('dt, COUNT(DISTINCT ip_address) as count')
+        ->groupBy('dt')
+        ->pluck('count', 'dt');
+
+        $dailyPeaks = SiteTrafficPeak::whereBetween('record_date', [$startDateStr, $endDateStr])
+            ->get()
+            ->mapWithKeys(function ($item) {
+                $dtStr = $item->record_date instanceof Carbon ? $item->record_date->toDateString() : (string) $item->record_date;
+                return [substr($dtStr, 0, 10) => (int) $item->unique_visitors];
+            });
+
         $labels = [];
+        $usersData = [];
         $pvData = [];
         $cvData = [];
         $searchData = [];
@@ -417,14 +463,16 @@ class ViewsAnalyticsController extends Controller
         while ($current <= $endDate) {
             $key = $current->format('Y-m-d');
             $labels[] = $current->format('d M');
-            $pvData[] = $dailyPV[$key] ?? 0;
-            $cvData[] = $dailyCV[$key] ?? 0;
-            $searchData[] = $dailySL[$key] ?? 0;
+            $usersData[] = max((int) ($dailyUV[$key] ?? 0), (int) ($dailyPeaks[$key] ?? 0));
+            $pvData[] = (int) ($dailyPV[$key] ?? 0);
+            $cvData[] = (int) ($dailyCV[$key] ?? 0);
+            $searchData[] = (int) ($dailySL[$key] ?? 0);
             $current->addDay();
         }
 
         return [
             'labels' => $labels,
+            'users' => $usersData,
             'product_views' => $pvData,
             'category_views' => $cvData,
             'searches' => $searchData,

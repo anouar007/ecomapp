@@ -79,6 +79,28 @@ class RealtimePresence extends Model
                         ]
                     );
 
+                    // Sync today's website visitors in SiteTrafficPeak
+                    if (!empty($ip)) {
+                        $todayStr = now()->toDateString();
+                        $fileCache = \Illuminate\Support\Facades\Cache::store('file');
+                        $ipDayKey = "presence_daily_ip_{$todayStr}_" . md5($ip);
+                        if (!$fileCache->has($ipDayKey)) {
+                            $fileCache->put($ipDayKey, true, 86400);
+                            $peak = SiteTrafficPeak::firstOrCreate(
+                                ['record_date' => $todayStr],
+                                [
+                                    'year' => (int) now()->format('Y'),
+                                    'month' => (int) now()->format('n'),
+                                    'week' => (int) now()->format('W'),
+                                    'peak_concurrent_users' => 1,
+                                    'unique_visitors' => 0,
+                                    'total_views' => 0,
+                                ]
+                            );
+                            $peak->increment('unique_visitors');
+                        }
+                    }
+
                     // Clean up stale presences (older than 10 minutes) with 1% lottery chance
                     if (random_int(1, 100) === 1) {
                         static::where('last_seen_at', '<', $now - 600)->delete();
