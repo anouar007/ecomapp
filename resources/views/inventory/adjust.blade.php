@@ -246,14 +246,14 @@
                         <span class="fw-bold text-dark">{{ currency($product->price) }}</span>
                     </div>
 
-                    @if($product->cost_price)
+                    @if(auth()->check() && auth()->user()->hasRole('Admin') && $product->cost_price)
                     <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-2.5">
-                        <span class="text-muted">Prix de revient / d'achat :</span>
+                        <span class="text-muted"><i class="fas fa-lock text-danger me-1"></i> Prix de revient / d'achat :</span>
                         <span class="fw-semibold text-secondary">{{ currency($product->cost_price) }}</span>
                     </div>
 
                     <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-2.5">
-                        <span class="text-muted">Valeur actuelle en stock :</span>
+                        <span class="text-muted"><i class="fas fa-lock text-danger me-1"></i> Valeur actuelle en stock :</span>
                         <span class="fw-bold text-success">{{ currency($stk * $product->cost_price) }}</span>
                     </div>
                     @endif

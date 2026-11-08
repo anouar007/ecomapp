@@ -651,6 +651,12 @@
                     <span>Inventaire & Stock</span>
                 </a>
             </li>
+            <li class="sidebar-menu-item">
+                <a href="{{ route('stores.index') }}" class="sidebar-menu-link {{ request()->routeIs('stores.*') ? 'active' : '' }}">
+                    <i class="fas fa-warehouse"></i>
+                    <span>Magasins & Dépôts</span>
+                </a>
+            </li>
             @endcan
             @can('manage_customers')
             <li class="sidebar-menu-item">
@@ -659,7 +665,22 @@
                     <span>Clients</span>
                 </a>
             </li>
+            <li class="sidebar-menu-item">
+                <a href="{{ route('client-credits.index') }}" class="sidebar-menu-link {{ request()->routeIs('client-credits.*') ? 'active' : '' }}">
+                    <i class="fas fa-wallet"></i>
+                    <span>Crédits & Règlements</span>
+                </a>
+            </li>
             @endcan
+            @if(auth()->check() && auth()->user()->hasRole('Admin'))
+            <li class="sidebar-menu-item">
+                <a href="{{ route('reports.profitability') }}" class="sidebar-menu-link {{ request()->routeIs('reports.profitability*') ? 'active' : '' }}">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Bénéfices & Marges</span>
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill ms-auto" style="font-size: 0.62rem;">Admin</span>
+                </a>
+            </li>
+            @endif
             @if(auth()->check() && (auth()->user()->can('manage_coupons') || auth()->user()->hasRole('Admin')))
             <li class="sidebar-menu-item">
                 <a href="{{ route('coupons.index') }}" class="sidebar-menu-link {{ request()->routeIs('coupons.*') ? 'active' : '' }}">

@@ -117,6 +117,13 @@ Route::middleware('auth')->group(function () {
         // Debtors Dashboard
         Route::get('debtors', [\App\Http\Controllers\DebtorsController::class, 'index'])->name('debtors.index');
         Route::get('debtors/download', [\App\Http\Controllers\DebtorsController::class, 'downloadPdf'])->name('debtors.download');
+
+        // Client Credits, Balances & Payment History with Proof Image
+        Route::get('client-credits', [\App\Http\Controllers\CustomerCreditController::class, 'index'])->name('client-credits.index');
+        Route::get('client-credits/transactions', [\App\Http\Controllers\CustomerCreditController::class, 'transactions'])->name('client-credits.transactions');
+        Route::post('client-credits/transactions', [\App\Http\Controllers\CustomerCreditController::class, 'storeTransaction'])->name('client-credits.transactions.store');
+        Route::delete('client-credits/transactions/{transaction}', [\App\Http\Controllers\CustomerCreditController::class, 'destroyTransaction'])->name('client-credits.transactions.destroy');
+        Route::post('customers/{customer}/credit-limit', [\App\Http\Controllers\CustomerCreditController::class, 'updateCreditLimit'])->name('customers.update-credit-limit');
     });
     
     // Inventory Management
@@ -130,6 +137,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/inventory/{product}/adjust', [\App\Http\Controllers\InventoryController::class, 'processAdjustment'])->name('inventory.process-adjustment');
         Route::post('/inventory/alerts/{alert}/acknowledge', [\App\Http\Controllers\InventoryController::class, 'acknowledgeAlert'])->name('inventory.acknowledge-alert');
         Route::post('/inventory/alerts/bulk-acknowledge', [\App\Http\Controllers\InventoryController::class, 'bulkAcknowledge'])->name('inventory.bulk-acknowledge');
+
+        // Stores, Warehouses & Multi-Store Stock Locations
+        Route::get('/stores', [\App\Http\Controllers\StoreController::class, 'index'])->name('stores.index');
+        Route::post('/stores', [\App\Http\Controllers\StoreController::class, 'store'])->name('stores.store');
+        Route::put('/stores/{store}', [\App\Http\Controllers\StoreController::class, 'update'])->name('stores.update');
+        Route::delete('/stores/{store}', [\App\Http\Controllers\StoreController::class, 'destroy'])->name('stores.destroy');
+        Route::get('/stores/stock', [\App\Http\Controllers\StoreController::class, 'stockIndex'])->name('stores.stock');
+        Route::post('/stores/stock/location', [\App\Http\Controllers\StoreController::class, 'updateStockLocation'])->name('stores.stock.location');
+        Route::post('/stores/stock/transfer', [\App\Http\Controllers\StoreController::class, 'transfer'])->name('stores.stock.transfer');
     });
     
     // Coupons & Promotions
@@ -189,6 +205,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/reports', [\App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
         Route::get('/reports/export-pdf', [\App\Http\Controllers\ReportController::class, 'exportPDF'])->name('reports.export.pdf');
         Route::get('/reports/export-csv', [\App\Http\Controllers\ReportController::class, 'exportCSV'])->name('reports.export.csv');
+
+        // Profitability & Benefits (Strictly Admin Only)
+        Route::get('/reports/profitability', [\App\Http\Controllers\ProfitabilityController::class, 'index'])->name('reports.profitability');
+        Route::get('/reports/profitability/export-csv', [\App\Http\Controllers\ProfitabilityController::class, 'exportCsv'])->name('reports.profitability.export');
+        Route::post('/reports/profitability/products/{product}/cost', [\App\Http\Controllers\ProfitabilityController::class, 'updateCostPrice'])->name('reports.profitability.update-cost');
     });
     
     // Settings

@@ -144,7 +144,7 @@
     <!-- Actions Toolbar (Clean, Pro, Harmonious Buttons) -->
     <div class="d-flex align-items-center justify-content-between pt-1">
         <div class="text-muted small" style="font-size: 0.72rem;">
-            @if($product->cost_price)
+            @if(auth()->check() && auth()->user()->hasRole('Admin') && $product->cost_price)
                 <span>Coût : <strong class="text-dark">{{ currency($product->cost_price) }}</strong></span>
             @endif
         </div>

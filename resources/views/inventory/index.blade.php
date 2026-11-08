@@ -418,13 +418,15 @@
                             <span class="{{ $reorderClass }}" style="font-size: 0.85rem;">{{ $reorderPt }}</span>
                         </td>
 
-                        <!-- Valeur marchande -->
+                        <!-- Valeur marchande (Admin uniquement) -->
                         <td class="text-end">
-                            @if($isTracked && $product->cost_price)
+                            @if(auth()->check() && auth()->user()->hasRole('Admin') && $isTracked && $product->cost_price)
                                 <div class="fw-bold text-dark" style="font-size: 0.84rem;">{{ currency($stock * $product->cost_price) }}</div>
                                 <div class="text-muted small" style="font-size: 0.68rem;">{{ currency($product->cost_price) }} / u.</div>
-                            @else
+                            @elseif(auth()->check() && auth()->user()->hasRole('Admin'))
                                 <span class="text-muted">—</span>
+                            @else
+                                <span class="badge bg-light text-muted border font-monospace" style="font-size: 0.65rem;"><i class="fas fa-lock me-1"></i>Réservé</span>
                             @endif
                         </td>
 

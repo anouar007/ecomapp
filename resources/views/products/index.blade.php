@@ -477,8 +477,8 @@
                             @else
                                 <div class="fw-bold text-dark">{{ currency($product->price) }}</div>
                             @endif
-                            @if($product->cost_price)
-                                <div class="text-muted small prod-cost-text" title="Prix de revient">Coût: {{ currency($product->cost_price) }}</div>
+                            @if(auth()->check() && auth()->user()->hasRole('Admin') && $product->cost_price)
+                                <div class="text-muted small prod-cost-text" title="Prix de revient (Admin uniquement)"><i class="fas fa-lock me-0.5 opacity-50" style="font-size: 0.65rem;"></i>Coût: {{ currency($product->cost_price) }}</div>
                             @endif
                         </td>
                         <td class="col-stock">

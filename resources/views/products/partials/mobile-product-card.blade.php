@@ -124,9 +124,9 @@
                     <i class="fas fa-check-circle"></i>
                 </span>
             </div>
-            @if($product->cost_price)
-                <span class="mobile-cost-badge" title="Prix de revient">
-                    Coût: {{ currency($product->cost_price) }}
+            @if(auth()->check() && auth()->user()->hasRole('Admin') && $product->cost_price)
+                <span class="mobile-cost-badge" title="Prix de revient (Admin uniquement)">
+                    <i class="fas fa-lock me-0.5 opacity-50" style="font-size: 0.65rem;"></i>Coût: {{ currency($product->cost_price) }}
                 </span>
             @endif
         </div>

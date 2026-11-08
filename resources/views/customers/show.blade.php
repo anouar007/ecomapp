@@ -224,62 +224,90 @@
     </div>
 </div>
 
-<!-- Section Ligne de Crédit & Encours Client (si configuré) -->
-@if($customer->credit_limit > 0 || $customer->current_balance > 0)
+<!-- Section Ligne de Crédit, Avoirs & Encours Client -->
 <div class="card border-0 shadow-sm rounded-4 p-3.5 mb-4" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #ffffff;">
-    <div class="d-flex align-items-center justify-content-between mb-3">
-        <div class="d-flex align-items-center gap-2">
-            <div class="stat-kpi-icon bg-white text-dark" style="width: 36px; height: 36px; font-size: 1rem;">
-                <i class="fas fa-credit-card"></i>
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3">
+        <div class="d-flex align-items-center gap-2.5">
+            <div class="stat-kpi-icon bg-white text-dark rounded-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 1.1rem;">
+                <i class="fas fa-wallet text-primary"></i>
             </div>
             <div>
-                <h6 class="fw-bold mb-0 text-white" style="font-size: 0.95rem;">Gestion de l'Encours & Crédit Accordé</h6>
-                <div class="text-white-50 small">Plafond de trésorerie autorisé pour ce compte client</div>
+                <h6 class="fw-bold mb-0 text-white" style="font-size: 1rem;">Crédit, Avoirs & Solde Trésorerie</h6>
+                <div class="text-white-50 small">Suivi des créances clients et avoirs du magasin</div>
             </div>
         </div>
-        @if($customer->hasReachedCreditLimit())
-            <span class="badge bg-danger text-white rounded-pill px-2.5 py-1">
-                <i class="fas fa-exclamation-triangle me-1"></i>Plafond dépassé
-            </span>
-        @else
-            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1">
-                <i class="fas fa-check-circle me-1"></i>Solde conforme
-            </span>
-        @endif
+        <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-sm btn-danger rounded-pill px-3 py-1.5 fw-semibold shadow-xs" 
+                    onclick="openCustomerPaymentModal()">
+                <i class="fas fa-coins me-1"></i> Nouveau Règlement / Avoir
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1.5 fw-semibold"
+                    onclick="openCreditLimitModal()">
+                <i class="fas fa-sliders me-1"></i> Plafond
+            </button>
+        </div>
     </div>
 
     <div class="row g-3 align-items-center">
+        <!-- 1. Limite de Crédit -->
         <div class="col-6 col-md-3">
-            <div class="text-white-50 small text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">Limite de Crédit</div>
+            <div class="text-white-50 small text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">Plafond Autorisé</div>
             <div class="fs-5 fw-bold text-white">{{ currency($customer->credit_limit) }}</div>
         </div>
+
+        <!-- 2. Solde Actuel (Débiteur ou Créditeur) -->
         <div class="col-6 col-md-3">
-            <div class="text-white-50 small text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">Encours Actuel</div>
-            <div class="fs-5 fw-bold {{ $customer->current_balance > $customer->credit_limit ? 'text-danger' : 'text-warning' }}">
-                {{ currency($customer->current_balance) }}
-            </div>
+            <div class="text-white-50 small text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">Situation du Solde</div>
+            @if($customer->current_balance > 0.01)
+                <div class="fs-5 fw-bold text-danger">
+                    <i class="fas fa-arrow-down me-1" style="font-size: 0.85rem;"></i>{{ currency($customer->current_balance) }}
+                </div>
+                <div class="badge bg-danger text-white rounded-pill px-2 py-0.5 mt-0.5" style="font-size: 0.65rem;">
+                    Le client doit au magasin
+                </div>
+            @elseif($customer->current_balance < -0.01)
+                <div class="fs-5 fw-bold text-info">
+                    <i class="fas fa-arrow-up me-1" style="font-size: 0.85rem;"></i>{{ currency(abs($customer->current_balance)) }}
+                </div>
+                <div class="badge bg-info text-white rounded-pill px-2 py-0.5 mt-0.5" style="font-size: 0.65rem;">
+                    Avoir dû au client
+                </div>
+            @else
+                <div class="fs-5 fw-bold text-success">0,00 DH</div>
+                <div class="badge bg-success text-white rounded-pill px-2 py-0.5 mt-0.5" style="font-size: 0.65rem;">
+                    Compte entièrement soldé
+                </div>
+            @endif
         </div>
+
+        <!-- 3. Crédit Disponible -->
         <div class="col-6 col-md-3">
             <div class="text-white-50 small text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">Crédit Disponible</div>
             <div class="fs-5 fw-bold text-success">
                 {{ currency(max(0, $customer->credit_limit - $customer->current_balance)) }}
             </div>
         </div>
+
+        <!-- 4. Taux d'utilisation -->
         <div class="col-6 col-md-3">
-            <div class="d-flex align-items-center justify-content-between text-white-50 small" style="font-size: 0.7rem;">
-                <span>Utilisation</span>
-                <span class="text-white fw-bold">{{ number_format($utilization, 1) }}%</span>
-            </div>
-            <div class="progress mt-1" style="height: 6px; background: rgba(255, 255, 255, 0.2); border-radius: 99px;">
-                <div class="progress-bar {{ $utilization > 90 ? 'bg-danger' : ($utilization > 70 ? 'bg-warning' : 'bg-success') }}" 
-                     role="progressbar" 
-                     style="width: {{ $utilization }}%; border-radius: 99px;">
+            @if($customer->credit_limit > 0)
+                <div class="d-flex align-items-center justify-content-between text-white-50 small" style="font-size: 0.7rem;">
+                    <span>Utilisation</span>
+                    <span class="text-white fw-bold">{{ number_format($utilization, 1) }}%</span>
                 </div>
-            </div>
+                <div class="progress mt-1" style="height: 6px; background: rgba(255, 255, 255, 0.2); border-radius: 99px;">
+                    <div class="progress-bar {{ $utilization > 90 ? 'bg-danger' : ($utilization > 70 ? 'bg-warning' : 'bg-success') }}" 
+                         role="progressbar" 
+                         style="width: {{ $utilization }}%; border-radius: 99px;">
+                    </div>
+                </div>
+            @else
+                <div class="text-white-50 small text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">Plafond</div>
+                <div class="text-white-50 small mt-1">Non défini (au comptant)</div>
+            @endif
         </div>
     </div>
 </div>
-@endif
 
 <!-- Informations Personnelles & Coordonnées (2 Colonnes) -->
 <div class="row g-3 mb-4">
@@ -594,6 +622,122 @@
     @endif
 </div>
 
+<!-- ======================================================= -->
+<!-- SECTION HISTORIQUE DES RÈGLEMENTS & PREUVES DE PAIEMENT -->
+<!-- ======================================================= -->
+<div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3">
+        <div class="d-flex align-items-center gap-2">
+            <div class="stat-kpi-icon bg-light text-dark rounded-3 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                <i class="fas fa-receipt text-danger"></i>
+            </div>
+            <div>
+                <h5 class="fw-bold mb-0" style="font-size: 1rem;">Historique des Règlements & Justificatifs Photos</h5>
+                <span class="text-muted small">Paiements encaissés, avoirs accordés, et pièces jointes photographiques</span>
+            </div>
+        </div>
+        <button type="button" class="btn btn-sm btn-danger rounded-pill px-3 py-1.5 fw-semibold shadow-xs" onclick="openCustomerPaymentModal()">
+            <i class="fas fa-plus-circle me-1"></i> Nouveau Règlement
+        </button>
+    </div>
+
+    @if(isset($recentTransactions) && $recentTransactions->count() > 0)
+        <div class="table-responsive d-none d-md-block">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="font-size: 0.76rem; font-weight: 600;">Date & Réf</th>
+                        <th style="font-size: 0.76rem; font-weight: 600;">Type d'Opération</th>
+                        <th style="font-size: 0.76rem; font-weight: 600;">Mode & N° Chèque</th>
+                        <th style="font-size: 0.76rem; font-weight: 600;" class="text-center">Preuve Photo</th>
+                        <th style="font-size: 0.76rem; font-weight: 600;" class="text-end">Montant</th>
+                        <th style="font-size: 0.76rem; font-weight: 600;" class="text-end">Nouveau Solde</th>
+                        <th style="font-size: 0.76rem; font-weight: 600;">Opérateur</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($recentTransactions as $trx)
+                    <tr>
+                        <td>
+                            <div class="fw-bold font-monospace text-dark" style="font-size: 0.8rem;">{{ $trx->transaction_number }}</div>
+                            <div class="text-muted" style="font-size: 0.72rem;">{{ $trx->payment_date->format('d/m/Y H:i') }}</div>
+                        </td>
+                        <td>
+                            <span class="badge {{ $trx->type_badge_class }} border rounded-pill px-2.5 py-1" style="font-size: 0.72rem;">
+                                {{ $trx->type_label }}
+                            </span>
+                        </td>
+                        <td class="small">
+                            <div>{{ $trx->payment_method_label }}</div>
+                            @if($trx->reference_number)
+                                <span class="badge bg-light text-secondary border font-monospace mt-0.5" style="font-size: 0.65rem;">
+                                    {{ $trx->reference_number }}
+                                </span>
+                            @endif
+                        </td>
+                        <td class="text-center">
+                            @if($trx->proof_image_url)
+                                <img src="{{ $trx->proof_image_url }}" alt="Preuve" style="width: 42px; height: 42px; object-fit: cover; border-radius: 8px; border: 1px solid #e2e8f0; cursor: pointer;"
+                                     onclick="previewProofModal('{{ $trx->proof_image_url }}', '{{ $trx->transaction_number }}', '{{ addslashes($customer->name) }}')"
+                                     title="Agrandir la preuve">
+                            @else
+                                <span class="text-muted small fst-italic">—</span>
+                            @endif
+                        </td>
+                        <td class="text-end fw-bold {{ $trx->direction === 'in' ? 'text-success' : 'text-danger' }}">
+                            {{ $trx->direction === 'in' ? '+' : '-' }}{{ currency($trx->amount) }}
+                        </td>
+                        <td class="text-end font-monospace small">
+                            <span class="fw-semibold {{ $trx->balance_after > 0 ? 'text-danger' : ($trx->balance_after < 0 ? 'text-info' : 'text-success') }}">
+                                {{ currency($trx->balance_after) }}
+                            </span>
+                        </td>
+                        <td class="small text-muted">
+                            {{ $trx->createdBy->name ?? 'Système' }}
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile View for Transactions -->
+        <div class="d-block d-md-none">
+            <div class="d-flex flex-column gap-2">
+                @foreach($recentTransactions as $trx)
+                <div class="border rounded-3 p-2.5 bg-light">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="fw-bold font-monospace small">{{ $trx->transaction_number }}</span>
+                        <span class="fw-bold {{ $trx->direction === 'in' ? 'text-success' : 'text-danger' }}">
+                            {{ $trx->direction === 'in' ? '+' : '-' }}{{ currency($trx->amount) }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center text-muted" style="font-size: 0.72rem;">
+                        <span>{{ $trx->type_label }} • {{ $trx->payment_method_label }}</span>
+                        <span>{{ $trx->payment_date->format('d/m/Y') }}</span>
+                    </div>
+                    @if($trx->proof_image_url)
+                        <div class="mt-2 pt-2 border-top d-flex align-items-center gap-2">
+                            <img src="{{ $trx->proof_image_url }}" alt="Preuve" style="width: 38px; height: 38px; object-fit: cover; border-radius: 6px;"
+                                 onclick="previewProofModal('{{ $trx->proof_image_url }}', '{{ $trx->transaction_number }}', '{{ addslashes($customer->name) }}')">
+                            <a href="javascript:void(0)" class="small text-primary text-decoration-none"
+                               onclick="previewProofModal('{{ $trx->proof_image_url }}', '{{ $trx->transaction_number }}', '{{ addslashes($customer->name) }}')">
+                                <i class="fas fa-expand me-1"></i> Voir la preuve de paiement
+                            </a>
+                        </div>
+                    @endif
+                </div>
+                @endforeach
+            </div>
+        </div>
+    @else
+        <div class="text-center py-4 text-muted">
+            <i class="fas fa-receipt mb-2" style="font-size: 1.5rem; opacity: 0.5;"></i>
+            <p class="small mb-0">Aucun règlement enregistré pour ce client pour le moment.</p>
+        </div>
+    @endif
+</div>
+
 <!-- Modal Créditer des Points de Fidélité -->
 <div class="modal fade" id="addPointsModal" tabindex="-1" aria-labelledby="addPointsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -663,4 +807,188 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Règlement / Avoir pour ce Client -->
+<div class="modal fade" id="customerPaymentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <form action="{{ route('client-credits.transactions.store') }}" method="POST" enctype="multipart/form-data" class="modal-content border-0 shadow-lg rounded-4">
+            @csrf
+            <input type="hidden" name="customer_id" value="{{ $customer->id }}">
+            <div class="modal-header bg-dark text-white py-3 px-4 border-0">
+                <div class="d-flex align-items-center gap-2.5">
+                    <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0 fs-6">Enregistrer un Règlement / Avoir</h5>
+                        <p class="small text-white-50 mb-0" style="font-size: 0.76rem;">Client : {{ $customer->name }} (Solde : {{ currency($customer->current_balance) }})</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+
+            <div class="modal-body p-4">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-7">
+                        <label class="form-label small fw-bold text-dark mb-1">Type d'opération <span class="text-danger">*</span></label>
+                        <select name="type" id="cust_modal_type" class="form-select rounded-3" required>
+                            <option value="payment_received" {{ $customer->current_balance > 0 ? 'selected' : '' }}>Règlement reçu du client (Diminue sa dette)</option>
+                            <option value="refund_to_client" {{ $customer->current_balance < 0 ? 'selected' : '' }}>Remboursement versé au client (Diminue son avoir)</option>
+                            <option value="credit_given">Vente à crédit accordée (Augmente la dette)</option>
+                            <option value="credit_note">Avoir accordé au client (Augmente la dette du magasin)</option>
+                            <option value="adjustment">Ajustement manuel de solde</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label small fw-bold text-dark mb-1">Montant (DH) <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="number" step="0.01" min="0.01" name="amount" class="form-control rounded-start-3 fw-bold" 
+                                   value="{{ $customer->current_balance > 0 ? (float)$customer->current_balance : ($customer->current_balance < 0 ? abs((float)$customer->current_balance) : '') }}" required>
+                            <span class="input-group-text bg-light fw-bold text-secondary">DH</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold text-dark mb-1">Mode de règlement <span class="text-danger">*</span></label>
+                        <select name="payment_method" class="form-select rounded-3" required>
+                            <option value="especes" selected>Espèces / Cash</option>
+                            <option value="virement">Virement bancaire</option>
+                            <option value="cheque">Chèque bancaire</option>
+                            <option value="versement">Versement bancaire</option>
+                            <option value="tpe">Carte bancaire (TPE)</option>
+                            <option value="avoir">Déduction sur Avoir</option>
+                            <option value="autre">Autre mode</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold text-dark mb-1">N° Réf. Transaction / N° Chèque</label>
+                        <input type="text" name="reference_number" class="form-control rounded-3" placeholder="Ex: CHQ-981244 ou VIR-BAM-0021">
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold text-dark mb-1">Date de l'opération</label>
+                        <input type="datetime-local" name="payment_date" class="form-control rounded-3" value="{{ now()->format('Y-m-d\TH:i') }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold text-dark mb-1">
+                            <i class="fas fa-camera text-primary me-1"></i> Preuve de paiement (Image reçue / photo reçu)
+                        </label>
+                        <input type="file" name="proof_image" accept="image/*" class="form-control rounded-3" onchange="previewCustPaymentImage(this)">
+                        <div class="form-text" style="font-size: 0.72rem;">Formats : JPG, PNG, WEBP (Max 5MB).</div>
+                    </div>
+                </div>
+
+                <div id="custImagePreviewBox" class="d-none mb-3 p-2 rounded-3 bg-light border text-center">
+                    <img id="custImagePreviewTarget" src="" alt="Aperçu Preuve" style="max-height: 180px; max-width: 100%; border-radius: 8px;">
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label small fw-bold text-dark mb-1">Notes / Motif du règlement</label>
+                    <textarea name="notes" rows="2" class="form-control rounded-3" placeholder="Précisez le détail de l'opération..."></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer bg-light px-4 py-3 border-0">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-3.5" data-bs-dismiss="modal">Annuler</button>
+                <button type="submit" class="btn btn-danger rounded-pill px-4 fw-semibold shadow-xs">
+                    <i class="fas fa-check-circle me-1.5"></i> Enregistrer l'Opération
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Plafond de Crédit -->
+<div class="modal fade" id="creditLimitModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <form method="POST" action="{{ route('customers.update-credit-limit', $customer) }}" class="modal-content border-0 shadow-lg rounded-4">
+            @csrf
+            <div class="modal-header bg-dark text-white py-2.5 px-3 border-0">
+                <h6 class="modal-title fw-bold mb-0 fs-6">Plafond de Crédit</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body p-3">
+                <label class="form-label small fw-bold text-dark mb-1">Montant Max Autorisé (DH)</label>
+                <div class="input-group">
+                    <input type="number" step="0.01" min="0" name="credit_limit" value="{{ (float)$customer->credit_limit }}" class="form-control rounded-start-3 fw-bold" required>
+                    <span class="input-group-text bg-light fw-bold text-secondary">DH</span>
+                </div>
+                <div class="form-text" style="font-size: 0.72rem;">0 = Aucun plafond (crédit non accordé par défaut).</div>
+            </div>
+            <div class="modal-footer bg-light px-3 py-2 border-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Annuler</button>
+                <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Zoom Preuve Photo -->
+<div class="modal fade" id="proofViewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header bg-dark text-white py-2.5 px-3 border-0">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas fa-file-invoice text-warning"></i>
+                    <div>
+                        <h6 class="modal-title fw-bold mb-0 fs-6" id="proofModalTitle">Justificatif de Paiement</h6>
+                        <span class="text-white-50" style="font-size: 0.72rem;" id="proofModalSub">—</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body p-2 text-center bg-black bg-opacity-10">
+                <img id="proofModalImage" src="" alt="Preuve" style="max-width: 100%; max-height: 75vh; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+            </div>
+            <div class="modal-footer bg-white px-3 py-2 border-0 justify-content-between">
+                <a id="proofDownloadBtn" href="" download class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                    <i class="fas fa-download me-1"></i> Télécharger le document
+                </a>
+                <button type="button" class="btn btn-sm btn-dark rounded-pill px-3" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+function openCustomerPaymentModal() {
+    const modal = new bootstrap.Modal(document.getElementById('customerPaymentModal'));
+    modal.show();
+}
+
+function openCreditLimitModal() {
+    const modal = new bootstrap.Modal(document.getElementById('creditLimitModal'));
+    modal.show();
+}
+
+function previewCustPaymentImage(input) {
+    const box = document.getElementById('custImagePreviewBox');
+    const target = document.getElementById('custImagePreviewTarget');
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            target.src = e.target.result;
+            box.classList.remove('d-none');
+        }
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        box.classList.add('d-none');
+    }
+}
+
+function previewProofModal(imageUrl, trxNumber, customerName) {
+    document.getElementById('proofModalTitle').textContent = `Preuve de Paiement • ${trxNumber}`;
+    document.getElementById('proofModalSub').textContent = `Client : ${customerName}`;
+    document.getElementById('proofModalImage').src = imageUrl;
+    document.getElementById('proofDownloadBtn').href = imageUrl;
+    const modal = new bootstrap.Modal(document.getElementById('proofViewModal'));
+    modal.show();
+}
+</script>
+@endpush
 @endsection

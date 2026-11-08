@@ -232,6 +232,24 @@ class Product extends Model
     /**
      * Get the category that owns the product.
      */
+    /**
+     * Store stocks for this product across multiple stores and warehouses.
+     */
+    public function storeStocks()
+    {
+        return $this->hasMany(ProductStock::class);
+    }
+
+    /**
+     * Stores and warehouses stocking this product.
+     */
+    public function stores()
+    {
+        return $this->belongsToMany(Store::class, 'product_stocks')
+                    ->withPivot('quantity', 'location_code', 'min_quantity')
+                    ->withTimestamps();
+    }
+
     public function productCategory()
     {
         return $this->belongsTo(Category::class, 'category_id');

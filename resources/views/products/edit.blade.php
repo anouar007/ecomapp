@@ -1073,10 +1073,11 @@
                         </div>
                     </div>
 
-                    <!-- Prix d'achat / revient -->
+                    @if(auth()->check() && auth()->user()->hasRole('Admin'))
+                    <!-- Prix d'achat / revient (Strictement Admin) -->
                     <div class="mb-3">
                         <label for="cost_price" class="form-label fw-semibold text-dark">
-                            Prix d'achat / revient ({{ setting('currency_symbol', 'MAD') }})
+                            <i class="fas fa-lock text-danger me-1"></i> Prix d'achat / revient ({{ setting('currency_symbol', 'MAD') }})
                         </label>
                         <div class="input-group">
                             <span class="input-group-text bg-light text-muted">
@@ -1092,7 +1093,7 @@
                                    min="0" 
                                    oninput="updatePricingAndProfit()">
                         </div>
-                        <div class="form-text small text-muted">Coût unitaire pour calculer votre marge commerciale.</div>
+                        <div class="form-text small text-muted">Strictement confidentiel (visible par l'Administrateur uniquement).</div>
                         @error('cost_price')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -1119,6 +1120,7 @@
                             </div>
                         </div>
                     </div>
+                    @endif
                 </div>
 
                 <!-- Organisation & Stock -->

@@ -122,6 +122,7 @@ class CustomerController extends Controller
         // Customer statistics and order history
         $recentOrders = $customer->allOrders()->with('items.product')->orderBy('created_at', 'desc')->paginate(15);
         $recentInvoices = $customer->invoices()->orderBy('created_at', 'desc')->limit(10)->get();
+        $recentTransactions = $customer->transactions()->with('createdBy')->limit(20)->get();
 
         $allOrdersQuery = $customer->allOrders();
         $totalOrdersCount = (clone $allOrdersQuery)->count();
@@ -139,7 +140,7 @@ class CustomerController extends Controller
             'days_since_last_order' => $customer->days_since_last_order,
         ];
         
-        return view('customers.show', compact('customer', 'recentOrders', 'recentInvoices', 'customerStats'));
+        return view('customers.show', compact('customer', 'recentOrders', 'recentInvoices', 'recentTransactions', 'customerStats'));
     }
 
     /**

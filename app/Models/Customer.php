@@ -97,6 +97,90 @@ class Customer extends Model
     }
 
     /**
+     * Financial transactions and payment history for this customer.
+     */
+    public function transactions()
+    {
+        return $this->hasMany(CustomerTransaction::class)->orderBy('payment_date', 'desc');
+    }
+
+    /**
+     * Amount the client owes to the store (positive encours).
+     */
+    public function getClientOwesAttribute(): float
+    {
+        return max(0, (float) $this->current_balance);
+    }
+
+    /**
+     * Amount the store owes to the client (avoir / credit balance).
+     */
+    public function getStoreOwesAttribute(): float
+    {
+        return max(0, - (float) $this->current_balance);
+    }
+
+    /**
+     * Account balance status: debtor (client owes), creditor (store owes), or settled.
+     */
+    public function getBalanceStatusAttribute(): string
+    {
+        if ($this->current_balance > 0.01) {
+            return 'debtor';
+        } elseif ($this->current_balance < -0.01) {
+            return 'creditor';
+        }
+        return 'settled';
+    }
+
+    /**
+     * Record a customer financial transaction (payment, refund, credit note, credit given).
+     */
+    public function recordTransaction(array $data, ?\Illuminate\Http\UploadedFile $proofFile = null): CustomerTransaction
+    {
+        $amount = floatval($data['amount'] ?? 0);
+        $type = $data['type'] ?? 'payment_received';
+        $before = floatval($this->current_balance);
+
+        $after = match($type) {
+            'payment_received' => $before - $amount,
+            'refund_to_client' => $before + $amount,
+            'credit_given'     => $before + $amount,
+            'credit_note'      => $before - $amount,
+            'adjustment'       => isset($data['set_exact_balance']) ? floatval($data['set_exact_balance']) : ($before + $amount),
+            default            => $before - $amount,
+        };
+
+        $proofPath = null;
+        if ($proofFile && $proofFile->isValid()) {
+            $proofPath = $proofFile->store('payment_proofs', 'public');
+        } elseif (!empty($data['proof_image_path'])) {
+            $proofPath = $data['proof_image_path'];
+        }
+
+        $trx = $this->transactions()->create([
+            'transaction_number' => CustomerTransaction::generateTransactionNumber(),
+            'type'               => $type,
+            'amount'             => $amount,
+            'balance_before'     => $before,
+            'balance_after'      => $after,
+            'payment_method'     => $data['payment_method'] ?? 'especes',
+            'reference_number'   => $data['reference_number'] ?? null,
+            'proof_image'        => $proofPath,
+            'order_id'           => $data['order_id'] ?? null,
+            'invoice_id'         => $data['invoice_id'] ?? null,
+            'payment_date'       => $data['payment_date'] ?? now(),
+            'notes'              => $data['notes'] ?? null,
+            'created_by'         => auth()->id(),
+        ]);
+
+        $this->current_balance = $after;
+        $this->save();
+
+        return $trx;
+    }
+
+    /**
      * Update current balance based on outstanding invoices.
      */
     public function updateBalance()
