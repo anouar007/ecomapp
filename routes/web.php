@@ -208,8 +208,10 @@ Route::middleware('auth')->group(function () {
 
         // Profitability & Benefits (Strictly Admin Only)
         Route::get('/reports/profitability', [\App\Http\Controllers\ProfitabilityController::class, 'index'])->name('reports.profitability');
+        Route::get('/reports/profitability/costs', [\App\Http\Controllers\ProfitabilityController::class, 'manageCosts'])->name('reports.profitability.costs');
         Route::get('/reports/profitability/export-csv', [\App\Http\Controllers\ProfitabilityController::class, 'exportCsv'])->name('reports.profitability.export');
         Route::post('/reports/profitability/products/{product}/cost', [\App\Http\Controllers\ProfitabilityController::class, 'updateCostPrice'])->name('reports.profitability.update-cost');
+        Route::post('/reports/profitability/costs/batch', [\App\Http\Controllers\ProfitabilityController::class, 'updateBatchCosts'])->name('reports.profitability.update-costs-batch');
     });
     
     // Settings

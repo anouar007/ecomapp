@@ -137,9 +137,15 @@
                 </div>
 
                 <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <a href="{{ route('reports.profitability.costs') }}" class="btn btn-danger rounded-pill px-3.5 py-2 fw-semibold shadow-sm" style="font-size: 0.85rem;">
+                        <i class="fas fa-coins me-1.5"></i> Gérer les Coûts d'Achat
+                        @if($missingCostCount > 0)
+                            <span class="badge bg-white text-danger rounded-pill ms-1">{{ $missingCostCount }}</span>
+                        @endif
+                    </a>
                     <a href="{{ route('reports.profitability.export', ['period' => $period, 'start_date' => $startDate->format('Y-m-d'), 'end_date' => $endDate->format('Y-m-d')]) }}" 
-                       class="btn btn-outline-light rounded-pill px-4 py-2 fw-semibold shadow-xs" style="font-size: 0.85rem;">
-                        <i class="fas fa-file-excel text-success me-1.5"></i> Exporter en Excel / CSV
+                       class="btn btn-outline-light rounded-pill px-3.5 py-2 fw-semibold shadow-xs" style="font-size: 0.85rem;">
+                        <i class="fas fa-file-excel text-success me-1.5"></i> Exporter CSV
                     </a>
                 </div>
             </div>
@@ -164,9 +170,12 @@
                 <i class="fas fa-triangle-exclamation text-warning fs-4"></i>
                 <div>
                     <strong>{{ $missingCostCount }} produit(s) n'ont pas encore de prix de revient (coût d'achat) renseigné.</strong>
-                    <div class="small text-muted">Pour ces articles, le coût d'achat est comptabilisé à 0 DH. Vous pouvez mettre à jour le coût d'achat en 1 clic via le tableau ci-dessous.</div>
+                    <div class="small text-muted">Pour ces articles, le coût d'achat est comptabilisé à 0 DH. Définissez leurs prix de revient pour des marges exactes.</div>
                 </div>
             </div>
+            <a href="{{ route('reports.profitability.costs', ['status' => 'missing']) }}" class="btn btn-sm btn-dark rounded-pill px-3 py-1.5 fw-semibold shadow-xs">
+                <i class="fas fa-coins me-1 text-warning"></i> Gérer les {{ $missingCostCount }} coûts manquants <i class="fas fa-arrow-right ms-1"></i>
+            </a>
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
     </div>
@@ -324,6 +333,15 @@
                     <button class="nav-link" id="categories-tab" data-bs-toggle="tab" data-bs-target="#tab-categories" type="button" role="tab">
                         <i class="fas fa-tags me-1.5"></i> Bénéfice par Catégorie ({{ $categoryBenefits->count() }})
                     </button>
+                </li>
+                <li class="nav-item ms-auto" role="presentation">
+                    <a href="{{ route('reports.profitability.costs') }}" class="nav-link text-danger fw-bold d-flex align-items-center">
+                        <i class="fas fa-coins me-1.5"></i> Gestion Complète des Coûts
+                        @if($missingCostCount > 0)
+                            <span class="badge bg-danger text-white rounded-pill ms-1.5" style="font-size: 0.68rem;">{{ $missingCostCount }}</span>
+                        @endif
+                        <i class="fas fa-arrow-right ms-1.5 small"></i>
+                    </a>
                 </li>
             </ul>
         </div>

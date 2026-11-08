@@ -386,4 +386,49 @@ class ErpFeaturesVerificationTest extends TestCase
         $response->assertDontSee('Valeur au Coût');
         $response->assertDontSee('Prix Revient');
     }
+
+    /**
+     * 13. Test Product Costs Management Interface: Admin access and filters.
+     */
+    public function test_profitability_manage_costs_interface_and_filters()
+    {
+        // Non-admin forbidden
+        $response = $this->actingAs($this->staff)->get(route('reports.profitability.costs'));
+        $response->assertStatus(403);
+
+        // Admin allowed
+        $response = $this->actingAs($this->admin)->get(route('reports.profitability.costs'));
+        $response->assertStatus(200);
+        $response->assertSee('Gestion des Coûts');
+
+        // Search product
+        $responseSearch = $this->actingAs($this->admin)->get(route('reports.profitability.costs', ['search' => $this->product->sku]));
+        $responseSearch->assertStatus(200);
+        $responseSearch->assertSee($this->product->name);
+
+        // Filter missing costs
+        $responseMissing = $this->actingAs($this->admin)->get(route('reports.profitability.costs', ['status' => 'missing']));
+        $responseMissing->assertStatus(200);
+    }
+
+    /**
+     * 14. Test Batch Costs Update.
+     */
+    public function test_profitability_batch_costs_update()
+    {
+        $response = $this->actingAs($this->admin)->postJson(route('reports.profitability.update-costs-batch'), [
+            'costs' => [
+                ['id' => $this->product->id, 'cost_price' => 19500.00]
+            ]
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'updated_count' => 1
+        ]);
+
+        $this->product->refresh();
+        $this->assertEquals(19500.00, (float) $this->product->cost_price);
+    }
 }
