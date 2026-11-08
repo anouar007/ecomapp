@@ -32,6 +32,28 @@
     font-size: 1.15rem;
     flex-shrink: 0;
 }
+.chips-scroll-period {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 3px;
+}
+.chips-scroll-period::-webkit-scrollbar {
+    display: none;
+}
+.profit-mobile-card {
+    border-radius: 16px !important;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.profit-mobile-card:active {
+    transform: scale(0.995);
+}
 .period-pill-btn {
     white-space: nowrap;
     border-radius: 9999px !important;
@@ -46,6 +68,7 @@
     border: 1px solid #e2e8f0;
     background: #ffffff;
     color: #475569;
+    flex-shrink: 0;
 }
 .period-pill-btn:hover {
     background: #f1f5f9;
@@ -149,14 +172,14 @@
     </div>
     @endif
 
-    <!-- Period Selector Filter Bar -->
+    <!-- Period Selector Filter Bar (Mobile-First) -->
     <div class="card border-0 shadow-sm rounded-4 mb-4">
         <div class="card-body p-3">
-            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                <!-- Preset Pills -->
-                <div class="d-flex flex-wrap gap-1.5 align-items-center">
+            <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+                <!-- Preset Horizontal Swipeable Chips -->
+                <div class="chips-scroll-period">
                     <a href="{{ route('reports.profitability', ['period' => 'today']) }}" class="period-pill-btn {{ $period === 'today' ? 'active' : '' }}">
-                        Aujourd'hui
+                        <i class="far fa-calendar-day"></i> Aujourd'hui
                     </a>
                     <a href="{{ route('reports.profitability', ['period' => 'yesterday']) }}" class="period-pill-btn {{ $period === 'yesterday' ? 'active' : '' }}">
                         Hier
@@ -176,15 +199,15 @@
                 </div>
 
                 <!-- Custom Date Range Form -->
-                <form method="GET" action="{{ route('reports.profitability') }}" class="d-flex align-items-center gap-2">
+                <form method="GET" action="{{ route('reports.profitability') }}" class="d-flex align-items-center gap-2 flex-wrap flex-sm-nowrap">
                     <input type="hidden" name="period" value="custom">
-                    <div class="d-flex align-items-center gap-1.5">
-                        <span class="text-muted small fw-semibold">Du :</span>
-                        <input type="date" name="start_date" value="{{ $startDate->format('Y-m-d') }}" class="form-control form-control-sm rounded-3" style="width: 140px;">
-                        <span class="text-muted small fw-semibold">Au :</span>
-                        <input type="date" name="end_date" value="{{ $endDate->format('Y-m-d') }}" class="form-control form-control-sm rounded-3" style="width: 140px;">
+                    <div class="d-flex align-items-center gap-1.5 flex-grow-1">
+                        <span class="text-muted small fw-semibold">Du:</span>
+                        <input type="date" name="start_date" value="{{ $startDate->format('Y-m-d') }}" class="form-control form-control-sm rounded-3">
+                        <span class="text-muted small fw-semibold">Au:</span>
+                        <input type="date" name="end_date" value="{{ $endDate->format('Y-m-d') }}" class="form-control form-control-sm rounded-3">
                     </div>
-                    <button type="submit" class="btn btn-sm btn-dark rounded-pill px-3 fw-semibold">
+                    <button type="submit" class="btn btn-sm btn-dark rounded-pill px-3 fw-semibold flex-shrink-0">
                         Appliquer
                     </button>
                 </form>
@@ -309,7 +332,8 @@
             
             <!-- TAB 1: BÉNÉFICE PAR PRODUIT -->
             <div class="tab-pane fade show active" id="tab-products" role="tabpanel">
-                <div class="table-responsive">
+                <!-- Desktop Table View -->
+                <div class="table-responsive d-none d-lg-block">
                     <table class="table align-middle mb-0 fixed-profit-table">
                         <thead class="bg-light border-bottom">
                             <tr>
@@ -387,11 +411,75 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Mobile Cards View for Products -->
+                <div class="d-block d-lg-none p-3 space-y-3">
+                    @forelse($productBenefits as $p)
+                    <div class="profit-mobile-card p-3">
+                        <div class="d-flex align-items-start gap-2.5 mb-2.5">
+                            @if($p->product_image)
+                                <img src="{{ asset('storage/' . $p->product_image) }}" alt="{{ $p->product_name }}" class="prod-thumb-profit-lg shadow-xs"
+                                     onerror="this.src='{{ asset('images/placeholder-product.svg') }}'">
+                            @else
+                                <div class="prod-thumb-profit-lg d-flex align-items-center justify-content-center text-muted">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                            @endif
+                            <div class="min-w-0 flex-grow-1">
+                                <div class="d-flex align-items-center justify-content-between gap-1 mb-1">
+                                    <span class="badge bg-light text-dark border rounded-pill px-2 py-0.5 font-monospace" style="font-size: 0.68rem;">
+                                        {{ $p->quantity_sold }} vendu(s)
+                                    </span>
+                                    <span class="badge {{ $p->margin_percentage >= 30 ? 'bg-success-subtle text-success border border-success-subtle' : ($p->margin_percentage >= 15 ? 'bg-primary-subtle text-primary border border-primary-subtle' : 'bg-warning-subtle text-warning border border-warning-subtle') }} rounded-pill px-2 py-0.5" style="font-size: 0.68rem;">
+                                        Marge: {{ $p->margin_percentage }}%
+                                    </span>
+                                </div>
+                                <div class="fw-bold text-dark text-truncate" style="font-size: 0.92rem;" title="{{ $p->product_name }}">{{ $p->product_name }}</div>
+                                <div class="text-muted small" style="font-size: 0.72rem;">
+                                    <span class="font-monospace">SKU: {{ $p->product_sku }}</span>
+                                    @if($p->brand_name) • {{ $p->brand_name }} @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Financial breakdown rows -->
+                        <div class="p-2.5 rounded-3 bg-light border space-y-1.5 mb-2" style="font-size: 0.76rem;">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="text-muted">Chiffre d'Affaires :</span>
+                                <strong class="text-dark">{{ currency($p->total_revenue) }}</strong>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="text-muted">Prix de Revient :</span>
+                                <div class="d-flex align-items-center gap-1.5">
+                                    <strong class="{{ $p->cost_price <= 0 ? 'text-warning' : 'text-secondary' }}">{{ currency($p->cost_price) }}</strong>
+                                    <button type="button" class="btn btn-xs btn-link text-primary p-0" 
+                                            onclick="openQuickCostModal({{ $p->product_id }}, '{{ addslashes($p->product_name) }}', {{ (float)$p->cost_price }})"
+                                            title="Modifier coût">
+                                        <i class="fas fa-pencil" style="font-size: 0.7rem;"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between pt-1.5 border-top">
+                                <span class="fw-semibold text-dark">Bénéfice Net :</span>
+                                <span class="fw-bold fs-6 {{ $p->net_profit >= 0 ? 'text-success' : 'text-danger' }}">
+                                    {{ currency($p->net_profit) }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="text-center py-5 text-muted small">
+                        <i class="fas fa-chart-pie fa-2x mb-2 text-secondary opacity-25"></i>
+                        <p class="mb-0">Aucune vente enregistrée sur cette période.</p>
+                    </div>
+                    @endforelse
+                </div>
             </div>
 
             <!-- TAB 2: BÉNÉFICE PAR MARQUE -->
             <div class="tab-pane fade" id="tab-brands" role="tabpanel">
-                <div class="table-responsive">
+                <!-- Desktop Table View -->
+                <div class="table-responsive d-none d-lg-block">
                     <table class="table align-middle mb-0 fixed-profit-table">
                         <thead class="bg-light border-bottom">
                             <tr>
@@ -433,11 +521,58 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Mobile Cards View for Brands -->
+                <div class="d-block d-lg-none p-3 space-y-3">
+                    @forelse($brandBenefits as $b)
+                    <div class="profit-mobile-card p-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div>
+                                <h6 class="fw-bold text-dark mb-0">{{ $b->brand_name }}</h6>
+                                <span class="text-muted small" style="font-size: 0.72rem;">{{ $b->products_count }} réf. • {{ $b->items_sold }} vendus</span>
+                            </div>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 fw-bold" style="font-size: 0.74rem;">
+                                {{ $b->margin_percentage }}% marge
+                            </span>
+                        </div>
+
+                        <div class="p-2.5 rounded-3 bg-light border space-y-1.5 mb-2" style="font-size: 0.76rem;">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="text-muted">Chiffre d'Affaires :</span>
+                                <strong class="text-dark">{{ currency($b->total_revenue) }}</strong>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="text-muted">Coût d'Achat :</span>
+                                <span class="text-muted">{{ currency($b->total_cost) }}</span>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between pt-1.5 border-top">
+                                <span class="fw-semibold text-dark">Bénéfice Net :</span>
+                                <span class="fw-bold fs-6 text-success">{{ currency($b->net_profit) }}</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-between small text-muted" style="font-size: 0.72rem;">
+                            <span>Part du gain total :</span>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="progress" style="width: 80px; height: 6px;">
+                                    <div class="progress-bar bg-success" style="width: {{ min(100, $b->profit_share) }}%"></div>
+                                </div>
+                                <strong>{{ $b->profit_share }}%</strong>
+                            </div>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="text-center py-5 text-muted small">
+                        <p class="mb-0">Aucune donnée par marque disponible.</p>
+                    </div>
+                    @endforelse
+                </div>
             </div>
 
             <!-- TAB 3: BÉNÉFICE PAR CATÉGORIE -->
             <div class="tab-pane fade" id="tab-categories" role="tabpanel">
-                <div class="table-responsive">
+                <!-- Desktop Table View -->
+                <div class="table-responsive d-none d-lg-block">
                     <table class="table align-middle mb-0 fixed-profit-table">
                         <thead class="bg-light border-bottom">
                             <tr>
@@ -478,6 +613,52 @@
                             @endforelse
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Mobile Cards View for Categories -->
+                <div class="d-block d-lg-none p-3 space-y-3">
+                    @forelse($categoryBenefits as $c)
+                    <div class="profit-mobile-card p-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div>
+                                <h6 class="fw-bold text-dark mb-0">{{ $c->category_name }}</h6>
+                                <span class="text-muted small" style="font-size: 0.72rem;">{{ $c->products_count }} réf. • {{ $c->items_sold }} vendus</span>
+                            </div>
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 fw-bold" style="font-size: 0.74rem;">
+                                {{ $c->margin_percentage }}% marge
+                            </span>
+                        </div>
+
+                        <div class="p-2.5 rounded-3 bg-light border space-y-1.5 mb-2" style="font-size: 0.76rem;">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="text-muted">Chiffre d'Affaires :</span>
+                                <strong class="text-dark">{{ currency($c->total_revenue) }}</strong>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="text-muted">Coût d'Achat :</span>
+                                <span class="text-muted">{{ currency($c->total_cost) }}</span>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between pt-1.5 border-top">
+                                <span class="fw-semibold text-dark">Bénéfice Net :</span>
+                                <span class="fw-bold fs-6 text-success">{{ currency($c->net_profit) }}</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-between small text-muted" style="font-size: 0.72rem;">
+                            <span>Part du gain total :</span>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="progress" style="width: 80px; height: 6px;">
+                                    <div class="progress-bar bg-primary" style="width: {{ min(100, $c->profit_share) }}%"></div>
+                                </div>
+                                <strong>{{ $c->profit_share }}%</strong>
+                            </div>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="text-center py-5 text-muted small">
+                        <p class="mb-0">Aucune donnée par catégorie disponible.</p>
+                    </div>
+                    @endforelse
                 </div>
             </div>
 

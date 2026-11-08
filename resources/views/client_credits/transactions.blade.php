@@ -4,6 +4,63 @@
 
 @push('styles')
 <style>
+/* ==========================================================================
+   MOBILE-FIRST CLIENT TRANSACTIONS LEDGER STYLES
+   ========================================================================== */
+.chips-scroll-credit {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 3px;
+}
+.chips-scroll-credit::-webkit-scrollbar {
+    display: none;
+}
+.chip-credit {
+    white-space: nowrap;
+    border-radius: 9999px !important;
+    padding: 0.45rem 0.95rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #475569;
+    flex-shrink: 0;
+}
+.chip-credit:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+.chip-credit.active {
+    background: #0f172a;
+    color: #ffffff;
+    border-color: #0f172a;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+}
+.chip-credit.active .badge {
+    background: rgba(255, 255, 255, 0.25) !important;
+    color: #ffffff !important;
+}
+
+.trx-mobile-card {
+    border-radius: 16px !important;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.trx-mobile-card:active {
+    transform: scale(0.995);
+}
+
 .proof-thumb-table {
     width: 44px;
     height: 44px;
@@ -11,11 +68,19 @@
     border-radius: 8px;
     border: 1px solid #e2e8f0;
     cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition: transform 0.15s ease;
 }
 .proof-thumb-table:hover {
-    transform: scale(1.12);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    transform: scale(1.08);
+}
+.proof-thumb-mobile {
+    width: 52px;
+    height: 52px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    flex-shrink: 0;
 }
 .fixed-trx-table {
     table-layout: fixed !important;
@@ -70,6 +135,43 @@
     </div>
     @endif
 
+    <!-- Quick Swipeable Chips Filter Bar (Mobile & Desktop) -->
+    <div class="mb-3">
+        <div class="chips-scroll-credit">
+            <a href="{{ route('client-credits.transactions') }}" 
+               class="chip-credit {{ !request()->filled('type') && !request()->filled('has_proof') ? 'active' : '' }}">
+                <i class="fas fa-layer-group"></i>
+                <span>Toutes les opérations</span>
+                <span class="badge bg-secondary rounded-pill px-1.5" style="font-size: 0.65rem;">{{ $transactions->total() }}</span>
+            </a>
+            <a href="{{ route('client-credits.transactions', array_merge(request()->except(['page', 'type']), ['type' => 'payment_received'])) }}" 
+               class="chip-credit {{ request('type') === 'payment_received' ? 'active' : '' }}">
+                <i class="fas fa-arrow-down text-success"></i>
+                <span>Règlements reçus</span>
+            </a>
+            <a href="{{ route('client-credits.transactions', array_merge(request()->except(['page', 'type']), ['type' => 'refund_to_client'])) }}" 
+               class="chip-credit {{ request('type') === 'refund_to_client' ? 'active' : '' }}">
+                <i class="fas fa-arrow-up text-danger"></i>
+                <span>Remboursements versés</span>
+            </a>
+            <a href="{{ route('client-credits.transactions', array_merge(request()->except(['page', 'type']), ['type' => 'credit_given'])) }}" 
+               class="chip-credit {{ request('type') === 'credit_given' ? 'active' : '' }}">
+                <i class="fas fa-hand-holding-dollar text-warning"></i>
+                <span>Crédits accordés</span>
+            </a>
+            <a href="{{ route('client-credits.transactions', array_merge(request()->except(['page', 'type']), ['type' => 'credit_note'])) }}" 
+               class="chip-credit {{ request('type') === 'credit_note' ? 'active' : '' }}">
+                <i class="fas fa-file-invoice text-info"></i>
+                <span>Avoirs clients</span>
+            </a>
+            <a href="{{ route('client-credits.transactions', array_merge(request()->except(['page', 'has_proof']), ['has_proof' => 'yes'])) }}" 
+               class="chip-credit {{ request('has_proof') === 'yes' ? 'active' : '' }}">
+                <i class="fas fa-camera text-primary"></i>
+                <span>Avec preuve photo</span>
+            </a>
+        </div>
+    </div>
+
     <!-- Clean Aligned Filters Card -->
     <div class="card border-0 shadow-sm rounded-4 mb-4">
         <div class="card-body p-3.5">
@@ -82,7 +184,7 @@
                     </div>
                 </div>
 
-                <div class="col-6 col-md-2">
+                <div class="col-6 col-md-3">
                     <label class="form-label small fw-semibold text-muted mb-1">Client</label>
                     <select name="customer_id" class="form-select form-select-sm">
                         <option value="">Tous les clients</option>
@@ -115,7 +217,7 @@
                     </select>
                 </div>
 
-                <div class="col-6 col-md-3 d-flex gap-2">
+                <div class="col-6 col-md-2 d-flex gap-2">
                     <button type="submit" class="btn btn-sm btn-dark rounded-pill px-3 fw-semibold flex-fill">
                         <i class="fas fa-filter me-1"></i> Filtrer
                     </button>
@@ -131,8 +233,8 @@
 
     <!-- Ledger Table Card -->
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
-        <!-- Desktop Table View -->
-        <div class="table-responsive d-none d-md-block">
+        <!-- Desktop Table View (Hidden on mobile) -->
+        <div class="table-responsive d-none d-lg-block">
             <table class="table align-middle mb-0 fixed-trx-table">
                 <thead class="bg-light border-bottom">
                     <tr>
@@ -244,45 +346,84 @@
             </table>
         </div>
 
-        <!-- Mobile Cards View (d-block d-md-none) -->
-        <div class="d-block d-md-none p-3 space-y-3">
+        <!-- Mobile Cards View (d-block d-lg-none) -->
+        <div class="d-block d-lg-none p-3 space-y-3">
             @forelse($transactions as $trx)
-            <div class="card border rounded-3 p-3 bg-white shadow-xs">
-                <div class="d-flex align-items-start justify-content-between mb-1.5">
-                    <div>
-                        <div class="fw-bold font-monospace small">{{ $trx->transaction_number }}</div>
-                        <a href="{{ route('customers.show', $trx->customer_id) }}" class="fw-semibold text-dark text-decoration-none small">
+            <div class="trx-mobile-card p-3">
+                <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+                    <div class="min-w-0">
+                        <div class="d-flex align-items-center gap-1.5 flex-wrap mb-1">
+                            <span class="badge bg-light text-dark font-monospace border px-2 py-0.5" style="font-size: 0.72rem;">
+                                {{ $trx->transaction_number }}
+                            </span>
+                            <span class="badge {{ $trx->type_badge_class }} border rounded-pill px-2 py-0.5" style="font-size: 0.68rem;">
+                                {{ $trx->type_label }}
+                            </span>
+                        </div>
+                        <a href="{{ route('customers.show', $trx->customer_id) }}" class="fw-bold text-dark text-decoration-none d-block text-truncate" style="font-size: 0.95rem;">
                             {{ $trx->customer->name ?? 'Client' }}
                         </a>
+                        <div class="text-muted small" style="font-size: 0.72rem;">
+                            {{ $trx->payment_date->format('d/m/Y à H:i') }} • {{ $trx->payment_method_label }}
+                        </div>
                     </div>
-                    <div class="text-end">
-                        <div class="fw-bold {{ $trx->direction === 'in' ? 'text-success' : 'text-danger' }}">
+
+                    <!-- Amount & Solde Pill -->
+                    <div class="text-end flex-shrink-0">
+                        <div class="fw-bold fs-6 {{ $trx->direction === 'in' ? 'text-success' : 'text-danger' }}">
                             {{ $trx->direction === 'in' ? '+' : '-' }}{{ currency($trx->amount) }}
                         </div>
-                        <div class="text-muted font-monospace" style="font-size: 0.68rem;">
+                        <div class="badge {{ $trx->balance_after > 0 ? 'bg-danger-subtle text-danger' : ($trx->balance_after < 0 ? 'bg-info-subtle text-info' : 'bg-success-subtle text-success') }} rounded-pill font-monospace px-2 py-0.5 mt-0.5" style="font-size: 0.68rem;">
                             Solde: {{ currency($trx->balance_after) }}
                         </div>
                     </div>
                 </div>
 
-                <div class="d-flex align-items-center justify-content-between text-muted pt-2 border-top mt-1" style="font-size: 0.72rem;">
-                    <span>{{ $trx->type_label }} • {{ $trx->payment_method_label }}</span>
-                    <span>{{ $trx->payment_date->format('d/m/Y') }}</span>
-                </div>
-
-                @if($trx->proof_image_url)
-                <div class="mt-2 pt-2 border-top d-flex align-items-center gap-2">
-                    <img src="{{ $trx->proof_image_url }}" alt="Preuve" class="proof-thumb-table"
-                         onclick="previewProofModal('{{ $trx->proof_image_url }}', '{{ $trx->transaction_number }}', '{{ addslashes($trx->customer->name ?? '') }}')">
-                    <a href="javascript:void(0)" class="small text-primary text-decoration-none"
-                       onclick="previewProofModal('{{ $trx->proof_image_url }}', '{{ $trx->transaction_number }}', '{{ addslashes($trx->customer->name ?? '') }}')">
-                        <i class="fas fa-expand me-1"></i> Agrandir le justificatif
-                    </a>
+                @if($trx->notes)
+                <div class="bg-light rounded-3 p-2 mb-2 small text-muted fst-italic" style="font-size: 0.74rem;">
+                    <i class="fas fa-comment-dots text-secondary opacity-50 me-1"></i>{{ $trx->notes }}
                 </div>
                 @endif
+
+                <!-- Proof Image Box on Mobile -->
+                @if($trx->proof_image_url)
+                <div class="d-flex align-items-center justify-content-between bg-light rounded-3 p-2 border mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <img src="{{ $trx->proof_image_url }}" alt="Preuve" class="proof-thumb-mobile shadow-xs"
+                             onclick="previewProofModal('{{ $trx->proof_image_url }}', '{{ $trx->transaction_number }}', '{{ addslashes($trx->customer->name ?? '') }}')">
+                        <div class="small">
+                            <div class="fw-semibold text-dark" style="font-size: 0.74rem;">Preuve de paiement</div>
+                            <span class="text-muted" style="font-size: 0.68rem;">Photo / Reçu bancaire</span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-white bg-white border rounded-pill px-2.5 py-1 text-primary shadow-xs"
+                            onclick="previewProofModal('{{ $trx->proof_image_url }}', '{{ $trx->transaction_number }}', '{{ addslashes($trx->customer->name ?? '') }}')"
+                            style="font-size: 0.74rem;">
+                        <i class="fas fa-expand me-1"></i> Agrandir
+                    </button>
+                </div>
+                @endif
+
+                <div class="d-flex align-items-center justify-content-between pt-2 border-top text-muted" style="font-size: 0.72rem;">
+                    <div>
+                        <i class="fas fa-user-circle me-1 opacity-50"></i>{{ $trx->createdBy->name ?? 'Système' }}
+                    </div>
+                    @if(auth()->user()->hasRole('Admin'))
+                    <form method="POST" action="{{ route('client-credits.transactions.destroy', $trx->id) }}" onsubmit="return confirm('Confirmez-vous l\'annulation de cette transaction ? Le solde du client sera réajusté.');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-xs btn-light text-danger border rounded-pill px-2.5 py-1" style="font-size: 0.7rem;">
+                            <i class="fas fa-trash me-1"></i> Annuler l'opération
+                        </button>
+                    </form>
+                    @endif
+                </div>
             </div>
             @empty
-            <div class="text-center py-4 text-muted small">Aucune transaction trouvée.</div>
+            <div class="text-center py-5 text-muted small">
+                <i class="fas fa-receipt fa-2x mb-2 text-secondary opacity-25"></i>
+                <p class="mb-0">Aucune transaction trouvée.</p>
+            </div>
             @endforelse
         </div>
 

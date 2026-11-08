@@ -5,76 +5,104 @@
 @push('styles')
 <style>
 /* ==========================================================================
-   CLIENT CREDITS & TREASURY STYLES - PRO EXECUTIVE ALIGNMENT
+   MOBILE-FIRST CLIENT CREDITS & TREASURY STYLES
    ========================================================================== */
-.credit-kpi-card {
-    border-radius: 16px;
-    border: 1px solid #e2e8f0;
-    background: #ffffff;
-    padding: 1.25rem 1.4rem;
-    height: 100%;
+.chips-scroll-credit {
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-.credit-kpi-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
-    border-color: #cbd5e1;
-}
-.kpi-icon-pill {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.15rem;
-    flex-shrink: 0;
-}
-.nav-pills-credit {
-    display: flex;
-    gap: 0.4rem;
+    gap: 0.5rem;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 3px;
 }
-.nav-pills-credit::-webkit-scrollbar {
+.chips-scroll-credit::-webkit-scrollbar {
     display: none;
 }
-.nav-pills-credit .nav-link {
-    border-radius: 9999px;
+.chip-credit {
+    white-space: nowrap;
+    border-radius: 9999px !important;
+    padding: 0.45rem 0.95rem;
     font-size: 0.8rem;
     font-weight: 600;
-    color: #475569;
-    padding: 0.45rem 1rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
     border: 1px solid #e2e8f0;
     background: #ffffff;
-    white-space: nowrap;
-    transition: all 0.15s ease;
+    color: #475569;
+    flex-shrink: 0;
 }
-.nav-pills-credit .nav-link:hover {
-    background: #f8fafc;
+.chip-credit:hover {
+    background: #f1f5f9;
     color: #0f172a;
 }
-.nav-pills-credit .nav-link.active {
+.chip-credit.active {
     background: #0f172a;
     color: #ffffff;
     border-color: #0f172a;
     box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
 }
-.customer-avatar-circle {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    color: #ffffff;
-    font-weight: 700;
-    font-size: 0.85rem;
+.chip-credit.active .badge {
+    background: rgba(255, 255, 255, 0.25) !important;
+    color: #ffffff !important;
+}
+
+/* Mobile Customer Card */
+.credit-cust-card {
+    border-radius: 16px !important;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.credit-cust-card:active {
+    transform: scale(0.995);
+}
+
+/* KPI Card */
+.credit-kpi-card {
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    padding: 1.15rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.credit-kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+}
+.kpi-icon-pill {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 1.1rem;
     flex-shrink: 0;
+}
+.contact-touch-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 9999px !important;
+    font-size: 0.74rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+    text-decoration: none;
+}
+.contact-touch-pill:hover {
+    background: #e2e8f0;
+    color: #0f172a;
 }
 .proof-thumbnail-btn {
     width: 46px;
@@ -83,11 +111,10 @@
     border-radius: 8px;
     border: 1px solid #e2e8f0;
     cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition: transform 0.15s ease;
 }
 .proof-thumbnail-btn:hover {
     transform: scale(1.08);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
 }
 .fixed-credit-table {
     table-layout: fixed !important;
@@ -97,32 +124,32 @@
 @endpush
 
 @section('content')
-<div class="container-fluid py-4">
+<div class="container-fluid py-3 py-md-4">
 
-    <!-- Top Executive Header -->
-    <div class="card border-0 rounded-4 shadow-sm mb-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff;">
-        <div class="card-body p-4">
+    <!-- Top Executive Header (Mobile Responsive) -->
+    <div class="card border-0 rounded-4 shadow-sm mb-3 mb-md-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff;">
+        <div class="card-body p-3.5 p-md-4">
             <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-circle bg-danger bg-opacity-25 border border-danger border-opacity-50 text-danger d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; font-size: 1.35rem;">
+                    <div class="rounded-circle bg-danger bg-opacity-25 border border-danger border-opacity-50 text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px; font-size: 1.25rem;">
                         <i class="fas fa-wallet text-white"></i>
                     </div>
-                    <div>
-                        <div class="d-flex align-items-center gap-2 mb-1">
-                            <span class="badge bg-danger rounded-pill px-2.5 py-0.5 fw-semibold" style="font-size: 0.72rem;">TRÉSORERIE & COMPTES</span>
-                            <span class="text-white-50 small">• Créances, Avoirs & Historique des Règlements</span>
+                    <div class="min-w-0">
+                        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                            <span class="badge bg-danger rounded-pill px-2.5 py-0.5 fw-semibold" style="font-size: 0.7rem;">TRÉSORERIE & COMPTES</span>
+                            <span class="text-white-50 small d-none d-sm-inline">• Créances & Avoirs Clients</span>
                         </div>
-                        <h1 class="h3 fw-bold text-white mb-0">Gestion des Crédits & Règlements Clients</h1>
-                        <p class="text-white-50 small mb-0 mt-1">Gérez en temps réel les créances clients (ce qu'ils doivent) et les avoirs du magasin (ce que vous leur devez) avec preuves de paiement.</p>
+                        <h1 class="h4 h3-md fw-bold text-white mb-0 text-truncate">Crédits & Règlements Clients</h1>
+                        <p class="text-white-50 small mb-0 mt-1 d-none d-md-block">Suivez en temps réel ce que les clients vous doivent (créances) et ce que le magasin leur doit (avoirs/acomptes).</p>
                     </div>
                 </div>
 
                 <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <a href="{{ route('client-credits.transactions') }}" class="btn btn-outline-light rounded-pill px-3.5 py-2 fw-semibold shadow-xs" style="font-size: 0.85rem;">
-                        <i class="fas fa-list-check me-1.5"></i> Grand Livre des Règlements
+                    <a href="{{ route('client-credits.transactions') }}" class="btn btn-sm btn-outline-light rounded-pill px-3 py-2 fw-semibold flex-fill flex-lg-grow-0 text-center shadow-xs">
+                        <i class="fas fa-list-check me-1.5"></i> Grand Livre
                     </a>
-                    <button type="button" class="btn btn-danger rounded-pill px-4 py-2 fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#newPaymentModal" style="font-size: 0.85rem;">
-                        <i class="fas fa-plus-circle me-1.5"></i> Enregistrer un Règlement / Avoir
+                    <button type="button" class="btn btn-sm btn-danger rounded-pill px-3.5 py-2 fw-semibold shadow-sm flex-fill flex-lg-grow-0" data-bs-toggle="modal" data-bs-target="#newPaymentModal">
+                        <i class="fas fa-plus-circle me-1.5"></i> Nouveau Règlement
                     </button>
                 </div>
             </div>
@@ -131,139 +158,138 @@
 
     <!-- Alert / Flash message -->
     @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show rounded-4 border-0 shadow-xs mb-4" role="alert">
+    <div class="alert alert-success alert-dismissible fade show rounded-4 border-0 shadow-xs mb-3 mb-md-4" role="alert">
         <div class="d-flex align-items-center gap-2">
             <i class="fas fa-circle-check fs-5"></i>
-            <div>{{ session('success') }}</div>
+            <div class="small fw-semibold">{{ session('success') }}</div>
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
     </div>
     @endif
 
     @if(session('error'))
-    <div class="alert alert-danger alert-dismissible fade show rounded-4 border-0 shadow-xs mb-4" role="alert">
+    <div class="alert alert-danger alert-dismissible fade show rounded-4 border-0 shadow-xs mb-3 mb-md-4" role="alert">
         <div class="d-flex align-items-center gap-2">
             <i class="fas fa-triangle-exclamation fs-5"></i>
-            <div>{{ session('error') }}</div>
+            <div class="small fw-semibold">{{ session('error') }}</div>
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
     </div>
     @endif
 
-    <!-- 4 Perfectly Aligned Financial KPI Cards -->
-    <div class="row g-3 mb-4">
+    <!-- 4 Perfectly Aligned Financial KPI Cards (2x2 on Mobile) -->
+    <div class="row g-2.5 g-md-3 mb-3 mb-md-4">
         <!-- 1. Créances Clients -->
-        <div class="col-12 col-sm-6 col-xl-3">
+        <div class="col-6 col-xl-3">
             <div class="credit-kpi-card">
                 <div>
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Créances Clients (Dû au magasin)</span>
+                    <div class="d-flex align-items-center justify-content-between mb-1.5">
+                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.04em;">Créances Clients</span>
                         <div class="kpi-icon-pill bg-danger-subtle text-danger">
                             <i class="fas fa-arrow-down-long"></i>
                         </div>
                     </div>
-                    <div class="h3 fw-bold text-danger mb-1">{{ currency($totalDebtors) }}</div>
+                    <div class="fs-5 fs-md-4 fw-bold text-danger mb-0">{{ currency($totalDebtors) }}</div>
                 </div>
-                <div class="d-flex align-items-center gap-1.5 pt-2 border-top mt-2 text-muted" style="font-size: 0.74rem;">
-                    <span class="badge bg-danger-subtle text-danger rounded-pill px-2 py-0.5 fw-bold">{{ $activeDebtorCount }} compte(s)</span>
-                    <span>ont un solde débiteur actif</span>
+                <div class="pt-1.5 border-top mt-1.5 text-muted" style="font-size: 0.72rem;">
+                    <span class="fw-bold text-dark">{{ $activeDebtorCount }}</span> compte(s) débiteur(s)
                 </div>
             </div>
         </div>
 
         <!-- 2. Avoirs Clients -->
-        <div class="col-12 col-sm-6 col-xl-3">
+        <div class="col-6 col-xl-3">
             <div class="credit-kpi-card">
                 <div>
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Avoirs Clients (Dû aux clients)</span>
+                    <div class="d-flex align-items-center justify-content-between mb-1.5">
+                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.04em;">Avoirs Clients</span>
                         <div class="kpi-icon-pill bg-info-subtle text-info">
                             <i class="fas fa-arrow-up-long"></i>
                         </div>
                     </div>
-                    <div class="h3 fw-bold text-info mb-1">{{ currency($totalCreditors) }}</div>
+                    <div class="fs-5 fs-md-4 fw-bold text-info mb-0">{{ currency($totalCreditors) }}</div>
                 </div>
-                <div class="d-flex align-items-center gap-1.5 pt-2 border-top mt-2 text-muted" style="font-size: 0.74rem;">
-                    <span class="badge bg-info-subtle text-info rounded-pill px-2 py-0.5 fw-bold">{{ $activeCreditorCount }} compte(s)</span>
-                    <span>ont un solde créditeur en leur faveur</span>
+                <div class="pt-1.5 border-top mt-1.5 text-muted" style="font-size: 0.72rem;">
+                    <span class="fw-bold text-dark">{{ $activeCreditorCount }}</span> avoir(s) en cours
                 </div>
             </div>
         </div>
 
         <!-- 3. Solde Net Trésorerie -->
-        <div class="col-12 col-sm-6 col-xl-3">
+        <div class="col-6 col-xl-3">
             <div class="credit-kpi-card">
                 <div>
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Solde Net Trésorerie</span>
+                    <div class="d-flex align-items-center justify-content-between mb-1.5">
+                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.04em;">Solde Net</span>
                         <div class="kpi-icon-pill {{ $netBalance >= 0 ? 'bg-primary-subtle text-primary' : 'bg-warning-subtle text-warning' }}">
                             <i class="fas fa-scale-balanced"></i>
                         </div>
                     </div>
-                    <div class="h3 fw-bold {{ $netBalance >= 0 ? 'text-primary' : 'text-warning' }} mb-1">
+                    <div class="fs-5 fs-md-4 fw-bold {{ $netBalance >= 0 ? 'text-primary' : 'text-warning' }} mb-0">
                         {{ currency($netBalance) }}
                     </div>
                 </div>
-                <div class="d-flex align-items-center gap-1.5 pt-2 border-top mt-2 text-muted" style="font-size: 0.74rem;">
-                    <span class="badge {{ $netBalance >= 0 ? 'bg-primary-subtle text-primary' : 'bg-warning-subtle text-warning' }} rounded-pill px-2 py-0.5 fw-bold">
-                        {{ $netBalance >= 0 ? 'Favorable' : 'Déficit' }}
-                    </span>
-                    <span>{{ $netBalance >= 0 ? 'Créances supérieures aux avoirs' : 'Avoirs supérieurs aux créances' }}</span>
+                <div class="pt-1.5 border-top mt-1.5 text-muted" style="font-size: 0.72rem;">
+                    {{ $netBalance >= 0 ? 'Balance en votre faveur' : 'Avoirs supérieurs' }}
                 </div>
             </div>
         </div>
 
         <!-- 4. Règlements Encaissés du Mois -->
-        <div class="col-12 col-sm-6 col-xl-3">
+        <div class="col-6 col-xl-3">
             <div class="credit-kpi-card">
                 <div>
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Encaissé ce mois-ci</span>
+                    <div class="d-flex align-items-center justify-content-between mb-1.5">
+                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.04em;">Encaissé ce mois</span>
                         <div class="kpi-icon-pill bg-success-subtle text-success">
                             <i class="fas fa-hand-holding-dollar"></i>
                         </div>
                     </div>
-                    <div class="h3 fw-bold text-success mb-1">{{ currency($collectedThisMonth) }}</div>
+                    <div class="fs-5 fs-md-4 fw-bold text-success mb-0">{{ currency($collectedThisMonth) }}</div>
                 </div>
-                <div class="d-flex align-items-center gap-1.5 pt-2 border-top mt-2 text-muted" style="font-size: 0.74rem;">
-                    <i class="far fa-calendar-check text-success"></i>
-                    <span>Règlements reçus en {{ now()->translatedFormat('F Y') }}</span>
+                <div class="pt-1.5 border-top mt-1.5 text-muted" style="font-size: 0.72rem;">
+                    Reçus en {{ now()->translatedFormat('M Y') }}
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Main Content Grid -->
-    <div class="row g-4">
-        <!-- Left: Customer Balances Matrix (8 cols) -->
+    <!-- Main Content Layout -->
+    <div class="row g-3 g-md-4">
+        
+        <!-- Left Column: Customer Accounts Matrix (8 cols on XL) -->
         <div class="col-12 col-xl-8">
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3 mb-md-4">
                 
-                <!-- Table Controls & Filter Bar -->
+                <!-- Filter Chips & Search Bar (Mobile Swiper) -->
                 <div class="p-3 border-bottom bg-white">
-                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                        <!-- Navigation Tabs / Filters -->
-                        <div class="nav-pills-credit" role="tablist">
-                            <a href="{{ route('client-credits.index', ['filter' => 'all']) }}" class="nav-link {{ $filter === 'all' ? 'active' : '' }}">
-                                Tous les comptes
+                    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2.5">
+                        <!-- Horizontal Scrollable Touch Chips -->
+                        <div class="chips-scroll-credit">
+                            <a href="{{ route('client-credits.index', ['filter' => 'all']) }}" class="chip-credit {{ $filter === 'all' ? 'active' : '' }}">
+                                <span>Tous les comptes</span>
                             </a>
-                            <a href="{{ route('client-credits.index', ['filter' => 'debtors']) }}" class="nav-link {{ $filter === 'debtors' ? 'active' : '' }}">
-                                <i class="fas fa-arrow-down text-danger me-1"></i> Clients Débiteurs ({{ $activeDebtorCount }})
+                            <a href="{{ route('client-credits.index', ['filter' => 'debtors']) }}" class="chip-credit {{ $filter === 'debtors' ? 'active' : '' }}">
+                                <i class="fas fa-arrow-down text-danger"></i>
+                                <span>Débiteurs</span>
+                                <span class="badge bg-danger text-white rounded-pill ms-1">{{ $activeDebtorCount }}</span>
                             </a>
-                            <a href="{{ route('client-credits.index', ['filter' => 'creditors']) }}" class="nav-link {{ $filter === 'creditors' ? 'active' : '' }}">
-                                <i class="fas fa-arrow-up text-info me-1"></i> Avoirs Clients ({{ $activeCreditorCount }})
+                            <a href="{{ route('client-credits.index', ['filter' => 'creditors']) }}" class="chip-credit {{ $filter === 'creditors' ? 'active' : '' }}">
+                                <i class="fas fa-arrow-up text-info"></i>
+                                <span>Avoirs</span>
+                                <span class="badge bg-info text-white rounded-pill ms-1">{{ $activeCreditorCount }}</span>
                             </a>
-                            <a href="{{ route('client-credits.index', ['filter' => 'settled']) }}" class="nav-link {{ $filter === 'settled' ? 'active' : '' }}">
-                                Soldés (0 DH)
+                            <a href="{{ route('client-credits.index', ['filter' => 'settled']) }}" class="chip-credit {{ $filter === 'settled' ? 'active' : '' }}">
+                                <span>Soldés (0 DH)</span>
                             </a>
                         </div>
 
-                        <!-- Search Form -->
-                        <form method="GET" action="{{ route('client-credits.index') }}" class="d-flex align-items-center gap-2">
+                        <!-- Search Box -->
+                        <form method="GET" action="{{ route('client-credits.index') }}" class="d-flex align-items-center gap-1.5">
                             <input type="hidden" name="filter" value="{{ $filter }}">
-                            <div class="input-group input-group-sm" style="width: 210px;">
+                            <div class="input-group input-group-sm w-100" style="min-width: 180px;">
                                 <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
-                                <input type="text" name="search" value="{{ request('search') }}" class="form-control bg-light border-start-0" placeholder="Nom, code, tél...">
+                                <input type="text" name="search" value="{{ request('search') }}" class="form-control bg-light border-start-0" placeholder="Rechercher client...">
                             </div>
                             @if(request('search'))
                                 <a href="{{ route('client-credits.index', ['filter' => $filter]) }}" class="btn btn-sm btn-light border rounded-pill" title="Réinitialiser">
@@ -274,8 +300,119 @@
                     </div>
                 </div>
 
-                <!-- Desktop Table View -->
-                <div class="table-responsive d-none d-md-block">
+                <!-- 1. MOBILE USER CARDS VIEW (d-block d-lg-none) -->
+                <div class="d-block d-lg-none p-2.5 space-y-2.5 bg-light bg-opacity-50">
+                    @forelse($customers as $c)
+                    <div class="credit-cust-card p-3 bg-white">
+                        <!-- Top Header: Avatar + Name + Balance Badge -->
+                        <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+                            <div class="d-flex align-items-center gap-2.5 min-w-0">
+                                <div class="rounded-circle bg-dark text-white fw-bold d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px; font-size: 0.85rem;">
+                                    {{ strtoupper(substr($c->name, 0, 1)) }}
+                                </div>
+                                <div class="min-w-0">
+                                    <a href="{{ route('customers.show', $c->id) }}" class="fw-bold text-dark text-decoration-none text-truncate d-block" style="font-size: 0.92rem;">
+                                        {{ $c->name }}
+                                    </a>
+                                    <div class="text-muted d-flex align-items-center gap-1.5 font-monospace" style="font-size: 0.72rem;">
+                                        <span>{{ $c->customer_code ?? 'ID #'.$c->id }}</span>
+                                        @if($c->city)
+                                            <span>• {{ $c->city }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Balance Status Pill -->
+                            <div class="flex-shrink-0">
+                                @if($c->current_balance > 0.01)
+                                    <div class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1 fw-bold" style="font-size: 0.76rem;">
+                                        <i class="fas fa-arrow-down me-1"></i>{{ currency($c->current_balance) }}
+                                    </div>
+                                @elseif($c->current_balance < -0.01)
+                                    <div class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2.5 py-1 fw-bold" style="font-size: 0.76rem;">
+                                        <i class="fas fa-arrow-up me-1"></i>Avoir: {{ currency(abs($c->current_balance)) }}
+                                    </div>
+                                @else
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">
+                                        <i class="fas fa-check me-0.5"></i> Soldé
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Touch Contact Pills -->
+                        <div class="d-flex flex-wrap gap-1.5 mb-2.5">
+                            @if($c->phone)
+                            <a href="tel:{{ $c->phone }}" class="contact-touch-pill">
+                                <i class="fas fa-phone text-success"></i>
+                                <span>{{ $c->phone }}</span>
+                            </a>
+                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $c->phone) }}" target="_blank" class="contact-touch-pill text-success" title="WhatsApp">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+                            @endif
+                            @if($c->email)
+                            <a href="mailto:{{ $c->email }}" class="contact-touch-pill">
+                                <i class="fas fa-envelope text-primary"></i>
+                                <span>Email</span>
+                            </a>
+                            @endif
+                        </div>
+
+                        <!-- Credit Limit Bar (if exists) -->
+                        @if($c->credit_limit > 0)
+                        @php
+                            $mobUsage = min(100, max(0, ($c->current_balance / $c->credit_limit) * 100));
+                            $mobBarColor = $mobUsage >= 90 ? 'bg-danger' : ($mobUsage >= 70 ? 'bg-warning' : 'bg-success');
+                        @endphp
+                        <div class="p-2 rounded-3 bg-light border mb-2.5">
+                            <div class="d-flex align-items-center justify-content-between text-muted" style="font-size: 0.72rem;">
+                                <span>Plafond : <strong class="text-dark">{{ currency($c->credit_limit) }}</strong></span>
+                                <span class="fw-semibold text-dark">{{ round($mobUsage) }}%</span>
+                            </div>
+                            <div class="progress mt-1" style="height: 5px; border-radius: 99px;">
+                                <div class="progress-bar {{ $mobBarColor }}" role="progressbar" style="width: {{ $mobUsage }}%;"></div>
+                            </div>
+                        </div>
+                        @endif
+
+                        <!-- Action Buttons Row (Touch Friendly) -->
+                        <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                            <span class="text-muted" style="font-size: 0.72rem;">
+                                @php $lastMobTrx = $c->transactions()->first(); @endphp
+                                @if($lastMobTrx)
+                                    Dernier : {{ $lastMobTrx->payment_date->diffForHumans() }}
+                                @else
+                                    Aucun règlement
+                                @endif
+                            </span>
+
+                            <div class="d-flex align-items-center gap-1.5">
+                                <button type="button" class="btn btn-sm btn-danger rounded-pill px-3 py-1 fw-semibold shadow-xs"
+                                        onclick="openNewPaymentForCustomer({{ $c->id }}, '{{ addslashes($c->name) }}', {{ (float) $c->current_balance }})">
+                                    <i class="fas fa-coins me-1"></i> Régler
+                                </button>
+                                <button type="button" class="btn btn-sm btn-light border rounded-pill px-2 py-1 text-secondary"
+                                        onclick="openLimitModal({{ $c->id }}, '{{ addslashes($c->name) }}', {{ (float) $c->credit_limit }})" title="Plafond">
+                                    <i class="fas fa-sliders"></i>
+                                </button>
+                                <a href="{{ route('customers.show', $c->id) }}" class="btn btn-sm btn-light border rounded-pill px-2 py-1 text-primary" title="Fiche 360">
+                                    <i class="fas fa-arrow-up-right-from-square"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="text-center py-5 text-muted">
+                        <i class="fas fa-wallet fa-3x mb-3 opacity-25"></i>
+                        <p class="mb-0 fw-semibold">Aucun client trouvé pour ce filtre.</p>
+                    </div>
+                    @endforelse
+                </div>
+
+                <!-- 2. DESKTOP TABULAR VIEW (d-none d-lg-block) -->
+                <div class="table-responsive d-none d-lg-block">
                     <table class="table align-middle mb-0 fixed-credit-table">
                         <thead class="bg-light border-bottom">
                             <tr>
@@ -289,10 +426,9 @@
                         <tbody class="divide-y">
                             @forelse($customers as $c)
                             <tr class="hover-bg-light">
-                                <!-- Client Info -->
                                 <td class="ps-3 py-3">
                                     <div class="d-flex align-items-center gap-2.5">
-                                        <div class="customer-avatar-circle">
+                                        <div class="rounded-circle bg-dark text-white fw-bold d-flex align-items-center justify-content-center flex-shrink-0" style="width: 36px; height: 36px; font-size: 0.85rem;">
                                             {{ strtoupper(substr($c->name, 0, 1)) }}
                                         </div>
                                         <div class="min-w-0">
@@ -317,8 +453,6 @@
                                         </div>
                                     </div>
                                 </td>
-
-                                <!-- Balance Status -->
                                 <td class="py-3">
                                     @if($c->current_balance > 0.01)
                                         <div class="d-inline-flex align-items-center gap-1.5 px-2.5 py-1 rounded-pill bg-danger-subtle text-danger border border-danger-subtle fw-bold" style="font-size: 0.78rem;">
@@ -338,8 +472,6 @@
                                         </span>
                                     @endif
                                 </td>
-
-                                <!-- Credit Limit -->
                                 <td class="py-3">
                                     @if($c->credit_limit > 0)
                                         <div class="fw-semibold text-dark small">{{ currency($c->credit_limit) }}</div>
@@ -355,26 +487,20 @@
                                         <span class="badge bg-light text-muted border rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">Au comptant</span>
                                     @endif
                                 </td>
-
-                                <!-- Last Operation -->
                                 <td class="py-3">
-                                    @php
-                                        $lastTrx = $c->transactions()->first();
-                                    @endphp
+                                    @php $lastTrx = $c->transactions()->first(); @endphp
                                     @if($lastTrx)
                                         <div class="small fw-semibold text-dark">{{ currency($lastTrx->amount) }}</div>
                                         <div class="text-muted" style="font-size: 0.7rem;">
                                             {{ $lastTrx->payment_date->diffForHumans() }}
                                             @if($lastTrx->proof_image)
-                                                <i class="fas fa-paperclip text-primary ms-1" title="Preuve de paiement attachée"></i>
+                                                <i class="fas fa-paperclip text-primary ms-1" title="Preuve attachée"></i>
                                             @endif
                                         </div>
                                     @else
                                         <span class="text-muted small fst-italic">—</span>
                                     @endif
                                 </td>
-
-                                <!-- Actions -->
                                 <td class="pe-3 py-3 text-end">
                                     <div class="d-inline-flex align-items-center gap-1">
                                         <button type="button" class="btn btn-sm btn-danger rounded-pill px-2.5 py-1 shadow-xs fw-semibold"
@@ -384,7 +510,7 @@
                                         </button>
                                         <button type="button" class="btn btn-sm btn-light border rounded-pill px-2 py-1 text-secondary"
                                                 onclick="openLimitModal({{ $c->id }}, '{{ addslashes($c->name) }}', {{ (float) $c->credit_limit }})"
-                                                title="Modifier le plafond de crédit">
+                                                title="Modifier le plafond">
                                             <i class="fas fa-sliders"></i>
                                         </button>
                                         <a href="{{ route('customers.show', $c->id) }}" class="btn btn-sm btn-light border rounded-pill px-2 py-1 text-primary" title="Fiche client">
@@ -395,67 +521,14 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="5" class="text-center py-5">
-                                    <div class="text-muted">
-                                        <i class="fas fa-wallet fa-3x mb-3 text-secondary opacity-25"></i>
-                                        <p class="mb-0 fw-semibold">Aucun client trouvé pour ce filtre.</p>
-                                    </div>
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    <i class="fas fa-wallet fa-3x mb-3 opacity-25"></i>
+                                    <p class="mb-0 fw-semibold">Aucun client trouvé pour ce filtre.</p>
                                 </td>
                             </tr>
                             @endforelse
                         </tbody>
                     </table>
-                </div>
-
-                <!-- Mobile Card View (d-block d-md-none) -->
-                <div class="d-block d-md-none p-3 space-y-3">
-                    @forelse($customers as $c)
-                    <div class="card border rounded-3 p-3 bg-white shadow-xs">
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <div class="d-flex align-items-center gap-2 min-w-0">
-                                <div class="customer-avatar-circle" style="width: 32px; height: 32px; font-size: 0.75rem;">
-                                    {{ strtoupper(substr($c->name, 0, 1)) }}
-                                </div>
-                                <div class="min-w-0">
-                                    <a href="{{ route('customers.show', $c->id) }}" class="fw-bold text-dark text-decoration-none small text-truncate d-block">
-                                        {{ $c->name }}
-                                    </a>
-                                    <span class="text-muted" style="font-size: 0.68rem;">{{ $c->customer_code ?? '' }}</span>
-                                </div>
-                            </div>
-                            <div>
-                                @if($c->current_balance > 0.01)
-                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 py-1 fw-bold" style="font-size: 0.72rem;">
-                                        Doit : {{ currency($c->current_balance) }}
-                                    </span>
-                                @elseif($c->current_balance < -0.01)
-                                    <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2 py-1 fw-bold" style="font-size: 0.72rem;">
-                                        Avoir : {{ currency(abs($c->current_balance)) }}
-                                    </span>
-                                @else
-                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5" style="font-size: 0.68rem;">
-                                        Soldé
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="d-flex align-items-center justify-content-between text-muted small pt-2 border-top mt-1" style="font-size: 0.74rem;">
-                            <span>Plafond : <strong class="text-dark">{{ $c->credit_limit > 0 ? currency($c->credit_limit) : 'Aucun' }}</strong></span>
-                            <div class="d-flex align-items-center gap-1.5">
-                                <button type="button" class="btn btn-xs btn-danger rounded-pill px-2.5 py-1"
-                                        onclick="openNewPaymentForCustomer({{ $c->id }}, '{{ addslashes($c->name) }}', {{ (float) $c->current_balance }})">
-                                    <i class="fas fa-coins me-1"></i> Régler
-                                </button>
-                                <a href="{{ route('customers.show', $c->id) }}" class="btn btn-xs btn-light border rounded-pill px-2 py-1">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    @empty
-                    <div class="text-center py-4 text-muted small">Aucun client trouvé.</div>
-                    @endforelse
                 </div>
 
                 @if($customers->hasPages())
@@ -466,10 +539,10 @@
             </div>
         </div>
 
-        <!-- Right: Recent Payment Ledger Feed with Proofs (4 cols) -->
+        <!-- Right Column: Recent Payment Feed with Proofs (4 cols on XL) -->
         <div class="col-12 col-xl-4">
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
-                <div class="p-3.5 border-bottom bg-white d-flex align-items-center justify-content-between">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3 mb-md-4">
+                <div class="p-3 border-bottom bg-white d-flex align-items-center justify-content-between">
                     <div>
                         <h6 class="fw-bold mb-0 text-dark">Derniers Règlements</h6>
                         <span class="text-muted small">Avec justificatifs & preuves photos</span>
@@ -515,10 +588,10 @@
                             <img src="{{ $trx->proof_image_url }}" alt="Preuve" class="proof-thumbnail-btn shadow-xs" 
                                  onclick="previewProofModal('{{ $trx->proof_image_url }}', '{{ $trx->transaction_number }}', '{{ addslashes($trx->customer->name ?? '') }}')">
                             <div class="small min-w-0">
-                                <div class="fw-semibold text-dark text-truncate" style="font-size: 0.74rem;">Preuve de paiement attachée</div>
+                                <div class="fw-semibold text-dark text-truncate" style="font-size: 0.74rem;">Preuve attachée</div>
                                 <a href="javascript:void(0)" class="text-primary text-decoration-none" style="font-size: 0.7rem;"
                                    onclick="previewProofModal('{{ $trx->proof_image_url }}', '{{ $trx->transaction_number }}', '{{ addslashes($trx->customer->name ?? '') }}')">
-                                    <i class="fas fa-expand me-1"></i> Agrandir l'image
+                                    <i class="fas fa-expand me-1"></i> Agrandir le document
                                 </a>
                             </div>
                         </div>
