@@ -65,6 +65,18 @@ class AppServiceProvider extends ServiceProvider
             return $user->hasRole('Admin') ? true : null;
         });
 
+        // Automatically track user last login timestamp & IP address on every successful login
+        \Illuminate\Support\Facades\Event::listen(\Illuminate\Auth\Events\Login::class, function ($event) {
+            if ($event->user instanceof \App\Models\User) {
+                try {
+                    $event->user->forceFill([
+                        'last_login_at' => now(),
+                        'last_login_ip' => request()->ip(),
+                    ])->saveQuietly();
+                } catch (\Throwable $e) {}
+            }
+        });
+
         try {
             // Override App Name
             if ($appName = \App\Models\Setting::get('app_name')) {

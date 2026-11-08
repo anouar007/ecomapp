@@ -65,6 +65,25 @@ class User extends Authenticatable
     }
 
     /**
+     * Determine if the user was recently active (within the last 15 minutes).
+     */
+    public function isOnline(): bool
+    {
+        return $this->last_login_at && $this->last_login_at->gt(now()->subMinutes(15));
+    }
+
+    /**
+     * Get human-formatted last login string.
+     */
+    public function getFormattedLastLoginAttribute(): string
+    {
+        if (!$this->last_login_at) {
+            return 'Jamais connecté';
+        }
+        return $this->last_login_at->format('d/m/Y à H:i');
+    }
+
+    /**
      * Determine if the user is suspended.
      */
     public function isSuspended(): bool

@@ -119,6 +119,15 @@
 .status-dot.inactive { background-color: #94a3b8; }
 .status-dot.suspended { background-color: #ef4444; }
 
+@keyframes pulse-green {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+.pulse-dot {
+    animation: pulse-green 2s infinite;
+}
+
 /* Quick Contact Touch Pills */
 .contact-pill {
     display: inline-flex;
@@ -595,16 +604,22 @@
                     <i class="fas fa-envelope text-primary" style="font-size: 0.7rem;"></i>
                     <span>Email</span>
                 </a>
-                <div class="contact-pill text-muted">
-                    <i class="fas fa-clock" style="font-size: 0.7rem;"></i>
-                    <span>
-                        @if($user->last_login_at)
-                            {{ $user->last_login_at->diffForHumans() }}
-                        @else
-                            Jamais connecté
-                        @endif
-                    </span>
+                @if($user->isOnline())
+                <div class="contact-pill bg-success-subtle text-success border-success-subtle fw-semibold">
+                    <span class="rounded-circle bg-success pulse-dot" style="width: 7px; height: 7px; display: inline-block;"></span>
+                    <span>En ligne</span>
                 </div>
+                @elseif($user->last_login_at)
+                <div class="contact-pill text-dark" title="{{ $user->last_login_at->format('d/m/Y à H:i') }} @if($user->last_login_ip)({{ $user->last_login_ip }})@endif">
+                    <i class="far fa-clock text-secondary" style="font-size: 0.7rem;"></i>
+                    <span>{{ $user->last_login_at->diffForHumans() }}</span>
+                </div>
+                @else
+                <div class="contact-pill text-muted">
+                    <i class="far fa-clock opacity-50" style="font-size: 0.7rem;"></i>
+                    <span class="fst-italic">Jamais connecté</span>
+                </div>
+                @endif
             </div>
 
             <!-- Assigned Roles & Permissions Summary -->
@@ -774,15 +789,31 @@
                             {!! $user->status_badge !!}
                         </td>
                         <td class="py-3">
-                            @if($user->last_login_at)
-                                <div class="text-dark fw-medium small">
+                            @if($user->isOnline())
+                                <div class="d-inline-flex align-items-center gap-1.5 px-2 py-0.5 rounded-pill bg-success-subtle text-success border border-success-subtle mb-1" style="font-size: 0.72rem; font-weight: 600;">
+                                    <span class="rounded-circle bg-success pulse-dot" style="width: 7px; height: 7px; display: inline-block;"></span>
+                                    <span>En ligne</span>
+                                </div>
+                                <div class="text-muted font-monospace" style="font-size: 0.7rem;" title="Dernière activité : {{ $user->last_login_at->format('d/m/Y à H:i') }} @if($user->last_login_ip)({{ $user->last_login_ip }})@endif">
                                     {{ $user->last_login_at->diffForHumans() }}
                                 </div>
-                                <div class="text-muted font-monospace" style="font-size: 0.72rem;">
-                                    {{ $user->last_login_at->format('d/m/Y H:i') }}
+                            @elseif($user->last_login_at)
+                                <div class="d-flex align-items-center gap-1.5 text-dark fw-semibold" style="font-size: 0.8rem;">
+                                    <i class="far fa-clock text-secondary opacity-75" style="font-size: 0.72rem;"></i>
+                                    <span>{{ $user->last_login_at->diffForHumans() }}</span>
+                                </div>
+                                <div class="text-muted d-flex align-items-center gap-1.5 mt-0.5" style="font-size: 0.72rem;">
+                                    <span class="font-monospace">{{ $user->last_login_at->format('d/m/Y à H:i') }}</span>
+                                    @if($user->last_login_ip)
+                                        <span class="badge bg-light text-secondary border font-monospace px-1.5 py-0" style="font-size: 0.65rem;" title="Adresse IP de connexion">
+                                            {{ $user->last_login_ip }}
+                                        </span>
+                                    @endif
                                 </div>
                             @else
-                                <span class="text-muted small fst-italic">Jamais connecté</span>
+                                <span class="badge bg-light text-muted border px-2 py-1 rounded-pill" style="font-size: 0.72rem; font-weight: normal;">
+                                    <i class="fas fa-minus-circle me-1 text-secondary opacity-50"></i> Jamais connecté
+                                </span>
                             @endif
                         </td>
                         <td class="pe-4 py-3 text-end">
@@ -890,6 +921,22 @@
                     <!-- ============================================== -->
                     <div class="col-12 col-lg-5 modal-col-left tab-pane-responsive" id="pills-profile-content">
                         
+                        <!-- Last Login Activity Banner (Visible only in Edit mode) -->
+                        <div id="userLastLoginBanner" class="d-none alert alert-light border rounded-3 p-2.5 mb-3" style="background: #f8fafc;">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div id="userLastLoginDot" class="rounded-circle bg-secondary flex-shrink-0" style="width: 8px; height: 8px;"></div>
+                                    <div>
+                                        <div class="text-muted text-uppercase fw-semibold" style="font-size: 0.68rem; letter-spacing: 0.04em;">Dernière connexion</div>
+                                        <div class="fw-semibold text-dark" id="userLastLoginText" style="font-size: 0.8rem;">—</div>
+                                    </div>
+                                </div>
+                                <div id="userLastLoginIpBadge" class="badge bg-white text-secondary border font-monospace px-2 py-1" style="font-size: 0.7rem;">
+                                    —
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- 1. Identité Section -->
                         <div class="mb-4">
                             <h6 class="fw-bold text-dark mb-2.5 d-flex align-items-center gap-2" style="font-size: 0.9rem;">
@@ -1303,6 +1350,9 @@ function openCreateModal() {
     document.getElementById('userSubmitBtn').innerHTML = '<i class="fas fa-check-circle me-1.5"></i> Enregistrer';
 
     // Reset inputs
+    const lastLoginBanner = document.getElementById('userLastLoginBanner');
+    if (lastLoginBanner) lastLoginBanner.classList.add('d-none');
+
     document.getElementById('user_name').value = '';
     document.getElementById('user_email').value = '';
     document.getElementById('user_phone').value = '';
@@ -1365,6 +1415,34 @@ function openEditModal(userId) {
         document.getElementById('user_password').required = false;
         document.getElementById('password_hint').textContent = 'Laissez vide pour conserver le mot de passe actuel.';
         checkPasswordStrength('');
+
+        // Populate Last Login Activity Banner
+        const loginBanner = document.getElementById('userLastLoginBanner');
+        const loginDot = document.getElementById('userLastLoginDot');
+        const loginText = document.getElementById('userLastLoginText');
+        const loginIp = document.getElementById('userLastLoginIpBadge');
+        if (loginBanner && loginDot && loginText && loginIp) {
+            loginBanner.classList.remove('d-none');
+            if (data.last_login_at) {
+                if (data.is_online) {
+                    loginDot.className = 'rounded-circle bg-success flex-shrink-0 pulse-dot';
+                    loginText.innerHTML = `<span class="text-success fw-bold">En ligne actuellement</span> <span class="text-muted fw-normal" style="font-size: 0.74rem;">(${data.last_login_diff})</span>`;
+                } else {
+                    loginDot.className = 'rounded-circle bg-secondary flex-shrink-0';
+                    loginText.innerHTML = `${data.last_login_diff} <span class="text-muted fw-normal" style="font-size: 0.74rem;">(${data.last_login_at})</span>`;
+                }
+                if (data.last_login_ip) {
+                    loginIp.textContent = 'IP: ' + data.last_login_ip;
+                    loginIp.classList.remove('d-none');
+                } else {
+                    loginIp.classList.add('d-none');
+                }
+            } else {
+                loginDot.className = 'rounded-circle bg-warning flex-shrink-0';
+                loginText.innerHTML = '<span class="text-muted fst-italic">Jamais connecté à la plateforme</span>';
+                loginIp.classList.add('d-none');
+            }
+        }
 
         // Reset roles cards
         document.querySelectorAll('.role-select-card').forEach(c => {

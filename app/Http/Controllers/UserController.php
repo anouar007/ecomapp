@@ -223,8 +223,10 @@ class UserController extends Controller
             'roles' => $user->roles->pluck('name'),
             'direct_permissions' => $user->permissions->pluck('name'),
             'all_permissions' => $user->getAllPermissions()->pluck('name'),
-            'last_login_at' => $user->last_login_at ? $user->last_login_at->format('d/m/Y H:i') : null,
+            'last_login_at' => $user->last_login_at ? $user->last_login_at->format('d/m/Y à H:i') : null,
+            'last_login_diff' => $user->last_login_at ? $user->last_login_at->diffForHumans() : null,
             'last_login_ip' => $user->last_login_ip,
+            'is_online' => $user->isOnline(),
             'is_current_user' => auth()->id() === $user->id,
             'is_primary_admin' => $user->id === 1 || $user->email === 'contact@wina.com',
         ]);
