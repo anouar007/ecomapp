@@ -510,6 +510,25 @@
         }
 
         /* ================================================================
+           ZERO HORIZONTAL SCROLL GUARANTEE (MOBILE & DESKTOP)
+           ================================================================ */
+        html {
+            overflow-x: hidden !important;
+            max-width: 100% !important;
+        }
+        body {
+            overflow-x: hidden !important;
+            max-width: 100% !important;
+            width: 100% !important;
+            position: relative;
+        }
+        .container,
+        .container-fluid {
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        /* ================================================================
            UNIVERSAL 8PX BORDER RADIUS SYSTEM
            ================================================================ */
         :root {

@@ -50,11 +50,25 @@
             font-family: "Roboto", sans-serif !important;
         }
 
+        /* Zero Horizontal Scroll Guarantee */
+        html {
+            overflow-x: hidden !important;
+            max-width: 100% !important;
+        }
         body {
             font-size: var(--font-size-base);
             background-color: #f8fafc;
             color: #0f172a;
             -webkit-font-smoothing: antialiased;
+            overflow-x: hidden !important;
+            max-width: 100% !important;
+            width: 100% !important;
+            position: relative;
+        }
+        .main-content {
+            overflow-x: hidden !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
         }
 
         /* Allow bold tags to be bold (descriptions, rich content, emphasis) */

@@ -883,6 +883,25 @@
 
 @push('styles')
 <style>
+    /* ── Zero Horizontal Scroll Guarantee ── */
+    html {
+        overflow-x: hidden !important;
+        max-width: 100% !important;
+    }
+    body {
+        overflow-x: hidden !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        position: relative;
+    }
+    .hero-winashop-section,
+    .popular-categories-section,
+    .featured-products-section,
+    section {
+        overflow-x: hidden !important;
+        max-width: 100% !important;
+    }
+
     /* ── Hero Grid Absolute Height Guarantee & Responsiveness ── */
     @media (min-width: 992px) {
         .hero-main-card {

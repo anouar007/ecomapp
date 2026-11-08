@@ -5,19 +5,24 @@
 @push('styles')
 <style>
 /* ==========================================================================
-   MOBILE-FIRST CLIENT CREDITS & TREASURY STYLES
+   MOBILE-FIRST CLIENT CREDITS & TREASURY STYLES (ZERO HORIZONTAL SCROLL)
    ========================================================================== */
+html, body, .main-content {
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+}
+.container-fluid {
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+    padding-left: clamp(10px, 2vw, 24px) !important;
+    padding-right: clamp(10px, 2vw, 24px) !important;
+}
 .chips-scroll-credit {
     display: flex;
-    gap: 0.5rem;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    padding-bottom: 3px;
-}
-.chips-scroll-credit::-webkit-scrollbar {
-    display: none;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: center;
+    overflow-x: visible;
 }
 .chip-credit {
     white-space: nowrap;
