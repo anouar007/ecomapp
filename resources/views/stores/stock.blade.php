@@ -4,22 +4,36 @@
 
 @push('styles')
 <style>
-.store-stock-badge {
+/* ==========================================================================
+   MULTI-STORE STOCKS & LOCATIONS MATRIX - PRO EXECUTIVE ALIGNMENT
+   ========================================================================== */
+.store-stock-pill-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.35rem 0.65rem;
-    border-radius: 8px;
+    gap: 0.45rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 10px;
     background: #f8fafc;
     border: 1px solid #e2e8f0;
     font-size: 0.74rem;
+    transition: all 0.15s ease;
 }
-.prod-thumb-stock {
+.store-stock-pill-badge:hover {
+    background: #ffffff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+.prod-thumb-matrix {
     width: 44px;
     height: 44px;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 10px;
     border: 1px solid #e2e8f0;
+    background: #ffffff;
+    flex-shrink: 0;
+}
+.fixed-stock-table {
+    table-layout: fixed !important;
+    width: 100% !important;
 }
 </style>
 @endpush
@@ -27,25 +41,35 @@
 @section('content')
 <div class="container-fluid py-4">
 
-    <!-- Top Header -->
-    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
-        <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
-                <a href="{{ route('stores.index') }}" class="text-decoration-none text-muted small">
-                    <i class="fas fa-arrow-left me-1"></i> Points de Stockage
-                </a>
-                <span class="text-muted small">• Matrice des Quantités & Rayons</span>
+    <!-- Top Executive Header -->
+    <div class="card border-0 rounded-4 shadow-sm mb-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff;">
+        <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-circle bg-purple bg-opacity-25 border border-purple border-opacity-50 text-white d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; font-size: 1.35rem; background: rgba(147, 51, 234, 0.25);">
+                        <i class="fas fa-boxes-stacked text-white"></i>
+                    </div>
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <a href="{{ route('stores.index') }}" class="text-white-50 text-decoration-none small">
+                                <i class="fas fa-arrow-left me-1"></i> Points de Stockage
+                            </a>
+                            <span class="text-white-50 small">• Matrice des Quantités & Rayons</span>
+                        </div>
+                        <h1 class="h3 fw-bold text-white mb-0">Quantités par Magasin & Emplacements de Stock</h1>
+                        <p class="text-white-50 small mb-0 mt-1">Consultez en un coup d'œil les unités disponibles par site ainsi que l'emplacement précis (Rayon, Étagère, Casier).</p>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <a href="{{ route('stores.index') }}" class="btn btn-outline-light rounded-pill px-3.5 py-2 fw-semibold" style="font-size: 0.85rem;">
+                        <i class="fas fa-warehouse me-1.5"></i> Configurer les Dépôts
+                    </a>
+                    <button type="button" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#transferStockModal" style="font-size: 0.85rem;">
+                        <i class="fas fa-arrow-right-arrow-left me-1.5"></i> Transférer du Stock
+                    </button>
+                </div>
             </div>
-            <h1 class="h3 fw-bold text-dark mb-0">Quantités par Magasin & Emplacements de Stock</h1>
-            <p class="text-muted small mb-0">Suivez la quantité de chaque produit stockée par magasin, ainsi que le rayon, étagère et casier précis.</p>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-            <a href="{{ route('stores.index') }}" class="btn btn-outline-secondary rounded-pill px-3 py-2 fw-semibold">
-                <i class="fas fa-warehouse me-1.5"></i> Configurer les Dépôts
-            </a>
-            <button type="button" class="btn btn-primary rounded-pill px-3.5 py-2 fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#transferStockModal">
-                <i class="fas fa-arrow-right-arrow-left me-1.5"></i> Transférer du Stock
-            </button>
         </div>
     </div>
 
@@ -53,24 +77,24 @@
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show rounded-4 border-0 shadow-xs mb-4" role="alert">
         <div class="d-flex align-items-center gap-2">
-            <i class="fas fa-check-circle fs-5"></i>
+            <i class="fas fa-circle-check fs-5"></i>
             <div>{{ session('success') }}</div>
         </div>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
     </div>
     @endif
 
     @if(session('error'))
     <div class="alert alert-danger alert-dismissible fade show rounded-4 border-0 shadow-xs mb-4" role="alert">
         <div class="d-flex align-items-center gap-2">
-            <i class="fas fa-exclamation-circle fs-5"></i>
+            <i class="fas fa-triangle-exclamation fs-5"></i>
             <div>{{ session('error') }}</div>
         </div>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
     </div>
     @endif
 
-    <!-- Filters Bar -->
+    <!-- Clean Aligned Filters Bar -->
     <div class="card border-0 shadow-sm rounded-4 mb-4">
         <div class="card-body p-3.5">
             <form method="GET" action="{{ route('stores.stock') }}" class="row g-2.5 align-items-end">
@@ -83,7 +107,7 @@
                 </div>
 
                 <div class="col-6 col-md-3">
-                    <label class="form-label small fw-semibold text-muted mb-1">Filtrer par Site</label>
+                    <label class="form-label small fw-semibold text-muted mb-1">Filtrer par Dépôt</label>
                     <select name="store_id" class="form-select form-select-sm">
                         <option value="">Tous les dépôts & magasins</option>
                         @foreach($stores as $st)
@@ -97,7 +121,7 @@
                 <div class="col-6 col-md-2">
                     <label class="form-label small fw-semibold text-muted mb-1">Catégorie</label>
                     <select name="category_id" class="form-select form-select-sm">
-                        <option value="">Toutes</option>
+                        <option value="">Toutes les catégories</option>
                         @foreach($categories as $cat)
                             <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
                                 {{ $cat->name }}
@@ -107,7 +131,7 @@
                 </div>
 
                 <div class="col-6 col-md-2">
-                    <label class="form-label small fw-semibold text-muted mb-1">Emplacement (Rayon/Étagère)</label>
+                    <label class="form-label small fw-semibold text-muted mb-1">Emplacement Rayon</label>
                     <input type="text" name="location_code" value="{{ request('location_code') }}" class="form-control form-control-sm" placeholder="Ex: Rayon A, B-2...">
                 </div>
 
@@ -125,15 +149,16 @@
         </div>
     </div>
 
-    <!-- Products & Multi-Store Stocks Table -->
+    <!-- Products & Multi-Store Stocks Matrix Card -->
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
-        <div class="table-responsive">
-            <table class="table align-middle mb-0">
+        <!-- Desktop Table View -->
+        <div class="table-responsive d-none d-md-block">
+            <table class="table align-middle mb-0 fixed-stock-table">
                 <thead class="bg-light border-bottom">
                     <tr>
                         <th class="ps-3 py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 30%;">Article</th>
-                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 12%;">Stock Total</th>
-                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 44%;">Répartition par Magasin & Rayon</th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 14%;">Stock Total</th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 42%;">Répartition par Magasin & Emplacement Rayon</th>
                         <th class="pe-3 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 14%;">Actions</th>
                     </tr>
                 </thead>
@@ -144,18 +169,18 @@
                         <td class="ps-3 py-3">
                             <div class="d-flex align-items-center gap-2.5">
                                 @if($p->image)
-                                    <img src="{{ asset('storage/' . $p->image) }}" alt="{{ $p->name }}" class="prod-thumb-stock"
+                                    <img src="{{ asset('storage/' . $p->image) }}" alt="{{ $p->name }}" class="prod-thumb-matrix shadow-xs"
                                          onerror="this.src='{{ asset('images/placeholder-product.svg') }}'">
                                 @else
-                                    <div class="prod-thumb-stock bg-light d-flex align-items-center justify-content-center text-muted">
+                                    <div class="prod-thumb-matrix d-flex align-items-center justify-content-center text-muted">
                                         <i class="fas fa-box"></i>
                                     </div>
                                 @endif
                                 <div class="min-w-0">
-                                    <div class="fw-bold text-dark text-truncate" title="{{ $p->name }}" style="max-width: 280px;">
+                                    <div class="fw-bold text-dark text-truncate" title="{{ $p->name }}">
                                         {{ $p->name }}
                                     </div>
-                                    <div class="d-flex align-items-center gap-2 text-muted small mt-0.5" style="font-size: 0.72rem;">
+                                    <div class="d-flex align-items-center gap-1.5 text-muted small mt-0.5" style="font-size: 0.72rem;">
                                         <span class="font-monospace text-secondary fw-medium">SKU: {{ $p->sku }}</span>
                                         @if($p->brand)
                                             <span>• {{ $p->brand->name }}</span>
@@ -190,16 +215,16 @@
                                         $qty = $stockRecord ? $stockRecord->quantity : 0;
                                         $loc = $stockRecord ? $stockRecord->location_code : null;
                                     @endphp
-                                    <div class="store-stock-badge {{ $qty > 0 ? 'border-primary-subtle' : 'opacity-75' }}">
+                                    <div class="store-stock-pill-badge {{ $qty > 0 ? 'border-primary-subtle' : 'opacity-75' }}">
                                         <div class="d-flex align-items-center gap-1.5">
                                             <i class="fas {{ $st->type === 'warehouse' ? 'fa-warehouse text-purple' : 'fa-shop text-primary' }}"></i>
                                             <span class="fw-semibold text-dark">{{ $st->name }} :</span>
-                                            <span class="badge {{ $qty > 0 ? 'bg-primary text-white' : 'bg-light text-muted border' }} rounded-pill">
+                                            <span class="badge {{ $qty > 0 ? 'bg-primary text-white' : 'bg-light text-muted border' }} rounded-pill px-2 py-0.5">
                                                 {{ $qty }} pcs
                                             </span>
                                         </div>
                                         @if($loc)
-                                            <div class="badge bg-white text-secondary border font-monospace ms-1 px-1.5 py-0" style="font-size: 0.65rem;" title="Emplacement précis">
+                                            <div class="badge bg-white text-secondary border font-monospace ms-1 px-1.5 py-0.5" style="font-size: 0.65rem;" title="Emplacement précis">
                                                 <i class="fas fa-map-pin me-0.5 text-danger opacity-75"></i>{{ $loc }}
                                             </div>
                                         @endif
@@ -238,6 +263,65 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+
+        <!-- Mobile Cards View (d-block d-md-none) -->
+        <div class="d-block d-md-none p-3 space-y-3">
+            @forelse($products as $p)
+            @php $totalUnits = $p->storeStocks->sum('quantity'); @endphp
+            <div class="card border rounded-3 p-3 bg-white shadow-xs">
+                <div class="d-flex align-items-start gap-2.5 mb-2">
+                    @if($p->image)
+                        <img src="{{ asset('storage/' . $p->image) }}" alt="{{ $p->name }}" class="prod-thumb-matrix"
+                             onerror="this.src='{{ asset('images/placeholder-product.svg') }}'">
+                    @else
+                        <div class="prod-thumb-matrix d-flex align-items-center justify-content-center text-muted">
+                            <i class="fas fa-box"></i>
+                        </div>
+                    @endif
+                    <div class="min-w-0 flex-grow-1">
+                        <div class="fw-bold text-dark small text-truncate">{{ $p->name }}</div>
+                        <div class="text-muted" style="font-size: 0.7rem;">SKU: {{ $p->sku }} • {{ $p->brand->name ?? '' }}</div>
+                        <div class="fw-bold {{ $totalUnits > 0 ? 'text-dark' : 'text-danger' }} mt-0.5" style="font-size: 0.8rem;">
+                            Total : {{ $totalUnits }} pcs
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Store breakdowns -->
+                <div class="p-2 rounded-3 bg-light border space-y-1 mb-2">
+                    @foreach($stores as $st)
+                        @php
+                            $stRecord = $p->storeStocks->firstWhere('store_id', $st->id);
+                            $stQty = $stRecord ? $stRecord->quantity : 0;
+                            $stLoc = $stRecord ? $stRecord->location_code : null;
+                        @endphp
+                        <div class="d-flex align-items-center justify-content-between text-muted" style="font-size: 0.72rem;">
+                            <span>{{ $st->name }} :</span>
+                            <div class="d-flex align-items-center gap-1">
+                                <strong class="text-dark">{{ $stQty }} pcs</strong>
+                                @if($stLoc)
+                                    <span class="badge bg-white text-secondary border font-monospace px-1">{{ $stLoc }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <div class="d-flex align-items-center justify-content-end gap-2 pt-1 border-top">
+                    <button type="button" class="btn btn-xs btn-light border rounded-pill px-2.5 py-1 text-primary"
+                            onclick="openLocationEditModal({{ $p->id }}, '{{ addslashes($p->name) }}', {{ json_encode($p->storeStocks) }})">
+                        <i class="fas fa-sliders me-1"></i> Emplacement
+                    </button>
+                    <button type="button" class="btn btn-xs btn-light border rounded-pill px-2.5 py-1 text-secondary"
+                            onclick="openTransferForProduct({{ $p->id }}, '{{ addslashes($p->name) }}')">
+                        <i class="fas fa-arrow-right-arrow-left me-1"></i> Transférer
+                    </button>
+                </div>
+            </div>
+            @empty
+            <div class="text-center py-4 text-muted small">Aucun produit trouvé.</div>
+            @endforelse
         </div>
 
         @if($products->hasPages())
@@ -420,4 +504,3 @@ function openTransferForProduct(productId, productName) {
 </script>
 @endpush
 @endsection
-

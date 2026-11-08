@@ -4,27 +4,35 @@
 
 @push('styles')
 <style>
-.stat-kpi-card {
+/* ==========================================================================
+   PROFITABILITY & BENEFIT REPORT STYLES - PRO EXECUTIVE ALIGNMENT
+   ========================================================================== */
+.profit-kpi-card {
     border-radius: 16px;
     border: 1px solid #e2e8f0;
     background: #ffffff;
-    padding: 1.35rem;
+    padding: 1.35rem 1.4rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.stat-kpi-card:hover {
+.profit-kpi-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.06);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
 }
-.kpi-icon-wrap {
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
+.kpi-icon-pill {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: 1.15rem;
+    flex-shrink: 0;
 }
-.period-pill {
+.period-pill-btn {
     white-space: nowrap;
     border-radius: 9999px !important;
     padding: 0.4rem 0.95rem;
@@ -39,35 +47,45 @@
     background: #ffffff;
     color: #475569;
 }
-.period-pill:hover {
+.period-pill-btn:hover {
     background: #f1f5f9;
     color: #0f172a;
 }
-.period-pill.active {
+.period-pill-btn.active {
     background: #0f172a;
     color: #ffffff;
     border-color: #0f172a;
     box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
 }
-.nav-tabs-custom .nav-link {
+.nav-tabs-profit .nav-link {
     font-weight: 600;
     color: #64748b;
     border: none;
     border-bottom: 2.5px solid transparent;
-    padding: 0.75rem 1.25rem;
+    padding: 0.85rem 1.4rem;
     font-size: 0.88rem;
+    transition: all 0.15s ease;
 }
-.nav-tabs-custom .nav-link.active {
+.nav-tabs-profit .nav-link:hover {
+    color: #0f172a;
+}
+.nav-tabs-profit .nav-link.active {
     color: #dc2626;
     border-bottom-color: #dc2626;
     background: transparent;
 }
-.prod-thumb-profit {
-    width: 42px;
-    height: 42px;
+.prod-thumb-profit-lg {
+    width: 44px;
+    height: 44px;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 10px;
     border: 1px solid #e2e8f0;
+    background: #ffffff;
+    flex-shrink: 0;
+}
+.fixed-profit-table {
+    table-layout: fixed !important;
+    width: 100% !important;
 }
 </style>
 @endpush
@@ -75,23 +93,33 @@
 @section('content')
 <div class="container-fluid py-4">
 
-    <!-- Top Admin Header -->
-    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
-        <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
-                <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1 fw-semibold" style="font-size: 0.75rem;">
-                    <i class="fas fa-lock me-1"></i> Réservé aux Administrateurs
-                </span>
-                <span class="text-muted small">• Analyse Financière & Rentabilité Réelle</span>
+    <!-- Top Executive Header -->
+    <div class="card border-0 rounded-4 shadow-sm mb-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff;">
+        <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-circle bg-danger bg-opacity-25 border border-danger border-opacity-50 text-white d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; font-size: 1.35rem;">
+                        <i class="fas fa-chart-pie text-white"></i>
+                    </div>
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="badge bg-danger rounded-pill px-2.5 py-0.5 fw-semibold" style="font-size: 0.72rem;">
+                                <i class="fas fa-lock me-1"></i> STRICTEMENT ADMIN
+                            </span>
+                            <span class="text-white-50 small">• Analyse Financière & Rentabilité Réelle</span>
+                        </div>
+                        <h1 class="h3 fw-bold text-white mb-0">Rapport de Rentabilité, Bénéfices & Marges</h1>
+                        <p class="text-white-50 small mb-0 mt-1">Calcul précis du bénéfice net (Ventes - Coûts d'achat) par produit, marque, catégorie et période temporelle.</p>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <a href="{{ route('reports.profitability.export', ['period' => $period, 'start_date' => $startDate->format('Y-m-d'), 'end_date' => $endDate->format('Y-m-d')]) }}" 
+                       class="btn btn-outline-light rounded-pill px-4 py-2 fw-semibold shadow-xs" style="font-size: 0.85rem;">
+                        <i class="fas fa-file-excel text-success me-1.5"></i> Exporter en Excel / CSV
+                    </a>
+                </div>
             </div>
-            <h1 class="h3 fw-bold text-dark mb-0">Rapport de Rentabilité, Bénéfices & Marges</h1>
-            <p class="text-muted small mb-0">Calcul exact du bénéfice net (Ventes - Coûts d'achat) par produit, marque, catégorie et période de temps.</p>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-            <a href="{{ route('reports.profitability.export', ['period' => $period, 'start_date' => $startDate->format('Y-m-d'), 'end_date' => $endDate->format('Y-m-d')]) }}" 
-               class="btn btn-outline-success rounded-pill px-3.5 py-2 fw-semibold shadow-xs">
-                <i class="fas fa-file-excel me-1.5"></i> Exporter en Excel / CSV
-            </a>
         </div>
     </div>
 
@@ -99,10 +127,10 @@
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show rounded-4 border-0 shadow-xs mb-4" role="alert">
         <div class="d-flex align-items-center gap-2">
-            <i class="fas fa-check-circle fs-5"></i>
+            <i class="fas fa-circle-check fs-5"></i>
             <div>{{ session('success') }}</div>
         </div>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
     </div>
     @endif
 
@@ -113,11 +141,11 @@
                 <i class="fas fa-triangle-exclamation text-warning fs-4"></i>
                 <div>
                     <strong>{{ $missingCostCount }} produit(s) n'ont pas encore de prix de revient (coût d'achat) renseigné.</strong>
-                    <div class="small text-muted">Pour ces articles, le coût d'achat est comptabilisé à 0 DH. Vous pouvez mettre à jour le coût directement depuis le tableau ci-dessous.</div>
+                    <div class="small text-muted">Pour ces articles, le coût d'achat est comptabilisé à 0 DH. Vous pouvez mettre à jour le coût d'achat en 1 clic via le tableau ci-dessous.</div>
                 </div>
             </div>
         </div>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
     </div>
     @endif
 
@@ -127,22 +155,22 @@
             <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                 <!-- Preset Pills -->
                 <div class="d-flex flex-wrap gap-1.5 align-items-center">
-                    <a href="{{ route('reports.profitability', ['period' => 'today']) }}" class="period-pill {{ $period === 'today' ? 'active' : '' }}">
+                    <a href="{{ route('reports.profitability', ['period' => 'today']) }}" class="period-pill-btn {{ $period === 'today' ? 'active' : '' }}">
                         Aujourd'hui
                     </a>
-                    <a href="{{ route('reports.profitability', ['period' => 'yesterday']) }}" class="period-pill {{ $period === 'yesterday' ? 'active' : '' }}">
+                    <a href="{{ route('reports.profitability', ['period' => 'yesterday']) }}" class="period-pill-btn {{ $period === 'yesterday' ? 'active' : '' }}">
                         Hier
                     </a>
-                    <a href="{{ route('reports.profitability', ['period' => 'week']) }}" class="period-pill {{ $period === 'week' ? 'active' : '' }}">
+                    <a href="{{ route('reports.profitability', ['period' => 'week']) }}" class="period-pill-btn {{ $period === 'week' ? 'active' : '' }}">
                         7 Derniers Jours
                     </a>
-                    <a href="{{ route('reports.profitability', ['period' => 'month']) }}" class="period-pill {{ $period === 'month' ? 'active' : '' }}">
+                    <a href="{{ route('reports.profitability', ['period' => 'month']) }}" class="period-pill-btn {{ $period === 'month' ? 'active' : '' }}">
                         Ce Mois-ci
                     </a>
-                    <a href="{{ route('reports.profitability', ['period' => 'last_month']) }}" class="period-pill {{ $period === 'last_month' ? 'active' : '' }}">
+                    <a href="{{ route('reports.profitability', ['period' => 'last_month']) }}" class="period-pill-btn {{ $period === 'last_month' ? 'active' : '' }}">
                         Mois Dernier
                     </a>
-                    <a href="{{ route('reports.profitability', ['period' => 'year']) }}" class="period-pill {{ $period === 'year' ? 'active' : '' }}">
+                    <a href="{{ route('reports.profitability', ['period' => 'year']) }}" class="period-pill-btn {{ $period === 'year' ? 'active' : '' }}">
                         Cette Année ({{ date('Y') }})
                     </a>
                 </div>
@@ -162,24 +190,26 @@
                 </form>
             </div>
             <div class="mt-2 text-muted small" style="font-size: 0.76rem;">
-                <i class="far fa-calendar-check me-1"></i> Données analysées du <strong>{{ $startDate->translatedFormat('d F Y') }}</strong> au <strong>{{ $endDate->translatedFormat('d F Y') }}</strong>.
+                <i class="far fa-calendar-check text-primary me-1"></i> Données analysées du <strong>{{ $startDate->translatedFormat('d F Y') }}</strong> au <strong>{{ $endDate->translatedFormat('d F Y') }}</strong>.
             </div>
         </div>
     </div>
 
-    <!-- 4 Main Financial KPI Cards -->
+    <!-- 4 Perfectly Aligned Financial KPI Cards -->
     <div class="row g-3 mb-4">
         <!-- 1. Chiffre d'Affaires -->
         <div class="col-12 col-sm-6 col-xl-3">
-            <div class="stat-kpi-card">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="text-muted small fw-semibold text-uppercase" style="font-size: 0.72rem;">Chiffre d'Affaires</span>
-                    <div class="kpi-icon-wrap bg-primary-subtle text-primary">
-                        <i class="fas fa-cart-shopping"></i>
+            <div class="profit-kpi-card">
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Chiffre d'Affaires</span>
+                        <div class="kpi-icon-pill bg-primary-subtle text-primary">
+                            <i class="fas fa-cart-shopping"></i>
+                        </div>
                     </div>
+                    <div class="h3 fw-bold text-dark mb-1">{{ currency($overall['total_revenue']) }}</div>
                 </div>
-                <div class="h4 fw-bold text-dark mb-1">{{ currency($overall['total_revenue']) }}</div>
-                <div class="small text-muted">
+                <div class="pt-2 border-top mt-2 text-muted small" style="font-size: 0.74rem;">
                     <span>{{ $overall['orders_count'] }} commande(s) • {{ $overall['items_sold'] }} article(s)</span>
                 </div>
             </div>
@@ -187,47 +217,53 @@
 
         <!-- 2. Coût d'Achat Total -->
         <div class="col-12 col-sm-6 col-xl-3">
-            <div class="stat-kpi-card">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="text-muted small fw-semibold text-uppercase" style="font-size: 0.72rem;">Coût Total des Ventes (Achats)</span>
-                    <div class="kpi-icon-wrap bg-warning-subtle text-warning">
-                        <i class="fas fa-truck-ramp-box"></i>
+            <div class="profit-kpi-card">
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Coût d'Achat Total</span>
+                        <div class="kpi-icon-pill bg-warning-subtle text-warning">
+                            <i class="fas fa-truck-ramp-box"></i>
+                        </div>
                     </div>
+                    <div class="h3 fw-bold text-dark mb-1">{{ currency($overall['total_cost']) }}</div>
                 </div>
-                <div class="h4 fw-bold text-dark mb-1">{{ currency($overall['total_cost']) }}</div>
-                <div class="small text-muted">
-                    Prix de revient fournisseurs des articles vendus
+                <div class="pt-2 border-top mt-2 text-muted small" style="font-size: 0.74rem;">
+                    Prix de revient des marchandises vendues
                 </div>
             </div>
         </div>
 
         <!-- 3. Bénéfice Net Réalisé (Gain) -->
         <div class="col-12 col-sm-6 col-xl-3">
-            <div class="stat-kpi-card" style="background: linear-gradient(135deg, #064e3b 0%, #065f46 100%); color: #ffffff;">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="text-white-50 small fw-semibold text-uppercase" style="font-size: 0.72rem;">Bénéfice Net Réalisé</span>
-                    <div class="kpi-icon-wrap bg-white text-success">
-                        <i class="fas fa-sack-dollar"></i>
+            <div class="profit-kpi-card" style="background: linear-gradient(135deg, #064e3b 0%, #065f46 100%); color: #ffffff;">
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-white-50 fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Bénéfice Net Réalisé</span>
+                        <div class="kpi-icon-pill bg-white text-success">
+                            <i class="fas fa-sack-dollar"></i>
+                        </div>
                     </div>
+                    <div class="h3 fw-bold text-white mb-1">{{ currency($overall['net_profit']) }}</div>
                 </div>
-                <div class="h4 fw-bold text-white mb-1">{{ currency($overall['net_profit']) }}</div>
-                <div class="small text-white-50">
-                    Gain net réel (Chiffre d'affaires - Coûts)
+                <div class="pt-2 border-top mt-2 text-white-50 small" style="font-size: 0.74rem;">
+                    Gain net réel (Ventes - Coûts)
                 </div>
             </div>
         </div>
 
         <!-- 4. Taux de Marge Moyenne -->
         <div class="col-12 col-sm-6 col-xl-3">
-            <div class="stat-kpi-card">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="text-muted small fw-semibold text-uppercase" style="font-size: 0.72rem;">Taux de Marge Moyenne</span>
-                    <div class="kpi-icon-wrap bg-success-subtle text-success">
-                        <i class="fas fa-chart-pie"></i>
+            <div class="profit-kpi-card">
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Taux de Marge Moyenne</span>
+                        <div class="kpi-icon-pill bg-success-subtle text-success">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
                     </div>
+                    <div class="h3 fw-bold text-success mb-1">{{ $overall['margin_percentage'] }}%</div>
                 </div>
-                <div class="h4 fw-bold text-success mb-1">{{ $overall['margin_percentage'] }}%</div>
-                <div class="small text-muted">
+                <div class="pt-2 border-top mt-2 text-muted small" style="font-size: 0.74rem;">
                     Markup : +{{ $overall['markup_percentage'] }}% sur coût d'achat
                 </div>
             </div>
@@ -250,7 +286,7 @@
     <!-- 3 Detailed Analytical Tabs -->
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
         <div class="border-bottom bg-white px-3 pt-2">
-            <ul class="nav nav-tabs nav-tabs-custom border-0" id="profitTabs" role="tablist">
+            <ul class="nav nav-tabs nav-tabs-profit border-0" id="profitTabs" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="products-tab" data-bs-toggle="tab" data-bs-target="#tab-products" type="button" role="tab">
                         <i class="fas fa-box me-1.5"></i> Bénéfice par Produit ({{ $productBenefits->count() }})
@@ -274,17 +310,16 @@
             <!-- TAB 1: BÉNÉFICE PAR PRODUIT -->
             <div class="tab-pane fade show active" id="tab-products" role="tabpanel">
                 <div class="table-responsive">
-                    <table class="table align-middle mb-0">
+                    <table class="table align-middle mb-0 fixed-profit-table">
                         <thead class="bg-light border-bottom">
                             <tr>
-                                <th class="ps-3 py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 30%;">Produit & Marque</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold text-center" style="font-size: 0.72rem;">Qté Vendue</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem;">Prix Vente Moy.</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem;">Prix de Revient (Coût)</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem;">Total Ventes</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem;">Total Coût</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem;">Bénéfice Net</th>
-                                <th class="pe-3 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem;">Marge %</th>
+                                <th class="ps-3 py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 30%;">Article & Marque</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold text-center" style="font-size: 0.72rem; width: 10%;">Qté Vendue</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 12%;">Prix Vente Moy.</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 12%;">Prix Revient</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 12%;">Total Ventes</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 12%;">Bénéfice Net</th>
+                                <th class="pe-3 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 12%;">Marge %</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y">
@@ -293,19 +328,19 @@
                                 <td class="ps-3 py-3">
                                     <div class="d-flex align-items-center gap-2.5">
                                         @if($p->product_image)
-                                            <img src="{{ asset('storage/' . $p->product_image) }}" alt="{{ $p->product_name }}" class="prod-thumb-profit"
+                                            <img src="{{ asset('storage/' . $p->product_image) }}" alt="{{ $p->product_name }}" class="prod-thumb-profit-lg shadow-xs"
                                                  onerror="this.src='{{ asset('images/placeholder-product.svg') }}'">
                                         @else
-                                            <div class="prod-thumb-profit bg-light d-flex align-items-center justify-content-center text-muted">
+                                            <div class="prod-thumb-profit-lg d-flex align-items-center justify-content-center text-muted">
                                                 <i class="fas fa-box"></i>
                                             </div>
                                         @endif
                                         <div class="min-w-0">
-                                            <div class="fw-bold text-dark text-truncate" style="max-width: 260px;" title="{{ $p->product_name }}">
+                                            <div class="fw-bold text-dark text-truncate" title="{{ $p->product_name }}">
                                                 {{ $p->product_name }}
                                             </div>
                                             <div class="text-muted small" style="font-size: 0.7rem;">
-                                                <span class="font-monospace">{{ $p->product_sku }}</span>
+                                                <span class="font-monospace text-secondary">{{ $p->product_sku }}</span>
                                                 @if($p->brand_name)
                                                     <span>• {{ $p->brand_name }}</span>
                                                 @endif
@@ -331,7 +366,6 @@
                                     </div>
                                 </td>
                                 <td class="py-3 text-end fw-semibold small">{{ currency($p->total_revenue) }}</td>
-                                <td class="py-3 text-end text-muted small">{{ currency($p->total_cost) }}</td>
                                 <td class="py-3 text-end">
                                     <span class="fw-bold fs-6 {{ $p->net_profit >= 0 ? 'text-success' : 'text-danger' }}">
                                         {{ currency($p->net_profit) }}
@@ -345,7 +379,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="8" class="text-center py-5 text-muted">
+                                <td colspan="7" class="text-center py-5 text-muted">
                                     Aucune vente enregistrée sur cette période.
                                 </td>
                             </tr>
@@ -358,16 +392,15 @@
             <!-- TAB 2: BÉNÉFICE PAR MARQUE -->
             <div class="tab-pane fade" id="tab-brands" role="tabpanel">
                 <div class="table-responsive">
-                    <table class="table align-middle mb-0">
+                    <table class="table align-middle mb-0 fixed-profit-table">
                         <thead class="bg-light border-bottom">
                             <tr>
-                                <th class="ps-3 py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem;">Marque</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold text-center" style="font-size: 0.72rem;">Articles Vendus</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem;">Chiffre d'Affaires</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem;">Coût d'Achat</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem;">Bénéfice Net</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem;">Taux Marge %</th>
-                                <th class="pe-3 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem;">Part du Bénéfice Global</th>
+                                <th class="ps-3 py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 28%;">Marque</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold text-center" style="font-size: 0.72rem; width: 12%;">Articles Vendus</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 15%;">Chiffre d'Affaires</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 15%;">Coût d'Achat</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 15%;">Bénéfice Net</th>
+                                <th class="pe-3 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 15%;">Marge & Part</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y">
@@ -383,23 +416,16 @@
                                 <td class="py-3 text-end">
                                     <span class="fw-bold fs-6 text-success">{{ currency($b->net_profit) }}</span>
                                 </td>
-                                <td class="py-3 text-end">
-                                    <span class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1">
+                                <td class="pe-3 py-3 text-end">
+                                    <span class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1 mb-1 d-inline-block">
                                         {{ $b->margin_percentage }}%
                                     </span>
-                                </td>
-                                <td class="pe-3 py-3 text-end">
-                                    <div class="d-inline-flex align-items-center gap-1.5">
-                                        <div class="progress" style="width: 60px; height: 6px;">
-                                            <div class="progress-bar bg-success" style="width: {{ min(100, $b->profit_share) }}%;"></div>
-                                        </div>
-                                        <span class="small fw-semibold text-dark">{{ $b->profit_share }}%</span>
-                                    </div>
+                                    <div class="text-muted small" style="font-size: 0.68rem;">{{ $b->profit_share }}% du total</div>
                                 </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="7" class="text-center py-5 text-muted">
+                                <td colspan="6" class="text-center py-5 text-muted">
                                     Aucune vente par marque disponible.
                                 </td>
                             </tr>
@@ -412,16 +438,15 @@
             <!-- TAB 3: BÉNÉFICE PAR CATÉGORIE -->
             <div class="tab-pane fade" id="tab-categories" role="tabpanel">
                 <div class="table-responsive">
-                    <table class="table align-middle mb-0">
+                    <table class="table align-middle mb-0 fixed-profit-table">
                         <thead class="bg-light border-bottom">
                             <tr>
-                                <th class="ps-3 py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem;">Catégorie</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold text-center" style="font-size: 0.72rem;">Articles Vendus</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem;">Chiffre d'Affaires</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem;">Coût d'Achat</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem;">Bénéfice Net</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem;">Marge %</th>
-                                <th class="pe-3 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem;">Part du Bénéfice</th>
+                                <th class="ps-3 py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 28%;">Catégorie</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold text-center" style="font-size: 0.72rem; width: 12%;">Articles Vendus</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 15%;">Chiffre d'Affaires</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 15%;">Coût d'Achat</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 15%;">Bénéfice Net</th>
+                                <th class="pe-3 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 15%;">Marge & Part</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y">
@@ -437,23 +462,16 @@
                                 <td class="py-3 text-end">
                                     <span class="fw-bold fs-6 text-success">{{ currency($c->net_profit) }}</span>
                                 </td>
-                                <td class="py-3 text-end">
-                                    <span class="badge bg-primary-subtle text-primary rounded-pill px-2.5 py-1">
+                                <td class="pe-3 py-3 text-end">
+                                    <span class="badge bg-primary-subtle text-primary rounded-pill px-2.5 py-1 mb-1 d-inline-block">
                                         {{ $c->margin_percentage }}%
                                     </span>
-                                </td>
-                                <td class="pe-3 py-3 text-end">
-                                    <div class="d-inline-flex align-items-center gap-1.5">
-                                        <div class="progress" style="width: 60px; height: 6px;">
-                                            <div class="progress-bar bg-primary" style="width: {{ min(100, $c->profit_share) }}%;"></div>
-                                        </div>
-                                        <span class="small fw-semibold text-dark">{{ $c->profit_share }}%</span>
-                                    </div>
+                                    <div class="text-muted small" style="font-size: 0.68rem;">{{ $c->profit_share }}% du total</div>
                                 </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="7" class="text-center py-5 text-muted">
+                                <td colspan="6" class="text-center py-5 text-muted">
                                     Aucune donnée par catégorie disponible.
                                 </td>
                             </tr>
@@ -592,4 +610,3 @@ function openQuickCostModal(productId, productName, currentCost) {
 </script>
 @endpush
 @endsection
-
