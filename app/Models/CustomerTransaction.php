@@ -139,7 +139,7 @@ class CustomerTransaction extends Model
         return match($this->type) {
             'payment_received' => 'bg-success-subtle text-success border-success-subtle',
             'refund_to_client' => 'bg-danger-subtle text-danger border-danger-subtle',
-            'credit_given' => 'bg-warning-subtle text-warning border-warning-subtle',
+            'credit_given' => 'bg-warning-subtle text-dark border-warning-subtle fw-semibold',
             'credit_note' => 'bg-info-subtle text-info border-info-subtle',
             'adjustment' => 'bg-secondary-subtle text-secondary border-secondary-subtle',
             default => 'bg-light text-dark',

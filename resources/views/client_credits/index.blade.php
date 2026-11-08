@@ -27,14 +27,14 @@ html, body, .main-content {
 .chip-credit {
     white-space: nowrap;
     border-radius: 9999px !important;
-    padding: 0.45rem 0.95rem;
-    font-size: 0.8rem;
+    padding: 0.35rem 0.8rem;
+    font-size: 0.78rem;
     font-weight: 600;
     text-decoration: none;
     transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.35rem;
     border: 1px solid #e2e8f0;
     background: #ffffff;
     color: #475569;
@@ -266,13 +266,13 @@ html, body, .main-content {
         <div class="col-12 col-xl-8">
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3 mb-md-4">
                 
-                <!-- Filter Chips & Search Bar (Mobile Swiper) -->
+                <!-- Filter Chips & Search Bar -->
                 <div class="p-3 border-bottom bg-white">
                     <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2.5">
-                        <!-- Horizontal Scrollable Touch Chips -->
-                        <div class="chips-scroll-credit">
+                        <!-- Fast Filter Touch Chips -->
+                        <div class="chips-scroll-credit d-flex align-items-center gap-1.5 flex-wrap">
                             <a href="{{ route('client-credits.index', ['filter' => 'all']) }}" class="chip-credit {{ $filter === 'all' ? 'active' : '' }}">
-                                <span>Tous les comptes</span>
+                                <span>Tous</span>
                             </a>
                             <a href="{{ route('client-credits.index', ['filter' => 'debtors']) }}" class="chip-credit {{ $filter === 'debtors' ? 'active' : '' }}">
                                 <i class="fas fa-arrow-down text-danger"></i>
@@ -285,14 +285,14 @@ html, body, .main-content {
                                 <span class="badge bg-info text-white rounded-pill ms-1">{{ $activeCreditorCount }}</span>
                             </a>
                             <a href="{{ route('client-credits.index', ['filter' => 'settled']) }}" class="chip-credit {{ $filter === 'settled' ? 'active' : '' }}">
-                                <span>Soldés (0 DH)</span>
+                                <span>Soldés</span>
                             </a>
                         </div>
 
                         <!-- Search Box -->
-                        <form method="GET" action="{{ route('client-credits.index') }}" class="d-flex align-items-center gap-1.5">
+                        <form method="GET" action="{{ route('client-credits.index') }}" class="d-flex align-items-center gap-1.5 flex-shrink-0">
                             <input type="hidden" name="filter" value="{{ $filter }}">
-                            <div class="input-group input-group-sm w-100" style="min-width: 180px;">
+                            <div class="input-group input-group-sm" style="width: 200px;">
                                 <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
                                 <input type="text" name="search" value="{{ request('search') }}" class="form-control bg-light border-start-0" placeholder="Rechercher client...">
                             </div>
@@ -421,11 +421,11 @@ html, body, .main-content {
                     <table class="table align-middle mb-0 fixed-credit-table">
                         <thead class="bg-light border-bottom">
                             <tr>
-                                <th class="ps-3 py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 32%;">Client</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 24%;">Statut du Solde</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 18%;">Plafond Crédit</th>
+                                <th class="ps-3 py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 30%;">Client</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 22%;">Statut du Solde</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 16%;">Plafond Crédit</th>
                                 <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 14%;">Dernier Règlement</th>
-                                <th class="pe-3 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 12%;">Actions</th>
+                                <th class="pe-3 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 18%; min-width: 175px;">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y">
@@ -437,22 +437,22 @@ html, body, .main-content {
                                             {{ strtoupper(substr($c->name, 0, 1)) }}
                                         </div>
                                         <div class="min-w-0">
-                                            <div class="d-flex align-items-center gap-1.5">
-                                                <a href="{{ route('customers.show', $c->id) }}" class="fw-bold text-dark text-decoration-none hover-primary text-truncate" title="{{ $c->name }}">
+                                            <div class="d-flex align-items-center gap-1.5 flex-nowrap">
+                                                <a href="{{ route('customers.show', $c->id) }}" class="fw-bold text-dark text-decoration-none hover-primary text-truncate" title="{{ $c->name }}" style="max-width: 175px;">
                                                     {{ $c->name }}
                                                 </a>
                                                 @if($c->customer_code)
-                                                    <span class="badge bg-light text-secondary border font-monospace px-1.5 py-0" style="font-size: 0.65rem;">
+                                                    <span class="badge bg-light text-secondary border font-monospace px-1.5 py-0 flex-shrink-0" style="font-size: 0.65rem;">
                                                         {{ $c->customer_code }}
                                                     </span>
                                                 @endif
                                             </div>
-                                            <div class="d-flex align-items-center gap-2 text-muted small mt-0.5" style="font-size: 0.74rem;">
+                                            <div class="d-flex align-items-center gap-1.5 text-muted small mt-0.5 text-nowrap" style="font-size: 0.74rem;">
                                                 @if($c->phone)
-                                                    <span><i class="fas fa-phone me-1 opacity-50"></i>{{ $c->phone }}</span>
+                                                    <span class="text-nowrap"><i class="fas fa-phone me-1 opacity-50"></i>{{ $c->phone }}</span>
                                                 @endif
                                                 @if($c->city)
-                                                    <span>• {{ $c->city }}</span>
+                                                    <span class="text-nowrap">• {{ $c->city }}</span>
                                                 @endif
                                             </div>
                                         </div>
@@ -506,19 +506,19 @@ html, body, .main-content {
                                         <span class="text-muted small fst-italic">—</span>
                                     @endif
                                 </td>
-                                <td class="pe-3 py-3 text-end">
-                                    <div class="d-inline-flex align-items-center gap-1">
-                                        <button type="button" class="btn btn-sm btn-danger rounded-pill px-2.5 py-1 shadow-xs fw-semibold"
+                                <td class="pe-3 py-3 text-end text-nowrap" style="min-width: 175px;">
+                                    <div class="d-inline-flex align-items-center gap-1 text-nowrap">
+                                        <button type="button" class="btn btn-sm btn-danger rounded-pill px-2.5 py-1 shadow-xs fw-semibold text-nowrap"
                                                 onclick="openNewPaymentForCustomer({{ $c->id }}, '{{ addslashes($c->name) }}', {{ (float) $c->current_balance }})"
                                                 title="Enregistrer un règlement / avoir">
-                                            <i class="fas fa-coins me-1"></i> Règlement
+                                            <i class="fas fa-coins me-1"></i> Régler
                                         </button>
                                         <button type="button" class="btn btn-sm btn-light border rounded-pill px-2 py-1 text-secondary"
                                                 onclick="openLimitModal({{ $c->id }}, '{{ addslashes($c->name) }}', {{ (float) $c->credit_limit }})"
-                                                title="Modifier le plafond">
+                                                title="Modifier le plafond de crédit">
                                             <i class="fas fa-sliders"></i>
                                         </button>
-                                        <a href="{{ route('customers.show', $c->id) }}" class="btn btn-sm btn-light border rounded-pill px-2 py-1 text-primary" title="Fiche client">
+                                        <a href="{{ route('customers.show', $c->id) }}" class="btn btn-sm btn-light border rounded-pill px-2 py-1 text-primary" title="Fiche client 360°">
                                             <i class="fas fa-arrow-up-right-from-square"></i>
                                         </a>
                                     </div>
