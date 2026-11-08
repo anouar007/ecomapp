@@ -47,7 +47,7 @@
                         <table style="border-collapse: collapse; width: 100%;">
                             <tr>
                                 <td style="width: 44px; padding: 0 10px 0 0; vertical-align: middle; border: none;">
-                                    <img src="{{ $item->product_image }}" 
+                                    <img src="{{ $item->email_product_image }}" 
                                          alt="{{ $item->product_name }}" 
                                          width="40" height="40" 
                                          style="width: 40px; height: 40px; object-fit: contain; border-radius: 6px; border: 1px solid #e2e8f0; background: #ffffff; display: block; padding: 2px;">

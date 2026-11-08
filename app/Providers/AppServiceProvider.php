@@ -46,20 +46,18 @@ class AppServiceProvider extends ServiceProvider
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
 
-        // Canonical host & path safety: always force https://winashop.com (non-www, no /public) in production or when accessed via winashop.com
-        try {
-            $reqHost = request()->getHost();
-        } catch (\Throwable $e) {
-            $reqHost = '';
-        }
-        $isLiveDomain = str_contains($reqHost, 'winashop.com') 
-            || str_contains((string) config('app.url'), 'winashop.com')
-            || !$this->app->environment('local');
-
-        if ($isLiveDomain && !in_array($reqHost, ['localhost', '127.0.0.1', '::1'], true) && !str_starts_with($reqHost, '192.168.') && !str_starts_with($reqHost, '10.')) {
-            config(['app.url' => 'https://winashop.com']);
-            \Illuminate\Support\Facades\URL::forceRootUrl('https://winashop.com');
-            \Illuminate\Support\Facades\URL::forceScheme('https');
+        // Canonical host & path safety: always force https://winashop.com (non-www, no /public) in production
+        if (!$this->app->environment('local')) {
+            try {
+                $reqHost = request()->getHost();
+            } catch (\Throwable $e) {
+                $reqHost = '';
+            }
+            if (str_contains($reqHost, 'winashop.com') || str_contains((string) config('app.url'), 'winashop.com')) {
+                config(['app.url' => 'https://winashop.com']);
+                \Illuminate\Support\Facades\URL::forceRootUrl('https://winashop.com');
+                \Illuminate\Support\Facades\URL::forceScheme('https');
+            }
         }
 
         // Implicitly grant "Admin" role all permissions

@@ -95,6 +95,15 @@ class OrderItem extends Model
     }
 
     /**
+     * Get guaranteed public HTTPS image URL specifically for emails (Gmail, iOS Mail, Outlook).
+     */
+    public function getEmailProductImageAttribute(): string
+    {
+        $raw = $this->resolveRawProductImage();
+        return static::normalizePublicSecureUrl($raw, true);
+    }
+
+    /**
      * Resolve the best candidate image path or URL for this order item.
      */
     protected function resolveRawProductImage(): string
@@ -159,20 +168,29 @@ class OrderItem extends Model
      * 2. Insecure http:// blocked by iOS App Transport Security & Gmail Proxy (upgrades to https://)
      * 3. Relative paths missing domain (prefixes with https://winashop.com)
      */
-    public static function normalizePublicSecureUrl(?string $url): string
+    public static function normalizePublicSecureUrl(?string $url, bool $forcePublicHttps = false): string
     {
         if (empty($url)) {
             $url = 'images/camera/cat_cameras.jpg';
         }
 
-        // Canonical public domain
-        $liveDomain = 'https://winashop.com';
-        try {
-            $host = request()->getHost();
-            if (!empty($host) && !in_array($host, ['localhost', '127.0.0.1', '::1'], true) && !str_starts_with($host, '192.168.') && !str_starts_with($host, '10.')) {
-                $liveDomain = 'https://' . ltrim(preg_replace('#^https?://#', '', $host), '/');
+        $reqHost = '';
+        try { $reqHost = request()->getHost(); } catch (\Throwable $e) {}
+        $isLocalHost = in_array($reqHost, ['localhost', '127.0.0.1', '::1'], true) || str_starts_with($reqHost, '192.168.') || str_starts_with($reqHost, '10.');
+
+        // When viewing on local development and not explicitly forcing public HTTPS for email:
+        if ($isLocalHost && !$forcePublicHttps && app()->environment('local')) {
+            if (str_starts_with($url, 'http://') || str_starts_with($url, 'https://')) {
+                return $url;
             }
-        } catch (\Throwable $e) {}
+            return asset(ltrim($url, '/'));
+        }
+
+        // Canonical public domain for emails and production
+        $liveDomain = 'https://winashop.com';
+        if (!empty($reqHost) && !$isLocalHost) {
+            $liveDomain = 'https://' . ltrim(preg_replace('#^https?://#', '', $reqHost), '/');
+        }
 
         // Replace localhost or 127.0.0.1 (occurs when APP_URL is default in .env)
         if (str_contains($url, 'localhost') || str_contains($url, '127.0.0.1') || str_contains($url, '::1')) {

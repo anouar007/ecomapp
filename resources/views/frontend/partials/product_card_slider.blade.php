@@ -53,7 +53,7 @@
         @endforeach
 
         <a href="{{ $cardUrl }}" class="w-100 h-100 d-flex align-items-center justify-content-center" aria-label="{{ $product->name }}" title="{{ $cardAltTitle }}">
-            <img itemprop="image" src="{{ $product->card_thumbnail }}" alt="{{ $cardAltTitle }}" width="220" height="220" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='{{ $product->thumbnail }}';" @if($product->primary_image_padding_style) style="padding: {{ $product->primary_image_padding_style }} !important;" @endif>
+            <img itemprop="image" src="{{ $product->card_thumbnail }}" alt="{{ $cardAltTitle }}" width="220" height="220" loading="lazy" decoding="async" onerror="if(!this.dataset.triedThumb){this.dataset.triedThumb='1';this.src='{{ $product->thumbnail }}';}else{this.onerror=null;this.src='{{ asset('images/camera/cat_cameras.jpg') }}';}" @if($product->primary_image_padding_style) style="padding: {{ $product->primary_image_padding_style }} !important;" @endif>
         </a>
     </div>
 

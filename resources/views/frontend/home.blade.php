@@ -167,7 +167,7 @@
                         $topLink = $heroSideTop?->link ?? route('shop.index', ['q' => 'Osmo Pocket']);
                         $topBtn = $heroSideTop?->button_text ?? 'Acheter';
                     @endphp
-                    <div class="hero-side-card position-relative overflow-hidden flex-fill" title="{{ $heroSideTop?->title ?? '' }}">
+                    <div class="hero-side-card position-relative overflow-hidden flex-fill" style="min-height: 236px;" title="{{ $heroSideTop?->title ?? '' }}">
                         <div class="hero-side-bg" style="background-image: url('{{ $topImg }}');"></div>
                         <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(15,23,42,0.15) 0%, rgba(15,23,42,0.6) 100%); pointer-events: none;"></div>
                         <span class="hero-side-tag">{{ $topTag }}</span>
@@ -189,7 +189,7 @@
                         $botLink = $heroSideBottom?->link ?? route('shop.index', ['q' => 'Godox AD800']);
                         $botBtn = $heroSideBottom?->button_text ?? 'Découvrez la GODOX AD800 PRO';
                     @endphp
-                    <div class="hero-side-card position-relative overflow-hidden flex-fill" title="{{ $heroSideBottom?->title ?? '' }}">
+                    <div class="hero-side-card position-relative overflow-hidden flex-fill" style="min-height: 236px;" title="{{ $heroSideBottom?->title ?? '' }}">
                         <div class="hero-side-bg" style="background-image: url('{{ $botImg }}');"></div>
                         <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(15,23,42,0.15) 0%, rgba(15,23,42,0.6) 100%); pointer-events: none;"></div>
                         <span class="hero-side-tag">{{ $botTag }}</span>
