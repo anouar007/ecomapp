@@ -116,12 +116,13 @@ class CheckoutController extends Controller
             'shipping_city.required' => 'Veuillez sélectionner ou saisir votre ville.',
         ]);
 
-        // Normalize & clean customer phone number
+        // Normalize & clean customer phone & email
         $rawPhone = trim($request->customer_phone);
         $cleanPhone = preg_replace('/[^\d\+]/', '', $rawPhone);
         if (preg_match('/^[5-8]\d{8}$/', $cleanPhone)) {
             $cleanPhone = '0' . $cleanPhone;
         }
+        $cleanEmail = !empty($request->customer_email) ? trim(strtolower((string)$request->customer_email)) : null;
 
         // Determine actual city name (support manual entry if city is not in the list)
         $cityName = trim($request->shipping_city ?? '');
@@ -187,13 +188,13 @@ class CheckoutController extends Controller
         $total = max(0, $subtotal + $shippingCost - $discount); // Total TTC including shipping minus discount
 
         try {
-            $order = DB::transaction(function () use ($request, $cleanPhone, $cityName, $subtotalNet, $tax, $shippingCost, $discount, $coupon, $total, $cart, $subtotal) {
+            $order = DB::transaction(function () use ($request, $cleanPhone, $cleanEmail, $cityName, $subtotalNet, $tax, $shippingCost, $discount, $coupon, $total, $cart, $subtotal) {
                 // Create Order
                 $order = Order::create([
                     'order_number' => 'ORD-' . strtoupper(Str::random(10)),
                     'user_id' => auth()->id(), // Link to user if logged in
                     'customer_name' => $request->customer_name,
-                    'customer_email' => $request->customer_email,
+                    'customer_email' => $cleanEmail,
                     'customer_phone' => $cleanPhone ?: $request->customer_phone,
                     'ice' => $request->ice,
                     'shipping_address' => $request->shipping_address,
@@ -269,14 +270,20 @@ class CheckoutController extends Controller
         session()->forget('applied_coupon');
         session()->put('last_order_id', $order->id);
 
-        // Send Emails asynchronously / after response so the customer experiences instant order confirmation without SMTP delays
+        // Send Emails (Customer confirmation + Admin order notification)
         $sendEmails = function () use ($order) {
             try {
                 MailConfigService::applyConfig();
 
+                $customerEmail = !empty($order->customer_email) ? trim(strtolower((string)$order->customer_email)) : null;
+
                 // 1. Customer confirmation email
-                if (!empty($order->customer_email) && filter_var($order->customer_email, FILTER_VALIDATE_EMAIL)) {
-                    Mail::to($order->customer_email)->send(new OrderConfirmation($order));
+                if (!empty($customerEmail) && filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
+                    Log::info("Sending order confirmation email to {$customerEmail} for order #{$order->order_number}");
+                    Mail::to($customerEmail)->send(new OrderConfirmation($order));
+                    Log::info("Order confirmation email successfully sent to {$customerEmail} for order #{$order->order_number}");
+                } else {
+                    Log::warning("Skipped customer confirmation email for order #{$order->order_number}: invalid or empty email '{$order->customer_email}'");
                 }
 
                 // 2. Admin order notification email
@@ -284,22 +291,23 @@ class CheckoutController extends Controller
                 if ($notificationsEnabled) {
                     $recipients = MailConfigService::getOrderNotificationRecipients();
                     if (!empty($recipients)) {
+                        Log::info("Sending admin notification to " . implode(', ', $recipients) . " for order #{$order->order_number}");
                         Mail::to($recipients)->send(new NewOrderNotification($order));
+                        Log::info("Admin order notification successfully sent for order #{$order->order_number}");
                     }
                 }
             } catch (\Throwable $e) {
-                Log::error('Failed to send checkout emails: ' . $e->getMessage());
+                Log::error("Failed to send checkout emails for order #{$order->order_number}: " . $e->getMessage(), [
+                    'trace' => $e->getTraceAsString()
+                ]);
             }
         };
 
-        if (app()->runningUnitTests()) {
+        // Execute immediately to prevent FastCGI / shared hosting from dropping background tasks before SMTP completes
+        try {
             $sendEmails();
-        } elseif (function_exists('defer')) {
-            defer($sendEmails);
-        } elseif (function_exists('dispatch')) {
-            dispatch($sendEmails)->afterResponse();
-        } else {
-            $sendEmails();
+        } catch (\Throwable $e) {
+            Log::error('Synchronous email execution failed: ' . $e->getMessage());
         }
 
         return redirect()->route('checkout.success', ['order' => $order->id]);

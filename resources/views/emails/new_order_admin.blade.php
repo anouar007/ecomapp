@@ -116,10 +116,10 @@
                                 {{ $item->quantity }}
                             </td>
                             <td style="text-align: right; color: #475569;">
-                                {{ number_format($item->price, 2, ',', ' ') }} DH
+                                {{ number_format((float) ($item->price ?? 0), 2, ',', ' ') }} DH
                             </td>
                             <td style="text-align: right; font-weight: 700; color: #0f172a;">
-                                {{ number_format($item->subtotal ?: ($item->price * $item->quantity), 2, ',', ' ') }} DH
+                                {{ number_format((float) ($item->subtotal ?: (($item->price ?? 0) * ($item->quantity ?? 1))), 2, ',', ' ') }} DH
                             </td>
                         </tr>
                         @endforeach
@@ -131,21 +131,21 @@
                     <table width="100%" style="border-collapse: collapse;">
                         <tr>
                             <td style="padding: 4px 0; color: #64748b; font-size: 13.5px;">Sous-total HT :</td>
-                            <td style="padding: 4px 0; text-align: right; color: #0f172a; font-weight: 600; font-size: 13.5px;">{{ number_format($order->subtotal, 2, ',', ' ') }} DH</td>
+                            <td style="padding: 4px 0; text-align: right; color: #0f172a; font-weight: 600; font-size: 13.5px;">{{ number_format((float) ($order->subtotal ?? 0), 2, ',', ' ') }} DH</td>
                         </tr>
                         <tr>
                             <td style="padding: 4px 0; color: #64748b; font-size: 13.5px;">TVA ({{ setting('tax_rate', 20) }}%) :</td>
-                            <td style="padding: 4px 0; text-align: right; color: #0f172a; font-weight: 600; font-size: 13.5px;">{{ number_format($order->tax, 2, ',', ' ') }} DH</td>
+                            <td style="padding: 4px 0; text-align: right; color: #0f172a; font-weight: 600; font-size: 13.5px;">{{ number_format((float) ($order->tax ?? 0), 2, ',', ' ') }} DH</td>
                         </tr>
                         <tr>
                             <td style="padding: 4px 0; color: #64748b; font-size: 13.5px;">Frais de livraison :</td>
                             <td style="padding: 4px 0; text-align: right; color: #059669; font-weight: 700; font-size: 13.5px;">
-                                {{ $order->shipping_cost > 0 ? number_format($order->shipping_cost, 2, ',', ' ') . ' DH' : 'Gratuite' }}
+                                {{ ($order->shipping_cost ?? 0) > 0 ? number_format((float) $order->shipping_cost, 2, ',', ' ') . ' DH' : 'Gratuite' }}
                             </td>
                         </tr>
                         <tr style="border-top: 2px dashed #cbd5e1;">
                             <td style="padding: 12px 0 4px; font-size: 17px; font-weight: 800; color: #0f172a;">TOTAL TTC :</td>
-                            <td style="padding: 12px 0 4px; text-align: right; font-size: 19px; font-weight: 800; color: #dc2626;">{{ number_format($order->total, 2, ',', ' ') }} DH</td>
+                            <td style="padding: 12px 0 4px; text-align: right; font-size: 19px; font-weight: 800; color: #dc2626;">{{ number_format((float) ($order->total ?? 0), 2, ',', ' ') }} DH</td>
                         </tr>
                     </table>
                 </div>
