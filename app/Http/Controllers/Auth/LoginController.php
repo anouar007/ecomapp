@@ -31,17 +31,43 @@ class LoginController extends Controller
         $credentials['email'] = filter_var($credentials['email'], FILTER_SANITIZE_EMAIL);
 
         if (Auth::attempt($credentials, $request->filled('remember'))) {
+            $user = auth()->user();
+
+            // Check if user account is inactive or suspended
+            if ($user->status && $user->status !== 'active') {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                $statusMsg = $user->status === 'suspended'
+                    ? 'Votre compte a été suspendu pour des raisons de sécurité. Veuillez contacter l\'administrateur.'
+                    : 'Votre compte est inactif. Veuillez contacter votre administrateur pour réactiver votre accès.';
+
+                throw ValidationException::withMessages([
+                    'email' => __($statusMsg),
+                ]);
+            }
+
             $request->session()->regenerate();
+
+            // Track last login timestamp and IP
+            try {
+                $user->update([
+                    'last_login_at' => now(),
+                    'last_login_ip' => $request->ip(),
+                ]);
+            } catch (\Throwable $e) {
+                \Log::warning('Could not record last_login_at: ' . $e->getMessage());
+            }
             
             // Log successful login
             \Log::info('User logged in', [
-                'user_id' => auth()->id(),
+                'user_id' => $user->id,
                 'ip' => $request->ip(),
                 'user_agent' => $request->userAgent()
             ]);
             
-            $user = auth()->user();
-            if ($user->hasRole('Admin') || $user->hasRole('Staff')) {
+            if ($user->hasRole('Admin') || $user->hasRole('Manager') || $user->hasRole('Staff') || $user->can('view_dashboard')) {
                 return redirect()->intended(route('dashboard'));
             }
             

@@ -705,6 +705,15 @@
                 </a>
             </li>
             @endcan
+
+            @if(auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('manage_users') || auth()->user()->can('manage_roles')))
+            <li class="sidebar-menu-item">
+                <a href="{{ route('users.index') }}" class="sidebar-menu-link {{ request()->routeIs('users.*') || request()->routeIs('roles.*') ? 'active' : '' }}">
+                    <i class="fas fa-users-gear"></i>
+                    <span>Équipe & Rôles</span>
+                </a>
+            </li>
+            @endif
             
             <!-- Developer Credit -->
             <li class="sidebar-menu-item mt-auto pt-4 pb-2 px-4 text-center">

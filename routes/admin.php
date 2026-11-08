@@ -21,9 +21,12 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     // Permissions Management
     Route::resource('permissions', \App\Http\Controllers\PermissionController::class);
     
-    // Users Management
-    Route::get('users', [\App\Http\Controllers\UserRoleController::class, 'index'])
-        ->name('users.index');
-    Route::put('users/{user}/roles', [\App\Http\Controllers\UserRoleController::class, 'updateRoles'])
+    // Users & Team Management
+    Route::resource('users', \App\Http\Controllers\UserController::class);
+    Route::post('users/{user}/toggle-status', [\App\Http\Controllers\UserController::class, 'toggleStatus'])
+        ->name('users.toggle-status');
+    Route::post('users/{user}/reset-password', [\App\Http\Controllers\UserController::class, 'resetPassword'])
+        ->name('users.reset-password');
+    Route::put('users/{user}/roles', [\App\Http\Controllers\UserController::class, 'updateRoles'])
         ->name('users.update-roles');
 });
