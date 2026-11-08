@@ -123,8 +123,8 @@ class SecurityHeaders
             return $html;
         }
 
-        // Remove HTML comments except conditional IE or Livewire/Blade markers
-        $cleaned = preg_replace('/<!--(?!\s*(?:\[if [^\]]+]|<!|>))(?:(?!-->).)*-->/s', '', $html);
+        // Remove HTML comments safely (non-greedy, no catastrophic backtracking)
+        $cleaned = preg_replace('/<!--(?!\s*(?:\[if [^\]]+]|<!|>)).*?-->/s', '', $html);
         if (is_string($cleaned)) {
             $html = $cleaned;
         }

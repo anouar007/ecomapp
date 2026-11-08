@@ -353,7 +353,7 @@
                                     <div class="d-flex align-items-center gap-2.5">
                                         @if($p->product_image)
                                             <img src="{{ asset('storage/' . $p->product_image) }}" alt="{{ $p->product_name }}" class="prod-thumb-profit-lg shadow-xs"
-                                                 onerror="this.src='{{ asset('images/placeholder-product.svg') }}'">
+                                                 onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                                         @else
                                             <div class="prod-thumb-profit-lg d-flex align-items-center justify-content-center text-muted">
                                                 <i class="fas fa-box"></i>
@@ -419,7 +419,7 @@
                         <div class="d-flex align-items-start gap-2.5 mb-2.5">
                             @if($p->product_image)
                                 <img src="{{ asset('storage/' . $p->product_image) }}" alt="{{ $p->product_name }}" class="prod-thumb-profit-lg shadow-xs"
-                                     onerror="this.src='{{ asset('images/placeholder-product.svg') }}'">
+                                     onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
                             @else
                                 <div class="prod-thumb-profit-lg d-flex align-items-center justify-content-center text-muted">
                                     <i class="fas fa-box"></i>
