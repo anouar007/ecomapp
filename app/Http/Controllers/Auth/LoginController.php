@@ -66,6 +66,23 @@ class LoginController extends Controller
                 'ip' => $request->ip(),
                 'user_agent' => $request->userAgent()
             ]);
+
+            try {
+                \App\Models\ActivityLog::create([
+                    'user_id' => $user->id,
+                    'subject_type' => get_class($user),
+                    'subject_id' => $user->id,
+                    'event' => 'login',
+                    'description' => "Connexion réussie de {$user->name} ({$user->email})",
+                    'properties' => [
+                        'ip' => $request->ip(),
+                        'user_name' => $user->name,
+                        'user_email' => $user->email,
+                    ],
+                    'ip_address' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]);
+            } catch (\Throwable $e) {}
             
             if ($user->hasRole('Admin') || $user->hasRole('Manager') || $user->hasRole('Staff') || $user->can('view_dashboard')) {
                 return redirect()->intended(route('dashboard'));
@@ -90,6 +107,25 @@ class LoginController extends Controller
      */
     public function logout(Request $request)
     {
+        $user = auth()->user();
+        if ($user) {
+            try {
+                \App\Models\ActivityLog::create([
+                    'user_id' => $user->id,
+                    'subject_type' => get_class($user),
+                    'subject_id' => $user->id,
+                    'event' => 'logout',
+                    'description' => "Déconnexion de {$user->name} ({$user->email})",
+                    'properties' => [
+                        'ip' => $request->ip(),
+                        'user_name' => $user->name,
+                    ],
+                    'ip_address' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]);
+            } catch (\Throwable $e) {}
+        }
+
         Auth::logout();
 
         $request->session()->invalidate();

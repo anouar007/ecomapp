@@ -53,13 +53,40 @@ class ActivityLog extends Model
      */
     public function getChangesAttribute(): array
     {
-        if (!isset($this->properties['old']) || !isset($this->properties['new'])) {
+        $old = $this->properties['old'] ?? [];
+        $new = $this->properties['new'] ?? [];
+
+        if (empty($old) && empty($new)) {
             return [];
         }
 
         $changes = [];
-        foreach ($this->properties['new'] as $key => $newValue) {
-            $oldValue = $this->properties['old'][$key] ?? null;
+
+        if ($this->event === 'created') {
+            foreach ($new as $key => $newValue) {
+                $changes[$key] = [
+                    'old' => null,
+                    'new' => $newValue,
+                ];
+            }
+            return $changes;
+        }
+
+        if ($this->event === 'deleted') {
+            foreach ($old as $key => $oldValue) {
+                $changes[$key] = [
+                    'old' => $oldValue,
+                    'new' => null,
+                ];
+            }
+            return $changes;
+        }
+
+        // Updated
+        $allKeys = array_unique(array_merge(array_keys($old), array_keys($new)));
+        foreach ($allKeys as $key) {
+            $oldValue = $old[$key] ?? null;
+            $newValue = $new[$key] ?? null;
             if ($oldValue != $newValue) {
                 $changes[$key] = [
                     'old' => $oldValue,
@@ -69,6 +96,43 @@ class ActivityLog extends Model
         }
 
         return $changes;
+    }
+
+    public function getEventBadgeAttribute(): string
+    {
+        return match($this->event) {
+            'created' => '<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1"><i class="fas fa-plus-circle me-1"></i>Création</span>',
+            'updated' => '<span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1"><i class="fas fa-pen-to-square me-1"></i>Modification</span>',
+            'deleted' => '<span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1"><i class="fas fa-trash-can me-1"></i>Suppression</span>',
+            'login' => '<span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2.5 py-1"><i class="fas fa-right-to-bracket me-1"></i>Connexion</span>',
+            'logout' => '<span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2.5 py-1"><i class="fas fa-right-from-bracket me-1"></i>Déconnexion</span>',
+            'password_reset' => '<span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2.5 py-1"><i class="fas fa-key me-1"></i>Mot de passe</span>',
+            default => '<span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2.5 py-1">' . htmlspecialchars(ucfirst($this->event)) . '</span>',
+        };
+    }
+
+    public function getSubjectLabelAttribute(): string
+    {
+        if (!$this->subject_type) return 'Système';
+        $base = class_basename($this->subject_type);
+        $name = match($base) {
+            'Product' => 'Produit',
+            'ProductVariant' => 'Variante',
+            'Category' => 'Catégorie',
+            'Order' => 'Commande',
+            'Invoice' => 'Facture',
+            'Customer' => 'Client',
+            'Coupon' => 'Code Promo',
+            'User' => 'Utilisateur',
+            'Setting' => 'Paramètre',
+            'InventoryMovement' => 'Mouvement Stock',
+            'Banner' => 'Bannière',
+            'Brand' => 'Marque',
+            'ProductReview' => 'Avis',
+            'ReturnOrder' => 'Retour',
+            default => $base,
+        };
+        return $this->subject_id ? "{$name} #{$this->subject_id}" : $name;
     }
 
     public function getEventColorAttribute(): string

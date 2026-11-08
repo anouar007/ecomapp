@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class Invoice extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\LogsActivity;
 
     protected $fillable = [
         'invoice_number',

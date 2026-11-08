@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Cache;
 
 class Setting extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\LogsActivity;
 
     protected $fillable = ['key', 'value', 'type', 'group'];
 

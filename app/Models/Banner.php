@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Banner extends Model
 {
+    use \App\Traits\LogsActivity;
     protected $fillable = [
         'title',
         'badge',

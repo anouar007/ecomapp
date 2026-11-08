@@ -52,9 +52,28 @@ class ActivityLogController extends Controller
         return view('activity-logs.index', compact('logs', 'stats', 'users'));
     }
 
-    public function show(ActivityLog $activityLog)
+    public function show(Request $request, ActivityLog $activityLog)
     {
         $activityLog->load('user', 'subject');
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'id' => $activityLog->id,
+                'event' => $activityLog->event,
+                'event_badge' => $activityLog->event_badge,
+                'description' => $activityLog->description,
+                'subject_label' => $activityLog->subject_label,
+                'user_name' => $activityLog->user ? $activityLog->user->name : ($activityLog->properties['user_name'] ?? 'Système'),
+                'user_email' => $activityLog->user ? $activityLog->user->email : ($activityLog->properties['user_email'] ?? null),
+                'date' => $activityLog->created_at->format('d/m/Y H:i:s'),
+                'diff_for_humans' => $activityLog->created_at->diffForHumans(),
+                'ip_address' => $activityLog->ip_address ?? '—',
+                'user_agent' => $activityLog->user_agent ?? '—',
+                'changes' => $activityLog->changes,
+                'properties' => $activityLog->properties,
+            ]);
+        }
+
         return view('activity-logs.show', compact('activityLog'));
     }
 

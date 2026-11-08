@@ -1,245 +1,556 @@
 @extends('layouts.app')
 
-@section('title', "Journal d'Activité")
+@section('title', "Journal d'Activité & Traçabilité")
+
+@push('styles')
+<style>
+/* Chips Bar Horizontal Scroll */
+.chips-scroll {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 2px;
+}
+.chips-scroll::-webkit-scrollbar {
+    display: none;
+}
+.chip-item {
+    white-space: nowrap;
+    border-radius: 9999px !important;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #475569;
+}
+.chip-item:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+.chip-item.active {
+    background: #0f172a;
+    color: #ffffff;
+    border-color: #0f172a;
+    box-shadow: 0 2px 4px rgba(15, 23, 42, 0.15);
+}
+.chip-item.active .badge {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+}
+
+/* Diff Table Styles */
+.diff-table th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    background: #f8fafc;
+}
+.diff-old {
+    background-color: #fff1f2 !important;
+    color: #be123c !important;
+    font-family: monospace;
+    font-size: 0.82rem;
+    border-left: 3px solid #f43f5e;
+}
+.diff-new {
+    background-color: #f0fdf4 !important;
+    color: #15803d !important;
+    font-family: monospace;
+    font-size: 0.82rem;
+    border-left: 3px solid #22c55e;
+}
+</style>
+@endpush
 
 @section('content')
-<div class="brand-header mb-3 mb-md-4">
-    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 w-100">
+<div class="container-fluid px-2 px-sm-3 px-md-4 py-2 py-md-3">
+
+    <!-- Header Section -->
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3 pt-1">
         <div class="d-flex align-items-center gap-2.5">
-            <div class="brand-header-icon flex-shrink-0">
-                <i class="fas fa-history"></i>
+            <div class="rounded-4 p-2.5 d-flex align-items-center justify-content-center shadow-xs text-white" 
+                 style="width: 44px; height: 44px; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
+                <i class="fas fa-history fs-5"></i>
             </div>
             <div>
-                <h1 class="brand-title">Journal d'Activité</h1>
-                <p class="brand-subtitle">Suivi des actions utilisateurs et traçabilité des événements système</p>
+                <h1 class="h5 fw-bold mb-0 text-dark">Journal d'Activité & Traçabilité</h1>
+                <p class="text-muted small mb-0 d-none d-sm-block">Historique complet des modifications : anciennes valeurs, dates et opérateurs</p>
             </div>
         </div>
-        <form action="{{ route('activity-logs.clear') }}" method="POST" onsubmit="return confirm('Supprimer les journaux anciens de plus de 90 jours ?');">
-            @csrf
-            <input type="hidden" name="older_than_days" value="90">
-            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1.5 fw-semibold">
-                <i class="fas fa-trash-alt me-1.5"></i> Purger (>90j)
-            </button>
-        </form>
-    </div>
-</div>
 
-@if(session('success'))
-<div class="alert alert-success alert-dismissible fade show rounded-3 border-0 shadow-sm mb-3 mb-md-4" role="alert">
-    <i class="fas fa-check-circle me-1.5"></i> {{ session('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-@endif
-
-<!-- Statistics Cards -->
-<div class="row g-2 g-md-3 mb-3 mb-md-4">
-    <div class="col-6 col-md-4">
-        <div class="stat-kpi-card">
-            <div class="d-flex align-items-center justify-content-between">
-                <div class="min-w-0">
-                    <div class="stat-kpi-label text-truncate">Total Logs</div>
-                    <div class="stat-kpi-value text-dark fs-4">{{ number_format($stats['total_activities']) }}</div>
-                    <div class="stat-kpi-sub text-muted d-none d-sm-block text-truncate">Événements enregistrés</div>
-                </div>
-                <div class="stat-kpi-icon bg-primary-subtle text-primary">
-                    <i class="fas fa-list-ul"></i>
-                </div>
-            </div>
+        <div class="d-flex align-items-center gap-2">
+            <form action="{{ route('activity-logs.clear') }}" method="POST" onsubmit="return confirm('Purger définitivement les journaux anciens de plus de 90 jours ?');">
+                @csrf
+                <input type="hidden" name="older_than_days" value="90">
+                <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-xs">
+                    <i class="fas fa-trash-can"></i>
+                    <span>Purger (>90j)</span>
+                </button>
+            </form>
         </div>
     </div>
 
-    <div class="col-6 col-md-4">
-        <div class="stat-kpi-card">
-            <div class="d-flex align-items-center justify-content-between">
-                <div class="min-w-0">
-                    <div class="stat-kpi-label text-truncate">Aujourd'hui</div>
-                    <div class="stat-kpi-value text-success fs-4">{{ number_format($stats['today_activities']) }}</div>
-                    <div class="stat-kpi-sub text-muted d-none d-sm-block text-truncate">Activité en direct</div>
-                </div>
-                <div class="stat-kpi-icon bg-success-subtle text-success">
-                    <i class="fas fa-clock"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-12 col-md-4">
-        <div class="stat-kpi-card">
-            <div class="d-flex align-items-center justify-content-between">
-                <div class="min-w-0">
-                    <div class="stat-kpi-label text-truncate">Utilisateurs Uniques</div>
-                    <div class="stat-kpi-value text-info fs-4">{{ number_format($stats['unique_users']) }}</div>
-                    <div class="stat-kpi-sub text-muted d-none d-sm-block text-truncate">Opérateurs actifs</div>
-                </div>
-                <div class="stat-kpi-icon bg-info-subtle text-info">
-                    <i class="fas fa-users"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Filters -->
-<div class="card mb-3 mb-md-4 border-0 shadow-sm rounded-3">
-    <div class="card-body p-3">
-        <form method="GET" action="{{ route('activity-logs.index') }}" class="row g-2 align-items-center">
-            <div class="col-12 col-md-4">
-                <input type="text" name="search" class="form-control" placeholder="Rechercher une action..." value="{{ request('search') }}">
-            </div>
-            
-            <div class="col-6 col-md-3">
-                <select name="user_id" class="form-select">
-                    <option value="">Tous les utilisateurs</option>
-                    @foreach($users as $user)
-                        <option value="{{ $user->id }}" {{ request('user_id') == $user->id ? 'selected' : '' }}>
-                            {{ $user->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="col-6 col-md-3">
-                <input type="date" name="start_date" class="form-control" value="{{ request('start_date') }}" placeholder="Date début">
-            </div>
-            
-            <div class="col-12 col-md-2 d-flex gap-2">
-                <button type="submit" class="btn btn-primary flex-grow-1"><i class="fas fa-filter me-1"></i> Filtrer</button>
-                @if(request()->hasAny(['search', 'user_id', 'start_date', 'end_date']))
-                <a href="{{ route('activity-logs.index') }}" class="btn btn-outline-secondary"><i class="fas fa-redo"></i></a>
-                @endif
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Desktop Table (d-none d-md-block, Zero horizontal scroll) -->
-<div class="brand-table-card d-none d-md-block shadow-sm rounded-4 overflow-hidden bg-white mb-4">
-    <div class="card-header bg-white p-3 px-md-4 border-bottom">
-        <h5 class="mb-0 fw-bold fs-6 fs-md-5">
-            <i class="fas fa-history text-danger me-2"></i>Historique des événements
-        </h5>
-    </div>
-    <div class="table-responsive">
-        <table class="brand-table mb-0 align-middle">
-            <thead>
-                <tr>
-                    <th style="padding-left: 1.5rem; width: 22%;">Utilisateur</th>
-                    <th style="width: 25%;">Action</th>
-                    <th style="width: 18%;">Élément concerné</th>
-                    <th style="width: 20%;">Date & Heure</th>
-                    <th class="text-end" style="padding-right: 1.5rem; width: 15%;">Détails</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($logs as $log)
-                <tr>
-                    <td style="padding-left: 1.5rem;">
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-xs flex-shrink-0" 
-                                 style="width: 32px; height: 32px; background: #e2e8f0; color: #475569; font-size: 0.78rem;">
-                                {{ $log->user ? substr($log->user->name, 0, 1) : 'S' }}
-                            </div>
-                            <div class="min-w-0">
-                                <span class="fw-semibold text-dark text-truncate d-block small">{{ $log->user->name ?? 'Système' }}</span>
-                                <small class="text-muted text-truncate d-block" style="font-size: 0.70rem;">{{ $log->user->email ?? '' }}</small>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <span class="badge bg-light text-dark border px-2.5 py-1 small">
-                            {{ $log->description }}
-                        </span>
-                    </td>
-                    <td>
-                        @if($log->subject_type)
-                            <span class="badge bg-secondary-subtle text-secondary border px-2 py-0.5" style="font-size: 0.72rem;">
-                                {{ class_basename($log->subject_type) }} #{{ $log->subject_id }}
-                            </span>
-                        @else
-                            <span class="text-muted small">—</span>
-                        @endif
-                    </td>
-                    <td>
-                        <div class="small text-dark">{{ $log->created_at->format('d/m/Y') }}</div>
-                        <small class="text-muted font-monospace" style="font-size: 0.70rem;">{{ $log->created_at->format('H:i:s') }}</small>
-                    </td>
-                    <td style="padding-right: 1.5rem;" class="text-end">
-                        <div class="action-buttons-group justify-content-end">
-                            <a href="{{ route('activity-logs.show', $log) }}" class="action-btn action-btn-view" title="Voir les détails">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="5" class="text-center py-5">
-                        <div class="opacity-50 mb-2">
-                            <i class="fas fa-history fa-3x text-muted mb-3"></i>
-                            <h6 class="fw-bold text-muted">Aucun journal d'activité trouvé</h6>
-                        </div>
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-    @if($logs->hasPages())
-    <div class="p-3 border-top d-flex justify-content-center">
-        {{ $logs->links() }}
+    <!-- Feedback Alerts -->
+    @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show rounded-3 border-0 shadow-xs mb-3 d-flex align-items-center gap-2 py-2.5 px-3" role="alert">
+        <i class="fas fa-circle-check fs-5 text-success flex-shrink-0"></i>
+        <div class="small fw-semibold">{{ session('success') }}</div>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     @endif
-</div>
 
-<!-- Mobile Touch Cards (d-block d-md-none, Zero horizontal scroll) -->
-<div class="d-block d-md-none mb-4">
-    @forelse($logs as $log)
-    <div class="card border rounded-3 p-3 mb-2.5 bg-white shadow-xs">
-        <div class="d-flex align-items-center justify-content-between mb-2">
-            <div class="d-flex align-items-center gap-2 min-w-0">
-                <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-xs flex-shrink-0" 
-                     style="width: 28px; height: 28px; background: #e2e8f0; color: #475569; font-size: 0.74rem;">
-                    {{ $log->user ? substr($log->user->name, 0, 1) : 'S' }}
-                </div>
-                <span class="fw-bold text-dark text-truncate small">{{ $log->user->name ?? 'Système' }}</span>
-            </div>
-            <span class="text-muted small" style="font-size: 0.72rem;">
-                {{ $log->created_at->format('d/m/Y H:i') }}
-            </span>
-        </div>
-
-        <div class="mb-2">
-            <span class="badge bg-light text-dark border px-2 py-1 text-wrap text-start lh-sm" style="font-size: 0.78rem;">
-                {{ $log->description }}
-            </span>
-        </div>
-
-        <div class="d-flex align-items-center justify-content-between pt-2 border-top">
-            <div>
-                @if($log->subject_type)
-                    <span class="badge bg-secondary-subtle text-secondary border px-2 py-0.5" style="font-size: 0.70rem;">
-                        {{ class_basename($log->subject_type) }} #{{ $log->subject_id }}
+    <!-- KPI Statistics Cards -->
+    <div class="row g-2 g-md-3 mb-3">
+        <div class="col-4">
+            <div class="card border-0 rounded-4 shadow-xs bg-white p-3 h-100">
+                <div class="d-flex align-items-center justify-content-between mb-1">
+                    <span class="text-muted small fw-semibold text-uppercase" style="font-size: 0.7rem;">Total Événements</span>
+                    <span class="rounded-circle d-flex align-items-center justify-content-center bg-primary-subtle text-primary" style="width: 32px; height: 32px;">
+                        <i class="fas fa-list-check" style="font-size: 0.8rem;"></i>
                     </span>
-                @else
-                    <span class="text-muted small" style="font-size: 0.72rem;">—</span>
-                @endif
+                </div>
+                <div class="fs-4 fw-bold text-dark">{{ number_format($stats['total_activities']) }}</div>
+                <div class="text-muted small d-none d-sm-block" style="font-size: 0.72rem;">Historique audité</div>
             </div>
-            <a href="{{ route('activity-logs.show', $log) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1" style="font-size: 0.78rem;">
-                <i class="fas fa-eye me-1"></i> Détails
-            </a>
+        </div>
+
+        <div class="col-4">
+            <div class="card border-0 rounded-4 shadow-xs bg-white p-3 h-100">
+                <div class="d-flex align-items-center justify-content-between mb-1">
+                    <span class="text-muted small fw-semibold text-uppercase" style="font-size: 0.7rem;">Aujourd'hui</span>
+                    <span class="rounded-circle d-flex align-items-center justify-content-center bg-success-subtle text-success" style="width: 32px; height: 32px;">
+                        <i class="fas fa-bolt" style="font-size: 0.8rem;"></i>
+                    </span>
+                </div>
+                <div class="fs-4 fw-bold text-success">{{ number_format($stats['today_activities']) }}</div>
+                <div class="text-muted small d-none d-sm-block" style="font-size: 0.72rem;">Actions en direct</div>
+            </div>
+        </div>
+
+        <div class="col-4">
+            <div class="card border-0 rounded-4 shadow-xs bg-white p-3 h-100">
+                <div class="d-flex align-items-center justify-content-between mb-1">
+                    <span class="text-muted small fw-semibold text-uppercase" style="font-size: 0.7rem;">Opérateurs</span>
+                    <span class="rounded-circle d-flex align-items-center justify-content-center bg-info-subtle text-info" style="width: 32px; height: 32px;">
+                        <i class="fas fa-users" style="font-size: 0.8rem;"></i>
+                    </span>
+                </div>
+                <div class="fs-4 fw-bold text-info">{{ number_format($stats['unique_users']) }}</div>
+                <div class="text-muted small d-none d-sm-block" style="font-size: 0.72rem;">Membres actifs</div>
+            </div>
         </div>
     </div>
-    @empty
-    <div class="text-center py-5 bg-white rounded-3 border">
-        <i class="fas fa-history fa-3x text-muted opacity-50 mb-3"></i>
-        <h6 class="fw-bold text-muted">Aucun journal trouvé</h6>
-    </div>
-    @endforelse
 
+    <!-- Quick Event Filter Chips (Horizontal Scroll) -->
+    <div class="chips-scroll mb-2.5">
+        <a href="{{ route('activity-logs.index', request()->except('event')) }}" 
+           class="chip-item {{ !request('event') ? 'active' : '' }}">
+            <i class="fas fa-layer-group"></i>
+            <span>Tous les événements</span>
+        </a>
+        <a href="{{ route('activity-logs.index', array_merge(request()->all(), ['event' => 'updated'])) }}" 
+           class="chip-item {{ request('event') === 'updated' ? 'active' : '' }}">
+            <i class="fas fa-pen-to-square text-primary"></i>
+            <span>Modifications</span>
+        </a>
+        <a href="{{ route('activity-logs.index', array_merge(request()->all(), ['event' => 'created'])) }}" 
+           class="chip-item {{ request('event') === 'created' ? 'active' : '' }}">
+            <i class="fas fa-plus-circle text-success"></i>
+            <span>Créations</span>
+        </a>
+        <a href="{{ route('activity-logs.index', array_merge(request()->all(), ['event' => 'deleted'])) }}" 
+           class="chip-item {{ request('event') === 'deleted' ? 'active' : '' }}">
+            <i class="fas fa-trash-can text-danger"></i>
+            <span>Suppressions</span>
+        </a>
+        <a href="{{ route('activity-logs.index', array_merge(request()->all(), ['event' => 'login'])) }}" 
+           class="chip-item {{ request('event') === 'login' ? 'active' : '' }}">
+            <i class="fas fa-right-to-bracket text-info"></i>
+            <span>Connexions</span>
+        </a>
+    </div>
+
+    <!-- Search & Filter Bar -->
+    <div class="card border-0 rounded-4 shadow-xs bg-white mb-3">
+        <div class="card-body p-2.5 p-md-3">
+            <form method="GET" action="{{ route('activity-logs.index') }}" class="row g-2 align-items-center">
+                @if(request('event'))
+                    <input type="hidden" name="event" value="{{ request('event') }}">
+                @endif
+                <div class="col-12 col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0 rounded-start-pill ps-3 text-muted">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" name="search" class="form-control bg-light border-start-0 rounded-end-pill py-2" 
+                               placeholder="Rechercher par mot-clé, produit, commande..." 
+                               value="{{ request('search') }}">
+                    </div>
+                </div>
+                
+                <div class="col-6 col-md-3">
+                    <select name="user_id" class="form-select bg-light rounded-pill py-2" onchange="this.form.submit()">
+                        <option value="">Tous les utilisateurs</option>
+                        @foreach($users as $user)
+                            <option value="{{ $user->id }}" {{ request('user_id') == $user->id ? 'selected' : '' }}>
+                                {{ $user->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <input type="date" name="start_date" class="form-control bg-light rounded-pill py-2" 
+                           value="{{ request('start_date') }}" title="Date début" onchange="this.form.submit()">
+                </div>
+                
+                <div class="col-12 col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-dark rounded-pill py-2 w-100 fw-semibold">
+                        Filtrer
+                    </button>
+                    @if(request()->hasAny(['search', 'user_id', 'start_date', 'end_date', 'event']))
+                        <a href="{{ route('activity-logs.index') }}" class="btn btn-outline-secondary rounded-pill py-2 px-3" title="Réinitialiser">
+                            <i class="fas fa-rotate-left"></i>
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 1. DESKTOP TABLE VIEW (>= 992px)           -->
+    <!-- ========================================== -->
+    <div class="card border-0 rounded-4 shadow-xs bg-white overflow-hidden d-none d-lg-block mb-4">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="bg-light border-bottom">
+                    <tr>
+                        <th class="ps-4 py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.74rem; letter-spacing: 0.05em; width: 22%;">Opérateur</th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.74rem; letter-spacing: 0.05em; width: 14%;">Événement</th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.74rem; letter-spacing: 0.05em; width: 34%;">Description & Détail</th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.74rem; letter-spacing: 0.05em; width: 16%;">Date & Heure</th>
+                        <th class="pe-4 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.74rem; letter-spacing: 0.05em; width: 14%;">Comparatif Diff</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y">
+                    @forelse($logs as $log)
+                    @php
+                        $userName = $log->user ? $log->user->name : ($log->properties['user_name'] ?? 'Système');
+                        $userEmail = $log->user ? $log->user->email : ($log->properties['user_email'] ?? null);
+                        $hasDiff = count($log->changes) > 0;
+                    @endphp
+                    <tr class="hover-bg-light transition-all">
+                        <td class="ps-4 py-3">
+                            <div class="d-flex align-items-center gap-2.5">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-xs flex-shrink-0" 
+                                     style="width: 36px; height: 36px; background: linear-gradient(135deg, #334155 0%, #0f172a 100%); font-size: 0.85rem;">
+                                    {{ strtoupper(substr($userName, 0, 1)) }}
+                                </div>
+                                <div class="min-w-0">
+                                    <span class="fw-bold text-dark text-truncate d-block small">{{ $userName }}</span>
+                                    @if($userEmail)
+                                        <small class="text-muted text-truncate d-block" style="font-size: 0.72rem;">{{ $userEmail }}</small>
+                                    @endif
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-3">
+                            {!! $log->event_badge !!}
+                        </td>
+                        <td class="py-3">
+                            <div class="fw-medium text-dark small">{{ $log->description }}</div>
+                            @if($log->subject_type)
+                                <span class="badge bg-light text-secondary border rounded-pill px-2 py-0.5 mt-0.5 font-monospace" style="font-size: 0.68rem;">
+                                    {{ $log->subject_label }}
+                                </span>
+                            @endif
+                        </td>
+                        <td class="py-3">
+                            <div class="small fw-semibold text-dark">{{ $log->created_at->format('d/m/Y') }}</div>
+                            <small class="text-muted font-monospace" style="font-size: 0.72rem;">
+                                {{ $log->created_at->format('H:i:s') }} ({{ $log->created_at->diffForHumans() }})
+                            </small>
+                        </td>
+                        <td class="pe-4 py-3 text-end">
+                            @if($hasDiff)
+                                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-semibold d-inline-flex align-items-center gap-1.5"
+                                        onclick="openLogDiffModal({{ $log->id }})">
+                                    <i class="fas fa-code-compare"></i>
+                                    <span>Voir Diff</span>
+                                </button>
+                            @else
+                                <a href="{{ route('activity-logs.show', $log) }}" class="btn btn-sm btn-light rounded-pill px-3 py-1 text-secondary border">
+                                    <i class="fas fa-eye me-1"></i> Détails
+                                </a>
+                            @endif
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <div class="py-4 opacity-75">
+                                <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                                <h6 class="fw-bold text-dark">Aucune activité enregistrée</h6>
+                                <p class="text-muted small mb-0">Les actions de création, mise à jour et suppression apparaîtront ici automatiquement.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 2. MOBILE USER CARDS (< 992px)             -->
+    <!-- ========================================== -->
+    <div class="d-block d-lg-none mb-4">
+        @forelse($logs as $log)
+        @php
+            $userName = $log->user ? $log->user->name : ($log->properties['user_name'] ?? 'Système');
+            $hasDiff = count($log->changes) > 0;
+        @endphp
+        <div class="card border rounded-4 p-3 mb-2.5 bg-white shadow-xs">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <div class="d-flex align-items-center gap-2 min-w-0">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-xs flex-shrink-0" 
+                         style="width: 32px; height: 32px; background: linear-gradient(135deg, #334155 0%, #0f172a 100%); font-size: 0.8rem;">
+                        {{ strtoupper(substr($userName, 0, 1)) }}
+                    </div>
+                    <div class="min-w-0">
+                        <span class="fw-bold text-dark text-truncate d-block small">{{ $userName }}</span>
+                    </div>
+                </div>
+                <span class="text-muted small font-monospace" style="font-size: 0.72rem;">
+                    {{ $log->created_at->diffForHumans() }}
+                </span>
+            </div>
+
+            <div class="d-flex align-items-center gap-1.5 mb-2">
+                {!! $log->event_badge !!}
+                @if($log->subject_type)
+                    <span class="badge bg-light text-secondary border rounded-pill px-2 py-0.5 font-monospace" style="font-size: 0.68rem;">
+                        {{ $log->subject_label }}
+                    </span>
+                @endif
+            </div>
+
+            <div class="text-dark small fw-medium mb-2.5" style="font-size: 0.82rem; line-height: 1.35;">
+                {{ $log->description }}
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                <small class="text-muted" style="font-size: 0.72rem;">
+                    <i class="fas fa-clock me-1"></i>{{ $log->created_at->format('d/m/Y H:i:s') }}
+                </small>
+                @if($hasDiff)
+                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-semibold" 
+                            style="font-size: 0.78rem;" onclick="openLogDiffModal({{ $log->id }})">
+                        <i class="fas fa-code-compare me-1"></i> Voir Diff
+                    </button>
+                @else
+                    <a href="{{ route('activity-logs.show', $log) }}" class="btn btn-sm btn-light rounded-pill px-3 py-1 text-secondary border" style="font-size: 0.78rem;">
+                        <i class="fas fa-eye me-1"></i> Détails
+                    </a>
+                @endif
+            </div>
+        </div>
+        @empty
+        <div class="text-center py-5 bg-white rounded-4 border p-4">
+            <i class="fas fa-history fa-3x text-muted opacity-50 mb-3"></i>
+            <h6 class="fw-bold text-dark">Aucune activité enregistrée</h6>
+        </div>
+        @endforelse
+    </div>
+
+    <!-- Pagination -->
     @if($logs->hasPages())
-    <div class="p-3 d-flex justify-content-center">
+    <div class="d-flex justify-content-center mt-3">
         {{ $logs->links() }}
     </div>
     @endif
+
 </div>
+
+<!-- ======================================================= -->
+<!-- MODAL: COMPARATIF DIFF EN DIRECT (OLD DATA VS NEW DATA) -->
+<!-- ======================================================= -->
+<div class="modal fade" id="logDiffModal" tabindex="-1" aria-labelledby="logDiffModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+            
+            <!-- Modal Header -->
+            <div class="modal-header bg-dark text-white py-3 px-3 px-md-4 border-0">
+                <div class="d-flex align-items-center gap-2.5">
+                    <div class="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                        <i class="fas fa-code-compare text-primary" id="modalDiffIcon"></i>
+                    </div>
+                    <div>
+                        <h6 class="modal-title fw-bold mb-0 fs-6" id="logDiffModalLabel">Détails des Modifications (Diff)</h6>
+                        <span class="small text-white-50" id="logDiffModalSub">Comparaison Avant / Après</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body p-3 p-md-4 bg-light">
+                
+                <!-- Operator & Metadata Card -->
+                <div class="card border-0 rounded-3 bg-white shadow-xs p-3 mb-3">
+                    <div class="row g-2 small">
+                        <div class="col-6 col-sm-3">
+                            <span class="text-muted d-block" style="font-size: 0.72rem;">Opérateur :</span>
+                            <strong class="text-dark d-block" id="diff_modal_user"></strong>
+                        </div>
+                        <div class="col-6 col-sm-3">
+                            <span class="text-muted d-block" style="font-size: 0.72rem;">Date & Heure :</span>
+                            <span class="text-dark font-monospace" id="diff_modal_date"></span>
+                        </div>
+                        <div class="col-6 col-sm-3">
+                            <span class="text-muted d-block" style="font-size: 0.72rem;">Adresse IP :</span>
+                            <span class="text-dark font-monospace" id="diff_modal_ip"></span>
+                        </div>
+                        <div class="col-6 col-sm-3">
+                            <span class="text-muted d-block" style="font-size: 0.72rem;">Élément ciblé :</span>
+                            <span class="badge bg-secondary-subtle text-secondary border rounded-pill" id="diff_modal_subject"></span>
+                        </div>
+                    </div>
+                    <div class="mt-2 pt-2 border-top small text-muted font-monospace" style="font-size: 0.72rem;" id="diff_modal_desc"></div>
+                </div>
+
+                <!-- Changes Table -->
+                <div class="card border-0 rounded-3 bg-white shadow-xs overflow-hidden">
+                    <div class="card-header bg-white py-2.5 px-3 border-bottom d-flex align-items-center justify-content-between">
+                        <span class="fw-bold text-dark small">
+                            <i class="fas fa-table-columns text-primary me-1.5"></i> Attributs Modifiés (Ancienne vs Nouvelle Valeur)
+                        </span>
+                        <span class="badge bg-light text-secondary border rounded-pill" id="diff_modal_count">0 changements</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table diff-table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25%;">Champ / Attribut</th>
+                                    <th style="width: 37.5%;">— Ancienne Valeur (Avant)</th>
+                                    <th style="width: 37.5%;">+ Nouvelle Valeur (Après)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="diff_modal_tbody">
+                                <!-- Populated dynamically via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer bg-white py-2.5 px-3 border-top d-flex justify-content-end">
+                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">
+                    Fermer
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+let bsDiffModal = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const el = document.getElementById('logDiffModal');
+    if (el) bsDiffModal = new bootstrap.Modal(el);
+});
+
+function openLogDiffModal(logId) {
+    document.getElementById('logDiffModalLabel').textContent = 'Chargement du comparatif...';
+    document.getElementById('diff_modal_tbody').innerHTML = `
+        <tr>
+            <td colspan="3" class="text-center py-4 text-muted">
+                <i class="fas fa-spinner fa-spin me-2"></i> Chargement des données...
+            </td>
+        </tr>
+    `;
+
+    if (bsDiffModal) bsDiffModal.show();
+
+    fetch(`/activity-logs/${logId}`, {
+        headers: { 'Accept': 'application/json' }
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById('logDiffModalLabel').textContent = `Activité #${data.id} • ${data.event.toUpperCase()}`;
+        document.getElementById('diff_modal_user').textContent = data.user_name + (data.user_email ? ` (${data.user_email})` : '');
+        document.getElementById('diff_modal_date').textContent = data.date;
+        document.getElementById('diff_modal_ip').textContent = data.ip_address;
+        document.getElementById('diff_modal_subject').textContent = data.subject_label;
+        document.getElementById('diff_modal_desc').textContent = data.description;
+
+        const tbody = document.getElementById('diff_modal_tbody');
+        tbody.innerHTML = '';
+
+        const changes = data.changes || {};
+        const keys = Object.keys(changes);
+        document.getElementById('diff_modal_count').textContent = `${keys.length} champ(s) modifié(s)`;
+
+        if (keys.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="3" class="text-center py-4 text-muted small">
+                        Aucun détail de modification avant/après enregistré pour cet événement.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        keys.forEach(key => {
+            const item = changes[key];
+            const oldVal = item.old !== null && item.old !== undefined ? (typeof item.old === 'object' ? JSON.stringify(item.old, null, 2) : String(item.old)) : '<span class="text-muted fst-italic">Vide / Initial</span>';
+            const newVal = item.new !== null && item.new !== undefined ? (typeof item.new === 'object' ? JSON.stringify(item.new, null, 2) : String(item.new)) : '<span class="text-muted fst-italic">Supprimé / Nul</span>';
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="fw-bold text-dark font-monospace small ps-3">
+                    ${escapeHtml(key)}
+                </td>
+                <td class="diff-old">
+                    ${oldVal}
+                </td>
+                <td class="diff-new">
+                    ${newVal}
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    })
+    .catch(err => {
+        alert('Erreur lors du chargement : ' + err.message);
+    });
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+</script>
+@endpush
 @endsection

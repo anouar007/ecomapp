@@ -714,6 +714,15 @@
                 </a>
             </li>
             @endif
+
+            @if(auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('view_activity_logs')))
+            <li class="sidebar-menu-item">
+                <a href="{{ route('activity-logs.index') }}" class="sidebar-menu-link {{ request()->routeIs('activity-logs.*') ? 'active' : '' }}">
+                    <i class="fas fa-history"></i>
+                    <span>Journal d'Activité</span>
+                </a>
+            </li>
+            @endif
             
             <!-- Developer Credit -->
             <li class="sidebar-menu-item mt-auto pt-4 pb-2 px-4 text-center">
