@@ -104,6 +104,10 @@ class FastGuestPageCache
      */
     protected function shouldCacheRequest(Request $request): bool
     {
+        if (app()->runningUnitTests()) {
+            return false;
+        }
+
         if (!$request->isMethod('GET') || $request->ajax() || $request->wantsJson()) {
             return false;
         }

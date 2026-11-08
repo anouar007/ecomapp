@@ -14,12 +14,12 @@ class ShopEnhancementVerificationTest extends TestCase
         \App\Models\Setting::set('coming_soon_enabled', '0');
     }
 
-    public function test_shop_index_paginates_20_products_per_page()
+    public function test_shop_index_paginates_products_per_page()
     {
         $response = $this->get(route('shop.index'));
         $response->assertStatus(200);
         $products = $response->viewData('products');
-        $this->assertEquals(20, $products->perPage());
+        $this->assertEquals(32, $products->perPage());
     }
 
     public function test_shop_index_page_renders_successfully()

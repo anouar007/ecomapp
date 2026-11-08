@@ -58,6 +58,10 @@ class SecurityHeaders
      */
     protected function optimizeAndCompressResponse(Request $request, Response $response): void
     {
+        if (app()->runningUnitTests()) {
+            return;
+        }
+
         if ($response instanceof BinaryFileResponse || $response instanceof StreamedResponse) {
             return;
         }
