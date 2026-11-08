@@ -121,9 +121,22 @@ html, body, .main-content {
 .proof-thumbnail-btn:hover {
     transform: scale(1.08);
 }
+.credit-table-wrap {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
 .fixed-credit-table {
     table-layout: fixed !important;
     width: 100% !important;
+    max-width: 100% !important;
+    margin-bottom: 0 !important;
+}
+.fixed-credit-table th,
+.fixed-credit-table td {
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+    vertical-align: middle;
 }
 </style>
 @endpush
@@ -417,15 +430,15 @@ html, body, .main-content {
                 </div>
 
                 <!-- 2. DESKTOP TABULAR VIEW (d-none d-lg-block) -->
-                <div class="table-responsive d-none d-lg-block">
+                <div class="credit-table-wrap d-none d-lg-block">
                     <table class="table align-middle mb-0 fixed-credit-table">
                         <thead class="bg-light border-bottom">
                             <tr>
                                 <th class="ps-3 py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 30%;">Client</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 22%;">Statut du Solde</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 16%;">Plafond Crédit</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 14%;">Dernier Règlement</th>
-                                <th class="pe-3 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 18%; min-width: 175px;">Actions</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 24%;">Statut du Solde</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 17%;">Plafond Crédit</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 13%;">Dernier Règlement</th>
+                                <th class="pe-3 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 16%;">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y">
@@ -506,19 +519,23 @@ html, body, .main-content {
                                         <span class="text-muted small fst-italic">—</span>
                                     @endif
                                 </td>
-                                <td class="pe-3 py-3 text-end text-nowrap" style="min-width: 175px;">
-                                    <div class="d-inline-flex align-items-center gap-1 text-nowrap">
-                                        <button type="button" class="btn btn-sm btn-danger rounded-pill px-2.5 py-1 shadow-xs fw-semibold text-nowrap"
+                                <td class="pe-3 py-2.5 text-end text-nowrap" style="width: 16%;">
+                                    <div class="d-inline-flex align-items-center justify-content-end gap-1 text-nowrap">
+                                        <button type="button" class="btn btn-sm btn-danger rounded-pill px-2 py-1 shadow-xs fw-semibold text-nowrap"
+                                                style="font-size: 0.75rem;"
                                                 onclick="openNewPaymentForCustomer({{ $c->id }}, '{{ addslashes($c->name) }}', {{ (float) $c->current_balance }})"
                                                 title="Enregistrer un règlement / avoir">
                                             <i class="fas fa-coins me-1"></i> Régler
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-light border rounded-pill px-2 py-1 text-secondary"
+                                        <button type="button" class="btn btn-sm btn-light border rounded-circle text-secondary d-inline-flex align-items-center justify-content-center"
+                                                style="width: 28px; height: 28px; padding: 0; font-size: 0.72rem;"
                                                 onclick="openLimitModal({{ $c->id }}, '{{ addslashes($c->name) }}', {{ (float) $c->credit_limit }})"
                                                 title="Modifier le plafond de crédit">
                                             <i class="fas fa-sliders"></i>
                                         </button>
-                                        <a href="{{ route('customers.show', $c->id) }}" class="btn btn-sm btn-light border rounded-pill px-2 py-1 text-primary" title="Fiche client 360°">
+                                        <a href="{{ route('customers.show', $c->id) }}" class="btn btn-sm btn-light border rounded-circle text-primary d-inline-flex align-items-center justify-content-center"
+                                           style="width: 28px; height: 28px; padding: 0; font-size: 0.72rem;"
+                                           title="Fiche client 360°">
                                             <i class="fas fa-arrow-up-right-from-square"></i>
                                         </a>
                                     </div>

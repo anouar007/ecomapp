@@ -9,27 +9,22 @@
    ========================================================================== */
 .chips-scroll-credit {
     display: flex;
-    gap: 0.5rem;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    padding-bottom: 3px;
-}
-.chips-scroll-credit::-webkit-scrollbar {
-    display: none;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: center;
+    overflow-x: visible;
 }
 .chip-credit {
     white-space: nowrap;
     border-radius: 9999px !important;
-    padding: 0.45rem 0.95rem;
-    font-size: 0.8rem;
+    padding: 0.35rem 0.8rem;
+    font-size: 0.78rem;
     font-weight: 600;
     text-decoration: none;
     transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.35rem;
     border: 1px solid #e2e8f0;
     background: #ffffff;
     color: #475569;
@@ -82,9 +77,22 @@
     cursor: pointer;
     flex-shrink: 0;
 }
+.credit-table-wrap {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
 .fixed-trx-table {
     table-layout: fixed !important;
     width: 100% !important;
+    max-width: 100% !important;
+    margin-bottom: 0 !important;
+}
+.fixed-trx-table th,
+.fixed-trx-table td {
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+    vertical-align: middle;
 }
 </style>
 @endpush
@@ -234,7 +242,7 @@
     <!-- Ledger Table Card -->
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
         <!-- Desktop Table View (Hidden on mobile) -->
-        <div class="table-responsive d-none d-lg-block">
+        <div class="credit-table-wrap d-none d-lg-block">
             <table class="table align-middle mb-0 fixed-trx-table">
                 <thead class="bg-light border-bottom">
                     <tr>
