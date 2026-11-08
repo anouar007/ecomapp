@@ -37,28 +37,28 @@ class HomeController extends Controller
 
         // 2. Popular Categories loaded dynamically from DB with dashboard-uploaded images
         $defaultIcons = [
-            'camera' => asset('images/camera/icons/cat_camera.svg'),
-            'objectifs' => asset('images/camera/icons/cat_lens.svg'),
+            'camera' => asset('images/camera/cat_cameras.jpg'),
+            'objectifs' => asset('images/camera/hero_lens_optics.jpg'),
             'carte-memoire-lecteur' => asset('images/camera/icons/cat_sdcard.svg'),
             'accessoires' => asset('images/camera/icons/cat_accessories.svg'),
-            'materiel-de-podcast' => asset('images/camera/icons/cat_podcast.svg'),
-            'filtres-nd-cpl-polarise' => asset('images/camera/icons/cat_filter.svg'),
-            'matte-box' => asset('images/camera/icons/cat_mattebox.svg'),
-            'accessoires-insta360' => asset('images/camera/icons/cat_insta360.svg'),
+            'materiel-de-podcast' => asset('images/camera/cat_audio.jpg'),
+            'filtres-nd-cpl-polarise' => asset('images/camera/hero_lens_optics.jpg'),
+            'matte-box' => asset('images/camera/hero_cinema_rig.jpg'),
+            'accessoires-insta360' => asset('images/camera/cat_drones.jpg'),
             'kit-de-nettoyage' => asset('images/camera/icons/cat_cleaning.svg'),
-            'trepieds' => asset('images/camera/icons/cat_tripod.svg'),
+            'trepieds' => asset('images/camera/hero_cinema_rig.jpg'),
             'batterie-chargeur' => asset('images/camera/icons/cat_battery.svg'),
-            'sacs-de-camera' => asset('images/camera/icons/cat_bag.svg'),
-            'lumieres-materiel-de-studio' => asset('images/camera/icons/cat_lighting.svg'),
-            'son' => asset('images/camera/icons/cat_audio.svg'),
-            'stabilisateurs' => asset('images/camera/icons/cat_gimbals.svg'),
+            'sacs-de-camera' => asset('images/camera/hero_studio_crew.jpg'),
+            'lumieres-materiel-de-studio' => asset('images/camera/cat_lighting.jpg'),
+            'son' => asset('images/camera/cat_audio.jpg'),
+            'stabilisateurs' => asset('images/camera/cat_gimbals.jpg'),
             'occasion' => asset('images/camera/icons/cat_occasion.svg'),
         ];
 
-        $popularCategories = $fileCache->remember("home_popular_categories_v3_{$cacheVer}", 1800, function () use ($defaultIcons) {
+        $popularCategories = $fileCache->remember("home_popular_categories_v4_{$cacheVer}", 1800, function () use ($defaultIcons) {
             $categories = Category::where('status', 'active')
                 ->whereNull('parent_id')
-                ->where('slug', '!=', 'test-cat')
+                ->whereNotIn('slug', ['general', 'lenses', 'gear', 'test-cat', 'test-category'])
                 ->withCount('products')
                 ->orderBy('sort_order', 'asc')
                 ->orderBy('name', 'asc')
