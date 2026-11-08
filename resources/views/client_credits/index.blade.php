@@ -122,20 +122,16 @@ html, body, .main-content {
     transform: scale(1.08);
 }
 .credit-table-wrap {
-    overflow-x: hidden !important;
-    width: 100% !important;
-    max-width: 100% !important;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
-.fixed-credit-table {
-    table-layout: fixed !important;
+.credit-table {
     width: 100% !important;
-    max-width: 100% !important;
     margin-bottom: 0 !important;
 }
-.fixed-credit-table th,
-.fixed-credit-table td {
-    overflow: hidden !important;
-    text-overflow: ellipsis;
+.credit-table th,
+.credit-table td {
     vertical-align: middle;
 }
 </style>
@@ -275,8 +271,8 @@ html, body, .main-content {
     <!-- Main Content Layout -->
     <div class="row g-3 g-md-4">
         
-        <!-- Left Column: Customer Accounts Matrix (8 cols on XL) -->
-        <div class="col-12 col-xl-8">
+        <!-- Left Column: Customer Accounts Matrix (9 cols on XL) -->
+        <div class="col-12 col-xl-9 col-xxl-9">
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3 mb-md-4">
                 
                 <!-- Filter Chips & Search Bar -->
@@ -431,14 +427,14 @@ html, body, .main-content {
 
                 <!-- 2. DESKTOP TABULAR VIEW (d-none d-lg-block) -->
                 <div class="credit-table-wrap d-none d-lg-block">
-                    <table class="table align-middle mb-0 fixed-credit-table">
+                    <table class="table align-middle mb-0 credit-table">
                         <thead class="bg-light border-bottom">
                             <tr>
-                                <th class="ps-3 py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 30%;">Client</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 24%;">Statut du Solde</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 17%;">Plafond Crédit</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 13%;">Dernier Règlement</th>
-                                <th class="pe-3 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 16%;">Actions</th>
+                                <th class="ps-3 py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem;">Client</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem;">Statut du Solde</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem;">Plafond Crédit</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem;">Dernier Règlement</th>
+                                <th class="pe-3 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; min-width: 145px;">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y">
@@ -450,24 +446,29 @@ html, body, .main-content {
                                             {{ strtoupper(substr($c->name, 0, 1)) }}
                                         </div>
                                         <div class="min-w-0">
-                                            <div class="d-flex align-items-center gap-1.5 flex-nowrap">
-                                                <a href="{{ route('customers.show', $c->id) }}" class="fw-bold text-dark text-decoration-none hover-primary text-truncate" title="{{ $c->name }}" style="max-width: 175px;">
+                                            <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                                                <a href="{{ route('customers.show', $c->id) }}" class="fw-bold text-dark text-decoration-none hover-primary" title="{{ $c->name }}" style="font-size: 0.88rem;">
                                                     {{ $c->name }}
                                                 </a>
                                                 @if($c->customer_code)
-                                                    <span class="badge bg-light text-secondary border font-monospace px-1.5 py-0 flex-shrink-0" style="font-size: 0.65rem;">
+                                                    <span class="badge bg-light text-secondary border font-monospace px-1.5 py-0.5 flex-shrink-0" style="font-size: 0.65rem;">
                                                         {{ $c->customer_code }}
                                                     </span>
                                                 @endif
                                             </div>
-                                            <div class="d-flex align-items-center gap-1.5 text-muted small mt-0.5 text-nowrap" style="font-size: 0.74rem;">
+                                            @if($c->phone || $c->city)
+                                            <div class="d-flex align-items-center gap-1.5 text-muted small mt-0.5" style="font-size: 0.74rem;">
                                                 @if($c->phone)
                                                     <span class="text-nowrap"><i class="fas fa-phone me-1 opacity-50"></i>{{ $c->phone }}</span>
                                                 @endif
+                                                @if($c->phone && $c->city)
+                                                    <span class="opacity-50">•</span>
+                                                @endif
                                                 @if($c->city)
-                                                    <span class="text-nowrap">• {{ $c->city }}</span>
+                                                    <span class="text-nowrap">{{ $c->city }}</span>
                                                 @endif
                                             </div>
+                                            @endif
                                         </div>
                                     </div>
                                 </td>
@@ -497,7 +498,7 @@ html, body, .main-content {
                                             $usage = min(100, max(0, ($c->current_balance / $c->credit_limit) * 100));
                                             $barColor = $usage >= 90 ? 'bg-danger' : ($usage >= 70 ? 'bg-warning' : 'bg-success');
                                         @endphp
-                                        <div class="progress mt-1" style="height: 5px; width: 110px;">
+                                        <div class="progress mt-1" style="height: 5px; width: 90px; max-width: 100%;">
                                             <div class="progress-bar {{ $barColor }}" role="progressbar" style="width: {{ $usage }}%;"></div>
                                         </div>
                                         <div class="text-muted mt-0.5" style="font-size: 0.68rem;">{{ round($usage) }}% utilisé</div>
@@ -519,9 +520,9 @@ html, body, .main-content {
                                         <span class="text-muted small fst-italic">—</span>
                                     @endif
                                 </td>
-                                <td class="pe-3 py-2.5 text-end text-nowrap" style="width: 16%;">
-                                    <div class="d-inline-flex align-items-center justify-content-end gap-1 text-nowrap">
-                                        <button type="button" class="btn btn-sm btn-danger rounded-pill px-2 py-1 shadow-xs fw-semibold text-nowrap"
+                                <td class="pe-3 py-2.5 text-end text-nowrap" style="min-width: 145px;">
+                                    <div class="d-inline-flex align-items-center justify-content-end gap-1.5 text-nowrap">
+                                        <button type="button" class="btn btn-sm btn-danger rounded-pill px-2.5 py-1 shadow-xs fw-semibold text-nowrap"
                                                 style="font-size: 0.75rem;"
                                                 onclick="openNewPaymentForCustomer({{ $c->id }}, '{{ addslashes($c->name) }}', {{ (float) $c->current_balance }})"
                                                 title="Enregistrer un règlement / avoir">
@@ -561,8 +562,8 @@ html, body, .main-content {
             </div>
         </div>
 
-        <!-- Right Column: Recent Payment Feed with Proofs (4 cols on XL) -->
-        <div class="col-12 col-xl-4">
+        <!-- Right Column: Recent Payment Feed with Proofs (3 cols on XL) -->
+        <div class="col-12 col-xl-3 col-xxl-3">
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3 mb-md-4">
                 <div class="p-3 border-bottom bg-white d-flex align-items-center justify-content-between">
                     <div>
