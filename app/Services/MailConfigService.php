@@ -42,6 +42,25 @@ class MailConfigService
                 Config::set('mail.from.name', $fromName);
             }
 
+            // Ensure all links and asset URLs rendered in transactional emails resolve to the public HTTPS domain
+            // Prevents iOS ATS / Gmail proxy from breaking images if APP_URL is default localhost in server .env
+            $isLocal = app()->environment('local');
+            $appUrl = (string) config('app.url');
+            $reqHost = '';
+            try { $reqHost = request()->getHost(); } catch (\Throwable $e) {}
+
+            $shouldForceLiveUrl = str_contains($reqHost, 'winashop.com')
+                || str_contains($appUrl, 'winashop.com')
+                || str_contains($appUrl, 'localhost')
+                || str_contains($appUrl, '127.0.0.1')
+                || !$isLocal;
+
+            if ($shouldForceLiveUrl && !app()->runningUnitTests()) {
+                Config::set('app.url', 'https://winashop.com');
+                \Illuminate\Support\Facades\URL::forceRootUrl('https://winashop.com');
+                \Illuminate\Support\Facades\URL::forceScheme('https');
+            }
+
             return true;
         } catch (\Throwable $e) {
             Log::warning('Failed to apply dynamic mail config: ' . $e->getMessage());

@@ -18,7 +18,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <a href="{{ url('/') }}" class="logo">{{ setting('app_name', 'Speed Store') }}</a>
+            <a href="{{ \App\Models\OrderItem::normalizePublicSecureUrl(url('/')) }}" class="logo">{{ setting('app_name', 'Wina Shop') }}</a>
         </div>
 
         <h2>Thank you for your order! 🎉</h2>
@@ -77,7 +77,7 @@
         </p>
 
         <p style="text-align: center; margin-top: 30px;">
-            <a href="{{ route('checkout.success', $order->id) }}" class="btn">View Order Details</a>
+            <a href="{{ \App\Models\OrderItem::normalizePublicSecureUrl(route('checkout.success', $order->id)) }}" class="btn">View Order Details</a>
         </p>
 
         <div class="footer">

@@ -151,7 +151,7 @@
                 </div>
 
                 <!-- CTA Button -->
-                <a href="{{ !empty($order->id) ? route('orders.show', $order->id) : url('/orders') }}" class="btn-cta">
+                <a href="{{ \App\Models\OrderItem::normalizePublicSecureUrl(!empty($order->id) ? route('orders.show', $order->id) : url('/orders')) }}" class="btn-cta">
                     👉 Traiter cette commande dans le Dashboard
                 </a>
 

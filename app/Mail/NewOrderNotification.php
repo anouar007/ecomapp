@@ -29,7 +29,7 @@ class NewOrderNotification extends Mailable
     public function envelope(): Envelope
     {
         $appName = setting('app_name', config('app.name', 'Wina Shop'));
-        $totalFormatted = number_format($this->order->total, 2, ',', ' ') . ' ' . setting('currency_code', 'DH');
+        $totalFormatted = number_format((float) ($this->order->total ?? 0), 2, ',', ' ') . ' ' . setting('currency_code', 'DH');
 
         return new Envelope(
             subject: "🔔 [{$appName}] Nouvelle Commande #{$this->order->order_number} ({$totalFormatted})",

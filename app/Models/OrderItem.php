@@ -84,8 +84,20 @@ class OrderItem extends Model
      * 2. Product's resolved thumbnail (variant parent or direct product)
      * 3. Fallback matching by SKU or Name if product relation was unlinked
      * 4. Safe default placeholder
+     *
+     * Automatically normalized to a guaranteed public HTTPS URL (https://winashop.com/...)
+     * to prevent broken [?] image icons on iOS Mail / Gmail / Outlook caused by localhost or insecure HTTP.
      */
     public function getProductImageAttribute(): string
+    {
+        $raw = $this->resolveRawProductImage();
+        return static::normalizePublicSecureUrl($raw);
+    }
+
+    /**
+     * Resolve the best candidate image path or URL for this order item.
+     */
+    protected function resolveRawProductImage(): string
     {
         // 1. Variant Image
         $variant = $this->variant;
@@ -141,12 +153,55 @@ class OrderItem extends Model
     }
 
     /**
+     * Normalize any image or product link to a guaranteed, secure, publicly accessible HTTPS URL.
+     * Prevents broken image icons [?] in emails on iOS / Gmail / Outlook caused by:
+     * 1. APP_URL=http://localhost in server .env (replaces localhost/127.0.0.1 with https://winashop.com)
+     * 2. Insecure http:// blocked by iOS App Transport Security & Gmail Proxy (upgrades to https://)
+     * 3. Relative paths missing domain (prefixes with https://winashop.com)
+     */
+    public static function normalizePublicSecureUrl(?string $url): string
+    {
+        if (empty($url)) {
+            $url = 'images/camera/cat_cameras.jpg';
+        }
+
+        // Canonical public domain
+        $liveDomain = 'https://winashop.com';
+        try {
+            $host = request()->getHost();
+            if (!empty($host) && !in_array($host, ['localhost', '127.0.0.1', '::1'], true) && !str_starts_with($host, '192.168.') && !str_starts_with($host, '10.')) {
+                $liveDomain = 'https://' . ltrim(preg_replace('#^https?://#', '', $host), '/');
+            }
+        } catch (\Throwable $e) {}
+
+        // Replace localhost or 127.0.0.1 (occurs when APP_URL is default in .env)
+        if (str_contains($url, 'localhost') || str_contains($url, '127.0.0.1') || str_contains($url, '::1')) {
+            $url = preg_replace('#^https?://(localhost|127\.0\.0\.1|\[?::1\]?)(:\d+)?/#', $liveDomain . '/', $url);
+        }
+
+        // If still relative
+        if (str_starts_with($url, '/')) {
+            $url = $liveDomain . $url;
+        } elseif (!str_starts_with($url, 'http://') && !str_starts_with($url, 'https://')) {
+            $url = $liveDomain . '/' . ltrim($url, '/');
+        }
+
+        // Enforce HTTPS
+        if (str_starts_with($url, 'http://')) {
+            $url = 'https://' . substr($url, 7);
+        }
+
+        return $url;
+    }
+
+    /**
      * Get the product URL for linking in checkout confirmation / invoices.
      */
     public function getProductUrlAttribute(): string
     {
         if ($this->product) {
-            return route('shop.show', $this->product->slug ?: $this->product->id);
+            $url = route('shop.show', $this->product->slug ?: $this->product->id);
+            return static::normalizePublicSecureUrl($url);
         }
 
         return '#';
