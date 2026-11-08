@@ -51,6 +51,30 @@
     color: #ffffff !important;
 }
 
+/* Domain Pill Filters inside Modal */
+.domain-pill {
+    white-space: nowrap;
+    border-radius: 9999px !important;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.76rem;
+    font-weight: 600;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.domain-pill:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+.domain-pill.active {
+    background: #dc2626;
+    color: #ffffff;
+    border-color: #dc2626;
+    box-shadow: 0 2px 4px rgba(220, 38, 38, 0.25);
+}
+
 /* Mobile User Card Styling */
 .user-card {
     border-radius: 16px !important;
@@ -118,9 +142,10 @@
 .switch-ios {
     position: relative;
     display: inline-block;
-    width: 44px;
+    width: 42px;
     height: 24px;
     margin: 0;
+    flex-shrink: 0;
 }
 .switch-ios input {
     opacity: 0;
@@ -132,7 +157,7 @@
     cursor: pointer;
     top: 0; left: 0; right: 0; bottom: 0;
     background-color: #cbd5e1;
-    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 24px;
 }
 .switch-slider:before {
@@ -143,23 +168,23 @@
     left: 3px;
     bottom: 3px;
     background-color: white;
-    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 50%;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
 }
 .switch-ios input:checked + .switch-slider {
     background-color: #10b981;
 }
 .switch-ios input:checked + .switch-slider:before {
-    transform: translateX(20px);
+    transform: translateX(18px);
 }
 
 /* Role Selector Cards inside Modal */
 .role-select-card {
     cursor: pointer;
     border: 2px solid #e2e8f0;
-    border-radius: 14px !important;
-    padding: 1rem;
+    border-radius: 12px !important;
+    padding: 0.85rem;
     background: #ffffff;
     transition: all 0.2s ease;
     position: relative;
@@ -168,25 +193,25 @@
     border-color: #cbd5e1;
     background: #f8fafc;
 }
-.role-select-card.selected {
-    border-color: #dc2626;
-    background: #fff1f2;
+.role-select-card.selected-admin {
+    border-color: #dc2626 !important;
+    background: #fff1f2 !important;
     box-shadow: 0 0 0 1px #dc2626;
 }
 .role-select-card.selected-manager {
-    border-color: #2563eb;
-    background: #eff6ff;
+    border-color: #2563eb !important;
+    background: #eff6ff !important;
     box-shadow: 0 0 0 1px #2563eb;
 }
 .role-select-card.selected-staff {
-    border-color: #059669;
-    background: #ecfdf5;
+    border-color: #059669 !important;
+    background: #ecfdf5 !important;
     box-shadow: 0 0 0 1px #059669;
 }
 .role-check-indicator {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 10px;
+    right: 10px;
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -197,7 +222,7 @@
     color: transparent;
     font-size: 0.65rem;
 }
-.role-select-card.selected .role-check-indicator {
+.role-select-card.selected-admin .role-check-indicator {
     background: #dc2626;
     border-color: #dc2626;
     color: #ffffff;
@@ -227,25 +252,105 @@
     transition: width 0.3s ease, background-color 0.3s ease;
 }
 
-/* Modal Fullscreen on Mobile */
-@media (max-width: 767.98px) {
+/* Permission Row Item */
+.perm-row {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.7rem 0.85rem;
+    transition: all 0.15s ease;
+}
+.perm-row:hover {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+}
+.perm-row.is-active {
+    border-color: #bbf7d0;
+    background: #f0fdf4;
+}
+
+/* ==========================================================================
+   MODAL SCROLLING & RESPONSIVE ARCHITECTURE (Guaranteed 100% Scrollable)
+   ========================================================================== */
+
+#userModal .modal-dialog {
+    max-width: 1200px;
+}
+
+/* Desktop: 2-column split with dedicated scrollable panels */
+@media (min-width: 992px) {
+    #userModal .modal-content {
+        height: 88vh;
+        max-height: 88vh;
+        display: flex;
+        flex-direction: column;
+        border-radius: 16px !important;
+        overflow: hidden;
+    }
+    #userModal .modal-body {
+        flex: 1 1 0;
+        min-height: 0;
+        overflow: hidden; /* inner columns handle their own scrolling */
+        padding: 0 !important;
+    }
+    .modal-col-left {
+        height: 100%;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+        padding: 1.5rem;
+        background: #ffffff;
+        border-right: 1px solid #e2e8f0;
+    }
+    .modal-col-right {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        background: #f8fafc;
+        overflow: hidden;
+    }
+    .perms-scroll-container {
+        flex: 1 1 0;
+        min-height: 0;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+        padding: 1.25rem 1.5rem;
+    }
+}
+
+/* Mobile & Tablet (< 992px): Fullscreen app-style with tabs */
+@media (max-width: 991.98px) {
     #userModal .modal-dialog,
     #passwordModal .modal-dialog {
         margin: 0;
         max-width: 100%;
+        width: 100%;
         height: 100%;
+        min-height: 100%;
     }
     #userModal .modal-content,
     #passwordModal .modal-content {
-        height: 100%;
+        height: 100vh !important;
+        max-height: 100vh !important;
         border-radius: 0 !important;
         border: none;
+        display: flex;
+        flex-direction: column;
     }
-    #userModal .modal-body,
-    #passwordModal .modal-body {
-        overflow-y: auto;
+    #userModal .modal-body {
+        flex: 1 1 0;
+        min-height: 0;
+        overflow-y: auto !important;
         -webkit-overflow-scrolling: touch;
-        padding-bottom: 90px;
+        padding: 1rem 1rem 90px 1rem !important; /* Large bottom clearance so footer never blocks content */
+    }
+    .perms-scroll-container {
+        overflow: visible;
+        padding: 0;
+    }
+    .modal-col-left, .modal-col-right {
+        height: auto;
+        border: none;
+        padding: 0;
     }
     .modal-sticky-footer {
         position: fixed;
@@ -253,9 +358,9 @@
         left: 0;
         right: 0;
         background: #ffffff;
-        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
         z-index: 1055;
-        padding: 0.85rem 1rem calc(0.85rem + env(safe-area-inset-bottom, 0px)) 1rem;
+        padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom, 0px)) 1rem;
     }
 }
 
@@ -745,233 +850,217 @@
 <!-- MODAL PRO: NOUVEAU / MODIFIER COLLABORATEUR             -->
 <!-- ======================================================= -->
 <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
-        <div class="modal-content border-0 shadow-lg overflow-hidden">
-            
-            <!-- Modal Header -->
-            <div class="modal-header bg-dark text-white py-3 px-3 px-md-4 border-0">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <form id="userForm" method="POST" action="{{ route('users.store') }}" class="modal-content border-0 shadow-lg">
+            @csrf
+            <input type="hidden" name="_method" id="userFormMethod" value="POST">
+
+            <!-- Modal Header (Always Pinned Top) -->
+            <div class="modal-header bg-dark text-white py-2.5 px-3 px-md-4 border-0 flex-shrink-0">
                 <div class="d-flex align-items-center gap-2.5 min-w-0">
-                    <div class="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px;">
+                    <div class="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px;">
                         <i class="fas fa-user-shield text-danger" id="userModalIcon"></i>
                     </div>
                     <div class="min-w-0">
-                        <h5 class="modal-title fw-bold mb-0 text-truncate" id="userModalLabel" style="font-size: 1.05rem;">Nouveau Collaborateur</h5>
-                        <p class="small text-white-50 mb-0 text-truncate" id="userModalSub">Définissez les accès et privilèges de l'équipe</p>
+                        <h5 class="modal-title fw-bold mb-0 text-truncate fs-6" id="userModalLabel">Nouveau Collaborateur</h5>
+                        <p class="small text-white-50 mb-0 text-truncate" id="userModalSub" style="font-size: 0.76rem;">Définissez les accès et privilèges de l'équipe</p>
                     </div>
                 </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
             </div>
 
-            <!-- Tab Navigation Header (Step-by-step Pro Feel) -->
-            <div class="bg-light border-bottom px-3 px-md-4 pt-2">
-                <ul class="nav nav-pills gap-1 flex-nowrap overflow-auto" id="userModalTabs" role="tablist" style="scrollbar-width: none;">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active rounded-pill px-3 py-1.5 small fw-semibold text-nowrap" id="tab-identity-btn" 
-                                data-bs-toggle="pill" data-bs-target="#tab-identity" type="button" role="tab">
-                            <i class="fas fa-id-card me-1.5"></i>1. Identité & Compte
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link rounded-pill px-3 py-1.5 small fw-semibold text-nowrap" id="tab-roles-btn" 
-                                data-bs-toggle="pill" data-bs-target="#tab-roles" type="button" role="tab">
-                            <i class="fas fa-shield-halved me-1.5"></i>2. Rôle & Accès
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link rounded-pill px-3 py-1.5 small fw-semibold text-nowrap" id="tab-permissions-btn" 
-                                data-bs-toggle="pill" data-bs-target="#tab-permissions" type="button" role="tab">
-                            <i class="fas fa-sliders me-1.5"></i>3. Permissions Granulaires
-                            <span class="badge bg-secondary-subtle text-secondary rounded-pill ms-1" id="perms-tab-counter">0</span>
-                        </button>
-                    </li>
-                </ul>
+            <!-- Mobile-Only Segmented Control Tabs (< 992px) -->
+            <div class="bg-light border-bottom p-2 d-lg-none flex-shrink-0">
+                <div class="nav nav-pills nav-fill bg-white p-1 rounded-pill border" id="mobileModalPills" role="tablist">
+                    <button class="nav-link active rounded-pill py-1.5 small fw-bold" id="pills-profile-btn" data-bs-toggle="pill" data-bs-target="#pills-profile-content" type="button" role="tab">
+                        <i class="fas fa-id-card me-1"></i> 1. Profil & Rôle
+                    </button>
+                    <button class="nav-link rounded-pill py-1.5 small fw-bold" id="pills-perms-btn" data-bs-toggle="pill" data-bs-target="#pills-perms-content" type="button" role="tab">
+                        <i class="fas fa-sliders me-1"></i> 2. Permissions (<span id="mob-perms-counter">0</span>/22)
+                    </button>
+                </div>
             </div>
 
-            <form id="userForm" method="POST" action="{{ route('users.store') }}">
-                @csrf
-                <input type="hidden" name="_method" id="userFormMethod" value="POST">
+            <!-- Modal Body (Always 100% Scrollable) -->
+            <div class="modal-body">
+                <div class="row g-0 h-100">
 
-                <div class="modal-body p-3 p-md-4">
-                    <div class="tab-content" id="userModalTabContent">
+                    <!-- ============================================== -->
+                    <!-- LEFT COLUMN / TAB 1: PROFIL, MOT DE PASSE, RÔLE -->
+                    <!-- ============================================== -->
+                    <div class="col-12 col-lg-5 modal-col-left tab-pane-responsive" id="pills-profile-content">
+                        
+                        <!-- 1. Identité Section -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-dark mb-2.5 d-flex align-items-center gap-2" style="font-size: 0.9rem;">
+                                <i class="fas fa-user-circle text-primary"></i>
+                                <span>Coordonnées & Compte</span>
+                            </h6>
 
-                        <!-- TAB 1: IDENTITÉ & MOT DE PASSE -->
-                        <div class="tab-pane fade show active" id="tab-identity" role="tabpanel">
-                            <div class="row g-3">
-                                
-                                <!-- Personal Info Card -->
-                                <div class="col-12 col-md-6">
-                                    <div class="p-3.5 rounded-4 bg-light border h-100">
-                                        <h6 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
-                                            <i class="fas fa-user-circle text-primary"></i> Informations Personnelles
-                                        </h6>
+                            <div class="mb-2.5">
+                                <label class="form-label small fw-bold text-dark mb-1">Nom complet <span class="text-danger">*</span></label>
+                                <input type="text" name="name" id="user_name" class="form-control rounded-3" 
+                                       placeholder="Ex: Yassine El Amrani" required autocomplete="name">
+                            </div>
 
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-bold text-dark">Nom complet <span class="text-danger">*</span></label>
-                                            <input type="text" name="name" id="user_name" class="form-control form-control-lg bg-white rounded-3 fs-6" 
-                                                   placeholder="Ex: Yassine El Amrani" required autocomplete="name">
-                                        </div>
+                            <div class="mb-2.5">
+                                <label class="form-label small fw-bold text-dark mb-1">Email professionnel <span class="text-danger">*</span></label>
+                                <input type="email" name="email" id="user_email" class="form-control rounded-3" 
+                                       placeholder="yassine@winashop.com" required autocomplete="email">
+                            </div>
 
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-bold text-dark">Adresse Email (Identifiant) <span class="text-danger">*</span></label>
-                                            <input type="email" name="email" id="user_email" class="form-control form-control-lg bg-white rounded-3 fs-6" 
-                                                   placeholder="yassine@winashop.com" required autocomplete="email">
-                                        </div>
-
-                                        <div class="row g-2 mb-3">
-                                            <div class="col-6">
-                                                <label class="form-label small fw-bold text-dark">Téléphone</label>
-                                                <input type="tel" name="phone" id="user_phone" class="form-control bg-white rounded-3" 
-                                                       placeholder="06 12 34 56 78" autocomplete="tel">
-                                            </div>
-                                            <div class="col-6">
-                                                <label class="form-label small fw-bold text-dark">Poste / Fonction</label>
-                                                <input type="text" name="job_title" id="user_job_title" class="form-control bg-white rounded-3" 
-                                                       placeholder="Ex: Responsable Ventes">
-                                            </div>
-                                        </div>
-
-                                        <div class="mb-0">
-                                            <label class="form-label small fw-bold text-dark">Statut du compte</label>
-                                            <select name="status" id="user_status" class="form-select bg-white rounded-3">
-                                                <option value="active">Actif (Accès immédiatement autorisé)</option>
-                                                <option value="inactive">Inactif (Connexion bloquée)</option>
-                                                <option value="suspended">Suspendu (Sécurité / Audit)</option>
-                                            </select>
-                                        </div>
-                                    </div>
+                            <div class="row g-2 mb-2.5">
+                                <div class="col-6">
+                                    <label class="form-label small fw-bold text-dark mb-1">Téléphone</label>
+                                    <input type="tel" name="phone" id="user_phone" class="form-control rounded-3" 
+                                           placeholder="06 12 34 56 78" autocomplete="tel">
                                 </div>
-
-                                <!-- Password Card -->
-                                <div class="col-12 col-md-6">
-                                    <div class="p-3.5 rounded-4 bg-light border h-100 d-flex flex-column justify-content-between">
-                                        <div>
-                                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                                <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
-                                                    <i class="fas fa-lock text-warning"></i> Sécurité & Mot de Passe
-                                                </h6>
-                                                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-1"
-                                                        onclick="generateStrongPassword('user_password')">
-                                                    <i class="fas fa-wand-magic-sparkles me-1"></i> Générer auto
-                                                </button>
-                                            </div>
-                                            <p class="text-muted small mb-3" id="password_hint">Minimum 8 caractères recommandés.</p>
-
-                                            <div class="position-relative mb-2">
-                                                <input type="text" name="password" id="user_password" 
-                                                       class="form-control form-control-lg bg-white rounded-3 font-monospace pe-5 fs-6" 
-                                                       placeholder="Tapez ou générez un code fort" 
-                                                       oninput="checkPasswordStrength(this.value)"
-                                                       autocomplete="new-password">
-                                                <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y text-secondary text-decoration-none me-2 p-0" 
-                                                        onclick="copyToClipboard('user_password', 'pwd-copied-toast')" title="Copier le mot de passe">
-                                                    <i class="fas fa-copy fa-lg"></i>
-                                                </button>
-                                            </div>
-
-                                            <!-- Strength Indicator -->
-                                            <div class="pwd-strength-bar">
-                                                <div class="pwd-strength-fill" id="pwd-strength-fill"></div>
-                                            </div>
-                                            <div class="d-flex justify-content-between align-items-center mt-1">
-                                                <span class="text-muted small" style="font-size: 0.72rem;">Niveau de sécurité :</span>
-                                                <span class="fw-bold small" style="font-size: 0.72rem;" id="pwd-strength-text">En attente</span>
-                                            </div>
-
-                                            <div id="pwd-copied-toast" class="alert alert-success border-0 py-1.5 px-2.5 mt-2 mb-0 rounded-3 small fw-semibold" style="display: none;">
-                                                <i class="fas fa-check-circle me-1"></i> Mot de passe copié dans le presse-papier !
-                                            </div>
-                                        </div>
-
-                                        <div class="mt-4 p-2.5 rounded-3 bg-white border small text-muted">
-                                            <i class="fas fa-shield-alt text-success me-1"></i> Les mots de passe sont chiffrés avec Bcrypt (256-bit). Le collaborateur pourra le modifier à tout moment.
-                                        </div>
-                                    </div>
+                                <div class="col-6">
+                                    <label class="form-label small fw-bold text-dark mb-1">Poste / Fonction</label>
+                                    <input type="text" name="job_title" id="user_job_title" class="form-control rounded-3" 
+                                           placeholder="Ex: Responsable Ventes">
                                 </div>
+                            </div>
 
+                            <div>
+                                <label class="form-label small fw-bold text-dark mb-1">Statut d'accès</label>
+                                <select name="status" id="user_status" class="form-select rounded-3">
+                                    <option value="active">Actif (Accès immédiatement autorisé)</option>
+                                    <option value="inactive">Inactif (Connexion bloquée)</option>
+                                    <option value="suspended">Suspendu (Sécurité / Audit)</option>
+                                </select>
                             </div>
                         </div>
 
-                        <!-- TAB 2: RÔLES & ACCÈS DE BASE -->
-                        <div class="tab-pane fade" id="tab-roles" role="tabpanel">
-                            <div class="mb-3">
-                                <h6 class="fw-bold text-dark mb-1">Sélectionnez le rôle principal du collaborateur</h6>
-                                <p class="text-muted small mb-0">Chaque rôle débloque automatiquement un ensemble d'autorisations prédéfinies.</p>
+                        <!-- 2. Mot de Passe Section -->
+                        <div class="mb-4 p-3 rounded-4 bg-light border">
+                            <div class="d-flex align-items-center justify-content-between mb-1.5">
+                                <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-1.5" style="font-size: 0.85rem;">
+                                    <i class="fas fa-lock text-warning"></i> Mot de passe
+                                </h6>
+                                <button type="button" class="btn btn-xs btn-outline-primary rounded-pill px-2.5 py-1"
+                                        onclick="generateStrongPassword('user_password')">
+                                    <i class="fas fa-wand-magic-sparkles me-1"></i> Générer auto
+                                </button>
+                            </div>
+                            <p class="text-muted small mb-2" id="password_hint" style="font-size: 0.74rem;">Min. 8 caractères sécurisés.</p>
+
+                            <div class="position-relative mb-1.5">
+                                <input type="text" name="password" id="user_password" 
+                                       class="form-control bg-white rounded-3 font-monospace pe-5" 
+                                       placeholder="••••••••" 
+                                       oninput="checkPasswordStrength(this.value)"
+                                       autocomplete="new-password">
+                                <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y text-secondary text-decoration-none me-2 p-0" 
+                                        onclick="copyToClipboard('user_password', 'pwd-copied-toast')" title="Copier le mot de passe">
+                                    <i class="fas fa-copy"></i>
+                                </button>
                             </div>
 
-                            <div class="row g-3">
+                            <!-- Strength Meter -->
+                            <div class="pwd-strength-bar">
+                                <div class="pwd-strength-fill" id="pwd-strength-fill"></div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                <span class="text-muted" style="font-size: 0.68rem;">Force :</span>
+                                <span class="fw-bold text-muted" style="font-size: 0.68rem;" id="pwd-strength-text">En attente</span>
+                            </div>
+
+                            <div id="pwd-copied-toast" class="alert alert-success border-0 py-1 px-2 mt-1.5 mb-0 rounded-2 small fw-semibold" style="display: none; font-size: 0.72rem;">
+                                <i class="fas fa-check-circle me-1"></i> Mot de passe généré et copié !
+                            </div>
+                        </div>
+
+                        <!-- 3. Rôles Principaux Section -->
+                        <div class="mb-3">
+                            <h6 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2" style="font-size: 0.9rem;">
+                                <i class="fas fa-shield-alt text-danger"></i>
+                                <span>Rôle Principal</span>
+                            </h6>
+                            <p class="text-muted small mb-2.5" style="font-size: 0.76rem;">
+                                Cliquez sur un rôle pour appliquer son profil de permissions :
+                            </p>
+
+                            <div class="d-flex flex-column gap-2">
                                 @foreach($roles as $role)
                                 @php
-                                    $roleKey = strtolower($role->name);
-                                    $cardColor = match($role->name) {
-                                        'Admin' => 'selected',
+                                    $roleColorClass = match($role->name) {
+                                        'Admin' => 'selected-admin',
                                         'Manager' => 'selected-manager',
                                         'Staff' => 'selected-staff',
-                                        default => 'selected',
+                                        default => 'selected-admin',
                                     };
                                     $icon = match($role->name) {
                                         'Admin' => 'fa-crown text-danger',
                                         'Manager' => 'fa-user-tie text-primary',
                                         'Staff' => 'fa-user-check text-success',
-                                        default => 'fa-shield-halved text-secondary',
+                                        default => 'fa-shield text-secondary',
                                     };
                                     $desc = match($role->name) {
-                                        'Admin' => 'Accès total et absolu à tous les modules, configurations et données de la boutique.',
-                                        'Manager' => 'Gestion complète des opérations : commandes, catalogue, stocks, clients et rapports analytiques.',
-                                        'Staff' => 'Accès opérationnel quotidien : traitement des commandes, gestion des produits et consultation des stocks.',
-                                        default => 'Rôle standard avec autorisations spécifiques.',
+                                        'Admin' => 'Accès total à tous les modules, configurations et comptabilité.',
+                                        'Manager' => 'Gestion des commandes, catalogue, stocks, clients et analyses.',
+                                        'Staff' => 'Traitement des commandes, produits et état des stocks.',
+                                        default => 'Accès standard configuré.',
                                     };
                                 @endphp
-                                <div class="col-12 col-md-4">
-                                    <div class="role-select-card h-100" id="role-card-{{ $role->name }}" 
-                                         onclick="selectRoleCard('{{ $role->name }}')">
-                                        <div class="role-check-indicator">
-                                            <i class="fas fa-check"></i>
-                                        </div>
-                                        <div class="d-flex align-items-center gap-2.5 mb-2">
-                                            <div class="rounded-circle d-flex align-items-center justify-content-center bg-light" style="width: 40px; height: 40px;">
-                                                <i class="fas {{ $icon }} fs-5"></i>
-                                            </div>
-                                            <div>
-                                                <h6 class="fw-bold text-dark mb-0">{{ $role->name }}</h6>
-                                                <span class="badge bg-secondary-subtle text-secondary rounded-pill" style="font-size: 0.68rem;">
-                                                    {{ $role->permissions->count() }} autorisations
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <p class="text-muted small mb-0" style="font-size: 0.8rem; line-height: 1.4;">
-                                            {{ $desc }}
-                                        </p>
-                                        <input type="checkbox" name="roles[]" value="{{ $role->name }}" 
-                                               id="role-input-{{ $role->name }}" 
-                                               class="d-none role-checkbox"
-                                               data-role-name="{{ $role->name }}"
-                                               data-permissions="{{ json_encode($role->permissions->pluck('name')) }}">
+                                <div class="role-select-card" id="role-card-{{ $role->name }}" 
+                                     onclick="selectRoleCard('{{ $role->name }}')">
+                                    <div class="role-check-indicator">
+                                        <i class="fas fa-check"></i>
                                     </div>
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="fas {{ $icon }}"></i>
+                                        <span class="fw-bold text-dark small">{{ $role->name }}</span>
+                                        <span class="badge bg-secondary-subtle text-secondary rounded-pill ms-auto me-4" style="font-size: 0.65rem;">
+                                            {{ $role->permissions->count() }} règles
+                                        </span>
+                                    </div>
+                                    <p class="text-muted small mb-0 pe-4" style="font-size: 0.74rem; line-height: 1.35;">
+                                        {{ $desc }}
+                                    </p>
+                                    <input type="checkbox" name="roles[]" value="{{ $role->name }}" 
+                                           id="role-input-{{ $role->name }}" 
+                                           class="d-none role-checkbox"
+                                           data-role-name="{{ $role->name }}"
+                                           data-permissions="{{ json_encode($role->permissions->pluck('name')) }}">
                                 </div>
                                 @endforeach
                             </div>
-
-                            <div class="alert alert-info border-0 rounded-4 p-3 mt-4 d-flex align-items-start gap-2.5">
-                                <i class="fas fa-info-circle text-primary mt-0.5"></i>
-                                <div class="small">
-                                    <strong class="d-block mb-0.5 text-dark">Besoin de personnaliser les autorisations ?</strong>
-                                    Vous pouvez ajuster finement les accès du collaborateur dans l'onglet suivant <strong>3. Permissions Granulaires</strong>.
-                                </div>
-                            </div>
                         </div>
 
-                        <!-- TAB 3: PERMISSIONS GRANULAIRES SUR-MESURE -->
-                        <div class="tab-pane fade" id="tab-permissions" role="tabpanel">
+                        <!-- Mobile CTA to Step 2 -->
+                        <div class="d-lg-none mt-4 pt-2">
+                            <button type="button" class="btn btn-outline-danger w-100 rounded-pill py-2.5 fw-bold d-flex align-items-center justify-content-center gap-2"
+                                    onclick="switchToPermissionsTab()">
+                                <span>Voir & Personnaliser les Permissions (22)</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <!-- ============================================== -->
+                    <!-- RIGHT COLUMN / TAB 2: PERMISSIONS GRANULAIRES  -->
+                    <!-- ============================================== -->
+                    <div class="col-12 col-lg-7 modal-col-right tab-pane-responsive" id="pills-perms-content">
+                        
+                        <!-- Permissions Header & Controls Bar (Sticky on Desktop) -->
+                        <div class="p-3 bg-white border-bottom flex-shrink-0">
                             
-                            <!-- Search & Quick Filters Bar -->
-                            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-2 mb-3 bg-light p-2.5 rounded-3 border">
-                                <div class="position-relative flex-grow-1">
-                                    <input type="text" id="perm-search-box" class="form-control form-control-sm bg-white rounded-pill ps-4" 
-                                           placeholder="Filtrer les permissions (ex: stock, facture, commande)..."
-                                           oninput="filterPermissionsList(this.value)">
-                                    <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-2.5 text-muted small"></i>
+                            <!-- Counter & Presets Row -->
+                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2.5">
+                                <div>
+                                    <span class="fw-bold text-dark fs-6 d-flex align-items-center gap-2">
+                                        <i class="fas fa-sliders text-success"></i> Permissions Granulaires
+                                        <span class="badge bg-success-subtle text-success rounded-pill px-2 py-0.5" style="font-size: 0.72rem;" id="perms-active-badge">
+                                            <span id="perms-count-number">0</span> / 22 actives
+                                        </span>
+                                    </span>
                                 </div>
-                                <div class="d-flex gap-1.5 justify-content-end">
+                                <div class="d-flex gap-1">
+                                    <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-2.5 py-1" onclick="resetPermsToRole()" title="Réinitialiser selon rôle">
+                                        <i class="fas fa-rotate-left me-1"></i> Rôle
+                                    </button>
                                     <button type="button" class="btn btn-xs btn-outline-dark rounded-pill px-2.5 py-1" onclick="toggleAllPerms(true)">
                                         Tout cocher
                                     </button>
@@ -981,84 +1070,112 @@
                                 </div>
                             </div>
 
-                            <!-- Modules Grid -->
-                            <div class="row g-3" id="perms-container">
-                                @foreach($permissionModules as $modKey => $module)
-                                <div class="col-12 col-md-6 perm-module-card" data-module-key="{{ $modKey }}">
-                                    <div class="card border rounded-4 shadow-xs h-100 overflow-hidden">
-                                        <div class="card-header bg-white py-2.5 px-3 border-bottom d-flex align-items-center justify-content-between">
-                                            <div class="d-flex align-items-center gap-2">
-                                                <i class="{{ $module['icon'] }}" style="color: {{ $module['color'] }}; font-size: 0.95rem;"></i>
-                                                <span class="fw-bold text-dark small">{{ $module['title'] }}</span>
-                                            </div>
-                                            <div class="d-flex gap-1">
-                                                <button type="button" class="btn btn-link text-decoration-none p-0 text-primary small fw-semibold" 
-                                                        onclick="toggleModulePerms('{{ $modKey }}', true)" style="font-size: 0.72rem;">
-                                                    Cocher
-                                                </button>
-                                                <span class="text-muted small">/</span>
-                                                <button type="button" class="btn btn-link text-decoration-none p-0 text-secondary small fw-semibold" 
-                                                        onclick="toggleModulePerms('{{ $modKey }}', false)" style="font-size: 0.72rem;">
-                                                    Décocher
-                                                </button>
-                                            </div>
-                                        </div>
+                            <!-- Live Search Input -->
+                            <div class="position-relative mb-2">
+                                <input type="text" id="perm-search-box" class="form-control form-control-sm bg-light rounded-pill ps-4" 
+                                       placeholder="Filtrer en direct (ex: stock, facture, commande, stats)..."
+                                       oninput="filterPermissionsList(this.value)">
+                                <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-2.5 text-muted small"></i>
+                            </div>
 
-                                        <div class="card-body p-2.5 d-flex flex-column gap-1.5 bg-light-subtle module-items-{{ $modKey }}">
-                                            @foreach($module['permissions'] as $permName => $permDesc)
-                                            <label class="d-flex align-items-center justify-content-between p-2 rounded-3 bg-white border cursor-pointer hover-bg-light transition-all mb-0 perm-item"
-                                                   data-perm-name="{{ strtolower($permName) }}" 
-                                                   data-perm-desc="{{ strtolower($permDesc) }}">
-                                                <div class="min-w-0 pe-2">
-                                                    <span class="fw-bold text-dark d-block font-monospace" style="font-size: 0.78rem;">{{ $permName }}</span>
-                                                    <span class="text-muted d-block small" style="font-size: 0.72rem; line-height: 1.3;">{{ $permDesc }}</span>
-                                                </div>
-                                                <div class="d-flex align-items-center gap-2 flex-shrink-0">
-                                                    <span class="badge bg-primary-subtle text-primary border rounded-pill px-1.5 py-0.5 inherited-badge d-none" 
-                                                          id="badge-inherited-{{ $permName }}" style="font-size: 0.65rem;">
-                                                        Inclus
-                                                    </span>
-                                                    <label class="switch-ios mb-0">
-                                                        <input type="checkbox" name="permissions[]" value="{{ $permName }}" 
-                                                               id="perm-switch-{{ $permName }}" 
-                                                               class="perm-switch-input"
-                                                               onchange="onPermSwitchChange()">
-                                                        <span class="switch-slider"></span>
-                                                    </label>
-                                                </div>
-                                            </label>
-                                            @endforeach
+                            <!-- Domain Filter Pills (Instant 1-Click Jump/Filter) -->
+                            <div class="chips-scroll">
+                                <span class="domain-pill active" onclick="filterByDomain('all', this)">
+                                    Tous (22)
+                                </span>
+                                @foreach($permissionModules as $modKey => $module)
+                                <span class="domain-pill" onclick="filterByDomain('{{ $modKey }}', this)">
+                                    <i class="{{ $module['icon'] }} me-1" style="font-size: 0.7rem;"></i>{{ $module['title'] }} ({{ count($module['permissions']) }})
+                                </span>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <!-- 100% Scrollable Permissions List Container -->
+                        <div class="perms-scroll-container" id="perms-scroll-area">
+                            <div class="d-flex flex-column gap-3">
+                                @foreach($permissionModules as $modKey => $module)
+                                <div class="perm-module-section" id="domain-section-{{ $modKey }}" data-domain-key="{{ $modKey }}">
+                                    
+                                    <!-- Domain Title & Sub-action -->
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="rounded-circle d-flex align-items-center justify-content-center" 
+                                                  style="width: 26px; height: 26px; background: {{ $module['color'] }}20; color: {{ $module['color'] }}; font-size: 0.75rem;">
+                                                <i class="{{ $module['icon'] }}"></i>
+                                            </span>
+                                            <span class="fw-bold text-dark small">{{ $module['title'] }}</span>
+                                            <span class="badge bg-light text-secondary border rounded-pill px-1.5" style="font-size: 0.65rem;">
+                                                {{ count($module['permissions']) }}
+                                            </span>
+                                        </div>
+                                        <div class="d-flex gap-1">
+                                            <button type="button" class="btn btn-link text-decoration-none p-0 text-primary small fw-semibold" 
+                                                    onclick="toggleModulePerms('{{ $modKey }}', true)" style="font-size: 0.72rem;">
+                                                Cocher tout
+                                            </button>
+                                            <span class="text-muted small">/</span>
+                                            <button type="button" class="btn btn-link text-decoration-none p-0 text-secondary small fw-semibold" 
+                                                    onclick="toggleModulePerms('{{ $modKey }}', false)" style="font-size: 0.72rem;">
+                                                Décocher
+                                            </button>
                                         </div>
                                     </div>
+
+                                    <!-- Permission Rows -->
+                                    <div class="d-flex flex-column gap-1.5 module-items-{{ $modKey }}">
+                                        @foreach($module['permissions'] as $permName => $permDesc)
+                                        <div class="perm-row d-flex align-items-center justify-content-between gap-2 perm-item" 
+                                             id="perm-row-{{ $permName }}"
+                                             data-perm-name="{{ strtolower($permName) }}" 
+                                             data-perm-desc="{{ strtolower($permDesc) }}">
+                                            <div class="min-w-0">
+                                                <span class="fw-bold text-dark d-block font-monospace" style="font-size: 0.76rem;">{{ $permName }}</span>
+                                                <span class="text-muted d-block small" style="font-size: 0.72rem; line-height: 1.3;">{{ $permDesc }}</span>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-1.5 py-0.5 inherited-badge d-none" 
+                                                      id="badge-inherited-{{ $permName }}" style="font-size: 0.65rem;">
+                                                    Inclus dans rôle
+                                                </span>
+                                                <label class="switch-ios mb-0">
+                                                    <input type="checkbox" name="permissions[]" value="{{ $permName }}" 
+                                                           id="perm-switch-{{ $permName }}" 
+                                                           class="perm-switch-input"
+                                                           onchange="onPermSwitchChange()">
+                                                    <span class="switch-slider"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        @endforeach
+                                    </div>
+
                                 </div>
                                 @endforeach
                             </div>
-
                         </div>
 
                     </div>
-                </div>
 
-                <!-- Footer with Safe Area Support -->
-                <div class="modal-footer modal-sticky-footer border-top d-flex justify-content-between align-items-center">
-                    <button type="button" class="btn btn-light rounded-pill px-3 py-2 fw-semibold" data-bs-dismiss="modal">
-                        Annuler
+                </div>
+            </div>
+
+            <!-- Modal Footer (Always Pinned Bottom) -->
+            <div class="modal-footer modal-sticky-footer bg-white border-top py-2.5 px-3 px-md-4 d-flex justify-content-between align-items-center flex-shrink-0">
+                <button type="button" class="btn btn-light rounded-pill px-3 py-2 fw-semibold" data-bs-dismiss="modal">
+                    Annuler
+                </button>
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-3 py-2 fw-semibold d-lg-none" id="mobBackBtn" onclick="switchToProfileTab()" style="display: none;">
+                        <i class="fas fa-arrow-left me-1"></i> Profil
                     </button>
-                    <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-outline-secondary rounded-pill px-3 py-2 fw-semibold d-md-none" id="modalPrevTabBtn" onclick="navigateModalTab(-1)">
-                            Précédent
-                        </button>
-                        <button type="button" class="btn btn-outline-dark rounded-pill px-3 py-2 fw-semibold d-md-none" id="modalNextTabBtn" onclick="navigateModalTab(1)">
-                            Suivant
-                        </button>
-                        <button type="submit" class="btn btn-danger rounded-pill px-4 py-2 fw-bold text-white shadow-sm" id="userSubmitBtn">
-                            <i class="fas fa-check-circle me-1.5"></i> Enregistrer
-                        </button>
-                    </div>
+                    <button type="submit" class="btn btn-danger rounded-pill px-4 py-2 fw-bold text-white shadow-sm" id="userSubmitBtn">
+                        <i class="fas fa-check-circle me-1.5"></i> Enregistrer
+                    </button>
                 </div>
+            </div>
 
-            </form>
-        </div>
+        </form>
     </div>
 </div>
 
@@ -1067,7 +1184,8 @@
 <!-- ======================================================= -->
 <div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+        <form id="passwordForm" method="POST" class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+            @csrf
             <div class="modal-header bg-dark text-white py-3 px-3 px-md-4 border-0">
                 <div class="d-flex align-items-center gap-2">
                     <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
@@ -1081,48 +1199,45 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
             </div>
 
-            <form id="passwordForm" method="POST">
-                @csrf
-                <div class="modal-body p-3.5 bg-light">
-                    <div class="card border-0 rounded-3 p-3 bg-white shadow-xs mb-3">
-                        <div class="text-muted small">Identifiant :</div>
-                        <div class="fw-bold text-dark font-monospace" id="pwd_modal_email"></div>
-                    </div>
+            <div class="modal-body p-3.5 bg-light">
+                <div class="card border-0 rounded-3 p-3 bg-white shadow-xs mb-3">
+                    <div class="text-muted small">Identifiant :</div>
+                    <div class="fw-bold text-dark font-monospace" id="pwd_modal_email"></div>
+                </div>
 
-                    <div class="mb-3">
-                        <div class="d-flex align-items-center justify-content-between mb-1.5">
-                            <label class="form-label small fw-bold text-dark mb-0">Nouveau mot de passe <span class="text-danger">*</span></label>
-                            <button type="button" class="btn btn-xs btn-outline-primary rounded-pill px-2.5 py-1"
-                                    onclick="generateStrongPassword('modal_new_password')">
-                                <i class="fas fa-wand-magic-sparkles me-1"></i> Générer fort
-                            </button>
-                        </div>
-                        <div class="position-relative">
-                            <input type="text" name="password" id="modal_new_password" class="form-control form-control-lg bg-white rounded-3 font-monospace pe-5 fs-6" 
-                                   placeholder="Minimum 8 caractères" required minlength="8">
-                            <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y text-secondary text-decoration-none me-2 p-0" 
-                                    onclick="copyToClipboard('modal_new_password', 'pwd-reset-copied-toast')" title="Copier">
-                                <i class="fas fa-copy fa-lg"></i>
-                            </button>
-                        </div>
-                        <div id="pwd-reset-copied-toast" class="alert alert-success border-0 py-1 px-2 mt-2 mb-0 rounded-3 small fw-semibold" style="display: none;">
-                            <i class="fas fa-check-circle me-1"></i> Mot de passe copié !
-                        </div>
+                <div class="mb-3">
+                    <div class="d-flex align-items-center justify-content-between mb-1.5">
+                        <label class="form-label small fw-bold text-dark mb-0">Nouveau mot de passe <span class="text-danger">*</span></label>
+                        <button type="button" class="btn btn-xs btn-outline-primary rounded-pill px-2.5 py-1"
+                                onclick="generateStrongPassword('modal_new_password')">
+                            <i class="fas fa-wand-magic-sparkles me-1"></i> Générer fort
+                        </button>
                     </div>
-
-                    <div class="alert alert-info border-0 rounded-3 small mb-0 py-2">
-                        <i class="fas fa-info-circle me-1"></i> Le nouveau mot de passe prend effet immédiatement dès validation.
+                    <div class="position-relative">
+                        <input type="text" name="password" id="modal_new_password" class="form-control form-control-lg bg-white rounded-3 font-monospace pe-5 fs-6" 
+                               placeholder="Minimum 8 caractères" required minlength="8">
+                        <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y text-secondary text-decoration-none me-2 p-0" 
+                                onclick="copyToClipboard('modal_new_password', 'pwd-reset-copied-toast')" title="Copier">
+                            <i class="fas fa-copy fa-lg"></i>
+                        </button>
+                    </div>
+                    <div id="pwd-reset-copied-toast" class="alert alert-success border-0 py-1 px-2 mt-2 mb-0 rounded-3 small fw-semibold" style="display: none;">
+                        <i class="fas fa-check-circle me-1"></i> Mot de passe copié !
                     </div>
                 </div>
 
-                <div class="modal-footer bg-white py-2.5 px-3 border-top d-flex justify-content-between">
-                    <button type="button" class="btn btn-light rounded-pill px-3" data-bs-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn btn-warning rounded-pill px-3.5 fw-bold">
-                        <i class="fas fa-check me-1"></i> Appliquer
-                    </button>
+                <div class="alert alert-info border-0 rounded-3 small mb-0 py-2">
+                    <i class="fas fa-info-circle me-1"></i> Le nouveau mot de passe prend effet immédiatement dès validation.
                 </div>
-            </form>
-        </div>
+            </div>
+
+            <div class="modal-footer bg-white py-2.5 px-3 border-top d-flex justify-content-between">
+                <button type="button" class="btn btn-light rounded-pill px-3" data-bs-dismiss="modal">Annuler</button>
+                <button type="submit" class="btn btn-warning rounded-pill px-3.5 fw-bold">
+                    <i class="fas fa-check me-1"></i> Appliquer
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -1130,8 +1245,6 @@
 <script>
 let bsUserModal = null;
 let bsPwdModal = null;
-const tabIds = ['tab-identity', 'tab-roles', 'tab-permissions'];
-let currentTabIndex = 0;
 
 document.addEventListener('DOMContentLoaded', function() {
     const userModalEl = document.getElementById('userModal');
@@ -1140,34 +1253,44 @@ document.addEventListener('DOMContentLoaded', function() {
     const pwdModalEl = document.getElementById('passwordModal');
     if (pwdModalEl) bsPwdModal = new bootstrap.Modal(pwdModalEl);
 
-    // Track active tab changes
-    const tabBtns = document.querySelectorAll('#userModalTabs button[data-bs-toggle="pill"]');
-    tabBtns.forEach((btn, index) => {
-        btn.addEventListener('shown.bs.tab', function(e) {
-            currentTabIndex = index;
-            updateTabNavButtons();
-        });
-    });
+    // Mobile tabs button listener
+    const pBtn = document.getElementById('pills-profile-btn');
+    const permsBtn = document.getElementById('pills-perms-btn');
+    if (pBtn && permsBtn) {
+        pBtn.addEventListener('click', () => syncMobileTabDisplay('profile'));
+        permsBtn.addEventListener('click', () => syncMobileTabDisplay('perms'));
+    }
 });
 
-function updateTabNavButtons() {
-    const prevBtn = document.getElementById('modalPrevTabBtn');
-    const nextBtn = document.getElementById('modalNextTabBtn');
-    if (!prevBtn || !nextBtn) return;
+// Mobile tab switcher helpers
+function syncMobileTabDisplay(tab) {
+    if (window.innerWidth >= 992) return; // Desktop shows both simultaneously
 
-    prevBtn.style.display = currentTabIndex === 0 ? 'none' : 'inline-block';
-    nextBtn.style.display = currentTabIndex === tabIds.length - 1 ? 'none' : 'inline-block';
+    const leftCol = document.getElementById('pills-profile-content');
+    const rightCol = document.getElementById('pills-perms-content');
+    const backBtn = document.getElementById('mobBackBtn');
+
+    if (tab === 'profile') {
+        leftCol.style.display = 'block';
+        rightCol.style.display = 'none';
+        if (backBtn) backBtn.style.display = 'none';
+        document.getElementById('pills-profile-btn')?.classList.add('active');
+        document.getElementById('pills-perms-btn')?.classList.remove('active');
+    } else {
+        leftCol.style.display = 'none';
+        rightCol.style.display = 'block';
+        if (backBtn) backBtn.style.display = 'inline-block';
+        document.getElementById('pills-perms-btn')?.classList.add('active');
+        document.getElementById('pills-profile-btn')?.classList.remove('active');
+    }
 }
 
-function navigateModalTab(direction) {
-    let nextIndex = currentTabIndex + direction;
-    if (nextIndex >= 0 && nextIndex < tabIds.length) {
-        const targetBtn = document.getElementById(tabIds[nextIndex] + '-btn');
-        if (targetBtn) {
-            const tabInstance = bootstrap.Tab.getOrCreateInstance(targetBtn);
-            tabInstance.show();
-        }
-    }
+function switchToPermissionsTab() {
+    syncMobileTabDisplay('perms');
+}
+
+function switchToProfileTab() {
+    syncMobileTabDisplay('profile');
 }
 
 // 1. OPEN CREATE MODAL
@@ -1177,7 +1300,7 @@ function openCreateModal() {
     document.getElementById('userModalIcon').className = 'fas fa-user-plus text-danger';
     document.getElementById('userFormMethod').value = 'POST';
     document.getElementById('userForm').action = "{{ route('users.store') }}";
-    document.getElementById('userSubmitBtn').innerHTML = '<i class="fas fa-check-circle me-1.5"></i> Créer le Collaborateur';
+    document.getElementById('userSubmitBtn').innerHTML = '<i class="fas fa-check-circle me-1.5"></i> Enregistrer';
 
     // Reset inputs
     document.getElementById('user_name').value = '';
@@ -1187,11 +1310,11 @@ function openCreateModal() {
     document.getElementById('user_status').value = 'active';
     document.getElementById('user_password').value = '';
     document.getElementById('user_password').required = true;
-    document.getElementById('password_hint').textContent = 'Obligatoire à la création (min 8 caractères).';
+    document.getElementById('password_hint').textContent = 'Min. 8 caractères sécurisés.';
 
-    // Reset roles selection cards
+    // Reset roles cards
     document.querySelectorAll('.role-select-card').forEach(c => {
-        c.classList.remove('selected', 'selected-manager', 'selected-staff');
+        c.classList.remove('selected-admin', 'selected-manager', 'selected-staff');
     });
     document.querySelectorAll('.role-checkbox').forEach(cb => cb.checked = false);
 
@@ -1205,9 +1328,13 @@ function openCreateModal() {
     // Auto-generate strong initial password
     generateStrongPassword('user_password');
 
-    // Switch to first tab
-    const firstTabBtn = document.getElementById('tab-identity-btn');
-    if (firstTabBtn) bootstrap.Tab.getOrCreateInstance(firstTabBtn).show();
+    // Reset domain filter & search
+    document.getElementById('perm-search-box').value = '';
+    filterPermissionsList('');
+    filterByDomain('all', document.querySelector('.domain-pill'));
+
+    // Mobile initial view
+    syncMobileTabDisplay('profile');
 
     if (bsUserModal) bsUserModal.show();
 }
@@ -1241,25 +1368,28 @@ function openEditModal(userId) {
 
         // Reset roles cards
         document.querySelectorAll('.role-select-card').forEach(c => {
-            c.classList.remove('selected', 'selected-manager', 'selected-staff');
+            c.classList.remove('selected-admin', 'selected-manager', 'selected-staff');
         });
         document.querySelectorAll('.role-checkbox').forEach(cb => cb.checked = false);
 
-        // Check assigned roles
+        // Select user roles
         data.roles.forEach(roleName => {
             selectRoleCard(roleName, true);
         });
 
-        // Check permissions switches
+        // Set direct permissions switches
         document.querySelectorAll('.perm-switch-input').forEach(sw => {
             sw.checked = data.direct_permissions.includes(sw.value);
         });
 
         onPermSwitchChange();
 
-        // Switch to first tab
-        const firstTabBtn = document.getElementById('tab-identity-btn');
-        if (firstTabBtn) bootstrap.Tab.getOrCreateInstance(firstTabBtn).show();
+        // Reset search & filter
+        document.getElementById('perm-search-box').value = '';
+        filterPermissionsList('');
+        filterByDomain('all', document.querySelector('.domain-pill'));
+
+        syncMobileTabDisplay('profile');
 
         if (bsUserModal) bsUserModal.show();
     })
@@ -1274,19 +1404,17 @@ function selectRoleCard(roleName, multi = false) {
     const input = document.getElementById(`role-input-${roleName}`);
     if (!card || !input) return;
 
-    const roleColorClass = roleName === 'Admin' ? 'selected' : (roleName === 'Manager' ? 'selected-manager' : 'selected-staff');
+    const roleColorClass = roleName === 'Admin' ? 'selected-admin' : (roleName === 'Manager' ? 'selected-manager' : 'selected-staff');
 
     if (!multi) {
-        // Single select behavior
         document.querySelectorAll('.role-select-card').forEach(c => {
-            c.classList.remove('selected', 'selected-manager', 'selected-staff');
+            c.classList.remove('selected-admin', 'selected-manager', 'selected-staff');
         });
         document.querySelectorAll('.role-checkbox').forEach(cb => cb.checked = false);
 
         card.classList.add(roleColorClass);
         input.checked = true;
     } else {
-        // Multi select toggle
         const isSelected = card.classList.contains(roleColorClass);
         if (isSelected) {
             card.classList.remove(roleColorClass);
@@ -1300,7 +1428,130 @@ function selectRoleCard(roleName, multi = false) {
     onPermSwitchChange();
 }
 
-// 4. PASSWORD GENERATOR & STRENGTH EVALUATOR
+// 4. RESET PERMISSIONS TO CURRENT ROLE
+function resetPermsToRole() {
+    const inheritedPerms = new Set();
+    document.querySelectorAll('.role-checkbox:checked').forEach(cb => {
+        try {
+            const perms = JSON.parse(cb.getAttribute('data-permissions') || '[]');
+            perms.forEach(p => inheritedPerms.add(p));
+        } catch(e) {}
+    });
+
+    document.querySelectorAll('.perm-switch-input').forEach(sw => {
+        sw.checked = inheritedPerms.has(sw.value);
+    });
+
+    onPermSwitchChange();
+}
+
+// 5. PERMISSIONS REACTION & REAL-TIME COUNTER
+function onPermSwitchChange() {
+    const inheritedPerms = new Set();
+
+    document.querySelectorAll('.role-checkbox:checked').forEach(cb => {
+        try {
+            const perms = JSON.parse(cb.getAttribute('data-permissions') || '[]');
+            perms.forEach(p => inheritedPerms.add(p));
+        } catch(e) {}
+    });
+
+    let totalActive = 0;
+    document.querySelectorAll('.perm-switch-input').forEach(sw => {
+        const permName = sw.value;
+        const isInherited = inheritedPerms.has(permName);
+        const badge = document.getElementById(`badge-inherited-${permName}`);
+        const row = document.getElementById(`perm-row-${permName}`);
+
+        if (badge) {
+            if (isInherited) {
+                badge.classList.remove('d-none');
+            } else {
+                badge.classList.add('d-none');
+            }
+        }
+
+        const isActive = sw.checked || isInherited;
+        if (isActive) {
+            totalActive++;
+            row?.classList.add('is-active');
+        } else {
+            row?.classList.remove('is-active');
+        }
+    });
+
+    // Update counters
+    const countNumber = document.getElementById('perms-count-number');
+    if (countNumber) countNumber.textContent = totalActive;
+
+    const mobCounter = document.getElementById('mob-perms-counter');
+    if (mobCounter) mobCounter.textContent = totalActive;
+}
+
+// 6. INSTANT LIVE SEARCH FOR PERMISSIONS
+function filterPermissionsList(query) {
+    const q = query.toLowerCase().trim();
+    document.querySelectorAll('.perm-item').forEach(item => {
+        const name = item.getAttribute('data-perm-name') || '';
+        const desc = item.getAttribute('data-perm-desc') || '';
+        if (q === '' || name.includes(q) || desc.includes(q)) {
+            item.style.display = 'flex';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+
+    // Hide module headers if all items are hidden
+    document.querySelectorAll('.perm-module-section').forEach(sec => {
+        const visible = sec.querySelectorAll('.perm-item[style*="display: flex"]');
+        if (q !== '' && visible.length === 0) {
+            sec.style.display = 'none';
+        } else {
+            sec.style.display = 'block';
+        }
+    });
+}
+
+// 7. FILTER PERMISSIONS BY DOMAIN PILLS
+function filterByDomain(domainKey, clickedPill) {
+    document.querySelectorAll('.domain-pill').forEach(p => p.classList.remove('active'));
+    if (clickedPill) clickedPill.classList.add('active');
+
+    document.querySelectorAll('.perm-module-section').forEach(sec => {
+        if (domainKey === 'all' || sec.getAttribute('data-domain-key') === domainKey) {
+            sec.style.display = 'block';
+        } else {
+            sec.style.display = 'none';
+        }
+    });
+
+    // Reset search box when selecting a domain
+    document.getElementById('perm-search-box').value = '';
+    document.querySelectorAll('.perm-item').forEach(i => i.style.display = 'flex');
+
+    // Scroll to top of perms container
+    const scrollArea = document.getElementById('perms-scroll-area');
+    if (scrollArea) scrollArea.scrollTop = 0;
+}
+
+function toggleModulePerms(modKey, state) {
+    const container = document.querySelector(`.module-items-${modKey}`);
+    if (container) {
+        container.querySelectorAll('.perm-switch-input').forEach(sw => {
+            sw.checked = state;
+        });
+        onPermSwitchChange();
+    }
+}
+
+function toggleAllPerms(state) {
+    document.querySelectorAll('.perm-switch-input').forEach(sw => {
+        sw.checked = state;
+    });
+    onPermSwitchChange();
+}
+
+// 8. PASSWORD GENERATOR & STRENGTH EVALUATOR
 function generateStrongPassword(targetInputId) {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789#@!%*?";
     let pwd = "Wina-";
@@ -1373,82 +1624,7 @@ function copyToClipboard(inputId, toastId) {
     }
 }
 
-// 5. PERMISSIONS REACTION & REAL-TIME COUNTER
-function onPermSwitchChange() {
-    const inheritedPerms = new Set();
-
-    document.querySelectorAll('.role-checkbox:checked').forEach(cb => {
-        try {
-            const perms = JSON.parse(cb.getAttribute('data-permissions') || '[]');
-            perms.forEach(p => inheritedPerms.add(p));
-        } catch(e) {}
-    });
-
-    let totalActive = 0;
-    document.querySelectorAll('.perm-switch-input').forEach(sw => {
-        const permName = sw.value;
-        const isInherited = inheritedPerms.has(permName);
-        const badge = document.getElementById(`badge-inherited-${permName}`);
-
-        if (badge) {
-            if (isInherited) {
-                badge.classList.remove('d-none');
-            } else {
-                badge.classList.add('d-none');
-            }
-        }
-
-        if (sw.checked || isInherited) {
-            totalActive++;
-        }
-    });
-
-    const counter = document.getElementById('perms-tab-counter');
-    if (counter) counter.textContent = totalActive;
-}
-
-// Filter permissions list in real time
-function filterPermissionsList(query) {
-    const q = query.toLowerCase().trim();
-    document.querySelectorAll('.perm-item').forEach(item => {
-        const name = item.getAttribute('data-perm-name') || '';
-        const desc = item.getAttribute('data-perm-desc') || '';
-        if (q === '' || name.includes(q) || desc.includes(q)) {
-            item.style.display = 'flex';
-        } else {
-            item.style.display = 'none';
-        }
-    });
-
-    // Hide modules where all items are hidden
-    document.querySelectorAll('.perm-module-card').forEach(mod => {
-        const visibleItems = mod.querySelectorAll('.perm-item[style*="display: flex"]');
-        if (q !== '' && visibleItems.length === 0) {
-            mod.style.display = 'none';
-        } else {
-            mod.style.display = 'block';
-        }
-    });
-}
-
-function toggleModulePerms(modKey, state) {
-    const container = document.querySelector(`.module-items-${modKey}`);
-    if (container) {
-        container.querySelectorAll('.perm-switch-input').forEach(sw => {
-            sw.checked = state;
-        });
-        onPermSwitchChange();
-    }
-}
-
-function toggleAllPerms(state) {
-    document.querySelectorAll('.perm-switch-input').forEach(sw => {
-        sw.checked = state;
-    });
-    onPermSwitchChange();
-}
-
-// 6. TOGGLE STATUS (AJAX)
+// 9. TOGGLE STATUS (AJAX)
 function toggleUserStatus(userId, userName, triggerSwitch = null) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
@@ -1463,23 +1639,18 @@ function toggleUserStatus(userId, userName, triggerSwitch = null) {
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-            // Update mobile dot & label
             const mobDot = document.getElementById(`mob-dot-${userId}`);
-            if (mobDot) {
-                mobDot.className = `status-dot ${data.status}`;
-            }
+            if (mobDot) mobDot.className = `status-dot ${data.status}`;
+            
             const deskDot = document.getElementById(`desk-dot-${userId}`);
-            if (deskDot) {
-                deskDot.className = `status-dot ${data.status}`;
-            }
+            if (deskDot) deskDot.className = `status-dot ${data.status}`;
+            
             const mobLabel = document.getElementById(`mob-status-label-${userId}`);
-            if (mobLabel) {
-                mobLabel.textContent = data.status === 'active' ? 'Actif' : 'Inactif';
-            }
+            if (mobLabel) mobLabel.textContent = data.status === 'active' ? 'Actif' : 'Inactif';
+            
             const deskCol = document.getElementById(`desk-status-col-${userId}`);
-            if (deskCol) {
-                deskCol.innerHTML = data.badge;
-            }
+            if (deskCol) deskCol.innerHTML = data.badge;
+            
             const deskBtn = document.getElementById(`desk-btn-toggle-${userId}`);
             if (deskBtn) {
                 deskBtn.innerHTML = data.status === 'active' 
@@ -1497,7 +1668,7 @@ function toggleUserStatus(userId, userName, triggerSwitch = null) {
     });
 }
 
-// 7. OPEN PASSWORD RESET MODAL
+// 10. OPEN PASSWORD RESET MODAL
 function openPasswordModal(userId, userName, userEmail) {
     document.getElementById('pwd_modal_name').textContent = userName;
     document.getElementById('pwd_modal_email').textContent = userEmail;
