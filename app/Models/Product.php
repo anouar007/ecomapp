@@ -1115,9 +1115,24 @@ class Product extends Model
         $isGenericLogo = function(?string $path): bool {
             if (empty($path)) return true;
             $lower = strtolower($path);
-            return str_contains($lower, 'winashop.jpg') || 
-                   str_contains($lower, 'wina.png') || 
-                   str_contains($lower, 'wina-placeholder');
+            if (str_contains($lower, 'winashop.jpg') || 
+                str_contains($lower, 'wina.png') || 
+                str_contains($lower, 'wina-placeholder')) {
+                return true;
+            }
+
+            // Exclude mismatched Godox softbox dummy images on non-lighting products
+            $pName = strtolower($this->name ?? '');
+            $isGodoxLighting = str_contains($pName, 'godox') || 
+                               str_contains($pName, 'boîte') || 
+                               str_contains($pName, 'boite') || 
+                               str_contains($pName, 'softbox') || 
+                               str_contains($pName, 'ml-sf50');
+            if (!$isGodoxLighting && (str_contains($lower, 'godox-boite-a-lumiere') || str_contains($lower, '1111111111111112222222'))) {
+                return true;
+            }
+
+            return false;
         };
 
         // 1. Prioritize already-loaded 'images' relation in-memory (prevents N+1 queries)
