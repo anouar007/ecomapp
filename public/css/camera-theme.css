@@ -63,16 +63,9 @@
 }
 
 /* Base Light Theme */
-html {
-    overflow-x: hidden !important;
-    max-width: 100% !important;
-}
-
+html,
 body {
-    overflow-x: hidden !important;
-    max-width: 100% !important;
-    width: 100% !important;
-    position: relative;
+    overflow-x: clip !important;
 }
 
 body {

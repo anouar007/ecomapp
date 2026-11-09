@@ -158,8 +158,8 @@
             </div>
 
             {{-- 2 Stacked Cards on Right (Side-by-side on tablet, stacked on desktop) --}}
-            <div class="col-lg-4 d-flex flex-column hero-side-column">
-                <div class="d-flex flex-column flex-sm-row flex-lg-column gap-3 h-100 flex-grow-1">
+            <div class="col-lg-4">
+                <div class="d-flex flex-column flex-sm-row flex-lg-column gap-3 h-100">
                     {{-- Top Card: e.g. DJI Osmo Pocket 4 --}}
                     @php 
                         $topImg = $heroSideTop?->image_url ?? asset('images/camera/banner_osmo_pocket.jpg');
@@ -167,15 +167,14 @@
                         $topLink = $heroSideTop?->link ?? route('shop.index', ['q' => 'Osmo Pocket']);
                         $topBtn = $heroSideTop?->button_text ?? 'Acheter';
                     @endphp
-                    <div class="hero-side-card position-relative overflow-hidden flex-fill d-flex flex-column justify-content-between p-3 p-md-4" style="min-height: 236px; height: calc(50% - 6px); background-color: #0f172a;" title="{{ $heroSideTop?->title ?? '' }}">
-                        <div class="hero-side-bg position-absolute top-0 start-0 w-100 h-100" style="background-image: url('{{ $topImg }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
-                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(15,23,42,0.3) 0%, rgba(15,23,42,0.78) 100%); pointer-events: none;"></div>
-                        
-                        <div class="position-relative z-2 w-100 d-flex align-items-center justify-content-between">
-                            <span class="hero-side-tag" style="position: static !important;">{{ $topTag }}</span>
-                        </div>
-
-                        <div class="position-relative z-2 mt-auto pt-3">
+                    <div class="hero-side-card position-relative overflow-hidden flex-fill" style="min-height: 236px;" title="{{ $heroSideTop?->title ?? '' }}">
+                        <div class="hero-side-bg" style="background-image: url('{{ $topImg }}');"></div>
+                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(15,23,42,0.15) 0%, rgba(15,23,42,0.6) 100%); pointer-events: none;"></div>
+                        <span class="hero-side-tag">{{ $topTag }}</span>
+                        @if(!empty($heroSideTop?->title))
+                            <span class="visually-hidden">{{ $heroSideTop->title }}</span>
+                        @endif
+                        <div class="position-absolute bottom-0 start-0 m-3 z-2">
                             <a href="{{ $topLink }}" class="btn hero-action-btn" aria-label="{{ $heroSideTop?->title ?? $topBtn }}">
                                 <span>{{ $topBtn }}</span>
                                 <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
@@ -190,15 +189,14 @@
                         $botLink = $heroSideBottom?->link ?? route('shop.index', ['q' => 'Godox AD800']);
                         $botBtn = $heroSideBottom?->button_text ?? 'Découvrez la GODOX AD800 PRO';
                     @endphp
-                    <div class="hero-side-card position-relative overflow-hidden flex-fill d-flex flex-column justify-content-between p-3 p-md-4" style="min-height: 236px; height: calc(50% - 6px); background-color: #0f172a;" title="{{ $heroSideBottom?->title ?? '' }}">
-                        <div class="hero-side-bg position-absolute top-0 start-0 w-100 h-100" style="background-image: url('{{ $botImg }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
-                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(15,23,42,0.3) 0%, rgba(15,23,42,0.78) 100%); pointer-events: none;"></div>
-                        
-                        <div class="position-relative z-2 w-100 d-flex align-items-center justify-content-between">
-                            <span class="hero-side-tag" style="position: static !important;">{{ $botTag }}</span>
-                        </div>
-
-                        <div class="position-relative z-2 mt-auto pt-3">
+                    <div class="hero-side-card position-relative overflow-hidden flex-fill" style="min-height: 236px;" title="{{ $heroSideBottom?->title ?? '' }}">
+                        <div class="hero-side-bg" style="background-image: url('{{ $botImg }}');"></div>
+                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(15,23,42,0.15) 0%, rgba(15,23,42,0.6) 100%); pointer-events: none;"></div>
+                        <span class="hero-side-tag">{{ $botTag }}</span>
+                        @if(!empty($heroSideBottom?->title))
+                            <span class="visually-hidden">{{ $heroSideBottom->title }}</span>
+                        @endif
+                        <div class="position-absolute bottom-0 start-0 m-3 z-2">
                             <a href="{{ $botLink }}" class="btn hero-action-btn" aria-label="{{ $heroSideBottom?->title ?? $botBtn }}">
                                 <span>{{ $botBtn }}</span>
                                 <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
@@ -221,23 +219,6 @@
             <div>
                 <h2 class="fw-bold text-dark mb-0 mb-md-1" style="font-size: clamp(1.25rem, 3.5vw, 1.65rem); letter-spacing: -0.4px;">Catégories Populaires</h2>
                 <p class="text-secondary small mb-0 d-none d-md-block" style="font-size: 0.88rem;">Explorez nos rayons phares et équipements audiovisuels certifiés au Maroc</p>
-            </div>
-            {{-- Navigation Arrows aligned in the section header --}}
-            <div class="d-flex align-items-center gap-2">
-                <button type="button" 
-                        class="btn btn-cat-swiper-arrow d-flex align-items-center justify-content-center" 
-                        id="catSwiperPrev" 
-                        aria-label="Précédent" 
-                        title="Catégories précédentes">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button type="button" 
-                        class="btn btn-cat-swiper-arrow d-flex align-items-center justify-content-center" 
-                        id="catSwiperNext" 
-                        aria-label="Suivant" 
-                        title="Catégories suivantes">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
             </div>
         </div>
         
@@ -279,7 +260,25 @@
         </div>
 
         {{-- Dots pagination below categories --}}
-        <div class="popular-cats-pagination text-center mt-2 d-flex justify-content-center align-items-center gap-2"></div>
+        <div class="popular-cats-pagination text-center mt-2 mt-md-3 d-flex justify-content-center align-items-center gap-2"></div>
+
+        {{-- Slider Controls under pagination dots --}}
+        <div class="cat-slider-nav-wrap d-flex align-items-center justify-content-center gap-2 mt-2">
+            <button type="button" 
+                    class="btn btn-cat-swiper-arrow d-flex align-items-center justify-content-center" 
+                    id="catSwiperPrev" 
+                    aria-label="Précédent" 
+                    title="Catégories précédentes">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button type="button" 
+                    class="btn btn-cat-swiper-arrow d-flex align-items-center justify-content-center" 
+                    id="catSwiperNext" 
+                    aria-label="Suivant" 
+                    title="Catégories suivantes">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
     </div>
 </section>
 
@@ -883,59 +882,6 @@
 
 @push('styles')
 <style>
-    /* ── Zero Horizontal Scroll Guarantee ── */
-    html {
-        overflow-x: hidden !important;
-        max-width: 100% !important;
-    }
-    body {
-        overflow-x: hidden !important;
-        max-width: 100% !important;
-        width: 100% !important;
-        position: relative;
-    }
-    .hero-winashop-section,
-    .popular-categories-section,
-    .featured-products-section,
-    section {
-        overflow-x: hidden !important;
-        max-width: 100% !important;
-    }
-
-    /* ── Hero Grid Absolute Height Guarantee & Responsiveness ── */
-    @media (min-width: 992px) {
-        .hero-main-card {
-            height: 500px !important;
-            min-height: 500px !important;
-        }
-        .hero-side-column {
-            min-height: 500px !important;
-            height: 500px !important;
-        }
-        .hero-side-card {
-            height: calc(50% - 8px) !important;
-            min-height: 236px !important;
-        }
-    }
-    @media (max-width: 991px) {
-        .hero-main-card {
-            height: 380px !important;
-            min-height: 380px !important;
-        }
-        .hero-side-card {
-            min-height: 190px !important;
-        }
-    }
-    @media (max-width: 767px) {
-        .hero-main-card {
-            height: 280px !important;
-            min-height: 280px !important;
-        }
-        .hero-side-card {
-            min-height: 160px !important;
-        }
-    }
-
     /* ── Floating Persistent Bottom-Left "Voir tous les produits" Button ── */
     .home-floating-catalog-wrap {
         position: fixed;

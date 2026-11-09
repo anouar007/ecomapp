@@ -510,25 +510,6 @@
         }
 
         /* ================================================================
-           ZERO HORIZONTAL SCROLL GUARANTEE (MOBILE & DESKTOP)
-           ================================================================ */
-        html {
-            overflow-x: hidden !important;
-            max-width: 100% !important;
-        }
-        body {
-            overflow-x: hidden !important;
-            max-width: 100% !important;
-            width: 100% !important;
-            position: relative;
-        }
-        .container,
-        .container-fluid {
-            max-width: 100% !important;
-            box-sizing: border-box !important;
-        }
-
-        /* ================================================================
            UNIVERSAL 8PX BORDER RADIUS SYSTEM
            ================================================================ */
         :root {
@@ -2905,7 +2886,7 @@
                         $headerLogoHeight = max(28, min(140, (int) setting('header_logo_height', 96)));
                     @endphp
                     <a class="navbar-brand m-0 p-0 d-flex align-items-center me-1 me-lg-2" href="{{ url('/') }}" style="flex-shrink: 0;" title="{{ setting('app_name', 'WINA SHOP') }}" aria-label="{{ setting('app_name', 'WINA SHOP') }} - {{ __('Accueil') }}">
-                        <img src="{{ site_logo_url('header') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="{{ $headerLogoHeight }}" height="{{ $headerLogoHeight }}" class="brand-logo-img" style="height: {{ $headerLogoHeight }}px; max-height: {{ $headerLogoHeight + 10 }}px; width: auto; max-width: 280px; object-fit: contain;" onerror="this.onerror=null; this.src='{{ asset('images/camera/logo.png') }}';">
+                        <img src="{{ site_logo_url('header') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="{{ $headerLogoHeight }}" height="{{ $headerLogoHeight }}" class="brand-logo-img" style="height: {{ $headerLogoHeight }}px; max-height: {{ $headerLogoHeight + 10 }}px; width: auto; max-width: 280px; object-fit: contain;">
                         <span class="visually-hidden">{{ setting('app_name', 'WINA SHOP') }}</span>
                     </a>
 
@@ -3147,7 +3128,7 @@
     <div class="offcanvas offcanvas-start border-0 shadow-lg d-lg-none" tabindex="-1" id="mobileNavDrawer" aria-labelledby="mobileNavDrawerLabel" style="width: 310px; z-index: 1000000;">
         <div class="offcanvas-header border-bottom py-3">
             <a href="{{ url('/') }}" class="navbar-brand m-0" aria-label="{{ setting('app_name', 'WINA SHOP') }} - {{ __('Accueil') }}" title="{{ setting('app_name', 'WINA SHOP') }}">
-                <img src="{{ site_logo_url('mobile') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="{{ $mobileLogoHeight }}" height="{{ $mobileLogoHeight }}" style="height: {{ $mobileLogoHeight }}px; width: auto; object-fit: contain;" onerror="this.onerror=null; this.src='{{ asset('images/camera/logo.png') }}';">
+                <img src="{{ site_logo_url('mobile') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="{{ $mobileLogoHeight }}" height="{{ $mobileLogoHeight }}" style="height: {{ $mobileLogoHeight }}px; width: auto; object-fit: contain;">
                 <span class="visually-hidden">{{ setting('app_name', 'WINA SHOP') }}</span>
             </a>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -3625,7 +3606,7 @@
                 <div class="col-lg-6">
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <a href="{{ url('/') }}" class="d-inline-block" title="{{ setting('app_name', 'WINA SHOP') }}" aria-label="{{ setting('app_name', 'WINA SHOP') }}">
-                            <img src="{{ site_logo_url('footer') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="{{ $footerLogoHeight }}" height="{{ $footerLogoHeight }}" style="height: {{ $footerLogoHeight }}px; width: auto; object-fit: contain;" onerror="this.onerror=null; this.src='{{ asset('images/camera/logo.png') }}';">
+                            <img src="{{ site_logo_url('footer') }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="{{ $footerLogoHeight }}" height="{{ $footerLogoHeight }}" style="height: {{ $footerLogoHeight }}px; width: auto; object-fit: contain;">
                         </a>
                         <p class="fw-bold text-white mb-0 text-uppercase ls-1 d-flex align-items-center gap-2 h5">
                             <span class="tally-dot"></span> {{ setting('app_name', 'WINA SHOP') }}
