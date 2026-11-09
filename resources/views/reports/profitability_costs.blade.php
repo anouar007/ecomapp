@@ -963,3 +963,4 @@ function applySimulatorToTable() {
 </script>
 @endpush
 @endsection
+
