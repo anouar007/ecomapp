@@ -549,4 +549,84 @@ class ErpFeaturesVerificationTest extends TestCase
         $response->assertSee('Bénéfice Net Réel Global');
         $response->assertSee('Dépenses');
     }
+
+    /**
+     * Test Recurring Monthly Expenses Management, Burn Rate, and 1-Click Generation.
+     */
+    public function test_recurring_expenses_management_and_generation(): void
+    {
+        // 1. Visit expenses index
+        $response = $this->actingAs($this->admin)->get(route('expenses.index', ['tab' => 'recurring']));
+        $response->assertStatus(200);
+        $response->assertSee('Charges Récurrentes');
+        $response->assertSee('Burn Rate');
+
+        // 2. Create a recurring expense with generate_now = 1
+        $store = Store::first();
+        $response = $this->actingAs($this->admin)->post(route('expenses.recurring.store'), [
+            'title'          => 'Loyer Local Commercial Centre',
+            'category'       => 'rent',
+            'amount'         => 12500.00,
+            'frequency'      => 'monthly',
+            'day_of_month'   => 1,
+            'start_date'     => now()->startOfMonth()->toDateString(),
+            'payment_method' => 'bank_transfer',
+            'payee'          => 'Bailleur M. Tahiri',
+            'store_id'       => $store ? $store->id : null,
+            'notes'          => 'Contrat bail commercial 3/6/9',
+            'generate_now'   => 1,
+        ]);
+
+        $response->assertRedirect(route('expenses.index', ['tab' => 'recurring']));
+        $this->assertDatabaseHas('recurring_expenses', [
+            'title'    => 'Loyer Local Commercial Centre',
+            'category' => 'rent',
+            'amount'   => 12500.00,
+        ]);
+
+        $recurring = \App\Models\RecurringExpense::where('title', 'Loyer Local Commercial Centre')->first();
+        $this->assertNotNull($recurring);
+
+        // 3. Verify that the expense was generated for the current month
+        $this->assertTrue($recurring->isGeneratedForMonth(now()));
+        $this->assertDatabaseHas('expenses', [
+            'recurring_expense_id' => $recurring->id,
+            'amount'               => 12500.00,
+        ]);
+
+        // 4. Duplicate prevention test: attempting to generate again for this month returns null
+        $secondAttempt = $recurring->generateExpense(now());
+        $this->assertNull($secondAttempt);
+
+        // 5. Test toggle status (pause)
+        $toggleResp = $this->actingAs($this->admin)->patch(route('expenses.recurring.toggle', $recurring->id));
+        $toggleResp->assertStatus(302);
+        $recurring->refresh();
+        $this->assertFalse($recurring->is_active);
+
+        // 6. Test update
+        $updateResp = $this->actingAs($this->admin)->put(route('expenses.recurring.update', $recurring->id), [
+            'title'          => 'Loyer Local Commercial Centre (Avenant)',
+            'category'       => 'rent',
+            'amount'         => 13000.00,
+            'frequency'      => 'monthly',
+            'day_of_month'   => 5,
+            'start_date'     => now()->startOfMonth()->toDateString(),
+            'payment_method' => 'bank_transfer',
+            'is_active'      => 1,
+        ]);
+        $updateResp->assertRedirect(route('expenses.index', ['tab' => 'recurring']));
+        $recurring->refresh();
+        $this->assertEquals('Loyer Local Commercial Centre (Avenant)', $recurring->title);
+        $this->assertEquals(13000.00, (float) $recurring->amount);
+        $this->assertTrue($recurring->is_active);
+
+        // 7. Test batch generation 1-click endpoint
+        $genResp = $this->actingAs($this->admin)->post(route('expenses.recurring.generate-month'));
+        $genResp->assertStatus(302);
+
+        // 8. Test artisan command execution
+        $exitCode = \Illuminate\Support\Facades\Artisan::call('expenses:generate-recurring');
+        $this->assertEquals(0, $exitCode);
+    }
 }

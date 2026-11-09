@@ -271,8 +271,8 @@ html, body, .main-content {
     <!-- Main Content Layout -->
     <div class="row g-3 g-md-4">
         
-        <!-- Left Column: Customer Accounts Matrix (9 cols on XL) -->
-        <div class="col-12 col-xl-9 col-xxl-9">
+        <!-- Left Column: Customer Accounts Matrix (12 cols on desktop/laptop, 9 cols on wide XXL) -->
+        <div class="col-12 col-xxl-9">
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3 mb-md-4">
                 
                 <!-- Filter Chips & Search Bar -->
@@ -562,8 +562,8 @@ html, body, .main-content {
             </div>
         </div>
 
-        <!-- Right Column: Recent Payment Feed with Proofs (3 cols on XL) -->
-        <div class="col-12 col-xl-3 col-xxl-3">
+        <!-- Right Column: Recent Payment Feed with Proofs (12 cols on desktop/laptop, 3 cols on wide XXL) -->
+        <div class="col-12 col-xxl-3">
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3 mb-md-4">
                 <div class="p-3 border-bottom bg-white d-flex align-items-center justify-content-between">
                     <div>

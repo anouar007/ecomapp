@@ -220,6 +220,13 @@ Route::middleware('auth')->group(function () {
         Route::delete('/expenses/{expense}', [\App\Http\Controllers\ExpenseController::class, 'destroy'])->name('expenses.destroy');
         Route::get('/expenses/export-csv', [\App\Http\Controllers\ExpenseController::class, 'exportCsv'])->name('expenses.export');
 
+        // Recurring Monthly Expenses (Charges Récurrentes Fixes)
+        Route::post('/expenses/recurring', [\App\Http\Controllers\ExpenseController::class, 'storeRecurring'])->name('expenses.recurring.store');
+        Route::put('/expenses/recurring/{recurringExpense}', [\App\Http\Controllers\ExpenseController::class, 'updateRecurring'])->name('expenses.recurring.update');
+        Route::patch('/expenses/recurring/{recurringExpense}/toggle', [\App\Http\Controllers\ExpenseController::class, 'toggleRecurring'])->name('expenses.recurring.toggle');
+        Route::delete('/expenses/recurring/{recurringExpense}', [\App\Http\Controllers\ExpenseController::class, 'destroyRecurring'])->name('expenses.recurring.destroy');
+        Route::post('/expenses/recurring/generate-month', [\App\Http\Controllers\ExpenseController::class, 'generateCurrentMonthRecurring'])->name('expenses.recurring.generate-month');
+
         // Shipments & Inbound Purchase Costs Management (Strictly Admin Only)
         Route::get('/shipments', [\App\Http\Controllers\ShipmentController::class, 'index'])->name('shipments.index');
         Route::get('/shipments/create', [\App\Http\Controllers\ShipmentController::class, 'create'])->name('shipments.create');

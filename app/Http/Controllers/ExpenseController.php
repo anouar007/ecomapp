@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Expense;
+use App\Models\RecurringExpense;
 use App\Models\Store;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -97,6 +98,22 @@ class ExpenseController extends Controller
         $categories = Expense::$categories;
         $paymentMethods = Expense::$paymentMethods;
 
+        // Recurring Expenses & Monthly Burn Rate
+        $recurringExpenses = RecurringExpense::with(['store', 'user'])
+            ->withCount('generatedExpenses')
+            ->orderBy('is_active', 'desc')
+            ->orderBy('day_of_month', 'asc')
+            ->get();
+
+        $recurringCount = $recurringExpenses->count();
+        $recurringMonthlyTotal = (float) $recurringExpenses->where('is_active', true)->sum('amount');
+        $currentMonth = Carbon::now();
+        $pendingRecurring = $recurringExpenses->filter(function ($item) use ($currentMonth) {
+            return $item->is_active && !$item->isGeneratedForMonth($currentMonth);
+        });
+        $pendingRecurringCount = $pendingRecurring->count();
+        $pendingRecurringAmount = (float) $pendingRecurring->sum('amount');
+
         return view('expenses.index', compact(
             'expenses',
             'periodExpenses',
@@ -115,7 +132,12 @@ class ExpenseController extends Controller
             'search',
             'stores',
             'categories',
-            'paymentMethods'
+            'paymentMethods',
+            'recurringExpenses',
+            'recurringCount',
+            'recurringMonthlyTotal',
+            'pendingRecurringCount',
+            'pendingRecurringAmount'
         ));
     }
 
@@ -286,6 +308,166 @@ class ExpenseController extends Controller
     }
 
     /**
+     * Store a newly created recurring expense template.
+     */
+    public function storeRecurring(Request $request)
+    {
+        $this->authorizeAccess();
+
+        $validated = $request->validate([
+            'title'          => ['required', 'string', 'max:255'],
+            'category'       => ['required', 'string', 'max:50'],
+            'amount'         => ['required', 'numeric', 'min:0.01'],
+            'frequency'      => ['required', 'string', 'in:monthly,quarterly,yearly,weekly'],
+            'day_of_month'   => ['required', 'integer', 'min:1', 'max:31'],
+            'start_date'     => ['required', 'date'],
+            'end_date'       => ['nullable', 'date', 'after_or_equal:start_date'],
+            'payment_method' => ['required', 'string', 'max:30'],
+            'payee'          => ['nullable', 'string', 'max:255'],
+            'store_id'       => ['nullable', 'exists:stores,id'],
+            'notes'          => ['nullable', 'string', 'max:1000'],
+            'auto_generate'  => ['nullable', 'boolean'],
+            'generate_now'   => ['nullable', 'boolean'],
+        ]);
+
+        $recurring = RecurringExpense::create([
+            'title'          => $validated['title'],
+            'category'       => $validated['category'],
+            'amount'         => $validated['amount'],
+            'frequency'      => $validated['frequency'],
+            'day_of_month'   => $validated['day_of_month'],
+            'start_date'     => $validated['start_date'],
+            'end_date'       => $validated['end_date'] ?? null,
+            'payment_method' => $validated['payment_method'],
+            'payee'          => $validated['payee'] ?? null,
+            'store_id'       => $validated['store_id'] ?? null,
+            'user_id'        => auth()->id(),
+            'notes'          => $validated['notes'] ?? null,
+            'is_active'      => true,
+            'auto_generate'  => $request->boolean('auto_generate', true),
+        ]);
+
+        // If merchant requested to generate for the current month immediately
+        if ($request->boolean('generate_now')) {
+            $recurring->generateExpense(Carbon::now());
+        }
+
+        return redirect()->route('expenses.index', ['tab' => 'recurring'])
+            ->with('success', "Charge récurrente '{$recurring->title}' configurée avec succès.");
+    }
+
+    /**
+     * Update an existing recurring expense template.
+     */
+    public function updateRecurring(Request $request, RecurringExpense $recurringExpense)
+    {
+        $this->authorizeAccess();
+
+        $validated = $request->validate([
+            'title'          => ['required', 'string', 'max:255'],
+            'category'       => ['required', 'string', 'max:50'],
+            'amount'         => ['required', 'numeric', 'min:0.01'],
+            'frequency'      => ['required', 'string', 'in:monthly,quarterly,yearly,weekly'],
+            'day_of_month'   => ['required', 'integer', 'min:1', 'max:31'],
+            'start_date'     => ['required', 'date'],
+            'end_date'       => ['nullable', 'date', 'after_or_equal:start_date'],
+            'payment_method' => ['required', 'string', 'max:30'],
+            'payee'          => ['nullable', 'string', 'max:255'],
+            'store_id'       => ['nullable', 'exists:stores,id'],
+            'notes'          => ['nullable', 'string', 'max:1000'],
+            'is_active'      => ['nullable', 'boolean'],
+            'auto_generate'  => ['nullable', 'boolean'],
+        ]);
+
+        $recurringExpense->update([
+            'title'          => $validated['title'],
+            'category'       => $validated['category'],
+            'amount'         => $validated['amount'],
+            'frequency'      => $validated['frequency'],
+            'day_of_month'   => $validated['day_of_month'],
+            'start_date'     => $validated['start_date'],
+            'end_date'       => $validated['end_date'] ?? null,
+            'payment_method' => $validated['payment_method'],
+            'payee'          => $validated['payee'] ?? null,
+            'store_id'       => $validated['store_id'] ?? null,
+            'notes'          => $validated['notes'] ?? null,
+            'is_active'      => $request->boolean('is_active', true),
+            'auto_generate'  => $request->boolean('auto_generate', true),
+        ]);
+
+        return redirect()->route('expenses.index', ['tab' => 'recurring'])
+            ->with('success', "Charge récurrente '{$recurringExpense->title}' mise à jour.");
+    }
+
+    /**
+     * Toggle active/inactive status of a recurring expense.
+     */
+    public function toggleRecurring(RecurringExpense $recurringExpense)
+    {
+        $this->authorizeAccess();
+
+        $recurringExpense->update([
+            'is_active' => !$recurringExpense->is_active,
+        ]);
+
+        $statusStr = $recurringExpense->is_active ? 'activée' : 'mise en pause';
+        return redirect()->back()
+            ->with('success', "La charge '{$recurringExpense->title}' est désormais {$statusStr}.");
+    }
+
+    /**
+     * Delete a recurring expense template.
+     */
+    public function destroyRecurring(RecurringExpense $recurringExpense)
+    {
+        $this->authorizeAccess();
+
+        $title = $recurringExpense->title;
+        $recurringExpense->delete();
+
+        return redirect()->route('expenses.index', ['tab' => 'recurring'])
+            ->with('success', "Charge récurrente '{$title}' supprimée.");
+    }
+
+    /**
+     * 1-Click trigger to generate current month's expenses from recurring templates.
+     */
+    public function generateCurrentMonthRecurring(Request $request)
+    {
+        $this->authorizeAccess();
+
+        $targetDate = Carbon::now();
+        $generatedCount = 0;
+        $totalAmount = 0;
+
+        if ($request->filled('recurring_expense_id')) {
+            $recurring = RecurringExpense::findOrFail($request->get('recurring_expense_id'));
+            $expense = $recurring->generateExpense($targetDate);
+            if ($expense) {
+                $generatedCount = 1;
+                $totalAmount = (float) $expense->amount;
+            }
+        } else {
+            $activeRecurring = RecurringExpense::where('is_active', true)->get();
+            foreach ($activeRecurring as $recurring) {
+                $expense = $recurring->generateExpense($targetDate);
+                if ($expense) {
+                    $generatedCount++;
+                    $totalAmount += (float) $expense->amount;
+                }
+            }
+        }
+
+        if ($generatedCount === 0) {
+            return redirect()->back()
+                ->with('info', "Toutes les charges récurrentes de ce mois (" . $targetDate->translatedFormat('F Y') . ") ont déjà été générées.");
+        }
+
+        return redirect()->back()
+            ->with('success', "{$generatedCount} charge(s) du mois générée(s) avec succès (" . number_format($totalAmount, 2, ',', ' ') . " DH).");
+    }
+
+    /**
      * Security check.
      */
     private function authorizeAccess(): void
@@ -314,3 +496,4 @@ class ExpenseController extends Controller
         };
     }
 }
+

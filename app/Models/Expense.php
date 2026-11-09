@@ -23,6 +23,7 @@ class Expense extends Model
         'payee',
         'receipt_image',
         'store_id',
+        'recurring_expense_id',
         'user_id',
         'notes',
         'status',
@@ -110,6 +111,11 @@ class Expense extends Model
         return $this->belongsTo(Store::class);
     }
 
+    public function recurringExpense(): BelongsTo
+    {
+        return $this->belongsTo(RecurringExpense::class, 'recurring_expense_id');
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -172,3 +178,4 @@ class Expense extends Model
         return $prefix . str_pad((string)$number, 4, '0', STR_PAD_LEFT);
     }
 }
+

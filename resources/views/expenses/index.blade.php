@@ -114,6 +114,9 @@
                 </div>
 
                 <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <button type="button" class="btn btn-warning text-dark fw-bold rounded-pill px-3.5 py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#newRecurringExpenseModal" style="font-size: 0.85rem;">
+                        <i class="fas fa-repeat me-1.5"></i> Charge Mensuelle
+                    </button>
                     <a href="{{ route('reports.profitability', ['period' => $period]) }}" class="btn btn-outline-light rounded-pill px-3.5 py-2 fw-semibold shadow-xs" style="font-size: 0.85rem;">
                         <i class="fas fa-chart-pie me-1.5 text-warning"></i> Rentabilité & Bénéfice Net
                     </a>
@@ -156,7 +159,40 @@
     </div>
     @endif
 
-    <!-- 4 Financial KPI Cards -->
+    @if(session('info'))
+    <div class="alert alert-info alert-dismissible fade show rounded-4 border-0 shadow-xs mb-4" role="alert">
+        <div class="d-flex align-items-center gap-2">
+            <i class="fas fa-circle-info fs-5"></i>
+            <div>{{ session('info') }}</div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+    </div>
+    @endif
+
+    <!-- Pending Recurring Expenses Generator Notification Banner -->
+    @if($pendingRecurringCount > 0)
+    <div class="card border-0 rounded-4 shadow-sm mb-4" style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-left: 5px solid #f59e0b !important;">
+        <div class="card-body p-3.5 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; font-size: 1.15rem;">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div>
+                    <div class="fw-bold text-dark fs-6">Charges Récurrentes de ce mois ({{ now()->translatedFormat('F Y') }})</div>
+                    <div class="text-muted small">
+                        <strong>{{ $pendingRecurringCount }}</strong> charge(s) récurrente(s) configurée(s) pour un total de <strong>{{ currency($pendingRecurringAmount) }}</strong> n'ont pas encore été générées pour ce mois-ci.
+                    </div>
+                </div>
+            </div>
+            <form method="POST" action="{{ route('expenses.recurring.generate-month') }}" class="flex-shrink-0">
+                @csrf
+                <button type="submit" class="btn btn-warning text-dark fw-bold rounded-pill px-3.5 py-2 shadow-xs">
+                    <i class="fas fa-wand-magic-sparkles me-1.5"></i> Générer les charges du mois (1-Clic)
+                </button>
+            </form>
+        </div>
+    </div>
+    @endif
     <div class="row g-3 mb-4">
         <!-- 1. Total Dépenses Période -->
         <div class="col-6 col-xl-3">
@@ -271,6 +307,34 @@
         </div>
     </div>
     @endif
+
+    <!-- Navigation Tabs (Grand Livre vs Charges Récurrentes) -->
+    <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2 flex-wrap gap-2">
+        <ul class="nav nav-pills gap-1.5" id="expensesTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link rounded-pill px-3.5 py-2 fw-semibold {{ request('tab') !== 'recurring' ? 'active' : '' }}" id="tab-ledger-btn" data-bs-toggle="pill" data-bs-target="#tab-ledger" type="button" role="tab" style="font-size: 0.85rem;">
+                    <i class="fas fa-book me-1.5"></i> Grand Livre des Dépenses ({{ $expenses->total() }})
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link rounded-pill px-3.5 py-2 fw-semibold {{ request('tab') === 'recurring' ? 'active' : '' }}" id="tab-recurring-btn" data-bs-toggle="pill" data-bs-target="#tab-recurring" type="button" role="tab" style="font-size: 0.85rem;">
+                    <i class="fas fa-repeat me-1.5 text-warning"></i> Charges Récurrentes & Mensuelles ({{ $recurringCount }})
+                </button>
+            </li>
+        </ul>
+
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-dark rounded-pill px-3 py-2 fw-normal" style="font-size: 0.78rem;">
+                <i class="fas fa-fire-flame-curved text-danger me-1"></i> Charges Fixes / Burn Rate : <strong class="text-white">{{ currency($recurringMonthlyTotal) }}/mois</strong>
+            </span>
+        </div>
+    </div>
+
+    <!-- Tab Panes Container -->
+    <div class="tab-content" id="expensesTabsContent">
+
+        <!-- TAB 1: GRAND LIVRE DES DÉPENSES -->
+        <div class="tab-pane fade {{ request('tab') !== 'recurring' ? 'show active' : '' }}" id="tab-ledger" role="tabpanel">
 
     <!-- Period & Filter Toolbar -->
     <div class="card border-0 shadow-sm rounded-4 mb-4">
@@ -562,6 +626,264 @@
         @endif
     </div>
 
+        </div> <!-- /#tab-ledger -->
+
+        <!-- TAB 2: CHARGES RÉCURRENTES & MENSUELLES -->
+        <div class="tab-pane fade {{ request('tab') === 'recurring' ? 'show active' : '' }}" id="tab-recurring" role="tabpanel">
+
+            <!-- Recurring Overview & Quick Actions Card -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-3.5">
+                    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                        <div>
+                            <h6 class="fw-bold mb-1 text-dark">
+                                <i class="fas fa-repeat text-warning me-1.5"></i> Modèles de Charges Fixes & Dépenses Répétées
+                            </h6>
+                            <p class="text-muted small mb-0">
+                                Configurez vos charges récurrentes (loyer, salaires, abonnements, syndic) <strong>une seule fois</strong>. Vous n'avez plus besoin de les recréer chaque mois.
+                            </p>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <form method="POST" action="{{ route('expenses.recurring.generate-month') }}" class="d-inline">
+                                @csrf
+                                <button type="submit" class="btn btn-sm btn-warning text-dark fw-bold rounded-pill px-3 py-2 shadow-xs">
+                                    <i class="fas fa-wand-magic-sparkles me-1"></i> Générer ce mois ({{ now()->translatedFormat('M Y') }})
+                                </button>
+                            </form>
+                            <button type="button" class="btn btn-sm btn-dark rounded-pill px-3.5 py-2 fw-semibold shadow-xs" data-bs-toggle="modal" data-bs-target="#newRecurringExpenseModal">
+                                <i class="fas fa-plus me-1"></i> Nouvelle Charge Récurrente
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recurring Expenses Matrix -->
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                <div class="p-3 border-bottom bg-white d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <h6 class="fw-bold mb-0 text-dark">Liste des Modèles Récurrents ({{ $recurringCount }})</h6>
+                    </div>
+                    <div class="text-muted small">
+                        Charges fixes actives : <strong class="text-danger">{{ currency($recurringMonthlyTotal) }}/mois</strong>
+                    </div>
+                </div>
+
+                <!-- Desktop Recurring Table -->
+                <div class="table-responsive d-none d-lg-block">
+                    <table class="table align-middle mb-0">
+                        <thead class="bg-light border-bottom">
+                            <tr>
+                                <th class="ps-3 py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 25%;">Intitulé & Catégorie</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 14%;">Montant & Fréquence</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 14%;">Jour d'Échéance</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 16%;">Boutique / Bénéficiaire</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold text-center" style="font-size: 0.72rem; width: 15%;">Ce Mois-ci</th>
+                                <th class="pe-3 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 16%;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y">
+                            @forelse($recurringExpenses as $rec)
+                            @php
+                                $isGen = $rec->isGeneratedForMonth(now());
+                            @endphp
+                            <tr class="hover-bg-light {{ !$rec->is_active ? 'opacity-75 bg-light' : '' }}">
+                                <!-- Title & Category -->
+                                <td class="ps-3 py-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="min-w-0">
+                                            <div class="fw-bold text-dark" style="font-size: 0.9rem;">
+                                                {{ $rec->title }}
+                                                @if(!$rec->is_active)
+                                                    <span class="badge bg-secondary-subtle text-secondary rounded-pill ms-1" style="font-size: 0.65rem;">En pause</span>
+                                                @endif
+                                            </div>
+                                            <div class="d-flex align-items-center gap-1.5 mt-0.5">
+                                                <span class="badge {{ $rec->category_badge_class }} rounded-pill" style="font-size: 0.68rem;">
+                                                    <i class="{{ $rec->category_icon }} me-1"></i> {{ $rec->category_label }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <!-- Amount & Frequency -->
+                                <td class="py-3 text-end">
+                                    <div class="fw-bold fs-6 text-danger">
+                                        {{ currency($rec->amount) }}
+                                    </div>
+                                    <div class="text-muted small" style="font-size: 0.72rem;">
+                                        {{ $rec->frequency_label }}
+                                    </div>
+                                </td>
+
+                                <!-- Day of month -->
+                                <td class="py-3">
+                                    <div class="fw-semibold text-dark small">
+                                        <i class="fas fa-calendar-day text-secondary me-1"></i>
+                                        Le {{ $rec->day_of_month }}{{ $rec->day_of_month == 1 ? 'er' : '' }} du mois
+                                    </div>
+                                    <div class="text-muted" style="font-size: 0.7rem;">
+                                        Début : {{ $rec->start_date ? $rec->start_date->format('d/m/Y') : '—' }}
+                                    </div>
+                                </td>
+
+                                <!-- Store / Payee -->
+                                <td class="py-3">
+                                    <div class="small fw-semibold text-dark">
+                                        {{ $rec->store->name ?? 'Siège / Général' }}
+                                    </div>
+                                    <div class="text-muted text-truncate" style="font-size: 0.72rem; max-width: 180px;">
+                                        {{ $rec->payee ?? '—' }}
+                                    </div>
+                                </td>
+
+                                <!-- Generated this month status -->
+                                <td class="py-3 text-center">
+                                    @if($isGen)
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1" style="font-size: 0.72rem;">
+                                            <i class="fas fa-circle-check me-1"></i> Généré ce mois
+                                        </span>
+                                    @elseif(!$rec->is_active)
+                                        <span class="badge bg-light text-muted border rounded-pill px-2.5 py-1" style="font-size: 0.72rem;">
+                                            Désactivé
+                                        </span>
+                                    @else
+                                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2.5 py-1" style="font-size: 0.72rem;">
+                                            <i class="fas fa-hourglass-half me-1"></i> En attente
+                                        </span>
+                                    @endif
+                                </td>
+
+                                <!-- Actions -->
+                                <td class="pe-3 py-3 text-end text-nowrap">
+                                    <div class="d-inline-flex align-items-center gap-1.5">
+                                        @if(!$isGen && $rec->is_active)
+                                        <form method="POST" action="{{ route('expenses.recurring.generate-month') }}" class="d-inline">
+                                            @csrf
+                                            <input type="hidden" name="recurring_expense_id" value="{{ $rec->id }}">
+                                            <button type="submit" class="btn btn-sm btn-warning text-dark fw-bold rounded-pill px-2 py-1 shadow-xs" style="font-size: 0.72rem;" title="Générer l'écriture pour ce mois-ci">
+                                                <i class="fas fa-bolt me-1"></i> Générer
+                                            </button>
+                                        </form>
+                                        @endif
+
+                                        <!-- Toggle Pause/Active -->
+                                        <form method="POST" action="{{ route('expenses.recurring.toggle', $rec->id) }}" class="d-inline">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="btn btn-sm btn-light border rounded-circle {{ $rec->is_active ? 'text-secondary' : 'text-success' }} d-inline-flex align-items-center justify-content-center"
+                                                    style="width: 28px; height: 28px; padding: 0;"
+                                                    title="{{ $rec->is_active ? 'Mettre en pause' : 'Réactiver' }}">
+                                                <i class="fas {{ $rec->is_active ? 'fa-pause' : 'fa-play' }}" style="font-size: 0.68rem;"></i>
+                                            </button>
+                                        </form>
+
+                                        <!-- Edit Modal -->
+                                        <button type="button" class="btn btn-sm btn-light border rounded-circle text-secondary d-inline-flex align-items-center justify-content-center"
+                                                style="width: 28px; height: 28px; padding: 0;"
+                                                onclick="openEditRecurringModal({{ json_encode($rec) }})"
+                                                title="Modifier le modèle">
+                                            <i class="fas fa-pencil" style="font-size: 0.68rem;"></i>
+                                        </button>
+
+                                        <!-- Delete -->
+                                        <form method="POST" action="{{ route('expenses.recurring.destroy', $rec->id) }}" onsubmit="return confirm('Supprimer définitivement ce modèle récurrent ?');" class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-light border rounded-circle text-danger d-inline-flex align-items-center justify-content-center"
+                                                    style="width: 28px; height: 28px; padding: 0;"
+                                                    title="Supprimer">
+                                                <i class="fas fa-trash" style="font-size: 0.68rem;"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    <i class="fas fa-repeat fa-3x mb-3 opacity-25"></i>
+                                    <p class="mb-2 fw-semibold">Aucune charge récurrente configurée.</p>
+                                    <button type="button" class="btn btn-sm btn-warning text-dark fw-bold rounded-pill px-3 py-1.5" data-bs-toggle="modal" data-bs-target="#newRecurringExpenseModal">
+                                        <i class="fas fa-plus me-1"></i> Créer votre première charge mensuelle (Loyer, Salaire...)
+                                    </button>
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobile Recurring Cards -->
+                <div class="d-block d-lg-none p-3 space-y-3 bg-light bg-opacity-50">
+                    @forelse($recurringExpenses as $rec)
+                    @php $isGen = $rec->isGeneratedForMonth(now()); @endphp
+                    <div class="expense-mobile-card p-3 bg-white">
+                        <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+                            <div>
+                                <span class="badge {{ $rec->category_badge_class }} rounded-pill" style="font-size: 0.68rem;">
+                                    <i class="{{ $rec->category_icon }} me-1"></i> {{ $rec->category_label }}
+                                </span>
+                                <div class="fw-bold text-dark mt-1" style="font-size: 0.95rem;">{{ $rec->title }}</div>
+                                <div class="text-muted small" style="font-size: 0.72rem;">
+                                    Le {{ $rec->day_of_month }} du mois • {{ $rec->store->name ?? 'Général' }}
+                                </div>
+                            </div>
+                            <div class="text-end flex-shrink-0">
+                                <div class="fw-bold fs-6 text-danger">{{ currency($rec->amount) }}</div>
+                                <div class="text-muted small" style="font-size: 0.68rem;">{{ $rec->frequency_label }}</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                            <div>
+                                @if($isGen)
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5" style="font-size: 0.68rem;">
+                                        ✓ Généré
+                                    </span>
+                                @else
+                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2 py-0.5" style="font-size: 0.68rem;">
+                                        ⏳ En attente
+                                    </span>
+                                @endif
+                            </div>
+                            <div class="d-flex align-items-center gap-1.5">
+                                @if(!$isGen && $rec->is_active)
+                                <form method="POST" action="{{ route('expenses.recurring.generate-month') }}" class="d-inline">
+                                    @csrf
+                                    <input type="hidden" name="recurring_expense_id" value="{{ $rec->id }}">
+                                    <button type="submit" class="btn btn-sm btn-warning text-dark fw-bold rounded-pill px-2.5 py-1" style="font-size: 0.72rem;">
+                                        <i class="fas fa-bolt"></i> Générer
+                                    </button>
+                                </form>
+                                @endif
+                                <button type="button" class="btn btn-sm btn-light border rounded-pill px-2.5 py-1 text-secondary"
+                                        onclick="openEditRecurringModal({{ json_encode($rec) }})">
+                                    <i class="fas fa-pencil"></i>
+                                </button>
+                                <form method="POST" action="{{ route('expenses.recurring.destroy', $rec->id) }}" onsubmit="return confirm('Supprimer ?');" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-light border rounded-pill px-2.5 py-1 text-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="text-center py-4 text-muted small">
+                        Aucune charge récurrente.
+                    </div>
+                    @endforelse
+                </div>
+            </div>
+
+        </div> <!-- /#tab-recurring -->
+
+    </div> <!-- /#expensesTabsContent -->
+
 </div>
 
 <!-- MODAL: NOUVELLE DÉPENSE -->
@@ -811,8 +1133,286 @@
     </div>
 </div>
 
+<!-- MODAL: NOUVELLE CHARGE RÉCURRENTE MENSUELLE -->
+<div class="modal fade" id="newRecurringExpenseModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <form method="POST" action="{{ route('expenses.recurring.store') }}" class="modal-content border-0 shadow-lg rounded-4">
+            @csrf
+            <div class="modal-header bg-dark text-white py-3 px-4 border-0">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                        <i class="fas fa-repeat"></i>
+                    </div>
+                    <div>
+                        <h6 class="modal-title fw-bold mb-0">Nouvelle Charge Récurrente Fixe</h6>
+                        <span class="text-white-50 small">Créez-la une fois, elle se générera chaque mois sans ressaisie</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+
+            <div class="modal-body p-4">
+                <div class="row g-3">
+                    <!-- Title -->
+                    <div class="col-12 col-md-8">
+                        <label class="form-label small fw-bold text-dark mb-1">Intitulé de la charge fixe <span class="text-danger">*</span></label>
+                        <input type="text" name="title" class="form-control rounded-3" placeholder="Ex: Loyer Magasin, Salaire Employé X, Fibre Internet..." required>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="col-12 col-md-4">
+                        <label class="form-label small fw-bold text-dark mb-1">Catégorie <span class="text-danger">*</span></label>
+                        <select name="category" class="form-select rounded-3" required>
+                            @foreach($categories as $key => $meta)
+                                <option value="{{ $key }}" {{ $key === 'rent' ? 'selected' : '' }}>{{ $meta['label'] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Amount -->
+                    <div class="col-12 col-md-4">
+                        <label class="form-label small fw-bold text-dark mb-1">Montant récurrent (DH) <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="number" step="0.01" min="0.01" name="amount" class="form-control rounded-start-3 fw-bold fs-6" placeholder="0.00" required>
+                            <span class="input-group-text bg-light fw-bold text-secondary">DH</span>
+                        </div>
+                    </div>
+
+                    <!-- Frequency -->
+                    <div class="col-12 col-md-4">
+                        <label class="form-label small fw-bold text-dark mb-1">Fréquence de répétition <span class="text-danger">*</span></label>
+                        <select name="frequency" class="form-select rounded-3" required>
+                            <option value="monthly" selected>Mensuelle (Chaque mois)</option>
+                            <option value="quarterly">Trimestrielle (Tous les 3 mois)</option>
+                            <option value="yearly">Annuelle (Tous les ans)</option>
+                            <option value="weekly">Hebdomadaire (Chaque semaine)</option>
+                        </select>
+                    </div>
+
+                    <!-- Day of month -->
+                    <div class="col-12 col-md-4">
+                        <label class="form-label small fw-bold text-dark mb-1">Jour du mois d'échéance <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-calendar-day text-muted"></i></span>
+                            <input type="number" name="day_of_month" min="1" max="31" value="1" class="form-control rounded-end-3" required>
+                        </div>
+                        <div class="form-text" style="font-size: 0.72rem;">Ex: 1 (le 1er du mois), 5 (le 5 du mois)...</div>
+                    </div>
+
+                    <!-- Start Date -->
+                    <div class="col-12 col-md-6">
+                        <label class="form-label small fw-bold text-dark mb-1">Date de début d'application <span class="text-danger">*</span></label>
+                        <input type="date" name="start_date" value="{{ date('Y-m-01') }}" class="form-control rounded-3" required>
+                    </div>
+
+                    <!-- End Date (Optional) -->
+                    <div class="col-12 col-md-6">
+                        <label class="form-label small fw-bold text-dark mb-1">Date de fin (Optionnel)</label>
+                        <input type="date" name="end_date" class="form-control rounded-3" placeholder="Laisser vide si permanent">
+                    </div>
+
+                    <!-- Payment Method -->
+                    <div class="col-12 col-md-6">
+                        <label class="form-label small fw-bold text-dark mb-1">Mode de Règlement habituel <span class="text-danger">*</span></label>
+                        <select name="payment_method" class="form-select rounded-3" required>
+                            @foreach($paymentMethods as $mKey => $mMeta)
+                                <option value="{{ $mKey }}" {{ $mKey === 'bank_transfer' ? 'selected' : '' }}>{{ $mMeta['label'] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Store / Boutique -->
+                    <div class="col-12 col-md-6">
+                        <label class="form-label small fw-bold text-dark mb-1">Boutique / Lieu concerné</label>
+                        <select name="store_id" class="form-select rounded-3">
+                            <option value="">Général / Siège de l'entreprise</option>
+                            @foreach($stores as $st)
+                                <option value="{{ $st->id }}">{{ $st->name }} ({{ $st->city }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Payee / Vendor -->
+                    <div class="col-12">
+                        <label class="form-label small fw-bold text-dark mb-1">Bénéficiaire / Propriétaire / Prestataire</label>
+                        <input type="text" name="payee" class="form-control rounded-3" placeholder="Ex: Bailleur local, Maroc Telecom, Nom employé...">
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="col-12">
+                        <label class="form-label small fw-bold text-dark mb-1">Notes / Référence du contrat</label>
+                        <textarea name="notes" rows="2" class="form-control rounded-3" placeholder="Ex: Bail commercial contrat N°12, prélèvement automatique..."></textarea>
+                    </div>
+
+                    <!-- Immediate Generation Checkbox -->
+                    <div class="col-12">
+                        <div class="p-3 rounded-3 bg-warning bg-opacity-10 border border-warning border-opacity-25 d-flex align-items-center gap-2">
+                            <input class="form-check-input mt-0 flex-shrink-0" type="checkbox" name="generate_now" value="1" id="recGenerateNow" checked>
+                            <label class="form-check-label small fw-semibold text-dark" for="recGenerateNow">
+                                <strong>Générer immédiatement l'écriture pour ce mois-ci ({{ now()->translatedFormat('F Y') }})</strong>
+                                <span class="d-block text-muted" style="font-size: 0.72rem;">Créera automatiquement la ligne dans le Grand Livre et l'intégrera aux calculs de rentabilité.</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer bg-light px-4 py-2.5 border-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Annuler</button>
+                <button type="submit" class="btn btn-sm btn-warning text-dark fw-bold rounded-pill px-4">
+                    <i class="fas fa-check me-1"></i> Créer la Charge Récurrente
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: MODIFIER CHARGE RÉCURRENTE -->
+<div class="modal fade" id="editRecurringExpenseModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <form method="POST" id="editRecurringForm" action="" class="modal-content border-0 shadow-lg rounded-4">
+            @csrf
+            @method('PUT')
+            <div class="modal-header bg-dark text-white py-3 px-4 border-0">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas fa-pencil text-warning"></i>
+                    <div>
+                        <h6 class="modal-title fw-bold mb-0">Modifier la Charge Récurrente</h6>
+                        <span class="text-white-50 small" id="editRecurringTitleHeader">—</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+
+            <div class="modal-body p-4">
+                <div class="row g-3">
+                    <div class="col-12 col-md-8">
+                        <label class="form-label small fw-bold text-dark mb-1">Intitulé <span class="text-danger">*</span></label>
+                        <input type="text" name="title" id="editRecTitle" class="form-control rounded-3" required>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label class="form-label small fw-bold text-dark mb-1">Catégorie <span class="text-danger">*</span></label>
+                        <select name="category" id="editRecCategory" class="form-select rounded-3" required>
+                            @foreach($categories as $key => $meta)
+                                <option value="{{ $key }}">{{ $meta['label'] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label class="form-label small fw-bold text-dark mb-1">Montant (DH) <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="number" step="0.01" min="0.01" name="amount" id="editRecAmount" class="form-control rounded-start-3 fw-bold" required>
+                            <span class="input-group-text bg-light fw-bold text-secondary">DH</span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label class="form-label small fw-bold text-dark mb-1">Fréquence <span class="text-danger">*</span></label>
+                        <select name="frequency" id="editRecFrequency" class="form-select rounded-3" required>
+                            <option value="monthly">Mensuelle (Chaque mois)</option>
+                            <option value="quarterly">Trimestrielle (Tous les 3 mois)</option>
+                            <option value="yearly">Annuelle (Tous les ans)</option>
+                            <option value="weekly">Hebdomadaire (Chaque semaine)</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label class="form-label small fw-bold text-dark mb-1">Jour d'échéance <span class="text-danger">*</span></label>
+                        <input type="number" name="day_of_month" id="editRecDayOfMonth" min="1" max="31" class="form-control rounded-3" required>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label small fw-bold text-dark mb-1">Date de début <span class="text-danger">*</span></label>
+                        <input type="date" name="start_date" id="editRecStartDate" class="form-control rounded-3" required>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label small fw-bold text-dark mb-1">Date de fin</label>
+                        <input type="date" name="end_date" id="editRecEndDate" class="form-control rounded-3">
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label small fw-bold text-dark mb-1">Règlement <span class="text-danger">*</span></label>
+                        <select name="payment_method" id="editRecPaymentMethod" class="form-select rounded-3" required>
+                            @foreach($paymentMethods as $mKey => $mMeta)
+                                <option value="{{ $mKey }}">{{ $mMeta['label'] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label small fw-bold text-dark mb-1">Boutique</label>
+                        <select name="store_id" id="editRecStoreId" class="form-select rounded-3">
+                            <option value="">Général / Siège</option>
+                            @foreach($stores as $st)
+                                <option value="{{ $st->id }}">{{ $st->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-8">
+                        <label class="form-label small fw-bold text-dark mb-1">Bénéficiaire</label>
+                        <input type="text" name="payee" id="editRecPayee" class="form-control rounded-3">
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label class="form-label small fw-bold text-dark mb-1">Statut</label>
+                        <select name="is_active" id="editRecIsActive" class="form-select rounded-3">
+                            <option value="1">Actif (En service)</option>
+                            <option value="0">En pause (Désactivé)</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label small fw-bold text-dark mb-1">Notes</label>
+                        <textarea name="notes" id="editRecNotes" rows="2" class="form-control rounded-3"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer bg-light px-4 py-2.5 border-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Annuler</button>
+                <button type="submit" class="btn btn-sm btn-primary rounded-pill px-4 fw-semibold">
+                    <i class="fas fa-save me-1"></i> Enregistrer les Modifications
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @push('scripts')
 <script>
+function openEditRecurringModal(rec) {
+    document.getElementById('editRecurringForm').action = `/expenses/recurring/${rec.id}`;
+    document.getElementById('editRecurringTitleHeader').textContent = rec.title;
+    document.getElementById('editRecTitle').value = rec.title || '';
+    document.getElementById('editRecCategory').value = rec.category || 'other';
+    document.getElementById('editRecAmount').value = rec.amount || '';
+    document.getElementById('editRecFrequency').value = rec.frequency || 'monthly';
+    document.getElementById('editRecDayOfMonth').value = rec.day_of_month || 1;
+    
+    if (rec.start_date) {
+        const d = new Date(rec.start_date);
+        document.getElementById('editRecStartDate').value = d.toISOString().split('T')[0];
+    }
+    if (rec.end_date) {
+        const d = new Date(rec.end_date);
+        document.getElementById('editRecEndDate').value = d.toISOString().split('T')[0];
+    } else {
+        document.getElementById('editRecEndDate').value = '';
+    }
+
+    document.getElementById('editRecPaymentMethod').value = rec.payment_method || 'bank_transfer';
+    document.getElementById('editRecStoreId').value = rec.store_id || '';
+    document.getElementById('editRecPayee').value = rec.payee || '';
+    document.getElementById('editRecIsActive').value = rec.is_active ? '1' : '0';
+    document.getElementById('editRecNotes').value = rec.notes || '';
+
+    const modal = new bootstrap.Modal(document.getElementById('editRecurringExpenseModal'));
+    modal.show();
+}
 function openEditExpenseModal(expense) {
     document.getElementById('editExpenseForm').action = `/expenses/${expense.id}`;
     document.getElementById('editExpenseNumber').textContent = expense.expense_number;
@@ -849,3 +1449,4 @@ function previewProofModal(imageUrl, refNumber, title) {
 </script>
 @endpush
 @endsection
+
