@@ -137,6 +137,9 @@
                 </div>
 
                 <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <a href="{{ route('shipments.index') }}" class="btn btn-outline-light rounded-pill px-3 py-2 fw-semibold shadow-xs" style="font-size: 0.85rem;">
+                        <i class="fas fa-truck-ramp-box me-1.5"></i> Coûts par Arrivage
+                    </a>
                     <a href="{{ route('reports.profitability.costs') }}" class="btn btn-danger rounded-pill px-3.5 py-2 fw-semibold shadow-sm" style="font-size: 0.85rem;">
                         <i class="fas fa-coins me-1.5"></i> Gérer les Coûts d'Achat
                         @if($missingCostCount > 0)
@@ -334,9 +337,12 @@
                         <i class="fas fa-tags me-1.5"></i> Bénéfice par Catégorie ({{ $categoryBenefits->count() }})
                     </button>
                 </li>
-                <li class="nav-item ms-auto" role="presentation">
+                <li class="nav-item ms-auto d-flex align-items-center gap-1.5" role="presentation">
+                    <a href="{{ route('shipments.index') }}" class="nav-link text-secondary fw-semibold d-flex align-items-center">
+                        <i class="fas fa-truck-ramp-box me-1.5"></i> Arrivages & Lots
+                    </a>
                     <a href="{{ route('reports.profitability.costs') }}" class="nav-link text-danger fw-bold d-flex align-items-center">
-                        <i class="fas fa-coins me-1.5"></i> Gestion Complète des Coûts
+                        <i class="fas fa-coins me-1.5"></i> Gestion Coûts
                         @if($missingCostCount > 0)
                             <span class="badge bg-danger text-white rounded-pill ms-1.5" style="font-size: 0.68rem;">{{ $missingCostCount }}</span>
                         @endif

@@ -431,4 +431,89 @@ class ErpFeaturesVerificationTest extends TestCase
         $this->product->refresh();
         $this->assertEquals(19500.00, (float) $this->product->cost_price);
     }
+
+    /**
+     * 15. Test Shipment Management strict Admin-only access.
+     */
+    public function test_shipments_cost_management_strict_access()
+    {
+        // Non-admin forbidden
+        $response = $this->actingAs($this->staff)->get(route('shipments.index'));
+        $response->assertStatus(403);
+
+        // Admin allowed
+        $response = $this->actingAs($this->admin)->get(route('shipments.index'));
+        $response->assertStatus(200);
+        $response->assertSee('Arrivages');
+    }
+
+    /**
+     * 16. Test Shipment Creation with Landed Cost & Fee Allocation per Product.
+     */
+    public function test_shipment_creation_and_landed_cost_allocation()
+    {
+        $initialStock = (int) ($this->product->stock ?? 0);
+        $initialStoreStock = (int) (\App\Models\ProductStock::where('product_id', $this->product->id)->where('store_id', $this->store1->id)->value('quantity') ?? 0);
+
+        $payload = [
+            'reference' => 'ARR-TEST-' . uniqid(),
+            'supplier_name' => 'Sony Europe B.V.',
+            'invoice_number' => 'INV-SONY-998',
+            'store_id' => $this->store1->id,
+            'received_date' => now()->format('Y-m-d'),
+            'status' => 'received',
+            'shipping_cost' => 500.00,  // Fret
+            'customs_cost' => 1500.00, // Douane
+            'other_fees' => 0.00,
+            'stock_applied' => 1,
+            'update_catalog_costs' => 1,
+            'items' => [
+                [
+                    'product_id' => $this->product->id,
+                    'quantity' => 10,
+                    'unit_cost' => 18000.00, // Achat brut unitaire
+                ]
+            ]
+        ];
+
+        $response = $this->actingAs($this->admin)->post(route('shipments.store'), $payload);
+        $response->assertRedirect(route('shipments.index'));
+        $response->assertSessionHas('success');
+
+        // Verify Shipment record
+        $shipment = \App\Models\Shipment::where('reference', $payload['reference'])->first();
+        $this->assertNotNull($shipment);
+        $this->assertEquals(180000.00, (float) $shipment->total_items_cost);
+        $this->assertEquals(182000.00, (float) $shipment->total_landed_cost); // 180,000 + 2,000 fees
+
+        // Verify Shipment Item with allocated landed fees
+        $item = $shipment->items()->first();
+        $this->assertNotNull($item);
+        $this->assertEquals(18000.00, (float) $item->unit_cost);
+        $this->assertEquals(200.00, (float) $item->allocated_fees_per_unit); // 2000 / 10 = 200 DH/pc
+        $this->assertEquals(18200.00, (float) $item->landed_unit_cost);      // 18,000 + 200 = 18,200 DH
+
+        // Verify Product catalog cost updated to landed unit cost
+        $this->product->refresh();
+        $this->assertEquals(18200.00, (float) $this->product->cost_price);
+        $this->assertEquals($initialStock + 10, (int) $this->product->stock);
+
+        // Verify Store ProductStock updated
+        $storeStock = \App\Models\ProductStock::where('product_id', $this->product->id)->where('store_id', $this->store1->id)->first();
+        $this->assertNotNull($storeStock);
+        $this->assertEquals($initialStoreStock + 10, $storeStock->quantity);
+    }
+
+    /**
+     * 17. Test Product Shipment Cost History endpoint (AJAX).
+     */
+    public function test_product_shipment_cost_history_endpoint()
+    {
+        $response = $this->actingAs($this->admin)->getJson(route('shipments.product-history', $this->product->id));
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'product' => ['id', 'name', 'sku', 'active_cost'],
+            'history'
+        ]);
+    }
 }

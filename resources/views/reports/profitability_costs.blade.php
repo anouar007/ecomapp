@@ -131,6 +131,9 @@
                 </div>
 
                 <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <a href="{{ route('shipments.index') }}" class="btn btn-outline-light rounded-pill px-3.5 py-2 fw-semibold shadow-xs" style="font-size: 0.85rem;">
+                        <i class="fas fa-truck-ramp-box me-1.5"></i> Coûts par Arrivage
+                    </a>
                     <a href="{{ route('reports.profitability') }}" class="btn btn-outline-light rounded-pill px-3.5 py-2 fw-semibold shadow-xs" style="font-size: 0.85rem;">
                         <i class="fas fa-arrow-left me-1.5"></i> Tableau de Bord Rentabilité
                     </a>
@@ -483,6 +486,14 @@
                                     <i class="fas fa-calculator"></i>
                                 </button>
 
+                                <!-- Shipment Cost History -->
+                                <button type="button" class="btn btn-sm btn-light border rounded-circle text-info d-inline-flex align-items-center justify-content-center"
+                                        style="width: 32px; height: 32px; padding: 0;"
+                                        onclick="viewProductShipmentHistory({{ $p->id }})"
+                                        title="Historique des coûts par arrivage">
+                                    <i class="fas fa-truck-ramp-box"></i>
+                                </button>
+
                                 <!-- Product Page Link -->
                                 <a href="{{ route('products.edit', $p->id) }}" target="_blank" class="btn btn-sm btn-light border rounded-circle text-primary d-inline-flex align-items-center justify-content-center"
                                    style="width: 32px; height: 32px; padding: 0;"
@@ -560,7 +571,11 @@
                 </div>
 
                 <!-- Touch Buttons -->
-                <div class="d-flex align-items-center justify-content-between gap-2 pt-1 border-top">
+                <div class="d-flex align-items-center justify-content-between gap-1.5 pt-1 border-top flex-wrap">
+                    <button type="button" class="btn btn-sm btn-light border text-info rounded-pill px-2.5 py-1"
+                            onclick="viewProductShipmentHistory({{ $p->id }})">
+                        <i class="fas fa-truck-ramp-box me-1"></i> Arrivages
+                    </button>
                     <button type="button" class="btn btn-sm btn-light border text-secondary rounded-pill px-2.5 py-1"
                             onclick="openSimulatorModal({{ $p->id }}, '{{ addslashes($p->name) }}', {{ $mEffectivePrice }}, {{ $mCostPrice }})">
                         <i class="fas fa-calculator me-1"></i> Simulateur
@@ -666,6 +681,61 @@
                 <button type="button" class="btn btn-sm btn-primary rounded-pill px-4 fw-semibold" onclick="applySimulatorToTable()">
                     <i class="fas fa-check me-1"></i> Appliquer & Enregistrer
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Product Cost History Across Shipments -->
+<div class="modal fade" id="productShipmentHistoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-dark text-white py-3 px-3.5 border-0">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas fa-truck-ramp-box text-warning"></i>
+                    <h6 class="modal-title fw-bold mb-0">Historique des Coûts par Arrivage Fournisseur</h6>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom flex-wrap gap-2">
+                    <div>
+                        <span class="badge bg-light text-secondary border font-monospace" id="histSku">—</span>
+                        <h5 class="fw-bold text-dark mb-0 mt-1" id="histProdName">—</h5>
+                    </div>
+                    <div class="text-end">
+                        <span class="text-muted small">Coût actif au catalogue :</span>
+                        <div class="fs-5 fw-bold text-primary" id="histActiveCost">—</div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="py-2 small text-secondary">Réf. Arrivage</th>
+                                <th class="py-2 small text-secondary">Date</th>
+                                <th class="py-2 small text-secondary">Fournisseur</th>
+                                <th class="py-2 small text-secondary text-center">Qté</th>
+                                <th class="py-2 small text-secondary text-end">Achat Net</th>
+                                <th class="py-2 small text-secondary text-end">Frais Approche</th>
+                                <th class="py-2 small text-secondary text-end">Coût Rendu</th>
+                                <th class="py-2 small text-secondary text-end">Marge %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="histTableBody" class="divide-y">
+                            <tr>
+                                <td colspan="8" class="text-center py-4 text-muted">Chargement de l'historique...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer bg-light px-4 py-2 border-0">
+                <a href="{{ route('shipments.create') }}" class="btn btn-sm btn-outline-danger rounded-pill px-3 me-auto">
+                    <i class="fas fa-plus me-1"></i> Nouvel Arrivage pour cet article
+                </a>
+                <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3" data-bs-dismiss="modal">Fermer</button>
             </div>
         </div>
     </div>
@@ -959,6 +1029,50 @@ function applySimulatorToTable() {
     }
 
     bootstrap.Modal.getInstance(document.getElementById('marginSimulatorModal')).hide();
+}
+
+/**
+ * View Product Shipment Cost History in Modal
+ */
+function viewProductShipmentHistory(productId) {
+    const modal = new bootstrap.Modal(document.getElementById('productShipmentHistoryModal'));
+    modal.show();
+
+    document.getElementById('histTableBody').innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted"><i class="fas fa-spinner fa-spin me-2"></i> Chargement de l\'historique des arrivages...</td></tr>';
+
+    fetch(`/shipments/product-history/${productId}`)
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('histSku').textContent = data.product.sku;
+            document.getElementById('histProdName').textContent = data.product.name;
+            document.getElementById('histActiveCost').textContent = data.product.active_cost;
+
+            const tbody = document.getElementById('histTableBody');
+            if (data.history.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted"><i class="fas fa-box-open me-1 opacity-50"></i> Aucun arrivage fournisseur enregistré pour cet article.</td></tr>';
+                return;
+            }
+
+            let html = '';
+            data.history.forEach(item => {
+                html += `
+                    <tr>
+                        <td class="py-2.5 font-monospace fw-bold text-dark">${item.reference}</td>
+                        <td class="py-2.5 small text-muted">${item.received_date}</td>
+                        <td class="py-2.5 small fw-semibold">${item.supplier_name}</td>
+                        <td class="py-2.5 text-center fw-bold">${item.quantity}</td>
+                        <td class="py-2.5 text-end small">${item.unit_cost}</td>
+                        <td class="py-2.5 text-end small text-muted">+${item.allocated_fees}</td>
+                        <td class="py-2.5 text-end fw-bold text-dark">${item.landed_cost}</td>
+                        <td class="py-2.5 text-end"><span class="badge bg-success-subtle text-success rounded-pill">${item.margin_pct}</span></td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        })
+        .catch(err => {
+            document.getElementById('histTableBody').innerHTML = '<tr><td colspan="8" class="text-center py-4 text-danger">Erreur de chargement.</td></tr>';
+        });
 }
 </script>
 @endpush

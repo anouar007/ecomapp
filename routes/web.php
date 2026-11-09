@@ -212,6 +212,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/reports/profitability/export-csv', [\App\Http\Controllers\ProfitabilityController::class, 'exportCsv'])->name('reports.profitability.export');
         Route::post('/reports/profitability/products/{product}/cost', [\App\Http\Controllers\ProfitabilityController::class, 'updateCostPrice'])->name('reports.profitability.update-cost');
         Route::post('/reports/profitability/costs/batch', [\App\Http\Controllers\ProfitabilityController::class, 'updateBatchCosts'])->name('reports.profitability.update-costs-batch');
+
+        // Shipments & Inbound Purchase Costs Management (Strictly Admin Only)
+        Route::get('/shipments', [\App\Http\Controllers\ShipmentController::class, 'index'])->name('shipments.index');
+        Route::get('/shipments/create', [\App\Http\Controllers\ShipmentController::class, 'create'])->name('shipments.create');
+        Route::post('/shipments', [\App\Http\Controllers\ShipmentController::class, 'store'])->name('shipments.store');
+        Route::get('/shipments/search-products', [\App\Http\Controllers\ShipmentController::class, 'searchProducts'])->name('shipments.search-products');
+        Route::get('/shipments/{shipment}', [\App\Http\Controllers\ShipmentController::class, 'show'])->name('shipments.show');
+        Route::delete('/shipments/{shipment}', [\App\Http\Controllers\ShipmentController::class, 'destroy'])->name('shipments.destroy');
+        Route::get('/shipments/product-history/{product}', [\App\Http\Controllers\ShipmentController::class, 'productHistory'])->name('shipments.product-history');
     });
     
     // Settings

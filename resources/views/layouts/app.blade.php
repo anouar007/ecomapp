@@ -688,6 +688,13 @@
             @endcan
             @if(auth()->check() && auth()->user()->hasRole('Admin'))
             <li class="sidebar-menu-item">
+                <a href="{{ route('shipments.index') }}" class="sidebar-menu-link {{ request()->routeIs('shipments.*') ? 'active' : '' }}">
+                    <i class="fas fa-truck-ramp-box"></i>
+                    <span>Arrivages & Coûts Lots</span>
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill ms-auto" style="font-size: 0.62rem;">Admin</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
                 <a href="{{ route('reports.profitability') }}" class="sidebar-menu-link {{ request()->routeIs('reports.profitability*') ? 'active' : '' }}">
                     <i class="fas fa-chart-pie"></i>
                     <span>Bénéfices & Marges</span>

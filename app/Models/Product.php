@@ -241,6 +241,14 @@ class Product extends Model
     }
 
     /**
+     * Shipment arrival batches recording purchase costs for this product over time.
+     */
+    public function shipmentItems()
+    {
+        return $this->hasMany(ShipmentItem::class);
+    }
+
+    /**
      * Stores and warehouses stocking this product.
      */
     public function stores()
