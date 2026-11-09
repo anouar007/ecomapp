@@ -35,6 +35,7 @@ class ProfitabilityController extends Controller
         $productBenefits = $this->profitabilityService->getProductBenefits($startDate, $endDate, 50, $sortBy);
         $brandBenefits = $this->profitabilityService->getBrandBenefits($startDate, $endDate);
         $categoryBenefits = $this->profitabilityService->getCategoryBenefits($startDate, $endDate);
+        $expenseBenefits = $this->profitabilityService->getExpenseBreakdown($startDate, $endDate);
         $trends = $this->profitabilityService->getTimelineTrends($startDate, $endDate);
 
         // Missing cost warnings
@@ -45,6 +46,7 @@ class ProfitabilityController extends Controller
             'productBenefits',
             'brandBenefits',
             'categoryBenefits',
+            'expenseBenefits',
             'trends',
             'period',
             'startDate',

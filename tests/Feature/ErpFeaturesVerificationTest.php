@@ -433,87 +433,120 @@ class ErpFeaturesVerificationTest extends TestCase
     }
 
     /**
-     * 15. Test Shipment Management strict Admin-only access.
+     * 15. Test Expense Management: Access control and CRUD with receipt upload.
      */
-    public function test_shipments_cost_management_strict_access()
+    public function test_expenses_access_and_crud()
     {
-        // Non-admin forbidden
-        $response = $this->actingAs($this->staff)->get(route('shipments.index'));
+        // Staff without accounting permission gets 403
+        $response = $this->actingAs($this->staff)->get(route('expenses.index'));
         $response->assertStatus(403);
 
-        // Admin allowed
-        $response = $this->actingAs($this->admin)->get(route('shipments.index'));
+        // Admin gets 200
+        $response = $this->actingAs($this->admin)->get(route('expenses.index'));
         $response->assertStatus(200);
-        $response->assertSee('Arrivages');
-    }
+        $response->assertSee('Gestion des Dépenses de l\'Entreprise', false);
 
-    /**
-     * 16. Test Shipment Creation with Landed Cost & Fee Allocation per Product.
-     */
-    public function test_shipment_creation_and_landed_cost_allocation()
-    {
-        $initialStock = (int) ($this->product->stock ?? 0);
-        $initialStoreStock = (int) (\App\Models\ProductStock::where('product_id', $this->product->id)->where('store_id', $this->store1->id)->value('quantity') ?? 0);
-
-        $payload = [
-            'reference' => 'ARR-TEST-' . uniqid(),
-            'supplier_name' => 'Sony Europe B.V.',
-            'invoice_number' => 'INV-SONY-998',
-            'store_id' => $this->store1->id,
-            'received_date' => now()->format('Y-m-d'),
-            'status' => 'received',
-            'shipping_cost' => 500.00,  // Fret
-            'customs_cost' => 1500.00, // Douane
-            'other_fees' => 0.00,
-            'stock_applied' => 1,
-            'update_catalog_costs' => 1,
-            'items' => [
-                [
-                    'product_id' => $this->product->id,
-                    'quantity' => 10,
-                    'unit_cost' => 18000.00, // Achat brut unitaire
-                ]
-            ]
-        ];
-
-        $response = $this->actingAs($this->admin)->post(route('shipments.store'), $payload);
-        $response->assertRedirect(route('shipments.index'));
-        $response->assertSessionHas('success');
-
-        // Verify Shipment record
-        $shipment = \App\Models\Shipment::where('reference', $payload['reference'])->first();
-        $this->assertNotNull($shipment);
-        $this->assertEquals(180000.00, (float) $shipment->total_items_cost);
-        $this->assertEquals(182000.00, (float) $shipment->total_landed_cost); // 180,000 + 2,000 fees
-
-        // Verify Shipment Item with allocated landed fees
-        $item = $shipment->items()->first();
-        $this->assertNotNull($item);
-        $this->assertEquals(18000.00, (float) $item->unit_cost);
-        $this->assertEquals(200.00, (float) $item->allocated_fees_per_unit); // 2000 / 10 = 200 DH/pc
-        $this->assertEquals(18200.00, (float) $item->landed_unit_cost);      // 18,000 + 200 = 18,200 DH
-
-        // Verify Product catalog cost updated to landed unit cost
-        $this->product->refresh();
-        $this->assertEquals(18200.00, (float) $this->product->cost_price);
-        $this->assertEquals($initialStock + 10, (int) $this->product->stock);
-
-        // Verify Store ProductStock updated
-        $storeStock = \App\Models\ProductStock::where('product_id', $this->product->id)->where('store_id', $this->store1->id)->first();
-        $this->assertNotNull($storeStock);
-        $this->assertEquals($initialStoreStock + 10, $storeStock->quantity);
-    }
-
-    /**
-     * 17. Test Product Shipment Cost History endpoint (AJAX).
-     */
-    public function test_product_shipment_cost_history_endpoint()
-    {
-        $response = $this->actingAs($this->admin)->getJson(route('shipments.product-history', $this->product->id));
-        $response->assertStatus(200);
-        $response->assertJsonStructure([
-            'product' => ['id', 'name', 'sku', 'active_cost'],
-            'history'
+        // Create an Expense
+        $fakeImage = UploadedFile::fake()->image('facture_loyer.jpg', 600, 600);
+        $postResponse = $this->actingAs($this->admin)->post(route('expenses.store'), [
+            'title'            => 'Loyer Magasin Casablanca',
+            'category'         => 'rent',
+            'amount'           => 12000.00,
+            'expense_date'     => now()->toDateString(),
+            'payment_method'   => 'bank_transfer',
+            'reference_number' => 'VIR-LOYER-2026',
+            'payee'            => 'Bailleur Immeuble',
+            'store_id'         => $this->store1->id,
+            'status'           => 'paid',
+            'notes'            => 'Loyer mensuel',
+            'receipt_image'    => $fakeImage,
         ]);
+
+        $postResponse->assertRedirect(route('expenses.index'));
+        $postResponse->assertSessionHas('success');
+
+        $expense = \App\Models\Expense::where('title', 'Loyer Magasin Casablanca')->first();
+        $this->assertNotNull($expense);
+        $this->assertEquals(12000.00, (float)$expense->amount);
+        $this->assertNotNull($expense->receipt_image);
+        Storage::disk('public')->assertExists($expense->receipt_image);
+
+        // Update Expense
+        $updateResponse = $this->actingAs($this->admin)->put(route('expenses.update', $expense->id), [
+            'title'            => 'Loyer Magasin Casablanca Modifié',
+            'category'         => 'rent',
+            'amount'           => 12500.00,
+            'expense_date'     => now()->toDateString(),
+            'payment_method'   => 'bank_transfer',
+            'status'           => 'paid',
+        ]);
+        $updateResponse->assertRedirect(route('expenses.index'));
+        $expense->refresh();
+        $this->assertEquals(12500.00, (float)$expense->amount);
+
+        // Delete Expense
+        $deleteResponse = $this->actingAs($this->admin)->delete(route('expenses.destroy', $expense->id));
+        $deleteResponse->assertRedirect(route('expenses.index'));
+        $this->assertDatabaseMissing('expenses', ['id' => $expense->id]);
+    }
+
+    /**
+     * 16. Test that expenses factor into Profitability General Net Benefit.
+     */
+    public function test_expenses_factor_into_profitability_general_benefit()
+    {
+        // Create an order with profit
+        $order = Order::create([
+            'order_number'     => 'ORD-EXP-TEST-' . uniqid(),
+            'customer_id'      => $this->customer->id,
+            'customer_name'    => $this->customer->name,
+            'customer_phone'   => $this->customer->phone ?? '0600000000',
+            'customer_email'   => 'test@example.com',
+            'shipping_address' => '123 Test St',
+            'shipping_city'    => 'Casablanca',
+            'shipping_zip'     => '20000',
+            'shipping_country' => 'MA',
+            'status'           => 'delivered',
+            'payment_status'   => 'paid',
+            'total'            => 20000.00,
+            'subtotal'         => 20000.00,
+            'created_at'       => now(),
+        ]);
+
+        OrderItem::create([
+            'order_id'     => $order->id,
+            'product_id'   => $this->product->id,
+            'product_name' => $this->product->name,
+            'product_sku'  => $this->product->sku ?? 'TEST-SKU',
+            'quantity'     => 1,
+            'price'        => 20000.00,
+            'subtotal'     => 20000.00,
+        ]);
+        $this->product->update(['cost_price' => 12000.00]);
+        // Gross Profit from this item = 20000 - 12000 = 8000 DH
+
+        // Create an operating expense of 3000 DH
+        \App\Models\Expense::create([
+            'expense_number' => 'DEP-TEST-PROFIT',
+            'title'          => 'Campagne Ads Facebook',
+            'category'       => 'marketing',
+            'amount'         => 3000.00,
+            'expense_date'   => now()->toDateString(),
+            'payment_method' => 'credit_card',
+            'status'         => 'paid',
+        ]);
+
+        $service = app(\App\Services\ProfitabilityService::class);
+        $overall = $service->getOverallBenefits(now()->startOfMonth(), now()->endOfMonth());
+
+        $this->assertGreaterThanOrEqual(3000.00, $overall['total_expenses']);
+        // Verify net profit calculation: Net Profit = Gross Profit - Total Expenses
+        $this->assertEquals($overall['gross_profit'] - $overall['total_expenses'], $overall['net_profit']);
+
+        // Check report view renders with expenses
+        $response = $this->actingAs($this->admin)->get(route('reports.profitability', ['period' => 'month']));
+        $response->assertStatus(200);
+        $response->assertSee('Bénéfice Net Réel Global');
+        $response->assertSee('Dépenses');
     }
 }

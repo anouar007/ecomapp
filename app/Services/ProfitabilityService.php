@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 class ProfitabilityService
 {
     /**
-     * Compute overall financial benefits and margins over a period.
+     * Compute overall financial benefits and margins over a period, factoring in Operating Expenses.
      */
     public function getOverallBenefits(Carbon $startDate, Carbon $endDate): array
     {
@@ -31,20 +31,36 @@ class ProfitabilityService
             ')
             ->first();
 
+        // Total Operating Expenses in this period
+        $totalExpenses = (float) DB::table('expenses')
+            ->whereBetween('expense_date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->where('status', 'paid')
+            ->sum('amount');
+
         $revenue = (float) ($data->total_revenue ?? 0);
         $cost = (float) ($data->total_cost ?? 0);
-        $profit = $revenue - $cost;
-        $margin = $revenue > 0 ? round(($profit / $revenue) * 100, 2) : 0;
-        $markup = $cost > 0 ? round(($profit / $cost) * 100, 2) : 0;
+        
+        // Gross Profit (Marge Brute Ventes - Coût Achat Marchandises)
+        $grossProfit = $revenue - $cost;
+        $grossMargin = $revenue > 0 ? round(($grossProfit / $revenue) * 100, 2) : 0;
+        $markup = $cost > 0 ? round(($grossProfit / $cost) * 100, 2) : 0;
+
+        // General Net Profit (Bénéfice Net Réel Global = Marge Brute - Dépenses d'exploitation)
+        $netProfit = $grossProfit - $totalExpenses;
+        $netMargin = $revenue > 0 ? round(($netProfit / $revenue) * 100, 2) : 0;
+
         $ordersCount = (int) ($data->orders_count ?? 0);
         $itemsSold = (int) ($data->items_sold ?? 0);
-        $avgProfitPerOrder = $ordersCount > 0 ? round($profit / $ordersCount, 2) : 0;
+        $avgProfitPerOrder = $ordersCount > 0 ? round($netProfit / $ordersCount, 2) : 0;
 
         return [
             'total_revenue'        => $revenue,
             'total_cost'           => $cost,
-            'net_profit'           => $profit,
-            'margin_percentage'    => $margin,
+            'gross_profit'         => $grossProfit,
+            'gross_margin'         => $grossMargin,
+            'total_expenses'       => $totalExpenses,
+            'net_profit'           => $netProfit,
+            'margin_percentage'    => $netMargin,
             'markup_percentage'    => $markup,
             'orders_count'         => $ordersCount,
             'items_sold'           => $itemsSold,
@@ -175,7 +191,7 @@ class ProfitabilityService
     }
 
     /**
-     * Get day-by-day (or monthly) financial timeline trends for Chart.js.
+     * Get day-by-day (or monthly) financial timeline trends for Chart.js including expenses.
      */
     public function getTimelineTrends(Carbon $startDate, Carbon $endDate): array
     {
@@ -198,9 +214,21 @@ class ProfitabilityService
             ->get()
             ->keyBy('period_key');
 
+        $rawExpenses = DB::table('expenses')
+            ->whereBetween('expense_date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->where('status', 'paid')
+            ->selectRaw("
+                DATE_FORMAT(expense_date, '{$groupByFormat}') as period_key,
+                SUM(amount) as expense
+            ")
+            ->groupBy('period_key')
+            ->get()
+            ->keyBy('period_key');
+
         $labels = [];
         $revenues = [];
         $costs = [];
+        $expenses = [];
         $profits = [];
         $margins = [];
 
@@ -212,13 +240,17 @@ class ProfitabilityService
             if (!in_array($label, $labels)) {
                 $labels[] = $label;
                 $row = $rawTrends->get($key);
+                $expRow = $rawExpenses->get($key);
+
                 $rev = (float) ($row->revenue ?? 0);
                 $cst = (float) ($row->cost ?? 0);
-                $prf = $rev - $cst;
+                $exp = (float) ($expRow->expense ?? 0);
+                $prf = ($rev - $cst) - $exp;
                 $mrg = $rev > 0 ? round(($prf / $rev) * 100, 1) : 0;
 
                 $revenues[] = $rev;
                 $costs[] = $cst;
+                $expenses[] = $exp;
                 $profits[] = $prf;
                 $margins[] = $mrg;
             }
@@ -234,9 +266,47 @@ class ProfitabilityService
             'labels'   => $labels,
             'revenues' => $revenues,
             'costs'    => $costs,
+            'expenses' => $expenses,
             'profits'  => $profits,
             'margins'  => $margins,
         ];
+    }
+
+    /**
+     * Get operating expenses breakdown by category over a period.
+     */
+    public function getExpenseBreakdown(Carbon $startDate, Carbon $endDate): Collection
+    {
+        $breakdown = DB::table('expenses')
+            ->whereBetween('expense_date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->where('status', 'paid')
+            ->selectRaw('
+                category,
+                COUNT(*) as count,
+                SUM(amount) as total_amount
+            ')
+            ->groupBy('category')
+            ->orderBy('total_amount', 'desc')
+            ->get();
+
+        $overallExpenses = (float) $breakdown->sum('total_amount');
+
+        return $breakdown->map(function ($item) use ($overallExpenses) {
+            $catMeta = \App\Models\Expense::$categories[$item->category] ?? [
+                'label' => ucfirst($item->category),
+                'badge' => 'bg-light text-secondary border',
+                'icon'  => 'fas fa-receipt',
+            ];
+
+            $amount = (float) $item->total_amount;
+            $item->label = $catMeta['label'];
+            $item->badge = $catMeta['badge'];
+            $item->icon = $catMeta['icon'];
+            $item->total_amount = $amount;
+            $item->share_percentage = $overallExpenses > 0 ? round(($amount / $overallExpenses) * 100, 1) : 0;
+
+            return $item;
+        });
     }
 }
 

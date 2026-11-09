@@ -213,6 +213,13 @@ Route::middleware('auth')->group(function () {
         Route::post('/reports/profitability/products/{product}/cost', [\App\Http\Controllers\ProfitabilityController::class, 'updateCostPrice'])->name('reports.profitability.update-cost');
         Route::post('/reports/profitability/costs/batch', [\App\Http\Controllers\ProfitabilityController::class, 'updateBatchCosts'])->name('reports.profitability.update-costs-batch');
 
+        // Business Expenses Management (Charges & Dépenses d'Exploitation)
+        Route::get('/expenses', [\App\Http\Controllers\ExpenseController::class, 'index'])->name('expenses.index');
+        Route::post('/expenses', [\App\Http\Controllers\ExpenseController::class, 'store'])->name('expenses.store');
+        Route::put('/expenses/{expense}', [\App\Http\Controllers\ExpenseController::class, 'update'])->name('expenses.update');
+        Route::delete('/expenses/{expense}', [\App\Http\Controllers\ExpenseController::class, 'destroy'])->name('expenses.destroy');
+        Route::get('/expenses/export-csv', [\App\Http\Controllers\ExpenseController::class, 'exportCsv'])->name('expenses.export');
+
         // Shipments & Inbound Purchase Costs Management (Strictly Admin Only)
         Route::get('/shipments', [\App\Http\Controllers\ShipmentController::class, 'index'])->name('shipments.index');
         Route::get('/shipments/create', [\App\Http\Controllers\ShipmentController::class, 'create'])->name('shipments.create');

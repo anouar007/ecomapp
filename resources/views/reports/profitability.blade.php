@@ -132,16 +132,16 @@
                             <span class="text-white-50 small">• Analyse Financière & Rentabilité Réelle</span>
                         </div>
                         <h1 class="h3 fw-bold text-white mb-0">Rapport de Rentabilité, Bénéfices & Marges</h1>
-                        <p class="text-white-50 small mb-0 mt-1">Calcul précis du bénéfice net (Ventes - Coûts d'achat) par produit, marque, catégorie et période temporelle.</p>
+                        <p class="text-white-50 small mb-0 mt-1">Calcul précis du bénéfice net réel (Ventes - Coûts d'achat - Dépenses d'exploitation) par produit, marque, catégorie et période.</p>
                     </div>
                 </div>
 
                 <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <a href="{{ route('shipments.index') }}" class="btn btn-outline-light rounded-pill px-3 py-2 fw-semibold shadow-xs" style="font-size: 0.85rem;">
-                        <i class="fas fa-truck-ramp-box me-1.5"></i> Coûts par Arrivage
+                    <a href="{{ route('expenses.index', ['period' => $period]) }}" class="btn btn-outline-light rounded-pill px-3.5 py-2 fw-semibold shadow-xs" style="font-size: 0.85rem;">
+                        <i class="fas fa-file-invoice-dollar text-warning me-1.5"></i> Dépenses ({{ currency($overall['total_expenses']) }})
                     </a>
                     <a href="{{ route('reports.profitability.costs') }}" class="btn btn-danger rounded-pill px-3.5 py-2 fw-semibold shadow-sm" style="font-size: 0.85rem;">
-                        <i class="fas fa-coins me-1.5"></i> Gérer les Coûts d'Achat
+                        <i class="fas fa-coins me-1.5"></i> Coûts d'Achat
                         @if($missingCostCount > 0)
                             <span class="badge bg-white text-danger rounded-pill ms-1">{{ $missingCostCount }}</span>
                         @endif
@@ -250,56 +250,61 @@
             </div>
         </div>
 
-        <!-- 2. Coût d'Achat Total -->
+        <!-- 2. Coût d'Achat Marchandises (COGS) -->
         <div class="col-12 col-sm-6 col-xl-3">
             <div class="profit-kpi-card">
                 <div>
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Coût d'Achat Total</span>
+                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Coût d'Achat Ventes</span>
                         <div class="kpi-icon-pill bg-warning-subtle text-warning">
                             <i class="fas fa-truck-ramp-box"></i>
                         </div>
                     </div>
                     <div class="h3 fw-bold text-dark mb-1">{{ currency($overall['total_cost']) }}</div>
                 </div>
-                <div class="pt-2 border-top mt-2 text-muted small" style="font-size: 0.74rem;">
-                    Prix de revient des marchandises vendues
+                <div class="pt-2 border-top mt-2 text-muted small d-flex justify-content-between" style="font-size: 0.74rem;">
+                    <span>Marge Brute Ventes :</span>
+                    <strong class="text-dark">{{ currency($overall['gross_profit']) }}</strong>
                 </div>
             </div>
         </div>
 
-        <!-- 3. Bénéfice Net Réalisé (Gain) -->
+        <!-- 3. Charges & Dépenses d'Exploitation -->
         <div class="col-12 col-sm-6 col-xl-3">
-            <div class="profit-kpi-card" style="background: linear-gradient(135deg, #064e3b 0%, #065f46 100%); color: #ffffff;">
+            <div class="profit-kpi-card">
                 <div>
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-white-50 fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Bénéfice Net Réalisé</span>
-                        <div class="kpi-icon-pill bg-white text-success">
+                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Charges & Dépenses</span>
+                        <div class="kpi-icon-pill bg-danger-subtle text-danger">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                    </div>
+                    <div class="h3 fw-bold text-danger mb-1">{{ currency($overall['total_expenses']) }}</div>
+                </div>
+                <div class="pt-2 border-top mt-2 text-muted small d-flex justify-content-between align-items-center" style="font-size: 0.74rem;">
+                    <span>Frais d'exploitation période</span>
+                    <a href="{{ route('expenses.index', ['period' => $period]) }}" class="text-danger fw-semibold text-decoration-none">
+                        Gérer <i class="fas fa-arrow-right ms-0.5"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Bénéfice Net Réel Global -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="profit-kpi-card" style="background: {{ $overall['net_profit'] >= 0 ? 'linear-gradient(135deg, #064e3b 0%, #065f46 100%)' : 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%)' }}; color: #ffffff;">
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-white-50 fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Bénéfice Net Réel Global</span>
+                        <div class="kpi-icon-pill bg-white {{ $overall['net_profit'] >= 0 ? 'text-success' : 'text-danger' }}">
                             <i class="fas fa-sack-dollar"></i>
                         </div>
                     </div>
                     <div class="h3 fw-bold text-white mb-1">{{ currency($overall['net_profit']) }}</div>
                 </div>
-                <div class="pt-2 border-top mt-2 text-white-50 small" style="font-size: 0.74rem;">
-                    Gain net réel (Ventes - Coûts)
-                </div>
-            </div>
-        </div>
-
-        <!-- 4. Taux de Marge Moyenne -->
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="profit-kpi-card">
-                <div>
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Taux de Marge Moyenne</span>
-                        <div class="kpi-icon-pill bg-success-subtle text-success">
-                            <i class="fas fa-chart-pie"></i>
-                        </div>
-                    </div>
-                    <div class="h3 fw-bold text-success mb-1">{{ $overall['margin_percentage'] }}%</div>
-                </div>
-                <div class="pt-2 border-top mt-2 text-muted small" style="font-size: 0.74rem;">
-                    Markup : +{{ $overall['markup_percentage'] }}% sur coût d'achat
+                <div class="pt-2 border-top mt-2 text-white-50 small d-flex justify-content-between align-items-center" style="font-size: 0.74rem;">
+                    <span>Taux Net : <strong>{{ $overall['margin_percentage'] }}%</strong></span>
+                    <span style="font-size: 0.68rem;">(Ventes - Coûts - Dépenses)</span>
                 </div>
             </div>
         </div>
@@ -337,12 +342,14 @@
                         <i class="fas fa-tags me-1.5"></i> Bénéfice par Catégorie ({{ $categoryBenefits->count() }})
                     </button>
                 </li>
-                <li class="nav-item ms-auto d-flex align-items-center gap-1.5" role="presentation">
-                    <a href="{{ route('shipments.index') }}" class="nav-link text-secondary fw-semibold d-flex align-items-center">
-                        <i class="fas fa-truck-ramp-box me-1.5"></i> Arrivages & Lots
-                    </a>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="expenses-tab" data-bs-toggle="tab" data-bs-target="#tab-expenses" type="button" role="tab">
+                        <i class="fas fa-file-invoice-dollar me-1.5 text-danger"></i> Charges & Dépenses ({{ currency($overall['total_expenses']) }})
+                    </button>
+                </li>
+                <li class="nav-item ms-auto" role="presentation">
                     <a href="{{ route('reports.profitability.costs') }}" class="nav-link text-danger fw-bold d-flex align-items-center">
-                        <i class="fas fa-coins me-1.5"></i> Gestion Coûts
+                        <i class="fas fa-coins me-1.5"></i> Gestion Complète des Coûts
                         @if($missingCostCount > 0)
                             <span class="badge bg-danger text-white rounded-pill ms-1.5" style="font-size: 0.68rem;">{{ $missingCostCount }}</span>
                         @endif
@@ -686,6 +693,66 @@
                 </div>
             </div>
 
+            <!-- TAB 4: CHARGES & DÉPENSES D'EXPLOITATION -->
+            <div class="tab-pane fade" id="tab-expenses" role="tabpanel">
+                <div class="p-3 bg-white border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div>
+                        <h6 class="fw-bold mb-0 text-dark">Répartition des Charges d'Exploitation sur la Période</h6>
+                        <span class="text-muted small">Déduites de votre marge brute pour obtenir le bénéfice net réel global</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="fw-bold text-danger fs-6">{{ currency($overall['total_expenses']) }}</span>
+                        <a href="{{ route('expenses.index', ['period' => $period]) }}" class="btn btn-sm btn-danger rounded-pill px-3 shadow-xs">
+                            <i class="fas fa-receipt me-1"></i> Gérer les Dépenses
+                        </a>
+                    </div>
+                </div>
+
+                @if($expenseBenefits->count() > 0)
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="bg-light border-bottom">
+                            <tr>
+                                <th class="ps-3 py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 35%;">Poste de Dépense</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold text-center" style="font-size: 0.72rem; width: 15%;">Nombre d'Écritures</th>
+                                <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 25%;">Montant Total</th>
+                                <th class="pe-3 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 25%;">Part des Charges</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y">
+                            @foreach($expenseBenefits as $eb)
+                            <tr class="hover-bg-light">
+                                <td class="ps-3 py-3">
+                                    <span class="badge {{ $eb->badge }} rounded-pill px-2.5 py-1 fw-semibold" style="font-size: 0.75rem;">
+                                        <i class="{{ $eb->icon }} me-1"></i> {{ $eb->label }}
+                                    </span>
+                                </td>
+                                <td class="py-3 text-center fw-semibold text-dark">{{ $eb->count }}</td>
+                                <td class="py-3 text-end fw-bold text-danger">-{{ currency($eb->total_amount) }}</td>
+                                <td class="pe-3 py-3 text-end">
+                                    <div class="d-flex align-items-center justify-content-end gap-2">
+                                        <div class="progress" style="width: 80px; height: 6px;">
+                                            <div class="progress-bar bg-danger" style="width: {{ $eb->share_percentage }}%"></div>
+                                        </div>
+                                        <span class="badge bg-light text-dark border rounded-pill fw-bold">{{ $eb->share_percentage }}%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                @else
+                <div class="text-center py-5 text-muted small">
+                    <i class="fas fa-file-invoice-dollar fa-3x mb-2 opacity-25"></i>
+                    <p class="mb-2 fw-semibold">Aucune dépense enregistrée sur cette période.</p>
+                    <a href="{{ route('expenses.index') }}" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                        <i class="fas fa-plus me-1"></i> Enregistrer une dépense
+                    </a>
+                </div>
+                @endif
+            </div>
+
         </div>
     </div>
 </div>
@@ -728,7 +795,7 @@ new Chart(ctx, {
         labels: trendsData.labels,
         datasets: [
             {
-                label: 'Bénéfice Net (DH)',
+                label: 'Bénéfice Net Réel (DH)',
                 data: trendsData.profits,
                 backgroundColor: 'rgba(16, 185, 129, 0.85)',
                 borderColor: '#10b981',
@@ -749,7 +816,7 @@ new Chart(ctx, {
             },
             {
                 type: 'line',
-                label: 'Coût d\'Achat (DH)',
+                label: 'Coût Marchandises (DH)',
                 data: trendsData.costs,
                 borderColor: '#f59e0b',
                 backgroundColor: 'rgba(245, 158, 11, 0.1)',
@@ -758,6 +825,18 @@ new Chart(ctx, {
                 tension: 0.3,
                 fill: false,
                 order: 2
+            },
+            {
+                type: 'line',
+                label: 'Dépenses & Charges (DH)',
+                data: trendsData.expenses || [],
+                borderColor: '#ef4444',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                borderWidth: 2,
+                borderDash: [3, 3],
+                tension: 0.3,
+                fill: false,
+                order: 3
             }
         ]
     },
