@@ -570,7 +570,7 @@
                     $adminLogoHeight = max(24, min(80, (int) setting('admin_logo_height', 48)));
                 @endphp
                 @if($winaLogo)
-                    <img src="{{ $winaLogo }}" alt="{{ setting('app_name', 'WINA SHOP') }}" width="110" height="{{ $adminLogoHeight }}" style="height: {{ $adminLogoHeight }}px; max-width: 160px; object-fit: contain;">
+                    <img src="{{ $winaLogo }}" alt="{{ setting('app_name', 'Wina Shop') }}" height="{{ $adminLogoHeight }}" style="height: {{ $adminLogoHeight }}px; max-width: 160px; object-fit: contain;" onerror="this.onerror=null; this.src='{{ asset('images/camera/logo.png') }}';">
                 @else
                     <i class="fas fa-camera text-danger me-2"></i>
                     <span style="font-weight: 800; color: #0f172a; font-size: 1.25rem;">WINA<span style="color: #dc2626;">SHOP</span></span>

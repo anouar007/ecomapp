@@ -103,7 +103,10 @@ if (!function_exists('resolve_setting_asset_url')) {
         if (file_exists(public_path($clean))) {
             return asset($clean);
         }
-        return asset('storage/' . $clean);
+        if (\Illuminate\Support\Facades\Storage::disk('public')->exists($clean)) {
+            return asset('storage/' . $clean);
+        }
+        return null;
     }
 }
 
@@ -119,19 +122,33 @@ if (!function_exists('app_logo_url')) {
     {
         $appLogo = setting('app_logo');
         if ($appLogo) {
-            return resolve_setting_asset_url($appLogo);
+            $resolved = resolve_setting_asset_url($appLogo);
+            if ($resolved) {
+                return $resolved;
+            }
         }
 
         $companyLogo = setting('company_logo');
         if ($companyLogo) {
-            return resolve_setting_asset_url($companyLogo);
+            $resolved = resolve_setting_asset_url($companyLogo);
+            if ($resolved) {
+                return $resolved;
+            }
+        }
+
+        if (file_exists(public_path('storage/logos/app_logo.png'))) {
+            return asset('storage/logos/app_logo.png');
         }
 
         if (file_exists(public_path('images/camera/logo.png'))) {
             return asset('images/camera/logo.png');
         }
 
-        return asset('images/camera/hero_cinema_rig.jpg');
+        if (file_exists(public_path('images/products/logo-wina-png_.png'))) {
+            return asset('images/products/logo-wina-png_.png');
+        }
+
+        return asset('images/camera/logo.png');
     }
 }
 

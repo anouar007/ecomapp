@@ -123,5 +123,9 @@ class SettingsVerificationTest extends TestCase
         $response = $this->actingAs($admin)->delete(route('custom-codes.destroy', $snippet));
         $response->assertRedirect();
         $this->assertDatabaseMissing('custom_codes', ['id' => $snippet->id]);
+
+        // Restore clean database state
+        Setting::set('app_name', 'Wina Shop', 'string', 'general');
+        Setting::set('app_logo', 'logos/app_logo.png', 'file', 'general');
     }
 }
