@@ -23,7 +23,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.7.32/sweetalert2.min.css">
     
     <link rel="stylesheet" href="{{ asset('css/driver.css') }}">
-    @stack('styles')
+    <div id="spa-page-styles">
+        @stack('styles')
+    </div>
     
     <!-- Winashop Theme Variables & Global Typography -->
     <style>
@@ -975,6 +977,11 @@
         });
     })();
     </script>
-    @stack('scripts')
+    <div id="spa-page-scripts">
+        @stack('scripts')
+    </div>
+
+    <!-- Zero-Refresh High-Performance SPA Navigation Engine -->
+    <script src="{{ asset('js/spa-navigation.js') }}?v={{ file_exists(public_path('js/spa-navigation.js')) ? filemtime(public_path('js/spa-navigation.js')) : time() }}"></script>
 </body>
 </html>

@@ -747,6 +747,18 @@ class ErpFeaturesVerificationTest extends TestCase
         $dashResp->assertSee("Vue d'ensemble", false);
         $dashResp->assertSee('Finance & Gestion', false);
         $dashResp->assertSee('Système & Audit', false);
+        $dashResp->assertSee('spa-navigation.js');
+        $dashResp->assertSee('id="spa-page-styles"', false);
+        $dashResp->assertSee('id="spa-page-scripts"', false);
+
+        // 1b. Test SPA Navigation AJAX request simulation (no full page reload)
+        $spaResp = $this->actingAs($this->admin)->withHeaders([
+            'X-Requested-With' => 'XMLHttpRequest',
+            'X-SPA-Navigation' => '1',
+        ])->get(route('dashboard'));
+        $spaResp->assertStatus(200);
+        $spaResp->assertSee('main-content');
+        $spaResp->assertSee('Cockpit Exécutif ERP & Trésorerie', false);
 
         // 2. Visit Customers Index and check Subnav Switcher
         $custResp = $this->actingAs($this->admin)->get(route('customers.index'));

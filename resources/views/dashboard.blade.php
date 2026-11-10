@@ -777,135 +777,161 @@
 <!-- Chart.js Integration with Real Controller Data -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const chartOptions = {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor: '#0f172a',
-                    titleColor: '#ffffff',
-                    bodyColor: '#ffffff',
-                    titleFont: { size: 12, family: "'Roboto', sans-serif" },
-                    bodyFont: { size: 12, weight: 'normal', family: "'Roboto', sans-serif" },
-                    padding: 10,
-                    cornerRadius: 8,
-                    callbacks: {
-                        label: function(context) {
-                            return ' ' + context.parsed.y.toLocaleString() + ' DH';
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: { 
-                    beginAtZero: true, 
-                    grid: { borderDash: [4, 4], color: '#f1f5f9' },
-                    ticks: { 
-                        color: '#94a3b8', 
-                        font: { size: 10, family: "'Roboto', sans-serif" },
-                        maxTicksLimit: 5,
-                        callback: function(val) {
-                            return val >= 1000 ? (val/1000) + 'k DH' : val + ' DH';
-                        }
-                    }
-                },
-                x: { 
-                    grid: { display: false },
-                    ticks: { 
-                        color: '#94a3b8', 
-                        font: { size: 10, family: "'Roboto', sans-serif" },
-                        maxRotation: 0,
-                        autoSkip: true,
-                        maxTicksLimit: window.innerWidth < 576 ? 4 : 7
-                    }
+    (function() {
+        function initDashboard() {
+            const revenueCanvas = document.getElementById('revenueChart');
+            if (!revenueCanvas) return;
+
+            // Destroy existing charts if canvas reused
+            if (typeof Chart !== 'undefined') {
+                const oldRev = Chart.getChart(revenueCanvas);
+                if (oldRev) oldRev.destroy();
+                const statusCanvas = document.getElementById('orderStatusChart');
+                if (statusCanvas) {
+                    const oldStatus = Chart.getChart(statusCanvas);
+                    if (oldStatus) oldStatus.destroy();
                 }
             }
-        };
 
-        // Dynamic Weekly Revenue Chart from Controller
-        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-        const revGradient = revenueCtx.createLinearGradient(0, 0, 0, 240);
-        revGradient.addColorStop(0, 'rgba(220, 38, 38, 0.22)');
-        revGradient.addColorStop(1, 'rgba(220, 38, 38, 0.0)');
-
-        const weeklyLabels = {!! json_encode($chartData['weekly_labels']) !!};
-        const weeklyValues = {!! json_encode($chartData['weekly_values']) !!};
-
-        new Chart(revenueCtx, {
-            type: 'line',
-            data: {
-                labels: weeklyLabels,
-                datasets: [{
-                    label: 'Revenus',
-                    data: weeklyValues,
-                    borderColor: '#dc2626',
-                    backgroundColor: revGradient,
-                    borderWidth: 2.5,
-                    tension: 0.35,
-                    fill: true,
-                    pointBackgroundColor: '#ffffff',
-                    pointBorderColor: '#dc2626',
-                    pointBorderWidth: 2,
-                    pointRadius: 3.5,
-                    pointHoverRadius: 6
-                }]
-            },
-            options: chartOptions
-        });
-
-        // Dynamic Order Distribution Donut Chart
-        const statusCtx = document.getElementById('orderStatusChart').getContext('2d');
-        const statusValues = {!! json_encode($chartData['status_values']) !!};
-
-        new Chart(statusCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Complétée', 'En attente', 'Annulée'],
-                datasets: [{
-                    data: statusValues,
-                    backgroundColor: ['#10b981', '#f59e0b', '#dc2626'],
-                    borderWidth: 0,
-                    hoverOffset: 6
-                }]
-            },
-            options: {
+            const chartOptions = {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '74%',
                 plugins: {
                     legend: { display: false },
                     tooltip: {
                         backgroundColor: '#0f172a',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        titleFont: { size: 12, family: "'Roboto', sans-serif" },
+                        bodyFont: { size: 12, weight: 'normal', family: "'Roboto', sans-serif" },
                         padding: 10,
                         cornerRadius: 8,
                         callbacks: {
                             label: function(context) {
-                                return ' ' + context.label + ': ' + context.parsed + ' commande(s)';
+                                return ' ' + context.parsed.y.toLocaleString() + ' DH';
                             }
                         }
                     }
-                }
-            }
-        });
-
-        // Auto-refresh real-time online clients count every 20 seconds
-        setInterval(function() {
-            fetch("{{ route('dashboard.live-clients') }}")
-                .then(r => r.ok ? r.json() : null)
-                .then(data => {
-                    if (data && typeof data.online_clients !== 'undefined') {
-                        document.querySelectorAll('.live-clients-badge').forEach(el => {
-                            el.textContent = data.online_clients;
-                        });
-                        document.querySelectorAll('.total-clients-display').forEach(el => {
-                            el.textContent = Number(data.total_clients).toLocaleString('fr-FR');
-                        });
+                },
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        grid: { borderDash: [4, 4], color: '#f1f5f9' },
+                        ticks: { 
+                            color: '#94a3b8', 
+                            font: { size: 10, family: "'Roboto', sans-serif" },
+                            maxTicksLimit: 5,
+                            callback: function(val) {
+                                return val >= 1000 ? (val/1000) + 'k DH' : val + ' DH';
+                            }
+                        }
+                    },
+                    x: { 
+                        grid: { display: false },
+                        ticks: { 
+                            color: '#94a3b8', 
+                            font: { size: 10, family: "'Roboto', sans-serif" },
+                            maxRotation: 0,
+                            autoSkip: true,
+                            maxTicksLimit: window.innerWidth < 576 ? 4 : 7
+                        }
                     }
-                })
-                .catch(() => {});
-        }, 20000);
-    });
+                }
+            };
+
+            // Dynamic Weekly Revenue Chart from Controller
+            const revenueCtx = revenueCanvas.getContext('2d');
+            const revGradient = revenueCtx.createLinearGradient(0, 0, 0, 240);
+            revGradient.addColorStop(0, 'rgba(220, 38, 38, 0.22)');
+            revGradient.addColorStop(1, 'rgba(220, 38, 38, 0.0)');
+
+            const weeklyLabels = {!! json_encode($chartData['weekly_labels']) !!};
+            const weeklyValues = {!! json_encode($chartData['weekly_values']) !!};
+
+            new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: weeklyLabels,
+                    datasets: [{
+                        label: 'Revenus',
+                        data: weeklyValues,
+                        borderColor: '#dc2626',
+                        backgroundColor: revGradient,
+                        borderWidth: 2.5,
+                        tension: 0.35,
+                        fill: true,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#dc2626',
+                        pointBorderWidth: 2,
+                        pointRadius: 3.5,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: chartOptions
+            });
+
+            // Dynamic Order Distribution Donut Chart
+            const statusCanvas = document.getElementById('orderStatusChart');
+            if (statusCanvas) {
+                const statusCtx = statusCanvas.getContext('2d');
+                const statusValues = {!! json_encode($chartData['status_values']) !!};
+
+                new Chart(statusCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Complétée', 'En attente', 'Annulée'],
+                        datasets: [{
+                            data: statusValues,
+                            backgroundColor: ['#10b981', '#f59e0b', '#dc2626'],
+                            borderWidth: 0,
+                            hoverOffset: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '74%',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#0f172a',
+                                padding: 10,
+                                cornerRadius: 8,
+                                callbacks: {
+                                    label: function(context) {
+                                        return ' ' + context.label + ': ' + context.parsed + ' commande(s)';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Auto-refresh real-time online clients count every 20 seconds
+            if (window._liveClientsTimer) clearInterval(window._liveClientsTimer);
+            window._liveClientsTimer = setInterval(function() {
+                fetch("{{ route('dashboard.live-clients') }}")
+                    .then(r => r.ok ? r.json() : null)
+                    .then(data => {
+                        if (data && typeof data.online_clients !== 'undefined') {
+                            document.querySelectorAll('.live-clients-badge').forEach(el => {
+                                el.textContent = data.online_clients;
+                            });
+                            document.querySelectorAll('.total-clients-display').forEach(el => {
+                                el.textContent = Number(data.total_clients).toLocaleString('fr-FR');
+                            });
+                        }
+                    })
+                    .catch(() => {});
+            }, 20000);
+        }
+
+        if (document.readyState !== 'loading') {
+            initDashboard();
+        } else {
+            document.addEventListener('DOMContentLoaded', initDashboard);
+        }
+    })();
 </script>
 @endsection
