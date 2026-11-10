@@ -278,38 +278,60 @@ html, body, .main-content {
     <!-- ======================================================= -->
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
         
-        <!-- Filter Chips & Search Bar -->
+        <!-- Filter Chips, Sort & Search Bar -->
         <div class="p-3 border-bottom bg-white">
-            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2.5">
-                <!-- Fast Filter Touch Chips -->
+            <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-2.5">
+                <!-- Fast Filter Touch Chips with Live Counts -->
                 <div class="chips-scroll-credit d-flex align-items-center gap-1.5 flex-wrap">
-                    <a href="{{ route('client-credits.index', ['filter' => 'all']) }}" class="chip-credit {{ $filter === 'all' ? 'active' : '' }}">
+                    <a href="{{ route('client-credits.index', array_merge(request()->except('page'), ['filter' => 'all'])) }}" class="chip-credit {{ $filter === 'all' ? 'active' : '' }}">
                         <span>Tous les comptes</span>
+                        <span class="badge bg-secondary bg-opacity-25 text-secondary rounded-pill ms-0.5">{{ $totalAccountsCount ?? $customers->total() }}</span>
                     </a>
-                    <a href="{{ route('client-credits.index', ['filter' => 'debtors']) }}" class="chip-credit {{ $filter === 'debtors' ? 'active' : '' }}">
+                    <a href="{{ route('client-credits.index', array_merge(request()->except('page'), ['filter' => 'debtors'])) }}" class="chip-credit {{ $filter === 'debtors' ? 'active' : '' }}">
                         <i class="fas fa-arrow-down text-danger"></i>
                         <span>Débiteurs</span>
-                        <span class="badge bg-danger text-white rounded-pill ms-1">{{ $activeDebtorCount }}</span>
+                        <span class="badge bg-danger text-white rounded-pill ms-0.5">{{ $activeDebtorCount }}</span>
                     </a>
-                    <a href="{{ route('client-credits.index', ['filter' => 'creditors']) }}" class="chip-credit {{ $filter === 'creditors' ? 'active' : '' }}">
+                    <a href="{{ route('client-credits.index', array_merge(request()->except('page'), ['filter' => 'creditors'])) }}" class="chip-credit {{ $filter === 'creditors' ? 'active' : '' }}">
                         <i class="fas fa-arrow-up text-info"></i>
                         <span>Avoirs</span>
-                        <span class="badge bg-info text-white rounded-pill ms-1">{{ $activeCreditorCount }}</span>
+                        <span class="badge bg-info text-white rounded-pill ms-0.5">{{ $activeCreditorCount }}</span>
                     </a>
-                    <a href="{{ route('client-credits.index', ['filter' => 'settled']) }}" class="chip-credit {{ $filter === 'settled' ? 'active' : '' }}">
+                    <a href="{{ route('client-credits.index', array_merge(request()->except('page'), ['filter' => 'settled'])) }}" class="chip-credit {{ $filter === 'settled' ? 'active' : '' }}">
+                        <i class="fas fa-check text-success"></i>
                         <span>Soldés (0 DH)</span>
+                        @isset($settledCount)
+                            <span class="badge bg-success-subtle text-success rounded-pill ms-0.5">{{ $settledCount }}</span>
+                        @endisset
+                    </a>
+                    <a href="{{ route('client-credits.index', array_merge(request()->except('page'), ['filter' => 'has_limit'])) }}" class="chip-credit {{ $filter === 'has_limit' ? 'active' : '' }}">
+                        <i class="fas fa-sliders text-primary"></i>
+                        <span>Avec Plafond</span>
+                        @isset($withLimitCount)
+                            <span class="badge bg-primary-subtle text-primary rounded-pill ms-0.5">{{ $withLimitCount }}</span>
+                        @endisset
                     </a>
                 </div>
 
-                <!-- Search Box -->
-                <form method="GET" action="{{ route('client-credits.index') }}" class="d-flex align-items-center gap-1.5 flex-shrink-0">
+                <!-- Search & Sort Controls -->
+                <form method="GET" action="{{ route('client-credits.index') }}" class="d-flex align-items-center gap-2 flex-wrap flex-sm-nowrap flex-shrink-0">
                     <input type="hidden" name="filter" value="{{ $filter }}">
-                    <div class="input-group input-group-sm" style="width: 240px;">
-                        <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
-                        <input type="text" name="search" value="{{ request('search') }}" class="form-control bg-light border-start-0" placeholder="Rechercher client, code, tél...">
+
+                    <!-- 1-Click Sort Selector -->
+                    <select name="sort" class="form-select form-select-sm bg-light rounded-pill px-3 fw-semibold text-secondary" style="width: auto; min-width: 175px; font-size: 0.76rem;" onchange="this.form.submit()">
+                        <option value="balance_desc" {{ ($sort ?? 'balance_desc') === 'balance_desc' ? 'selected' : '' }}>Trier : Plus grande dette</option>
+                        <option value="balance_asc" {{ ($sort ?? '') === 'balance_asc' ? 'selected' : '' }}>Trier : Plus grand avoir</option>
+                        <option value="name" {{ ($sort ?? '') === 'name' ? 'selected' : '' }}>Trier : Nom client (A-Z)</option>
+                        <option value="recent" {{ ($sort ?? '') === 'recent' ? 'selected' : '' }}>Trier : Activité récente</option>
+                    </select>
+
+                    <!-- Search Box -->
+                    <div class="input-group input-group-sm" style="width: 230px;">
+                        <span class="input-group-text bg-light border-end-0 rounded-start-pill ps-3"><i class="fas fa-search text-muted"></i></span>
+                        <input type="text" name="search" value="{{ request('search') }}" class="form-control bg-light border-start-0 rounded-end-pill" placeholder="Rechercher client, code, tél...">
                     </div>
-                    @if(request('search'))
-                        <a href="{{ route('client-credits.index', ['filter' => $filter]) }}" class="btn btn-sm btn-light border rounded-pill" title="Réinitialiser">
+                    @if(request('search') || (isset($sort) && $sort !== 'balance_desc'))
+                        <a href="{{ route('client-credits.index', ['filter' => $filter]) }}" class="btn btn-sm btn-light border rounded-pill px-2.5" title="Réinitialiser la recherche">
                             <i class="fas fa-times"></i>
                         </a>
                     @endif
@@ -494,9 +516,12 @@ html, body, .main-content {
                                 </span>
                             @endif
                         </td>
-                        <td class="py-3">
+                        <td class="py-3" style="cursor: pointer;" onclick="openLimitModal({{ $c->id }}, '{{ addslashes($c->name) }}', {{ (float) $c->credit_limit }})" title="Cliquer pour ajuster le plafond de crédit">
                             @if($c->credit_limit > 0)
-                                <div class="fw-semibold text-dark small">{{ currency($c->credit_limit) }}</div>
+                                <div class="fw-semibold text-dark small d-flex align-items-center gap-1">
+                                    <span>{{ currency($c->credit_limit) }}</span>
+                                    <i class="fas fa-pen text-muted opacity-50" style="font-size: 0.6rem;"></i>
+                                </div>
                                 @php
                                     $usage = min(100, max(0, ($c->current_balance / $c->credit_limit) * 100));
                                     $barColor = $usage >= 90 ? 'bg-danger' : ($usage >= 70 ? 'bg-warning' : 'bg-success');
@@ -506,31 +531,64 @@ html, body, .main-content {
                                 </div>
                                 <div class="text-muted mt-0.5" style="font-size: 0.68rem;">{{ round($usage) }}% utilisé</div>
                             @else
-                                <span class="badge bg-light text-muted border rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">Au comptant</span>
+                                <span class="badge bg-light text-muted border rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">
+                                    Au comptant <i class="fas fa-sliders ms-1 opacity-50"></i>
+                                </span>
                             @endif
                         </td>
                         <td class="py-3">
                             @php $lastTrx = $c->transactions()->first(); @endphp
                             @if($lastTrx)
-                                <div class="small fw-semibold text-dark">{{ currency($lastTrx->amount) }}</div>
-                                <div class="text-muted" style="font-size: 0.7rem;">
-                                    {{ $lastTrx->payment_date->diffForHumans() }}
-                                    @if($lastTrx->proof_image)
-                                        <i class="fas fa-paperclip text-primary ms-1" title="Preuve attachée"></i>
-                                    @endif
-                                </div>
+                                <a href="{{ route('client-credits.transactions', ['customer_id' => $c->id]) }}" class="text-decoration-none d-block" title="Voir tout l'historique de ce client dans le Grand Livre">
+                                    <div class="small fw-semibold text-dark hover-primary">{{ currency($lastTrx->amount) }}</div>
+                                    <div class="text-muted" style="font-size: 0.7rem;">
+                                        {{ $lastTrx->payment_date->diffForHumans() }}
+                                        @if($lastTrx->proof_image)
+                                            <i class="fas fa-paperclip text-primary ms-1" title="Preuve attachée"></i>
+                                        @endif
+                                    </div>
+                                </a>
                             @else
                                 <span class="text-muted small fst-italic">—</span>
                             @endif
                         </td>
-                        <td class="pe-3 py-2.5 text-end text-nowrap" style="min-width: 175px;">
+                        <td class="pe-3 py-2.5 text-end text-nowrap" style="min-width: 185px;">
                             <div class="d-inline-flex align-items-center justify-content-end gap-1.5 text-nowrap">
-                                <button type="button" class="btn btn-sm btn-danger rounded-pill px-3 py-1 shadow-xs fw-semibold text-nowrap"
-                                        style="font-size: 0.76rem;"
-                                        onclick="openNewPaymentForCustomer({{ $c->id }}, '{{ addslashes($c->name) }}', {{ (float) $c->current_balance }})"
-                                        title="Enregistrer un règlement / avoir pour ce client">
-                                    <i class="fas fa-coins me-1"></i> Régler
-                                </button>
+                                @if($c->current_balance > 0.01)
+                                    <button type="button" class="btn btn-sm btn-danger rounded-pill px-3 py-1 shadow-xs fw-semibold text-nowrap"
+                                            style="font-size: 0.76rem;"
+                                            onclick="openNewPaymentForCustomer({{ $c->id }}, '{{ addslashes($c->name) }}', {{ (float) $c->current_balance }})"
+                                            title="Encaisser le règlement de ce client">
+                                        <i class="fas fa-hand-holding-dollar me-1"></i> Régler
+                                    </button>
+                                    @if($c->phone)
+                                        @php
+                                            $waClean = preg_replace('/[^0-9]/', '', $c->phone);
+                                            if (str_starts_with($waClean, '0')) { $waClean = '212' . substr($waClean, 1); }
+                                            $waDebtText = urlencode("Bonjour {$c->name}, sauf erreur de notre part, le solde de votre compte client présente un reste à régler de " . number_format($c->current_balance, 2, ',', ' ') . " DH. Merci de votre confiance !");
+                                        @endphp
+                                        <a href="https://wa.me/{{ $waClean }}?text={{ $waDebtText }}" target="_blank"
+                                           class="btn btn-sm btn-success-subtle text-success border border-success-subtle rounded-circle d-inline-flex align-items-center justify-content-center"
+                                           style="width: 28px; height: 28px; padding: 0; font-size: 0.8rem; background: #dcfce7;"
+                                           title="Relancer par WhatsApp (Rappel courtois du solde)">
+                                            <i class="fab fa-whatsapp"></i>
+                                        </a>
+                                    @endif
+                                @elseif($c->current_balance < -0.01)
+                                    <button type="button" class="btn btn-sm btn-info text-white rounded-pill px-3 py-1 shadow-xs fw-semibold text-nowrap"
+                                            style="font-size: 0.76rem;"
+                                            onclick="openNewPaymentForCustomer({{ $c->id }}, '{{ addslashes($c->name) }}', {{ (float) $c->current_balance }})"
+                                            title="Rembourser ou utiliser l'avoir client">
+                                        <i class="fas fa-coins me-1"></i> Régler
+                                    </button>
+                                @else
+                                    <button type="button" class="btn btn-sm btn-light border text-dark rounded-pill px-3 py-1 fw-semibold text-nowrap"
+                                            style="font-size: 0.76rem;"
+                                            onclick="openNewPaymentForCustomer({{ $c->id }}, '{{ addslashes($c->name) }}', {{ (float) $c->current_balance }})"
+                                            title="Enregistrer une nouvelle opération (crédit, acompte, règlement)">
+                                        <i class="fas fa-plus-circle text-danger me-1"></i> Régler
+                                    </button>
+                                @endif
                                 <button type="button" class="btn btn-sm btn-light border rounded-pill px-2 py-1 text-secondary"
                                         style="font-size: 0.74rem;"
                                         onclick="openLimitModal({{ $c->id }}, '{{ addslashes($c->name) }}', {{ (float) $c->credit_limit }})"
@@ -812,25 +870,62 @@ function openNewPaymentForCustomer(customerId, customerName, currentBalance) {
 function onModalCustomerChange(select) {
     const selected = select.options[select.selectedIndex];
     const preview = document.getElementById('modalCustomerBalancePreview');
+    const fullChip = document.getElementById('btnFullBalanceChip');
+    const halfChip = document.getElementById('btnHalfBalanceChip');
+
     if (!selected || !selected.value) {
         if (preview) preview.classList.add('d-none');
+        if (fullChip) fullChip.classList.add('d-none');
+        if (halfChip) halfChip.classList.add('d-none');
+        if (typeof updateModalLiveSimulation === 'function') updateModalLiveSimulation();
         return;
     }
+
     const balance = parseFloat(selected.getAttribute('data-balance') || 0);
     if (!preview) return;
     preview.classList.remove('d-none');
 
     if (balance > 0.01) {
-        preview.innerHTML = `<span class="text-danger fw-bold"><i class="fas fa-arrow-down me-1"></i>Le client doit actuellement au magasin : ${balance.toLocaleString('fr-FR', {minimumFractionDigits: 2})} DH</span>`;
-        document.getElementById('modal_type').value = 'payment_received';
+        const fmtBal = balance.toLocaleString('fr-FR', {minimumFractionDigits: 2});
+        preview.innerHTML = `<span class="text-danger fw-bold"><i class="fas fa-arrow-down me-1"></i>Le client doit actuellement au magasin : ${fmtBal} DH</span>`;
+        if (typeof selectModalOpType === 'function') {
+            selectModalOpType('payment_received');
+        } else {
+            document.getElementById('modal_type').value = 'payment_received';
+        }
         document.getElementById('modal_amount').value = balance.toFixed(2);
+        if (fullChip) {
+            fullChip.classList.remove('d-none');
+            fullChip.innerHTML = `<i class="fas fa-check-double me-1"></i>Solder tout (${fmtBal} DH)`;
+        }
+        if (halfChip) halfChip.classList.remove('d-none');
     } else if (balance < -0.01) {
         const absVal = Math.abs(balance);
-        preview.innerHTML = `<span class="text-info fw-bold"><i class="fas fa-arrow-up me-1"></i>Le magasin doit actuellement à ce client (Avoir) : ${absVal.toLocaleString('fr-FR', {minimumFractionDigits: 2})} DH</span>`;
-        document.getElementById('modal_type').value = 'refund_to_client';
+        const fmtAbs = absVal.toLocaleString('fr-FR', {minimumFractionDigits: 2});
+        preview.innerHTML = `<span class="text-info fw-bold"><i class="fas fa-arrow-up me-1"></i>Le magasin doit actuellement à ce client (Avoir) : ${fmtAbs} DH</span>`;
+        if (typeof selectModalOpType === 'function') {
+            selectModalOpType('refund_to_client');
+        } else {
+            document.getElementById('modal_type').value = 'refund_to_client';
+        }
         document.getElementById('modal_amount').value = absVal.toFixed(2);
+        if (fullChip) {
+            fullChip.classList.remove('d-none');
+            fullChip.innerHTML = `<i class="fas fa-check-double me-1"></i>Rembourser tout (${fmtAbs} DH)`;
+        }
+        if (halfChip) halfChip.classList.remove('d-none');
     } else {
         preview.innerHTML = `<span class="text-success fw-bold"><i class="fas fa-check me-1"></i>Le compte du client est actuellement soldé (0 DH).</span>`;
+        if (typeof selectModalOpType === 'function') {
+            selectModalOpType('credit_given');
+        }
+        document.getElementById('modal_amount').value = '';
+        if (fullChip) fullChip.classList.add('d-none');
+        if (halfChip) halfChip.classList.add('d-none');
+    }
+
+    if (typeof updateModalLiveSimulation === 'function') {
+        updateModalLiveSimulation();
     }
 }
 

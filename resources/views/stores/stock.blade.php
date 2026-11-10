@@ -86,8 +86,9 @@
     flex-shrink: 0;
 }
 .fixed-stock-table {
-    table-layout: fixed !important;
     width: 100% !important;
+    border-collapse: separate;
+    border-spacing: 0;
 }
 </style>
 @endpush
@@ -262,7 +263,7 @@
                                     </div>
                                 @endif
                                 <div class="min-w-0">
-                                    <div class="fw-bold text-dark text-truncate" title="{{ $p->name }}">
+                                    <div class="fw-bold text-dark" title="{{ $p->name }}">
                                         {{ $p->name }}
                                     </div>
                                     <div class="d-flex align-items-center gap-1.5 text-muted small mt-0.5" style="font-size: 0.72rem;">

@@ -60,8 +60,11 @@ class CustomerCreditController extends Controller
         $totalDebtors = Customer::where('current_balance', '>', 0)->sum('current_balance');
         $totalCreditors = abs(Customer::where('current_balance', '<', 0)->sum('current_balance'));
         $netBalance = $totalDebtors - $totalCreditors;
+        $totalAccountsCount = Customer::count();
         $activeDebtorCount = Customer::where('current_balance', '>', 0.01)->count();
         $activeCreditorCount = Customer::where('current_balance', '<', -0.01)->count();
+        $settledCount = Customer::whereBetween('current_balance', [-0.01, 0.01])->count();
+        $withLimitCount = Customer::where('credit_limit', '>', 0)->count();
 
         // Total payments collected this month
         $collectedThisMonth = CustomerTransaction::where('type', 'payment_received')
@@ -70,7 +73,7 @@ class CustomerCreditController extends Controller
             ->sum('amount');
 
         // Recent transactions for the quick live feed
-        $recentTransactions = CustomerTransaction::with(['customer', 'createdBy'])
+        $recentTransactions = CustomerTransaction::with(['customer', 'createdBy', 'store'])
             ->latest('payment_date')
             ->limit(8)
             ->get();
@@ -88,13 +91,17 @@ class CustomerCreditController extends Controller
             'totalDebtors',
             'totalCreditors',
             'netBalance',
+            'totalAccountsCount',
             'activeDebtorCount',
             'activeCreditorCount',
+            'settledCount',
+            'withLimitCount',
             'collectedThisMonth',
             'recentTransactions',
             'allCustomersList',
             'stores',
-            'filter'
+            'filter',
+            'sort'
         ));
     }
 
@@ -163,6 +170,11 @@ class CustomerCreditController extends Controller
         // Totals for filtered records
         $totalIn = (clone $query)->whereIn('type', ['payment_received', 'credit_note'])->sum('amount');
         $totalOut = (clone $query)->whereIn('type', ['refund_to_client', 'credit_given'])->sum('amount');
+        $totalPaymentsReceived = (clone $query)->where('type', 'payment_received')->sum('amount');
+        $totalCreditsGiven = (clone $query)->where('type', 'credit_given')->sum('amount');
+        $totalCreditNotes = (clone $query)->where('type', 'credit_note')->sum('amount');
+        $totalRefunds = (clone $query)->where('type', 'refund_to_client')->sum('amount');
+        $withProofCount = (clone $query)->whereNotNull('proof_image')->count();
 
         $allCustomersList = Customer::select('id', 'name', 'phone', 'customer_code', 'current_balance')
             ->orderBy('name')
@@ -170,7 +182,18 @@ class CustomerCreditController extends Controller
 
         $stores = Store::where('is_active', true)->orderBy('name')->get();
 
-        return view('client_credits.transactions', compact('transactions', 'totalIn', 'totalOut', 'allCustomersList', 'stores'));
+        return view('client_credits.transactions', compact(
+            'transactions',
+            'totalIn',
+            'totalOut',
+            'totalPaymentsReceived',
+            'totalCreditsGiven',
+            'totalCreditNotes',
+            'totalRefunds',
+            'withProofCount',
+            'allCustomersList',
+            'stores'
+        ));
     }
 
     /**

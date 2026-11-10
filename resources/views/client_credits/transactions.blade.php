@@ -78,21 +78,32 @@
     flex-shrink: 0;
 }
 .credit-table-wrap {
-    overflow-x: hidden !important;
-    width: 100% !important;
-    max-width: 100% !important;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
-.fixed-trx-table {
-    table-layout: fixed !important;
+.credit-trx-table {
     width: 100% !important;
-    max-width: 100% !important;
+    border-collapse: separate;
+    border-spacing: 0;
     margin-bottom: 0 !important;
 }
-.fixed-trx-table th,
-.fixed-trx-table td {
-    overflow: hidden !important;
-    text-overflow: ellipsis;
+.credit-trx-table th {
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+}
+.credit-trx-table td {
     vertical-align: middle;
+}
+.trx-kpi-card {
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    padding: 1.1rem 1.25rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 </style>
 @endpush
@@ -110,7 +121,7 @@
                     </div>
                     <div>
                         <div class="d-flex align-items-center gap-2 mb-1">
-                            <a href="{{ route('client-credits.index') }}" class="text-white-50 text-decoration-none small">
+                            <a href="{{ route('client-credits.index') }}" class="text-white-50 text-decoration-none small hover-white">
                                 <i class="fas fa-arrow-left me-1"></i> Crédits & Créances
                             </a>
                             <span class="text-white-50 small">• Journal Complet des Opérations</span>
@@ -143,6 +154,50 @@
     </div>
     @endif
 
+    <!-- 4 Financial Summary KPI Cards for Filtered View -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-xl-3">
+            <div class="trx-kpi-card shadow-xs">
+                <div class="d-flex align-items-center justify-content-between mb-1.5">
+                    <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.04em;">Règlements Encaissés</span>
+                    <span class="badge bg-success-subtle text-success rounded-pill p-2"><i class="fas fa-arrow-down"></i></span>
+                </div>
+                <div class="fs-5 fw-bold text-success">{{ currency($totalPaymentsReceived ?? $totalIn ?? 0) }}</div>
+                <div class="text-muted mt-1" style="font-size: 0.72rem;">Entrées trésorerie sur la sélection</div>
+            </div>
+        </div>
+        <div class="col-6 col-xl-3">
+            <div class="trx-kpi-card shadow-xs">
+                <div class="d-flex align-items-center justify-content-between mb-1.5">
+                    <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.04em;">Crédits Accordés</span>
+                    <span class="badge bg-danger-subtle text-danger rounded-pill p-2"><i class="fas fa-hand-holding-dollar"></i></span>
+                </div>
+                <div class="fs-5 fw-bold text-danger">{{ currency($totalCreditsGiven ?? $totalOut ?? 0) }}</div>
+                <div class="text-muted mt-1" style="font-size: 0.72rem;">Ventes à crédit sur la sélection</div>
+            </div>
+        </div>
+        <div class="col-6 col-xl-3">
+            <div class="trx-kpi-card shadow-xs">
+                <div class="d-flex align-items-center justify-content-between mb-1.5">
+                    <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.04em;">Avoirs & Remboursements</span>
+                    <span class="badge bg-info-subtle text-info rounded-pill p-2"><i class="fas fa-file-invoice"></i></span>
+                </div>
+                <div class="fs-5 fw-bold text-info">{{ currency(($totalCreditNotes ?? 0) + ($totalRefunds ?? 0)) }}</div>
+                <div class="text-muted mt-1" style="font-size: 0.72rem;">Avoirs et retours clients</div>
+            </div>
+        </div>
+        <div class="col-6 col-xl-3">
+            <div class="trx-kpi-card shadow-xs">
+                <div class="d-flex align-items-center justify-content-between mb-1.5">
+                    <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.04em;">Justificatifs Photos</span>
+                    <span class="badge bg-primary-subtle text-primary rounded-pill p-2"><i class="fas fa-camera"></i></span>
+                </div>
+                <div class="fs-5 fw-bold text-dark">{{ $withProofCount ?? 0 }} <span class="fs-6 fw-normal text-muted">/ {{ $transactions->total() }}</span></div>
+                <div class="text-muted mt-1" style="font-size: 0.72rem;">Opérations avec reçu / photo</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Quick Swipeable Chips Filter Bar (Mobile & Desktop) -->
     <div class="mb-3">
         <div class="chips-scroll-credit">
@@ -157,11 +212,6 @@
                 <i class="fas fa-arrow-down text-success"></i>
                 <span>Règlements reçus</span>
             </a>
-            <a href="{{ route('client-credits.transactions', array_merge(request()->except(['page', 'type']), ['type' => 'refund_to_client'])) }}" 
-               class="chip-credit {{ request('type') === 'refund_to_client' ? 'active' : '' }}">
-                <i class="fas fa-arrow-up text-danger"></i>
-                <span>Remboursements versés</span>
-            </a>
             <a href="{{ route('client-credits.transactions', array_merge(request()->except(['page', 'type']), ['type' => 'credit_given'])) }}" 
                class="chip-credit {{ request('type') === 'credit_given' ? 'active' : '' }}">
                 <i class="fas fa-hand-holding-dollar text-warning"></i>
@@ -172,6 +222,11 @@
                 <i class="fas fa-file-invoice text-info"></i>
                 <span>Avoirs clients</span>
             </a>
+            <a href="{{ route('client-credits.transactions', array_merge(request()->except(['page', 'type']), ['type' => 'refund_to_client'])) }}" 
+               class="chip-credit {{ request('type') === 'refund_to_client' ? 'active' : '' }}">
+                <i class="fas fa-arrow-up text-danger"></i>
+                <span>Remboursements versés</span>
+            </a>
             <a href="{{ route('client-credits.transactions', array_merge(request()->except(['page', 'has_proof']), ['has_proof' => 'yes'])) }}" 
                class="chip-credit {{ request('has_proof') === 'yes' ? 'active' : '' }}">
                 <i class="fas fa-camera text-primary"></i>
@@ -180,7 +235,7 @@
         </div>
     </div>
 
-    <!-- Clean Aligned Filters Card -->
+    <!-- Clean Aligned 12-Col Filters Card -->
     <div class="card border-0 shadow-sm rounded-4 mb-4">
         <div class="card-body p-3.5">
             <form method="GET" action="{{ route('client-credits.transactions') }}" class="row g-2.5 align-items-end">
@@ -192,9 +247,9 @@
                     </div>
                 </div>
 
-                <div class="col-6 col-md-3">
+                <div class="col-6 col-md-2">
                     <label class="form-label small fw-semibold text-muted mb-1">Client</label>
-                    <select name="customer_id" class="form-select form-select-sm">
+                    <select name="customer_id" class="form-select form-select-sm" onchange="this.form.submit()">
                         <option value="">Tous les clients</option>
                         @foreach($allCustomersList as $c)
                             <option value="{{ $c->id }}" {{ request('customer_id') == $c->id ? 'selected' : '' }}>
@@ -206,19 +261,19 @@
 
                 <div class="col-6 col-md-2">
                     <label class="form-label small fw-semibold text-muted mb-1">Type d'opération</label>
-                    <select name="type" class="form-select form-select-sm">
+                    <select name="type" class="form-select form-select-sm" onchange="this.form.submit()">
                         <option value="">Tous les types</option>
-                        <option value="payment_received" {{ request('type') == 'payment_received' ? 'selected' : '' }}>Règlement Reçu (Encaissé)</option>
-                        <option value="refund_to_client" {{ request('type') == 'refund_to_client' ? 'selected' : '' }}>Remboursement Versé</option>
-                        <option value="credit_given" {{ request('type') == 'credit_given' ? 'selected' : '' }}>Crédit Accordé (Vente)</option>
+                        <option value="payment_received" {{ request('type') == 'payment_received' ? 'selected' : '' }}>Règlement Reçu</option>
+                        <option value="credit_given" {{ request('type') == 'credit_given' ? 'selected' : '' }}>Crédit Accordé</option>
                         <option value="credit_note" {{ request('type') == 'credit_note' ? 'selected' : '' }}>Avoir Accordé</option>
+                        <option value="refund_to_client" {{ request('type') == 'refund_to_client' ? 'selected' : '' }}>Remboursement</option>
                         <option value="adjustment" {{ request('type') == 'adjustment' ? 'selected' : '' }}>Ajustement</option>
                     </select>
                 </div>
 
                 <div class="col-6 col-md-2">
                     <label class="form-label small fw-semibold text-muted mb-1">Caisse / Boutique</label>
-                    <select name="store_id" class="form-select form-select-sm">
+                    <select name="store_id" class="form-select form-select-sm" onchange="this.form.submit()">
                         <option value="">Toutes les caisses</option>
                         @foreach($stores as $st)
                             <option value="{{ $st->id }}" {{ request('store_id') == $st->id ? 'selected' : '' }}>
@@ -228,21 +283,21 @@
                     </select>
                 </div>
 
-                <div class="col-6 col-md-2">
-                    <label class="form-label small fw-semibold text-muted mb-1">Preuve photo</label>
-                    <select name="has_proof" class="form-select form-select-sm">
-                        <option value="">Toutes</option>
-                        <option value="yes" {{ request('has_proof') == 'yes' ? 'selected' : '' }}>Avec photo uniquement</option>
-                        <option value="no" {{ request('has_proof') == 'no' ? 'selected' : '' }}>Sans photo</option>
+                <div class="col-6 col-md-1">
+                    <label class="form-label small fw-semibold text-muted mb-1">Preuve</label>
+                    <select name="has_proof" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="">Tout</option>
+                        <option value="yes" {{ request('has_proof') == 'yes' ? 'selected' : '' }}>Avec</option>
+                        <option value="no" {{ request('has_proof') == 'no' ? 'selected' : '' }}>Sans</option>
                     </select>
                 </div>
 
-                <div class="col-6 col-md-2 d-flex gap-2">
+                <div class="col-12 col-md-2 d-flex gap-1.5">
                     <button type="submit" class="btn btn-sm btn-dark rounded-pill px-3 fw-semibold flex-fill">
                         <i class="fas fa-filter me-1"></i> Filtrer
                     </button>
                     @if(request()->anyFilled(['search', 'customer_id', 'store_id', 'type', 'has_proof', 'date_from', 'date_to']))
-                        <a href="{{ route('client-credits.transactions') }}" class="btn btn-sm btn-light border rounded-pill px-2.5" title="Réinitialiser">
+                        <a href="{{ route('client-credits.transactions') }}" class="btn btn-sm btn-light border rounded-pill px-2.5" title="Réinitialiser tous les filtres">
                             <i class="fas fa-times"></i>
                         </a>
                     @endif
@@ -251,20 +306,20 @@
         </div>
     </div>
 
-    <!-- Ledger Table Card -->
+    <!-- Ledger Table Card (Full Width, Natural Auto Layout, Zero Truncation) -->
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
         <!-- Desktop Table View (Hidden on mobile) -->
         <div class="credit-table-wrap d-none d-lg-block">
-            <table class="table align-middle mb-0 fixed-trx-table">
+            <table class="table align-middle mb-0 credit-trx-table">
                 <thead class="bg-light border-bottom">
                     <tr>
-                        <th class="ps-3 py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 15%;">Date & N° Réf</th>
-                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 20%;">Client</th>
-                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem; width: 17%;">Type d'Opération</th>
-                        <th class="py-3 text-secondary text-uppercase fw-semibold text-center" style="font-size: 0.72rem; width: 11%;">Preuve Photo</th>
-                        <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 13%;">Montant</th>
-                        <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 13%;">Nouveau Solde</th>
-                        <th class="pe-3 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; width: 11%;">Opérateur</th>
+                        <th class="ps-3 py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem;">Date & N° Réf</th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem;">Client</th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem;">Opération & Mode</th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold text-center" style="font-size: 0.72rem;">Preuve Photo</th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem;">Montant</th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem;">Solde Après</th>
+                        <th class="pe-3 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem;">Opérateur & Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y">
@@ -283,11 +338,11 @@
 
                         <!-- Client -->
                         <td class="py-3">
-                            <a href="{{ route('customers.show', $trx->customer_id) }}" class="fw-bold text-dark text-decoration-none hover-primary text-truncate d-block">
+                            <a href="{{ route('customers.show', $trx->customer_id) }}" class="fw-bold text-dark text-decoration-none hover-primary d-block" style="font-size: 0.88rem;">
                                 {{ $trx->customer->name ?? 'Client inconnu' }}
                             </a>
                             <div class="text-muted small" style="font-size: 0.72rem;">
-                                {{ $trx->customer->customer_code ?? '' }} @if($trx->customer->phone)• {{ $trx->customer->phone }}@endif
+                                {{ $trx->customer->customer_code ?? '' }} @if($trx->customer?->phone)• {{ $trx->customer->phone }}@endif
                             </div>
                         </td>
 
@@ -296,16 +351,14 @@
                             <span class="badge {{ $trx->type_badge_class }} border rounded-pill px-2.5 py-1 fw-semibold mb-1 d-inline-block" style="font-size: 0.72rem;">
                                 {{ $trx->type_label }}
                             </span>
-                            <div class="text-muted" style="font-size: 0.72rem;">
-                                <i class="fas fa-credit-card me-1 opacity-50"></i> {{ $trx->payment_method_label }}
-                            </div>
-                            @if($trx->store)
-                                <div class="mt-0.5">
+                            <div class="text-muted d-flex align-items-center gap-1.5 flex-wrap" style="font-size: 0.72rem;">
+                                <span><i class="fas fa-credit-card me-1 opacity-50"></i>{{ $trx->payment_method_label }}</span>
+                                @if($trx->store)
                                     <span class="badge bg-light text-secondary border rounded-pill px-2 py-0.5" style="font-size: 0.65rem;">
                                         <i class="fas fa-store me-1 text-primary"></i>{{ $trx->store->name }}
                                     </span>
-                                </div>
-                            @endif
+                                @endif
+                            </div>
                         </td>
 
                         <!-- Proof of payment photo -->
@@ -325,7 +378,7 @@
                                 {{ $trx->direction === 'in' ? '+' : '-' }}{{ currency($trx->amount) }}
                             </div>
                             @if($trx->notes)
-                                <div class="text-muted text-truncate" style="max-width: 170px; font-size: 0.68rem; margin-left: auto;" title="{{ $trx->notes }}">
+                                <div class="text-muted" style="max-width: 240px; font-size: 0.7rem; margin-left: auto;">
                                     {{ $trx->notes }}
                                 </div>
                             @endif
@@ -342,8 +395,8 @@
                         </td>
 
                         <!-- Operator & Action -->
-                        <td class="pe-3 py-3 text-end small text-muted">
-                            <div class="text-truncate" style="max-width: 100px; margin-left: auto;" title="{{ $trx->createdBy->name ?? 'Système' }}">
+                        <td class="pe-3 py-3 text-end small text-muted text-nowrap">
+                            <div>
                                 <i class="fas fa-user-circle me-1 opacity-50"></i>{{ $trx->createdBy->name ?? 'Système' }}
                             </div>
                             @if(auth()->user()->hasRole('Admin'))
@@ -351,8 +404,8 @@
                                 <form method="POST" action="{{ route('client-credits.transactions.destroy', $trx->id) }}" onsubmit="return confirm('Confirmez-vous l\'annulation de cette transaction ? Le solde du client sera réajusté.');" class="d-inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-xs btn-light text-danger border rounded-pill px-2 py-0.5" title="Annuler cette transaction">
-                                        <i class="fas fa-trash" style="font-size: 0.65rem;"></i> Annuler
+                                    <button type="submit" class="btn btn-xs btn-light text-danger border rounded-pill px-2.5 py-0.5" title="Annuler cette transaction">
+                                        <i class="fas fa-trash me-1" style="font-size: 0.65rem;"></i>Annuler
                                     </button>
                                 </form>
                             </div>

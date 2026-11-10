@@ -117,6 +117,16 @@ class ErpFeaturesVerificationTest extends TestCase
         $response->assertSee('Régler');
         $response->assertSee('Plafond');
         $response->assertSee('Fiche client 360');
+        $response->assertSee('Aperçu du solde après opération');
+        $response->assertSee('Trier : Plus grande dette');
+
+        // Verify Grand Livre transactions page KPIs & clean table
+        $ledgerResp = $this->actingAs($this->admin)->get(route('client-credits.transactions'));
+        $ledgerResp->assertStatus(200);
+        $ledgerResp->assertSee('Règlements Encaissés');
+        $ledgerResp->assertSee('Crédits Accordés');
+        $ledgerResp->assertSee('Avoirs & Remboursements', false);
+        $ledgerResp->assertSee('Justificatifs Photos');
     }
 
     /**

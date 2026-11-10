@@ -107,8 +107,9 @@
     flex-shrink: 0;
 }
 .fixed-profit-table {
-    table-layout: fixed !important;
     width: 100% !important;
+    border-collapse: separate;
+    border-spacing: 0;
 }
 </style>
 @endpush
