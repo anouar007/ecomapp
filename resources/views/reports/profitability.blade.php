@@ -156,6 +156,26 @@
         </div>
     </div>
 
+    <!-- Navigation Croisée ERP (Rentabilité <-> Coûts <-> Dépenses) -->
+    <div class="subnav-pills-bar">
+        <a href="{{ route('reports.profitability', ['period' => $period]) }}" class="subnav-pill active">
+            <i class="fas fa-chart-pie"></i>
+            <span>Bénéfice Net Réel & P&L</span>
+        </a>
+        <a href="{{ route('reports.profitability.costs') }}" class="subnav-pill">
+            <i class="fas fa-coins text-warning"></i>
+            <span>Gestion des Coûts d'Achat</span>
+            @if($missingCostCount > 0)
+                <span class="subnav-pill-badge" style="background: #fef3c7; color: #b45309;">{{ $missingCostCount }} manquants</span>
+            @endif
+        </a>
+        <a href="{{ route('expenses.index', ['period' => $period]) }}" class="subnav-pill">
+            <i class="fas fa-receipt text-danger"></i>
+            <span>Dépenses de l'Entreprise</span>
+            <span class="subnav-pill-badge">{{ currency($overall['total_expenses']) }}</span>
+        </a>
+    </div>
+
     <!-- Alert / Flash message -->
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show rounded-4 border-0 shadow-xs mb-4" role="alert">

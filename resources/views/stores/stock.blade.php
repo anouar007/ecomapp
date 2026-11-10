@@ -133,6 +133,26 @@
         </div>
     </div>
 
+    <!-- Navigation Croisée ERP (Inventaire <-> Matrice des Rayons <-> Dépôts) -->
+    <div class="subnav-pills-bar">
+        <a href="{{ route('inventory.index') }}" class="subnav-pill">
+            <i class="fas fa-boxes-stacked"></i>
+            <span>Inventaire Global Articles</span>
+        </a>
+        <a href="{{ route('stores.stock') }}" class="subnav-pill active">
+            <i class="fas fa-cubes-stacked text-purple"></i>
+            <span>Matrice par Dépôt & Rayons</span>
+        </a>
+        <a href="{{ route('stores.index') }}" class="subnav-pill">
+            <i class="fas fa-warehouse text-info"></i>
+            <span>Magasins & Points de Vente</span>
+        </a>
+        <a href="{{ route('inventory.movements') }}" class="subnav-pill">
+            <i class="fas fa-history text-primary"></i>
+            <span>Mouvements & Traçabilité</span>
+        </a>
+    </div>
+
     <!-- Alert / Flash message -->
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show rounded-4 border-0 shadow-xs mb-4" role="alert">

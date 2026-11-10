@@ -9,6 +9,13 @@ use App\Models\User;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Invoice;
+use App\Models\Customer;
+use App\Models\CustomerTransaction;
+use App\Models\Expense;
+use App\Models\RecurringExpense;
+use App\Models\Store;
+use App\Models\ActivityLog;
+use App\Services\ProfitabilityService;
 
 class DashboardController extends Controller
 {
@@ -135,7 +142,47 @@ class DashboardController extends Controller
         // Low Stock Products (Stock <= 10)
         $lowStockProducts = Product::where('stock', '<=', 10)->orderBy('stock', 'asc')->take(6)->get();
 
-        return view('dashboard', compact('stats', 'quickStats', 'chartData', 'user', 'recentOrders', 'lowStockProducts'));
+        // Synchronized ERP Financials & Operational Ecosystem
+        $monthStart = now()->startOfMonth();
+        $monthEnd = now()->endOfMonth();
+
+        $totalDebtors = (float) Customer::where('current_balance', '>', 0)->sum('current_balance');
+        $activeDebtorCount = Customer::where('current_balance', '>', 0.01)->count();
+        $totalCreditors = (float) abs(Customer::where('current_balance', '<', 0)->sum('current_balance'));
+        $collectedThisMonth = (float) CustomerTransaction::where('type', 'payment_received')
+            ->whereMonth('payment_date', now()->month)
+            ->whereYear('payment_date', now()->year)
+            ->sum('amount');
+
+        $thisMonthExpenses = (float) Expense::where('status', 'paid')
+            ->whereMonth('expense_date', now()->month)
+            ->whereYear('expense_date', now()->year)
+            ->sum('amount');
+
+        $monthlyBurnRate = (float) RecurringExpense::where('is_active', true)->sum('amount');
+        $activeStoresCount = Store::where('is_active', true)->count();
+        $stockCostValuation = (float) Product::whereNotNull('cost_price')->sum(DB::raw('cost_price * stock'));
+
+        // Real Net Profit & Margins for current month
+        $profitability = (new ProfitabilityService())->getOverallBenefits($monthStart, $monthEnd);
+
+        // Recent Audit / Activity Logs
+        $recentActivities = ActivityLog::with('user')->latest()->take(5)->get();
+
+        $erpFinancials = [
+            'total_debtors'         => $totalDebtors,
+            'debtor_count'          => $activeDebtorCount,
+            'total_creditors'       => $totalCreditors,
+            'collected_month'       => $collectedThisMonth,
+            'month_expenses'        => $thisMonthExpenses,
+            'monthly_burn_rate'     => $monthlyBurnRate,
+            'active_stores'         => $activeStoresCount,
+            'stock_cost_valuation'  => $stockCostValuation,
+            'profitability'         => $profitability,
+            'recent_activities'     => $recentActivities,
+        ];
+
+        return view('dashboard', compact('stats', 'quickStats', 'chartData', 'user', 'recentOrders', 'lowStockProducts', 'erpFinancials'));
     }
 
     /**

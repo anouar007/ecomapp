@@ -423,6 +423,23 @@
         </div>
     </div>
 
+    <!-- Navigation Croisée Système & Audit -->
+    <div class="subnav-pills-bar">
+        <a href="{{ route('users.index') }}" class="subnav-pill active">
+            <i class="fas fa-users-gear text-dark"></i>
+            <span>Équipe, Collaborateurs & Rôles</span>
+            <span class="subnav-pill-badge">{{ $kpi['total_team'] ?? 0 }}</span>
+        </a>
+        <a href="{{ route('activity-logs.index') }}" class="subnav-pill">
+            <i class="fas fa-shield-alt text-primary"></i>
+            <span>Journal d'Activité & Traçabilité</span>
+        </a>
+        <a href="{{ route('settings.index') }}" class="subnav-pill">
+            <i class="fas fa-sliders text-secondary"></i>
+            <span>Paramètres Système</span>
+        </a>
+    </div>
+
     <!-- Feedback Alerts -->
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show rounded-3 border-0 shadow-xs mb-3 d-flex align-items-center gap-2 py-2.5 px-3" role="alert">

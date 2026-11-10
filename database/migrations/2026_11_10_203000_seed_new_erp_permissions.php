@@ -44,3 +44,4 @@ return new class extends Migration
         Permission::whereIn('name', $permissions)->delete();
     }
 };
+

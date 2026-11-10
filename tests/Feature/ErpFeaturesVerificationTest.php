@@ -732,4 +732,56 @@ class ErpFeaturesVerificationTest extends TestCase
         $actResp->assertStatus(200);
         $actResp->assertSee('Fiche source');
     }
+
+    public function test_dashboard_executive_synergy_hub_and_cross_module_subnav_bars(): void
+    {
+        // 1. Visit main Dashboard as Admin
+        $dashResp = $this->actingAs($this->admin)->get(route('dashboard'));
+        $dashResp->assertStatus(200);
+        $dashResp->assertSee('Cockpit Exécutif ERP & Trésorerie', false);
+        $dashResp->assertSee('CRÉANCES CLIENTS');
+        $dashResp->assertSee('DÉPENSES MOIS');
+        $dashResp->assertSee('BÉNÉFICE NET P&L', false);
+        $dashResp->assertSee('STOCKS & DÉPÔTS', false);
+        $dashResp->assertSee("Journal d'Activité & Traçabilité en Direct", false);
+        $dashResp->assertSee("Vue d'ensemble", false);
+        $dashResp->assertSee('Finance & Gestion', false);
+        $dashResp->assertSee('Système & Audit', false);
+
+        // 2. Visit Customers Index and check Subnav Switcher
+        $custResp = $this->actingAs($this->admin)->get(route('customers.index'));
+        $custResp->assertStatus(200);
+        $custResp->assertSee('Crédits, Créances & Dettes', false);
+        $custResp->assertSee('Grand Livre des Règlements');
+
+        // 3. Visit Client Credits Index and check Subnav Switcher
+        $credResp = $this->actingAs($this->admin)->get(route('client-credits.index'));
+        $credResp->assertStatus(200);
+        $credResp->assertSee('Fiches & Profils Clients', false);
+        $credResp->assertSee('Grand Livre des Règlements');
+
+        // 4. Visit Inventory Index and check Subnav Switcher
+        $invResp = $this->actingAs($this->admin)->get(route('inventory.index'));
+        $invResp->assertStatus(200);
+        $invResp->assertSee('Matrice par Dépôt & Rayons', false);
+        $invResp->assertSee('Magasins & Points de Vente', false);
+
+        // 5. Visit Stores Index and check Subnav Switcher
+        $storeResp = $this->actingAs($this->admin)->get(route('stores.index'));
+        $storeResp->assertStatus(200);
+        $storeResp->assertSee('Inventaire Global Articles');
+        $storeResp->assertSee('Matrice par Dépôt & Rayons', false);
+
+        // 6. Visit Profitability Report and check Subnav Switcher
+        $profitResp = $this->actingAs($this->admin)->get(route('reports.profitability'));
+        $profitResp->assertStatus(200);
+        $profitResp->assertSee("Gestion des Coûts d'Achat", false);
+        $profitResp->assertSee("Dépenses de l'Entreprise", false);
+
+        // 7. Visit Activity Logs and check Subnav Switcher
+        $actResp = $this->actingAs($this->admin)->get(route('activity-logs.index'));
+        $actResp->assertStatus(200);
+        $actResp->assertSee('Équipe, Collaborateurs & Rôles', false);
+        $actResp->assertSee('Paramètres Système');
+    }
 }

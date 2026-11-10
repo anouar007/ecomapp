@@ -137,6 +137,72 @@
             border-radius: 50% !important;
         }
 
+        /* Pro Executive Sidebar Section Headers */
+        .sidebar-section-header {
+            font-size: 0.65rem !important;
+            font-weight: 700 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.08em !important;
+            color: #94a3b8 !important;
+            padding: 1rem 1rem 0.35rem 1rem !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.5rem !important;
+            user-select: none !important;
+            margin: 0 !important;
+        }
+        .sidebar-section-header::after {
+            content: '' !important;
+            flex: 1 !important;
+            height: 1px !important;
+            background: #e2e8f0 !important;
+        }
+        .sidebar.collapsed .sidebar-section-header {
+            display: none !important;
+        }
+
+        /* Global Synchronized Subnav Switcher Pills */
+        .subnav-pills-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.25rem;
+        }
+        .subnav-pill {
+            white-space: nowrap;
+            border-radius: 9999px !important;
+            padding: 0.38rem 0.9rem;
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            color: #475569;
+            flex-shrink: 0;
+        }
+        .subnav-pill:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+        .subnav-pill.active {
+            background: #0f172a;
+            color: #ffffff !important;
+            border-color: #0f172a;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+        }
+        .subnav-pill.active i {
+            color: #ffffff !important;
+        }
+        .subnav-pill.active .badge {
+            background: rgba(255, 255, 255, 0.25) !important;
+            color: #ffffff !important;
+        }
+
         /* Custom Product Tag Badge System (Proportional to Card Size via cqw) */
         .product-card-tag-container {
             container-type: inline-size;
@@ -600,6 +666,8 @@
             </button>
         </div>
         <ul class="sidebar-menu">
+            <!-- 1. VUE D'ENSEMBLE -->
+            <li class="sidebar-section-header">Vue d'ensemble</li>
             <li class="sidebar-menu-item">
                 <a href="{{ route('dashboard') }}" class="sidebar-menu-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <i class="fas fa-home"></i>
@@ -614,14 +682,44 @@
                 </a>
             </li>
             @endif
-            @can('manage_categories')
+
+            <!-- 2. VENTES & CLIENTS -->
+            <li class="sidebar-section-header">Ventes & Clients</li>
+            @can('manage_orders')
             <li class="sidebar-menu-item">
-                <a href="{{ route('categories.index') }}" class="sidebar-menu-link {{ request()->routeIs('categories.*') ? 'active' : '' }}">
-                    <i class="fas fa-folder-tree"></i>
-                    <span>Catégories</span>
+                <a href="{{ route('orders.index') }}" class="sidebar-menu-link {{ request()->routeIs('orders.*') ? 'active' : '' }}">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Commandes</span>
                 </a>
             </li>
             @endcan
+            @can('manage_invoices')
+            <li class="sidebar-menu-item">
+                <a href="{{ route('invoices.index') }}" class="sidebar-menu-link {{ request()->routeIs('invoices.*') ? 'active' : '' }}">
+                    <i class="fas fa-file-invoice"></i>
+                    <span>Factures & Devis</span>
+                </a>
+            </li>
+            @endcan
+            @can('manage_customers')
+            <li class="sidebar-menu-item">
+                <a href="{{ route('customers.index') }}" class="sidebar-menu-link {{ request()->routeIs('customers.*') ? 'active' : '' }}">
+                    <i class="fas fa-users"></i>
+                    <span>Clients</span>
+                </a>
+            </li>
+            @endcan
+            @if(auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('manage_customers') || auth()->user()->can('manage_client_credits')))
+            <li class="sidebar-menu-item">
+                <a href="{{ route('client-credits.index') }}" class="sidebar-menu-link {{ request()->routeIs('client-credits.*') ? 'active' : '' }}">
+                    <i class="fas fa-wallet"></i>
+                    <span>Crédits & Règlements</span>
+                </a>
+            </li>
+            @endif
+
+            <!-- 3. CATALOGUE & STOCKS -->
+            <li class="sidebar-section-header">Catalogue & Stocks</li>
             @can('manage_products')
             <li class="sidebar-menu-item">
                 <a href="{{ route('products.index') }}" class="sidebar-menu-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
@@ -642,19 +740,11 @@
                 </a>
             </li>
             @endcan
-            @can('manage_orders')
+            @can('manage_categories')
             <li class="sidebar-menu-item">
-                <a href="{{ route('orders.index') }}" class="sidebar-menu-link {{ request()->routeIs('orders.*') ? 'active' : '' }}">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span>Commandes</span>
-                </a>
-            </li>
-            @endcan
-            @can('manage_invoices')
-            <li class="sidebar-menu-item">
-                <a href="{{ route('invoices.index') }}" class="sidebar-menu-link {{ request()->routeIs('invoices.*') ? 'active' : '' }}">
-                    <i class="fas fa-file-invoice"></i>
-                    <span>Factures & Devis</span>
+                <a href="{{ route('categories.index') }}" class="sidebar-menu-link {{ request()->routeIs('categories.*') ? 'active' : '' }}">
+                    <i class="fas fa-folder-tree"></i>
+                    <span>Catégories</span>
                 </a>
             </li>
             @endcan
@@ -674,23 +764,11 @@
                 </a>
             </li>
             @endif
-            @can('manage_customers')
-            <li class="sidebar-menu-item">
-                <a href="{{ route('customers.index') }}" class="sidebar-menu-link {{ request()->routeIs('customers.*') ? 'active' : '' }}">
-                    <i class="fas fa-users"></i>
-                    <span>Clients</span>
-                </a>
-            </li>
-            @endcan
-            @if(auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('manage_customers') || auth()->user()->can('manage_client_credits')))
-            <li class="sidebar-menu-item">
-                <a href="{{ route('client-credits.index') }}" class="sidebar-menu-link {{ request()->routeIs('client-credits.*') ? 'active' : '' }}">
-                    <i class="fas fa-wallet"></i>
-                    <span>Crédits & Règlements</span>
-                </a>
-            </li>
-            @endif
-            @if(auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('manage_accounting') || auth()->user()->can('manage_expenses')))
+
+            <!-- 4. FINANCE & GESTION -->
+            @if(auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('manage_accounting') || auth()->user()->can('manage_expenses') || auth()->user()->can('view_profitability')))
+            <li class="sidebar-section-header">Finance & Gestion</li>
+            @if(auth()->user()->hasRole('Admin') || auth()->user()->can('manage_accounting') || auth()->user()->can('manage_expenses'))
             <li class="sidebar-menu-item">
                 <a href="{{ route('expenses.index') }}" class="sidebar-menu-link {{ request()->routeIs('expenses.*') ? 'active' : '' }}">
                     <i class="fas fa-file-invoice-dollar"></i>
@@ -698,7 +776,7 @@
                 </a>
             </li>
             @endif
-            @if(auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('view_profitability')))
+            @if(auth()->user()->hasRole('Admin') || auth()->user()->can('view_profitability'))
             <li class="sidebar-menu-item">
                 <a href="{{ route('reports.profitability') }}" class="sidebar-menu-link {{ request()->routeIs('reports.profitability*') ? 'active' : '' }}">
                     <i class="fas fa-chart-pie"></i>
@@ -707,6 +785,10 @@
                 </a>
             </li>
             @endif
+            @endif
+
+            <!-- 5. MARKETING & VITRINE -->
+            <li class="sidebar-section-header">Marketing & Vitrine</li>
             @if(auth()->check() && (auth()->user()->can('manage_coupons') || auth()->user()->hasRole('Admin')))
             <li class="sidebar-menu-item">
                 <a href="{{ route('coupons.index') }}" class="sidebar-menu-link {{ request()->routeIs('coupons.*') ? 'active' : '' }}">
@@ -723,14 +805,12 @@
                 </a>
             </li>
             @endcan
-
             <li class="sidebar-menu-item">
                 <a href="{{ route('banners.index') }}" class="sidebar-menu-link {{ request()->routeIs('banners.*') ? 'active' : '' }}">
                     <i class="fas fa-sliders-h"></i>
                     <span>Slider & Bannières</span>
                 </a>
             </li>
-
             <li class="sidebar-menu-item">
                 <a href="{{ route('home-sections.index') }}" class="sidebar-menu-link {{ request()->routeIs('home-sections.*') ? 'active' : '' }}">
                     <i class="fas fa-layer-group"></i>
@@ -738,6 +818,24 @@
                 </a>
             </li>
 
+            <!-- 6. SYSTÈME & AUDIT -->
+            <li class="sidebar-section-header">Système & Audit</li>
+            @if(auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('manage_users') || auth()->user()->can('manage_roles')))
+            <li class="sidebar-menu-item">
+                <a href="{{ route('users.index') }}" class="sidebar-menu-link {{ request()->routeIs('users.*') || request()->routeIs('roles.*') ? 'active' : '' }}">
+                    <i class="fas fa-users-gear"></i>
+                    <span>Équipe & Rôles</span>
+                </a>
+            </li>
+            @endif
+            @if(auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('view_activity_logs')))
+            <li class="sidebar-menu-item">
+                <a href="{{ route('activity-logs.index') }}" class="sidebar-menu-link {{ request()->routeIs('activity-logs.*') ? 'active' : '' }}">
+                    <i class="fas fa-history"></i>
+                    <span>Journal d'Activité</span>
+                </a>
+            </li>
+            @endif
             @can('manage_settings')
             <li class="sidebar-menu-item">
                 <a href="{{ route('settings.logos-icons') }}" class="sidebar-menu-link {{ request()->routeIs('settings.logos-icons*') ? 'active' : '' }}">
@@ -752,24 +850,6 @@
                 </a>
             </li>
             @endcan
-
-            @if(auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('manage_users') || auth()->user()->can('manage_roles')))
-            <li class="sidebar-menu-item">
-                <a href="{{ route('users.index') }}" class="sidebar-menu-link {{ request()->routeIs('users.*') || request()->routeIs('roles.*') ? 'active' : '' }}">
-                    <i class="fas fa-users-gear"></i>
-                    <span>Équipe & Rôles</span>
-                </a>
-            </li>
-            @endif
-
-            @if(auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('view_activity_logs')))
-            <li class="sidebar-menu-item">
-                <a href="{{ route('activity-logs.index') }}" class="sidebar-menu-link {{ request()->routeIs('activity-logs.*') ? 'active' : '' }}">
-                    <i class="fas fa-history"></i>
-                    <span>Journal d'Activité</span>
-                </a>
-            </li>
-            @endif
             
             <!-- Developer Credit -->
             <li class="sidebar-menu-item mt-auto pt-4 pb-2 px-4 text-center">

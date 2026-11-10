@@ -131,6 +131,23 @@
         </div>
     </div>
 
+    <!-- Navigation Croisée ERP (Rentabilité <-> Coûts <-> Dépenses) -->
+    <div class="subnav-pills-bar">
+        <a href="{{ route('reports.profitability', ['period' => $period]) }}" class="subnav-pill">
+            <i class="fas fa-chart-pie text-success"></i>
+            <span>Bénéfice Net Réel & P&L</span>
+        </a>
+        <a href="{{ route('reports.profitability.costs') }}" class="subnav-pill">
+            <i class="fas fa-coins text-warning"></i>
+            <span>Gestion des Coûts d'Achat</span>
+        </a>
+        <a href="{{ route('expenses.index', ['period' => $period]) }}" class="subnav-pill active">
+            <i class="fas fa-receipt text-danger"></i>
+            <span>Dépenses & Charges d'Exploitation</span>
+            <span class="subnav-pill-badge">{{ currency($periodExpenses ?? 0) }}</span>
+        </a>
+    </div>
+
     <!-- Alert / Flash message -->
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show rounded-4 border-0 shadow-xs mb-4" role="alert">

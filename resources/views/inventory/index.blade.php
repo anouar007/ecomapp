@@ -31,6 +31,34 @@
         </div>
     </div>
 
+    <!-- Navigation Croisée ERP (Inventaire <-> Matrice des Rayons <-> Dépôts) -->
+    <div class="subnav-pills-bar">
+        <a href="{{ route('inventory.index') }}" class="subnav-pill active">
+            <i class="fas fa-boxes-stacked"></i>
+            <span>Inventaire Global Articles</span>
+            <span class="subnav-pill-badge">{{ $stats['total_products'] ?? 0 }}</span>
+        </a>
+        <a href="{{ route('stores.stock') }}" class="subnav-pill">
+            <i class="fas fa-cubes-stacked text-purple"></i>
+            <span>Matrice par Dépôt & Rayons</span>
+        </a>
+        <a href="{{ route('stores.index') }}" class="subnav-pill">
+            <i class="fas fa-warehouse text-info"></i>
+            <span>Magasins & Points de Vente</span>
+        </a>
+        <a href="{{ route('inventory.movements') }}" class="subnav-pill">
+            <i class="fas fa-history text-primary"></i>
+            <span>Mouvements & Traçabilité</span>
+        </a>
+        <a href="{{ route('inventory.alerts') }}" class="subnav-pill">
+            <i class="fas fa-bell text-warning"></i>
+            <span>Alertes Seuil</span>
+            @if(($stats['low_stock'] + $stats['out_of_stock']) > 0)
+                <span class="subnav-pill-badge" style="background: #fee2e2; color: #991b1b;">{{ $stats['low_stock'] + $stats['out_of_stock'] }}</span>
+            @endif
+        </a>
+    </div>
+
     <!-- KPI Metric Stat Cards (Row of 4 - Exactly Aligned with Invoices & Orders) -->
     <div class="row g-3 mb-4">
         <!-- Total Produits Suivis -->

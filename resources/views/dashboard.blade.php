@@ -31,47 +31,47 @@
         </div>
     </div>
 
-    <!-- Quick Actions Pills (Barre d'accès rapide fluide) -->
+    <!-- Quick Actions Pills (Barre d'accès rapide fluide & ERP) -->
     <div class="dashboard-quick-actions">
         <a href="{{ route('customers.index') }}" class="quick-action-pill border-success-subtle" title="Clients actuellement sur le site">
             <span class="quick-pill-icon" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">
                 <span class="stock-pulse-dot" style="width: 7px; height: 7px; background: #10b981; display: inline-block;"></span>
             </span>
             <span class="quick-pill-text text-dark">
-                <strong><span class="live-clients-badge">{{ $stats['online_clients'] ?? 1 }}</span></strong> en ligne sur le site
+                <strong><span class="live-clients-badge">{{ $stats['online_clients'] ?? 1 }}</span></strong> en ligne
             </span>
-        </a>
-        <a href="{{ route('customers.index') }}" class="quick-action-pill">
-            <span class="quick-pill-icon icon-indigo"><i class="fas fa-users"></i></span>
-            <span class="quick-pill-text">Clients ({{ $stats['total_clients'] ?? $stats['total_users'] }})</span>
         </a>
         <a href="{{ route('orders.index', ['status' => 'pending']) }}" class="quick-action-pill">
             <span class="quick-pill-icon icon-warning"><i class="fas fa-clock"></i></span>
             <span class="quick-pill-text">En attente ({{ $quickStats['pending_orders'] ?? 0 }})</span>
         </a>
+        <a href="{{ route('client-credits.index') }}" class="quick-action-pill" title="Créances & Dettes Clients">
+            <span class="quick-pill-icon" style="background: #fee2e2; color: #dc2626;"><i class="fas fa-wallet"></i></span>
+            <span class="quick-pill-text">Créances ({{ currency($erpFinancials['total_debtors'] ?? 0) }})</span>
+        </a>
+        <a href="{{ route('expenses.index') }}" class="quick-action-pill" title="Dépenses & Charges du Mois">
+            <span class="quick-pill-icon" style="background: #ffedd5; color: #ea580c;"><i class="fas fa-file-invoice-dollar"></i></span>
+            <span class="quick-pill-text">Charges mois ({{ currency($erpFinancials['month_expenses'] ?? 0) }})</span>
+        </a>
+        <a href="{{ route('reports.profitability') }}" class="quick-action-pill" title="Rapport Rentabilité & Marge Réelle">
+            <span class="quick-pill-icon" style="background: #ecfdf5; color: #059669;"><i class="fas fa-chart-pie"></i></span>
+            <span class="quick-pill-text">Rentabilité P&L</span>
+        </a>
         <a href="{{ route('inventory.index') }}" class="quick-action-pill">
             <span class="quick-pill-icon icon-danger"><i class="fas fa-exclamation-triangle"></i></span>
-            <span class="quick-pill-text">Stock faible ({{ $quickStats['low_stock_total'] ?? 0 }})</span>
+            <span class="quick-pill-text">Stock critique ({{ $quickStats['low_stock_total'] ?? 0 }})</span>
+        </a>
+        <a href="{{ route('stores.index') }}" class="quick-action-pill" title="Points de Stockage & Dépôts">
+            <span class="quick-pill-icon" style="background: #f3e8ff; color: #9333ea;"><i class="fas fa-warehouse"></i></span>
+            <span class="quick-pill-text">Dépôts ({{ $erpFinancials['active_stores'] ?? 1 }})</span>
         </a>
         <a href="{{ route('invoices.index') }}" class="quick-action-pill">
             <span class="quick-pill-icon icon-info"><i class="fas fa-receipt"></i></span>
             <span class="quick-pill-text">Factures & Devis</span>
         </a>
-        <a href="{{ route('products.index') }}" class="quick-action-pill">
-            <span class="quick-pill-icon icon-dark"><i class="fas fa-box-open"></i></span>
-            <span class="quick-pill-text">Catalogue produits</span>
-        </a>
-        <a href="{{ route('categories.index') }}" class="quick-action-pill">
-            <span class="quick-pill-icon icon-amber"><i class="fas fa-folder-tree"></i></span>
-            <span class="quick-pill-text">Catégories</span>
-        </a>
-        <a href="{{ route('banners.index') }}" class="quick-action-pill">
-            <span class="quick-pill-icon icon-red"><i class="fas fa-images"></i></span>
-            <span class="quick-pill-text">Bannières & Sliders</span>
-        </a>
-        <a href="{{ route('home-sections.index') }}" class="quick-action-pill">
-            <span class="quick-pill-icon icon-blue"><i class="fas fa-layer-group"></i></span>
-            <span class="quick-pill-text">Sections Accueil</span>
+        <a href="{{ route('activity-logs.index') }}" class="quick-action-pill" title="Journal d'Activité & Traçabilité">
+            <span class="quick-pill-icon icon-dark"><i class="fas fa-shield-alt"></i></span>
+            <span class="quick-pill-text">Journal d'Audit</span>
         </a>
     </div>
 
@@ -185,6 +185,146 @@
                         <span>Gérer</span>
                         <i class="fas fa-arrow-right" style="font-size: 10px;"></i>
                     </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Executive ERP Synergy Hub (Cockpit Consolidé : Trésorerie, Dépenses, Bénéfice Net & Dépôts) -->
+    <div class="card border-0 rounded-4 shadow-xs mb-4" style="background: #ffffff; border: 1px solid #e2e8f0 !important; overflow: hidden;">
+        <div class="card-header bg-white border-bottom border-slate-100 py-3 px-3.5 d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2.5">
+                <div class="card-header-icon flex-shrink-0" style="width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 0.95rem;">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold text-dark m-0 fs-6 d-flex align-items-center gap-2">
+                        <span>Cockpit Exécutif ERP & Trésorerie</span>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5" style="font-size: 0.68rem; font-weight: 600;">
+                            <i class="fas fa-sync-alt me-1"></i> Synchronisé
+                        </span>
+                    </h5>
+                    <p class="text-muted small mb-0">Vue consolidée : Créances clients, Charges d'exploitation, Rentabilité nette et Valorisation logistique</p>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ route('reports.profitability') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5" style="font-size: 0.78rem;">
+                    <i class="fas fa-file-invoice-dollar text-primary"></i> <span>Détails P&L</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body p-3.5">
+            <div class="row g-3">
+                <!-- 1. Trésorerie & Crédits Clients -->
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="h-100 p-3 rounded-3" style="background: #f8fafc; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="badge rounded-pill px-2 py-0.5 fw-semibold" style="font-size: 0.7rem; background: #fee2e2; color: #dc2626;">
+                                    <i class="fas fa-wallet me-1"></i> CRÉANCES CLIENTS
+                                </span>
+                                <a href="{{ route('client-credits.index') }}" class="text-muted small text-decoration-none" title="Ouvrir le module Crédits">
+                                    <i class="fas fa-arrow-up-right-from-square"></i>
+                                </a>
+                            </div>
+                            <div class="fs-5 fw-bold text-dark font-monospace mb-1">
+                                {{ currency($erpFinancials['total_debtors'] ?? 0) }}
+                            </div>
+                            <div class="small text-muted mb-2">
+                                Restant dû par <strong>{{ $erpFinancials['debtor_count'] ?? 0 }} client(s)</strong>
+                            </div>
+                        </div>
+                        <div class="pt-2 border-top border-slate-200 d-flex align-items-center justify-content-between small">
+                            <span class="text-muted" style="font-size: 0.73rem;">Encaissé ce mois:</span>
+                            <span class="fw-bold text-success font-monospace" style="font-size: 0.75rem;">+{{ currency($erpFinancials['collected_month'] ?? 0) }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Charges & Dépenses d'Exploitation -->
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="h-100 p-3 rounded-3" style="background: #f8fafc; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="badge rounded-pill px-2 py-0.5 fw-semibold" style="font-size: 0.7rem; background: #ffedd5; color: #ea580c;">
+                                    <i class="fas fa-receipt me-1"></i> DÉPENSES MOIS
+                                </span>
+                                <a href="{{ route('expenses.index') }}" class="text-muted small text-decoration-none" title="Ouvrir le module Dépenses">
+                                    <i class="fas fa-arrow-up-right-from-square"></i>
+                                </a>
+                            </div>
+                            <div class="fs-5 fw-bold text-dark font-monospace mb-1">
+                                {{ currency($erpFinancials['month_expenses'] ?? 0) }}
+                            </div>
+                            <div class="small text-muted mb-2">
+                                Charges décaissées ce mois
+                            </div>
+                        </div>
+                        <div class="pt-2 border-top border-slate-200 d-flex align-items-center justify-content-between small">
+                            <span class="text-muted" style="font-size: 0.73rem;">Charges récurrentes:</span>
+                            <span class="fw-bold text-dark font-monospace" style="font-size: 0.75rem;">{{ currency($erpFinancials['monthly_burn_rate'] ?? 0) }}/m</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Bénéfice Net Réel du Mois -->
+                <div class="col-12 col-sm-6 col-xl-3">
+                    @php
+                        $netProfit = $erpFinancials['profitability']['net_profit'] ?? 0;
+                        $marginRate = $erpFinancials['profitability']['margin_rate'] ?? 0;
+                        $isProfitPositive = $netProfit >= 0;
+                    @endphp
+                    <div class="h-100 p-3 rounded-3" style="background: #f8fafc; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="badge rounded-pill px-2 py-0.5 fw-semibold" style="font-size: 0.7rem; background: {{ $isProfitPositive ? '#dcfce7' : '#fee2e2' }}; color: {{ $isProfitPositive ? '#16a34a' : '#dc2626' }};">
+                                    <i class="fas fa-chart-line me-1"></i> BÉNÉFICE NET P&L
+                                </span>
+                                <a href="{{ route('reports.profitability') }}" class="text-muted small text-decoration-none" title="Ouvrir le rapport P&L">
+                                    <i class="fas fa-arrow-up-right-from-square"></i>
+                                </a>
+                            </div>
+                            <div class="fs-5 fw-bold {{ $isProfitPositive ? 'text-success' : 'text-danger' }} font-monospace mb-1">
+                                {{ ($isProfitPositive ? '+' : '') . currency($netProfit) }}
+                            </div>
+                            <div class="small text-muted mb-2">
+                                Après coûts d'achat & dépenses
+                            </div>
+                        </div>
+                        <div class="pt-2 border-top border-slate-200 d-flex align-items-center justify-content-between small">
+                            <span class="text-muted" style="font-size: 0.73rem;">Taux de marge net:</span>
+                            <span class="fw-bold font-monospace {{ $marginRate >= 0 ? 'text-success' : 'text-danger' }}" style="font-size: 0.75rem;">{{ $marginRate }}%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Logistique & Valorisation Stocks -->
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="h-100 p-3 rounded-3" style="background: #f8fafc; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="badge rounded-pill px-2 py-0.5 fw-semibold" style="font-size: 0.7rem; background: #ede9fe; color: #7c3aed;">
+                                    <i class="fas fa-boxes-stacked me-1"></i> STOCKS & DÉPÔTS
+                                </span>
+                                <a href="{{ route('inventory.index') }}" class="text-muted small text-decoration-none" title="Ouvrir l'inventaire">
+                                    <i class="fas fa-arrow-up-right-from-square"></i>
+                                </a>
+                            </div>
+                            <div class="fs-5 fw-bold text-dark font-monospace mb-1">
+                                {{ currency($erpFinancials['stock_cost_valuation'] ?? 0) }}
+                            </div>
+                            <div class="small text-muted mb-2">
+                                Valeur marchande au coût d'achat
+                            </div>
+                        </div>
+                        <div class="pt-2 border-top border-slate-200 d-flex align-items-center justify-content-between small">
+                            <span class="text-muted" style="font-size: 0.73rem;">Points de vente:</span>
+                            <span class="fw-bold text-dark font-monospace" style="font-size: 0.75rem;">
+                                <a href="{{ route('stores.index') }}" class="text-decoration-none text-dark">{{ $erpFinancials['active_stores'] ?? 1 }} dépôt(s) actif(s) &rarr;</a>
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -554,6 +694,82 @@
                     </a>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Traçabilité & Journal d'Activité en Direct (Audit Trail) -->
+    <div class="card border-0 rounded-4 shadow-xs mt-3 mt-md-4 mb-2" style="background: #ffffff; border: 1px solid #e2e8f0 !important;">
+        <div class="card-header bg-white border-bottom border-slate-100 py-3 px-3.5 d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2.5">
+                <div class="card-header-icon flex-shrink-0 icon-dark" style="width: 36px; height: 36px; border-radius: 10px; background: #0f172a; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 0.95rem;">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold text-dark m-0 fs-6 d-flex align-items-center gap-2">
+                        <span>Journal d'Activité & Traçabilité en Direct</span>
+                        <span class="badge bg-secondary-subtle text-secondary rounded-pill px-2 py-0.5" style="font-size: 0.68rem;">Audit Trail</span>
+                    </h5>
+                    <p class="text-muted small mb-0">Dernières opérations critiques enregistrées par vos collaborateurs</p>
+                </div>
+            </div>
+            <a href="{{ route('activity-logs.index') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5" style="font-size: 0.78rem;">
+                <span>Consulter le journal complet</span>
+                <i class="fas fa-arrow-right fs-xs"></i>
+            </a>
+        </div>
+        <div class="card-body p-0">
+            @if(isset($erpFinancials['recent_activities']) && count($erpFinancials['recent_activities']) > 0)
+                <div class="table-responsive">
+                    <table class="brand-table mb-0 align-middle">
+                        <thead>
+                            <tr>
+                                <th style="width: 18%;">Date & Heure</th>
+                                <th style="width: 20%;">Utilisateur / Rôle</th>
+                                <th style="width: 15%;">Module</th>
+                                <th style="width: 15%;">Action</th>
+                                <th style="width: 32%;">Description de l'opération</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($erpFinancials['recent_activities'] as $act)
+                            <tr>
+                                <td class="text-muted small font-monospace">
+                                    <i class="far fa-clock text-slate-400 me-1"></i>{{ $act->created_at->diffForHumans() }}
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="brand-avatar flex-shrink-0" style="width: 28px; height: 28px; font-size: 0.7rem; font-weight: 700; background: var(--gradient-dark); color: #ffffff;">
+                                            {{ strtoupper(substr($act->user->name ?? 'S', 0, 1)) }}
+                                        </div>
+                                        <div class="min-w-0">
+                                            <div class="fw-bold text-dark small text-truncate">{{ $act->user->name ?? 'Système' }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border px-2 py-1" style="font-size: 0.72rem;">
+                                        {{ ucfirst($act->module ?? 'Général') }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="brand-badge {{ in_array(strtolower($act->action ?? ''), ['delete', 'destroy', 'suppression', 'cancel']) ? 'danger' : (in_array(strtolower($act->action ?? ''), ['create', 'store', 'création']) ? 'success' : 'info') }} px-2 py-0.5" style="font-size: 0.68rem;">
+                                        {{ ucfirst($act->action ?? 'Action') }}
+                                    </span>
+                                </td>
+                                <td class="text-dark small text-truncate" style="max-width: 300px;">
+                                    {{ $act->description ?? 'Opération effectuée' }}
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="text-center py-4 text-muted">
+                    <i class="fas fa-shield-halved opacity-25 fs-2 mb-2"></i>
+                    <p class="small mb-0">Toutes les actions système sont enregistrées en toute sécurité.</p>
+                </div>
+            @endif
         </div>
     </div>
 </div>
