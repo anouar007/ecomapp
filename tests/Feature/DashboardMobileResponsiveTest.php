@@ -21,6 +21,9 @@ class DashboardMobileResponsiveTest extends TestCase
         // Mobile-first structure components
         $response->assertSee('brand-header', false);
         $response->assertSee('brand-header-actions', false);
+        $response->assertSee('subnav-pills-bar', false);
+        $response->assertSee('id="general"', false);
+        $response->assertSee('switchDashboardTab', false);
         $response->assertSee('dashboard-quick-actions', false);
         $response->assertSee('stats-grid-pro', false);
         $response->assertSee('chart-container-revenue', false);

@@ -2,8 +2,24 @@
 
 @section('title', 'Tableau de bord')
 
+@push('styles')
+<style>
+    #general,
+    #section-quick-actions,
+    #section-kpis,
+    #section-finances,
+    #section-charts,
+    #section-operations,
+    #section-orders,
+    #section-stock,
+    #section-audit {
+        scroll-margin-top: 85px;
+    }
+</style>
+@endpush
+
 @section('content')
-<div class="dashboard-container">
+<div class="dashboard-container" id="general">
     <!-- En-tête de page & Salutation (Clean & Pro) -->
     <div class="brand-header">
         <div class="d-flex align-items-center gap-2.5">
@@ -31,8 +47,43 @@
         </div>
     </div>
 
+    <!-- Synchronized Subnav Navigation Bar (Product Section Standard) -->
+    <div class="subnav-pills-bar mb-3.5">
+        <a href="#general" class="subnav-pill active" data-tab="general" onclick="switchDashboardTab('general', event)">
+            <i class="fas fa-layer-group text-danger"></i>
+            <span>Vue Générale</span>
+        </a>
+        <a href="#finances" class="subnav-pill" data-tab="finances" onclick="switchDashboardTab('finances', event)">
+            <i class="fas fa-network-wired text-success"></i>
+            <span>Cockpit ERP & Trésorerie</span>
+            <span class="badge rounded-pill bg-success-subtle text-success ms-1" style="font-size: 0.68rem;">P&L</span>
+        </a>
+        <a href="#charts" class="subnav-pill" data-tab="charts" onclick="switchDashboardTab('charts', event)">
+            <i class="fas fa-chart-line text-primary"></i>
+            <span>Graphiques & Ventes</span>
+        </a>
+        <a href="#orders" class="subnav-pill" data-tab="orders" onclick="switchDashboardTab('orders', event)">
+            <i class="fas fa-receipt text-warning"></i>
+            <span>Commandes Récentes</span>
+            @if(($quickStats['pending_orders'] ?? 0) > 0)
+                <span class="badge rounded-pill bg-warning text-dark ms-1" style="font-size: 0.68rem;">{{ $quickStats['pending_orders'] }}</span>
+            @endif
+        </a>
+        <a href="#stock" class="subnav-pill" data-tab="stock" onclick="switchDashboardTab('stock', event)">
+            <i class="fas fa-boxes-stacked text-danger"></i>
+            <span>Alertes Stock</span>
+            @if(($quickStats['low_stock_total'] ?? 0) > 0)
+                <span class="badge rounded-pill bg-danger text-white ms-1" style="font-size: 0.68rem;">{{ $quickStats['low_stock_total'] }}</span>
+            @endif
+        </a>
+        <a href="#audit" class="subnav-pill" data-tab="audit" onclick="switchDashboardTab('audit', event)">
+            <i class="fas fa-shield-alt text-dark"></i>
+            <span>Journal d'Activité</span>
+        </a>
+    </div>
+
     <!-- Quick Actions Pills (Barre d'accès rapide fluide & ERP) -->
-    <div class="dashboard-quick-actions">
+    <div class="dashboard-quick-actions" id="section-quick-actions">
         <a href="{{ route('customers.index') }}" class="quick-action-pill border-success-subtle" title="Clients actuellement sur le site">
             <span class="quick-pill-icon" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">
                 <span class="stock-pulse-dot" style="width: 7px; height: 7px; background: #10b981; display: inline-block;"></span>
@@ -76,7 +127,7 @@
     </div>
 
     <!-- KPI Metric Stat Cards (Product Section Standard) -->
-    <div class="row g-3 mb-4 stats-grid-pro">
+    <div class="row g-3 mb-4 stats-grid-pro" id="section-kpis">
         <!-- KPI 1 : Chiffre d'affaires -->
         <div class="col-6 col-lg-3">
             <a href="{{ route('reports.profitability') }}" class="stat-kpi-card text-decoration-none">
@@ -164,7 +215,7 @@
     </div>
 
     <!-- Executive ERP Synergy Hub (Cockpit Consolidé : Trésorerie, Dépenses, Bénéfice Net & Dépôts) -->
-    <div class="card border-0 rounded-4 shadow-xs mb-4" style="background: #ffffff; border: 1px solid #e2e8f0 !important; overflow: hidden;">
+    <div class="card border-0 rounded-4 shadow-xs mb-4" id="section-finances" style="background: #ffffff; border: 1px solid #e2e8f0 !important; overflow: hidden;">
         <div class="card-header bg-white border-bottom border-slate-100 py-3 px-3.5 d-flex align-items-center justify-content-between flex-wrap gap-2">
             <div class="d-flex align-items-center gap-2.5">
                 <div class="card-header-icon flex-shrink-0" style="width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 0.95rem;">
@@ -304,7 +355,7 @@
     </div>
 
     <!-- Section Graphiques (Pro Dashboards Analytics) -->
-    <div class="row g-3 g-md-4 dash-section">
+    <div class="row g-3 g-md-4 dash-section" id="section-charts">
         <!-- Aperçu des revenus (Line Chart) -->
         <div class="col-lg-8">
             <div class="brand-table-card h-100 d-flex flex-column justify-content-between mb-0">
@@ -407,9 +458,9 @@
     </div>
 
     <!-- Commandes récentes & Alertes stock (Alignement 100% harmonisé) -->
-    <div class="row g-3 g-md-4">
+    <div class="row g-3 g-md-4" id="section-operations">
         <!-- Commandes récentes -->
-        <div class="col-lg-8">
+        <div class="col-lg-8" id="section-orders">
             <div class="brand-table-card h-100 mb-0 d-flex flex-column justify-content-between">
                 <div>
                     <div class="card-header-pro">
@@ -564,7 +615,7 @@
         </div>
 
         <!-- Widget Alertes Stock (Design Pro Wina Shop) -->
-        <div class="col-lg-4">
+        <div class="col-lg-4" id="section-stock">
             <div class="brand-table-card h-100 mb-0 d-flex flex-column justify-content-between">
                 <div>
                     <div class="card-header-pro">
@@ -671,7 +722,7 @@
     </div>
 
     <!-- Traçabilité & Journal d'Activité en Direct (Audit Trail) -->
-    <div class="card border-0 rounded-4 shadow-xs mt-3 mt-md-4 mb-2" style="background: #ffffff; border: 1px solid #e2e8f0 !important;">
+    <div class="card border-0 rounded-4 shadow-xs mt-3 mt-md-4 mb-2" id="section-audit" style="background: #ffffff; border: 1px solid #e2e8f0 !important;">
         <div class="card-header bg-white border-bottom border-slate-100 py-3 px-3.5 d-flex align-items-center justify-content-between flex-wrap gap-2">
             <div class="d-flex align-items-center gap-2.5">
                 <div class="card-header-icon flex-shrink-0 icon-dark" style="width: 36px; height: 36px; border-radius: 10px; background: #0f172a; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 0.95rem;">
@@ -898,6 +949,87 @@
                     })
                     .catch(() => {});
             }, 20000);
+
+            // Sync initial hash and setup tracking
+            syncHashTab();
+            setupSectionObserver();
+        }
+
+        // Synchronized Subnav Navigation for Dashboard sections (#general, #finances, etc.)
+        window.switchDashboardTab = function(tabName, ev) {
+            if (ev && typeof ev.preventDefault === 'function') {
+                ev.preventDefault();
+            }
+            if (!tabName) tabName = 'general';
+            tabName = tabName.toLowerCase().replace('#', '');
+
+            // Update subnav pill styles
+            document.querySelectorAll('.subnav-pills-bar .subnav-pill').forEach(pill => {
+                if (pill.getAttribute('data-tab') === tabName) {
+                    pill.classList.add('active');
+                } else {
+                    pill.classList.remove('active');
+                }
+            });
+
+            const targetMap = {
+                general: document.getElementById('general'),
+                finances: document.getElementById('section-finances'),
+                charts: document.getElementById('section-charts'),
+                orders: document.getElementById('section-orders') || document.getElementById('section-operations'),
+                stock: document.getElementById('section-stock') || document.getElementById('section-operations'),
+                audit: document.getElementById('section-audit')
+            };
+
+            const targetEl = targetMap[tabName];
+            if (targetEl) {
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            try {
+                history.replaceState(null, null, '#' + tabName);
+            } catch (e) {}
+        };
+
+        function syncHashTab() {
+            const hash = (window.location.hash || '').replace('#', '').toLowerCase();
+            if (hash) {
+                window.switchDashboardTab(hash);
+            }
+        }
+
+        // Active section tracking via IntersectionObserver
+        function setupSectionObserver() {
+            if (!('IntersectionObserver' in window)) return;
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '-80px 0px -65% 0px',
+                threshold: 0
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        let tab = 'general';
+                        if (id === 'section-finances') tab = 'finances';
+                        else if (id === 'section-charts') tab = 'charts';
+                        else if (id === 'section-operations' || id === 'section-orders') tab = 'orders';
+                        else if (id === 'section-stock') tab = 'stock';
+                        else if (id === 'section-audit') tab = 'audit';
+
+                        document.querySelectorAll('.subnav-pills-bar .subnav-pill').forEach(pill => {
+                            pill.classList.toggle('active', pill.getAttribute('data-tab') === tab);
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            ['general', 'section-finances', 'section-charts', 'section-operations', 'section-audit'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) observer.observe(el);
+            });
         }
 
         if (document.readyState !== 'loading') {
@@ -905,6 +1037,11 @@
         } else {
             document.addEventListener('DOMContentLoaded', initDashboard);
         }
+
+        window.addEventListener('hashchange', syncHashTab);
+        document.addEventListener('spa:navigated', function() {
+            setTimeout(initDashboard, 60);
+        });
     })();
 </script>
 @endsection
