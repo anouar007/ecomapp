@@ -127,6 +127,26 @@ class Setting extends Model
     public static function clearCache()
     {
         static::$runtimeCache = null;
+        try {
+            Cache::store('file')->forget('all_settings_map');
+        } catch (\Throwable $e) {}
+        Cache::forget('all_settings_map');
+        Cache::forget('all_settings_grouped');
         Cache::flush();
+        \App\Http\Middleware\FastGuestPageCache::flush();
+    }
+
+    /**
+     * Delete a setting key and clear cache
+     *
+     * @param string $key
+     * @return bool
+     */
+    public static function forgetKey(string $key): bool
+    {
+        $deleted = static::where('key', $key)->delete();
+        static::clearCache();
+        Cache::forget("setting_{$key}");
+        return (bool) $deleted;
     }
 }

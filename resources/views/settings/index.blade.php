@@ -143,6 +143,13 @@
                     </span>
                     <i class="fas fa-chevron-right tab-chevron small"></i>
                 </button>
+                <button type="button" class="settings-nav-btn" data-tab="logos" onclick="switchSettingsTab('logos')">
+                    <span class="d-inline-flex align-items-center gap-2">
+                        <i class="fas fa-icons tab-icon text-danger"></i>
+                        <span>Logos & Icônes</span>
+                    </span>
+                    <i class="fas fa-chevron-right tab-chevron small"></i>
+                </button>
                 <button type="button" class="settings-nav-btn" data-tab="company" onclick="switchSettingsTab('company')">
                     <span class="d-inline-flex align-items-center gap-2">
                         <i class="fas fa-building tab-icon"></i>
@@ -369,6 +376,274 @@
                                         <option value="H:i" {{ setting('time_format') == 'H:i' ? 'selected' : '' }}>24 heures (14:30)</option>
                                         <option value="h:i A" {{ setting('time_format') == 'h:i A' ? 'selected' : '' }}>12 heures (02:30 PM)</option>
                                     </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Logos & Brand Visual Identity Tab --}}
+                    <div class="tab-pane d-none" id="logos-tab">
+                        {{-- Hero banner with direct link to Full Studio --}}
+                        <div class="settings-section-card bg-gradient-light border-0 shadow-xs mb-4">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="p-3 bg-danger-subtle text-danger rounded-4">
+                                        <i class="fas fa-icons fs-3"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="settings-section-title m-0">Logos & Identité Visuelle</h3>
+                                        <p class="settings-section-desc mb-0">Configurez le logo officiel, le favicon du navigateur et les variantes d'affichage.</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <a href="{{ route('settings.logos-icons') }}" class="btn btn-danger rounded-pill px-3.5 py-2 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm">
+                                        <i class="fas fa-palette"></i>
+                                        <span>Studio Complet Logos & Icônes</span>
+                                        <i class="fas fa-arrow-right small"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- 1. Main Logo Card --}}
+                        <div class="settings-section-card mb-4">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                                <h3 class="settings-section-title m-0">
+                                    <i class="fas fa-image text-danger"></i>
+                                    <span>Logo Officiel de la Boutique</span>
+                                </h3>
+                                <span class="badge {{ setting('app_logo') ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-secondary-subtle text-secondary' }} rounded-pill px-3 py-1.5 fw-bold">
+                                    {{ setting('app_logo') ? 'Actif (Hérité sur tout le site)' : 'Non défini' }}
+                                </span>
+                            </div>
+                            <p class="settings-section-desc">Ce logo est la référence principale de votre boutique : il est affiché par défaut dans l'en-tête desktop, l'en-tête mobile, le pied de page, les factures et les notifications clients.</p>
+
+                            <div class="row g-4 align-items-center">
+                                <div class="col-12 col-md-5">
+                                    <div class="p-4 rounded-4 border text-center d-flex flex-column align-items-center justify-content-center" style="min-height: 140px; background-color: #f8fafc; background-image: radial-gradient(#cbd5e1 0.75px, transparent 0.75px); background-size: 12px 12px;">
+                                        @if(setting('app_logo'))
+                                            <img src="{{ asset('storage/' . setting('app_logo')) }}" alt="Logo Officiel" class="img-fluid rounded-2 mb-2" style="max-height: 85px; max-width: 100%; object-fit: contain;">
+                                            <div class="small text-muted font-monospace text-truncate w-100" title="{{ setting('app_logo') }}">{{ basename(setting('app_logo')) }}</div>
+                                        @else
+                                            <div class="text-muted text-center py-2">
+                                                <i class="fas fa-image fs-1 text-muted opacity-50 mb-2"></i>
+                                                <div class="small fw-semibold">Aucun logo officiel téléversé</div>
+                                                <div class="smaller text-muted">Le nom texte "{{ setting('app_name', 'Full Frame House') }}" est utilisé</div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-7">
+                                    <div class="settings-upload-dropzone p-3.5 text-center rounded-4 border border-dashed" style="cursor: pointer;" onclick="document.getElementById('logo-input').click()">
+                                        <i class="fas fa-cloud-upload-alt text-danger mb-2" style="font-size: 2rem;"></i>
+                                        <div class="fw-bold text-dark mb-1">Téléverser un nouveau logo officiel</div>
+                                        <div class="small text-muted mb-2">Glissez un fichier ou cliquez ici (PNG transparent recommandé, SVG, JPG jusqu'à 2 Mo)</div>
+                                        <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1.5 fw-semibold">
+                                            <i class="fas fa-folder-open me-1"></i> Parcourir mes fichiers
+                                        </button>
+                                    </div>
+                                    @if(setting('app_logo'))
+                                        <div class="mt-2 text-end">
+                                            <button type="submit" form="remove-logo-form" class="btn btn-sm btn-brand-soft-danger rounded-pill px-3 py-1.5" onclick="return confirm('Êtes-vous sûr de vouloir supprimer le logo officiel ?')">
+                                                <i class="fas fa-trash me-1"></i> Supprimer ce logo
+                                            </button>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- 2. Favicon & Mobile Icon Card --}}
+                        <div class="settings-section-card mb-4">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                                <h3 class="settings-section-title m-0">
+                                    <i class="fas fa-globe text-primary"></i>
+                                    <span>Favicon du Navigateur (Onglet Web)</span>
+                                </h3>
+                                <span class="badge {{ setting('site_favicon') ? 'bg-primary-subtle text-primary border border-primary-subtle' : 'bg-light text-muted border' }} rounded-pill px-3 py-1.5 fw-bold">
+                                    {{ setting('site_favicon') ? 'Favicon Personnalisé' : 'Hérite du logo officiel' }}
+                                </span>
+                            </div>
+                            <p class="settings-section-desc">La petite icône qui s'affiche dans l'onglet du navigateur des visiteurs, dans la barre de favoris et sur les raccourcis mobile.</p>
+
+                            <div class="row g-4 align-items-center">
+                                <div class="col-12 col-md-5">
+                                    {{-- Realistic Browser Tab Mockup --}}
+                                    <div class="p-3 bg-light rounded-4 border">
+                                        <div class="small text-muted fw-semibold mb-2"><i class="fas fa-laptop me-1"></i> Aperçu dans l'onglet navigateur :</div>
+                                        <div class="d-flex align-items-center bg-white border rounded-top px-3 py-2 shadow-2xs gap-2" style="max-width: 260px;">
+                                            @php
+                                                $favSrc = setting('site_favicon') ? asset('storage/' . setting('site_favicon')) : (setting('app_logo') ? asset('storage/' . setting('app_logo')) : null);
+                                            @endphp
+                                            @if($favSrc)
+                                                <img src="{{ $favSrc }}" alt="Favicon" style="width: 18px; height: 18px; object-fit: contain;" class="flex-shrink-0 rounded-1">
+                                            @else
+                                                <i class="fas fa-camera text-danger flex-shrink-0" style="font-size: 14px;"></i>
+                                            @endif
+                                            <span class="small fw-semibold text-truncate text-dark" style="font-size: 0.8rem;">{{ setting('app_name', 'Full Frame House') }}</span>
+                                            <i class="fas fa-times ms-auto text-muted" style="font-size: 11px;"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-7">
+                                    <div class="d-flex flex-wrap align-items-center gap-2">
+                                        <button type="button" class="btn btn-outline-primary rounded-pill px-3.5 py-2 fw-semibold d-inline-flex align-items-center gap-2" onclick="uploadSlotAsset('site_favicon')">
+                                            <i class="fas fa-upload"></i>
+                                            <span>{{ setting('site_favicon') ? 'Remplacer le favicon' : 'Téléverser un favicon (.ico, .png, .svg)' }}</span>
+                                        </button>
+                                        @if(setting('site_favicon'))
+                                            <button type="button" class="btn btn-brand-soft-danger rounded-pill px-3 py-2 fw-semibold" onclick="removeSlotAsset('site_favicon', 'Favicon')">
+                                                <i class="fas fa-trash me-1"></i> Supprimer
+                                            </button>
+                                        @endif
+                                    </div>
+                                    <div class="form-text small mt-2">Format recommandé : fichier carré 32x32px ou 64x64px au format PNG, ICO ou SVG transparent.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- 3. Variantes d'Affichage Clés (Header, Mobile, Invoices, Footer) --}}
+                        <div class="settings-section-card">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                                <div>
+                                    <h3 class="settings-section-title m-0">
+                                        <i class="fas fa-th-large text-danger"></i>
+                                        <span>Variantes d'Affichage Spécifiques</span>
+                                    </h3>
+                                    <p class="settings-section-desc mb-0">Chaque emplacement peut avoir son propre logo ou hériter automatiquement du logo officiel.</p>
+                                </div>
+                                <a href="{{ route('settings.logos-icons') }}" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5">
+                                    <i class="fas fa-sliders-h"></i> <span>Gérer tous les 10 emplacements</span>
+                                </a>
+                            </div>
+
+                            <div class="row g-3">
+                                {{-- Header Desktop --}}
+                                <div class="col-12 col-sm-6 col-xl-3">
+                                    <div class="p-3 bg-white border rounded-4 h-100 d-flex flex-column justify-content-between shadow-2xs">
+                                        <div>
+                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                <span class="small fw-bold text-dark"><i class="fas fa-desktop text-secondary me-1"></i> En-tête Desktop</span>
+                                                <span class="badge {{ setting('header_logo') ? 'bg-success-subtle text-success' : 'bg-light text-muted border' }} rounded-pill" style="font-size: 0.7rem;">
+                                                    {{ setting('header_logo') ? 'Personnalisé' : 'Hérité' }}
+                                                </span>
+                                            </div>
+                                            <div class="text-center py-2 bg-light rounded-3 mb-2" style="height: 60px; display: flex; align-items: center; justify-content: center;">
+                                                @php $hLogo = setting('header_logo') ?: setting('app_logo'); @endphp
+                                                @if($hLogo)
+                                                    <img src="{{ asset('storage/' . $hLogo) }}" alt="Header Logo" style="max-height: 40px; max-width: 90%; object-fit: contain;">
+                                                @else
+                                                    <span class="small text-muted fst-italic">Non configuré</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-1.5 mt-2">
+                                            <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill flex-grow-1" onclick="uploadSlotAsset('header_logo')">
+                                                <i class="fas fa-upload me-1"></i> {{ setting('header_logo') ? 'Modifier' : 'Définir' }}
+                                            </button>
+                                            @if(setting('header_logo'))
+                                                <button type="button" class="btn btn-xs btn-outline-danger rounded-pill px-2" onclick="removeSlotAsset('header_logo', 'Logo Desktop')">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Header Mobile --}}
+                                <div class="col-12 col-sm-6 col-xl-3">
+                                    <div class="p-3 bg-white border rounded-4 h-100 d-flex flex-column justify-content-between shadow-2xs">
+                                        <div>
+                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                <span class="small fw-bold text-dark"><i class="fas fa-mobile-alt text-secondary me-1"></i> En-tête Mobile</span>
+                                                <span class="badge {{ setting('mobile_logo') ? 'bg-success-subtle text-success' : 'bg-light text-muted border' }} rounded-pill" style="font-size: 0.7rem;">
+                                                    {{ setting('mobile_logo') ? 'Personnalisé' : 'Hérité' }}
+                                                </span>
+                                            </div>
+                                            <div class="text-center py-2 bg-light rounded-3 mb-2" style="height: 60px; display: flex; align-items: center; justify-content: center;">
+                                                @php $mLogo = setting('mobile_logo') ?: setting('app_logo'); @endphp
+                                                @if($mLogo)
+                                                    <img src="{{ asset('storage/' . $mLogo) }}" alt="Mobile Logo" style="max-height: 40px; max-width: 90%; object-fit: contain;">
+                                                @else
+                                                    <span class="small text-muted fst-italic">Non configuré</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-1.5 mt-2">
+                                            <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill flex-grow-1" onclick="uploadSlotAsset('mobile_logo')">
+                                                <i class="fas fa-upload me-1"></i> {{ setting('mobile_logo') ? 'Modifier' : 'Définir' }}
+                                            </button>
+                                            @if(setting('mobile_logo'))
+                                                <button type="button" class="btn btn-xs btn-outline-danger rounded-pill px-2" onclick="removeSlotAsset('mobile_logo', 'Logo Mobile')">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Factures & Devis --}}
+                                <div class="col-12 col-sm-6 col-xl-3">
+                                    <div class="p-3 bg-white border rounded-4 h-100 d-flex flex-column justify-content-between shadow-2xs">
+                                        <div>
+                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                <span class="small fw-bold text-dark"><i class="fas fa-file-invoice text-secondary me-1"></i> Factures & Devis</span>
+                                                <span class="badge {{ setting('invoice_logo') ? 'bg-success-subtle text-success' : 'bg-light text-muted border' }} rounded-pill" style="font-size: 0.7rem;">
+                                                    {{ setting('invoice_logo') ? 'Personnalisé' : 'Hérité' }}
+                                                </span>
+                                            </div>
+                                            <div class="text-center py-2 bg-light rounded-3 mb-2" style="height: 60px; display: flex; align-items: center; justify-content: center;">
+                                                @php $iLogo = setting('invoice_logo') ?: setting('app_logo'); @endphp
+                                                @if($iLogo)
+                                                    <img src="{{ asset('storage/' . $iLogo) }}" alt="Invoice Logo" style="max-height: 40px; max-width: 90%; object-fit: contain;">
+                                                @else
+                                                    <span class="small text-muted fst-italic">Non configuré</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-1.5 mt-2">
+                                            <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill flex-grow-1" onclick="uploadSlotAsset('invoice_logo')">
+                                                <i class="fas fa-upload me-1"></i> {{ setting('invoice_logo') ? 'Modifier' : 'Définir' }}
+                                            </button>
+                                            @if(setting('invoice_logo'))
+                                                <button type="button" class="btn btn-xs btn-outline-danger rounded-pill px-2" onclick="removeSlotAsset('invoice_logo', 'Logo Facture')">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Footer Logo --}}
+                                <div class="col-12 col-sm-6 col-xl-3">
+                                    <div class="p-3 bg-white border rounded-4 h-100 d-flex flex-column justify-content-between shadow-2xs">
+                                        <div>
+                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                <span class="small fw-bold text-dark"><i class="fas fa-shoe-prints text-secondary me-1"></i> Pied de Page</span>
+                                                <span class="badge {{ setting('footer_logo') ? 'bg-success-subtle text-success' : 'bg-light text-muted border' }} rounded-pill" style="font-size: 0.7rem;">
+                                                    {{ setting('footer_logo') ? 'Personnalisé' : 'Hérité' }}
+                                                </span>
+                                            </div>
+                                            <div class="text-center py-2 bg-light rounded-3 mb-2" style="height: 60px; display: flex; align-items: center; justify-content: center;">
+                                                @php $fLogo = setting('footer_logo') ?: setting('app_logo'); @endphp
+                                                @if($fLogo)
+                                                    <img src="{{ asset('storage/' . $fLogo) }}" alt="Footer Logo" style="max-height: 40px; max-width: 90%; object-fit: contain;">
+                                                @else
+                                                    <span class="small text-muted fst-italic">Non configuré</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-1.5 mt-2">
+                                            <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill flex-grow-1" onclick="uploadSlotAsset('footer_logo')">
+                                                <i class="fas fa-upload me-1"></i> {{ setting('footer_logo') ? 'Modifier' : 'Définir' }}
+                                            </button>
+                                            @if(setting('footer_logo'))
+                                                <button type="button" class="btn btn-xs btn-outline-danger rounded-pill px-2" onclick="removeSlotAsset('footer_logo', 'Logo Pied de Page')">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1456,41 +1731,104 @@
     <form id="seo-boost-form" action="{{ route('settings.seo-boost') }}" method="POST" class="d-none">
         @csrf
     </form>
+
+    <form id="asset-upload-form" action="{{ route('settings.logos-icons.upload') }}" method="POST" enctype="multipart/form-data" class="d-none">
+        @csrf
+        <input type="hidden" name="slot_key" id="asset-upload-slot-key">
+        <input type="file" name="asset_file" id="asset-upload-file-input" onchange="document.getElementById('asset-upload-form').submit()">
+    </form>
+
+    <form id="asset-remove-form" action="{{ route('settings.logos-icons.remove') }}" method="POST" class="d-none">
+        @csrf
+        @method('DELETE')
+        <input type="hidden" name="slot_key" id="asset-remove-slot-key">
+    </form>
 @endsection
 
 @push('scripts')
 <script>
     function switchSettingsTab(tabName) {
+        if (!tabName) tabName = 'general';
+        // Normalize aliases
+        if (tabName === 'logo' || tabName === 'logos-icons') {
+            tabName = 'logos';
+        }
+
+        let activePane = document.getElementById(tabName + '-tab');
+        let activeBtn = document.querySelector(`.settings-nav-btn[data-tab="${tabName}"]`);
+
+        // Safe fallback: if requested tab does not exist, default to 'general'
+        if (!activePane) {
+            tabName = 'general';
+            activePane = document.getElementById('general-tab');
+            activeBtn = document.querySelector(`.settings-nav-btn[data-tab="general"]`);
+        }
+
         // Update nav buttons
         document.querySelectorAll('.settings-nav-btn').forEach(btn => {
             btn.classList.remove('active');
         });
-        const activeBtn = document.querySelector(`.settings-nav-btn[data-tab="${tabName}"]`);
-        if (activeBtn) activeBtn.classList.add('active');
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+        }
 
         // Update tab content panes
         document.querySelectorAll('.settings-content-card .tab-pane').forEach(pane => {
             pane.classList.add('d-none');
             pane.classList.remove('active');
         });
-        const activePane = document.getElementById(tabName + '-tab');
         if (activePane) {
             activePane.classList.remove('d-none');
             activePane.classList.add('active');
         }
 
         // Store active tab
-        sessionStorage.setItem('active_settings_tab', tabName);
-        history.replaceState(null, null, '#' + tabName);
+        try {
+            sessionStorage.setItem('active_settings_tab', tabName);
+            history.replaceState(null, null, '#' + tabName);
+        } catch (e) {}
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize tab based on URL hash or sessionStorage
+    function initSettingsPage() {
         const hash = window.location.hash.replace('#', '');
         const stored = sessionStorage.getItem('active_settings_tab');
         const initialTab = hash || stored || 'general';
         switchSettingsTab(initialTab);
+    }
 
+    if (document.readyState !== 'loading') {
+        initSettingsPage();
+    } else {
+        document.addEventListener('DOMContentLoaded', initSettingsPage);
+    }
+
+    window.addEventListener('hashchange', function() {
+        const hash = window.location.hash.replace('#', '');
+        if (hash) {
+            switchSettingsTab(hash);
+        }
+    });
+
+    function uploadSlotAsset(slotKey) {
+        const input = document.getElementById('asset-upload-file-input');
+        const keyInput = document.getElementById('asset-upload-slot-key');
+        if (input && keyInput) {
+            keyInput.value = slotKey;
+            input.click();
+        }
+    }
+
+    function removeSlotAsset(slotKey, label) {
+        if (!confirm('Supprimer ce visuel (' + (label || slotKey) + ') ?')) return;
+        const form = document.getElementById('asset-remove-form');
+        const keyInput = document.getElementById('asset-remove-slot-key');
+        if (form && keyInput) {
+            keyInput.value = slotKey;
+            form.submit();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
         // Top save button handler
         const topBtn = document.getElementById('btn-save-settings-top');
         if (topBtn) {

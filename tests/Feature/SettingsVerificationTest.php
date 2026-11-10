@@ -32,6 +32,10 @@ class SettingsVerificationTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Paramètres de la Boutique');
         $response->assertSee('Devise & Fiscalité', false);
+        $response->assertSee('data-tab="logos"', false);
+        $response->assertSee('id="logos-tab"', false);
+        $response->assertSee('Logos & Icônes', false);
+        $response->assertSee('Logos & Identité Visuelle', false);
 
         // Test Custom Codes Create Page
         $createResponse = $this->actingAs($admin)->get(route('custom-codes.create'));
