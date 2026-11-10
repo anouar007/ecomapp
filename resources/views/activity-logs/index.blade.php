@@ -75,25 +75,24 @@
 @section('content')
 <div class="container-fluid px-2 px-sm-3 px-md-4 py-2 py-md-3">
 
-    <!-- Header Section -->
-    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3 pt-1">
+    <!-- En-tête de page (Clean & Pro) -->
+    <div class="brand-header">
         <div class="d-flex align-items-center gap-2.5">
-            <div class="rounded-4 p-2.5 d-flex align-items-center justify-content-center shadow-xs text-white" 
-                 style="width: 44px; height: 44px; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
-                <i class="fas fa-history fs-5"></i>
+            <div class="brand-header-icon flex-shrink-0">
+                <i class="fas fa-history"></i>
             </div>
             <div>
-                <h1 class="h5 fw-bold mb-0 text-dark">Journal d'Activité & Traçabilité</h1>
-                <p class="text-muted small mb-0 d-none d-sm-block">Historique complet des modifications : anciennes valeurs, dates et opérateurs</p>
+                <h1 class="brand-title">Journal d'Activité & Traçabilité</h1>
+                <p class="brand-subtitle">Historique complet des modifications : anciennes valeurs, dates et opérateurs</p>
             </div>
         </div>
 
-        <div class="d-flex align-items-center gap-2">
-            <form action="{{ route('activity-logs.clear') }}" method="POST" onsubmit="return confirm('Purger définitivement les journaux anciens de plus de 90 jours ?');">
+        <div class="brand-header-actions">
+            <form action="{{ route('activity-logs.clear') }}" method="POST" onsubmit="return confirm('Purger définitivement les journaux anciens de plus de 90 jours ?');" class="m-0">
                 @csrf
                 <input type="hidden" name="older_than_days" value="90">
-                <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-xs">
-                    <i class="fas fa-trash-can"></i>
+                <button type="submit" class="btn-brand-outline text-danger" style="border-color: #fee2e2;">
+                    <i class="fas fa-trash-can me-1.5 text-danger"></i>
                     <span>Purger (>90j)</span>
                 </button>
             </form>
@@ -126,44 +125,50 @@
     </div>
     @endif
 
-    <!-- KPI Statistics Cards -->
-    <div class="row g-2 g-md-3 mb-3">
+    <!-- KPI Statistics Cards (Product Section Standard) -->
+    <div class="row g-3 mb-4">
         <div class="col-4">
-            <div class="card border-0 rounded-4 shadow-xs bg-white p-3 h-100">
-                <div class="d-flex align-items-center justify-content-between mb-1">
-                    <span class="text-muted small fw-semibold text-uppercase" style="font-size: 0.7rem;">Total Événements</span>
-                    <span class="rounded-circle d-flex align-items-center justify-content-center bg-primary-subtle text-primary" style="width: 32px; height: 32px;">
-                        <i class="fas fa-list-check" style="font-size: 0.8rem;"></i>
-                    </span>
+            <div class="stat-kpi-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Total Événements</div>
+                        <div class="stat-kpi-value text-dark">{{ number_format($stats['total_activities']) }}</div>
+                        <div class="stat-kpi-sub text-muted">Historique audité</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-primary-subtle text-primary">
+                        <i class="fas fa-list-check"></i>
+                    </div>
                 </div>
-                <div class="fs-4 fw-bold text-dark">{{ number_format($stats['total_activities']) }}</div>
-                <div class="text-muted small d-none d-sm-block" style="font-size: 0.72rem;">Historique audité</div>
             </div>
         </div>
 
         <div class="col-4">
-            <div class="card border-0 rounded-4 shadow-xs bg-white p-3 h-100">
-                <div class="d-flex align-items-center justify-content-between mb-1">
-                    <span class="text-muted small fw-semibold text-uppercase" style="font-size: 0.7rem;">Aujourd'hui</span>
-                    <span class="rounded-circle d-flex align-items-center justify-content-center bg-success-subtle text-success" style="width: 32px; height: 32px;">
-                        <i class="fas fa-bolt" style="font-size: 0.8rem;"></i>
-                    </span>
+            <div class="stat-kpi-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Aujourd'hui</div>
+                        <div class="stat-kpi-value text-success">{{ number_format($stats['today_activities']) }}</div>
+                        <div class="stat-kpi-sub text-muted">Actions en direct</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-success-subtle text-success">
+                        <i class="fas fa-bolt"></i>
+                    </div>
                 </div>
-                <div class="fs-4 fw-bold text-success">{{ number_format($stats['today_activities']) }}</div>
-                <div class="text-muted small d-none d-sm-block" style="font-size: 0.72rem;">Actions en direct</div>
             </div>
         </div>
 
         <div class="col-4">
-            <div class="card border-0 rounded-4 shadow-xs bg-white p-3 h-100">
-                <div class="d-flex align-items-center justify-content-between mb-1">
-                    <span class="text-muted small fw-semibold text-uppercase" style="font-size: 0.7rem;">Opérateurs</span>
-                    <span class="rounded-circle d-flex align-items-center justify-content-center bg-info-subtle text-info" style="width: 32px; height: 32px;">
-                        <i class="fas fa-users" style="font-size: 0.8rem;"></i>
-                    </span>
+            <div class="stat-kpi-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Opérateurs</div>
+                        <div class="stat-kpi-value text-info">{{ number_format($stats['unique_users']) }}</div>
+                        <div class="stat-kpi-sub text-muted">Membres actifs</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-info-subtle text-info">
+                        <i class="fas fa-users"></i>
+                    </div>
                 </div>
-                <div class="fs-4 fw-bold text-info">{{ number_format($stats['unique_users']) }}</div>
-                <div class="text-muted small d-none d-sm-block" style="font-size: 0.72rem;">Membres actifs</div>
             </div>
         </div>
     </div>

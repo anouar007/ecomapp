@@ -143,35 +143,26 @@ html, body, .main-content {
 @endpush
 
 @section('content')
-<div class="container-fluid py-3 py-md-4">
+<div class="dashboard-container">
 
-    <!-- Top Executive Header (Mobile Responsive) -->
-    <div class="card border-0 rounded-4 shadow-sm mb-3 mb-md-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff;">
-        <div class="card-body p-3.5 p-md-4">
-            <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-circle bg-danger bg-opacity-25 border border-danger border-opacity-50 text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px; font-size: 1.25rem;">
-                        <i class="fas fa-wallet text-white"></i>
-                    </div>
-                    <div class="min-w-0">
-                        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
-                            <span class="badge bg-danger rounded-pill px-2.5 py-0.5 fw-semibold" style="font-size: 0.7rem;">TRÉSORERIE & COMPTES</span>
-                            <span class="text-white-50 small d-none d-sm-inline">• Créances & Avoirs Clients</span>
-                        </div>
-                        <h1 class="h4 h3-md fw-bold text-white mb-0 text-truncate">Crédits & Règlements Clients</h1>
-                        <p class="text-white-50 small mb-0 mt-1 d-none d-md-block">Suivez en temps réel ce que les clients vous doivent (créances) et ce que le magasin leur doit (avoirs/acomptes).</p>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <a href="{{ route('client-credits.transactions') }}" class="btn btn-sm btn-outline-light rounded-pill px-3 py-2 fw-semibold flex-fill flex-lg-grow-0 text-center shadow-xs">
-                        <i class="fas fa-list-check me-1.5"></i> Grand Livre
-                    </a>
-                    <button type="button" class="btn btn-sm btn-danger rounded-pill px-3.5 py-2 fw-semibold shadow-sm flex-fill flex-lg-grow-0" data-bs-toggle="modal" data-bs-target="#newPaymentModal">
-                        <i class="fas fa-plus-circle me-1.5"></i> Nouveau Règlement
-                    </button>
-                </div>
+    <!-- En-tête de page (Standard Products Style) -->
+    <div class="brand-header">
+        <div class="d-flex align-items-center gap-2.5">
+            <div class="brand-header-icon flex-shrink-0">
+                <i class="fas fa-wallet"></i>
             </div>
+            <div>
+                <h1 class="brand-title">Crédits & Règlements Clients</h1>
+                <p class="brand-subtitle">Suivez en temps réel les créances clients dues, les avoirs et enregistrez les encaissements</p>
+            </div>
+        </div>
+        <div class="brand-header-actions">
+            <a href="{{ route('client-credits.transactions') }}" class="btn-brand-outline">
+                <i class="fas fa-list-check me-1.5" style="color: var(--primary-color)"></i> <span>Grand Livre</span>
+            </a>
+            <button type="button" class="btn-brand-primary" data-bs-toggle="modal" data-bs-target="#newPaymentModal">
+                <i class="fas fa-plus me-1"></i> <span>Nouveau Règlement</span>
+            </button>
         </div>
     </div>
 
@@ -213,91 +204,77 @@ html, body, .main-content {
     </div>
     @endif
 
-    <!-- 4 Perfectly Aligned Financial KPI Cards (2x2 on Mobile) -->
-    <div class="row g-2.5 g-md-3 mb-3 mb-md-4">
+    <!-- 4 Perfectly Aligned Financial KPI Cards (Standard Products Style) -->
+    <div class="row g-3 mb-4">
         <!-- 1. Créances Clients -->
-        <div class="col-6 col-xl-3">
-            <div class="credit-kpi-card">
-                <div>
-                    <div class="d-flex align-items-center justify-content-between mb-1.5">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.04em;">Créances Clients</span>
-                        <div class="kpi-icon-pill bg-danger-subtle text-danger">
-                            <i class="fas fa-arrow-down-long"></i>
-                        </div>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('client-credits.index', ['filter' => 'debtors']) }}" class="stat-kpi-card text-decoration-none {{ $filter === 'debtors' ? 'active-filter' : '' }}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Créances Clients</div>
+                        <div class="stat-kpi-value text-danger">{{ currency($totalDebtors) }}</div>
+                        <div class="stat-kpi-sub text-muted"><span class="badge bg-danger-subtle text-danger border border-danger-subtle">{{ $activeDebtorCount }} débiteur(s)</span></div>
                     </div>
-                    <div class="fs-5 fs-md-4 fw-bold text-danger mb-0">{{ currency($totalDebtors) }}</div>
+                    <div class="stat-kpi-icon bg-danger-subtle text-danger">
+                        <i class="fas fa-arrow-down-long"></i>
+                    </div>
                 </div>
-                <div class="pt-1.5 border-top mt-1.5 text-muted" style="font-size: 0.72rem;">
-                    <span class="fw-bold text-dark">{{ $activeDebtorCount }}</span> compte(s) débiteur(s)
-                </div>
-            </div>
+            </a>
         </div>
 
         <!-- 2. Avoirs Clients -->
-        <div class="col-6 col-xl-3">
-            <div class="credit-kpi-card">
-                <div>
-                    <div class="d-flex align-items-center justify-content-between mb-1.5">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.04em;">Avoirs Clients</span>
-                        <div class="kpi-icon-pill bg-info-subtle text-info">
-                            <i class="fas fa-arrow-up-long"></i>
-                        </div>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('client-credits.index', ['filter' => 'creditors']) }}" class="stat-kpi-card text-decoration-none {{ $filter === 'creditors' ? 'active-filter' : '' }}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Avoirs Clients</div>
+                        <div class="stat-kpi-value text-info">{{ currency($totalCreditors) }}</div>
+                        <div class="stat-kpi-sub text-muted"><span class="badge bg-info-subtle text-info border border-info-subtle">{{ $activeCreditorCount }} avoir(s)</span></div>
                     </div>
-                    <div class="fs-5 fs-md-4 fw-bold text-info mb-0">{{ currency($totalCreditors) }}</div>
+                    <div class="stat-kpi-icon bg-info-subtle text-info">
+                        <i class="fas fa-arrow-up-long"></i>
+                    </div>
                 </div>
-                <div class="pt-1.5 border-top mt-1.5 text-muted" style="font-size: 0.72rem;">
-                    <span class="fw-bold text-dark">{{ $activeCreditorCount }}</span> avoir(s) en cours
-                </div>
-            </div>
+            </a>
         </div>
 
         <!-- 3. Solde Net Trésorerie -->
-        <div class="col-6 col-xl-3">
-            <div class="credit-kpi-card">
-                <div>
-                    <div class="d-flex align-items-center justify-content-between mb-1.5">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.04em;">Solde Net</span>
-                        <div class="kpi-icon-pill {{ $netBalance >= 0 ? 'bg-primary-subtle text-primary' : 'bg-warning-subtle text-warning' }}">
-                            <i class="fas fa-scale-balanced"></i>
-                        </div>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('client-credits.index') }}" class="stat-kpi-card text-decoration-none {{ $filter === 'all' && !request('search') ? 'active-filter' : '' }}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Solde Net Global</div>
+                        <div class="stat-kpi-value {{ $netBalance >= 0 ? 'text-success' : 'text-danger' }}">{{ currency($netBalance) }}</div>
+                        <div class="stat-kpi-sub text-muted"><i class="fas fa-scale-balanced me-1"></i>{{ $netBalance >= 0 ? 'En votre faveur' : 'Avoirs supérieurs' }}</div>
                     </div>
-                    <div class="fs-5 fs-md-4 fw-bold {{ $netBalance >= 0 ? 'text-primary' : 'text-warning' }} mb-0">
-                        {{ currency($netBalance) }}
+                    <div class="stat-kpi-icon bg-primary-subtle text-primary">
+                        <i class="fas fa-scale-balanced"></i>
                     </div>
                 </div>
-                <div class="pt-1.5 border-top mt-1.5 text-muted" style="font-size: 0.72rem;">
-                    {{ $netBalance >= 0 ? 'Balance en votre faveur' : 'Avoirs supérieurs' }}
-                </div>
-            </div>
+            </a>
         </div>
 
         <!-- 4. Règlements Encaissés du Mois -->
-        <div class="col-6 col-xl-3">
-            <div class="credit-kpi-card">
-                <div>
-                    <div class="d-flex align-items-center justify-content-between mb-1.5">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.04em;">Encaissé ce mois</span>
-                        <div class="kpi-icon-pill bg-success-subtle text-success">
-                            <i class="fas fa-hand-holding-dollar"></i>
-                        </div>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('client-credits.transactions') }}" class="stat-kpi-card text-decoration-none">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Encaissé ce mois</div>
+                        <div class="stat-kpi-value text-success">+{{ currency($collectedThisMonth) }}</div>
+                        <div class="stat-kpi-sub text-muted"><i class="fas fa-check-circle text-success me-1"></i>Reçus en {{ now()->translatedFormat('M Y') }}</div>
                     </div>
-                    <div class="fs-5 fs-md-4 fw-bold text-success mb-0">{{ currency($collectedThisMonth) }}</div>
+                    <div class="stat-kpi-icon bg-success-subtle text-success">
+                        <i class="fas fa-hand-holding-dollar"></i>
+                    </div>
                 </div>
-                <div class="pt-1.5 border-top mt-1.5 text-muted" style="font-size: 0.72rem;">
-                    Reçus en {{ now()->translatedFormat('M Y') }}
-                </div>
-            </div>
+            </a>
         </div>
     </div>
 
-    <!-- ======================================================= -->
-    <!-- 1. CUSTOMER ACCOUNTS & BALANCES MATRIX (FULL WIDTH)     -->
-    <!-- ======================================================= -->
-    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
-        
-        <!-- Filter Chips, Sort & Search Bar -->
-        <div class="p-3 border-bottom bg-white">
-            <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-2.5">
+    <!-- Barre de filtres unifiée (Standard Products Style) -->
+    <div class="brand-filter-bar mb-3">
+        <form method="GET" action="{{ route('client-credits.index') }}" id="creditFilterForm">
+            <div class="d-flex align-items-center justify-content-between gap-2.5 flex-wrap">
                 <!-- Fast Filter Touch Chips with Live Counts -->
                 <div class="chips-scroll-credit d-flex align-items-center gap-1.5 flex-wrap">
                     <a href="{{ route('client-credits.index', array_merge(request()->except('page'), ['filter' => 'all'])) }}" class="chip-credit {{ $filter === 'all' ? 'active' : '' }}">
@@ -331,30 +308,35 @@ html, body, .main-content {
                 </div>
 
                 <!-- Search & Sort Controls -->
-                <form method="GET" action="{{ route('client-credits.index') }}" class="d-flex align-items-center gap-2 flex-wrap flex-sm-nowrap flex-shrink-0">
+                <div class="d-flex align-items-center gap-2 flex-wrap flex-sm-nowrap flex-grow-1 flex-xl-grow-0 justify-content-xl-end">
                     <input type="hidden" name="filter" value="{{ $filter }}">
 
                     <!-- 1-Click Sort Selector -->
-                    <select name="sort" class="form-select form-select-sm bg-light rounded-pill px-3 fw-semibold text-secondary" style="width: auto; min-width: 175px; font-size: 0.76rem;" onchange="this.form.submit()">
+                    <select name="sort" class="form-select form-select-sm" style="width: auto; min-width: 175px;" onchange="this.form.submit()">
                         <option value="balance_desc" {{ ($sort ?? 'balance_desc') === 'balance_desc' ? 'selected' : '' }}>Trier : Plus grande dette</option>
                         <option value="balance_asc" {{ ($sort ?? '') === 'balance_asc' ? 'selected' : '' }}>Trier : Plus grand avoir</option>
                         <option value="name" {{ ($sort ?? '') === 'name' ? 'selected' : '' }}>Trier : Nom client (A-Z)</option>
                         <option value="recent" {{ ($sort ?? '') === 'recent' ? 'selected' : '' }}>Trier : Activité récente</option>
                     </select>
 
-                    <!-- Search Box -->
-                    <div class="input-group input-group-sm" style="width: 230px;">
-                        <span class="input-group-text bg-light border-end-0 rounded-start-pill ps-3"><i class="fas fa-search text-muted"></i></span>
-                        <input type="text" name="search" value="{{ request('search') }}" class="form-control bg-light border-start-0 rounded-end-pill" placeholder="Rechercher client, code, tél...">
+                    <!-- Search Box Standard Wrapper -->
+                    <div class="brand-search-wrapper" style="min-width: 220px;">
+                        <i class="fas fa-search"></i>
+                        <input type="text" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Rechercher client, code, tél...">
                     </div>
+
                     @if(request('search') || (isset($sort) && $sort !== 'balance_desc'))
-                        <a href="{{ route('client-credits.index', ['filter' => $filter]) }}" class="btn btn-sm btn-light border rounded-pill px-2.5" title="Réinitialiser la recherche">
-                            <i class="fas fa-times"></i>
+                        <a href="{{ route('client-credits.index', ['filter' => $filter]) }}" class="btn-brand-light btn-sm flex-shrink-0" title="Réinitialiser la recherche">
+                            <i class="fas fa-redo"></i>
                         </a>
                     @endif
-                </form>
+                </div>
             </div>
-        </div>
+        </form>
+    </div>
+
+    <!-- Table Card Standard -->
+    <div class="brand-table-card mb-4">
 
         <!-- 1. MOBILE USER CARDS VIEW (d-block d-lg-none) -->
         <div class="d-block d-lg-none p-2.5 space-y-2.5 bg-light bg-opacity-50">

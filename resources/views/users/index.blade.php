@@ -398,26 +398,25 @@
 @section('content')
 <div class="container-fluid px-2 px-sm-3 px-md-4 py-2 py-md-3">
 
-    <!-- Mobile Header -->
-    <div class="d-flex align-items-center justify-content-between mb-3 pt-1">
-        <div>
-            <div class="d-flex align-items-center gap-2">
-                <h1 class="h5 fw-bold mb-0 text-dark">Équipe & Rôles</h1>
-                <span class="badge bg-dark text-white rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">
-                    {{ $kpi['total_team'] }} membres
-                </span>
+    <!-- En-tête de page (Clean & Pro) -->
+    <div class="brand-header">
+        <div class="d-flex align-items-center gap-2.5">
+            <div class="brand-header-icon flex-shrink-0">
+                <i class="fas fa-users-gear"></i>
             </div>
-            <p class="text-muted small mb-0 d-none d-sm-block">Comptes, accès et permissions sécurisées</p>
+            <div>
+                <h1 class="brand-title">Équipe, Collaborateurs & Rôles</h1>
+                <p class="brand-subtitle">Comptes d'accès, permissions d'équipe et traçabilité des opérations</p>
+            </div>
         </div>
 
-        <div class="d-flex align-items-center gap-1.5">
-            <a href="{{ route('roles.index') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-2.5 py-1.5 d-inline-flex align-items-center gap-1.5" title="Gérer les rôles globaux">
-                <i class="fas fa-shield-halved text-secondary"></i>
-                <span class="d-none d-md-inline small fw-semibold">Rôles globaux</span>
+        <div class="brand-header-actions">
+            <a href="{{ route('roles.index') }}" class="btn-brand-outline">
+                <i class="fas fa-shield-halved me-1.5" style="color: var(--primary-color)"></i>
+                <span>Rôles globaux</span>
             </a>
-            <button type="button" class="btn btn-sm btn-danger rounded-pill px-3 py-1.5 d-none d-md-inline-flex align-items-center gap-1.5 shadow-sm fw-bold"
-                    onclick="openCreateModal()">
-                <i class="fas fa-plus"></i>
+            <button type="button" class="btn-brand-primary" onclick="openCreateModal()">
+                <i class="fas fa-plus me-1.5"></i>
                 <span>Nouveau collaborateur</span>
             </button>
         </div>
@@ -472,6 +471,66 @@
     </div>
     @endif
 
+    <!-- KPI Metric Stat Cards (Product Section Standard) -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('users.index') }}" class="stat-kpi-card text-decoration-none {{ $roleFilter === 'all' && $statusFilter === 'all' && empty($search) ? 'active-filter' : '' }}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Total Membres</div>
+                        <div class="stat-kpi-value text-dark">{{ $kpi['total_team'] ?? $kpi['total_users'] }}</div>
+                        <div class="stat-kpi-sub text-muted">Équipe active & accès</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-primary-subtle text-primary">
+                        <i class="fas fa-users-gear"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('users.index', ['role' => 'Admin']) }}" class="stat-kpi-card text-decoration-none {{ $roleFilter === 'Admin' ? 'active-filter' : '' }}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Administrateurs</div>
+                        <div class="stat-kpi-value text-danger">{{ $kpi['admins'] ?? 0 }}</div>
+                        <div class="stat-kpi-sub text-muted">Accès complet système</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-danger-subtle text-danger">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('users.index', ['role' => 'Manager']) }}" class="stat-kpi-card text-decoration-none {{ in_array($roleFilter, ['Manager', 'Staff']) ? 'active-filter' : '' }}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Managers & Staff</div>
+                        <div class="stat-kpi-value text-primary">{{ ($kpi['managers'] ?? 0) + ($kpi['staff'] ?? 0) }}</div>
+                        <div class="stat-kpi-sub text-muted">{{ $kpi['managers'] ?? 0 }} mgr • {{ $kpi['staff'] ?? 0 }} staff</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-primary-subtle text-primary">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('users.index', ['status' => 'inactive']) }}" class="stat-kpi-card text-decoration-none {{ $statusFilter === 'inactive' ? 'active-filter' : '' }}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Comptes Inactifs</div>
+                        <div class="stat-kpi-value {{ ($kpi['inactive'] ?? 0) > 0 ? 'text-warning' : 'text-muted' }}">{{ $kpi['inactive'] ?? 0 }}</div>
+                        <div class="stat-kpi-sub text-muted">Accès bloqués ou suspendus</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-secondary-subtle text-secondary">
+                        <i class="fas fa-user-lock"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
     <!-- Mobile Scrollable Filter Chips -->
     <div class="chips-scroll mb-2.5">
         <a href="{{ route('users.index', array_merge(request()->except('role'), ['role' => 'all'])) }}" 
@@ -506,30 +565,29 @@
         </a>
     </div>
 
-    <!-- Search Input (Mobile Optimized) -->
-    <div class="mb-3">
-        <form method="GET" action="{{ route('users.index') }}" class="position-relative">
+    <!-- Barre de filtres unifiée (Desktop & Mobile) -->
+    <div class="brand-filter-bar mb-3">
+        <form method="GET" action="{{ route('users.index') }}" class="w-100">
             @if($roleFilter !== 'all')
                 <input type="hidden" name="role" value="{{ $roleFilter }}">
             @endif
             @if($statusFilter !== 'all')
                 <input type="hidden" name="status" value="{{ $statusFilter }}">
             @endif
-            <div class="input-group shadow-xs">
-                <span class="input-group-text bg-white border-end-0 ps-3 text-muted" style="border-radius: 12px 0 0 12px !important;">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <div class="brand-search-wrapper flex-grow-1" style="min-width: 220px;">
                     <i class="fas fa-search"></i>
-                </span>
-                <input type="text" name="search" value="{{ $search }}" 
-                       class="form-control border-start-0 border-end-0 bg-white py-2" 
-                       placeholder="Rechercher par nom, email, téléphone..."
-                       style="font-size: 0.9rem;">
-                @if($search !== '')
-                    <a href="{{ route('users.index') }}" class="input-group-text bg-white border-start-0 text-muted pe-3 text-decoration-none">
-                        <i class="fas fa-circle-xmark"></i>
-                    </a>
-                @endif
-                <button type="submit" class="btn btn-dark fw-semibold px-3" style="border-radius: 0 12px 12px 0 !important;">
-                    Filtrer
+                    <input type="text" name="search" class="form-control" 
+                           placeholder="Rechercher par nom, email, téléphone..."
+                           value="{{ $search }}">
+                    @if($search !== '')
+                        <a href="{{ route('users.index') }}" class="text-muted pe-2 text-decoration-none" style="font-size: 0.85rem;">
+                            <i class="fas fa-times-circle"></i>
+                        </a>
+                    @endif
+                </div>
+                <button type="submit" class="btn-brand-primary">
+                    <i class="fas fa-search me-1"></i> Rechercher
                 </button>
             </div>
         </form>

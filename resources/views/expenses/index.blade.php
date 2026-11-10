@@ -91,43 +91,32 @@
 @endpush
 
 @section('content')
-<div class="container-fluid py-4">
+<div class="dashboard-container">
 
-    <!-- Top Executive Header -->
-    <div class="card border-0 rounded-4 shadow-sm mb-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff;">
-        <div class="card-body p-4">
-            <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-circle bg-danger bg-opacity-25 border border-danger border-opacity-50 text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 52px; height: 52px; font-size: 1.35rem;">
-                        <i class="fas fa-file-invoice-dollar text-white"></i>
-                    </div>
-                    <div>
-                        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
-                            <span class="badge bg-danger rounded-pill px-2.5 py-0.5 fw-semibold" style="font-size: 0.72rem;">
-                                CHARGES & DÉPENSES
-                            </span>
-                            <span class="text-white-50 small">• Suivi des Coûts d'Exploitation</span>
-                        </div>
-                        <h1 class="h3 fw-bold text-white mb-0">Gestion des Dépenses de l'Entreprise</h1>
-                        <p class="text-white-50 small mb-0 mt-1">Enregistrez tous vos frais (loyer, salaires, publicité, transport, électricité) pour calculer votre <strong>bénéfice net réel global</strong>.</p>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <button type="button" class="btn btn-warning text-dark fw-bold rounded-pill px-3.5 py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#newRecurringExpenseModal" style="font-size: 0.85rem;">
-                        <i class="fas fa-repeat me-1.5"></i> Charge Mensuelle
-                    </button>
-                    <a href="{{ route('reports.profitability', ['period' => $period]) }}" class="btn btn-outline-light rounded-pill px-3.5 py-2 fw-semibold shadow-xs" style="font-size: 0.85rem;">
-                        <i class="fas fa-chart-pie me-1.5 text-warning"></i> Rentabilité & Bénéfice Net
-                    </a>
-                    <a href="{{ route('expenses.export', request()->all()) }}" class="btn btn-outline-light rounded-pill px-3.5 py-2 fw-semibold shadow-xs" style="font-size: 0.85rem;">
-                        <i class="fas fa-file-excel text-success me-1.5"></i> Exporter CSV
-                    </a>
-                    <button type="button" class="btn btn-danger rounded-pill px-3.5 py-2 fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#newExpenseModal" style="font-size: 0.85rem;">
-                        <i class="fas fa-plus-circle me-1.5"></i> Nouvelle Dépense
-                    </button>
-                </div>
+    <!-- En-tête de page (Standard Products Style) -->
+    <div class="brand-header">
+        <div class="d-flex align-items-center gap-2.5">
+            <div class="brand-header-icon flex-shrink-0">
+                <i class="fas fa-file-invoice-dollar"></i>
             </div>
+            <div>
+                <h1 class="brand-title">Gestion des Dépenses de l'Entreprise</h1>
+                <p class="brand-subtitle">Enregistrez tous vos frais d'exploitation pour calculer votre bénéfice net réel global</p>
+            </div>
+        </div>
+        <div class="brand-header-actions">
+            <button type="button" class="btn-brand-outline" data-bs-toggle="modal" data-bs-target="#newRecurringExpenseModal">
+                <i class="fas fa-repeat me-1.5" style="color: var(--primary-color)"></i> <span>Charge Mensuelle</span>
+            </button>
+            <a href="{{ route('reports.profitability', ['period' => $period]) }}" class="btn-brand-outline">
+                <i class="fas fa-chart-pie me-1.5" style="color: var(--warning-color)"></i> <span>Rentabilité P&L</span>
+            </a>
+            <a href="{{ route('expenses.export', request()->all()) }}" class="btn-brand-outline">
+                <i class="fas fa-file-excel me-1.5" style="color: var(--success-color)"></i> <span>Exporter CSV</span>
+            </a>
+            <button type="button" class="btn-brand-primary" data-bs-toggle="modal" data-bs-target="#newExpenseModal">
+                <i class="fas fa-plus me-1"></i> <span>Nouvelle Dépense</span>
+            </button>
         </div>
     </div>
 
@@ -210,68 +199,73 @@
         </div>
     </div>
     @endif
+
+    <!-- 4 Perfectly Aligned Financial KPI Cards (Standard Products Style) -->
     <div class="row g-3 mb-4">
         <!-- 1. Total Dépenses Période -->
-        <div class="col-6 col-xl-3">
-            <div class="expense-kpi-card" style="background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%); color: #ffffff;">
-                <div>
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-white-50 fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Dépenses Période</span>
-                        <div class="kpi-icon-pill bg-white text-danger">
-                            <i class="fas fa-arrow-trend-down"></i>
-                        </div>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('expenses.index', ['period' => $period]) }}" class="stat-kpi-card text-decoration-none active-filter">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Dépenses Période</div>
+                        <div class="stat-kpi-value text-danger">{{ currency($periodExpenses) }}</div>
+                        <div class="stat-kpi-sub text-muted"><span class="badge bg-danger-subtle text-danger border border-danger-subtle">{{ $periodCount }} écriture(s)</span></div>
                     </div>
-                    <div class="h3 fw-bold text-white mb-1">{{ currency($periodExpenses) }}</div>
+                    <div class="stat-kpi-icon bg-danger-subtle text-danger">
+                        <i class="fas fa-arrow-trend-down"></i>
+                    </div>
                 </div>
-                <div class="pt-2 border-top border-white-50 mt-2 text-white-50 small" style="font-size: 0.74rem;">
-                    <span>{{ $periodCount }} écriture(s) sur la période</span>
-                </div>
-            </div>
+            </a>
         </div>
 
         <!-- 2. Dépenses Ce Mois-ci -->
-        <div class="col-6 col-xl-3">
-            <div class="expense-kpi-card">
-                <div>
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Ce Mois-ci</span>
-                        <div class="kpi-icon-pill bg-warning-subtle text-warning">
-                            <i class="fas fa-calendar-days"></i>
-                        </div>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('expenses.index', ['period' => 'month']) }}" class="stat-kpi-card text-decoration-none">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Ce Mois-ci</div>
+                        <div class="stat-kpi-value text-dark">{{ currency($thisMonthExpenses) }}</div>
+                        <div class="stat-kpi-sub text-muted"><i class="fas fa-calendar-days text-warning me-1"></i>Mois de {{ now()->translatedFormat('F Y') }}</div>
                     </div>
-                    <div class="h3 fw-bold text-dark mb-1">{{ currency($thisMonthExpenses) }}</div>
+                    <div class="stat-kpi-icon bg-warning-subtle text-warning">
+                        <i class="fas fa-calendar-days"></i>
+                    </div>
                 </div>
-                <div class="pt-2 border-top mt-2 text-muted small" style="font-size: 0.74rem;">
-                    <span>Mois de {{ now()->translatedFormat('F Y') }}</span>
-                </div>
-            </div>
+            </a>
         </div>
 
         <!-- 3. Moyenne par Dépense -->
-        <div class="col-6 col-xl-3">
-            <div class="expense-kpi-card">
-                <div>
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Moyenne par Écriture</span>
-                        <div class="kpi-icon-pill bg-primary-subtle text-primary">
-                            <i class="fas fa-calculator"></i>
-                        </div>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('expenses.index') }}" class="stat-kpi-card text-decoration-none">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Moyenne par Écriture</div>
+                        <div class="stat-kpi-value text-dark">{{ currency($avgExpense) }}</div>
+                        <div class="stat-kpi-sub text-muted"><i class="fas fa-calculator text-primary me-1"></i>Aujourd'hui : <strong>{{ currency($todayExpenses) }}</strong></div>
                     </div>
-                    <div class="h3 fw-bold text-dark mb-1">{{ currency($avgExpense) }}</div>
+                    <div class="stat-kpi-icon bg-primary-subtle text-primary">
+                        <i class="fas fa-calculator"></i>
+                    </div>
                 </div>
-                <div class="pt-2 border-top mt-2 text-muted small" style="font-size: 0.74rem;">
-                    <span>Aujourd'hui : <strong>{{ currency($todayExpenses) }}</strong></span>
-                </div>
-            </div>
+            </a>
         </div>
 
         <!-- 4. Top Poste de Dépense -->
-        <div class="col-6 col-xl-3">
-            <div class="expense-kpi-card">
-                <div>
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Poste Principal</span>
-                        <div class="kpi-icon-pill bg-info-subtle text-info">
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('expenses.index') }}" class="stat-kpi-card text-decoration-none">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Poste Principal</div>
+                        <div class="stat-kpi-value text-info" style="font-size: 1.15rem;">{{ $topCategory ? $topCategory->label : 'Aucun' }}</div>
+                        <div class="stat-kpi-sub text-muted"><i class="fas fa-chart-pie text-info me-1"></i>{{ $topCategory ? currency($topCategory->total) : '0 DH' }}</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-info-subtle text-info">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
                             <i class="fas fa-chart-pie"></i>
                         </div>
                     </div>

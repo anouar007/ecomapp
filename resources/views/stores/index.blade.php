@@ -62,35 +62,26 @@
 @endpush
 
 @section('content')
-<div class="container-fluid py-4">
+<div class="dashboard-container">
 
-    <!-- Top Executive Header -->
-    <div class="card border-0 rounded-4 shadow-sm mb-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff;">
-        <div class="card-body p-4">
-            <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-circle bg-purple bg-opacity-25 border border-purple border-opacity-50 text-white d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; font-size: 1.35rem; background: rgba(147, 51, 234, 0.25);">
-                        <i class="fas fa-warehouse text-white"></i>
-                    </div>
-                    <div>
-                        <div class="d-flex align-items-center gap-2 mb-1">
-                            <span class="badge bg-purple rounded-pill px-2.5 py-0.5 fw-semibold" style="font-size: 0.72rem; background: #9333ea;">LOGISTIQUE MULTI-SITES</span>
-                            <span class="text-white-50 small">• Points de Vente, Dépôts & Emplacements de Stock</span>
-                        </div>
-                        <h1 class="h3 fw-bold text-white mb-0">Points de Stockage & Dépôts</h1>
-                        <p class="text-white-50 small mb-0 mt-1">Configurez vos magasins physiques, vos dépôts logistiques et les emplacements de stockage précis.</p>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <a href="{{ route('stores.stock') }}" class="btn btn-outline-light rounded-pill px-3.5 py-2 fw-semibold" style="font-size: 0.85rem;">
-                        <i class="fas fa-boxes-stacked me-1.5"></i> Matrice des Stocks & Rayons
-                    </a>
-                    <button type="button" class="btn btn-danger rounded-pill px-4 py-2 fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#newStoreModal" style="font-size: 0.85rem;">
-                        <i class="fas fa-plus-circle me-1.5"></i> Nouveau Point de Stockage
-                    </button>
-                </div>
+    <!-- En-tête de page (Standard Products Style) -->
+    <div class="brand-header">
+        <div class="d-flex align-items-center gap-2.5">
+            <div class="brand-header-icon flex-shrink-0" style="background: linear-gradient(135deg, #7c3aed, #9333ea); box-shadow: 0 4px 14px rgba(124, 58, 237, 0.25);">
+                <i class="fas fa-warehouse"></i>
             </div>
+            <div>
+                <h1 class="brand-title">Points de Stockage & Dépôts</h1>
+                <p class="brand-subtitle">Configurez vos magasins physiques, vos dépôts logistiques et les emplacements de stockage précis</p>
+            </div>
+        </div>
+        <div class="brand-header-actions">
+            <a href="{{ route('stores.stock') }}" class="btn-brand-outline">
+                <i class="fas fa-boxes-stacked me-1.5" style="color: #7c3aed;"></i> <span>Matrice des Rayons</span>
+            </a>
+            <button type="button" class="btn-brand-primary" data-bs-toggle="modal" data-bs-target="#newStoreModal">
+                <i class="fas fa-plus me-1"></i> <span>Nouveau Point de Stockage</span>
+            </button>
         </div>
     </div>
 
@@ -135,74 +126,66 @@
     </div>
     @endif
 
-    <!-- 4 Perfectly Aligned KPI Cards -->
+    <!-- 4 Perfectly Aligned KPI Cards (Standard Products Style) -->
     <div class="row g-3 mb-4">
-        <div class="col-6 col-xl-3">
-            <div class="store-kpi-card">
-                <div>
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Magasins / Boutiques</span>
-                        <div class="kpi-icon-pill bg-primary-subtle text-primary">
-                            <i class="fas fa-shop"></i>
-                        </div>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('stores.index', ['type' => 'physical_store']) }}" class="stat-kpi-card text-decoration-none {{ request('type') === 'physical_store' ? 'active-filter' : '' }}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Magasins / Boutiques</div>
+                        <div class="stat-kpi-value text-dark">{{ $totalStores }}</div>
+                        <div class="stat-kpi-sub text-muted"><span class="badge bg-light text-secondary border">Points de vente physiques</span></div>
                     </div>
-                    <div class="h3 fw-bold text-dark mb-0">{{ $totalStores }}</div>
+                    <div class="stat-kpi-icon bg-primary-subtle text-primary">
+                        <i class="fas fa-shop"></i>
+                    </div>
                 </div>
-                <div class="pt-2 border-top mt-2 text-muted small" style="font-size: 0.74rem;">
-                    Boutiques & points de vente physiques
-                </div>
-            </div>
+            </a>
         </div>
 
-        <div class="col-6 col-xl-3">
-            <div class="store-kpi-card">
-                <div>
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Dépôts & Entrepôts</span>
-                        <div class="kpi-icon-pill bg-purple-subtle text-purple" style="background: #f3e8ff; color: #7e22ce;">
-                            <i class="fas fa-warehouse"></i>
-                        </div>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('stores.index', ['type' => 'warehouse']) }}" class="stat-kpi-card text-decoration-none {{ request('type') === 'warehouse' ? 'active-filter' : '' }}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Dépôts & Entrepôts</div>
+                        <div class="stat-kpi-value" style="color: #7c3aed;">{{ $totalWarehouses }}</div>
+                        <div class="stat-kpi-sub text-muted"><span class="badge bg-purple-subtle text-purple border">Hubs centraux</span></div>
                     </div>
-                    <div class="h3 fw-bold text-dark mb-0">{{ $totalWarehouses }}</div>
+                    <div class="stat-kpi-icon" style="background: #f3e8ff; color: #7e22ce;">
+                        <i class="fas fa-warehouse"></i>
+                    </div>
                 </div>
-                <div class="pt-2 border-top mt-2 text-muted small" style="font-size: 0.74rem;">
-                    Hubs & entrepôts centraux
-                </div>
-            </div>
+            </a>
         </div>
 
-        <div class="col-6 col-xl-3">
-            <div class="store-kpi-card">
-                <div>
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Sites Actifs</span>
-                        <div class="kpi-icon-pill bg-success-subtle text-success">
-                            <i class="fas fa-circle-check"></i>
-                        </div>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('stores.index') }}" class="stat-kpi-card text-decoration-none {{ !request('type') ? 'active-filter' : '' }}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Sites Opérationnels</div>
+                        <div class="stat-kpi-value text-success">{{ $totalActive }}</div>
+                        <div class="stat-kpi-sub text-muted"><i class="fas fa-circle-check text-success me-1"></i>En production</div>
                     </div>
-                    <div class="h3 fw-bold text-success mb-0">{{ $totalActive }}</div>
+                    <div class="stat-kpi-icon bg-success-subtle text-success">
+                        <i class="fas fa-circle-check"></i>
+                    </div>
                 </div>
-                <div class="pt-2 border-top mt-2 text-muted small" style="font-size: 0.74rem;">
-                    Opérationnels en production
-                </div>
-            </div>
+            </a>
         </div>
 
-        <div class="col-6 col-xl-3">
-            <div class="store-kpi-card">
-                <div>
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Valorisation Stock</span>
-                        <div class="kpi-icon-pill bg-danger-subtle text-danger">
-                            <i class="fas fa-boxes-stacked"></i>
-                        </div>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('stores.stock') }}" class="stat-kpi-card text-decoration-none">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Valorisation Stocks</div>
+                        <div class="stat-kpi-value text-dark">{{ currency($totalStockCostValuation) }}</div>
+                        <div class="stat-kpi-sub text-muted"><i class="fas fa-boxes-stacked text-warning me-1"></i>{{ number_format($totalStockUnits, 0, ',', ' ') }} pcs au coût</div>
                     </div>
-                    <div class="h4 fw-bold text-danger mb-0">{{ currency($totalStockCostValuation) }}</div>
+                    <div class="stat-kpi-icon bg-warning-subtle text-warning">
+                        <i class="fas fa-coins"></i>
+                    </div>
                 </div>
-                <div class="pt-2 border-top mt-2 text-muted small" style="font-size: 0.74rem;">
-                    <strong>{{ number_format($totalStockUnits, 0, ',', ' ') }} pcs</strong> au coût d'achat
-                </div>
-            </div>
+            </a>
         </div>
     </div>
 

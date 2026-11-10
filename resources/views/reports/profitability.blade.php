@@ -117,42 +117,36 @@
 @section('content')
 <div class="container-fluid py-4">
 
-    <!-- Top Executive Header -->
-    <div class="card border-0 rounded-4 shadow-sm mb-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff;">
-        <div class="card-body p-4">
-            <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-circle bg-danger bg-opacity-25 border border-danger border-opacity-50 text-white d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; font-size: 1.35rem;">
-                        <i class="fas fa-chart-pie text-white"></i>
-                    </div>
-                    <div>
-                        <div class="d-flex align-items-center gap-2 mb-1">
-                            <span class="badge bg-danger rounded-pill px-2.5 py-0.5 fw-semibold" style="font-size: 0.72rem;">
-                                <i class="fas fa-lock me-1"></i> STRICTEMENT ADMIN
-                            </span>
-                            <span class="text-white-50 small">• Analyse Financière & Rentabilité Réelle</span>
-                        </div>
-                        <h1 class="h3 fw-bold text-white mb-0">Rapport de Rentabilité, Bénéfices & Marges</h1>
-                        <p class="text-white-50 small mb-0 mt-1">Calcul précis du bénéfice net réel (Ventes - Coûts d'achat - Dépenses d'exploitation) par produit, marque, catégorie et période.</p>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <a href="{{ route('expenses.index', ['period' => $period]) }}" class="btn btn-outline-light rounded-pill px-3.5 py-2 fw-semibold shadow-xs" style="font-size: 0.85rem;">
-                        <i class="fas fa-file-invoice-dollar text-warning me-1.5"></i> Dépenses ({{ currency($overall['total_expenses']) }})
-                    </a>
-                    <a href="{{ route('reports.profitability.costs') }}" class="btn btn-danger rounded-pill px-3.5 py-2 fw-semibold shadow-sm" style="font-size: 0.85rem;">
-                        <i class="fas fa-coins me-1.5"></i> Coûts d'Achat
-                        @if($missingCostCount > 0)
-                            <span class="badge bg-white text-danger rounded-pill ms-1">{{ $missingCostCount }}</span>
-                        @endif
-                    </a>
-                    <a href="{{ route('reports.profitability.export', ['period' => $period, 'start_date' => $startDate->format('Y-m-d'), 'end_date' => $endDate->format('Y-m-d')]) }}" 
-                       class="btn btn-outline-light rounded-pill px-3.5 py-2 fw-semibold shadow-xs" style="font-size: 0.85rem;">
-                        <i class="fas fa-file-excel text-success me-1.5"></i> Exporter CSV
-                    </a>
-                </div>
+    <!-- En-tête de page (Clean & Pro) -->
+    <div class="brand-header">
+        <div class="d-flex align-items-center gap-2.5">
+            <div class="brand-header-icon flex-shrink-0">
+                <i class="fas fa-chart-pie"></i>
             </div>
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge bg-danger rounded-pill px-2.5 py-0.5 fw-semibold" style="font-size: 0.72rem;">
+                        <i class="fas fa-lock me-1"></i> STRICTEMENT ADMIN
+                    </span>
+                    <span class="text-muted small">• Analyse Financière & Rentabilité Réelle</span>
+                </div>
+                <h1 class="brand-title">Rapport de Rentabilité, Bénéfices & Marges</h1>
+                <p class="brand-subtitle">Calcul précis du bénéfice net réel (Ventes - Coûts d'achat - Dépenses d'exploitation) par produit, marque, catégorie et période.</p>
+            </div>
+        </div>
+        <div class="brand-header-actions">
+            <a href="{{ route('expenses.index', ['period' => $period]) }}" class="btn-brand-outline">
+                <i class="fas fa-file-invoice-dollar text-warning me-1.5"></i> Dépenses ({{ currency($overall['total_expenses']) }})
+            </a>
+            <a href="{{ route('reports.profitability.costs') }}" class="btn-brand-outline">
+                <i class="fas fa-coins me-1.5" style="color: var(--primary-color)"></i> Coûts d'Achat
+                @if($missingCostCount > 0)
+                    <span class="badge bg-danger text-white rounded-pill ms-1">{{ $missingCostCount }}</span>
+                @endif
+            </a>
+            <a href="{{ route('reports.profitability.export', ['period' => $period, 'start_date' => $startDate->format('Y-m-d'), 'end_date' => $endDate->format('Y-m-d')]) }}" class="btn-brand-outline">
+                <i class="fas fa-file-excel text-success me-1.5"></i> Exporter CSV
+            </a>
         </div>
     </div>
 
@@ -251,81 +245,68 @@
         </div>
     </div>
 
-    <!-- 4 Perfectly Aligned Financial KPI Cards -->
+    <!-- 4 Perfectly Aligned Financial KPI Cards (Product Section Standard) -->
     <div class="row g-3 mb-4">
         <!-- 1. Chiffre d'Affaires -->
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="profit-kpi-card">
-                <div>
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Chiffre d'Affaires</span>
-                        <div class="kpi-icon-pill bg-primary-subtle text-primary">
-                            <i class="fas fa-cart-shopping"></i>
-                        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-kpi-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Chiffre d'Affaires</div>
+                        <div class="stat-kpi-value text-dark">{{ currency($overall['total_revenue']) }}</div>
+                        <div class="stat-kpi-sub text-muted">{{ $overall['orders_count'] }} commande(s) • {{ $overall['items_sold'] }} article(s)</div>
                     </div>
-                    <div class="h3 fw-bold text-dark mb-1">{{ currency($overall['total_revenue']) }}</div>
-                </div>
-                <div class="pt-2 border-top mt-2 text-muted small" style="font-size: 0.74rem;">
-                    <span>{{ $overall['orders_count'] }} commande(s) • {{ $overall['items_sold'] }} article(s)</span>
+                    <div class="stat-kpi-icon bg-primary-subtle text-primary">
+                        <i class="fas fa-cart-shopping"></i>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- 2. Coût d'Achat Marchandises (COGS) -->
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="profit-kpi-card">
-                <div>
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Coût d'Achat Ventes</span>
-                        <div class="kpi-icon-pill bg-warning-subtle text-warning">
-                            <i class="fas fa-truck-ramp-box"></i>
-                        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-kpi-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Coût d'Achat Ventes</div>
+                        <div class="stat-kpi-value text-dark">{{ currency($overall['total_cost']) }}</div>
+                        <div class="stat-kpi-sub text-muted">Marge Brute : <strong class="text-dark">{{ currency($overall['gross_profit']) }}</strong></div>
                     </div>
-                    <div class="h3 fw-bold text-dark mb-1">{{ currency($overall['total_cost']) }}</div>
-                </div>
-                <div class="pt-2 border-top mt-2 text-muted small d-flex justify-content-between" style="font-size: 0.74rem;">
-                    <span>Marge Brute Ventes :</span>
-                    <strong class="text-dark">{{ currency($overall['gross_profit']) }}</strong>
+                    <div class="stat-kpi-icon bg-warning-subtle text-warning">
+                        <i class="fas fa-truck-ramp-box"></i>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- 3. Charges & Dépenses d'Exploitation -->
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="profit-kpi-card">
-                <div>
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Charges & Dépenses</span>
-                        <div class="kpi-icon-pill bg-danger-subtle text-danger">
-                            <i class="fas fa-file-invoice-dollar"></i>
-                        </div>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('expenses.index', ['period' => $period]) }}" class="stat-kpi-card text-decoration-none">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Charges & Dépenses</div>
+                        <div class="stat-kpi-value text-danger">{{ currency($overall['total_expenses']) }}</div>
+                        <div class="stat-kpi-sub text-muted">Frais d'exploitation <i class="fas fa-arrow-right ms-1 text-danger" style="font-size: 0.68rem;"></i></div>
                     </div>
-                    <div class="h3 fw-bold text-danger mb-1">{{ currency($overall['total_expenses']) }}</div>
+                    <div class="stat-kpi-icon bg-danger-subtle text-danger">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
                 </div>
-                <div class="pt-2 border-top mt-2 text-muted small d-flex justify-content-between align-items-center" style="font-size: 0.74rem;">
-                    <span>Frais d'exploitation période</span>
-                    <a href="{{ route('expenses.index', ['period' => $period]) }}" class="text-danger fw-semibold text-decoration-none">
-                        Gérer <i class="fas fa-arrow-right ms-0.5"></i>
-                    </a>
-                </div>
-            </div>
+            </a>
         </div>
 
         <!-- 4. Bénéfice Net Réel Global -->
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="profit-kpi-card" style="background: {{ $overall['net_profit'] >= 0 ? 'linear-gradient(135deg, #064e3b 0%, #065f46 100%)' : 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%)' }}; color: #ffffff;">
-                <div>
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-white-50 fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Bénéfice Net Réel Global</span>
-                        <div class="kpi-icon-pill bg-white {{ $overall['net_profit'] >= 0 ? 'text-success' : 'text-danger' }}">
-                            <i class="fas fa-sack-dollar"></i>
-                        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-kpi-card" style="border-left: 3.5px solid {{ $overall['net_profit'] >= 0 ? 'var(--success-color, #10b981)' : '#ef4444' }};">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Bénéfice Net Réel</div>
+                        <div class="stat-kpi-value {{ $overall['net_profit'] >= 0 ? 'text-success' : 'text-danger' }}">{{ currency($overall['net_profit']) }}</div>
+                        <div class="stat-kpi-sub text-muted">Taux Net : <strong>{{ $overall['margin_percentage'] }}%</strong> (P&L)</div>
                     </div>
-                    <div class="h3 fw-bold text-white mb-1">{{ currency($overall['net_profit']) }}</div>
-                </div>
-                <div class="pt-2 border-top mt-2 text-white-50 small d-flex justify-content-between align-items-center" style="font-size: 0.74rem;">
-                    <span>Taux Net : <strong>{{ $overall['margin_percentage'] }}%</strong></span>
-                    <span style="font-size: 0.68rem;">(Ventes - Coûts - Dépenses)</span>
+                    <div class="stat-kpi-icon {{ $overall['net_profit'] >= 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }}">
+                        <i class="fas fa-sack-dollar"></i>
+                    </div>
                 </div>
             </div>
         </div>
@@ -333,21 +314,21 @@
 
     <!-- Executive Break-Even & Burn Rate Analysis Banner -->
     @if(isset($overall['monthly_burn_rate']) && $overall['monthly_burn_rate'] > 0)
-    <div class="card border-0 shadow-sm rounded-4 mb-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff;">
+    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white" style="border: 1px solid #e2e8f0 !important;">
         <div class="card-body p-3.5 p-md-4">
             <div class="row align-items-center g-3">
                 <div class="col-12 col-lg-5">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px; font-size: 1.25rem;">
+                        <div class="rounded-circle bg-warning bg-opacity-10 text-warning d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px; font-size: 1.25rem;">
                             <i class="fas fa-scale-balanced"></i>
                         </div>
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
                                 <span class="badge bg-warning text-dark rounded-pill px-2.5 py-0.5 fw-bold" style="font-size: 0.68rem;">SEUIL DE RENTABILITÉ & POINT MORT</span>
-                                <span class="text-white-50 small">• Charges Fixes</span>
+                                <span class="text-muted small">• Charges Fixes</span>
                             </div>
-                            <h5 class="fw-bold text-white mb-0 fs-6">Couverture des Frais Généraux</h5>
-                            <div class="text-white-50 small mt-0.5" style="font-size: 0.74rem;">
+                            <h5 class="fw-bold text-dark mb-0 fs-6">Couverture des Frais Généraux</h5>
+                            <div class="text-muted small mt-0.5" style="font-size: 0.74rem;">
                                 Vos charges fixes mensuelles (loyer, salaires, abonnements) s'élèvent à <strong>{{ currency($overall['monthly_burn_rate']) }}/mois</strong>.
                             </div>
                         </div>
@@ -355,9 +336,9 @@
                 </div>
 
                 <div class="col-12 col-md-6 col-lg-4">
-                    <div class="p-2.5 rounded-3 bg-white bg-opacity-10 border border-white border-opacity-10">
+                    <div class="p-2.5 rounded-3 bg-light border">
                         <div class="d-flex align-items-center justify-content-between mb-1.5" style="font-size: 0.76rem;">
-                            <span class="text-white-50">Couverture du point mort :</span>
+                            <span class="text-muted">Couverture du point mort :</span>
                             <span class="fw-bold {{ $overall['break_even_achieved'] ? 'text-success' : 'text-warning' }}">
                                 {{ $overall['break_even_progress'] }}%
                                 @if($overall['break_even_achieved'])
@@ -367,13 +348,13 @@
                                 @endif
                             </span>
                         </div>
-                        <div class="progress" style="height: 6px; border-radius: 99px; background: rgba(255,255,255,0.2);">
+                        <div class="progress" style="height: 6px; border-radius: 99px; background: #e2e8f0;">
                             <div class="progress-bar {{ $overall['break_even_achieved'] ? 'bg-success' : 'bg-warning' }}" role="progressbar" style="width: {{ $overall['break_even_progress'] }}%;"></div>
                         </div>
-                        <div class="d-flex align-items-center justify-content-between mt-1.5 text-white-50" style="font-size: 0.7rem;">
-                            <span>Marge brute : <strong class="text-white">{{ currency($overall['gross_profit']) }}</strong></span>
+                        <div class="d-flex align-items-center justify-content-between mt-1.5 text-muted" style="font-size: 0.7rem;">
+                            <span>Marge brute : <strong class="text-dark">{{ currency($overall['gross_profit']) }}</strong></span>
                             @if(!$overall['break_even_achieved'])
-                                <span>Reste à couvrir : <strong class="text-warning">{{ currency($overall['remaining_margin_to_break_even']) }}</strong></span>
+                                <span>Reste à couvrir : <strong class="text-danger">{{ currency($overall['remaining_margin_to_break_even']) }}</strong></span>
                             @else
                                 <span class="text-success fw-semibold">Frais fixes amortis !</span>
                             @endif
@@ -382,10 +363,10 @@
                 </div>
 
                 <div class="col-12 col-md-6 col-lg-3 text-lg-end">
-                    <div class="text-white-50 small mb-1" style="font-size: 0.74rem;">CA Point Mort Estimé :</div>
-                    <div class="fs-5 fw-bold text-white mb-2">{{ currency($overall['break_even_revenue']) }}</div>
-                    <a href="{{ route('expenses.index', ['tab' => 'recurring']) }}" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1.5 fw-semibold shadow-xs" style="font-size: 0.78rem;">
-                        <i class="fas fa-repeat me-1.5 text-warning"></i> Gérer les charges fixes
+                    <div class="text-muted small mb-1" style="font-size: 0.74rem;">CA Point Mort Estimé :</div>
+                    <div class="fs-5 fw-bold text-dark mb-2">{{ currency($overall['break_even_revenue']) }}</div>
+                    <a href="{{ route('expenses.index', ['tab' => 'recurring']) }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1.5 fw-semibold shadow-xs" style="font-size: 0.78rem;">
+                        <i class="fas fa-repeat me-1.5 text-primary"></i> Gérer les charges fixes
                     </a>
                 </div>
             </div>

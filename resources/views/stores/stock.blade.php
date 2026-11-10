@@ -94,42 +94,31 @@
 @endpush
 
 @section('content')
-<div class="container-fluid py-4">
+<div class="dashboard-container">
 
-    <!-- Top Executive Header -->
-    <div class="card border-0 rounded-4 shadow-sm mb-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff;">
-        <div class="card-body p-4">
-            <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-circle bg-purple bg-opacity-25 border border-purple border-opacity-50 text-white d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; font-size: 1.35rem; background: rgba(147, 51, 234, 0.25);">
-                        <i class="fas fa-boxes-stacked text-white"></i>
-                    </div>
-                    <div>
-                        <div class="d-flex align-items-center gap-2 mb-1">
-                            <a href="{{ route('stores.index') }}" class="text-white-50 text-decoration-none small">
-                                <i class="fas fa-arrow-left me-1"></i> Points de Stockage
-                            </a>
-                            <span class="text-white-50 small">• Matrice des Quantités & Rayons</span>
-                        </div>
-                        <h1 class="h3 fw-bold text-white mb-0">Quantités par Magasin & Emplacements de Stock</h1>
-                        <p class="text-white-50 small mb-0 mt-1">Consultez en un coup d'œil les unités disponibles par site ainsi que l'emplacement précis (Rayon, Étagère, Casier).</p>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center gap-2 flex-wrap">
-                    @if(auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('manage_accounting')))
-                    <a href="{{ route('reports.profitability.costs') }}" class="btn btn-outline-light rounded-pill px-3.5 py-2 fw-semibold shadow-xs" style="font-size: 0.85rem;">
-                        <i class="fas fa-coins text-warning me-1.5"></i> Coûts d'Achat (PMP)
-                    </a>
-                    @endif
-                    <a href="{{ route('stores.index') }}" class="btn btn-outline-light rounded-pill px-3.5 py-2 fw-semibold" style="font-size: 0.85rem;">
-                        <i class="fas fa-warehouse me-1.5"></i> Dépôts
-                    </a>
-                    <button type="button" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#transferStockModal" style="font-size: 0.85rem;">
-                        <i class="fas fa-arrow-right-arrow-left me-1.5"></i> Transférer du Stock
-                    </button>
-                </div>
+    <!-- En-tête de page (Standard Products Style) -->
+    <div class="brand-header">
+        <div class="d-flex align-items-center gap-2.5">
+            <div class="brand-header-icon flex-shrink-0" style="background: linear-gradient(135deg, #7c3aed, #9333ea); box-shadow: 0 4px 14px rgba(124, 58, 237, 0.25);">
+                <i class="fas fa-boxes-stacked"></i>
             </div>
+            <div>
+                <h1 class="brand-title">Quantités par Magasin & Emplacements</h1>
+                <p class="brand-subtitle">Consultez en un coup d'œil les unités disponibles par site ainsi que l'emplacement précis (Rayon, Étagère, Casier)</p>
+            </div>
+        </div>
+        <div class="brand-header-actions">
+            @if(auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('manage_accounting')))
+            <a href="{{ route('reports.profitability.costs') }}" class="btn-brand-outline">
+                <i class="fas fa-coins text-warning me-1.5"></i> <span>Coûts d'Achat</span>
+            </a>
+            @endif
+            <a href="{{ route('stores.index') }}" class="btn-brand-outline">
+                <i class="fas fa-warehouse text-info me-1.5"></i> <span>Dépôts</span>
+            </a>
+            <button type="button" class="btn-brand-primary" data-bs-toggle="modal" data-bs-target="#transferStockModal">
+                <i class="fas fa-arrow-right-arrow-left me-1.5"></i> <span>Transférer Stock</span>
+            </button>
         </div>
     </div>
 
@@ -200,63 +189,57 @@
         </div>
     </div>
 
-    <!-- Clean Aligned Filters Bar -->
-    <div class="card border-0 shadow-sm rounded-4 mb-4">
-        <div class="card-body p-3.5">
-            <form method="GET" action="{{ route('stores.stock') }}" class="row g-2.5 align-items-end">
-                <div class="col-12 col-md-3">
-                    <label class="form-label small fw-semibold text-muted mb-1">Recherche Produit</label>
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
-                        <input type="text" name="search" value="{{ request('search') }}" class="form-control bg-light border-start-0" placeholder="Nom, SKU...">
-                    </div>
+    <!-- Barre de filtres unifiée (Standard Products Style) -->
+    <div class="brand-filter-bar mb-3">
+        <form method="GET" action="{{ route('stores.stock') }}" class="row g-2.5 align-items-center">
+            <div class="col-12 col-md-3">
+                <div class="brand-search-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Nom produit, SKU...">
                 </div>
+            </div>
 
-                <div class="col-6 col-md-3">
-                    <label class="form-label small fw-semibold text-muted mb-1">Filtrer par Dépôt</label>
-                    <select name="store_id" class="form-select form-select-sm">
-                        <option value="">Tous les dépôts & magasins</option>
-                        @foreach($stores as $st)
-                            <option value="{{ $st->id }}" {{ request('store_id') == $st->id ? 'selected' : '' }}>
-                                {{ $st->name }} ({{ $st->code }})
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+            <div class="col-6 col-md-3">
+                <select name="store_id" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="">Tous les dépôts & magasins</option>
+                    @foreach($stores as $st)
+                        <option value="{{ $st->id }}" {{ request('store_id') == $st->id ? 'selected' : '' }}>
+                            {{ $st->name }} ({{ $st->code }})
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-                <div class="col-6 col-md-2">
-                    <label class="form-label small fw-semibold text-muted mb-1">Catégorie</label>
-                    <select name="category_id" class="form-select form-select-sm">
-                        <option value="">Toutes les catégories</option>
-                        @foreach($categories as $cat)
-                            <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
-                                {{ $cat->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+            <div class="col-6 col-md-2">
+                <select name="category_id" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="">Toutes les catégories</option>
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
+                            {{ $cat->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-                <div class="col-6 col-md-2">
-                    <label class="form-label small fw-semibold text-muted mb-1">Emplacement Rayon</label>
-                    <input type="text" name="location_code" value="{{ request('location_code') }}" class="form-control form-control-sm" placeholder="Ex: Rayon A, B-2...">
-                </div>
+            <div class="col-6 col-md-2">
+                <input type="text" name="location_code" value="{{ request('location_code') }}" class="form-control form-control-sm" placeholder="Rayon, Étagère...">
+            </div>
 
-                <div class="col-6 col-md-2 d-flex gap-2">
-                    <button type="submit" class="btn btn-sm btn-dark rounded-pill px-3 fw-semibold flex-fill">
-                        <i class="fas fa-filter me-1"></i> Filtrer
-                    </button>
-                    @if(request()->anyFilled(['search', 'store_id', 'category_id', 'location_code']))
-                        <a href="{{ route('stores.stock') }}" class="btn btn-sm btn-light border rounded-pill px-2.5" title="Réinitialiser">
-                            <i class="fas fa-times"></i>
-                        </a>
-                    @endif
-                </div>
-            </form>
-        </div>
+            <div class="col-6 col-md-2 d-flex gap-2">
+                <button type="submit" class="btn-brand-primary btn-sm flex-fill" title="Appliquer les filtres">
+                    <i class="fas fa-filter me-1"></i> Filtrer
+                </button>
+                @if(request()->anyFilled(['search', 'store_id', 'category_id', 'location_code']))
+                    <a href="{{ route('stores.stock') }}" class="btn-brand-light btn-sm flex-shrink-0" title="Réinitialiser">
+                        <i class="fas fa-redo"></i>
+                    </a>
+                @endif
+            </div>
+        </form>
     </div>
 
-    <!-- Products & Multi-Store Stocks Matrix Card -->
-    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+    <!-- Products & Multi-Store Stocks Matrix Card Standard -->
+    <div class="brand-table-card mb-4">
         <!-- Desktop Table View -->
         <div class="table-responsive d-none d-lg-block">
             <table class="table align-middle mb-0 fixed-stock-table">
