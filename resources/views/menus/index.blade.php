@@ -4,18 +4,20 @@
 
 @section('content')
     <div class="brand-header">
-        <div>
-            <h1 class="brand-title">
-                <div class="brand-header-icon">
-                    <i class="fas fa-compass"></i>
-                </div>
-                Menus de navigation
-            </h1>
-            <p class="brand-subtitle">Gérez les menus d'en-tête et de pied de page de votre boutique</p>
+        <div class="d-flex align-items-center gap-2.5">
+            <div class="brand-header-icon flex-shrink-0">
+                <i class="fas fa-compass"></i>
+            </div>
+            <div>
+                <h1 class="brand-title">Menus de navigation</h1>
+                <p class="brand-subtitle">Gérez les menus d'en-tête et de pied de page de votre boutique</p>
+            </div>
         </div>
-        <button type="button" class="btn-brand-primary" data-bs-toggle="modal" data-bs-target="#createMenuModal">
-            <i class="fas fa-plus me-2"></i> Créer un nouveau menu
-        </button>
+        <div class="brand-header-actions">
+            <button type="button" class="btn-brand-primary" data-bs-toggle="modal" data-bs-target="#createMenuModal">
+                <i class="fas fa-plus me-1.5"></i> Nouveau menu
+            </button>
+        </div>
     </div>
 
     <div class="row g-4">

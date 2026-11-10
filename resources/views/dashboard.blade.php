@@ -75,118 +75,91 @@
         </a>
     </div>
 
-    <!-- Cartes KPI Pro Unifiées (2x2 sur Mobile, 1x4 sur Desktop) -->
-    <div class="stats-grid-pro dash-section">
+    <!-- KPI Metric Stat Cards (Product Section Standard) -->
+    <div class="row g-3 mb-4 stats-grid-pro">
         <!-- KPI 1 : Chiffre d'affaires -->
-        <div class="stat-card-pro">
-            <div class="stat-card-header">
-                <div class="stat-icon-pro icon-red">
-                    <i class="fas fa-wallet"></i>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('reports.profitability') }}" class="stat-kpi-card text-decoration-none">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Chiffre d'affaires</div>
+                        <div class="stat-kpi-value text-dark">{{ currency($stats['total_revenue']) }}</div>
+                        <div class="stat-kpi-sub text-muted">
+                            @php $rGrowth = $stats['revenue_growth']; @endphp
+                            <span class="badge {{ $rGrowth >= 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }} border-0 me-1">
+                                <i class="fas fa-arrow-{{ $rGrowth >= 0 ? 'up' : 'down' }} me-0.5"></i>{{ abs($rGrowth) }}%
+                            </span>
+                            <span>Aujourd'hui: {{ currency($quickStats['today_revenue'] ?? 0) }}</span>
+                        </div>
+                    </div>
+                    <div class="stat-kpi-icon bg-primary-subtle text-primary">
+                        <i class="fas fa-wallet"></i>
+                    </div>
                 </div>
-                @php $rGrowth = $stats['revenue_growth']; @endphp
-                <span class="stat-trend-badge {{ $rGrowth >= 0 ? 'trend-up' : 'trend-down' }}">
-                    <i class="fas fa-arrow-{{ $rGrowth >= 0 ? 'up' : 'down' }}"></i>
-                    {{ abs($rGrowth) }}%
-                </span>
-            </div>
-            <div class="stat-card-body">
-                <div class="stat-label-pro">Chiffre d'affaires</div>
-                <div class="stat-value-pro">{{ currency($stats['total_revenue']) }}</div>
-            </div>
-            <div class="stat-card-footer">
-                <span class="stat-sub-text">
-                    <i class="fas fa-calendar-day text-danger me-1"></i> Aujourd'hui: <strong>{{ currency($quickStats['today_revenue'] ?? 0) }}</strong>
-                </span>
-            </div>
+            </a>
         </div>
 
         <!-- KPI 2 : Commandes -->
-        <div class="stat-card-pro">
-            <div class="stat-card-header">
-                <div class="stat-icon-pro icon-green">
-                    <i class="fas fa-shopping-bag"></i>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('orders.index') }}" class="stat-kpi-card text-decoration-none">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Commandes totales</div>
+                        <div class="stat-kpi-value text-dark">{{ number_format($stats['total_orders']) }}</div>
+                        <div class="stat-kpi-sub text-muted">
+                            @if(($quickStats['pending_orders'] ?? 0) > 0)
+                                <i class="fas fa-clock text-warning me-1"></i><strong class="text-warning">{{ $quickStats['pending_orders'] }}</strong> en attente
+                            @else
+                                <i class="fas fa-check-circle text-success me-1"></i>Flux à jour
+                            @endif
+                        </div>
+                    </div>
+                    <div class="stat-kpi-icon bg-success-subtle text-success">
+                        <i class="fas fa-shopping-bag"></i>
+                    </div>
                 </div>
-                @php $oGrowth = $stats['orders_growth']; @endphp
-                <span class="stat-trend-badge {{ $oGrowth >= 0 ? 'trend-up' : 'trend-down' }}">
-                    <i class="fas fa-arrow-{{ $oGrowth >= 0 ? 'up' : 'down' }}"></i>
-                    {{ abs($oGrowth) }}%
-                </span>
-            </div>
-            <div class="stat-card-body">
-                <div class="stat-label-pro">Commandes totales</div>
-                <div class="stat-value-pro">{{ number_format($stats['total_orders']) }}</div>
-            </div>
-            <div class="stat-card-footer">
-                <span class="stat-sub-text">
-                    @if(($quickStats['pending_orders'] ?? 0) > 0)
-                        <span class="badge-dot dot-warning"></span> <strong class="text-warning">{{ $quickStats['pending_orders'] }}</strong> à traiter
-                    @else
-                        <span class="badge-dot dot-success"></span> Aucune en attente
-                    @endif
-                </span>
-            </div>
+            </a>
         </div>
 
-        <!-- KPI 3 : Produits en catalogue -->
-        <div class="stat-card-pro">
-            <div class="stat-card-header">
-                <div class="stat-icon-pro icon-amber">
-                    <i class="fas fa-box"></i>
+        <!-- KPI 3 : Catalogue articles -->
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('products.index') }}" class="stat-kpi-card text-decoration-none">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Articles Catalogue</div>
+                        <div class="stat-kpi-value text-dark">{{ number_format($stats['total_products']) }}</div>
+                        <div class="stat-kpi-sub text-muted">
+                            @if(($quickStats['low_stock_total'] ?? 0) > 0)
+                                <i class="fas fa-triangle-exclamation text-warning me-1"></i><strong class="text-warning">{{ $quickStats['low_stock_total'] }}</strong> stock faible
+                            @else
+                                <i class="fas fa-boxes-stacked text-success me-1"></i>Stock optimal
+                            @endif
+                        </div>
+                    </div>
+                    <div class="stat-kpi-icon bg-warning-subtle text-warning">
+                        <i class="fas fa-box-open"></i>
+                    </div>
                 </div>
-                @php $pGrowth = $stats['products_growth']; @endphp
-                <span class="stat-trend-badge {{ $pGrowth >= 0 ? 'trend-up' : 'trend-down' }}">
-                    <i class="fas fa-arrow-{{ $pGrowth >= 0 ? 'up' : 'down' }}"></i>
-                    {{ abs($pGrowth) }}%
-                </span>
-            </div>
-            <div class="stat-card-body">
-                <div class="stat-label-pro">Catalogue articles</div>
-                <div class="stat-value-pro">{{ number_format($stats['total_products']) }}</div>
-            </div>
-            <div class="stat-card-footer">
-                <span class="stat-sub-text">
-                    @if(($quickStats['low_stock_total'] ?? 0) > 0)
-                        <span class="badge-dot dot-danger"></span> <strong class="text-danger">{{ $quickStats['low_stock_total'] }}</strong> stock faible
-                    @else
-                        <span class="badge-dot dot-success"></span> Stock optimal
-                    @endif
-                </span>
-            </div>
+            </a>
         </div>
 
         <!-- KPI 4 : Clients -->
-        <div class="stat-card-pro" style="cursor: pointer;" onclick="window.location='{{ route('customers.index') }}'" title="Voir la liste des clients">
-            <div class="stat-card-header">
-                <div class="stat-icon-pro icon-indigo">
-                    <i class="fas fa-users"></i>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('customers.index') }}" class="stat-kpi-card text-decoration-none">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Clients Boutique</div>
+                        <div class="stat-kpi-value text-dark"><span class="total-clients-display">{{ number_format($stats['total_clients'] ?? $stats['total_users']) }}</span></div>
+                        <div class="stat-kpi-sub text-muted">
+                            <span class="stock-pulse-dot" style="width: 7px; height: 7px; background: #10b981; display: inline-block;"></span>
+                            <strong class="text-success live-clients-badge">{{ $stats['online_clients'] ?? 1 }}</strong> en ligne
+                        </div>
+                    </div>
+                    <div class="stat-kpi-icon bg-info-subtle text-info">
+                        <i class="fas fa-users"></i>
+                    </div>
                 </div>
-                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 d-inline-flex align-items-center gap-1.5" style="font-size: 0.72rem;">
-                    <span class="stock-pulse-dot" style="width: 7px; height: 7px; background: #10b981; display: inline-block;"></span>
-                    <strong class="live-clients-badge">{{ $stats['online_clients'] ?? 1 }}</strong> en ligne
-                </span>
-            </div>
-            <div class="stat-card-body">
-                <div class="stat-label-pro d-flex align-items-center justify-content-between">
-                    <span>Clients de la boutique</span>
-                    <span class="text-muted small fw-normal" style="font-size: 0.72rem;">Actuels</span>
-                </div>
-                <div class="stat-value-pro d-flex align-items-baseline gap-2">
-                    <span class="total-clients-display">{{ number_format($stats['total_clients'] ?? $stats['total_users']) }}</span>
-                    <span class="text-muted fw-normal" style="font-size: 0.8rem;">inscrits</span>
-                </div>
-            </div>
-            <div class="stat-card-footer">
-                <div class="d-flex align-items-center justify-content-between w-100">
-                    <span class="stat-sub-text text-dark d-inline-flex align-items-center gap-1.5">
-                        <i class="fas fa-signal text-success" style="font-size: 11px;"></i>
-                        <span><strong class="text-success live-clients-badge">{{ $stats['online_clients'] ?? 1 }}</strong> sur le site en ce moment</span>
-                    </span>
-                    <span class="text-muted small d-inline-flex align-items-center gap-1" style="font-size: 0.74rem;">
-                        <span>Gérer</span>
-                        <i class="fas fa-arrow-right" style="font-size: 10px;"></i>
-                    </span>
-                </div>
-            </div>
+            </a>
         </div>
     </div>
 

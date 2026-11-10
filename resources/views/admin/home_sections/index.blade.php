@@ -301,27 +301,23 @@
 @section('content')
 <div class="container-fluid px-2 px-sm-3 px-md-4 py-3">
 
-    <!-- Executive Brand Header -->
-    <div class="brand-header d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-4">
+    <!-- Executive Brand Header (Clean & Pro) -->
+    <div class="brand-header">
         <div class="d-flex align-items-center gap-2.5">
-            <div class="brand-header-icon flex-shrink-0" style="width: 44px; height: 44px; border-radius: 12px; background: rgba(200, 16, 46, 0.1); color: #c8102e; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+            <div class="brand-header-icon flex-shrink-0">
                 <i class="fas fa-layer-group"></i>
             </div>
             <div>
-                <h1 class="brand-title mb-0" style="font-size: clamp(1.2rem, 2.5vw, 1.6rem); font-weight: 800; color: #0f172a; letter-spacing: -0.3px;">
-                    Gestion des Sections de l'Accueil
-                </h1>
-                <p class="brand-subtitle mb-0 text-muted small">
-                    Sélectionnez les produits et organisez leur ordre d'affichage en direct sur la boutique
-                </p>
+                <h1 class="brand-title">Gestion des Sections de l'Accueil</h1>
+                <p class="brand-subtitle">Sélectionnez les produits et organisez leur ordre d'affichage en direct sur la boutique</p>
             </div>
         </div>
-        <div class="brand-header-actions d-flex align-items-center gap-2 flex-wrap">
-            <a href="{{ url('/') }}" target="_blank" class="btn btn-outline-secondary shadow-sm rounded-pill px-3 py-1.5 d-inline-flex align-items-center gap-1.5 fw-semibold" style="font-size: 0.82rem;">
-                <i class="fas fa-external-link-alt"></i> <span>Voir l'accueil</span>
+        <div class="brand-header-actions">
+            <a href="{{ url('/') }}" target="_blank" class="btn-brand-outline">
+                <i class="fas fa-external-link-alt me-1.5" style="color: var(--primary-color)"></i> <span>Voir l'accueil</span>
             </a>
-            <a href="{{ route('banners.index') }}" class="btn btn-outline-primary shadow-sm rounded-pill px-3 py-1.5 d-inline-flex align-items-center gap-1.5 fw-semibold" style="font-size: 0.82rem;">
-                <i class="fas fa-sliders-h"></i> <span>Slider & Bannières</span>
+            <a href="{{ route('banners.index') }}" class="btn-brand-outline">
+                <i class="fas fa-sliders-h me-1.5 text-danger"></i> <span>Slider & Bannières</span>
             </a>
         </div>
     </div>
@@ -335,22 +331,20 @@
         </div>
     @endif
 
-    {{-- KPI Cards Row --}}
+    {{-- KPI Cards Row (Product Section Standard) --}}
     <div class="row g-3 mb-4">
         @foreach($sectionsData as $sKey => $sData)
         <div class="col-12 col-sm-6 col-lg-4">
-            <div class="card border-0 shadow-sm rounded-4 h-100 p-3" style="background: #ffffff; border: 1px solid #edf2f7 !important;">
+            <div class="stat-kpi-card">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <div class="text-uppercase fw-bold text-muted small" style="font-size: 0.72rem; letter-spacing: 0.05em;">{{ $sData['badge'] }}</div>
-                        <div class="fs-4 fw-bold text-dark my-1" id="kpi-count-{{ $sKey }}">
-                            {{ $sData['count'] }} <span class="fs-6 fw-normal text-muted">produits</span>
-                        </div>
-                        <div class="text-truncate text-secondary small" style="max-width: 220px;" title="{{ $sData['current_title'] }}">
+                        <div class="stat-kpi-label">{{ $sData['badge'] }}</div>
+                        <div class="stat-kpi-value text-dark" id="kpi-count-{{ $sKey }}">{{ $sData['count'] }} <span class="fs-6 fw-normal text-muted">produits</span></div>
+                        <div class="stat-kpi-sub text-muted text-truncate" style="max-width: 220px;" title="{{ $sData['current_title'] }}">
                             {{ $sData['current_title'] }}
                         </div>
                     </div>
-                    <div class="rounded-3 p-3 flex-shrink-0 @if($sKey === 'featured') bg-warning-subtle text-warning @elseif($sKey === 'new_arrivals') bg-danger-subtle text-danger @else bg-success-subtle text-success @endif" style="font-size: 1.3rem;">
+                    <div class="stat-kpi-icon @if($sKey === 'featured') bg-warning-subtle text-warning @elseif($sKey === 'new_arrivals') bg-danger-subtle text-danger @else bg-success-subtle text-success @endif">
                         <i class="{{ $sData['icon'] }}"></i>
                     </div>
                 </div>

@@ -156,81 +156,112 @@
 @endpush
 
 @section('content')
-<!-- Hero Header -->
-<div class="debtors-hero mb-3 mb-md-4 p-3 p-md-4">
-    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-start gap-3">
+<!-- En-tête de page (Clean & Pro) -->
+<div class="brand-header">
+    <div class="d-flex align-items-center gap-2.5">
+        <div class="brand-header-icon flex-shrink-0">
+            <i class="fas fa-hand-holding-dollar"></i>
+        </div>
         <div>
-            <h1 class="h3 fw-bold mb-1 text-white d-flex align-items-center gap-2">
-                <i class="fas fa-chart-line"></i>
-                <span>Créances & Débiteurs</span>
-            </h1>
-            <p class="mb-0 text-white-50 small">
-                Suivez, gérez et recouvrez efficacement les paiements impayés
-            </p>
+            <h1 class="brand-title">Créances & Débiteurs</h1>
+            <p class="brand-subtitle">Suivez, gérez et recouvrez efficacement les paiements impayés</p>
         </div>
-        <div class="d-flex gap-2 flex-wrap">
-            <a href="{{ route('debtors.download') }}" class="btn btn-light btn-sm rounded-pill px-3 fw-semibold">
-                <i class="fas fa-download me-1.5 text-primary"></i> Export PDF
-            </a>
-            <button class="btn btn-light btn-sm rounded-pill px-3 fw-semibold" onclick="window.print()">
-                <i class="fas fa-print me-1.5 text-secondary"></i> Imprimer
-            </button>
-        </div>
+    </div>
+    <div class="brand-header-actions">
+        <a href="{{ route('debtors.download') }}" class="btn-brand-outline">
+            <i class="fas fa-download me-1.5 text-primary"></i> Export PDF
+        </a>
+        <button class="btn-brand-outline" onclick="window.print()">
+            <i class="fas fa-print me-1.5 text-secondary"></i> Imprimer
+        </button>
     </div>
 </div>
 
-<!-- Enhanced Statistics -->
-<div class="row g-2 g-md-3 mb-3 mb-md-4">
-    <div class="col-6 col-md-3">
-        <div class="stat-card-pro p-3" style="border-left-color: #ef4444;">
-            <div class="stat-icon-pro" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; width: 34px; height: 34px; font-size: 0.85rem;">
-                <i class="fas fa-users"></i>
-            </div>
-            <div class="small text-muted mb-1 text-truncate">Total Débiteurs</div>
-            <div class="fw-bold text-dark fs-4">{{ $stats['total_debtors'] }}</div>
-            <div class="small text-muted text-truncate d-none d-sm-block mt-1" style="font-size: 0.72rem;">
-                <i class="fas fa-info-circle me-1"></i>Clients avec solde
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-6 col-md-3">
-        <div class="stat-card-pro p-3" style="border-left-color: #f59e0b;">
-            <div class="stat-icon-pro" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; width: 34px; height: 34px; font-size: 0.85rem;">
-                <i class="fas fa-coins"></i>
-            </div>
-            <div class="small text-muted mb-1 text-truncate">Encours Total</div>
-            <div class="fw-bold text-dark fs-5 text-truncate">{{ currency($stats['total_outstanding']) }}</div>
-            <div class="small text-muted text-truncate d-none d-sm-block mt-1" style="font-size: 0.72rem;">
-                <i class="fas fa-trending-up me-1"></i>Montant à recouvrer
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-6 col-md-3">
-        <div class="stat-card-pro p-3" style="border-left-color: #dc2626;">
-            <div class="stat-icon-pro" style="background: rgba(220, 38, 38, 0.1); color: #dc2626; width: 34px; height: 34px; font-size: 0.85rem;">
-                <i class="fas fa-exclamation-triangle"></i>
-            </div>
-            <div class="small text-muted mb-1 text-truncate">Plafond Dépassé</div>
-            <div class="fw-bold text-danger fs-4">{{ $stats['over_limit_count'] }}</div>
-            <div class="small text-muted text-truncate d-none d-sm-block mt-1" style="font-size: 0.72rem;">
-                <i class="fas fa-ban me-1"></i>Action immédiate
+<!-- Navigation Croisée ERP (Créances <-> Règlements Clients <-> Fiches Clients) -->
+<div class="subnav-pills-bar">
+    <a href="{{ route('debtors.index') }}" class="subnav-pill active">
+        <i class="fas fa-hand-holding-dollar text-danger"></i>
+        <span>Créances & Débiteurs</span>
+        <span class="subnav-pill-badge">{{ $stats['total_debtors'] }}</span>
+    </a>
+    <a href="{{ route('client-credits.index') }}" class="subnav-pill">
+        <i class="fas fa-wallet text-warning"></i>
+        <span>Crédits & Plafonds Clients</span>
+    </a>
+    <a href="{{ route('client-credits.transactions') }}" class="subnav-pill">
+        <i class="fas fa-list-check text-primary"></i>
+        <span>Grand Livre des Règlements</span>
+    </a>
+    <a href="{{ route('customers.index') }}" class="subnav-pill">
+        <i class="fas fa-users text-secondary"></i>
+        <span>Fiches Clients</span>
+    </a>
+</div>
+
+<!-- Enhanced Statistics (Product Section Standard) -->
+<div class="row g-3 mb-4">
+    <!-- 1. Total Débiteurs -->
+    <div class="col-6 col-lg-3">
+        <div class="stat-kpi-card">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <div class="stat-kpi-label">Total Débiteurs</div>
+                    <div class="stat-kpi-value text-dark">{{ $stats['total_debtors'] }}</div>
+                    <div class="stat-kpi-sub text-muted">Clients avec solde dû</div>
+                </div>
+                <div class="stat-kpi-icon bg-primary-subtle text-primary">
+                    <i class="fas fa-users"></i>
+                </div>
             </div>
         </div>
     </div>
     
-    <div class="col-6 col-md-3">
-        <div class="stat-card-pro p-3" style="border-left-color: #667eea;">
-            <div class="stat-icon-pro" style="background: rgba(102, 126, 234, 0.1); color: #667eea; width: 34px; height: 34px; font-size: 0.85rem;">
-                <i class="fas fa-percentage"></i>
+    <!-- 2. Encours Total -->
+    <div class="col-6 col-lg-3">
+        <div class="stat-kpi-card">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <div class="stat-kpi-label">Encours Total</div>
+                    <div class="stat-kpi-value text-danger">{{ currency($stats['total_outstanding']) }}</div>
+                    <div class="stat-kpi-sub text-muted">Montant à recouvrer</div>
+                </div>
+                <div class="stat-kpi-icon bg-danger-subtle text-danger">
+                    <i class="fas fa-coins"></i>
+                </div>
             </div>
-            <div class="small text-muted mb-1 text-truncate">Taux de Maîtrise</div>
-            <div class="fw-bold text-dark fs-5">
-                {{ $stats['total_debtors'] > 0 ? number_format(($stats['total_debtors'] - $stats['over_limit_count']) / $stats['total_debtors'] * 100, 1) : 0 }}%
+        </div>
+    </div>
+    
+    <!-- 3. Plafond Dépassé -->
+    <div class="col-6 col-lg-3">
+        <div class="stat-kpi-card">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <div class="stat-kpi-label">Plafond Dépassé</div>
+                    <div class="stat-kpi-value text-warning">{{ $stats['over_limit_count'] }}</div>
+                    <div class="stat-kpi-sub text-muted">Action immédiate</div>
+                </div>
+                <div class="stat-kpi-icon bg-warning-subtle text-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
             </div>
-            <div class="small text-muted text-truncate d-none d-sm-block mt-1" style="font-size: 0.72rem;">
-                <i class="fas fa-chart-pie me-1"></i>Dans les plafonds
+        </div>
+    </div>
+    
+    <!-- 4. Taux de Maîtrise -->
+    <div class="col-6 col-lg-3">
+        <div class="stat-kpi-card" style="border-left: 3.5px solid var(--success-color, #10b981);">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <div class="stat-kpi-label">Taux de Maîtrise</div>
+                    <div class="stat-kpi-value text-success">
+                        {{ $stats['total_debtors'] > 0 ? number_format(($stats['total_debtors'] - $stats['over_limit_count']) / $stats['total_debtors'] * 100, 1) : 0 }}%
+                    </div>
+                    <div class="stat-kpi-sub text-muted">Dans les plafonds autorisés</div>
+                </div>
+                <div class="stat-kpi-icon bg-success-subtle text-success">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
             </div>
         </div>
     </div>

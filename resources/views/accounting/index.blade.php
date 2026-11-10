@@ -3,59 +3,87 @@
 @section('title', 'Accounting Dashboard')
 
 @section('content')
-    <!-- Page Header -->
+    <!-- Page Header (Clean & Pro) -->
     <div class="brand-header">
-        <div>
-            <h1 class="brand-title">
-                <div class="brand-header-icon">
-                    <i class="fas fa-book-open"></i>
-                </div>
-                Financial Overview
-            </h1>
-            <p class="brand-subtitle">Manage your accounts and track financial health.</p>
+        <div class="d-flex align-items-center gap-2.5">
+            <div class="brand-header-icon flex-shrink-0">
+                <i class="fas fa-book-open"></i>
+            </div>
+            <div>
+                <h1 class="brand-title">Comptabilité & Vue Financière</h1>
+                <p class="brand-subtitle">Gérez vos comptes, bilans et suivez la santé financière de l'entreprise</p>
+            </div>
         </div>
-        <div class="d-flex gap-2">
-            <a href="{{ route('accounting.entries.create') }}" class="btn-brand-primary">
-                <i class="fas fa-plus me-2"></i> New Entry
-            </a>
+        <div class="brand-header-actions">
             <a href="{{ route('accounting.reports') }}" class="btn-brand-outline">
-                <i class="fas fa-chart-bar me-2"></i> Reports
+                <i class="fas fa-chart-bar me-1.5" style="color: var(--primary-color)"></i> Rapports
+            </a>
+            <a href="{{ route('accounting.entries.create') }}" class="btn-brand-primary">
+                <i class="fas fa-plus me-1.5"></i> Nouvelle Écriture
             </a>
         </div>
     </div>
 
-    <!-- Statistics Cards -->
-    <div class="brand-stats-grid">
-        <div class="brand-stat-card">
-            <div class="brand-stat-icon info">
-                <i class="fas fa-university"></i>
+    <!-- Statistics Cards (Product Section Standard) -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="stat-kpi-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Actif Total</div>
+                        <div class="stat-kpi-value text-dark">{{ currency($totalAssets) }}</div>
+                        <div class="stat-kpi-sub text-muted">Total Assets</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-info-subtle text-info">
+                        <i class="fas fa-university"></i>
+                    </div>
+                </div>
             </div>
-            <div class="brand-stat-label">Total Assets</div>
-            <div class="brand-stat-value">{{ currency($totalAssets) }}</div>
         </div>
         
-        <div class="brand-stat-card">
-            <div class="brand-stat-icon danger">
-                <i class="fas fa-file-invoice-dollar"></i>
+        <div class="col-6 col-lg-3">
+            <div class="stat-kpi-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Passif Total</div>
+                        <div class="stat-kpi-value text-danger">{{ currency($totalLiabilities) }}</div>
+                        <div class="stat-kpi-sub text-muted">Total Liabilities</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-danger-subtle text-danger">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                </div>
             </div>
-            <div class="brand-stat-label">Total Liabilities</div>
-            <div class="brand-stat-value">{{ currency($totalLiabilities) }}</div>
         </div>
         
-        <div class="brand-stat-card">
-            <div class="brand-stat-icon primary">
-                <i class="fas fa-balance-scale"></i>
+        <div class="col-6 col-lg-3">
+            <div class="stat-kpi-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Capitaux Propres</div>
+                        <div class="stat-kpi-value text-primary">{{ currency($totalEquity) }}</div>
+                        <div class="stat-kpi-sub text-muted">Equity</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-primary-subtle text-primary">
+                        <i class="fas fa-balance-scale"></i>
+                    </div>
+                </div>
             </div>
-            <div class="brand-stat-label">Equity</div>
-            <div class="brand-stat-value">{{ currency($totalEquity) }}</div>
         </div>
         
-        <div class="brand-stat-card">
-            <div class="brand-stat-icon success">
-                <i class="fas fa-chart-line"></i>
+        <div class="col-6 col-lg-3">
+            <div class="stat-kpi-card" style="border-left: 3.5px solid var(--success-color, #10b981);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Résultat Net (YTD)</div>
+                        <div class="stat-kpi-value text-success">{{ currency($netIncome) }}</div>
+                        <div class="stat-kpi-sub text-muted">Exercice en cours</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-success-subtle text-success">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
             </div>
-            <div class="brand-stat-label">Net Income (YTD)</div>
-            <div class="brand-stat-value">{{ currency($netIncome) }}</div>
         </div>
     </div>
 

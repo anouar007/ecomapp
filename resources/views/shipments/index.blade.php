@@ -78,36 +78,49 @@
 @section('content')
 <div class="container-fluid py-4">
 
-    <!-- Top Executive Header -->
-    <div class="card border-0 rounded-4 shadow-sm mb-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff;">
-        <div class="card-body p-4">
-            <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-circle bg-danger bg-opacity-25 border border-danger border-opacity-50 text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 52px; height: 52px; font-size: 1.35rem;">
-                        <i class="fas fa-truck-ramp-box text-white"></i>
-                    </div>
-                    <div>
-                        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
-                            <span class="badge bg-danger rounded-pill px-2.5 py-0.5 fw-semibold" style="font-size: 0.72rem;">
-                                <i class="fas fa-lock me-1"></i> GESTION DES EXPÉDITIONS & COÛTS
-                            </span>
-                            <span class="text-white-50 small">• Coûts d'Achat par Arrivage & Lot</span>
-                        </div>
-                        <h1 class="h3 fw-bold text-white mb-0">Arrivages & Coûts par Expédition</h1>
-                        <p class="text-white-50 small mb-0 mt-1">Enregistrez le coût d'achat spécifique de chaque arrivage fournisseur, ventilez les frais de douane et de transport, et suivez vos marges réelles par lot.</p>
-                    </div>
+    <!-- En-tête de page (Clean & Pro) -->
+    <div class="brand-header">
+        <div class="d-flex align-items-center gap-2.5">
+            <div class="brand-header-icon flex-shrink-0">
+                <i class="fas fa-truck-ramp-box"></i>
+            </div>
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                    <span class="badge bg-danger rounded-pill px-2.5 py-0.5 fw-semibold" style="font-size: 0.72rem;">
+                        <i class="fas fa-lock me-1"></i> GESTION DES EXPÉDITIONS & COÛTS
+                    </span>
+                    <span class="text-muted small">• Coûts d'Achat par Arrivage & Lot</span>
                 </div>
-
-                <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <a href="{{ route('reports.profitability.costs') }}" class="btn btn-outline-light rounded-pill px-3.5 py-2 fw-semibold shadow-xs" style="font-size: 0.85rem;">
-                        <i class="fas fa-coins me-1.5"></i> Coûts Catalogue
-                    </a>
-                    <a href="{{ route('shipments.create') }}" class="btn btn-danger rounded-pill px-4 py-2 fw-semibold shadow-sm" style="font-size: 0.85rem;">
-                        <i class="fas fa-plus-circle me-1.5"></i> Nouvel Arrivage
-                    </a>
-                </div>
+                <h1 class="brand-title">Arrivages & Coûts par Expédition</h1>
+                <p class="brand-subtitle">Enregistrez le coût d'achat spécifique de chaque arrivage fournisseur, ventilez les frais de douane et de transport, et suivez vos marges réelles par lot.</p>
             </div>
         </div>
+
+        <div class="brand-header-actions">
+            <a href="{{ route('reports.profitability.costs') }}" class="btn-brand-outline">
+                <i class="fas fa-coins me-1.5" style="color: var(--primary-color)"></i> Coûts Catalogue
+            </a>
+            <a href="{{ route('shipments.create') }}" class="btn-brand-primary">
+                <i class="fas fa-plus-circle me-1.5"></i> Nouvel Arrivage
+            </a>
+        </div>
+    </div>
+
+    <!-- Navigation Croisée ERP (Arrivages <-> Coûts <-> Rentabilité) -->
+    <div class="subnav-pills-bar">
+        <a href="{{ route('shipments.index') }}" class="subnav-pill active">
+            <i class="fas fa-truck-ramp-box text-danger"></i>
+            <span>Arrivages & Expéditions Fournisseurs</span>
+            <span class="subnav-pill-badge">{{ $totalShipments }}</span>
+        </a>
+        <a href="{{ route('reports.profitability.costs') }}" class="subnav-pill">
+            <i class="fas fa-coins text-warning"></i>
+            <span>Coûts d'Achat & Prix de Revient</span>
+        </a>
+        <a href="{{ route('reports.profitability') }}" class="subnav-pill">
+            <i class="fas fa-chart-pie text-success"></i>
+            <span>Rapport de Rentabilité & Marges</span>
+        </a>
     </div>
 
     <!-- Alert / Flash message -->
@@ -121,76 +134,68 @@
     </div>
     @endif
 
-    <!-- 4 Financial KPI Cards -->
+    <!-- 4 Financial KPI Cards (Product Section Standard) -->
     <div class="row g-3 mb-4">
         <!-- 1. Total Arrivages -->
-        <div class="col-6 col-xl-3">
-            <div class="shipment-kpi-card">
-                <div>
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Total Arrivages</span>
-                        <div class="kpi-icon-pill bg-primary-subtle text-primary">
-                            <i class="fas fa-boxes-packing"></i>
-                        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-kpi-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Total Arrivages</div>
+                        <div class="stat-kpi-value text-dark">{{ $totalShipments }}</div>
+                        <div class="stat-kpi-sub text-muted">{{ $activeSuppliersCount }} fournisseur(s)</div>
                     </div>
-                    <div class="h3 fw-bold text-dark mb-1">{{ $totalShipments }}</div>
-                </div>
-                <div class="pt-2 border-top mt-2 text-muted small" style="font-size: 0.74rem;">
-                    <span>{{ $activeSuppliersCount }} fournisseur(s) référencé(s)</span>
+                    <div class="stat-kpi-icon bg-primary-subtle text-primary">
+                        <i class="fas fa-boxes-packing"></i>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- 2. Valeur Marchandises Achetées -->
-        <div class="col-6 col-xl-3">
-            <div class="shipment-kpi-card">
-                <div>
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Total Marchandises (DH)</span>
-                        <div class="kpi-icon-pill bg-warning-subtle text-warning">
-                            <i class="fas fa-hand-holding-dollar"></i>
-                        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-kpi-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Marchandises Net</div>
+                        <div class="stat-kpi-value text-dark">{{ currency($totalLandedValue - $totalExtraFees) }}</div>
+                        <div class="stat-kpi-sub text-muted">Prix d'achat facturé</div>
                     </div>
-                    <div class="h3 fw-bold text-dark mb-1">{{ currency($totalLandedValue - $totalExtraFees) }}</div>
-                </div>
-                <div class="pt-2 border-top mt-2 text-muted small" style="font-size: 0.74rem;">
-                    <span>Prix d'achat net facturé par les fournisseurs</span>
+                    <div class="stat-kpi-icon bg-warning-subtle text-warning">
+                        <i class="fas fa-hand-holding-dollar"></i>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- 3. Frais de Transit & Douane -->
-        <div class="col-6 col-xl-3">
-            <div class="shipment-kpi-card">
-                <div>
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Frais Approche (Douane/Fret)</span>
-                        <div class="kpi-icon-pill bg-info-subtle text-info">
-                            <i class="fas fa-plane-departure"></i>
-                        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-kpi-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Frais Approche</div>
+                        <div class="stat-kpi-value text-info">{{ currency($totalExtraFees) }}</div>
+                        <div class="stat-kpi-sub text-muted">Douane, fret & transport</div>
                     </div>
-                    <div class="h3 fw-bold text-info mb-1">{{ currency($totalExtraFees) }}</div>
-                </div>
-                <div class="pt-2 border-top mt-2 text-muted small" style="font-size: 0.74rem;">
-                    <span>Frais répartis sur le coût de revient des lots</span>
+                    <div class="stat-kpi-icon bg-info-subtle text-info">
+                        <i class="fas fa-plane-departure"></i>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- 4. Coût Global Rendu Magasin -->
-        <div class="col-6 col-xl-3">
-            <div class="shipment-kpi-card" style="background: linear-gradient(135deg, #064e3b 0%, #065f46 100%); color: #ffffff;">
-                <div>
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-white-50 fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Coût Global Rendu</span>
-                        <div class="kpi-icon-pill bg-white text-success">
-                            <i class="fas fa-sack-dollar"></i>
-                        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-kpi-card" style="border-left: 3.5px solid var(--success-color, #10b981);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Coût Global Rendu</div>
+                        <div class="stat-kpi-value text-success">{{ currency($totalLandedValue) }}</div>
+                        <div class="stat-kpi-sub text-muted">{{ number_format($totalUnitsReceived, 0, ',', ' ') }} unités reçues</div>
                     </div>
-                    <div class="h3 fw-bold text-white mb-1">{{ currency($totalLandedValue) }}</div>
-                </div>
-                <div class="pt-2 border-top mt-2 text-white-50 small" style="font-size: 0.74rem;">
-                    <span>{{ number_format($totalUnitsReceived, 0, ',', ' ') }} unités réceptionnées</span>
+                    <div class="stat-kpi-icon bg-success-subtle text-success">
+                        <i class="fas fa-sack-dollar"></i>
+                    </div>
                 </div>
             </div>
         </div>

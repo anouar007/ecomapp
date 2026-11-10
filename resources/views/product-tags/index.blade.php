@@ -45,7 +45,7 @@
     <!-- En-tête de page aligné sur le design global -->
     <div class="brand-header">
         <div class="d-flex align-items-center gap-2.5">
-            <div class="brand-header-icon flex-shrink-0" style="background: rgba(220, 53, 69, 0.1); color: #dc3545;">
+            <div class="brand-header-icon flex-shrink-0">
                 <i class="fas fa-bolt"></i>
             </div>
             <div>
@@ -79,84 +79,72 @@
         </div>
     @endif
 
-    <!-- Pro KPI Metric Cards Grid (Identique au design Marques & Produits) -->
-    <div class="stats-grid-pro mb-4">
+    <!-- Metric KPI Stat Cards (Product Section Standard) -->
+    <div class="row g-3 mb-4">
         <!-- KPI 1 : Total des tags -->
-        <div class="stat-card-pro">
-            <div class="stat-card-header">
-                <div class="stat-icon-pro icon-red">
-                    <i class="fas fa-bolt"></i>
+        <div class="col-6 col-lg-3">
+            <div class="stat-kpi-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Total des tags</div>
+                        <div class="stat-kpi-value text-dark">{{ $totalTags ?? 0 }}</div>
+                        <div class="stat-kpi-sub text-muted">Badges configurés</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-primary-subtle text-primary">
+                        <i class="fas fa-bolt"></i>
+                    </div>
                 </div>
-                <span class="stat-trend-badge trend-up">
-                    <i class="fas fa-layer-group"></i> Total
-                </span>
-            </div>
-            <div class="stat-card-body">
-                <div class="stat-label-pro">Total des tags</div>
-                <div class="stat-value-pro">{{ $totalTags ?? 0 }}</div>
-            </div>
-            <div class="stat-card-footer">
-                <span class="stat-sub-text">Badges configurés dans le studio</span>
             </div>
         </div>
 
         <!-- KPI 2 : Tags Actifs -->
-        <div class="stat-card-pro">
-            <div class="stat-card-header">
-                <div class="stat-icon-pro icon-green">
-                    <i class="fas fa-check-circle"></i>
+        <div class="col-6 col-lg-3">
+            <div class="stat-kpi-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Tags actifs</div>
+                        <div class="stat-kpi-value text-success">{{ $activeTags ?? 0 }}</div>
+                        <div class="stat-kpi-sub text-muted">
+                            {{ ($inactiveTags ?? 0) > 0 ? ($inactiveTags . ' inactif(s)') : 'Visibles sur la boutique' }}
+                        </div>
+                    </div>
+                    <div class="stat-kpi-icon bg-success-subtle text-success">
+                        <i class="fas fa-circle-check"></i>
+                    </div>
                 </div>
-                <span class="stat-trend-badge trend-up">
-                    <i class="fas fa-signal"></i> En ligne
-                </span>
-            </div>
-            <div class="stat-card-body">
-                <div class="stat-label-pro">Tags actifs</div>
-                <div class="stat-value-pro">{{ $activeTags ?? 0 }}</div>
-            </div>
-            <div class="stat-card-footer">
-                <span class="stat-sub-text">
-                    {{ ($inactiveTags ?? 0) > 0 ? ($inactiveTags . ' inactif(s)') : 'Visibles sur la boutique' }}
-                </span>
             </div>
         </div>
 
         <!-- KPI 3 : Tags utilisés -->
-        <div class="stat-card-pro">
-            <div class="stat-card-header">
-                <div class="stat-icon-pro icon-indigo">
-                    <i class="fas fa-tags"></i>
+        <div class="col-6 col-lg-3">
+            <div class="stat-kpi-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Tags utilisés</div>
+                        <div class="stat-kpi-value text-primary">{{ $tagsWithProducts ?? 0 }}</div>
+                        <div class="stat-kpi-sub text-muted">Assignés à des produits</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-info-subtle text-info">
+                        <i class="fas fa-tags"></i>
+                    </div>
                 </div>
-                <span class="stat-trend-badge trend-up">
-                    <i class="fas fa-link"></i> Assignés
-                </span>
-            </div>
-            <div class="stat-card-body">
-                <div class="stat-label-pro">Tags utilisés</div>
-                <div class="stat-value-pro">{{ $tagsWithProducts ?? 0 }}</div>
-            </div>
-            <div class="stat-card-footer">
-                <span class="stat-sub-text">Associés à au moins 1 produit</span>
             </div>
         </div>
 
         <!-- KPI 4 : Produits badgés -->
-        <div class="stat-card-pro">
-            <div class="stat-card-header">
-                <div class="stat-icon-pro icon-amber">
-                    <i class="fas fa-boxes-stacked"></i>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('products.index') }}" class="stat-kpi-card text-decoration-none">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Produits badgés</div>
+                        <div class="stat-kpi-value text-dark">{{ $taggedProductsCount ?? 0 }}</div>
+                        <div class="stat-kpi-sub text-muted">Affichant un badge</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-warning-subtle text-warning">
+                        <i class="fas fa-boxes-stacked"></i>
+                    </div>
                 </div>
-                <span class="stat-trend-badge trend-up">
-                    <i class="fas fa-expand-arrows-alt"></i> Auto-scale
-                </span>
-            </div>
-            <div class="stat-card-body">
-                <div class="stat-label-pro">Produits badgés</div>
-                <div class="stat-value-pro">{{ $taggedProductsCount ?? 0 }}</div>
-            </div>
-            <div class="stat-card-footer">
-                <span class="stat-sub-text">Affichant un badge sur leurs cartes</span>
-            </div>
+            </a>
         </div>
     </div>
 

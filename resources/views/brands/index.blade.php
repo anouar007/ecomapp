@@ -7,7 +7,7 @@
     <!-- En-tête de page -->
     <div class="brand-header">
         <div class="d-flex align-items-center gap-2.5">
-            <div class="brand-header-icon flex-shrink-0" style="background: rgba(220, 53, 69, 0.1); color: #dc3545;">
+            <div class="brand-header-icon flex-shrink-0">
                 <i class="fas fa-tags"></i>
             </div>
             <div>
@@ -42,83 +42,73 @@
         </div>
     @endif
 
-    <!-- Pro KPI Metric Cards Grid -->
-    <div class="stats-grid-pro mb-4">
+    <!-- Metric KPI Stat Cards (Product Section Standard) -->
+    <div class="row g-3 mb-4">
         <!-- KPI 1 : Total marques -->
-        <div class="stat-card-pro">
-            <div class="stat-card-header">
-                <div class="stat-icon-pro icon-red">
-                    <i class="fas fa-tags"></i>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('brands.index') }}" class="stat-kpi-card text-decoration-none {{ !request('status') && !request('search') ? 'active-filter' : '' }}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Total marques</div>
+                        <div class="stat-kpi-value text-dark">{{ $kpiStats['total'] ?? 0 }}</div>
+                        <div class="stat-kpi-sub text-muted">Constructeurs répertoriés</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-primary-subtle text-primary">
+                        <i class="fas fa-tags"></i>
+                    </div>
                 </div>
-                <span class="stat-trend-badge trend-up">
-                    <i class="fas fa-layer-group"></i> Total
-                </span>
-            </div>
-            <div class="stat-card-body">
-                <div class="stat-label-pro">Total marques</div>
-                <div class="stat-value-pro">{{ $kpiStats['total'] ?? 0 }}</div>
-            </div>
-            <div class="stat-card-footer">
-                <span class="stat-sub-text">Constructeurs répertoriés</span>
-            </div>
+            </a>
         </div>
 
         <!-- KPI 2 : Marques Actives -->
-        <div class="stat-card-pro">
-            <div class="stat-card-header">
-                <div class="stat-icon-pro icon-green">
-                    <i class="fas fa-check-circle"></i>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('brands.index', ['status' => 'active']) }}" class="stat-kpi-card text-decoration-none {{ request('status') === 'active' ? 'active-filter' : '' }}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Marques actives</div>
+                        <div class="stat-kpi-value text-success">{{ $kpiStats['active'] ?? 0 }}</div>
+                        <div class="stat-kpi-sub text-muted">
+                            {{ ($kpiStats['inactive'] ?? 0) > 0 ? ($kpiStats['inactive'] . ' inactive(s)') : 'Visibles sur le shop' }}
+                        </div>
+                    </div>
+                    <div class="stat-kpi-icon bg-success-subtle text-success">
+                        <i class="fas fa-circle-check"></i>
+                    </div>
                 </div>
-                <span class="stat-trend-badge trend-up">
-                    <i class="fas fa-signal"></i> En ligne
-                </span>
-            </div>
-            <div class="stat-card-body">
-                <div class="stat-label-pro">Marques actives</div>
-                <div class="stat-value-pro">{{ $kpiStats['active'] ?? 0 }}</div>
-            </div>
-            <div class="stat-card-footer">
-                <span class="stat-sub-text">
-                    {{ ($kpiStats['inactive'] ?? 0) > 0 ? ($kpiStats['inactive'] . ' inactive(s)') : 'Visibles sur le shop' }}
-                </span>
-            </div>
+            </a>
         </div>
 
         <!-- KPI 3 : Avec Produits -->
-        <div class="stat-card-pro">
-            <div class="stat-card-header">
-                <div class="stat-icon-pro icon-indigo">
-                    <i class="fas fa-boxes-stacked"></i>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('products.index') }}" class="stat-kpi-card text-decoration-none">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Marques garnies</div>
+                        <div class="stat-kpi-value text-primary">{{ $kpiStats['with_products'] ?? 0 }}</div>
+                        <div class="stat-kpi-sub text-muted">Avec articles associés</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-info-subtle text-info">
+                        <i class="fas fa-boxes-stacked"></i>
+                    </div>
                 </div>
-                <span class="stat-trend-badge trend-up">
-                    <i class="fas fa-box"></i> Avec stock
-                </span>
-            </div>
-            <div class="stat-card-body">
-                <div class="stat-label-pro">Marques garnies</div>
-                <div class="stat-value-pro">{{ $kpiStats['with_products'] ?? 0 }}</div>
-            </div>
-            <div class="stat-card-footer">
-                <span class="stat-sub-text">Possédant au moins 1 produit</span>
-            </div>
+            </a>
         </div>
 
         <!-- KPI 4 : Produits sans marque -->
-        <div class="stat-card-pro">
-            <div class="stat-card-header">
-                <div class="stat-icon-pro icon-amber">
-                    <i class="fas fa-question-circle"></i>
+        <div class="col-6 col-lg-3">
+            <div class="stat-kpi-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Sans marque</div>
+                        <div class="stat-kpi-value {{ ($kpiStats['unassigned_products'] ?? 0) > 0 ? 'text-warning' : 'text-muted' }}">
+                            {{ $kpiStats['unassigned_products'] ?? 0 }}
+                        </div>
+                        <div class="stat-kpi-sub text-muted">Articles orphelins</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-warning-subtle text-warning">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
                 </div>
-                <span class="stat-trend-badge">
-                    <i class="fas fa-exclamation"></i> À lier
-                </span>
-            </div>
-            <div class="stat-card-body">
-                <div class="stat-label-pro">Produits sans marque</div>
-                <div class="stat-value-pro">{{ $kpiStats['unassigned_products'] ?? 0 }}</div>
-            </div>
-            <div class="stat-card-footer">
-                <span class="stat-sub-text">Non associés à une marque</span>
             </div>
         </div>
     </div>

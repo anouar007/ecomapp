@@ -3,21 +3,45 @@
 @section('title', 'Gestion des Permissions')
 
 @section('content')
-<div class="brand-header mb-3 mb-md-4">
-    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 w-100">
-        <div class="d-flex align-items-center gap-2.5">
-            <div class="brand-header-icon flex-shrink-0">
-                <i class="fas fa-key"></i>
-            </div>
-            <div>
-                <h1 class="brand-title">Gestion des Permissions</h1>
-                <p class="brand-subtitle">Définissez et configurez les droits d'accès granulaires du système</p>
-            </div>
+<div class="brand-header">
+    <div class="d-flex align-items-center gap-2.5">
+        <div class="brand-header-icon flex-shrink-0">
+            <i class="fas fa-key"></i>
         </div>
+        <div>
+            <h1 class="brand-title">Gestion des Permissions</h1>
+            <p class="brand-subtitle">Définissez et configurez les droits d'accès granulaires du système</p>
+        </div>
+    </div>
+    <div class="brand-header-actions">
+        <a href="{{ route('roles.index') }}" class="btn-brand-outline">
+            <i class="fas fa-shield-halved me-1.5" style="color: var(--primary-color)"></i> Rôles
+        </a>
         <a href="{{ route('permissions.create') }}" class="btn-brand-primary">
             <i class="fas fa-plus me-1.5"></i> Nouvelle Permission
         </a>
     </div>
+</div>
+
+<!-- Navigation Croisée Système & Audit -->
+<div class="subnav-pills-bar">
+    <a href="{{ route('users.index') }}" class="subnav-pill">
+        <i class="fas fa-users-gear text-dark"></i>
+        <span>Équipe & Collaborateurs</span>
+    </a>
+    <a href="{{ route('roles.index') }}" class="subnav-pill">
+        <i class="fas fa-shield-halved text-secondary"></i>
+        <span>Rôles & Permissions</span>
+    </a>
+    <a href="{{ route('permissions.index') }}" class="subnav-pill active">
+        <i class="fas fa-key text-danger"></i>
+        <span>Droits Granulaires</span>
+        <span class="subnav-pill-badge">{{ $permissions->count() }}</span>
+    </a>
+    <a href="{{ route('activity-logs.index') }}" class="subnav-pill">
+        <i class="fas fa-shield-alt text-primary"></i>
+        <span>Journal d'Activité & Traçabilité</span>
+    </a>
 </div>
 
 @if(session('success'))

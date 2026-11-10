@@ -25,85 +25,73 @@
         </div>
     </div>
 
-    <!-- Pro KPI Metric Cards Grid (2x2 Mobile, 1x4 Desktop) -->
-    <div class="stats-grid-pro mb-4">
+    <!-- Metric KPI Stat Cards (Product Section Standard) -->
+    <div class="row g-3 mb-4">
         <!-- KPI 1 : Total catégories -->
-        <div class="stat-card-pro">
-            <div class="stat-card-header">
-                <div class="stat-icon-pro icon-red">
-                    <i class="fas fa-folder-tree"></i>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('categories.index') }}" class="stat-kpi-card text-decoration-none {{ !request('status') && !request('search') ? 'active-filter' : '' }}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Total catégories</div>
+                        <div class="stat-kpi-value text-dark">{{ $kpiStats['total'] ?? 0 }}</div>
+                        <div class="stat-kpi-sub text-muted">
+                            <span class="badge bg-light text-secondary border">{{ ($kpiStats['subcategories'] ?? 0) > 0 ? ($kpiStats['subcategories'] . ' sous-catégories') : 'Arborescence active' }}</span>
+                        </div>
+                    </div>
+                    <div class="stat-kpi-icon bg-primary-subtle text-primary">
+                        <i class="fas fa-folder-tree"></i>
+                    </div>
                 </div>
-                <span class="stat-trend-badge trend-up">
-                    <i class="fas fa-layer-group"></i> Total
-                </span>
-            </div>
-            <div class="stat-card-body">
-                <div class="stat-label-pro">Total catégories</div>
-                <div class="stat-value-pro">{{ $kpiStats['total'] ?? 0 }}</div>
-            </div>
-            <div class="stat-card-footer">
-                <span class="stat-sub-text">
-                    {{ ($kpiStats['subcategories'] ?? 0) > 0 ? ($kpiStats['subcategories'] . ' sous-catégories') : 'Arborescence active' }}
-                </span>
-            </div>
+            </a>
         </div>
 
         <!-- KPI 2 : Catégories Actives -->
-        <div class="stat-card-pro">
-            <div class="stat-card-header">
-                <div class="stat-icon-pro icon-green">
-                    <i class="fas fa-check-circle"></i>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('categories.index', ['status' => 'active']) }}" class="stat-kpi-card text-decoration-none {{ request('status') === 'active' ? 'active-filter' : '' }}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Catégories actives</div>
+                        <div class="stat-kpi-value text-success">{{ $kpiStats['active'] ?? 0 }}</div>
+                        <div class="stat-kpi-sub text-muted">
+                            <i class="fas fa-check-circle text-success me-1"></i>Visibles sur le shop
+                        </div>
+                    </div>
+                    <div class="stat-kpi-icon bg-success-subtle text-success">
+                        <i class="fas fa-circle-check"></i>
+                    </div>
                 </div>
-                <span class="stat-trend-badge trend-up">
-                    <i class="fas fa-signal"></i> En ligne
-                </span>
-            </div>
-            <div class="stat-card-body">
-                <div class="stat-label-pro">Catégories actives</div>
-                <div class="stat-value-pro">{{ $kpiStats['active'] ?? 0 }}</div>
-            </div>
-            <div class="stat-card-footer">
-                <span class="stat-sub-text">
-                    {{ ($kpiStats['inactive'] ?? 0) > 0 ? ($kpiStats['inactive'] . ' inactive(s)') : 'Visibles sur le shop' }}
-                </span>
-            </div>
+            </a>
         </div>
 
         <!-- KPI 3 : Produits Classés -->
-        <div class="stat-card-pro">
-            <div class="stat-card-header">
-                <div class="stat-icon-pro icon-indigo">
-                    <i class="fas fa-boxes-stacked"></i>
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('products.index') }}" class="stat-kpi-card text-decoration-none">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Produits associés</div>
+                        <div class="stat-kpi-value text-primary">{{ number_format($kpiStats['total_products'] ?? 0, 0, ',', ' ') }}</div>
+                        <div class="stat-kpi-sub text-muted">Dans le catalogue Wina</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-info-subtle text-info">
+                        <i class="fas fa-boxes-stacked"></i>
+                    </div>
                 </div>
-                <span class="stat-trend-badge trend-up">
-                    <i class="fas fa-box"></i> Stock
-                </span>
-            </div>
-            <div class="stat-card-body">
-                <div class="stat-label-pro">Produits associés</div>
-                <div class="stat-value-pro">{{ number_format($kpiStats['total_products'] ?? 0, 0, ',', ' ') }}</div>
-            </div>
-            <div class="stat-card-footer">
-                <span class="stat-sub-text">Dans le catalogue Wina</span>
-            </div>
+            </a>
         </div>
 
         <!-- KPI 4 : Sous-catégories -->
-        <div class="stat-card-pro">
-            <div class="stat-card-header">
-                <div class="stat-icon-pro icon-amber">
-                    <i class="fas fa-sitemap"></i>
+        <div class="col-6 col-lg-3">
+            <div class="stat-kpi-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-kpi-label">Sous-catégories</div>
+                        <div class="stat-kpi-value text-dark">{{ $kpiStats['subcategories'] ?? 0 }}</div>
+                        <div class="stat-kpi-sub text-muted">Hiérarchie secondaire</div>
+                    </div>
+                    <div class="stat-kpi-icon bg-warning-subtle text-warning">
+                        <i class="fas fa-sitemap"></i>
+                    </div>
                 </div>
-                <span class="stat-trend-badge trend-up">
-                    <i class="fas fa-network-wired"></i> Niveau
-                </span>
-            </div>
-            <div class="stat-card-body">
-                <div class="stat-label-pro">Sous-catégories</div>
-                <div class="stat-value-pro">{{ $kpiStats['subcategories'] ?? 0 }}</div>
-            </div>
-            <div class="stat-card-footer">
-                <span class="stat-sub-text">Hiérarchie secondaire</span>
             </div>
         </div>
     </div>

@@ -3,19 +3,21 @@
 @section('title', 'Gestion des pages')
 
 @section('content')
-    <div class="brand-header mb-3 mb-md-4">
-        <div>
-            <h1 class="brand-title">
-                <div class="brand-header-icon">
-                    <i class="fas fa-file-alt"></i>
-                </div>
-                Gestion des pages
-            </h1>
-            <p class="brand-subtitle">Créez et gérez les pages visibles par vos clients sur votre site web</p>
+    <div class="brand-header">
+        <div class="d-flex align-items-center gap-2.5">
+            <div class="brand-header-icon flex-shrink-0">
+                <i class="fas fa-file-alt"></i>
+            </div>
+            <div>
+                <h1 class="brand-title">Gestion des pages</h1>
+                <p class="brand-subtitle">Créez et gérez les pages visibles par vos clients sur votre site web</p>
+            </div>
         </div>
-        <a href="{{ route('pages.create') }}" class="btn-brand-primary">
-            <i class="fas fa-plus me-2"></i> Créer une nouvelle page
-        </a>
+        <div class="brand-header-actions">
+            <a href="{{ route('pages.create') }}" class="btn-brand-primary">
+                <i class="fas fa-plus me-1.5"></i> Nouvelle page
+            </a>
+        </div>
     </div>
 
     <!-- Desktop Table (d-none d-md-block, Zero horizontal scroll) -->
