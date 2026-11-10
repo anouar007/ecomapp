@@ -128,9 +128,14 @@ html, body, .main-content {
 }
 .credit-table {
     width: 100% !important;
+    border-collapse: separate;
+    border-spacing: 0;
     margin-bottom: 0 !important;
 }
-.credit-table th,
+.credit-table th {
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+}
 .credit-table td {
     vertical-align: middle;
 }
@@ -268,351 +273,371 @@ html, body, .main-content {
         </div>
     </div>
 
-    <!-- Main Content Layout -->
-    <div class="row g-3 g-md-4">
+    <!-- ======================================================= -->
+    <!-- 1. CUSTOMER ACCOUNTS & BALANCES MATRIX (FULL WIDTH)     -->
+    <!-- ======================================================= -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
         
-        <!-- Left Column: Customer Accounts Matrix (12 cols on desktop/laptop, 9 cols on wide XXL) -->
-        <div class="col-12 col-xxl-9">
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3 mb-md-4">
-                
-                <!-- Filter Chips & Search Bar -->
-                <div class="p-3 border-bottom bg-white">
-                    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2.5">
-                        <!-- Fast Filter Touch Chips -->
-                        <div class="chips-scroll-credit d-flex align-items-center gap-1.5 flex-wrap">
-                            <a href="{{ route('client-credits.index', ['filter' => 'all']) }}" class="chip-credit {{ $filter === 'all' ? 'active' : '' }}">
-                                <span>Tous</span>
-                            </a>
-                            <a href="{{ route('client-credits.index', ['filter' => 'debtors']) }}" class="chip-credit {{ $filter === 'debtors' ? 'active' : '' }}">
-                                <i class="fas fa-arrow-down text-danger"></i>
-                                <span>Débiteurs</span>
-                                <span class="badge bg-danger text-white rounded-pill ms-1">{{ $activeDebtorCount }}</span>
-                            </a>
-                            <a href="{{ route('client-credits.index', ['filter' => 'creditors']) }}" class="chip-credit {{ $filter === 'creditors' ? 'active' : '' }}">
-                                <i class="fas fa-arrow-up text-info"></i>
-                                <span>Avoirs</span>
-                                <span class="badge bg-info text-white rounded-pill ms-1">{{ $activeCreditorCount }}</span>
-                            </a>
-                            <a href="{{ route('client-credits.index', ['filter' => 'settled']) }}" class="chip-credit {{ $filter === 'settled' ? 'active' : '' }}">
-                                <span>Soldés</span>
-                            </a>
-                        </div>
+        <!-- Filter Chips & Search Bar -->
+        <div class="p-3 border-bottom bg-white">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2.5">
+                <!-- Fast Filter Touch Chips -->
+                <div class="chips-scroll-credit d-flex align-items-center gap-1.5 flex-wrap">
+                    <a href="{{ route('client-credits.index', ['filter' => 'all']) }}" class="chip-credit {{ $filter === 'all' ? 'active' : '' }}">
+                        <span>Tous les comptes</span>
+                    </a>
+                    <a href="{{ route('client-credits.index', ['filter' => 'debtors']) }}" class="chip-credit {{ $filter === 'debtors' ? 'active' : '' }}">
+                        <i class="fas fa-arrow-down text-danger"></i>
+                        <span>Débiteurs</span>
+                        <span class="badge bg-danger text-white rounded-pill ms-1">{{ $activeDebtorCount }}</span>
+                    </a>
+                    <a href="{{ route('client-credits.index', ['filter' => 'creditors']) }}" class="chip-credit {{ $filter === 'creditors' ? 'active' : '' }}">
+                        <i class="fas fa-arrow-up text-info"></i>
+                        <span>Avoirs</span>
+                        <span class="badge bg-info text-white rounded-pill ms-1">{{ $activeCreditorCount }}</span>
+                    </a>
+                    <a href="{{ route('client-credits.index', ['filter' => 'settled']) }}" class="chip-credit {{ $filter === 'settled' ? 'active' : '' }}">
+                        <span>Soldés (0 DH)</span>
+                    </a>
+                </div>
 
-                        <!-- Search Box -->
-                        <form method="GET" action="{{ route('client-credits.index') }}" class="d-flex align-items-center gap-1.5 flex-shrink-0">
-                            <input type="hidden" name="filter" value="{{ $filter }}">
-                            <div class="input-group input-group-sm" style="width: 200px;">
-                                <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
-                                <input type="text" name="search" value="{{ request('search') }}" class="form-control bg-light border-start-0" placeholder="Rechercher client...">
-                            </div>
-                            @if(request('search'))
-                                <a href="{{ route('client-credits.index', ['filter' => $filter]) }}" class="btn btn-sm btn-light border rounded-pill" title="Réinitialiser">
-                                    <i class="fas fa-times"></i>
-                                </a>
-                            @endif
-                        </form>
+                <!-- Search Box -->
+                <form method="GET" action="{{ route('client-credits.index') }}" class="d-flex align-items-center gap-1.5 flex-shrink-0">
+                    <input type="hidden" name="filter" value="{{ $filter }}">
+                    <div class="input-group input-group-sm" style="width: 240px;">
+                        <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
+                        <input type="text" name="search" value="{{ request('search') }}" class="form-control bg-light border-start-0" placeholder="Rechercher client, code, tél...">
                     </div>
-                </div>
-
-                <!-- 1. MOBILE USER CARDS VIEW (d-block d-lg-none) -->
-                <div class="d-block d-lg-none p-2.5 space-y-2.5 bg-light bg-opacity-50">
-                    @forelse($customers as $c)
-                    <div class="credit-cust-card p-3 bg-white">
-                        <!-- Top Header: Avatar + Name + Balance Badge -->
-                        <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
-                            <div class="d-flex align-items-center gap-2.5 min-w-0">
-                                <div class="rounded-circle bg-dark text-white fw-bold d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px; font-size: 0.85rem;">
-                                    {{ strtoupper(substr($c->name, 0, 1)) }}
-                                </div>
-                                <div class="min-w-0">
-                                    <a href="{{ route('customers.show', $c->id) }}" class="fw-bold text-dark text-decoration-none text-truncate d-block" style="font-size: 0.92rem;">
-                                        {{ $c->name }}
-                                    </a>
-                                    <div class="text-muted d-flex align-items-center gap-1.5 font-monospace" style="font-size: 0.72rem;">
-                                        <span>{{ $c->customer_code ?? 'ID #'.$c->id }}</span>
-                                        @if($c->city)
-                                            <span>• {{ $c->city }}</span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Balance Status Pill -->
-                            <div class="flex-shrink-0">
-                                @if($c->current_balance > 0.01)
-                                    <div class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1 fw-bold" style="font-size: 0.76rem;">
-                                        <i class="fas fa-arrow-down me-1"></i>{{ currency($c->current_balance) }}
-                                    </div>
-                                @elseif($c->current_balance < -0.01)
-                                    <div class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2.5 py-1 fw-bold" style="font-size: 0.76rem;">
-                                        <i class="fas fa-arrow-up me-1"></i>Avoir: {{ currency(abs($c->current_balance)) }}
-                                    </div>
-                                @else
-                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">
-                                        <i class="fas fa-check me-0.5"></i> Soldé
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <!-- Touch Contact Pills -->
-                        <div class="d-flex flex-wrap gap-1.5 mb-2.5">
-                            @if($c->phone)
-                            <a href="tel:{{ $c->phone }}" class="contact-touch-pill">
-                                <i class="fas fa-phone text-success"></i>
-                                <span>{{ $c->phone }}</span>
-                            </a>
-                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $c->phone) }}" target="_blank" class="contact-touch-pill text-success" title="WhatsApp">
-                                <i class="fab fa-whatsapp"></i>
-                            </a>
-                            @endif
-                            @if($c->email)
-                            <a href="mailto:{{ $c->email }}" class="contact-touch-pill">
-                                <i class="fas fa-envelope text-primary"></i>
-                                <span>Email</span>
-                            </a>
-                            @endif
-                        </div>
-
-                        <!-- Credit Limit Bar (if exists) -->
-                        @if($c->credit_limit > 0)
-                        @php
-                            $mobUsage = min(100, max(0, ($c->current_balance / $c->credit_limit) * 100));
-                            $mobBarColor = $mobUsage >= 90 ? 'bg-danger' : ($mobUsage >= 70 ? 'bg-warning' : 'bg-success');
-                        @endphp
-                        <div class="p-2 rounded-3 bg-light border mb-2.5">
-                            <div class="d-flex align-items-center justify-content-between text-muted" style="font-size: 0.72rem;">
-                                <span>Plafond : <strong class="text-dark">{{ currency($c->credit_limit) }}</strong></span>
-                                <span class="fw-semibold text-dark">{{ round($mobUsage) }}%</span>
-                            </div>
-                            <div class="progress mt-1" style="height: 5px; border-radius: 99px;">
-                                <div class="progress-bar {{ $mobBarColor }}" role="progressbar" style="width: {{ $mobUsage }}%;"></div>
-                            </div>
-                        </div>
-                        @endif
-
-                        <!-- Action Buttons Row (Touch Friendly) -->
-                        <div class="d-flex align-items-center justify-content-between pt-2 border-top">
-                            <span class="text-muted" style="font-size: 0.72rem;">
-                                @php $lastMobTrx = $c->transactions()->first(); @endphp
-                                @if($lastMobTrx)
-                                    Dernier : {{ $lastMobTrx->payment_date->diffForHumans() }}
-                                @else
-                                    Aucun règlement
-                                @endif
-                            </span>
-
-                            <div class="d-flex align-items-center gap-1.5">
-                                <button type="button" class="btn btn-sm btn-danger rounded-pill px-3 py-1 fw-semibold shadow-xs"
-                                        onclick="openNewPaymentForCustomer({{ $c->id }}, '{{ addslashes($c->name) }}', {{ (float) $c->current_balance }})">
-                                    <i class="fas fa-coins me-1"></i> Régler
-                                </button>
-                                <button type="button" class="btn btn-sm btn-light border rounded-pill px-2 py-1 text-secondary"
-                                        onclick="openLimitModal({{ $c->id }}, '{{ addslashes($c->name) }}', {{ (float) $c->credit_limit }})" title="Plafond">
-                                    <i class="fas fa-sliders"></i>
-                                </button>
-                                <a href="{{ route('customers.show', $c->id) }}" class="btn btn-sm btn-light border rounded-pill px-2 py-1 text-primary" title="Fiche 360">
-                                    <i class="fas fa-arrow-up-right-from-square"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    @empty
-                    <div class="text-center py-5 text-muted">
-                        <i class="fas fa-wallet fa-3x mb-3 opacity-25"></i>
-                        <p class="mb-0 fw-semibold">Aucun client trouvé pour ce filtre.</p>
-                    </div>
-                    @endforelse
-                </div>
-
-                <!-- 2. DESKTOP TABULAR VIEW (d-none d-lg-block) -->
-                <div class="credit-table-wrap d-none d-lg-block">
-                    <table class="table align-middle mb-0 credit-table">
-                        <thead class="bg-light border-bottom">
-                            <tr>
-                                <th class="ps-3 py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem;">Client</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem;">Statut du Solde</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem;">Plafond Crédit</th>
-                                <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem;">Dernier Règlement</th>
-                                <th class="pe-3 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; min-width: 145px;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y">
-                            @forelse($customers as $c)
-                            <tr class="hover-bg-light">
-                                <td class="ps-3 py-3">
-                                    <div class="d-flex align-items-center gap-2.5">
-                                        <div class="rounded-circle bg-dark text-white fw-bold d-flex align-items-center justify-content-center flex-shrink-0" style="width: 36px; height: 36px; font-size: 0.85rem;">
-                                            {{ strtoupper(substr($c->name, 0, 1)) }}
-                                        </div>
-                                        <div class="min-w-0">
-                                            <div class="d-flex align-items-center gap-1.5 flex-wrap">
-                                                <a href="{{ route('customers.show', $c->id) }}" class="fw-bold text-dark text-decoration-none hover-primary" title="{{ $c->name }}" style="font-size: 0.88rem;">
-                                                    {{ $c->name }}
-                                                </a>
-                                                @if($c->customer_code)
-                                                    <span class="badge bg-light text-secondary border font-monospace px-1.5 py-0.5 flex-shrink-0" style="font-size: 0.65rem;">
-                                                        {{ $c->customer_code }}
-                                                    </span>
-                                                @endif
-                                            </div>
-                                            @if($c->phone || $c->city)
-                                            <div class="d-flex align-items-center gap-1.5 text-muted small mt-0.5" style="font-size: 0.74rem;">
-                                                @if($c->phone)
-                                                    <span class="text-nowrap"><i class="fas fa-phone me-1 opacity-50"></i>{{ $c->phone }}</span>
-                                                @endif
-                                                @if($c->phone && $c->city)
-                                                    <span class="opacity-50">•</span>
-                                                @endif
-                                                @if($c->city)
-                                                    <span class="text-nowrap">{{ $c->city }}</span>
-                                                @endif
-                                            </div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-3">
-                                    @if($c->current_balance > 0.01)
-                                        <div class="d-inline-flex align-items-center gap-1.5 px-2.5 py-1 rounded-pill bg-danger-subtle text-danger border border-danger-subtle fw-bold" style="font-size: 0.78rem;">
-                                            <i class="fas fa-arrow-down"></i>
-                                            <span>Doit : {{ currency($c->current_balance) }}</span>
-                                        </div>
-                                        <div class="text-muted mt-0.5" style="font-size: 0.7rem;">Créance client à encaisser</div>
-                                    @elseif($c->current_balance < -0.01)
-                                        <div class="d-inline-flex align-items-center gap-1.5 px-2.5 py-1 rounded-pill bg-info-subtle text-info border border-info-subtle fw-bold" style="font-size: 0.78rem;">
-                                            <i class="fas fa-arrow-up"></i>
-                                            <span>Avoir : {{ currency(abs($c->current_balance)) }}</span>
-                                        </div>
-                                        <div class="text-muted mt-0.5" style="font-size: 0.7rem;">Dû au client par le magasin</div>
-                                    @else
-                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1" style="font-size: 0.74rem;">
-                                            <i class="fas fa-check me-1"></i> Compte Soldé (0 DH)
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="py-3">
-                                    @if($c->credit_limit > 0)
-                                        <div class="fw-semibold text-dark small">{{ currency($c->credit_limit) }}</div>
-                                        @php
-                                            $usage = min(100, max(0, ($c->current_balance / $c->credit_limit) * 100));
-                                            $barColor = $usage >= 90 ? 'bg-danger' : ($usage >= 70 ? 'bg-warning' : 'bg-success');
-                                        @endphp
-                                        <div class="progress mt-1" style="height: 5px; width: 90px; max-width: 100%;">
-                                            <div class="progress-bar {{ $barColor }}" role="progressbar" style="width: {{ $usage }}%;"></div>
-                                        </div>
-                                        <div class="text-muted mt-0.5" style="font-size: 0.68rem;">{{ round($usage) }}% utilisé</div>
-                                    @else
-                                        <span class="badge bg-light text-muted border rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">Au comptant</span>
-                                    @endif
-                                </td>
-                                <td class="py-3">
-                                    @php $lastTrx = $c->transactions()->first(); @endphp
-                                    @if($lastTrx)
-                                        <div class="small fw-semibold text-dark">{{ currency($lastTrx->amount) }}</div>
-                                        <div class="text-muted" style="font-size: 0.7rem;">
-                                            {{ $lastTrx->payment_date->diffForHumans() }}
-                                            @if($lastTrx->proof_image)
-                                                <i class="fas fa-paperclip text-primary ms-1" title="Preuve attachée"></i>
-                                            @endif
-                                        </div>
-                                    @else
-                                        <span class="text-muted small fst-italic">—</span>
-                                    @endif
-                                </td>
-                                <td class="pe-3 py-2.5 text-end text-nowrap" style="min-width: 145px;">
-                                    <div class="d-inline-flex align-items-center justify-content-end gap-1.5 text-nowrap">
-                                        <button type="button" class="btn btn-sm btn-danger rounded-pill px-2.5 py-1 shadow-xs fw-semibold text-nowrap"
-                                                style="font-size: 0.75rem;"
-                                                onclick="openNewPaymentForCustomer({{ $c->id }}, '{{ addslashes($c->name) }}', {{ (float) $c->current_balance }})"
-                                                title="Enregistrer un règlement / avoir">
-                                            <i class="fas fa-coins me-1"></i> Régler
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-light border rounded-circle text-secondary d-inline-flex align-items-center justify-content-center"
-                                                style="width: 28px; height: 28px; padding: 0; font-size: 0.72rem;"
-                                                onclick="openLimitModal({{ $c->id }}, '{{ addslashes($c->name) }}', {{ (float) $c->credit_limit }})"
-                                                title="Modifier le plafond de crédit">
-                                            <i class="fas fa-sliders"></i>
-                                        </button>
-                                        <a href="{{ route('customers.show', $c->id) }}" class="btn btn-sm btn-light border rounded-circle text-primary d-inline-flex align-items-center justify-content-center"
-                                           style="width: 28px; height: 28px; padding: 0; font-size: 0.72rem;"
-                                           title="Fiche client 360°">
-                                            <i class="fas fa-arrow-up-right-from-square"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="5" class="text-center py-5 text-muted">
-                                    <i class="fas fa-wallet fa-3x mb-3 opacity-25"></i>
-                                    <p class="mb-0 fw-semibold">Aucun client trouvé pour ce filtre.</p>
-                                </td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-
-                @if($customers->hasPages())
-                <div class="p-3 border-top bg-light">
-                    {{ $customers->links() }}
-                </div>
-                @endif
+                    @if(request('search'))
+                        <a href="{{ route('client-credits.index', ['filter' => $filter]) }}" class="btn btn-sm btn-light border rounded-pill" title="Réinitialiser">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    @endif
+                </form>
             </div>
         </div>
 
-        <!-- Right Column: Recent Payment Feed with Proofs (12 cols on desktop/laptop, 3 cols on wide XXL) -->
-        <div class="col-12 col-xxl-3">
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3 mb-md-4">
-                <div class="p-3 border-bottom bg-white d-flex align-items-center justify-content-between">
-                    <div>
-                        <h6 class="fw-bold mb-0 text-dark">Derniers Règlements</h6>
-                        <span class="text-muted small">Avec justificatifs & preuves photos</span>
+        <!-- 1. MOBILE USER CARDS VIEW (d-block d-lg-none) -->
+        <div class="d-block d-lg-none p-2.5 space-y-2.5 bg-light bg-opacity-50">
+            @forelse($customers as $c)
+            <div class="credit-cust-card p-3 bg-white">
+                <!-- Top Header: Avatar + Name + Balance Badge -->
+                <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+                    <div class="d-flex align-items-center gap-2.5 min-w-0">
+                        <div class="rounded-circle bg-dark text-white fw-bold d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px; font-size: 0.85rem;">
+                            {{ strtoupper(substr($c->name, 0, 1)) }}
+                        </div>
+                        <div class="min-w-0">
+                            <a href="{{ route('customers.show', $c->id) }}" class="fw-bold text-dark text-decoration-none d-block" style="font-size: 0.92rem;">
+                                {{ $c->name }}
+                            </a>
+                            <div class="text-muted d-flex align-items-center gap-1.5 font-monospace" style="font-size: 0.72rem;">
+                                <span>{{ $c->customer_code ?? 'ID #'.$c->id }}</span>
+                                @if($c->city)
+                                    <span>• {{ $c->city }}</span>
+                                @endif
+                            </div>
+                        </div>
                     </div>
-                    <a href="{{ route('client-credits.transactions') }}" class="btn btn-sm btn-light rounded-pill px-2.5 py-1 text-primary border" style="font-size: 0.75rem;">
-                        Tout voir <i class="fas fa-arrow-right ms-1"></i>
+
+                    <!-- Balance Status Pill -->
+                    <div class="flex-shrink-0">
+                        @if($c->current_balance > 0.01)
+                            <div class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1 fw-bold" style="font-size: 0.76rem;">
+                                <i class="fas fa-arrow-down me-1"></i>{{ currency($c->current_balance) }}
+                            </div>
+                        @elseif($c->current_balance < -0.01)
+                            <div class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2.5 py-1 fw-bold" style="font-size: 0.76rem;">
+                                <i class="fas fa-arrow-up me-1"></i>Avoir: {{ currency(abs($c->current_balance)) }}
+                            </div>
+                        @else
+                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">
+                                <i class="fas fa-check me-0.5"></i> Soldé
+                            </span>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Touch Contact Pills -->
+                <div class="d-flex flex-wrap gap-1.5 mb-2.5">
+                    @if($c->phone)
+                    <a href="tel:{{ $c->phone }}" class="contact-touch-pill">
+                        <i class="fas fa-phone text-success"></i>
+                        <span>{{ $c->phone }}</span>
+                    </a>
+                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $c->phone) }}" target="_blank" class="contact-touch-pill text-success" title="WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                    @endif
+                    @if($c->email)
+                    <a href="mailto:{{ $c->email }}" class="contact-touch-pill">
+                        <i class="fas fa-envelope text-primary"></i>
+                        <span>Email</span>
+                    </a>
+                    @endif
+                </div>
+
+                <!-- Credit Limit Bar (if exists) -->
+                @if($c->credit_limit > 0)
+                @php
+                    $mobUsage = min(100, max(0, ($c->current_balance / $c->credit_limit) * 100));
+                    $mobBarColor = $mobUsage >= 90 ? 'bg-danger' : ($mobUsage >= 70 ? 'bg-warning' : 'bg-success');
+                @endphp
+                <div class="p-2 rounded-3 bg-light border mb-2.5">
+                    <div class="d-flex align-items-center justify-content-between text-muted" style="font-size: 0.72rem;">
+                        <span>Plafond : <strong class="text-dark">{{ currency($c->credit_limit) }}</strong></span>
+                        <span class="fw-semibold text-dark">{{ round($mobUsage) }}%</span>
+                    </div>
+                    <div class="progress mt-1" style="height: 5px; border-radius: 99px;">
+                        <div class="progress-bar {{ $mobBarColor }}" role="progressbar" style="width: {{ $mobUsage }}%;"></div>
+                    </div>
+                </div>
+                @endif
+
+                <!-- Action Buttons Row (Touch Friendly) -->
+                <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                    <span class="text-muted" style="font-size: 0.72rem;">
+                        @php $lastMobTrx = $c->transactions()->first(); @endphp
+                        @if($lastMobTrx)
+                            Dernier : {{ $lastMobTrx->payment_date->diffForHumans() }}
+                        @else
+                            Aucun règlement
+                        @endif
+                    </span>
+
+                    <div class="d-flex align-items-center gap-1.5">
+                        <button type="button" class="btn btn-sm btn-danger rounded-pill px-3 py-1 fw-semibold shadow-xs"
+                                onclick="openNewPaymentForCustomer({{ $c->id }}, '{{ addslashes($c->name) }}', {{ (float) $c->current_balance }})">
+                            <i class="fas fa-coins me-1"></i> Régler
+                        </button>
+                        <button type="button" class="btn btn-sm btn-light border rounded-pill px-2 py-1 text-secondary"
+                                onclick="openLimitModal({{ $c->id }}, '{{ addslashes($c->name) }}', {{ (float) $c->credit_limit }})" title="Plafond">
+                            <i class="fas fa-sliders"></i>
+                        </button>
+                        <a href="{{ route('customers.show', $c->id) }}" class="btn btn-sm btn-light border rounded-pill px-2 py-1 text-primary" title="Fiche 360">
+                            <i class="fas fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @empty
+            <div class="text-center py-5 text-muted">
+                <i class="fas fa-wallet fa-3x mb-3 opacity-25"></i>
+                <p class="mb-0 fw-semibold">Aucun client trouvé pour ce filtre.</p>
+            </div>
+            @endforelse
+        </div>
+
+        <!-- 2. DESKTOP TABULAR VIEW (d-none d-lg-block) -->
+        <div class="credit-table-wrap d-none d-lg-block">
+            <table class="table align-middle mb-0 credit-table">
+                <thead class="bg-light border-bottom">
+                    <tr>
+                        <th class="ps-3 py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem;">Client</th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem;">Statut du Solde</th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem;">Plafond Crédit</th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.72rem;">Dernier Règlement</th>
+                        <th class="pe-3 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.72rem; min-width: 175px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y">
+                    @forelse($customers as $c)
+                    <tr class="hover-bg-light">
+                        <td class="ps-3 py-3">
+                            <div class="d-flex align-items-center gap-2.5">
+                                <div class="rounded-circle bg-dark text-white fw-bold d-flex align-items-center justify-content-center flex-shrink-0" style="width: 36px; height: 36px; font-size: 0.85rem;">
+                                    {{ strtoupper(substr($c->name, 0, 1)) }}
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                                        <a href="{{ route('customers.show', $c->id) }}" class="fw-bold text-dark text-decoration-none hover-primary" style="font-size: 0.88rem;">
+                                            {{ $c->name }}
+                                        </a>
+                                        @if($c->customer_code)
+                                            <span class="badge bg-light text-secondary border font-monospace px-1.5 py-0.5 flex-shrink-0" style="font-size: 0.65rem;">
+                                                {{ $c->customer_code }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                    @if($c->phone || $c->city)
+                                    <div class="d-flex align-items-center gap-2 text-muted small mt-0.5" style="font-size: 0.74rem;">
+                                        @if($c->phone)
+                                            <span class="text-nowrap"><i class="fas fa-phone me-1 opacity-50"></i>{{ $c->phone }}</span>
+                                        @endif
+                                        @if($c->phone && $c->city)
+                                            <span class="opacity-50">•</span>
+                                        @endif
+                                        @if($c->city)
+                                            <span class="text-nowrap"><i class="fas fa-location-dot me-1 opacity-50"></i>{{ $c->city }}</span>
+                                        @endif
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-3">
+                            @if($c->current_balance > 0.01)
+                                <div class="d-inline-flex align-items-center gap-1.5 px-2.5 py-1 rounded-pill bg-danger-subtle text-danger border border-danger-subtle fw-bold" style="font-size: 0.78rem;">
+                                    <i class="fas fa-arrow-down"></i>
+                                    <span>Doit : {{ currency($c->current_balance) }}</span>
+                                </div>
+                                <div class="text-muted mt-0.5" style="font-size: 0.7rem;">Créance client à encaisser</div>
+                            @elseif($c->current_balance < -0.01)
+                                <div class="d-inline-flex align-items-center gap-1.5 px-2.5 py-1 rounded-pill bg-info-subtle text-info border border-info-subtle fw-bold" style="font-size: 0.78rem;">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span>Avoir : {{ currency(abs($c->current_balance)) }}</span>
+                                </div>
+                                <div class="text-muted mt-0.5" style="font-size: 0.7rem;">Dû au client par le magasin</div>
+                            @else
+                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1" style="font-size: 0.74rem;">
+                                    <i class="fas fa-check me-1"></i> Compte Soldé (0 DH)
+                                </span>
+                            @endif
+                        </td>
+                        <td class="py-3">
+                            @if($c->credit_limit > 0)
+                                <div class="fw-semibold text-dark small">{{ currency($c->credit_limit) }}</div>
+                                @php
+                                    $usage = min(100, max(0, ($c->current_balance / $c->credit_limit) * 100));
+                                    $barColor = $usage >= 90 ? 'bg-danger' : ($usage >= 70 ? 'bg-warning' : 'bg-success');
+                                @endphp
+                                <div class="progress mt-1" style="height: 5px; width: 95px; max-width: 100%;">
+                                    <div class="progress-bar {{ $barColor }}" role="progressbar" style="width: {{ $usage }}%;"></div>
+                                </div>
+                                <div class="text-muted mt-0.5" style="font-size: 0.68rem;">{{ round($usage) }}% utilisé</div>
+                            @else
+                                <span class="badge bg-light text-muted border rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">Au comptant</span>
+                            @endif
+                        </td>
+                        <td class="py-3">
+                            @php $lastTrx = $c->transactions()->first(); @endphp
+                            @if($lastTrx)
+                                <div class="small fw-semibold text-dark">{{ currency($lastTrx->amount) }}</div>
+                                <div class="text-muted" style="font-size: 0.7rem;">
+                                    {{ $lastTrx->payment_date->diffForHumans() }}
+                                    @if($lastTrx->proof_image)
+                                        <i class="fas fa-paperclip text-primary ms-1" title="Preuve attachée"></i>
+                                    @endif
+                                </div>
+                            @else
+                                <span class="text-muted small fst-italic">—</span>
+                            @endif
+                        </td>
+                        <td class="pe-3 py-2.5 text-end text-nowrap" style="min-width: 175px;">
+                            <div class="d-inline-flex align-items-center justify-content-end gap-1.5 text-nowrap">
+                                <button type="button" class="btn btn-sm btn-danger rounded-pill px-3 py-1 shadow-xs fw-semibold text-nowrap"
+                                        style="font-size: 0.76rem;"
+                                        onclick="openNewPaymentForCustomer({{ $c->id }}, '{{ addslashes($c->name) }}', {{ (float) $c->current_balance }})"
+                                        title="Enregistrer un règlement / avoir pour ce client">
+                                    <i class="fas fa-coins me-1"></i> Régler
+                                </button>
+                                <button type="button" class="btn btn-sm btn-light border rounded-pill px-2 py-1 text-secondary"
+                                        style="font-size: 0.74rem;"
+                                        onclick="openLimitModal({{ $c->id }}, '{{ addslashes($c->name) }}', {{ (float) $c->credit_limit }})"
+                                        title="Modifier le plafond de crédit">
+                                    <i class="fas fa-sliders me-0.5"></i> Plafond
+                                </button>
+                                <a href="{{ route('customers.show', $c->id) }}" class="btn btn-sm btn-light border rounded-circle text-primary d-inline-flex align-items-center justify-content-center"
+                                   style="width: 28px; height: 28px; padding: 0; font-size: 0.72rem;"
+                                   title="Fiche client 360°">
+                                    <i class="fas fa-arrow-up-right-from-square"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            <i class="fas fa-wallet fa-3x mb-3 opacity-25"></i>
+                            <p class="mb-0 fw-semibold">Aucun client trouvé pour ce filtre.</p>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        @if($customers->hasPages())
+        <div class="p-3 border-top bg-light">
+            {{ $customers->links() }}
+        </div>
+        @endif
+    </div>
+
+    <!-- ======================================================= -->
+    <!-- 2. RECENT PAYMENTS FEED & TREASURY SYNTHESIS (BOTTOM)   -->
+    <!-- ======================================================= -->
+    <div class="row g-3 g-md-4 mb-4">
+        
+        <!-- Left: Live Recent Payment Feed with Proofs (col-12 col-xl-8) -->
+        <div class="col-12 col-xl-8">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
+                <div class="p-3 border-bottom bg-white d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2.5">
+                        <div class="rounded-circle bg-success bg-opacity-10 text-success d-flex align-items-center justify-content-center flex-shrink-0" style="width: 36px; height: 36px;">
+                            <i class="fas fa-clock-rotate-left"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-0 text-dark">Derniers Règlements Encaissés</h6>
+                            <span class="text-muted small">Flux des règlements, acomptes et justificatifs en temps réel</span>
+                        </div>
+                    </div>
+                    <a href="{{ route('client-credits.transactions') }}" class="btn btn-sm btn-light rounded-pill px-3 py-1 text-primary border fw-semibold shadow-xs" style="font-size: 0.78rem;">
+                        Consulter le Grand Livre <i class="fas fa-arrow-right ms-1"></i>
                     </a>
                 </div>
 
                 <div class="list-group list-group-flush">
                     @forelse($recentTransactions as $trx)
                     <div class="list-group-item p-3 hover-bg-light">
-                        <div class="d-flex align-items-start justify-content-between gap-2 mb-1.5">
-                            <div class="min-w-0">
-                                <div class="d-flex align-items-center gap-1.5 flex-wrap">
-                                    <a href="{{ route('customers.show', $trx->customer_id) }}" class="fw-bold text-dark text-decoration-none small text-truncate">
-                                        {{ $trx->customer->name ?? 'Client' }}
-                                    </a>
-                                    <span class="badge {{ $trx->type_badge_class }} border rounded-pill" style="font-size: 0.65rem;">
-                                        {{ $trx->type_label }}
-                                    </span>
+                        <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mb-1.5">
+                            <div class="d-flex align-items-center gap-2.5 min-w-0">
+                                <div class="rounded-circle bg-dark text-white fw-bold d-flex align-items-center justify-content-center flex-shrink-0" style="width: 34px; height: 34px; font-size: 0.82rem;">
+                                    {{ strtoupper(substr($trx->customer->name ?? 'C', 0, 1)) }}
                                 </div>
-                                <div class="text-muted mt-0.5" style="font-size: 0.7rem;">
-                                    {{ $trx->payment_date->format('d/m/Y à H:i') }} • {{ $trx->payment_method_label }}
-                                    @if($trx->reference_number)
-                                        (Réf: {{ $trx->reference_number }})
-                                    @endif
+                                <div class="min-w-0">
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <a href="{{ route('customers.show', $trx->customer_id) }}" class="fw-bold text-dark text-decoration-none small hover-primary">
+                                            {{ $trx->customer->name ?? 'Client' }}
+                                        </a>
+                                        <span class="badge {{ $trx->type_badge_class }} border rounded-pill" style="font-size: 0.65rem;">
+                                            {{ $trx->type_label }}
+                                        </span>
+                                        @if($trx->store)
+                                            <span class="badge bg-light text-secondary border rounded-pill" style="font-size: 0.65rem;">
+                                                <i class="fas fa-store me-1 text-primary"></i>{{ $trx->store->name }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <div class="text-muted mt-0.5" style="font-size: 0.7rem;">
+                                        <i class="fas fa-calendar-day me-1 opacity-50"></i>{{ $trx->payment_date->format('d/m/Y à H:i') }}
+                                        <span class="mx-1">•</span>
+                                        <i class="fas fa-credit-card me-1 opacity-50"></i>{{ $trx->payment_method_label }}
+                                        @if($trx->reference_number)
+                                            <span class="font-monospace ms-1">(Réf: {{ $trx->reference_number }})</span>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
-                            <div class="text-end flex-shrink-0">
-                                <div class="fw-bold {{ $trx->direction === 'in' ? 'text-success' : 'text-danger' }} small">
+
+                            <div class="text-sm-end ps-4 ps-sm-0 flex-shrink-0">
+                                <div class="fw-bold fs-6 {{ $trx->direction === 'in' ? 'text-success' : 'text-danger' }}">
                                     {{ $trx->direction === 'in' ? '+' : '-' }}{{ currency($trx->amount) }}
                                 </div>
-                                <div class="text-muted font-monospace" style="font-size: 0.68rem;">
-                                    Solde: {{ currency($trx->balance_after) }}
+                                <div class="text-muted font-monospace" style="font-size: 0.7rem;">
+                                    Solde : {{ currency($trx->balance_after) }}
                                 </div>
                             </div>
                         </div>
 
                         <!-- Proof of payment thumbnail if attached -->
                         @if($trx->proof_image_url)
-                        <div class="d-flex align-items-center gap-2 mt-2 p-1.5 rounded-3 bg-light border">
+                        <div class="d-flex align-items-center gap-2.5 mt-2 p-2 rounded-3 bg-light border ms-sm-5">
                             <img src="{{ $trx->proof_image_url }}" alt="Preuve" class="proof-thumbnail-btn shadow-xs" 
                                  onclick="previewProofModal('{{ $trx->proof_image_url }}', '{{ $trx->transaction_number }}', '{{ addslashes($trx->customer->name ?? '') }}')">
                             <div class="small min-w-0">
-                                <div class="fw-semibold text-dark text-truncate" style="font-size: 0.74rem;">Preuve attachée</div>
-                                <a href="javascript:void(0)" class="text-primary text-decoration-none" style="font-size: 0.7rem;"
+                                <div class="fw-semibold text-dark text-truncate" style="font-size: 0.75rem;">Justificatif / Reçu de caisse</div>
+                                <a href="javascript:void(0)" class="text-primary text-decoration-none fw-semibold" style="font-size: 0.72rem;"
                                    onclick="previewProofModal('{{ $trx->proof_image_url }}', '{{ $trx->transaction_number }}', '{{ addslashes($trx->customer->name ?? '') }}')">
                                     <i class="fas fa-expand me-1"></i> Agrandir le document
                                 </a>
@@ -621,16 +646,89 @@ html, body, .main-content {
                         @endif
 
                         @if($trx->notes)
-                        <div class="text-muted small fst-italic mt-1.5 bg-light p-1.5 rounded" style="font-size: 0.72rem;">
+                        <div class="text-muted small fst-italic mt-1.5 bg-light p-2 rounded-3 ms-sm-5" style="font-size: 0.74rem;">
                             <i class="fas fa-comment-dots me-1 opacity-50"></i> {{ $trx->notes }}
                         </div>
                         @endif
                     </div>
                     @empty
                     <div class="p-4 text-center text-muted small">
-                        Aucun règlement enregistré récemment.
+                        <i class="fas fa-receipt fa-2x mb-2 opacity-25"></i>
+                        <p class="mb-0 fw-semibold">Aucun règlement enregistré récemment.</p>
                     </div>
                     @endforelse
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Trésorerie & Actions Stratégiques (col-12 col-xl-4) -->
+        <div class="col-12 col-xl-4">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
+                <div class="p-3 border-bottom bg-white d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                            <i class="fas fa-shield-halved"></i>
+                        </div>
+                        <h6 class="fw-bold mb-0 text-dark">Raccourcis & Indicateurs</h6>
+                    </div>
+                </div>
+
+                <div class="card-body p-3.5 d-flex flex-column justify-content-between gap-3">
+                    <div>
+                        <!-- Health metrics -->
+                        <div class="p-3 rounded-3 bg-light border mb-3">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="text-muted small fw-semibold">Créances totales en cours</span>
+                                <span class="fw-bold text-danger">{{ currency($totalDebtors) }}</span>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="text-muted small fw-semibold">Avoirs clients en cours</span>
+                                <span class="fw-bold text-info">{{ currency($totalCreditors) }}</span>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                                <span class="text-dark small fw-bold">Solde net trésorerie</span>
+                                <span class="fw-bold {{ $netBalance >= 0 ? 'text-primary' : 'text-warning' }}">{{ currency($netBalance) }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Fast Action Buttons -->
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-danger rounded-pill py-2 fw-semibold shadow-xs" data-bs-toggle="modal" data-bs-target="#newPaymentModal">
+                                <i class="fas fa-plus-circle me-1.5"></i> Nouveau Règlement Rapide
+                            </button>
+                            <a href="{{ route('client-credits.transactions') }}" class="btn btn-outline-dark rounded-pill py-2 fw-semibold">
+                                <i class="fas fa-list-check me-1.5"></i> Consulter le Grand Livre
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Synergy Link to Other ERP Modules -->
+                    <div class="pt-3 border-top">
+                        <div class="text-uppercase text-muted fw-bold mb-2" style="font-size: 0.68rem; letter-spacing: 0.05em;">Modules ERP Connectés</div>
+                        <div class="d-flex flex-column gap-1.5">
+                            <a href="{{ route('stores.index') }}" class="d-flex align-items-center justify-content-between p-2 rounded-3 text-decoration-none hover-bg-light border">
+                                <div class="d-flex align-items-center gap-2 small fw-semibold text-dark">
+                                    <i class="fas fa-warehouse text-purple" style="color: #9333ea;"></i>
+                                    <span>Points de Stockage & Caisses</span>
+                                </div>
+                                <i class="fas fa-chevron-right text-muted small"></i>
+                            </a>
+                            <a href="{{ route('expenses.index') }}" class="d-flex align-items-center justify-content-between p-2 rounded-3 text-decoration-none hover-bg-light border">
+                                <div class="d-flex align-items-center gap-2 small fw-semibold text-dark">
+                                    <i class="fas fa-receipt text-warning"></i>
+                                    <span>Dépenses & Charges Fixes</span>
+                                </div>
+                                <i class="fas fa-chevron-right text-muted small"></i>
+                            </a>
+                            <a href="{{ route('reports.profitability') }}" class="d-flex align-items-center justify-content-between p-2 rounded-3 text-decoration-none hover-bg-light border">
+                                <div class="d-flex align-items-center gap-2 small fw-semibold text-dark">
+                                    <i class="fas fa-chart-line text-success"></i>
+                                    <span>Rapport de Rentabilité & Marges</span>
+                                </div>
+                                <i class="fas fa-chevron-right text-muted small"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

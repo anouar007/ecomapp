@@ -113,6 +113,10 @@ class ErpFeaturesVerificationTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Client Pro Test');
         $response->assertSee(currency(1500));
+        $response->assertSee('Derniers Règlements Encaissés');
+        $response->assertSee('Régler');
+        $response->assertSee('Plafond');
+        $response->assertSee('Fiche client 360');
     }
 
     /**
