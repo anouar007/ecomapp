@@ -665,13 +665,15 @@
                     <span>Inventaire & Stock</span>
                 </a>
             </li>
+            @endcan
+            @if(auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('manage_inventory') || auth()->user()->can('manage_stores')))
             <li class="sidebar-menu-item">
                 <a href="{{ route('stores.index') }}" class="sidebar-menu-link {{ request()->routeIs('stores.*') ? 'active' : '' }}">
                     <i class="fas fa-warehouse"></i>
                     <span>Magasins & Dépôts</span>
                 </a>
             </li>
-            @endcan
+            @endif
             @can('manage_customers')
             <li class="sidebar-menu-item">
                 <a href="{{ route('customers.index') }}" class="sidebar-menu-link {{ request()->routeIs('customers.*') ? 'active' : '' }}">
@@ -679,14 +681,16 @@
                     <span>Clients</span>
                 </a>
             </li>
+            @endcan
+            @if(auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('manage_customers') || auth()->user()->can('manage_client_credits')))
             <li class="sidebar-menu-item">
                 <a href="{{ route('client-credits.index') }}" class="sidebar-menu-link {{ request()->routeIs('client-credits.*') ? 'active' : '' }}">
                     <i class="fas fa-wallet"></i>
                     <span>Crédits & Règlements</span>
                 </a>
             </li>
-            @endcan
-            @if(auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('manage_accounting')))
+            @endif
+            @if(auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('manage_accounting') || auth()->user()->can('manage_expenses')))
             <li class="sidebar-menu-item">
                 <a href="{{ route('expenses.index') }}" class="sidebar-menu-link {{ request()->routeIs('expenses.*') ? 'active' : '' }}">
                     <i class="fas fa-file-invoice-dollar"></i>
@@ -694,7 +698,7 @@
                 </a>
             </li>
             @endif
-            @if(auth()->check() && auth()->user()->hasRole('Admin'))
+            @if(auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('view_profitability')))
             <li class="sidebar-menu-item">
                 <a href="{{ route('reports.profitability') }}" class="sidebar-menu-link {{ request()->routeIs('reports.profitability*') ? 'active' : '' }}">
                     <i class="fas fa-chart-pie"></i>

@@ -69,6 +69,7 @@ class ActivityLogController extends Controller
                 'diff_for_humans' => $activityLog->created_at->diffForHumans(),
                 'ip_address' => $activityLog->ip_address ?? '—',
                 'user_agent' => $activityLog->user_agent ?? '—',
+                'source_url' => $activityLog->source_url,
                 'changes' => $activityLog->changes,
                 'properties' => $activityLog->properties,
             ]);

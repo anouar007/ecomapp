@@ -217,6 +217,18 @@
                 </div>
 
                 <div class="col-6 col-md-2">
+                    <label class="form-label small fw-semibold text-muted mb-1">Caisse / Boutique</label>
+                    <select name="store_id" class="form-select form-select-sm">
+                        <option value="">Toutes les caisses</option>
+                        @foreach($stores as $st)
+                            <option value="{{ $st->id }}" {{ request('store_id') == $st->id ? 'selected' : '' }}>
+                                {{ $st->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-6 col-md-2">
                     <label class="form-label small fw-semibold text-muted mb-1">Preuve photo</label>
                     <select name="has_proof" class="form-select form-select-sm">
                         <option value="">Toutes</option>
@@ -229,7 +241,7 @@
                     <button type="submit" class="btn btn-sm btn-dark rounded-pill px-3 fw-semibold flex-fill">
                         <i class="fas fa-filter me-1"></i> Filtrer
                     </button>
-                    @if(request()->anyFilled(['search', 'customer_id', 'type', 'has_proof', 'date_from', 'date_to']))
+                    @if(request()->anyFilled(['search', 'customer_id', 'store_id', 'type', 'has_proof', 'date_from', 'date_to']))
                         <a href="{{ route('client-credits.transactions') }}" class="btn btn-sm btn-light border rounded-pill px-2.5" title="Réinitialiser">
                             <i class="fas fa-times"></i>
                         </a>
@@ -287,6 +299,13 @@
                             <div class="text-muted" style="font-size: 0.72rem;">
                                 <i class="fas fa-credit-card me-1 opacity-50"></i> {{ $trx->payment_method_label }}
                             </div>
+                            @if($trx->store)
+                                <div class="mt-0.5">
+                                    <span class="badge bg-light text-secondary border rounded-pill px-2 py-0.5" style="font-size: 0.65rem;">
+                                        <i class="fas fa-store me-1 text-primary"></i>{{ $trx->store->name }}
+                                    </span>
+                                </div>
+                            @endif
                         </td>
 
                         <!-- Proof of payment photo -->
@@ -471,7 +490,7 @@
 </div>
 
 <!-- Re-use New Payment Modal -->
-@include('client_credits.partials.payment_modal', ['allCustomersList' => $allCustomersList])
+@include('client_credits.partials.payment_modal', ['allCustomersList' => $allCustomersList, 'stores' => $stores])
 
 @push('scripts')
 <script>

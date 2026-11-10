@@ -169,6 +169,7 @@ class Customer extends Model
             'proof_image'        => $proofPath,
             'order_id'           => $data['order_id'] ?? null,
             'invoice_id'         => $data['invoice_id'] ?? null,
+            'store_id'           => $data['store_id'] ?? null,
             'payment_date'       => $data['payment_date'] ?? now(),
             'notes'              => $data['notes'] ?? null,
             'created_by'         => auth()->id(),

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Expense extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\LogsActivity;
 
     protected $fillable = [
         'expense_number',

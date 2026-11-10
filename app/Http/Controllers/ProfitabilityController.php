@@ -23,8 +23,8 @@ class ProfitabilityController extends Controller
      */
     public function index(Request $request)
     {
-        // Enforce strict admin access
-        abort_if(!auth()->check() || !auth()->user()->hasRole('Admin'), 403, 'Accès strictement réservé aux Administrateurs.');
+        // Enforce strict admin access or view_profitability permission
+        abort_if(!auth()->check() || (!auth()->user()->hasRole('Admin') && !auth()->user()->can('view_profitability')), 403, 'Accès strictement réservé aux Administrateurs.');
 
         $period = $request->get('period', 'month');
         [$startDate, $endDate] = $this->resolveDateRange($period, $request->get('start_date'), $request->get('end_date'));
@@ -62,7 +62,7 @@ class ProfitabilityController extends Controller
      */
     public function manageCosts(Request $request)
     {
-        abort_if(!auth()->check() || !auth()->user()->hasRole('Admin'), 403, 'Accès strictement réservé aux Administrateurs.');
+        abort_if(!auth()->check() || (!auth()->user()->hasRole('Admin') && !auth()->user()->can('view_profitability')), 403, 'Accès strictement réservé aux Administrateurs.');
 
         $search = trim((string)$request->get('search', ''));
         $status = $request->get('status', 'all');
@@ -175,7 +175,7 @@ class ProfitabilityController extends Controller
      */
     public function updateCostPrice(Request $request, Product $product)
     {
-        abort_if(!auth()->check() || !auth()->user()->hasRole('Admin'), 403);
+        abort_if(!auth()->check() || (!auth()->user()->hasRole('Admin') && !auth()->user()->can('view_profitability')), 403);
 
         $validated = $request->validate([
             'cost_price' => ['required', 'numeric', 'min:0'],
@@ -215,7 +215,7 @@ class ProfitabilityController extends Controller
      */
     public function updateBatchCosts(Request $request)
     {
-        abort_if(!auth()->check() || !auth()->user()->hasRole('Admin'), 403);
+        abort_if(!auth()->check() || (!auth()->user()->hasRole('Admin') && !auth()->user()->can('view_profitability')), 403);
 
         $validated = $request->validate([
             'costs' => ['required', 'array'],

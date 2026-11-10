@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class RecurringExpense extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\LogsActivity;
 
     protected $fillable = [
         'title',
@@ -153,3 +153,4 @@ class RecurringExpense extends Model
         return $next->day($day);
     }
 }
+

@@ -310,6 +310,68 @@
         </div>
     </div>
 
+    <!-- Executive Break-Even & Burn Rate Analysis Banner -->
+    @if(isset($overall['monthly_burn_rate']) && $overall['monthly_burn_rate'] > 0)
+    <div class="card border-0 shadow-sm rounded-4 mb-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff;">
+        <div class="card-body p-3.5 p-md-4">
+            <div class="row align-items-center g-3">
+                <div class="col-12 col-lg-5">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px; font-size: 1.25rem;">
+                            <i class="fas fa-scale-balanced"></i>
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                                <span class="badge bg-warning text-dark rounded-pill px-2.5 py-0.5 fw-bold" style="font-size: 0.68rem;">SEUIL DE RENTABILITÉ & POINT MORT</span>
+                                <span class="text-white-50 small">• Charges Fixes</span>
+                            </div>
+                            <h5 class="fw-bold text-white mb-0 fs-6">Couverture des Frais Généraux</h5>
+                            <div class="text-white-50 small mt-0.5" style="font-size: 0.74rem;">
+                                Vos charges fixes mensuelles (loyer, salaires, abonnements) s'élèvent à <strong>{{ currency($overall['monthly_burn_rate']) }}/mois</strong>.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="p-2.5 rounded-3 bg-white bg-opacity-10 border border-white border-opacity-10">
+                        <div class="d-flex align-items-center justify-content-between mb-1.5" style="font-size: 0.76rem;">
+                            <span class="text-white-50">Couverture du point mort :</span>
+                            <span class="fw-bold {{ $overall['break_even_achieved'] ? 'text-success' : 'text-warning' }}">
+                                {{ $overall['break_even_progress'] }}%
+                                @if($overall['break_even_achieved'])
+                                    (Couvert ✓)
+                                @else
+                                    (En cours)
+                                @endif
+                            </span>
+                        </div>
+                        <div class="progress" style="height: 6px; border-radius: 99px; background: rgba(255,255,255,0.2);">
+                            <div class="progress-bar {{ $overall['break_even_achieved'] ? 'bg-success' : 'bg-warning' }}" role="progressbar" style="width: {{ $overall['break_even_progress'] }}%;"></div>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between mt-1.5 text-white-50" style="font-size: 0.7rem;">
+                            <span>Marge brute : <strong class="text-white">{{ currency($overall['gross_profit']) }}</strong></span>
+                            @if(!$overall['break_even_achieved'])
+                                <span>Reste à couvrir : <strong class="text-warning">{{ currency($overall['remaining_margin_to_break_even']) }}</strong></span>
+                            @else
+                                <span class="text-success fw-semibold">Frais fixes amortis !</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-3 text-lg-end">
+                    <div class="text-white-50 small mb-1" style="font-size: 0.74rem;">CA Point Mort Estimé :</div>
+                    <div class="fs-5 fw-bold text-white mb-2">{{ currency($overall['break_even_revenue']) }}</div>
+                    <a href="{{ route('expenses.index', ['tab' => 'recurring']) }}" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1.5 fw-semibold shadow-xs" style="font-size: 0.78rem;">
+                        <i class="fas fa-repeat me-1.5 text-warning"></i> Gérer les charges fixes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- Timeline Chart Card -->
     <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
         <div class="d-flex align-items-center justify-content-between mb-3">

@@ -47,6 +47,7 @@ class UserController extends Controller
                 'permissions' => [
                     'manage_inventory' => 'Ajuster les stocks et mouvements',
                     'view_inventory' => 'Consulter l\'état des stocks et alertes',
+                    'manage_stores' => 'Gérer les points de stockage, dépôts et transferts',
                 ],
             ],
             'customers' => [
@@ -54,16 +55,19 @@ class UserController extends Controller
                 'icon' => 'fas fa-user-tag',
                 'color' => '#8b5cf6',
                 'permissions' => [
-                    'manage_customers' => 'Gérer les fiches clients et crédits',
+                    'manage_customers' => 'Gérer les fiches clients et coordonnées',
+                    'manage_client_credits' => 'Accorder des crédits et encaisser les règlements clients',
                     'manage_coupons' => 'Créer des codes promo et affiliation',
                 ],
             ],
             'finance' => [
-                'title' => 'Comptabilité & Rapports',
+                'title' => 'Comptabilité & Rentabilité',
                 'icon' => 'fas fa-chart-line',
                 'color' => '#06b6d4',
                 'permissions' => [
                     'manage_accounting' => 'Gérer le journal et comptes comptables',
+                    'manage_expenses' => 'Gérer les dépenses d\'exploitation et charges récurrentes',
+                    'view_profitability' => 'Consulter le rapport de rentabilité, marges et coûts d\'achat',
                     'view_analytics' => 'Consulter les statistiques de trafic',
                     'view_reports' => 'Consulter les rapports financiers & ventes',
                     'export_data' => 'Exporter les données (Excel / CSV / PDF)',

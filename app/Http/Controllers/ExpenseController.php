@@ -473,7 +473,7 @@ class ExpenseController extends Controller
     private function authorizeAccess(): void
     {
         $user = auth()->user();
-        abort_if(!$user || (!$user->hasRole('Admin') && !$user->hasPermissionTo('manage_accounting')), 403, 'Accès non autorisé.');
+        abort_if(!$user || (!$user->hasRole('Admin') && !$user->hasPermissionTo('manage_accounting') && !$user->hasPermissionTo('manage_expenses')), 403, 'Accès non autorisé.');
     }
 
     /**

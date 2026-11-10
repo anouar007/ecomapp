@@ -55,3 +55,4 @@ class GenerateRecurringExpensesCommand extends Command
         return Command::SUCCESS;
     }
 }
+

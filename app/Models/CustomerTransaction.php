@@ -22,6 +22,7 @@ class CustomerTransaction extends Model
         'proof_image',
         'order_id',
         'invoice_id',
+        'store_id',
         'payment_date',
         'notes',
         'created_by',
@@ -64,6 +65,14 @@ class CustomerTransaction extends Model
     public function invoice()
     {
         return $this->belongsTo(Invoice::class);
+    }
+
+    /**
+     * Associated store / point of sale (cashier attribution).
+     */
+    public function store()
+    {
+        return $this->belongsTo(Store::class);
     }
 
     /**

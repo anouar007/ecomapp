@@ -172,15 +172,15 @@
             <div class="store-kpi-card">
                 <div>
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Unités Stockées</span>
+                        <span class="text-muted fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Valorisation Stock</span>
                         <div class="kpi-icon-pill bg-danger-subtle text-danger">
                             <i class="fas fa-boxes-stacked"></i>
                         </div>
                     </div>
-                    <div class="h3 fw-bold text-danger mb-0">{{ number_format($totalStockUnits, 0, ',', ' ') }}</div>
+                    <div class="h4 fw-bold text-danger mb-0">{{ currency($totalStockCostValuation) }}</div>
                 </div>
                 <div class="pt-2 border-top mt-2 text-muted small" style="font-size: 0.74rem;">
-                    Inventaire global multi-sites
+                    <strong>{{ number_format($totalStockUnits, 0, ',', ' ') }} pcs</strong> au coût d'achat
                 </div>
             </div>
         </div>
@@ -227,6 +227,21 @@
                                         <i class="fas fa-boxes-stacked text-success me-2"></i> Inventaire de ce site
                                     </a>
                                 </li>
+                                <li>
+                                    <a class="dropdown-item small" href="{{ route('expenses.index', ['store_id' => $st->id]) }}">
+                                        <i class="fas fa-file-invoice-dollar text-danger me-2"></i> Charges & Dépenses du site
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item small" href="{{ route('client-credits.transactions', ['store_id' => $st->id]) }}">
+                                        <i class="fas fa-cash-register text-info me-2"></i> Caisse & Règlements clients
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item small" href="{{ route('activity-logs.index', ['search' => $st->name]) }}">
+                                        <i class="fas fa-history text-secondary me-2"></i> Historique des opérations
+                                    </a>
+                                </li>
                                 @if(!$st->is_default)
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
@@ -266,21 +281,47 @@
                     </div>
                 </div>
 
-                <!-- Footer with Stock Stats & Quick Action -->
+                <!-- Footer with Stock Stats & Cross-Module Quick Actions -->
                 <div class="pt-3 border-top mt-2">
-                    <div class="d-flex align-items-center justify-content-between mb-2.5">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
                         <div>
-                            <span class="text-muted" style="font-size: 0.72rem;">Références :</span>
-                            <span class="fw-bold text-dark small ms-1">{{ $st->product_stocks_count }}</span>
-                        </div>
-                        <div>
-                            <span class="text-muted" style="font-size: 0.72rem;">Unités en stock :</span>
+                            <span class="text-muted" style="font-size: 0.72rem;">Stock physique :</span>
                             <span class="fw-bold text-success small ms-1">{{ number_format($st->total_units, 0, ',', ' ') }} pcs</span>
                         </div>
+                        <div>
+                            <span class="text-muted" style="font-size: 0.72rem;">Valeur achat :</span>
+                            <span class="fw-bold text-dark small ms-1">{{ currency($st->cost_valuation) }}</span>
+                        </div>
                     </div>
-                    <a href="{{ route('stores.stock', ['store_id' => $st->id]) }}" class="btn btn-sm btn-outline-dark rounded-pill w-100 fw-semibold shadow-xs">
-                        <i class="fas fa-boxes-stacked me-1.5"></i> Consulter l'inventaire de ce site
-                    </a>
+                    @if($st->month_expenses > 0 || $st->month_collections > 0)
+                    <div class="d-flex align-items-center justify-content-between mb-2.5 p-2 rounded-3 bg-light border" style="font-size: 0.72rem;">
+                        <div>
+                            <span class="text-muted">Charges mois :</span>
+                            <a href="{{ route('expenses.index', ['store_id' => $st->id]) }}" class="fw-bold text-danger text-decoration-none ms-1">
+                                {{ currency($st->month_expenses) }}
+                            </a>
+                        </div>
+                        @if($st->month_collections > 0)
+                        <div>
+                            <span class="text-muted">Caisse :</span>
+                            <a href="{{ route('client-credits.transactions', ['store_id' => $st->id]) }}" class="fw-bold text-success text-decoration-none ms-1">
+                                +{{ currency($st->month_collections) }}
+                            </a>
+                        </div>
+                        @endif
+                    </div>
+                    @endif
+                    <div class="d-flex align-items-center gap-1.5">
+                        <a href="{{ route('stores.stock', ['store_id' => $st->id]) }}" class="btn btn-sm btn-outline-dark rounded-pill flex-fill fw-semibold shadow-xs">
+                            <i class="fas fa-boxes-stacked me-1.5"></i> Inventaire
+                        </a>
+                        <a href="{{ route('expenses.index', ['store_id' => $st->id]) }}" class="btn btn-sm btn-light border rounded-pill px-2.5 text-danger" title="Charges de ce point de vente">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </a>
+                        <a href="{{ route('client-credits.transactions', ['store_id' => $st->id]) }}" class="btn btn-sm btn-light border rounded-pill px-2.5 text-success" title="Caisse & Règlements">
+                            <i class="fas fa-cash-register"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

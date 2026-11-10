@@ -640,7 +640,7 @@ html, body, .main-content {
 <!-- ======================================================= -->
 <!-- MODAL: ENREGISTRER UN RÈGLEMENT / OPÉRATION FINANCIÈRE  -->
 <!-- ======================================================= -->
-@include('client_credits.partials.payment_modal', ['allCustomersList' => $allCustomersList])
+@include('client_credits.partials.payment_modal', ['allCustomersList' => $allCustomersList, 'stores' => $stores])
 
 <!-- ======================================================= -->
 <!-- MODAL: MODIFIER LE PLAFOND DE CRÉDIT CLIENT            -->

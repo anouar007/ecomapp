@@ -153,6 +153,12 @@ trait LogsActivity
             'ReturnOrder' => 'Retour',
             'Account' => 'Compte Comptable',
             'JournalEntry' => 'Écriture Journal',
+            'Expense' => 'Dépense',
+            'RecurringExpense' => 'Charge Récurrente',
+            'CustomerTransaction' => 'Règlement / Transaction Client',
+            'Store' => 'Point de Stockage / Dépôt',
+            'ProductStock' => 'Stock Emplacement',
+            'InventoryMovement' => 'Mouvement / Transfert Stock',
             default => $base,
         };
     }
@@ -162,10 +168,13 @@ trait LogsActivity
      */
     protected function getActivityIdentifier(): ?string
     {
-        return $this->name 
+        return $this->expense_number
+            ?? $this->transaction_number
+            ?? $this->name 
             ?? $this->title 
             ?? $this->order_number 
             ?? $this->invoice_number 
+            ?? $this->reference_number
             ?? $this->code 
             ?? $this->key 
             ?? null;

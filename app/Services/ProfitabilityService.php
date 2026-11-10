@@ -53,18 +53,41 @@ class ProfitabilityService
         $itemsSold = (int) ($data->items_sold ?? 0);
         $avgProfitPerOrder = $ordersCount > 0 ? round($netProfit / $ordersCount, 2) : 0;
 
+        // Fixed Recurring Monthly Burn Rate (Charges Fixes d'Exploitation)
+        $monthlyBurnRate = (float) DB::table('recurring_expenses')
+            ->where('is_active', true)
+            ->sum('amount');
+
+        // Seuil de rentabilité (Point Mort en Chiffre d'Affaires) = Charges Fixes / Taux de Marge Brute
+        $breakEvenRevenue = 0;
+        $breakEvenAchieved = false;
+        $breakEvenProgress = 0;
+        $remainingMarginToBreakEven = 0;
+
+        if ($grossMargin > 0 && $monthlyBurnRate > 0) {
+            $breakEvenRevenue = round(($monthlyBurnRate / ($grossMargin / 100)), 2);
+            $breakEvenProgress = round(min(100, max(0, ($grossProfit / $monthlyBurnRate) * 100)), 1);
+            $breakEvenAchieved = $grossProfit >= $monthlyBurnRate;
+            $remainingMarginToBreakEven = max(0, $monthlyBurnRate - $grossProfit);
+        }
+
         return [
-            'total_revenue'        => $revenue,
-            'total_cost'           => $cost,
-            'gross_profit'         => $grossProfit,
-            'gross_margin'         => $grossMargin,
-            'total_expenses'       => $totalExpenses,
-            'net_profit'           => $netProfit,
-            'margin_percentage'    => $netMargin,
-            'markup_percentage'    => $markup,
-            'orders_count'         => $ordersCount,
-            'items_sold'           => $itemsSold,
-            'avg_profit_per_order' => $avgProfitPerOrder,
+            'total_revenue'                  => $revenue,
+            'total_cost'                     => $cost,
+            'gross_profit'                   => $grossProfit,
+            'gross_margin'                   => $grossMargin,
+            'total_expenses'                 => $totalExpenses,
+            'net_profit'                     => $netProfit,
+            'margin_percentage'              => $netMargin,
+            'markup_percentage'              => $markup,
+            'orders_count'                   => $ordersCount,
+            'items_sold'                     => $itemsSold,
+            'avg_profit_per_order'           => $avgProfitPerOrder,
+            'monthly_burn_rate'              => $monthlyBurnRate,
+            'break_even_revenue'             => $breakEvenRevenue,
+            'break_even_progress'            => $breakEvenProgress,
+            'break_even_achieved'            => $breakEvenAchieved,
+            'remaining_margin_to_break_even' => $remainingMarginToBreakEven,
         ];
     }
 

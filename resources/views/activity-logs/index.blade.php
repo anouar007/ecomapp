@@ -270,11 +270,18 @@
                         </td>
                         <td class="py-3">
                             <div class="fw-medium text-dark small">{{ $log->description }}</div>
-                            @if($log->subject_type)
-                                <span class="badge bg-light text-secondary border rounded-pill px-2 py-0.5 mt-0.5 font-monospace" style="font-size: 0.68rem;">
-                                    {{ $log->subject_label }}
-                                </span>
-                            @endif
+                            <div class="d-flex align-items-center gap-1.5 mt-1 flex-wrap">
+                                @if($log->subject_type)
+                                    <span class="badge bg-light text-secondary border rounded-pill px-2 py-0.5 font-monospace" style="font-size: 0.68rem;">
+                                        {{ $log->subject_label }}
+                                    </span>
+                                @endif
+                                @if($log->source_url)
+                                    <a href="{{ $log->source_url }}" class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill text-decoration-none px-2 py-0.5" style="font-size: 0.68rem;" title="Ouvrir la fiche source">
+                                        <i class="fas fa-arrow-up-right-from-square me-1"></i> Fiche source
+                                    </a>
+                                @endif
+                            </div>
                         </td>
                         <td class="py-3">
                             <div class="small fw-semibold text-dark">{{ $log->created_at->format('d/m/Y') }}</div>
@@ -337,12 +344,17 @@
                 </span>
             </div>
 
-            <div class="d-flex align-items-center gap-1.5 mb-2">
+            <div class="d-flex align-items-center gap-1.5 mb-2 flex-wrap">
                 {!! $log->event_badge !!}
                 @if($log->subject_type)
                     <span class="badge bg-light text-secondary border rounded-pill px-2 py-0.5 font-monospace" style="font-size: 0.68rem;">
                         {{ $log->subject_label }}
                     </span>
+                @endif
+                @if($log->source_url)
+                    <a href="{{ $log->source_url }}" class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill text-decoration-none px-2 py-0.5" style="font-size: 0.68rem;">
+                        <i class="fas fa-arrow-up-right-from-square me-1"></i> Fiche
+                    </a>
                 @endif
             </div>
 
@@ -457,8 +469,13 @@
             </div>
 
             <!-- Modal Footer -->
-            <div class="modal-footer bg-white py-2.5 px-3 border-top d-flex justify-content-end">
-                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">
+            <div class="modal-footer bg-white py-2.5 px-3 border-top d-flex justify-content-between">
+                <div>
+                    <a id="diff_modal_source_btn" href="#" class="btn btn-sm btn-primary rounded-pill px-3.5 d-none">
+                        <i class="fas fa-arrow-up-right-from-square me-1.5"></i> Consulter la fiche source
+                    </a>
+                </div>
+                <button type="button" class="btn btn-sm btn-light rounded-pill px-4" data-bs-dismiss="modal">
                     Fermer
                 </button>
             </div>
@@ -499,6 +516,16 @@ function openLogDiffModal(logId) {
         document.getElementById('diff_modal_ip').textContent = data.ip_address;
         document.getElementById('diff_modal_subject').textContent = data.subject_label;
         document.getElementById('diff_modal_desc').textContent = data.description;
+
+        const sourceBtn = document.getElementById('diff_modal_source_btn');
+        if (sourceBtn) {
+            if (data.source_url) {
+                sourceBtn.href = data.source_url;
+                sourceBtn.classList.remove('d-none');
+            } else {
+                sourceBtn.classList.add('d-none');
+            }
+        }
 
         const tbody = document.getElementById('diff_modal_tbody');
         tbody.innerHTML = '';

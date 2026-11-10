@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 class StoreController extends Controller
 {
     /**
-     * Display listing of stores, warehouses, and storage locations.
+     * Display listing of stores, warehouses, and storage locations with financial & stock intelligence.
      */
     public function index()
     {
@@ -22,13 +22,63 @@ class StoreController extends Controller
             ->orderBy('name')
             ->get();
 
+        // 1. Stock Valuation at Cost (PMP) & Retail Value per store
+        $stockValuationQuery = ProductStock::join('products', 'product_stocks.product_id', '=', 'products.id')
+            ->selectRaw('
+                product_stocks.store_id,
+                SUM(product_stocks.quantity) as total_units,
+                SUM(product_stocks.quantity * COALESCE(products.cost_price, 0)) as cost_valuation,
+                SUM(product_stocks.quantity * COALESCE(products.price, 0)) as retail_valuation
+            ')
+            ->groupBy('product_stocks.store_id')
+            ->get()
+            ->keyBy('store_id');
+
+        // 2. Monthly Operating Expenses per store
+        $storeExpensesQuery = \App\Models\Expense::where('status', 'paid')
+            ->whereNotNull('store_id')
+            ->whereBetween('expense_date', [now()->startOfMonth()->toDateString(), now()->endOfMonth()->toDateString()])
+            ->selectRaw('store_id, SUM(amount) as total_month_expenses')
+            ->groupBy('store_id')
+            ->get()
+            ->keyBy('store_id');
+
+        // 3. Customer Credit Payments collected at each store this month
+        $storeCollectionsQuery = \App\Models\CustomerTransaction::where('type', 'payment_received')
+            ->whereNotNull('store_id')
+            ->whereBetween('payment_date', [now()->startOfMonth(), now()->endOfMonth()])
+            ->selectRaw('store_id, SUM(amount) as total_collected')
+            ->groupBy('store_id')
+            ->get()
+            ->keyBy('store_id');
+
+        // Map onto each store
+        $stores->each(function ($store) use ($stockValuationQuery, $storeExpensesQuery, $storeCollectionsQuery) {
+            $stats = $stockValuationQuery->get($store->id);
+            $store->total_stock_units = (int)($stats->total_units ?? 0);
+            $store->cost_valuation = (float)($stats->cost_valuation ?? 0);
+            $store->retail_valuation = (float)($stats->retail_valuation ?? 0);
+            $store->month_expenses = (float)($storeExpensesQuery->get($store->id)->total_month_expenses ?? 0);
+            $store->month_collections = (float)($storeCollectionsQuery->get($store->id)->total_collected ?? 0);
+        });
+
         // Calculate store stats
         $totalStores = $stores->where('type', 'store')->count();
         $totalWarehouses = $stores->where('type', 'warehouse')->count();
         $totalActive = $stores->where('is_active', true)->count();
         $totalStockUnits = ProductStock::sum('quantity');
+        $totalStockCostValuation = (float) $stores->sum('cost_valuation');
+        $totalStockRetailValuation = (float) $stores->sum('retail_valuation');
 
-        return view('stores.index', compact('stores', 'totalStores', 'totalWarehouses', 'totalActive', 'totalStockUnits'));
+        return view('stores.index', compact(
+            'stores',
+            'totalStores',
+            'totalWarehouses',
+            'totalActive',
+            'totalStockUnits',
+            'totalStockCostValuation',
+            'totalStockRetailValuation'
+        ));
     }
 
     /**

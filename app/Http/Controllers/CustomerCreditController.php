@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\CustomerTransaction;
+use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -79,6 +80,9 @@ class CustomerCreditController extends Controller
             ->orderBy('name')
             ->get();
 
+        // List of all active stores for modal cashier attribution
+        $stores = Store::where('is_active', true)->orderBy('name')->get();
+
         return view('client_credits.index', compact(
             'customers',
             'totalDebtors',
@@ -89,6 +93,7 @@ class CustomerCreditController extends Controller
             'collectedThisMonth',
             'recentTransactions',
             'allCustomersList',
+            'stores',
             'filter'
         ));
     }
@@ -98,7 +103,7 @@ class CustomerCreditController extends Controller
      */
     public function transactions(Request $request)
     {
-        $query = CustomerTransaction::with(['customer', 'createdBy', 'order', 'invoice']);
+        $query = CustomerTransaction::with(['customer', 'createdBy', 'order', 'invoice', 'store']);
 
         // Search by customer or reference
         if ($request->filled('search')) {
@@ -119,6 +124,11 @@ class CustomerCreditController extends Controller
         // Filter by customer
         if ($request->filled('customer_id')) {
             $query->where('customer_id', $request->customer_id);
+        }
+
+        // Filter by store / cashier point
+        if ($request->filled('store_id')) {
+            $query->where('store_id', $request->store_id);
         }
 
         // Filter by operation type
@@ -158,7 +168,9 @@ class CustomerCreditController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('client_credits.transactions', compact('transactions', 'totalIn', 'totalOut', 'allCustomersList'));
+        $stores = Store::where('is_active', true)->orderBy('name')->get();
+
+        return view('client_credits.transactions', compact('transactions', 'totalIn', 'totalOut', 'allCustomersList', 'stores'));
     }
 
     /**
@@ -172,6 +184,7 @@ class CustomerCreditController extends Controller
             'amount'           => ['required', 'numeric', 'min:0.01'],
             'payment_method'   => ['required', 'string', 'max:50'],
             'reference_number' => ['nullable', 'string', 'max:100'],
+            'store_id'         => ['nullable', 'exists:stores,id'],
             'proof_image'      => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,gif', 'max:5120'], // 5MB max
             'payment_date'     => ['nullable', 'date'],
             'notes'            => ['nullable', 'string', 'max:1000'],

@@ -629,4 +629,93 @@ class ErpFeaturesVerificationTest extends TestCase
         $exitCode = \Illuminate\Support\Facades\Artisan::call('expenses:generate-recurring');
         $this->assertEquals(0, $exitCode);
     }
+
+    /**
+     * Test seamless cross-module ERP synergy:
+     * - Store cashier attribution on Customer Credit Transactions
+     * - Stock valuation at cost in Stores Index
+     * - Break-even point & Burn rate in Profitability
+     * - Activity Log captures Expense and Stock movements with deep links
+     */
+    public function test_cross_module_erp_integration_synergy(): void
+    {
+        // 1. Record customer transaction with store attribution
+        $response = $this->actingAs($this->admin)->post(route('client-credits.transactions.store'), [
+            'customer_id'      => $this->customer->id,
+            'type'             => 'payment_received',
+            'amount'           => 1500.00,
+            'payment_method'   => 'especes',
+            'store_id'         => $this->store1->id,
+            'reference_number' => 'REC-CAISSE-01',
+            'notes'            => 'Paiement comptoir caisse magasin',
+        ]);
+        $response->assertStatus(302);
+
+        $this->assertDatabaseHas('customer_transactions', [
+            'customer_id' => $this->customer->id,
+            'store_id'    => $this->store1->id,
+            'amount'      => 1500.00,
+        ]);
+
+        // 2. Test Store Index calculates stock cost valuation and expenses
+        $this->product->update(['cost_price' => 2500.00]);
+        \App\Models\ProductStock::updateOrCreate(
+            ['product_id' => $this->product->id, 'store_id' => $this->store1->id],
+            ['quantity' => 10, 'location_code' => 'RAYON-A1']
+        );
+
+        $storeResp = $this->actingAs($this->admin)->get(route('stores.index'));
+        $storeResp->assertStatus(200);
+        $storeResp->assertSee('Valorisation Stock');
+        $storeResp->assertSee('Charges mois');
+
+        // 3. Test Profitability Break-Even analysis from recurring burn rate
+        \App\Models\RecurringExpense::create([
+            'title'          => 'Loyer Dépôt Central',
+            'category'       => 'rent',
+            'amount'         => 8000.00,
+            'frequency'      => 'monthly',
+            'day_of_month'   => 1,
+            'start_date'     => now()->startOfMonth()->toDateString(),
+            'payment_method' => 'bank_transfer',
+            'is_active'      => true,
+        ]);
+
+        $service = app(\App\Services\ProfitabilityService::class);
+        $overall = $service->getOverallBenefits(now()->startOfMonth(), now()->endOfMonth());
+
+        $this->assertGreaterThanOrEqual(8000.00, $overall['monthly_burn_rate']);
+        $this->assertArrayHasKey('break_even_revenue', $overall);
+        $this->assertArrayHasKey('break_even_progress', $overall);
+
+        // Check Profitability view renders the Break-Even banner
+        $profitResp = $this->actingAs($this->admin)->get(route('reports.profitability', ['period' => 'month']));
+        $profitResp->assertStatus(200);
+        $profitResp->assertSee('SEUIL DE RENTABILITÉ');
+        $profitResp->assertSee('Couverture des Frais Généraux');
+
+        // 4. Test ActivityLog triggers on Expense creation with source_url
+        $expense = \App\Models\Expense::create([
+            'expense_number' => 'DEP-AUDIT-TEST',
+            'title'          => 'Achat Fournitures Bureau',
+            'category'       => 'utilities',
+            'amount'         => 450.00,
+            'expense_date'   => now()->toDateString(),
+            'payment_method' => 'cash',
+            'status'         => 'paid',
+        ]);
+
+        $log = \App\Models\ActivityLog::where('subject_type', \App\Models\Expense::class)
+            ->where('subject_id', $expense->id)
+            ->first();
+
+        $this->assertNotNull($log);
+        $this->assertStringContainsString('Dépense', $log->subject_label);
+        $this->assertNotNull($log->source_url);
+
+        // 5. Check Activity Log Index view renders source links
+        $actResp = $this->actingAs($this->admin)->get(route('activity-logs.index'));
+        $actResp->assertStatus(200);
+        $actResp->assertSee('Fiche source');
+    }
 }

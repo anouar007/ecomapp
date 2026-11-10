@@ -54,9 +54,9 @@
                     </div>
                 </div>
 
-                <!-- Payment Method & Reference -->
+                <!-- Payment Method & Reference & Store/Cashier -->
                 <div class="row g-3 mb-3">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label small fw-bold text-dark mb-1">Mode de règlement <span class="text-danger">*</span></label>
                         <select name="payment_method" class="form-select rounded-3" required>
                             <option value="especes" selected>Espèces / Cash</option>
@@ -68,9 +68,20 @@
                             <option value="autre">Autre mode</option>
                         </select>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label small fw-bold text-dark mb-1">N° Réf. Transaction / N° Chèque</label>
-                        <input type="text" name="reference_number" class="form-control rounded-3" placeholder="Ex: CHQ-981244 ou VIR-BAM-0021">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold text-dark mb-1">Caisse / Boutique</label>
+                        <select name="store_id" class="form-select rounded-3">
+                            <option value="">Siège / Général</option>
+                            @isset($stores)
+                                @foreach($stores as $st)
+                                    <option value="{{ $st->id }}">{{ $st->name }} ({{ $st->city }})</option>
+                                @endforeach
+                            @endisset
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold text-dark mb-1">N° Réf. / N° Chèque</label>
+                        <input type="text" name="reference_number" class="form-control rounded-3" placeholder="Ex: CHQ-981244, VIR-0021">
                     </div>
                 </div>
 

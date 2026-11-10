@@ -116,8 +116,13 @@
                 </div>
 
                 <div class="d-flex align-items-center gap-2 flex-wrap">
+                    @if(auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->can('manage_accounting')))
+                    <a href="{{ route('reports.profitability.costs') }}" class="btn btn-outline-light rounded-pill px-3.5 py-2 fw-semibold shadow-xs" style="font-size: 0.85rem;">
+                        <i class="fas fa-coins text-warning me-1.5"></i> Coûts d'Achat (PMP)
+                    </a>
+                    @endif
                     <a href="{{ route('stores.index') }}" class="btn btn-outline-light rounded-pill px-3.5 py-2 fw-semibold" style="font-size: 0.85rem;">
-                        <i class="fas fa-warehouse me-1.5"></i> Configurer les Dépôts
+                        <i class="fas fa-warehouse me-1.5"></i> Dépôts
                     </a>
                     <button type="button" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#transferStockModal" style="font-size: 0.85rem;">
                         <i class="fas fa-arrow-right-arrow-left me-1.5"></i> Transférer du Stock

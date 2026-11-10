@@ -125,7 +125,12 @@ class ActivityLog extends Model
             'Coupon' => 'Code Promo',
             'User' => 'Utilisateur',
             'Setting' => 'Paramètre',
-            'InventoryMovement' => 'Mouvement Stock',
+            'InventoryMovement' => 'Mouvement / Transfert Stock',
+            'Expense' => 'Dépense d\'Exploitation',
+            'RecurringExpense' => 'Charge Récurrente Fixe',
+            'CustomerTransaction' => 'Règlement / Opération Client',
+            'Store' => 'Point de Stockage / Dépôt',
+            'ProductStock' => 'Stock & Emplacement',
             'Banner' => 'Bannière',
             'Brand' => 'Marque',
             'ProductReview' => 'Avis',
@@ -133,6 +138,36 @@ class ActivityLog extends Model
             default => $base,
         };
         return $this->subject_id ? "{$name} #{$this->subject_id}" : $name;
+    }
+
+    /**
+     * Get direct source deep-link URL in admin if applicable.
+     */
+    public function getSourceUrlAttribute(): ?string
+    {
+        if (!$this->subject_type || !$this->subject_id) {
+            return null;
+        }
+
+        $base = class_basename($this->subject_type);
+
+        try {
+            return match($base) {
+                'Customer' => route('customers.show', $this->subject_id),
+                'CustomerTransaction' => route('client-credits.transactions', ['search' => $this->subject_id]),
+                'Expense' => route('expenses.index', ['search' => $this->subject_id]),
+                'RecurringExpense' => route('expenses.index', ['tab' => 'recurring']),
+                'Store' => route('stores.index'),
+                'Product' => route('products.edit', $this->subject_id),
+                'ProductStock', 'InventoryMovement' => route('stores.stock'),
+                'Order' => route('orders.show', $this->subject_id),
+                'Invoice' => route('invoices.show', $this->subject_id),
+                'User' => route('users.index'),
+                default => null,
+            };
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 
     public function getEventColorAttribute(): string
