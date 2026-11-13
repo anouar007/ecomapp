@@ -133,20 +133,7 @@
     </div>
 
     <!-- Navigation Croisée ERP (Clients <-> Crédits <-> Grand Livre) -->
-    <div class="subnav-pills-bar">
-        <a href="{{ route('customers.index') }}" class="subnav-pill">
-            <i class="fas fa-users"></i>
-            <span>Fiches & Profils Clients</span>
-        </a>
-        <a href="{{ route('client-credits.index') }}" class="subnav-pill">
-            <i class="fas fa-wallet text-danger"></i>
-            <span>Crédits, Créances & Dettes</span>
-        </a>
-        <a href="{{ route('client-credits.transactions') }}" class="subnav-pill active">
-            <i class="fas fa-list-check text-primary"></i>
-            <span>Grand Livre des Règlements</span>
-        </a>
-    </div>
+    @include('partials.subnav.clients')
 
     <!-- Alert / Flash message -->
     @if(session('success'))

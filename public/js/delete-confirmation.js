@@ -6,6 +6,9 @@
  */
 
 document.addEventListener('DOMContentLoaded', function () {
+    if (window.__winaDeleteConfirmationBound) return;
+    window.__winaDeleteConfirmationBound = true;
+
     // Handle delete confirmations
     document.addEventListener('submit', function (e) {
         const form = e.target;

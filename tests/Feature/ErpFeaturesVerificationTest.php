@@ -796,4 +796,178 @@ class ErpFeaturesVerificationTest extends TestCase
         $actResp->assertSee('Équipe, Collaborateurs & Rôles', false);
         $actResp->assertSee('Paramètres Système');
     }
+
+    public function test_profitability_store_filtering_search_and_pnl_clarity(): void
+    {
+        $category = Category::create([
+            'name' => 'Cat Rentabilité ' . uniqid(),
+            'slug' => 'cat-rent-' . uniqid(),
+        ]);
+
+        $productA = Product::create([
+            'name' => 'Caméra Alpha Pro',
+            'slug' => 'cam-alpha-' . uniqid(),
+            'sku' => 'CAM-ALPHA-' . uniqid(),
+            'price' => 5000.00,
+            'cost_price' => 3000.00,
+            'stock_quantity' => 10,
+            'category_id' => $category->id,
+        ]);
+
+        $productB = Product::create([
+            'name' => 'Micro Beta Zero',
+            'slug' => 'mic-beta-' . uniqid(),
+            'sku' => 'MIC-BETA-' . uniqid(),
+            'price' => 1000.00,
+            'cost_price' => 0,
+            'stock_quantity' => 10,
+            'category_id' => $category->id,
+        ]);
+
+        $order = Order::create([
+            'order_number' => 'ORD-PROF-' . uniqid(),
+            'customer_id' => $this->customer->id,
+            'customer_name' => $this->customer->name,
+            'customer_phone' => $this->customer->phone ?? '0600000000',
+            'customer_email' => 'prof@example.com',
+            'shipping_address' => 'Casablanca',
+            'shipping_city' => 'Casablanca',
+            'shipping_zip' => '20000',
+            'shipping_country' => 'MA',
+            'status' => 'delivered',
+            'payment_status' => 'paid',
+            'total' => 6000.00,
+            'subtotal' => 6000.00,
+            'created_at' => now(),
+        ]);
+
+        OrderItem::create([
+            'order_id' => $order->id,
+            'product_id' => $productA->id,
+            'store_id' => $this->store1->id,
+            'product_name' => $productA->name,
+            'product_sku' => $productA->sku,
+            'quantity' => 1,
+            'price' => 5000.00,
+            'subtotal' => 5000.00,
+        ]);
+
+        OrderItem::create([
+            'order_id' => $order->id,
+            'product_id' => $productB->id,
+            'store_id' => $this->store2->id,
+            'product_name' => $productB->name,
+            'product_sku' => $productB->sku,
+            'quantity' => 1,
+            'price' => 1000.00,
+            'subtotal' => 1000.00,
+        ]);
+
+        $service = app(\App\Services\ProfitabilityService::class);
+        $store1Overall = $service->getOverallBenefits(now()->startOfMonth(), now()->endOfMonth(), $this->store1->id);
+        $this->assertEquals(5000.00, $store1Overall['total_revenue']);
+        $this->assertEquals(3000.00, $store1Overall['total_cost']);
+        $this->assertEquals(2000.00, $store1Overall['gross_profit']);
+
+        $store2Overall = $service->getOverallBenefits(now()->startOfMonth(), now()->endOfMonth(), $this->store2->id);
+        $this->assertEquals(1000.00, $store2Overall['total_revenue']);
+        $this->assertEquals(0.00, $store2Overall['total_cost']);
+        $this->assertEquals(1000.00, $store2Overall['uncosted_revenue']);
+
+        // Store filter in UI scopes products & renders P&L waterfall
+        $respStore1 = $this->actingAs($this->admin)->get(route('reports.profitability', [
+            'period' => 'month',
+            'store_id' => $this->store1->id,
+        ]));
+        $respStore1->assertStatus(200);
+        $respStore1->assertSee('Équation P&L en Direct');
+        $respStore1->assertSee($productA->name);
+        $respStore1->assertDontSee($productB->name);
+
+        // Missing cost filter + search
+        $respMissing = $this->actingAs($this->admin)->get(route('reports.profitability', [
+            'period' => 'month',
+            'margin_filter' => 'missing_cost',
+            'search' => 'Beta Zero',
+        ]));
+        $respMissing->assertStatus(200);
+        $respMissing->assertSee($productB->name);
+        $respMissing->assertDontSee($productA->name);
+
+        // Unsold catalog products also appear in the full products table
+        $productUnsold = Product::create([
+            'name' => 'Trépied Catalogue Invendu',
+            'slug' => 'trepied-invendu-' . uniqid(),
+            'sku' => 'TRP-INV-' . uniqid(),
+            'price' => 800.00,
+            'cost_price' => 500.00,
+            'stock_quantity' => 5,
+            'category_id' => $category->id,
+        ]);
+
+        $respAll = $this->actingAs($this->admin)->get(route('reports.profitability', ['period' => 'month']));
+        $respAll->assertStatus(200);
+        $respAll->assertSee($productA->name);
+        $respAll->assertSee($productB->name);
+        $respAll->assertSee($productUnsold->name);
+    }
+
+    public function test_order_show_displays_complete_history_with_details(): void
+    {
+        $order = Order::create([
+            'order_number' => 'ORD-HIST-' . uniqid(),
+            'user_id' => $this->admin->id,
+            'customer_id' => $this->customer->id,
+            'customer_name' => $this->customer->name,
+            'customer_phone' => $this->customer->phone ?? '0600000000',
+            'customer_email' => 'hist@example.com',
+            'shipping_address' => 'Casablanca',
+            'shipping_city' => 'Casablanca',
+            'shipping_zip' => '20000',
+            'shipping_country' => 'MA',
+            'status' => 'pending',
+            'payment_status' => 'pending',
+            'total' => 1500.00,
+            'subtotal' => 1500.00,
+        ]);
+
+        OrderItem::create([
+            'order_id' => $order->id,
+            'product_id' => $this->product->id,
+            'store_id' => $this->store1->id,
+            'product_name' => $this->product->name,
+            'product_sku' => $this->product->sku ?? 'SKU-HIST',
+            'quantity' => 1,
+            'price' => 1500.00,
+            'subtotal' => 1500.00,
+        ]);
+
+        // Trigger an update & stock movement for rich history
+        $this->actingAs($this->admin);
+        $order->update(['status' => 'processing', 'payment_status' => 'paid']);
+
+        InventoryMovement::create([
+            'product_id' => $this->product->id,
+            'type' => 'out',
+            'quantity' => 1,
+            'stock_before' => 10,
+            'stock_after' => 9,
+            'reference_type' => Order::class,
+            'reference_id' => $order->id,
+            'from_location_id' => $this->store1->id,
+            'reason' => 'Déduction test commande',
+            'created_by' => $this->admin->id,
+        ]);
+
+        $resp = $this->actingAs($this->admin)->get(route('orders.show', $order));
+        $resp->assertStatus(200);
+        $resp->assertSee('Historique complet');
+        $resp->assertSee('Traçabilité');
+        $resp->assertSee('Mise à jour de la commande');
+        $resp->assertSee('En attente');
+        $resp->assertSee('En cours');
+        $resp->assertSee('Sortie de stock');
+        $resp->assertSee($this->store1->name);
+        $resp->assertSee($this->admin->name);
+    }
 }

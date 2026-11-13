@@ -33,7 +33,7 @@
             'Chri ' . $catName . ' f casa'
         ]);
     } elseif ($activeBrandSlug) {
-        $brandName = ucfirst($activeBrandSlug);
+        $brandName = (isset($activeBrand) && $activeBrand) ? $activeBrand->name : ucfirst($activeBrandSlug);
         $pageTitle = $brandName . ' Maroc — Produits Officiels, Prix & Garantie | ' . setting('app_name', 'WINA SHOP');
         $pageDescription = 'Découvrez toute la gamme officielle ' . $brandName . ' au Maroc chez WINA SHOP Casablanca. Caméras, optiques et accessoires garantis, devis INDH et livraison express partout au Maroc. منتجات ' . $brandName . ' الأصلية في المغرب مع الضمان الرسمي.';
         $pageKeywords = implode(', ', [
@@ -104,12 +104,22 @@
       @endif
     ]
   },
+  @php
+      $schemaQueryParams = [];
+      if (request()->filled('category')) {
+          $schemaQueryParams['category'] = (string) request()->query('category');
+      }
+      if (request()->filled('brand')) {
+          $schemaQueryParams['brand'] = (string) request()->query('brand');
+      }
+      $cleanShopSchemaUrl = route('shop.index', $schemaQueryParams);
+  @endphp
   {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     "name": {!! json_encode($pageTitle) !!},
     "description": {!! json_encode($pageDescription) !!},
-    "url": "{{ url()->current() }}",
+    "url": "{{ $cleanShopSchemaUrl }}",
     "keywords": {!! json_encode($pageKeywords) !!},
     "inLanguage": ["fr-MA", "ar-MA", "en-MA"],
     "isPartOf": {
@@ -122,7 +132,7 @@
     "@context": "https://schema.org",
     "@type": "ItemList",
     "name": "{{ addslashes($pageTitle) }}",
-    "url": "{{ url()->current() }}",
+    "url": "{{ $cleanShopSchemaUrl }}",
     "numberOfItems": {{ $products->total() }},
     "itemListElement": [
       @foreach($products as $i => $prod)
@@ -162,6 +172,10 @@
             <h1 class="shop-hero-title mb-2">
                 @if(request('q'))
                     {{ __('Résultats pour') }} <span class="text-brand-red">&laquo; {{ request('q') }} &raquo;</span>
+                @elseif(request('category') && isset($activeBrand) && $activeBrand)
+                    <span class="text-brand-red">{{ $categories->where('slug', request('category'))->first()->name ?? __('Produits') }}</span> &mdash; {{ $activeBrand->name }}
+                @elseif(isset($activeBrand) && $activeBrand)
+                    {{ __('Équipement') }} <span class="text-brand-red">{{ $activeBrand->name }}</span> {{ __('au Maroc') }}
                 @elseif(request('category'))
                     <span class="text-brand-red">{{ $categories->where('slug', request('category'))->first()->name ?? __('Produits') }}</span>
                 @else
@@ -581,6 +595,46 @@
                 <div id="loader" class="d-none text-center py-5">
                     <div class="shop-loader-spinner"></div>
                 </div>
+
+                {{-- Crawl-friendly SEO & AI Shopping Guide for Category / Brand / Shop pages --}}
+                @if(!request('q'))
+                <div class="mt-4 p-3 p-md-4 bg-white border rounded-4 shadow-sm">
+                    <div class="row g-3 align-items-start">
+                        <div class="col-12 col-lg-7">
+                            <h2 class="h6 fw-bold text-dark mb-2">
+                                @if(isset($activeBrand) && $activeBrand)
+                                    {{ $activeBrand->name }} {{ __('au Maroc — Revendeur Spécialisé WINA SHOP Casablanca') }}
+                                @elseif($activeCategory)
+                                    {{ $activeCategory->name }} {{ __('au Maroc — Catalogue Professionnel WINA SHOP') }}
+                                @else
+                                    {{ __('WINA SHOP Casablanca — Matériel Photo, Vidéo, Son & Cinéma au Maroc') }}
+                                @endif
+                            </h2>
+                            <p class="small text-muted mb-2" style="line-height: 1.65;">
+                                {{ __('Commandez vos équipements originaux neufs et scellés avec garantie constructeur au Maroc, livraison sécurisée 24h-48h (Casablanca, Rabat, Marrakech, Tanger, Agadir, Fès, Oujda) et facture officielle ICE ou devis proforma certifié INDH / sociétés.') }}
+                            </p>
+                            @if($categories->isNotEmpty())
+                            <div class="d-flex flex-wrap gap-1.5 mt-2">
+                                @foreach($categories->take(10) as $seoCat)
+                                    <a href="{{ route('shop.index', ['category' => $seoCat->slug]) }}" class="badge rounded-pill bg-light text-dark border text-decoration-none fw-normal px-2.5 py-1" style="font-size: 0.72rem;">
+                                        {{ $seoCat->name }}
+                                    </a>
+                                @endforeach
+                            </div>
+                            @endif
+                        </div>
+                        <div class="col-12 col-lg-5">
+                            <div class="small fw-semibold text-dark mb-2">{{ __('Engagement WINA SHOP Maroc') }}</div>
+                            <ul class="list-unstyled small text-muted mb-0 d-grid gap-1">
+                                <li><i class="fas fa-check-circle text-danger me-1"></i> {{ __('Stock réel en magasin à Al Oulfa, Casablanca') }}</li>
+                                <li><i class="fas fa-shipping-fast text-danger me-1"></i> {{ __('Expédition express 24h-48h dans tout le Maroc') }}</li>
+                                <li><i class="fas fa-file-invoice text-danger me-1"></i> {{ __('Devis Proforma INDH & Facture ICE officiels') }}</li>
+                                <li><i class="fas fa-shield-alt text-danger me-1"></i> {{ __('Produits authentiques scellés avec garantie') }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                @endif
             </div>
         </div>
     </div>

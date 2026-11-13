@@ -15,9 +15,11 @@
             <p class="brand-subtitle">Track all financial transactions and accounting entries</p>
         </div>
         <a href="{{ route('accounting.entries.create') }}" class="btn-brand-primary">
-            <i class="fas fa-plus me-2"></i> New Entry
+            <i class="fas fa-plus me-2"></i> Nouvelle Écriture
         </a>
     </div>
+
+    @include('partials.subnav.finance')
 
     <!-- Filter Form -->
     <div class="brand-table-card mb-4">

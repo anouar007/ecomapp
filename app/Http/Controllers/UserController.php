@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -18,93 +22,153 @@ class UserController extends Controller
     public static function getPermissionModules(): array
     {
         return [
+            'dashboard' => [
+                'title' => 'Parties du Tableau de Bord',
+                'icon' => 'fas fa-gauge-high',
+                'color' => '#dc2626',
+                'permissions' => [
+                    'view_dashboard' => 'Accéder au tableau de bord administrateur',
+                    'dashboard_quick_actions' => 'Afficher la barre d\'actions rapides',
+                    'dashboard_kpis' => 'Afficher les cartes KPI (CA, Commandes, Produits, Clients)',
+                    'dashboard_finance_hub' => 'Afficher le Cockpit ERP (Trésorerie, Dépenses, Bénéfice Net)',
+                    'dashboard_charts' => 'Afficher les graphiques (Revenus & Répartition commandes)',
+                    'dashboard_recent_orders' => 'Afficher le bloc Commandes récentes',
+                    'dashboard_stock_alerts' => 'Afficher le widget Alertes de stock',
+                    'dashboard_activity_feed' => 'Afficher le journal d\'activité en direct',
+                ],
+            ],
             'catalog' => [
-                'title' => 'Catalogue & Produits',
+                'title' => 'Catalogue & Produits (Sections & Actions)',
                 'icon' => 'fas fa-box-open',
                 'color' => '#3b82f6',
                 'permissions' => [
-                    'manage_products' => 'Créer, modifier et supprimer des produits',
-                    'view_products' => 'Consulter les fiches produits',
+                    'manage_products' => 'Accès complet Produits (toutes actions)',
+                    'view_products' => 'Consulter la liste et les fiches produits',
+                    'create_products' => 'Ajouter de nouveaux produits',
+                    'edit_products' => 'Modifier les produits, prix et images',
+                    'delete_products' => 'Supprimer des produits',
                     'manage_categories' => 'Gérer les catégories et classements',
+                    'manage_brands' => 'Gérer les marques',
+                    'manage_product_tags' => 'Gérer les tags et badges produits',
                 ],
             ],
             'orders' => [
-                'title' => 'Commandes & Ventes',
+                'title' => 'Commandes, POS & Facturation',
                 'icon' => 'fas fa-shopping-cart',
                 'color' => '#10b981',
                 'permissions' => [
-                    'manage_orders' => 'Traiter et modifier les commandes',
+                    'manage_orders' => 'Accès complet Commandes (toutes actions)',
                     'view_orders' => 'Consulter la liste et le détail des commandes',
-                    'manage_invoices' => 'Générer et gérer les factures & devis',
+                    'create_orders' => 'Créer de nouvelles commandes manuelles',
+                    'edit_orders' => 'Modifier le statut et les détails des commandes',
+                    'delete_orders' => 'Supprimer ou annuler des commandes',
+                    'access_pos' => 'Accéder à la Caisse POS et encaisser en magasin',
+                    'manage_invoices' => 'Générer et gérer les factures, devis & garanties',
                     'manage_returns' => 'Gérer les retours et remboursements',
                     'manage_reviews' => 'Modérer les avis et notes clients',
                 ],
             ],
             'inventory' => [
-                'title' => 'Stocks & Logistique',
+                'title' => 'Stocks & Dépôts Multi-Magasins',
                 'icon' => 'fas fa-warehouse',
                 'color' => '#f59e0b',
                 'permissions' => [
-                    'manage_inventory' => 'Ajuster les stocks et mouvements',
-                    'view_inventory' => 'Consulter l\'état des stocks et alertes',
-                    'manage_stores' => 'Gérer les points de stockage, dépôts et transferts',
+                    'manage_inventory' => 'Accès complet Stocks (toutes actions)',
+                    'view_inventory' => 'Consulter l\'état des stocks, mouvements et alertes',
+                    'adjust_inventory' => 'Effectuer des ajustements et acquitter les alertes',
+                    'transfer_inventory' => 'Transférer du stock entre dépôts/magasins',
+                    'manage_stores' => 'Créer, modifier et supprimer des dépôts/magasins',
                 ],
             ],
             'customers' => [
-                'title' => 'Clients & Marketing',
+                'title' => 'Clients, Crédits & Marketing',
                 'icon' => 'fas fa-user-tag',
                 'color' => '#8b5cf6',
                 'permissions' => [
-                    'manage_customers' => 'Gérer les fiches clients et coordonnées',
-                    'manage_client_credits' => 'Accorder des crédits et encaisser les règlements clients',
-                    'manage_coupons' => 'Créer des codes promo et affiliation',
+                    'view_customers' => 'Consulter la liste et les fiches clients',
+                    'manage_customers' => 'Créer, modifier et gérer les fiches clients',
+                    'manage_client_credits' => 'Accorder des crédits et encaisser les règlements',
+                    'manage_coupons' => 'Créer et gérer les codes promo et remises',
                 ],
             ],
             'finance' => [
-                'title' => 'Comptabilité & Rentabilité',
+                'title' => 'Analytique, Rapports & Comptabilité',
                 'icon' => 'fas fa-chart-line',
                 'color' => '#06b6d4',
                 'permissions' => [
+                    'view_analytics' => 'Accès complet Analytique (Vues, Ventes & Insights)',
+                    'view_analytics_views' => 'Consulter Vues & Trafic Site en direct',
+                    'view_analytics_sales' => 'Consulter Analytique Ventes & Performance',
+                    'view_analytics_insights' => 'Consulter Insights & Villes de Livraison',
+                    'view_reports' => 'Consulter les Rapports & Exports',
+                    'view_profitability' => 'Consulter la Rentabilité P&L, marges et coûts',
                     'manage_accounting' => 'Gérer le journal et comptes comptables',
-                    'manage_expenses' => 'Gérer les dépenses d\'exploitation et charges récurrentes',
-                    'view_profitability' => 'Consulter le rapport de rentabilité, marges et coûts d\'achat',
-                    'view_analytics' => 'Consulter les statistiques de trafic',
-                    'view_reports' => 'Consulter les rapports financiers & ventes',
+                    'manage_expenses' => 'Gérer les dépenses et charges récurrentes',
                     'export_data' => 'Exporter les données (Excel / CSV / PDF)',
                 ],
             ],
             'system' => [
-                'title' => 'Système & Équipe',
+                'title' => 'Système, Contenu & Équipe',
                 'icon' => 'fas fa-shield-halved',
                 'color' => '#ef4444',
                 'permissions' => [
-                    'manage_settings' => 'Modifier les configurations du magasin',
-                    'manage_content' => 'Gérer les pages, bannières et menus',
-                    'manage_users' => 'Créer et gérer les membres de l\'équipe',
-                    'manage_roles' => 'Gérer les rôles et autorisations',
-                    'view_activity_logs' => 'Consulter l\'historique des activités',
-                    'view_dashboard' => 'Accéder au tableau de bord administrateur',
+                    'manage_settings' => 'Modifier les configurations, logos et SEO',
+                    'manage_content' => 'Gérer les pages, bannières, accueil et menus',
+                    'manage_users' => 'Accès complet Utilisateurs (toutes actions)',
+                    'create_users' => 'Créer de nouveaux utilisateurs',
+                    'edit_users' => 'Modifier les utilisateurs et leurs permissions',
+                    'delete_users' => 'Supprimer des utilisateurs',
+                    'manage_roles' => 'Gérer les rôles et la matrice des permissions',
+                    'view_activity_logs' => 'Consulter le journal d\'activité',
                 ],
             ],
         ];
     }
 
     /**
-     * Display a listing of team users.
+     * Build permission modules merged with any extra custom permissions stored in DB.
      */
-    public function index(Request $request)
+    protected static function getPermissionModulesWithExtras($permissions): array
     {
-        $search = trim($request->get('search', ''));
-        $roleFilter = $request->get('role', 'all');
-        $statusFilter = $request->get('status', 'all');
+        $modules = self::getPermissionModules();
+        $known = collect($modules)->flatMap(fn ($mod) => array_keys($mod['permissions']))->flip();
+
+        $extras = $permissions->filter(fn ($perm) => !$known->has($perm->name));
+        if ($extras->isNotEmpty()) {
+            $modules['custom'] = [
+                'title' => 'Autres Permissions',
+                'icon' => 'fas fa-puzzle-piece',
+                'color' => '#64748b',
+                'permissions' => $extras->mapWithKeys(fn ($perm) => [$perm->name => 'Permission personnalisée (' . $perm->name . ')'])->all(),
+            ];
+        }
+
+        return $modules;
+    }
+
+    /**
+     * Build filtered User query shared by index listing and CSV export.
+     */
+    protected function buildFilteredQuery(Request $request): Builder
+    {
+        $search = trim((string) $request->get('search', ''));
+        $roleFilter = (string) $request->get('role', 'all');
+        $statusFilter = (string) $request->get('status', 'all');
+        $scopeFilter = (string) $request->get('scope', 'all');
 
         $query = User::with(['roles', 'permissions']);
 
         if ($search !== '') {
-            $query->scopeSearch($search);
+            $query->search($search);
         }
 
-        if ($roleFilter !== 'all' && !empty($roleFilter)) {
+        if ($scopeFilter === 'team') {
+            $query->has('roles');
+        } elseif ($scopeFilter === 'customers') {
+            $query->doesntHave('roles');
+        }
+
+        if ($roleFilter !== 'all' && $roleFilter !== '') {
             if ($roleFilter === 'none') {
                 $query->doesntHave('roles');
             } else {
@@ -114,31 +178,117 @@ class UserController extends Controller
             }
         }
 
-        if ($statusFilter !== 'all' && !empty($statusFilter)) {
-            $query->where('status', $statusFilter);
+        if ($statusFilter !== 'all' && $statusFilter !== '') {
+            if ($statusFilter === 'blocked') {
+                $query->where('status', '!=', 'active');
+            } elseif ($statusFilter === 'online') {
+                $query->where('status', 'active')
+                    ->whereNotNull('last_login_at')
+                    ->where('last_login_at', '>=', now()->subMinutes(15));
+            } else {
+                $query->where('status', $statusFilter);
+            }
         }
 
-        // Team members first, then order by ID desc
-        $users = $query->orderByRaw('CASE WHEN EXISTS (SELECT 1 FROM model_has_roles WHERE model_has_roles.model_id = users.id) THEN 0 ELSE 1 END')
-            ->orderBy('id', 'desc')
-            ->paginate(15)
+        return $query->orderByRaw('CASE WHEN EXISTS (SELECT 1 FROM model_has_roles WHERE model_has_roles.model_id = users.id) THEN 0 ELSE 1 END')
+            ->orderBy('id', 'desc');
+    }
+
+    /**
+     * Display a listing of team users.
+     */
+    public function index(Request $request)
+    {
+        $search = trim((string) $request->get('search', ''));
+        $roleFilter = (string) $request->get('role', 'all');
+        $statusFilter = (string) $request->get('status', 'all');
+        $scopeFilter = (string) $request->get('scope', 'all');
+        $perPage = (int) $request->get('per_page', 15);
+        if (!in_array($perPage, [15, 25, 50], true)) {
+            $perPage = 15;
+        }
+
+        $users = $this->buildFilteredQuery($request)
+            ->paginate($perPage)
             ->withQueryString();
 
-        // Calculate KPI summary
+        $roles = Role::with('permissions')
+            ->withCount('users')
+            ->orderByRaw("CASE WHEN name = 'Admin' THEN 0 WHEN name = 'Manager' THEN 1 WHEN name = 'Staff' THEN 2 ELSE 3 END")
+            ->orderBy('name')
+            ->get();
+
+        $roleCounts = $roles->pluck('users_count', 'name');
+        $totalUsers = User::count();
+        $totalTeam = User::has('roles')->count();
+
         $kpi = [
-            'total_users' => User::count(),
-            'total_team' => User::has('roles')->count(),
-            'admins' => User::role('Admin')->count(),
-            'managers' => User::role('Manager')->count(),
-            'staff' => User::role('Staff')->count(),
+            'total_users' => $totalUsers,
+            'total_team' => $totalTeam,
+            'customers_only' => max(0, $totalUsers - $totalTeam),
+            'admins' => (int) ($roleCounts['Admin'] ?? 0),
+            'managers' => (int) ($roleCounts['Manager'] ?? 0),
+            'staff' => (int) ($roleCounts['Staff'] ?? 0),
             'inactive' => User::where('status', '!=', 'active')->count(),
+            'online' => User::where('status', 'active')
+                ->whereNotNull('last_login_at')
+                ->where('last_login_at', '>=', now()->subMinutes(15))
+                ->count(),
         ];
 
-        $roles = Role::with('permissions')->get();
         $permissions = Permission::all();
-        $permissionModules = self::getPermissionModules();
+        $permissionModules = self::getPermissionModulesWithExtras($permissions);
+        $totalPermissionsCount = collect($permissionModules)->sum(fn ($mod) => count($mod['permissions']));
+        $canManageAdminRole = (bool) (auth()->user()?->hasRole('Admin'));
 
-        return view('users.index', compact('users', 'roles', 'permissions', 'permissionModules', 'kpi', 'search', 'roleFilter', 'statusFilter'));
+        return view('users.index', compact(
+            'users',
+            'roles',
+            'permissions',
+            'permissionModules',
+            'totalPermissionsCount',
+            'canManageAdminRole',
+            'kpi',
+            'search',
+            'roleFilter',
+            'statusFilter',
+            'scopeFilter',
+            'perPage'
+        ));
+    }
+
+    /**
+     * Export filtered users to CSV.
+     */
+    public function exportCsv(Request $request)
+    {
+        $rows = $this->buildFilteredQuery($request)->get();
+        $filename = 'collaborateurs_' . now()->format('Y-m-d_His') . '.csv';
+
+        return response()->streamDownload(function () use ($rows) {
+            $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF");
+            fputcsv($handle, ['ID', 'Nom', 'Email', 'Téléphone', 'Fonction', 'Rôles', 'Permissions directes', 'Statut', 'Dernière connexion', 'Dernière IP'], ';');
+
+            foreach ($rows as $user) {
+                fputcsv($handle, [
+                    $user->id,
+                    $user->name,
+                    $user->email,
+                    $user->phone ?? '',
+                    $user->job_title ?? '',
+                    $user->roles->pluck('name')->implode(', ') ?: 'Sans rôle',
+                    $user->permissions->pluck('name')->implode(', '),
+                    $user->status ?? 'active',
+                    $user->last_login_at ? $user->last_login_at->format('Y-m-d H:i:s') : 'Jamais',
+                    $user->last_login_ip ?? '',
+                ], ';');
+            }
+
+            fclose($handle);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
     }
 
     /**
@@ -165,6 +315,9 @@ class UserController extends Controller
             'password.min' => 'Le mot de passe doit comporter au moins 8 caractères.',
         ]);
 
+        $rolesToAssign = $validated['roles'] ?? [];
+        $this->guardPrivilegeEscalation($rolesToAssign);
+
         try {
             $user = User::create([
                 'name' => $validated['name'],
@@ -176,13 +329,22 @@ class UserController extends Controller
             ]);
 
             // Assign roles
-            if (!empty($validated['roles'])) {
-                $user->syncRoles($validated['roles']);
+            if (!empty($rolesToAssign)) {
+                $user->syncRoles($rolesToAssign);
             }
 
             // Sync direct extra permissions
             if (!empty($validated['permissions'])) {
                 $user->syncPermissions($validated['permissions']);
+            }
+
+            if (!empty($rolesToAssign) || !empty($validated['permissions'])) {
+                $this->recordRoleAudit(
+                    'created',
+                    "Attribution des rôles [" . implode(', ', $rolesToAssign ?: ['Aucun']) . "] au collaborateur {$user->name}",
+                    $user,
+                    ['roles' => $rolesToAssign, 'permissions' => $validated['permissions'] ?? []]
+                );
             }
 
             Log::info('New team user created', [
@@ -215,6 +377,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        $this->guardPrivilegeEscalation([], $user);
         $user->load(['roles.permissions', 'permissions']);
 
         return response()->json([
@@ -264,11 +427,13 @@ class UserController extends Controller
         $isPrimaryAdmin = $user->id === 1 || $user->email === 'contact@wina.com';
 
         if ($isSelf && $validated['status'] !== 'active') {
-            return back()->with('error', 'Sécurité : Vous ne pouvez pas désactiver ou suspendre votre propre compte connecté.');
+            $msg = 'Sécurité : Vous ne pouvez pas désactiver ou suspendre votre propre compte connecté.';
+            return $request->wantsJson() ? response()->json(['success' => false, 'message' => $msg], 403) : back()->with('error', $msg);
         }
 
         if ($isPrimaryAdmin && $validated['status'] !== 'active') {
-            return back()->with('error', 'Sécurité : Le super-administrateur principal ne peut pas être désactivé.');
+            $msg = 'Sécurité : Le super-administrateur principal ne peut pas être désactivé.';
+            return $request->wantsJson() ? response()->json(['success' => false, 'message' => $msg], 403) : back()->with('error', $msg);
         }
 
         // Protect primary admin from losing Admin role
@@ -276,6 +441,10 @@ class UserController extends Controller
         if ($isPrimaryAdmin && !in_array('Admin', $rolesToSync)) {
             $rolesToSync[] = 'Admin';
         }
+
+        $this->guardPrivilegeEscalation($rolesToSync, $user);
+        $oldRoles = $user->getRoleNames()->toArray();
+        $oldPermissions = $user->getDirectPermissions()->pluck('name')->toArray();
 
         try {
             $updateData = [
@@ -290,13 +459,34 @@ class UserController extends Controller
                 $updateData['password'] = Hash::make($validated['password']);
             }
 
+            $oldStatus = $user->status ?? 'active';
             $user->update($updateData);
+            if ($validated['status'] !== 'active') {
+                $this->invalidateUserSessions($user);
+            }
 
             // Sync roles
             $user->syncRoles($rolesToSync);
 
             // Sync direct extra permissions
-            $user->syncPermissions($validated['permissions'] ?? []);
+            $newPermissions = $validated['permissions'] ?? [];
+            $user->syncPermissions($newPermissions);
+
+            if ($oldRoles !== $rolesToSync || $oldPermissions !== $newPermissions || $oldStatus !== $validated['status']) {
+                $this->recordRoleAudit(
+                    'updated',
+                    "Modification des accès pour {$user->name} (statut : {$validated['status']}, rôles : " . implode(', ', $rolesToSync ?: ['Aucun']) . ")",
+                    $user,
+                    [
+                        'old_status' => $oldStatus,
+                        'new_status' => $validated['status'],
+                        'old_roles' => $oldRoles,
+                        'new_roles' => $rolesToSync,
+                        'old_permissions' => $oldPermissions,
+                        'new_permissions' => $newPermissions,
+                    ]
+                );
+            }
 
             Log::info('User updated by admin', [
                 'admin_id' => auth()->id(),
@@ -327,6 +517,8 @@ class UserController extends Controller
      */
     public function toggleStatus(Request $request, User $user)
     {
+        $this->guardPrivilegeEscalation([], $user);
+
         if (auth()->id() === $user->id) {
             return response()->json([
                 'success' => false,
@@ -343,6 +535,18 @@ class UserController extends Controller
 
         $newStatus = ($user->status === 'active') ? 'inactive' : 'active';
         $user->update(['status' => $newStatus]);
+        if ($newStatus !== 'active') {
+            $this->invalidateUserSessions($user);
+        }
+
+        $this->recordRoleAudit(
+            'updated',
+            $newStatus === 'active'
+                ? "Réactivation du compte de {$user->name}"
+                : "Désactivation du compte de {$user->name}",
+            $user,
+            ['new_status' => $newStatus]
+        );
 
         Log::info('User status toggled', [
             'admin_id' => auth()->id(),
@@ -365,6 +569,8 @@ class UserController extends Controller
      */
     public function resetPassword(Request $request, User $user)
     {
+        $this->guardPrivilegeEscalation([], $user);
+
         $validated = $request->validate([
             'password' => ['required', 'string', 'min:8'],
         ], [
@@ -396,12 +602,16 @@ class UserController extends Controller
      */
     public function destroy(Request $request, User $user)
     {
+        $this->guardPrivilegeEscalation([], $user);
+
         if (auth()->id() === $user->id) {
-            return back()->with('error', 'Sécurité : Vous ne pouvez pas supprimer votre propre compte.');
+            $msg = 'Sécurité : Vous ne pouvez pas supprimer votre propre compte.';
+            return $request->wantsJson() ? response()->json(['success' => false, 'message' => $msg], 403) : back()->with('error', $msg);
         }
 
         if ($user->id === 1 || $user->email === 'contact@wina.com') {
-            return back()->with('error', 'Sécurité : Le super-administrateur principal ne peut pas être supprimé.');
+            $msg = 'Sécurité : Le super-administrateur principal ne peut pas être supprimé.';
+            return $request->wantsJson() ? response()->json(['success' => false, 'message' => $msg], 403) : back()->with('error', $msg);
         }
 
         try {
@@ -414,13 +624,18 @@ class UserController extends Controller
                     'status' => 'suspended',
                     'email' => 'deleted_' . time() . '_' . $user->email,
                 ]);
+                $this->invalidateUserSessions($user);
                 $user->syncRoles([]);
                 $user->syncPermissions([]);
 
-                return redirect()->route('users.index')->with('success', "Le compte {$userName} possédait des commandes archivées : ses accès ont été révoqués et son compte a été archivé en toute sécurité.");
+                $msg = "Le compte {$userName} possédait des commandes archivées : ses accès ont été révoqués et son compte a été archivé en toute sécurité.";
+                return $request->wantsJson()
+                    ? response()->json(['success' => true, 'message' => $msg])
+                    : redirect()->route('users.index')->with('success', $msg);
             }
 
             // Detach roles & permissions before deleting
+            $this->invalidateUserSessions($user);
             $user->syncRoles([]);
             $user->syncPermissions([]);
             $user->delete();
@@ -431,10 +646,15 @@ class UserController extends Controller
                 'user_name' => $userName,
             ]);
 
-            return redirect()->route('users.index')->with('success', "Le collaborateur {$userName} a été supprimé.");
+            $msg = "Le collaborateur {$userName} a été supprimé.";
+            return $request->wantsJson()
+                ? response()->json(['success' => true, 'message' => $msg])
+                : redirect()->route('users.index')->with('success', $msg);
         } catch (\Throwable $e) {
             Log::error('Error deleting user: ' . $e->getMessage());
-            return back()->with('error', 'Erreur lors de la suppression : ' . $e->getMessage());
+            return $request->wantsJson()
+                ? response()->json(['success' => false, 'message' => 'Erreur lors de la suppression : ' . $e->getMessage()], 422)
+                : back()->with('error', 'Erreur lors de la suppression : ' . $e->getMessage());
         }
     }
 
@@ -448,12 +668,162 @@ class UserController extends Controller
             'roles.*' => ['exists:roles,id'],
         ]);
 
+        $roleNames = Role::whereIn('id', $validated['roles'] ?? [])->pluck('name')->toArray();
+        $this->guardPrivilegeEscalation($roleNames, $user);
+
         try {
+            $oldRoles = $user->getRoleNames()->toArray();
             $user->syncRoles($validated['roles'] ?? []);
+
+            $this->recordRoleAudit(
+                'updated',
+                "Rôles mis à jour pour {$user->name} : " . implode(', ', $roleNames ?: ['Aucun']),
+                $user,
+                ['old_roles' => $oldRoles, 'new_roles' => $roleNames]
+            );
+
             return back()->with('success', 'Rôles mis à jour avec succès.');
         } catch (\Exception $e) {
             return back()->with('error', 'Échec de la mise à jour des rôles : ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Prevent non-Admin collaborators from editing Admin users or granting the Admin role.
+     */
+    protected function guardPrivilegeEscalation(array $roleNames = [], ?User $targetUser = null): void
+    {
+        $actor = auth()->user();
+        if ($actor && $actor->hasRole('Admin')) {
+            return;
+        }
+
+        if ($targetUser && $targetUser->hasRole('Admin')) {
+            abort(403, 'Seul un Administrateur peut modifier un compte Administrateur.');
+        }
+
+        if (in_array('Admin', $roleNames, true)) {
+            abort(403, 'Seul un Administrateur peut attribuer le rôle Admin.');
+        }
+    }
+
+    /**
+     * Execute bulk activation, deactivation, or role assignment on selected users.
+     */
+    public function bulkAction(Request $request)
+    {
+        $validated = $request->validate([
+            'action' => ['required', Rule::in(['activate', 'deactivate', 'assign_role'])],
+            'user_ids' => ['required', 'array', 'min:1'],
+            'user_ids.*' => ['integer', 'exists:users,id'],
+            'role' => ['nullable', 'string', 'exists:roles,name'],
+        ]);
+
+        if ($validated['action'] === 'assign_role') {
+            if (empty($validated['role'])) {
+                return response()->json(['success' => false, 'message' => 'Veuillez sélectionner un rôle à attribuer.'], 422);
+            }
+            $this->guardPrivilegeEscalation([$validated['role']]);
+        }
+
+        $users = User::with('roles')->whereIn('id', $validated['user_ids'])->get();
+        foreach ($users as $target) {
+            $this->guardPrivilegeEscalation([], $target);
+        }
+
+        $processed = 0;
+        $skipped = 0;
+
+        foreach ($users as $target) {
+            $isSelf = auth()->id() === $target->id;
+            $isPrimary = $target->id === 1 || $target->email === 'contact@wina.com';
+
+            if ($validated['action'] === 'deactivate') {
+                if ($isSelf || $isPrimary) {
+                    $skipped++;
+                    continue;
+                }
+                $target->update(['status' => 'inactive']);
+                $this->invalidateUserSessions($target);
+                $processed++;
+            } elseif ($validated['action'] === 'activate') {
+                $target->update(['status' => 'active']);
+                $processed++;
+            } elseif ($validated['action'] === 'assign_role') {
+                if ($isPrimary) {
+                    $skipped++;
+                    continue;
+                }
+                $target->syncRoles([$validated['role']]);
+                $processed++;
+            }
+        }
+
+        $actionLabel = match ($validated['action']) {
+            'activate' => 'Activation groupée',
+            'deactivate' => 'Désactivation groupée',
+            'assign_role' => "Attribution groupée du rôle [{$validated['role']}]",
+        };
+
+        if ($processed > 0 && ($auditSubject = auth()->user() ?? $users->first())) {
+            $this->recordRoleAudit(
+                'updated',
+                "{$actionLabel} sur {$processed} utilisateur(s)",
+                $auditSubject,
+                [
+                    'action' => $validated['action'],
+                    'processed' => $processed,
+                    'skipped' => $skipped,
+                    'user_ids' => $validated['user_ids'],
+                ]
+            );
+        }
+
+        return response()->json([
+            'success' => true,
+            'processed' => $processed,
+            'skipped' => $skipped,
+            'message' => $skipped > 0
+                ? "{$processed} compte(s) mis à jour ({$skipped} compte(s) protégé(s) ignoré(s))."
+                : "{$processed} compte(s) mis à jour avec succès.",
+        ]);
+    }
+
+    /**
+     * Clear remember tokens and active database sessions when revoking access.
+     */
+    protected function invalidateUserSessions(User $user): void
+    {
+        try {
+            $user->forceFill(['remember_token' => Str::random(60)])->saveQuietly();
+            $sessionTable = config('session.table', 'sessions');
+            if (Schema::hasTable($sessionTable)) {
+                DB::table($sessionTable)->where('user_id', $user->id)->delete();
+            }
+        } catch (\Throwable $e) {
+            // Non-blocking if sessions table is unavailable
+        }
+    }
+
+    /**
+     * Log role/permission mutations into ActivityLog for traceability.
+     */
+    protected function recordRoleAudit(string $event, string $description, User $subject, array $properties = []): void
+    {
+        \App\Models\ActivityLog::create([
+            'user_id' => auth()->id(),
+            'event' => $event,
+            'description' => $description,
+            'subject_type' => User::class,
+            'subject_id' => $subject->id,
+            'properties' => array_merge([
+                'user_name' => auth()->user()?->name,
+                'user_email' => auth()->user()?->email,
+                'target_user' => $subject->email,
+            ], $properties),
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ]);
     }
 }
 

@@ -483,8 +483,8 @@
                         </td>
                         <td class="col-stock">
                             @php
-                                $stock = $product->stock;
-                                $min = $product->min_stock ?? 5;
+                                $stock = (int) ($product->stock ?? 0);
+                                $min = (int) ($product->min_stock ?? $product->low_stock_threshold ?? 5);
                                 if ($product->isComingSoon()) {
                                     $badgeType = 'coming-soon';
                                     $dotColor = 'orange';

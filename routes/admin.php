@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['auth', 'role:Admin'])->group(function () {
+Route::middleware(['auth', 'role_or_permission:Admin|manage_roles'])->group(function () {
     // Roles Management
     Route::resource('roles', \App\Http\Controllers\RoleController::class);
     Route::get('roles/{role}/users', [\App\Http\Controllers\RoleController::class, 'users'])
@@ -20,8 +20,14 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     
     // Permissions Management
     Route::resource('permissions', \App\Http\Controllers\PermissionController::class);
-    
-    // Users & Team Management
+});
+
+Route::middleware(['auth', 'role_or_permission:Admin|manage_users'])->group(function () {
+    // Users & Team Management (static routes before resource {user} wildcard)
+    Route::get('users/export', [\App\Http\Controllers\UserController::class, 'exportCsv'])
+        ->name('users.export');
+    Route::post('users/bulk-action', [\App\Http\Controllers\UserController::class, 'bulkAction'])
+        ->name('users.bulk-action');
     Route::resource('users', \App\Http\Controllers\UserController::class);
     Route::post('users/{user}/toggle-status', [\App\Http\Controllers\UserController::class, 'toggleStatus'])
         ->name('users.toggle-status');

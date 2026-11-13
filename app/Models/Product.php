@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Product extends Model
 {
@@ -104,9 +105,15 @@ class Product extends Model
 
         static::saving(function (Product $product) {
             if ($product->isDirty('stock') && !$product->isDirty('stock_quantity')) {
+                $product->stock = max(0, (int) $product->stock);
                 $product->stock_quantity = $product->stock;
             } elseif ($product->isDirty('stock_quantity') && !$product->isDirty('stock')) {
+                $product->stock_quantity = max(0, (int) $product->stock_quantity);
                 $product->stock = $product->stock_quantity;
+            } elseif ((int) $product->stock !== (int) $product->stock_quantity) {
+                $normalizedStock = max(0, (int) $product->stock);
+                $product->stock = $normalizedStock;
+                $product->stock_quantity = $normalizedStock;
             }
             if ($product->isDirty('min_stock') && !$product->isDirty('low_stock_threshold')) {
                 $product->low_stock_threshold = $product->min_stock;
@@ -1015,24 +1022,144 @@ class Product extends Model
     }
 
     /**
-     * Adjust stock quantity and record movement. Supports variant-level adjustment.
+     * Adjust stock quantity (globally, per variant, or per store/magasin/depot) and record movement.
      */
     public function adjustStock(int $quantity, string $type, $userId, array $options = []): bool
     {
-        // If adjusting a specific variant
+        $storeId = !empty($options['store_id']) ? (int) $options['store_id'] : null;
+
+        // Variant-level adjustment (with optional store sync)
         if (!empty($options['variant_id'])) {
             $variant = $this->variants()->find($options['variant_id']);
             if ($variant) {
-                return $variant->adjustStock($quantity, $type, $userId, $options);
+                return DB::transaction(function () use ($variant, $quantity, $type, $userId, $options, $storeId) {
+                    $variantBefore = (int) ($variant->stock ?? 0);
+                    $variantTarget = ($type === 'adjustment')
+                        ? $quantity
+                        : ($variantBefore + (in_array($type, ['in', 'return'], true) ? abs($quantity) : -abs($quantity)));
+
+                    if ($variantTarget < 0) {
+                        return false;
+                    }
+
+                    $delta = $variantTarget - $variantBefore;
+                    if ($storeId) {
+                        $storeStock = ProductStock::firstOrNew([
+                            'product_id' => $this->id,
+                            'store_id' => $storeId,
+                        ]);
+                        if (!$storeStock->exists) {
+                            $storeStock->quantity = 0;
+                            $storeStock->min_quantity = isset($options['min_quantity']) ? (int) $options['min_quantity'] : 2;
+                        }
+                        if ($storeStock->quantity + $delta < 0) {
+                            return false;
+                        }
+                    }
+
+                    if (!$variant->adjustStock($quantity, $type, $userId, $options)) {
+                        return false;
+                    }
+
+                    if ($storeId) {
+                        $storeStock->quantity = max(0, (int) $storeStock->quantity + $delta);
+                        if (!empty($options['location_code'])) {
+                            $storeStock->location_code = $options['location_code'];
+                        }
+                        if (isset($options['min_quantity']) && $options['min_quantity'] !== '' && $options['min_quantity'] !== null) {
+                            $storeStock->min_quantity = (int) $options['min_quantity'];
+                        }
+                        $storeStock->save();
+                    }
+
+                    return true;
+                });
             }
         }
 
+        // Per-store / magasin / depot stock adjustment
+        if ($storeId) {
+            return DB::transaction(function () use ($storeId, $quantity, $type, $userId, $options) {
+                $sumStoresBefore = (int) ProductStock::where('product_id', $this->id)->sum('quantity');
+
+                $storeStock = ProductStock::firstOrNew([
+                    'product_id' => $this->id,
+                    'store_id' => $storeId,
+                ]);
+
+                $storeBefore = $storeStock->exists ? (int) $storeStock->quantity : 0;
+                if (!$storeStock->exists) {
+                    $storeStock->min_quantity = isset($options['min_quantity']) && $options['min_quantity'] !== ''
+                        ? (int) $options['min_quantity']
+                        : 2;
+                }
+
+                if ($type === 'adjustment') {
+                    $storeAfter = $quantity;
+                    $movementQty = abs($storeAfter - $storeBefore);
+                } elseif (in_array($type, ['in', 'return'], true)) {
+                    $storeAfter = $storeBefore + abs($quantity);
+                    $movementQty = abs($quantity);
+                } else {
+                    $storeAfter = $storeBefore - abs($quantity);
+                    $movementQty = abs($quantity);
+                }
+
+                if ($storeAfter < 0) {
+                    return false; // Cannot drop store stock below zero
+                }
+
+                $storeStock->quantity = $storeAfter;
+                if (array_key_exists('location_code', $options) && $options['location_code'] !== null && $options['location_code'] !== '') {
+                    $storeStock->location_code = $options['location_code'];
+                }
+                if (isset($options['min_quantity']) && $options['min_quantity'] !== '' && $options['min_quantity'] !== null) {
+                    $storeStock->min_quantity = (int) $options['min_quantity'];
+                }
+                $storeStock->save();
+
+                $sumStoresAfter = (int) ProductStock::where('product_id', $this->id)->sum('quantity');
+                $delta = $storeAfter - $storeBefore;
+                $globalBefore = (int) ($this->stock ?? 0);
+
+                // If product already uses store allocations (or had 0 stock), sync strictly to store sum;
+                // otherwise preserve unallocated legacy stock while applying the delta.
+                $newGlobalStock = ($sumStoresBefore > 0 || $globalBefore <= 0)
+                    ? $sumStoresAfter
+                    : max($sumStoresAfter, max(0, $globalBefore + $delta));
+
+                $this->update([
+                    'stock' => $newGlobalStock,
+                    'stock_quantity' => $newGlobalStock,
+                ]);
+
+                $this->inventoryMovements()->create([
+                    'variant_id' => null,
+                    'type' => $type,
+                    'quantity' => $movementQty,
+                    'stock_before' => $storeBefore,
+                    'stock_after' => $storeAfter,
+                    'reference_type' => $options['reference_type'] ?? null,
+                    'reference_id' => $options['reference_id'] ?? null,
+                    'from_location_id' => ($delta < 0 || $type === 'out') ? $storeId : null,
+                    'to_location_id' => ($delta >= 0 && $type !== 'out') ? $storeId : null,
+                    'reason' => $options['reason'] ?? null,
+                    'created_by' => $userId,
+                ]);
+
+                $this->checkStockLevel();
+
+                return true;
+            });
+        }
+
+        // Fallback: Global stock adjustment
         $stockBefore = $this->stock ?? 0;
         if ($type === 'adjustment') {
             $newStock = $quantity;
             $movementQty = abs($newStock - $stockBefore);
         } else {
-            $newStock = $stockBefore + ($type === 'in' ? $quantity : -$quantity);
+            $newStock = $stockBefore + (in_array($type, ['in', 'return'], true) ? abs($quantity) : -abs($quantity));
             $movementQty = abs($quantity);
         }
 
@@ -1040,7 +1167,10 @@ class Product extends Model
             return false; // Cannot have negative stock
         }
 
-        $this->update(['stock' => $newStock]);
+        $this->update([
+            'stock' => $newStock,
+            'stock_quantity' => $newStock,
+        ]);
 
         // Record the movement
         $this->inventoryMovements()->create([
@@ -1109,7 +1239,11 @@ class Product extends Model
             foreach ($admins as $admin) {
                 $settings = \App\Models\NotificationSetting::forUser($admin->id);
                 if ($settings->isEnabled('low_stock_alert')) {
-                    $admin->notify(new \App\Notifications\LowStockAlert($alert));
+                    try {
+                        $admin->notify(new \App\Notifications\LowStockAlert($alert));
+                    } catch (\Throwable $e) {
+                        \Illuminate\Support\Facades\Log::warning('Low stock email notification failed: ' . $e->getMessage());
+                    }
                 }
             }
         }
@@ -1131,6 +1265,82 @@ class Product extends Model
     public function isOutOfStock(): bool
     {
         return ($this->stock ?? 0) <= 0;
+    }
+
+    /**
+     * Resolve the default active store ID (if multi-store is configured).
+     */
+    public static function defaultStoreId(): ?int
+    {
+        $id = Store::where('is_active', true)
+            ->orderByDesc('is_default')
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->value('id');
+
+        return $id ? (int) $id : null;
+    }
+
+    /**
+     * Effective low-stock threshold for this product.
+     */
+    public function getEffectiveThreshold(): int
+    {
+        return max(0, (int) ($this->low_stock_threshold ?? $this->min_stock ?? 5));
+    }
+
+    /**
+     * Atomically update both stock & stock_quantity columns, refresh alert state, and flush caches.
+     */
+    public function syncStockFields(int $newStock, bool $flushCache = true): int
+    {
+        $normalized = max(0, $newStock);
+        $changed = ((int) $this->stock !== $normalized) || ((int) $this->stock_quantity !== $normalized);
+
+        \Illuminate\Support\Facades\DB::table('products')
+            ->where('id', $this->id)
+            ->update([
+                'stock' => $normalized,
+                'stock_quantity' => $normalized,
+                'updated_at' => now(),
+            ]);
+
+        $this->stock = $normalized;
+        $this->stock_quantity = $normalized;
+
+        if ($this->track_inventory) {
+            $this->checkStockLevel();
+        }
+
+        if ($changed && $flushCache) {
+            $fileCache = \Illuminate\Support\Facades\Cache::store('file');
+            \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
+            \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
+            $fileCache->forget('shop_instock_pool_v1');
+            $fileCache->forget('home_featured_products_v1');
+            $fileCache->forget('home_new_arrival_products_v1');
+            $fileCache->forget('home_occasion_products_v1');
+            \App\Http\Middleware\FastGuestPageCache::flush();
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * Synchronize products.stock and products.stock_quantity from store allocations when present,
+     * or apply a fallback delta on unallocated products.
+     */
+    public function syncStockFromStores(?int $fallbackDelta = null, bool $flushCache = true): int
+    {
+        if ($this->storeStocks()->exists()) {
+            $storeSum = (int) $this->storeStocks()->sum('quantity');
+            return $this->syncStockFields($storeSum, $flushCache);
+        }
+
+        $current = (int) ($this->stock ?? 0);
+        $next = $fallbackDelta !== null ? ($current + $fallbackDelta) : $current;
+
+        return $this->syncStockFields($next, $flushCache);
     }
 
     /**

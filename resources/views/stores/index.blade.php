@@ -86,24 +86,7 @@
     </div>
 
     <!-- Navigation Croisée ERP (Inventaire <-> Matrice des Rayons <-> Dépôts) -->
-    <div class="subnav-pills-bar">
-        <a href="{{ route('inventory.index') }}" class="subnav-pill">
-            <i class="fas fa-boxes-stacked"></i>
-            <span>Inventaire Global Articles</span>
-        </a>
-        <a href="{{ route('stores.stock') }}" class="subnav-pill">
-            <i class="fas fa-cubes-stacked text-purple"></i>
-            <span>Matrice par Dépôt & Rayons</span>
-        </a>
-        <a href="{{ route('stores.index') }}" class="subnav-pill active">
-            <i class="fas fa-warehouse text-info"></i>
-            <span>Magasins & Points de Vente</span>
-        </a>
-        <a href="{{ route('inventory.movements') }}" class="subnav-pill">
-            <i class="fas fa-history text-primary"></i>
-            <span>Mouvements & Traçabilité</span>
-        </a>
-    </div>
+    @include('partials.subnav.inventory')
 
     <!-- Alert / Flash message -->
     @if(session('success'))
@@ -129,7 +112,7 @@
     <!-- 4 Perfectly Aligned KPI Cards (Standard Products Style) -->
     <div class="row g-3 mb-4">
         <div class="col-6 col-lg-3">
-            <a href="{{ route('stores.index', ['type' => 'physical_store']) }}" class="stat-kpi-card text-decoration-none {{ request('type') === 'physical_store' ? 'active-filter' : '' }}">
+            <a href="{{ route('stores.index', ['type' => 'store']) }}" class="stat-kpi-card text-decoration-none {{ request('type') === 'store' ? 'active-filter' : '' }}">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <div class="stat-kpi-label">Magasins / Boutiques</div>
@@ -226,8 +209,13 @@
                                     </button>
                                 </li>
                                 <li>
+                                    <a class="dropdown-item small" href="{{ route('inventory.index', ['store_id' => $st->id]) }}">
+                                        <i class="fas fa-boxes-stacked text-primary me-2"></i> Gérer le stock (Inventaire)
+                                    </a>
+                                </li>
+                                <li>
                                     <a class="dropdown-item small" href="{{ route('stores.stock', ['store_id' => $st->id]) }}">
-                                        <i class="fas fa-boxes-stacked text-success me-2"></i> Inventaire de ce site
+                                        <i class="fas fa-table-cells text-success me-2"></i> Matrice &amp; Rayons du site
                                     </a>
                                 </li>
                                 <li>
@@ -315,8 +303,11 @@
                     </div>
                     @endif
                     <div class="d-flex align-items-center gap-1.5">
-                        <a href="{{ route('stores.stock', ['store_id' => $st->id]) }}" class="btn btn-sm btn-outline-dark rounded-pill flex-fill fw-semibold shadow-xs">
-                            <i class="fas fa-boxes-stacked me-1.5"></i> Inventaire
+                        <a href="{{ route('inventory.index', ['store_id' => $st->id]) }}" class="btn btn-sm btn-outline-dark rounded-pill flex-fill fw-semibold shadow-xs">
+                            <i class="fas fa-boxes-stacked me-1.5"></i> Gérer le Stock
+                        </a>
+                        <a href="{{ route('stores.stock', ['store_id' => $st->id]) }}" class="btn btn-sm btn-light border rounded-pill px-2.5 text-primary" title="Matrice & Rayons">
+                            <i class="fas fa-table-cells"></i>
                         </a>
                         <a href="{{ route('expenses.index', ['store_id' => $st->id]) }}" class="btn btn-sm btn-light border rounded-pill px-2.5 text-danger" title="Charges de ce point de vente">
                             <i class="fas fa-file-invoice-dollar"></i>

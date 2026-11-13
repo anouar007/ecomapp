@@ -121,21 +121,7 @@
     </div>
 
     <!-- Navigation Croisée ERP (Rentabilité <-> Coûts <-> Dépenses) -->
-    <div class="subnav-pills-bar">
-        <a href="{{ route('reports.profitability', ['period' => $period]) }}" class="subnav-pill">
-            <i class="fas fa-chart-pie text-success"></i>
-            <span>Bénéfice Net Réel & P&L</span>
-        </a>
-        <a href="{{ route('reports.profitability.costs') }}" class="subnav-pill">
-            <i class="fas fa-coins text-warning"></i>
-            <span>Gestion des Coûts d'Achat</span>
-        </a>
-        <a href="{{ route('expenses.index', ['period' => $period]) }}" class="subnav-pill active">
-            <i class="fas fa-receipt text-danger"></i>
-            <span>Dépenses & Charges d'Exploitation</span>
-            <span class="subnav-pill-badge">{{ currency($periodExpenses ?? 0) }}</span>
-        </a>
-    </div>
+    @include('partials.subnav.finance')
 
     <!-- Alert / Flash message -->
     @if(session('success'))
@@ -252,68 +238,109 @@
 
         <!-- 4. Top Poste de Dépense -->
         <div class="col-6 col-lg-3">
-            <a href="{{ route('expenses.index') }}" class="stat-kpi-card text-decoration-none">
+            <a href="{{ $topCategory ? route('expenses.index', array_merge(request()->except('category', 'page'), ['category' => $topCategory->category])) : route('expenses.index') }}" class="stat-kpi-card text-decoration-none">
                 <div class="d-flex align-items-center justify-content-between">
-                    <div>
+                    <div class="min-w-0 me-2">
                         <div class="stat-kpi-label">Poste Principal</div>
-                        <div class="stat-kpi-value text-info" style="font-size: 1.15rem;">{{ $topCategory ? $topCategory->label : 'Aucun' }}</div>
-                        <div class="stat-kpi-sub text-muted"><i class="fas fa-chart-pie text-info me-1"></i>{{ $topCategory ? currency($topCategory->total) : '0 DH' }}</div>
+                        <div class="stat-kpi-value text-info text-truncate" style="font-size: 1.15rem;" title="{{ $topCategory ? $topCategory->label : 'Aucun' }}">
+                            {{ $topCategory ? $topCategory->label : 'Aucun' }}
+                        </div>
+                        <div class="stat-kpi-sub text-muted">
+                            <i class="fas fa-chart-pie text-info me-1"></i>
+                            @if($topCategory)
+                                {{ currency($topCategory->total) }} <strong class="text-dark">({{ $topCategory->share }}%)</strong>
+                            @else
+                                0 DH
+                            @endif
+                        </div>
                     </div>
-                    <div class="stat-kpi-icon bg-info-subtle text-info">
+                    <div class="stat-kpi-icon bg-info-subtle text-info flex-shrink-0">
                         <i class="fas fa-chart-pie"></i>
                     </div>
                 </div>
             </a>
         </div>
     </div>
-                            <i class="fas fa-chart-pie"></i>
+
+    <!-- Category & Daily Trend Visual Analytics -->
+    @if($categoryBreakdown->count() > 0 || $dailyExpenseTrend->count() > 0)
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-3 p-md-4 d-flex flex-column">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">
+                                <i class="fas fa-chart-column text-primary me-1.5"></i> Évolution des Dépenses
+                            </h6>
+                            <small class="text-muted">Montants payés par jour sur la période</small>
                         </div>
+                        @if($pendingExpensesCount > 0)
+                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2.5 py-1" style="font-size: 0.7rem;">
+                                {{ $pendingExpensesCount }} en attente ({{ currency($pendingExpensesTotal) }})
+                            </span>
+                        @endif
                     </div>
-                    @if($topCategory)
-                        <div class="h5 fw-bold text-dark mb-1 text-truncate" title="{{ $topCategory->label }}">{{ $topCategory->label }}</div>
-                        <div class="text-muted small" style="font-size: 0.74rem;">
-                            <strong>{{ currency($topCategory->total) }}</strong> ({{ $topCategory->share }}% du total)
-                        </div>
-                    @else
-                        <div class="h5 fw-bold text-muted mb-1">—</div>
-                        <div class="text-muted small" style="font-size: 0.74rem;">Aucune dépense enregistrée</div>
-                    @endif
-                </div>
-                <div class="pt-2 border-top mt-2 text-muted small" style="font-size: 0.74rem;">
-                    <span>{{ $categoryBreakdown->count() }} poste(s) actif(s)</span>
+                    <div style="height: 210px; position: relative;" class="my-auto">
+                        <canvas id="expenseTrendChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Category Breakdown Visual Cards (If expenses exist) -->
-    @if($categoryBreakdown->count() > 0)
-    <div class="card border-0 shadow-sm rounded-4 mb-4">
-        <div class="card-body p-3.5">
-            <h6 class="fw-bold mb-2.5 text-dark" style="font-size: 0.88rem;">
-                <i class="fas fa-layer-group text-danger me-1.5"></i> Répartition des Dépenses par Catégorie
-            </h6>
-            <div class="row g-2">
-                @foreach($categoryBreakdown as $cb)
-                <div class="col-12 col-sm-6 col-md-4 col-xl-3">
-                    <div class="p-2.5 rounded-3 bg-light border d-flex align-items-center justify-content-between">
-                        <div class="min-w-0 me-2">
-                            <div class="d-flex align-items-center gap-1.5 mb-1">
-                                <span class="badge {{ $cb->badge }} rounded-pill" style="font-size: 0.65rem;">
-                                    <i class="{{ $cb->icon }} me-1"></i> {{ $cb->label }}
-                                </span>
-                            </div>
-                            <div class="fw-bold text-dark" style="font-size: 0.88rem;">{{ currency($cb->total) }}</div>
+        <div class="col-12 col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-3 p-md-4">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                        <div>
+                            <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">
+                                <i class="fas fa-layer-group text-danger me-1.5"></i> Répartition par Catégorie
+                            </h6>
+                            <small class="text-muted">Cliquez sur un poste pour filtrer le grand livre</small>
                         </div>
-                        <div class="text-end flex-shrink-0">
-                            <div class="badge bg-white text-dark border rounded-pill px-2 py-1 fw-bold" style="font-size: 0.72rem;">
-                                {{ $cb->share }}%
+                        <span class="badge bg-light text-secondary border rounded-pill px-2.5 py-1">{{ $categoryBreakdown->count() }} poste(s) actif(s)</span>
+                    </div>
+
+                    <div class="row g-3 align-items-center">
+                        <div class="col-12 col-sm-5">
+                            <div style="height: 190px; position: relative;">
+                                <canvas id="expenseCategoryChart"></canvas>
                             </div>
-                            <div class="text-muted small mt-0.5" style="font-size: 0.68rem;">{{ $cb->count }} dépense(s)</div>
+                        </div>
+                        <div class="col-12 col-sm-7">
+                            <div class="row g-2">
+                                @foreach($categoryBreakdown as $cb)
+                                @php
+                                    $isSelectedCat = $category === $cb->category;
+                                    $catFilterUrl = $isSelectedCat
+                                        ? route('expenses.index', request()->except('category', 'page'))
+                                        : route('expenses.index', array_merge(request()->except('page'), ['category' => $cb->category]));
+                                @endphp
+                                <div class="col-12 col-md-6">
+                                    <a href="{{ $catFilterUrl }}"
+                                       class="text-decoration-none d-block p-2.5 rounded-3 border transition {{ $isSelectedCat ? 'bg-danger-subtle border-danger shadow-xs' : 'bg-light-subtle hover-shadow-xs' }}">
+                                        <div class="d-flex align-items-center justify-content-between gap-1.5 mb-1">
+                                            <span class="badge {{ $cb->badge }} rounded-pill text-truncate" style="font-size: 0.66rem; max-width: 120px;">
+                                                <i class="{{ $cb->icon }} me-1"></i> {{ $cb->label }}
+                                            </span>
+                                            <span class="badge bg-white text-dark border rounded-pill px-2 py-0.5 fw-bold" style="font-size: 0.68rem;">
+                                                {{ $cb->share }}%
+                                            </span>
+                                        </div>
+                                        <div class="d-flex align-items-baseline justify-content-between mb-1">
+                                            <span class="fw-bold text-dark" style="font-size: 0.86rem;">{{ currency($cb->total) }}</span>
+                                            <span class="text-muted" style="font-size: 0.68rem;">{{ $cb->count }} op.</span>
+                                        </div>
+                                        <div class="progress" style="height: 4px;">
+                                            <div class="progress-bar bg-danger" style="width: {{ min(100, $cb->share) }}%"></div>
+                                        </div>
+                                    </a>
+                                </div>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 </div>
-                @endforeach
             </div>
         </div>
     </div>
@@ -350,32 +377,57 @@
     <!-- Period & Filter Toolbar -->
     <div class="card border-0 shadow-sm rounded-4 mb-4">
         <div class="card-body p-3">
-            <!-- Preset Touch Period Pills -->
-            <div class="chips-scroll-expense mb-3">
-                <a href="{{ route('expenses.index', array_merge(request()->except('period', 'start_date', 'end_date', 'page'), ['period' => 'today'])) }}" 
-                   class="expense-pill-btn {{ $period === 'today' ? 'active' : '' }}">
-                    Aujourd'hui
-                </a>
-                <a href="{{ route('expenses.index', array_merge(request()->except('period', 'start_date', 'end_date', 'page'), ['period' => 'yesterday'])) }}" 
-                   class="expense-pill-btn {{ $period === 'yesterday' ? 'active' : '' }}">
-                    Hier
-                </a>
-                <a href="{{ route('expenses.index', array_merge(request()->except('period', 'start_date', 'end_date', 'page'), ['period' => 'week'])) }}" 
-                   class="expense-pill-btn {{ $period === 'week' ? 'active' : '' }}">
-                    7 Derniers Jours
-                </a>
-                <a href="{{ route('expenses.index', array_merge(request()->except('period', 'start_date', 'end_date', 'page'), ['period' => 'month'])) }}" 
-                   class="expense-pill-btn {{ $period === 'month' ? 'active' : '' }}">
-                    Ce Mois-ci
-                </a>
-                <a href="{{ route('expenses.index', array_merge(request()->except('period', 'start_date', 'end_date', 'page'), ['period' => 'last_month'])) }}" 
-                   class="expense-pill-btn {{ $period === 'last_month' ? 'active' : '' }}">
-                    Mois Dernier
-                </a>
-                <a href="{{ route('expenses.index', array_merge(request()->except('period', 'start_date', 'end_date', 'page'), ['period' => 'year'])) }}" 
-                   class="expense-pill-btn {{ $period === 'year' ? 'active' : '' }}">
-                    Cette Année ({{ date('Y') }})
-                </a>
+            <!-- Preset Touch Period Pills + Custom Date Range -->
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                <div class="chips-scroll-expense">
+                    <a href="{{ route('expenses.index', array_merge(request()->except('period', 'start_date', 'end_date', 'page'), ['period' => 'today'])) }}" 
+                       class="expense-pill-btn {{ $period === 'today' ? 'active' : '' }}">
+                        Aujourd'hui
+                    </a>
+                    <a href="{{ route('expenses.index', array_merge(request()->except('period', 'start_date', 'end_date', 'page'), ['period' => 'yesterday'])) }}" 
+                       class="expense-pill-btn {{ $period === 'yesterday' ? 'active' : '' }}">
+                        Hier
+                    </a>
+                    <a href="{{ route('expenses.index', array_merge(request()->except('period', 'start_date', 'end_date', 'page'), ['period' => 'week'])) }}" 
+                       class="expense-pill-btn {{ $period === 'week' ? 'active' : '' }}">
+                        7 Derniers Jours
+                    </a>
+                    <a href="{{ route('expenses.index', array_merge(request()->except('period', 'start_date', 'end_date', 'page'), ['period' => 'month'])) }}" 
+                       class="expense-pill-btn {{ $period === 'month' ? 'active' : '' }}">
+                        Ce Mois-ci
+                    </a>
+                    <a href="{{ route('expenses.index', array_merge(request()->except('period', 'start_date', 'end_date', 'page'), ['period' => 'last_month'])) }}" 
+                       class="expense-pill-btn {{ $period === 'last_month' ? 'active' : '' }}">
+                        Mois Dernier
+                    </a>
+                    <a href="{{ route('expenses.index', array_merge(request()->except('period', 'start_date', 'end_date', 'page'), ['period' => 'year'])) }}" 
+                       class="expense-pill-btn {{ $period === 'year' ? 'active' : '' }}">
+                        Cette Année ({{ date('Y') }})
+                    </a>
+                    <a href="{{ route('expenses.index', array_merge(request()->except('period', 'start_date', 'end_date', 'page'), ['period' => 'all'])) }}" 
+                       class="expense-pill-btn {{ $period === 'all' ? 'active' : '' }}">
+                        Tout
+                    </a>
+                </div>
+
+                <form method="GET" action="{{ route('expenses.index') }}" class="d-flex flex-wrap align-items-center gap-1.5">
+                    <input type="hidden" name="period" value="custom">
+                    @if($search)<input type="hidden" name="search" value="{{ $search }}">@endif
+                    @if($category)<input type="hidden" name="category" value="{{ $category }}">@endif
+                    @if($storeId)<input type="hidden" name="store_id" value="{{ $storeId }}">@endif
+                    @if($paymentMethod)<input type="hidden" name="payment_method" value="{{ $paymentMethod }}">@endif
+                    <div class="input-group input-group-sm" style="width: auto;">
+                        <span class="input-group-text bg-light text-muted fw-semibold">Du</span>
+                        <input type="date" name="start_date" value="{{ $startDate->format('Y-m-d') }}" class="form-control form-control-sm">
+                    </div>
+                    <div class="input-group input-group-sm" style="width: auto;">
+                        <span class="input-group-text bg-light text-muted fw-semibold">Au</span>
+                        <input type="date" name="end_date" value="{{ $endDate->format('Y-m-d') }}" class="form-control form-control-sm">
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-dark rounded-pill px-3 fw-semibold">
+                        <i class="fas fa-calendar-check me-1"></i> Appliquer
+                    </button>
+                </form>
             </div>
 
             <!-- Filters Form -->
@@ -420,10 +472,21 @@
                     </select>
                 </div>
 
-                <!-- Custom Date Range Form if Custom -->
-                <div class="col-6 col-md-2 d-flex gap-1">
-                    <button type="submit" class="btn btn-sm btn-dark w-100 fw-semibold rounded-3">Filtrer</button>
-                    @if($search || $category || $storeId || $paymentMethod || $period !== 'month')
+                <!-- Status Filter -->
+                <div class="col-6 col-md-2">
+                    <select name="status" class="form-select form-select-sm bg-light" onchange="this.form.submit()">
+                        <option value="">Tous Statuts</option>
+                        <option value="paid" {{ ($status ?? '') === 'paid' ? 'selected' : '' }}>Payées</option>
+                        <option value="pending" {{ ($status ?? '') === 'pending' ? 'selected' : '' }}>En attente</option>
+                    </select>
+                </div>
+
+                <!-- Filter Submit & Reset -->
+                <div class="col-12 col-md-1 d-flex gap-1">
+                    <button type="submit" class="btn btn-sm btn-dark w-100 fw-semibold rounded-3" title="Filtrer">
+                        <i class="fas fa-filter"></i>
+                    </button>
+                    @if($search || $category || $storeId || $paymentMethod || ($status ?? null) || $period !== 'month')
                         <a href="{{ route('expenses.index') }}" class="btn btn-sm btn-light border rounded-3" title="Réinitialiser">
                             <i class="fas fa-times"></i>
                         </a>
@@ -501,13 +564,17 @@
                             </span>
                         </td>
 
-                        <!-- Payment Method -->
+                        <!-- Payment Method & Status -->
                         <td class="py-3">
                             <div class="small fw-semibold text-dark">
                                 <i class="{{ $e->payment_method_icon }} text-secondary me-1"></i> {{ $e->payment_method_label }}
                             </div>
-                            <div class="text-muted" style="font-size: 0.68rem;">
-                                {{ $e->status === 'paid' ? 'Payé' : 'En attente' }}
+                            <div class="mt-0.5">
+                                @if($e->status === 'paid')
+                                    <span class="badge bg-success-subtle text-success rounded-pill px-2 py-0.5" style="font-size: 0.66rem;">Payé</span>
+                                @else
+                                    <span class="badge bg-warning-subtle text-warning rounded-pill px-2 py-0.5" style="font-size: 0.66rem;">En attente</span>
+                                @endif
                             </div>
                         </td>
 
@@ -1457,6 +1524,66 @@ function previewProofModal(imageUrl, refNumber, title) {
     const modal = new bootstrap.Modal(document.getElementById('previewProofModal'));
     modal.show();
 }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const trendCanvas = document.getElementById('expenseTrendChart');
+    if (trendCanvas && typeof Chart !== 'undefined') {
+        const trendData = @json($dailyExpenseTrend->values());
+        new Chart(trendCanvas, {
+            type: 'bar',
+            data: {
+                labels: trendData.map(d => d.label),
+                datasets: [{
+                    label: 'Dépenses (DH)',
+                    data: trendData.map(d => Number(d.total || 0)),
+                    backgroundColor: 'rgba(220, 38, 38, 0.72)',
+                    borderColor: '#dc2626',
+                    borderWidth: 1,
+                    borderRadius: 6,
+                    maxBarThickness: 24,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { display: false }, ticks: { maxTicksLimit: 10, font: { size: 11 } } },
+                    y: { beginAtZero: true, grid: { color: 'rgba(148, 163, 184, 0.15)' }, ticks: { font: { size: 11 } } }
+                }
+            }
+        });
+    }
+
+    const expCanvas = document.getElementById('expenseCategoryChart');
+    if (expCanvas && typeof Chart !== 'undefined') {
+        const cats = @json($categoryBreakdown->values());
+        if (cats.length > 0) {
+            new Chart(expCanvas, {
+                type: 'doughnut',
+                data: {
+                    labels: cats.map(c => c.label),
+                    datasets: [{
+                        data: cats.map(c => Number(c.total || 0)),
+                        backgroundColor: ['#dc2626', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#0ea5e9', '#ec4899', '#64748b'],
+                        borderWidth: 0,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '66%',
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+    }
+});
 </script>
 @endpush
 @endsection

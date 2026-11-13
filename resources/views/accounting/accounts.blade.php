@@ -3,20 +3,35 @@
 @section('title', 'Chart of Accounts')
 
 @section('content')
-<div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Chart of Accounts</h1>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAccountModal">
-            <i class="fas fa-plus me-2"></i> New Account
-        </button>
+<div class="dashboard-container">
+    <div class="brand-header">
+        <div class="d-flex align-items-center gap-2.5">
+            <div class="brand-header-icon flex-shrink-0">
+                <i class="fas fa-sitemap"></i>
+            </div>
+            <div>
+                <h1 class="brand-title">Plan Comptable (PCGM)</h1>
+                <p class="brand-subtitle">Comptes comptables, classes et soldes actifs de l'entreprise</p>
+            </div>
+        </div>
+        <div class="brand-header-actions">
+            <button type="button" class="btn-brand-primary" data-bs-toggle="modal" data-bs-target="#createAccountModal">
+                <i class="fas fa-plus me-1.5"></i> Nouveau Compte
+            </button>
+        </div>
     </div>
 
+    @include('partials.subnav.finance')
+
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+        <div class="alert alert-success alert-dismissible fade show rounded-3 border-0 shadow-xs mb-3">
+            <i class="fas fa-circle-check me-1.5"></i> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
     @endif
 
-    <div class="card shadow mb-4">
-        <div class="card-body">
+    <div class="brand-table-card">
+        <div class="p-3 p-md-4">
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="accountsTable" width="100%" cellspacing="0">
                     <thead>

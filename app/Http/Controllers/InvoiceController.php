@@ -229,11 +229,10 @@ class InvoiceController extends Controller
 
             DB::commit();
 
-            // Update customer balance
-            if ($invoice->customer_email) {
-                $customer = \App\Models\Customer::where('email', $invoice->customer_email)->first();
-                if ($customer) {
-                    $customer->updateBalance();
+            // Reconcile customer balance delta without overwriting manual ledger entries
+            if ($delta = $this->invoiceOutstandingAmount($invoice)) {
+                if ($customer = $this->resolveCustomerForInvoice($invoice)) {
+                    $customer->applyBalanceDelta($delta);
                 }
             }
 
@@ -313,6 +312,7 @@ class InvoiceController extends Controller
         }
         
         $originalStatus = $invoice->payment_status;
+        $previousRemaining = $this->invoiceOutstandingAmount($invoice);
         $invoice->update($validated);
 
         if ($invoice->type === 'invoice') {
@@ -321,39 +321,38 @@ class InvoiceController extends Controller
 
             // Handle stock deduction on payment
             if ($validated['payment_status'] === 'paid' && !$invoice->stock_deducted && !$orderStockDeducted) {
-                foreach ($invoice->items as $item) {
-                    if ($item->product) {
-                        $item->product->decrement('stock', $item->quantity);
+                if ($invoice->order_id && $invoice->order) {
+                    $invoice->order->deductStock(Auth::id(), "Facture payée #{$invoice->invoice_number}");
+                } else {
+                    foreach ($invoice->items as $item) {
+                        if ($item->product) {
+                            $item->product->decrement('stock', $item->quantity);
+                        }
                     }
                 }
                 $invoice->update(['stock_deducted' => true]);
-                // If it belongs to an order, mark the order as deducted to prevent double-deduction later
-                if ($invoice->order_id && $invoice->order) {
-                    $invoice->order->update(['stock_deducted' => true]);
-                }
             }
             
             // Handle stock restoration if reverted from paid
             if ($originalStatus === 'paid' && $validated['payment_status'] !== 'paid' && $invoice->stock_deducted) {
-                foreach ($invoice->items as $item) {
-                    if ($item->product) {
-                        $item->product->increment('stock', $item->quantity);
+                if ($invoice->order_id && $invoice->order) {
+                    $invoice->order->restoreStock(Auth::id(), "Révocation paiement facture #{$invoice->invoice_number}");
+                } else {
+                    foreach ($invoice->items as $item) {
+                        if ($item->product) {
+                            $item->product->increment('stock', $item->quantity);
+                        }
                     }
                 }
                 $invoice->update(['stock_deducted' => false]);
-                // Also unmark the order if we were the ones tracking it
-                if ($invoice->order_id && $invoice->order) {
-                    $invoice->order->update(['stock_deducted' => false]);
-                }
             }
         }
 
-        // Update customer balance
-        if ($invoice->customer_email) {
-            $customer = \App\Models\Customer::where('email', $invoice->customer_email)->first();
-            if ($customer) {
-                $customer->updateBalance();
-            }
+        // Reconcile customer balance by delta without wiping manual transactions
+        $invoice->refresh();
+        $delta = $this->invoiceOutstandingAmount($invoice) - $previousRemaining;
+        if (abs($delta) >= 0.01 && ($customer = $this->resolveCustomerForInvoice($invoice))) {
+            $customer->applyBalanceDelta($delta);
         }
 
         return redirect()->route('invoices.show', $invoice)
@@ -369,32 +368,53 @@ class InvoiceController extends Controller
             return back()->with('error', __('Paid invoices cannot be deleted.'));
         }
 
-        $customerEmail = $invoice->customer_email;
+        $customer = $this->resolveCustomerForInvoice($invoice);
+        $delta = -$this->invoiceOutstandingAmount($invoice);
         
         // Restore stock if it was deducted by this invoice
         if ($invoice->stock_deducted) {
-            foreach ($invoice->items as $item) {
-                if ($item->product) {
-                    $item->product->increment('stock', $item->quantity);
-                }
-            }
             if ($invoice->order_id && $invoice->order) {
-                $invoice->order->update(['stock_deducted' => false]);
+                $invoice->order->restoreStock(Auth::id(), "Suppression facture #{$invoice->invoice_number}");
+            } else {
+                foreach ($invoice->items as $item) {
+                    if ($item->product) {
+                        $item->product->increment('stock', $item->quantity);
+                    }
+                }
             }
         }
 
         $invoice->delete();
 
-        // Update customer balance
-        if ($customerEmail) {
-            $customer = \App\Models\Customer::where('email', $customerEmail)->first();
-            if ($customer) {
-                $customer->updateBalance();
-            }
+        // Adjust customer balance cleanly by delta
+        if ($customer && abs($delta) >= 0.01) {
+            $customer->applyBalanceDelta($delta);
         }
 
         return redirect()->route('invoices.index')
             ->with('success', __('Invoice deleted successfully!'));
+    }
+
+    protected function resolveCustomerForInvoice(Invoice $invoice): ?\App\Models\Customer
+    {
+        if ($invoice->customer_email) {
+            $customer = \App\Models\Customer::where('email', $invoice->customer_email)->first();
+            if ($customer) {
+                return $customer;
+            }
+        }
+        if ($invoice->order_id && $invoice->order && $invoice->order->customer_id) {
+            return $invoice->order->customer;
+        }
+        return null;
+    }
+
+    protected function invoiceOutstandingAmount(Invoice $invoice): float
+    {
+        if ($invoice->type === 'invoice' && in_array($invoice->payment_status, ['unpaid', 'partial'])) {
+            return (float) $invoice->remaining_balance;
+        }
+        return 0.0;
     }
 
     /**
@@ -688,21 +708,20 @@ class InvoiceController extends Controller
             if ($invoice->type === 'invoice' && $invoice->payment_status === 'paid' && !$invoice->stock_deducted) {
                 $orderStockDeducted = $order->stock_deducted;
                 if (!$orderStockDeducted) {
-                    foreach ($invoice->items as $item) {
-                        if ($item->product) {
-                            $item->product->decrement('stock', $item->quantity);
-                        }
-                    }
+                    $order->deductStock(Auth::id(), "Facture générée #{$invoice->invoice_number}");
                     $invoice->update(['stock_deducted' => true]);
-                    $order->update(['stock_deducted' => true]);
                 }
             }
 
-            // Update customer balance
-            if ($invoice->customer_email) {
-                $customer = \App\Models\Customer::where('email', $invoice->customer_email)->first();
-                if ($customer) {
-                    $customer->updateBalance();
+            // Reconcile customer balance delta (skip if a credit_given ledger entry already covers this order)
+            $existingOrderCredit = \App\Models\CustomerTransaction::where('order_id', $order->id)
+                ->where('type', 'credit_given')
+                ->first();
+            if ($existingOrderCredit) {
+                $existingOrderCredit->update(['invoice_id' => $invoice->id]);
+            } elseif ($delta = $this->invoiceOutstandingAmount($invoice)) {
+                if ($customer = $this->resolveCustomerForInvoice($invoice)) {
+                    $customer->applyBalanceDelta($delta);
                 }
             }
 

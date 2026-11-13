@@ -123,24 +123,7 @@
     </div>
 
     <!-- Navigation Croisée ERP (Inventaire <-> Matrice des Rayons <-> Dépôts) -->
-    <div class="subnav-pills-bar">
-        <a href="{{ route('inventory.index') }}" class="subnav-pill">
-            <i class="fas fa-boxes-stacked"></i>
-            <span>Inventaire Global Articles</span>
-        </a>
-        <a href="{{ route('stores.stock') }}" class="subnav-pill active">
-            <i class="fas fa-cubes-stacked text-purple"></i>
-            <span>Matrice par Dépôt & Rayons</span>
-        </a>
-        <a href="{{ route('stores.index') }}" class="subnav-pill">
-            <i class="fas fa-warehouse text-info"></i>
-            <span>Magasins & Points de Vente</span>
-        </a>
-        <a href="{{ route('inventory.movements') }}" class="subnav-pill">
-            <i class="fas fa-history text-primary"></i>
-            <span>Mouvements & Traçabilité</span>
-        </a>
-    </div>
+    @include('partials.subnav.inventory')
 
     <!-- Alert / Flash message -->
     @if(session('success'))
@@ -170,7 +153,7 @@
                class="chip-store {{ !request()->filled('store_id') ? 'active' : '' }}">
                 <i class="fas fa-boxes-stacked"></i>
                 <span>Tous les dépôts</span>
-                <span class="badge bg-secondary rounded-pill px-1.5" style="font-size: 0.65rem;">{{ $products->total() }}</span>
+                <span class="badge bg-light text-dark border rounded-pill px-1.5" style="font-size: 0.65rem;">{{ number_format($stores->sum('total_units'), 0, ',', ' ') }} pcs</span>
             </a>
             @foreach($stores as $st)
                 @php
@@ -285,14 +268,21 @@
                         <!-- Stock Total -->
                         <td class="py-3">
                             @php
-                                $totalUnits = $p->storeStocks->sum('quantity');
+                                $storeSum = (int) $p->storeStocks->sum('quantity');
+                                $globalStock = (int) ($p->stock ?? 0);
+                                $totalUnits = $p->storeStocks->isNotEmpty() ? $storeSum : $globalStock;
+                                $unallocatedUnits = $p->storeStocks->isNotEmpty() ? max(0, $globalStock - $storeSum) : $globalStock;
+                                $threshold = (int) ($p->low_stock_threshold ?? $p->min_stock ?? 5);
                             @endphp
                             <div class="fs-6 fw-bold {{ $totalUnits > 0 ? 'text-dark' : 'text-danger' }}">
                                 {{ $totalUnits }} unités
                             </div>
-                            <span class="badge {{ $totalUnits > 5 ? 'bg-success-subtle text-success' : ($totalUnits > 0 ? 'bg-warning-subtle text-warning' : 'bg-danger-subtle text-danger') }} rounded-pill" style="font-size: 0.68rem;">
-                                {{ $totalUnits > 5 ? 'En stock' : ($totalUnits > 0 ? 'Stock bas' : 'Rupture') }}
+                            <span class="badge {{ $totalUnits > $threshold ? 'bg-success-subtle text-success' : ($totalUnits > 0 ? 'bg-warning-subtle text-warning' : 'bg-danger-subtle text-danger') }} rounded-pill" style="font-size: 0.68rem;">
+                                {{ $totalUnits > $threshold ? 'En stock' : ($totalUnits > 0 ? 'Stock bas' : 'Rupture') }}
                             </span>
+                            @if($unallocatedUnits > 0 && $p->storeStocks->isEmpty())
+                                <div class="text-muted mt-0.5" style="font-size: 0.65rem;">Non affecté à un dépôt</div>
+                            @endif
                         </td>
 
                         <!-- Store Breakdown & Shelf Location -->
@@ -357,7 +347,12 @@
         <!-- Mobile Cards View (d-block d-lg-none) -->
         <div class="d-block d-lg-none p-3 space-y-3">
             @forelse($products as $p)
-            @php $totalUnits = $p->storeStocks->sum('quantity'); @endphp
+            @php
+                $storeSum = (int) $p->storeStocks->sum('quantity');
+                $globalStock = (int) ($p->stock ?? 0);
+                $totalUnits = $p->storeStocks->isNotEmpty() ? $storeSum : $globalStock;
+                $threshold = (int) ($p->low_stock_threshold ?? $p->min_stock ?? 5);
+            @endphp
             <div class="stock-prod-card p-3">
                 <div class="d-flex align-items-start gap-2.5 mb-2.5">
                     @if($p->image)
@@ -370,8 +365,8 @@
                     @endif
                     <div class="min-w-0 flex-grow-1">
                         <div class="d-flex align-items-center justify-content-between gap-1 mb-1">
-                            <span class="badge {{ $totalUnits > 5 ? 'bg-success-subtle text-success border border-success-subtle' : ($totalUnits > 0 ? 'bg-warning-subtle text-warning border border-warning-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle') }} rounded-pill px-2 py-0.5" style="font-size: 0.68rem;">
-                                {{ $totalUnits > 5 ? 'En stock' : ($totalUnits > 0 ? 'Stock bas' : 'Rupture') }}
+                            <span class="badge {{ $totalUnits > $threshold ? 'bg-success-subtle text-success border border-success-subtle' : ($totalUnits > 0 ? 'bg-warning-subtle text-warning border border-warning-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle') }} rounded-pill px-2 py-0.5" style="font-size: 0.68rem;">
+                                {{ $totalUnits > $threshold ? 'En stock' : ($totalUnits > 0 ? 'Stock bas' : 'Rupture') }}
                             </span>
                             <span class="font-monospace fw-bold {{ $totalUnits > 0 ? 'text-dark' : 'text-danger' }}" style="font-size: 0.82rem;">
                                 Total : {{ $totalUnits }} pcs

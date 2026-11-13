@@ -17,7 +17,7 @@
                 {{ $startDate->format('M d, Y') }} — {{ $endDate->format('M d, Y') }}
             </p>
         </div>
-        <div class="d-flex gap-3 align-items-center">
+        <div class="d-flex flex-wrap gap-2 align-items-center">
             <div class="btn-group bg-white p-1 rounded-3 shadow-soft" style="border: 1px solid rgba(0,0,0,0.05);">
                 @foreach(['today' => 'Today', 'week' => 'Week', 'month' => 'Month', 'year' => 'Year'] as $key => $label)
                     <button class="btn btn-sm {{ $period === $key ? 'btn-primary' : 'btn-light border-0' }}" 
@@ -27,6 +27,16 @@
                     </button>
                 @endforeach
             </div>
+
+            <form action="{{ route('reports.index') }}" method="GET" class="d-flex align-items-center gap-1.5 bg-white p-1 rounded-3 shadow-soft border">
+                <input type="hidden" name="period" value="custom">
+                <input type="date" name="start_date" value="{{ $startDate->format('Y-m-d') }}" class="form-control form-control-sm border-0" style="width: 130px;">
+                <span class="text-muted small">&rarr;</span>
+                <input type="date" name="end_date" value="{{ $endDate->format('Y-m-d') }}" class="form-control form-control-sm border-0" style="width: 130px;">
+                <button type="submit" class="btn btn-sm btn-dark rounded-2 px-2.5" title="Filtrer par date">
+                    <i class="fas fa-filter"></i>
+                </button>
+            </form>
             
             <button class="btn-brand-outline border-danger text-danger" onclick="exportPDF()">
                 <i class="fas fa-file-pdf me-2"></i> PDF
@@ -36,6 +46,8 @@
             </button>
         </div>
     </div>
+
+    @include('partials.subnav.analytics')
 
     <!-- Key Metrics -->
     <div class="brand-stats-grid mb-4">
@@ -243,8 +255,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
     function changePeriod(period) { window.location.href = `{{ route('reports.index') }}?period=${period}`; }
-    function exportPDF() { window.location.href = `{{ route('reports.export.pdf') }}?period={{ $period }}`; }
-    function exportCSV() { window.location.href = `{{ route('reports.export.csv') }}?period={{ $period }}`; }
+    function exportPDF() { window.location.href = `{{ route('reports.export.pdf', ['period' => $period, 'start_date' => $startDate->format('Y-m-d'), 'end_date' => $endDate->format('Y-m-d')]) }}`; }
+    function exportCSV() { window.location.href = `{{ route('reports.export.csv', ['period' => $period, 'start_date' => $startDate->format('Y-m-d'), 'end_date' => $endDate->format('Y-m-d')]) }}`; }
 
     Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
     Chart.defaults.color = '#64748b';

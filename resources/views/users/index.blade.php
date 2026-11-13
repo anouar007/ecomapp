@@ -217,6 +217,16 @@
     background: #ecfdf5 !important;
     box-shadow: 0 0 0 1px #059669;
 }
+.role-select-card.selected-custom {
+    border-color: #4f46e5 !important;
+    background: #eef2ff !important;
+    box-shadow: 0 0 0 1px #4f46e5;
+}
+.role-select-card.is-restricted {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #f8fafc;
+}
 .role-check-indicator {
     position: absolute;
     top: 10px;
@@ -245,6 +255,20 @@
     background: #059669;
     border-color: #059669;
     color: #ffffff;
+}
+.role-select-card.selected-custom .role-check-indicator {
+    background: #4f46e5;
+    border-color: #4f46e5;
+    color: #ffffff;
+}
+
+/* Sticky Selection Bulk Bar */
+.users-bulk-bar {
+    background: #0f172a;
+    color: #ffffff;
+    border-radius: 12px !important;
+    padding: 0.65rem 1rem;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2);
 }
 
 /* Password Strength Bar */
@@ -411,6 +435,10 @@
         </div>
 
         <div class="brand-header-actions">
+            <a href="{{ route('users.export', request()->query()) }}" class="btn-brand-outline" data-no-pjax="true">
+                <i class="fas fa-file-csv me-1.5 text-success"></i>
+                <span>Exporter CSV</span>
+            </a>
             <a href="{{ route('roles.index') }}" class="btn-brand-outline">
                 <i class="fas fa-shield-halved me-1.5" style="color: var(--primary-color)"></i>
                 <span>Rôles globaux</span>
@@ -423,21 +451,7 @@
     </div>
 
     <!-- Navigation Croisée Système & Audit -->
-    <div class="subnav-pills-bar">
-        <a href="{{ route('users.index') }}" class="subnav-pill active">
-            <i class="fas fa-users-gear text-dark"></i>
-            <span>Équipe, Collaborateurs & Rôles</span>
-            <span class="subnav-pill-badge">{{ $kpi['total_team'] ?? 0 }}</span>
-        </a>
-        <a href="{{ route('activity-logs.index') }}" class="subnav-pill">
-            <i class="fas fa-shield-alt text-primary"></i>
-            <span>Journal d'Activité & Traçabilité</span>
-        </a>
-        <a href="{{ route('settings.index') }}" class="subnav-pill">
-            <i class="fas fa-sliders text-secondary"></i>
-            <span>Paramètres Système</span>
-        </a>
-    </div>
+    @include('partials.subnav.system')
 
     <!-- Feedback Alerts -->
     @if(session('success'))
@@ -474,12 +488,18 @@
     <!-- KPI Metric Stat Cards (Product Section Standard) -->
     <div class="row g-3 mb-4">
         <div class="col-6 col-lg-3">
-            <a href="{{ route('users.index') }}" class="stat-kpi-card text-decoration-none {{ $roleFilter === 'all' && $statusFilter === 'all' && empty($search) ? 'active-filter' : '' }}">
+            <a href="{{ route('users.index', ['scope' => 'team']) }}" class="stat-kpi-card text-decoration-none {{ $scopeFilter === 'team' ? 'active-filter' : '' }}">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <div class="stat-kpi-label">Total Membres</div>
+                        <div class="stat-kpi-label">Équipe & Rôles</div>
                         <div class="stat-kpi-value text-dark">{{ $kpi['total_team'] ?? $kpi['total_users'] }}</div>
-                        <div class="stat-kpi-sub text-muted">Équipe active & accès</div>
+                        <div class="stat-kpi-sub text-muted">
+                            @if(($kpi['online'] ?? 0) > 0)
+                                <span class="text-success fw-semibold">{{ $kpi['online'] }} en ligne</span> • {{ $kpi['customers_only'] ?? 0 }} clients
+                            @else
+                                {{ $kpi['total_users'] }} comptes • {{ $kpi['customers_only'] ?? 0 }} clients
+                            @endif
+                        </div>
                     </div>
                     <div class="stat-kpi-icon bg-primary-subtle text-primary">
                         <i class="fas fa-users-gear"></i>
@@ -502,26 +522,26 @@
             </a>
         </div>
         <div class="col-6 col-lg-3">
-            <a href="{{ route('users.index', ['role' => 'Manager']) }}" class="stat-kpi-card text-decoration-none {{ in_array($roleFilter, ['Manager', 'Staff']) ? 'active-filter' : '' }}">
+            <a href="{{ route('users.index', ['status' => 'online']) }}" class="stat-kpi-card text-decoration-none {{ $statusFilter === 'online' ? 'active-filter' : '' }}">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <div class="stat-kpi-label">Managers & Staff</div>
-                        <div class="stat-kpi-value text-primary">{{ ($kpi['managers'] ?? 0) + ($kpi['staff'] ?? 0) }}</div>
+                        <div class="stat-kpi-label">Connectés (15 min)</div>
+                        <div class="stat-kpi-value text-success">{{ $kpi['online'] ?? 0 }}</div>
                         <div class="stat-kpi-sub text-muted">{{ $kpi['managers'] ?? 0 }} mgr • {{ $kpi['staff'] ?? 0 }} staff</div>
                     </div>
-                    <div class="stat-kpi-icon bg-primary-subtle text-primary">
-                        <i class="fas fa-user-tie"></i>
+                    <div class="stat-kpi-icon bg-success-subtle text-success">
+                        <i class="fas fa-signal"></i>
                     </div>
                 </div>
             </a>
         </div>
         <div class="col-6 col-lg-3">
-            <a href="{{ route('users.index', ['status' => 'inactive']) }}" class="stat-kpi-card text-decoration-none {{ $statusFilter === 'inactive' ? 'active-filter' : '' }}">
+            <a href="{{ route('users.index', ['status' => 'blocked']) }}" class="stat-kpi-card text-decoration-none {{ in_array($statusFilter, ['inactive', 'suspended', 'blocked'], true) ? 'active-filter' : '' }}">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <div class="stat-kpi-label">Comptes Inactifs</div>
+                        <div class="stat-kpi-label">Comptes Bloqués</div>
                         <div class="stat-kpi-value {{ ($kpi['inactive'] ?? 0) > 0 ? 'text-warning' : 'text-muted' }}">{{ $kpi['inactive'] ?? 0 }}</div>
-                        <div class="stat-kpi-sub text-muted">Accès bloqués ou suspendus</div>
+                        <div class="stat-kpi-sub text-muted">Inactifs ou suspendus</div>
                     </div>
                     <div class="stat-kpi-icon bg-secondary-subtle text-secondary">
                         <i class="fas fa-user-lock"></i>
@@ -531,66 +551,141 @@
         </div>
     </div>
 
-    <!-- Mobile Scrollable Filter Chips -->
+    <!-- Dynamic Role & Status Filter Chips -->
     <div class="chips-scroll mb-2.5">
-        <a href="{{ route('users.index', array_merge(request()->except('role'), ['role' => 'all'])) }}" 
-           class="chip-item {{ $roleFilter === 'all' && $statusFilter === 'all' ? 'active' : '' }}">
+        <a href="{{ route('users.index', ['search' => $search ?: null]) }}"
+           class="chip-item {{ $roleFilter === 'all' && $statusFilter === 'all' && $scopeFilter === 'all' ? 'active' : '' }}">
             <i class="fas fa-layer-group"></i>
             <span>Tous</span>
             <span class="badge bg-light text-dark rounded-pill px-1.5 py-0.5" style="font-size: 0.68rem;">{{ $kpi['total_users'] }}</span>
         </a>
-        <a href="{{ route('users.index', ['role' => 'Admin']) }}" 
-           class="chip-item {{ $roleFilter === 'Admin' ? 'active' : '' }}">
-            <i class="fas fa-crown text-danger"></i>
-            <span>Admins</span>
-            <span class="badge bg-danger-subtle text-danger rounded-pill px-1.5 py-0.5" style="font-size: 0.68rem;">{{ $kpi['admins'] }}</span>
+        <a href="{{ route('users.index', ['scope' => 'team', 'search' => $search ?: null]) }}"
+           class="chip-item {{ $scopeFilter === 'team' && $roleFilter === 'all' ? 'active' : '' }}">
+            <i class="fas fa-users-gear text-primary"></i>
+            <span>Équipe</span>
+            <span class="badge bg-primary-subtle text-primary rounded-pill px-1.5 py-0.5" style="font-size: 0.68rem;">{{ $kpi['total_team'] }}</span>
         </a>
-        <a href="{{ route('users.index', ['role' => 'Manager']) }}" 
-           class="chip-item {{ $roleFilter === 'Manager' ? 'active' : '' }}">
-            <i class="fas fa-user-tie text-primary"></i>
-            <span>Managers</span>
-            <span class="badge bg-primary-subtle text-primary rounded-pill px-1.5 py-0.5" style="font-size: 0.68rem;">{{ $kpi['managers'] }}</span>
+        @foreach($roles as $role)
+            @php
+                $chipIcon = match($role->name) {
+                    'Admin' => 'fa-crown text-danger',
+                    'Manager' => 'fa-user-tie text-primary',
+                    'Staff' => 'fa-user-check text-success',
+                    default => 'fa-shield-halved text-indigo',
+                };
+                $chipBadge = match($role->name) {
+                    'Admin' => 'bg-danger-subtle text-danger',
+                    'Manager' => 'bg-primary-subtle text-primary',
+                    'Staff' => 'bg-success-subtle text-success',
+                    default => 'bg-secondary-subtle text-secondary',
+                };
+            @endphp
+            <a href="{{ route('users.index', ['role' => $role->name, 'search' => $search ?: null]) }}"
+               class="chip-item {{ $roleFilter === $role->name ? 'active' : '' }}">
+                <i class="fas {{ $chipIcon }}"></i>
+                <span>{{ $role->name }}</span>
+                <span class="badge {{ $chipBadge }} rounded-pill px-1.5 py-0.5" style="font-size: 0.68rem;">{{ $role->users_count }}</span>
+            </a>
+        @endforeach
+        <a href="{{ route('users.index', ['role' => 'none', 'search' => $search ?: null]) }}"
+           class="chip-item {{ $roleFilter === 'none' || $scopeFilter === 'customers' ? 'active' : '' }}">
+            <i class="fas fa-user text-muted"></i>
+            <span>Sans rôle</span>
+            <span class="badge bg-light text-secondary rounded-pill px-1.5 py-0.5" style="font-size: 0.68rem;">{{ $kpi['customers_only'] }}</span>
         </a>
-        <a href="{{ route('users.index', ['role' => 'Staff']) }}" 
-           class="chip-item {{ $roleFilter === 'Staff' ? 'active' : '' }}">
-            <i class="fas fa-user-check text-success"></i>
-            <span>Staff</span>
-            <span class="badge bg-success-subtle text-success rounded-pill px-1.5 py-0.5" style="font-size: 0.68rem;">{{ $kpi['staff'] }}</span>
-        </a>
-        <a href="{{ route('users.index', ['status' => 'inactive']) }}" 
-           class="chip-item {{ $statusFilter === 'inactive' ? 'active' : '' }}">
+        <a href="{{ route('users.index', ['status' => 'blocked', 'search' => $search ?: null]) }}"
+           class="chip-item {{ in_array($statusFilter, ['blocked', 'inactive', 'suspended'], true) ? 'active' : '' }}">
             <i class="fas fa-pause-circle text-secondary"></i>
-            <span>Inactifs</span>
+            <span>Bloqués</span>
             <span class="badge bg-secondary-subtle text-secondary rounded-pill px-1.5 py-0.5" style="font-size: 0.68rem;">{{ $kpi['inactive'] }}</span>
         </a>
     </div>
 
     <!-- Barre de filtres unifiée (Desktop & Mobile) -->
     <div class="brand-filter-bar mb-3">
-        <form method="GET" action="{{ route('users.index') }}" class="w-100">
-            @if($roleFilter !== 'all')
-                <input type="hidden" name="role" value="{{ $roleFilter }}">
-            @endif
-            @if($statusFilter !== 'all')
-                <input type="hidden" name="status" value="{{ $statusFilter }}">
-            @endif
+        <form method="GET" action="{{ route('users.index') }}" class="w-100" id="usersFilterForm">
             <div class="d-flex align-items-center gap-2 flex-wrap">
                 <div class="brand-search-wrapper flex-grow-1" style="min-width: 220px;">
                     <i class="fas fa-search"></i>
-                    <input type="text" name="search" class="form-control" 
-                           placeholder="Rechercher par nom, email, téléphone..."
+                    <input type="text" name="search" class="form-control"
+                           placeholder="Rechercher par nom, email, téléphone, poste..."
                            value="{{ $search }}">
                     @if($search !== '')
-                        <a href="{{ route('users.index') }}" class="text-muted pe-2 text-decoration-none" style="font-size: 0.85rem;">
+                        <a href="{{ route('users.index', array_filter(['role' => $roleFilter !== 'all' ? $roleFilter : null, 'status' => $statusFilter !== 'all' ? $statusFilter : null, 'scope' => $scopeFilter !== 'all' ? $scopeFilter : null])) }}"
+                           class="text-muted pe-2 text-decoration-none" style="font-size: 0.85rem;" title="Effacer la recherche">
                             <i class="fas fa-times-circle"></i>
                         </a>
                     @endif
                 </div>
+
+                <select name="role" class="form-select" style="width: auto; min-width: 145px;" aria-label="Filtrer par rôle">
+                    <option value="all" {{ $roleFilter === 'all' ? 'selected' : '' }}>Tous les rôles</option>
+                    @foreach($roles as $role)
+                        <option value="{{ $role->name }}" {{ $roleFilter === $role->name ? 'selected' : '' }}>
+                            {{ $role->name }} ({{ $role->users_count }})
+                        </option>
+                    @endforeach
+                    <option value="none" {{ $roleFilter === 'none' ? 'selected' : '' }}>Sans rôle ({{ $kpi['customers_only'] }})</option>
+                </select>
+
+                <select name="status" class="form-select" style="width: auto; min-width: 155px;" aria-label="Filtrer par statut">
+                    <option value="all" {{ $statusFilter === 'all' ? 'selected' : '' }}>Tous les statuts</option>
+                    <option value="online" {{ $statusFilter === 'online' ? 'selected' : '' }}>En ligne ({{ $kpi['online'] }})</option>
+                    <option value="active" {{ $statusFilter === 'active' ? 'selected' : '' }}>Actifs seulement</option>
+                    <option value="blocked" {{ $statusFilter === 'blocked' ? 'selected' : '' }}>Inactifs & Suspendus ({{ $kpi['inactive'] }})</option>
+                    <option value="inactive" {{ $statusFilter === 'inactive' ? 'selected' : '' }}>Inactifs</option>
+                    <option value="suspended" {{ $statusFilter === 'suspended' ? 'selected' : '' }}>Suspendus</option>
+                </select>
+
+                <select name="per_page" class="form-select" style="width: auto; min-width: 96px;" aria-label="Lignes par page">
+                    @foreach([15, 25, 50] as $pp)
+                        <option value="{{ $pp }}" {{ (int)$perPage === $pp ? 'selected' : '' }}>{{ $pp }} / page</option>
+                    @endforeach
+                </select>
+
                 <button type="submit" class="btn-brand-primary">
-                    <i class="fas fa-search me-1"></i> Rechercher
+                    <i class="fas fa-filter me-1"></i> Filtrer
                 </button>
+
+                @if($search !== '' || $roleFilter !== 'all' || $statusFilter !== 'all' || $scopeFilter !== 'all')
+                    <a href="{{ route('users.index') }}" class="btn btn-light border rounded-pill px-3 py-2 small fw-semibold text-secondary">
+                        <i class="fas fa-rotate-left me-1"></i> Réinitialiser
+                    </a>
+                @endif
             </div>
         </form>
+    </div>
+
+    <!-- Bulk Selection Bar -->
+    <div id="usersBulkBar" class="users-bulk-bar d-none align-items-center justify-content-between flex-wrap gap-2 mb-3">
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-danger rounded-pill px-2.5 py-1 fw-bold" id="usersBulkCount">0</span>
+            <span class="small fw-semibold">compte(s) sélectionné(s)</span>
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <button type="button" class="btn btn-sm btn-success rounded-pill px-3 fw-semibold" onclick="runBulkAction('activate')">
+                <i class="fas fa-check me-1"></i> Activer
+            </button>
+            <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3 fw-semibold" onclick="runBulkAction('deactivate')">
+                <i class="fas fa-pause me-1"></i> Désactiver
+            </button>
+            <div class="input-group input-group-sm" style="width: auto;">
+                <select id="bulkRoleSelect" class="form-select form-select-sm bg-dark text-white border-secondary">
+                    <option value="">Changer de rôle...</option>
+                    @foreach($roles as $role)
+                        @if($role->name !== 'Admin' || $canManageAdminRole)
+                            <option value="{{ $role->name }}">{{ $role->name }}</option>
+                        @endif
+                    @endforeach
+                </select>
+                <button type="button" class="btn btn-sm btn-primary fw-semibold" onclick="runBulkAction('assign_role')">
+                    Appliquer
+                </button>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-light rounded-pill px-2.5" onclick="clearUserSelection()" title="Désélectionner tout">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </div>
     </div>
 
     <!-- ========================================== -->
@@ -601,20 +696,34 @@
         @php
             $isSelf = auth()->id() === $user->id;
             $isSuperAdmin = $user->id === 1 || $user->email === 'contact@wina.com';
+            $isRestrictedTarget = !$canManageAdminRole && $user->hasRole('Admin');
+            $canMutateTarget = !$isSelf && !$isSuperAdmin && !$isRestrictedTarget;
             $primaryRole = optional($user->roles->first())->name;
             $avatarGradient = match($primaryRole) {
                 'Admin' => 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)',
                 'Manager' => 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
                 'Staff' => 'linear-gradient(135deg, #059669 0%, #047857 100%)',
-                default => 'linear-gradient(135deg, #64748b 0%, #334155 100%)',
+                default => $primaryRole
+                    ? 'linear-gradient(135deg, #6366f1 0%, #4338ca 100%)'
+                    : 'linear-gradient(135deg, #64748b 0%, #334155 100%)',
             };
             $statusClass = $user->status ?? 'active';
+            $statusShortLabel = match($statusClass) {
+                'active' => 'Actif',
+                'suspended' => 'Suspendu',
+                default => 'Inactif',
+            };
         @endphp
-        <div class="user-card p-3 mb-2.5 position-relative">
+        <div class="user-card p-3 mb-2.5 position-relative" id="mob-card-{{ $user->id }}">
             
-            <!-- Top Section: Avatar + Name + Status Switch -->
+            <!-- Top Section: Selection + Avatar + Name + Status Switch -->
             <div class="d-flex align-items-start justify-content-between gap-2.5 mb-2.5">
                 <div class="d-flex align-items-center gap-2.5 min-w-0">
+                    @if($canMutateTarget)
+                        <input type="checkbox" class="form-check-input user-select-cb flex-shrink-0 mt-0"
+                               value="{{ $user->id }}" onchange="onUserSelectChange(this)"
+                               aria-label="Sélectionner {{ $user->name }}">
+                    @endif
                     <div class="avatar-wrap">
                         <div class="avatar-circle" style="background: {{ $avatarGradient }};">
                             {{ strtoupper(substr($user->name, 0, 1)) }}
@@ -645,7 +754,7 @@
                 </div>
 
                 <!-- Status Toggle Switch (iOS Style) -->
-                @if(!$isSelf && !$isSuperAdmin)
+                @if($canMutateTarget)
                 <div class="d-flex flex-column align-items-end flex-shrink-0">
                     <label class="switch-ios" title="Activer / Désactiver">
                         <input type="checkbox" id="switch-mob-{{ $user->id }}" 
@@ -654,7 +763,7 @@
                         <span class="switch-slider"></span>
                     </label>
                     <span class="text-muted mt-1" style="font-size: 0.65rem;" id="mob-status-label-{{ $user->id }}">
-                        {{ $user->status === 'active' ? 'Actif' : 'Inactif' }}
+                        {{ $statusShortLabel }}
                     </span>
                 </div>
                 @else
@@ -706,10 +815,11 @@
                                 'Admin' => 'bg-danger text-white',
                                 'Manager' => 'bg-primary text-white',
                                 'Staff' => 'bg-success text-white',
-                                default => 'bg-secondary text-white',
+                                default => 'text-white',
                             };
+                            $customStyle = in_array($role->name, ['Admin', 'Manager', 'Staff']) ? '' : 'background:#4f46e5;';
                         @endphp
-                        <span class="badge {{ $badgeStyle }} rounded-pill px-2 py-0.5 fw-semibold" style="font-size: 0.7rem;">
+                        <span class="badge {{ $badgeStyle }} rounded-pill px-2 py-0.5 fw-semibold" style="font-size: 0.7rem; {{ $customStyle }}">
                             {{ $role->name }}
                         </span>
                     @empty
@@ -727,25 +837,35 @@
 
             <!-- Touch Actions Row -->
             <div class="d-flex gap-2 pt-1 border-top">
-                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill flex-grow-1 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1.5"
-                        onclick="openEditModal({{ $user->id }})">
-                    <i class="fas fa-pencil"></i>
-                    <span>Modifier</span>
-                </button>
-                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill flex-grow-1 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1.5"
-                        onclick="openPasswordModal({{ $user->id }}, '{{ addslashes($user->name) }}', '{{ addslashes($user->email) }}')">
-                    <i class="fas fa-key text-warning"></i>
-                    <span>Mot de passe</span>
-                </button>
-                @if(!$isSelf && !$isSuperAdmin)
-                <form method="POST" action="{{ route('users.destroy', $user) }}" class="d-inline"
-                      onsubmit="return confirm('Supprimer définitivement le collaborateur {{ addslashes($user->name) }} ?');">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-2.5 py-1.5" title="Supprimer">
+                @if(!$isRestrictedTarget)
+                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill flex-grow-1 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1.5"
+                            onclick="openEditModal({{ $user->id }})">
+                        <i class="fas fa-pencil"></i>
+                        <span>Modifier</span>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill flex-grow-1 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1.5"
+                            onclick="openPasswordModal({{ $user->id }}, '{{ addslashes($user->name) }}', '{{ addslashes($user->email) }}')">
+                        <i class="fas fa-key text-warning"></i>
+                        <span>Mot de passe</span>
+                    </button>
+                @else
+                    <span class="btn btn-light btn-sm rounded-pill flex-grow-1 py-1.5 text-muted disabled">
+                        <i class="fas fa-lock me-1"></i> Compte Admin protégé
+                    </span>
+                @endif
+                @if(auth()->user()->hasRole('Admin') || auth()->user()->can('view_activity_logs'))
+                    <a href="{{ route('activity-logs.index', ['user_id' => $user->id]) }}"
+                       class="btn btn-outline-dark btn-sm rounded-pill px-2.5 py-1.5 d-flex align-items-center justify-content-center"
+                       title="Historique d'activité">
+                        <i class="fas fa-clock-rotate-left"></i>
+                    </a>
+                @endif
+                @if($canMutateTarget)
+                    <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-2.5 py-1.5"
+                            onclick="deleteUserConfirm({{ $user->id }}, '{{ addslashes($user->name) }}', '{{ route('users.destroy', $user) }}')"
+                            title="Supprimer">
                         <i class="fas fa-trash-can"></i>
                     </button>
-                </form>
                 @endif
             </div>
 
@@ -770,11 +890,14 @@
             <table class="table align-middle mb-0">
                 <thead class="bg-light border-bottom">
                     <tr>
-                        <th class="ps-4 py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.74rem; letter-spacing: 0.05em; width: 32%;">Collaborateur</th>
+                        <th class="ps-4 py-3" style="width: 42px;">
+                            <input type="checkbox" class="form-check-input" id="selectAllUsers" onchange="toggleSelectAllUsers(this)" title="Tout sélectionner sur cette page">
+                        </th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.74rem; letter-spacing: 0.05em; width: 30%;">Collaborateur</th>
                         <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.74rem; letter-spacing: 0.05em; width: 22%;">Rôles & Permissions</th>
-                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.74rem; letter-spacing: 0.05em; width: 14%;">Statut</th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.74rem; letter-spacing: 0.05em; width: 12%;">Statut</th>
                         <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.74rem; letter-spacing: 0.05em; width: 16%;">Dernière Connexion</th>
-                        <th class="pe-4 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.74rem; letter-spacing: 0.05em; width: 16%;">Actions</th>
+                        <th class="pe-4 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.74rem; letter-spacing: 0.05em; width: 20%;">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y">
@@ -782,16 +905,29 @@
                     @php
                         $isSelf = auth()->id() === $user->id;
                         $isSuperAdmin = $user->id === 1 || $user->email === 'contact@wina.com';
+                        $isRestrictedTarget = !$canManageAdminRole && $user->hasRole('Admin');
+                        $canMutateTarget = !$isSelf && !$isSuperAdmin && !$isRestrictedTarget;
                         $primaryRole = optional($user->roles->first())->name;
                         $avatarGradient = match($primaryRole) {
                             'Admin' => 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)',
                             'Manager' => 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
                             'Staff' => 'linear-gradient(135deg, #059669 0%, #047857 100%)',
-                            default => 'linear-gradient(135deg, #64748b 0%, #334155 100%)',
+                            default => $primaryRole
+                                ? 'linear-gradient(135deg, #6366f1 0%, #4338ca 100%)'
+                                : 'linear-gradient(135deg, #64748b 0%, #334155 100%)',
                         };
                     @endphp
-                    <tr class="hover-bg-light transition-all">
+                    <tr class="hover-bg-light transition-all" id="desk-row-{{ $user->id }}">
                         <td class="ps-4 py-3">
+                            @if($canMutateTarget)
+                                <input type="checkbox" class="form-check-input user-select-cb"
+                                       value="{{ $user->id }}" onchange="onUserSelectChange(this)"
+                                       aria-label="Sélectionner {{ $user->name }}">
+                            @else
+                                <span class="text-muted opacity-25" title="Compte protégé"><i class="fas fa-lock" style="font-size: 0.75rem;"></i></span>
+                            @endif
+                        </td>
+                        <td class="py-3">
                             <div class="d-flex align-items-center gap-3">
                                 <div class="avatar-wrap">
                                     <div class="avatar-circle" style="background: {{ $avatarGradient }};">
@@ -834,8 +970,11 @@
                                             'Admin' => 'bg-danger-subtle text-danger border-danger-subtle',
                                             'Manager' => 'bg-primary-subtle text-primary border-primary-subtle',
                                             'Staff' => 'bg-success-subtle text-success border-success-subtle',
-                                            default => 'bg-light text-dark border-secondary-subtle',
+                                            default => '',
                                         };
+                                        $roleInlineStyle = in_array($role->name, ['Admin', 'Manager', 'Staff'])
+                                            ? ''
+                                            : 'background: #eef2ff; color: #4338ca; border-color: #c7d2fe;';
                                         $roleIcon = match($role->name) {
                                             'Admin' => 'fa-crown',
                                             'Manager' => 'fa-user-tie',
@@ -843,7 +982,7 @@
                                             default => 'fa-shield-halved',
                                         };
                                     @endphp
-                                    <span class="badge {{ $roleColor }} border rounded-pill px-2.5 py-1 fw-semibold d-inline-flex align-items-center gap-1" style="font-size: 0.74rem;">
+                                    <span class="badge {{ $roleColor }} border rounded-pill px-2.5 py-1 fw-semibold d-inline-flex align-items-center gap-1" style="font-size: 0.74rem; {{ $roleInlineStyle }}">
                                         <i class="fas {{ $roleIcon }}"></i>
                                         <span>{{ $role->name }}</span>
                                     </span>
@@ -893,37 +1032,47 @@
                         </td>
                         <td class="pe-4 py-3 text-end">
                             <div class="d-inline-flex align-items-center gap-1">
-                                <button type="button" class="btn btn-sm btn-light rounded-pill px-2.5 py-1 text-primary shadow-xs border"
-                                        onclick="openEditModal({{ $user->id }})" title="Modifier">
-                                    <i class="fas fa-pencil"></i>
-                                </button>
-                                <button type="button" class="btn btn-sm btn-light rounded-pill px-2.5 py-1 text-warning shadow-xs border"
-                                        onclick="openPasswordModal({{ $user->id }}, '{{ addslashes($user->name) }}', '{{ addslashes($user->email) }}')" 
-                                        title="Mot de passe">
-                                    <i class="fas fa-key"></i>
-                                </button>
-                                @if(!$isSelf && !$isSuperAdmin)
+                                @if(!$isRestrictedTarget)
+                                    <button type="button" class="btn btn-sm btn-light rounded-pill px-2.5 py-1 text-primary shadow-xs border"
+                                            onclick="openEditModal({{ $user->id }})" title="Modifier">
+                                        <i class="fas fa-pencil"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-light rounded-pill px-2.5 py-1 text-warning shadow-xs border"
+                                            onclick="openPasswordModal({{ $user->id }}, '{{ addslashes($user->name) }}', '{{ addslashes($user->email) }}')" 
+                                            title="Mot de passe">
+                                        <i class="fas fa-key"></i>
+                                    </button>
+                                @else
+                                    <span class="badge bg-light text-muted border rounded-pill px-2 py-1" style="font-size: 0.7rem;" title="Modification réservée aux administrateurs">
+                                        <i class="fas fa-lock me-1"></i> Protégé
+                                    </span>
+                                @endif
+                                @if(auth()->user()->hasRole('Admin') || auth()->user()->can('view_activity_logs'))
+                                    <a href="{{ route('activity-logs.index', ['user_id' => $user->id]) }}"
+                                       class="btn btn-sm btn-light rounded-pill px-2.5 py-1 text-dark shadow-xs border"
+                                       title="Historique d'activité">
+                                        <i class="fas fa-clock-rotate-left"></i>
+                                    </a>
+                                @endif
+                                @if($canMutateTarget)
                                     <button type="button" class="btn btn-sm btn-light rounded-pill px-2.5 py-1 text-secondary shadow-xs border"
                                             onclick="toggleUserStatus({{ $user->id }}, '{{ addslashes($user->name) }}')"
                                             id="desk-btn-toggle-{{ $user->id }}"
                                             title="Activer / Désactiver">
                                         <i class="fas {{ $user->status === 'active' ? 'fa-toggle-on text-success' : 'fa-toggle-off text-muted' }} fa-lg"></i>
                                     </button>
-                                    <form method="POST" action="{{ route('users.destroy', $user) }}" class="d-inline"
-                                          onsubmit="return confirm('Supprimer définitivement le collaborateur {{ addslashes($user->name) }} ?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-light rounded-pill px-2.5 py-1 text-danger shadow-xs border" title="Supprimer">
-                                            <i class="fas fa-trash-can"></i>
-                                        </button>
-                                    </form>
+                                    <button type="button" class="btn btn-sm btn-light rounded-pill px-2.5 py-1 text-danger shadow-xs border"
+                                            onclick="deleteUserConfirm({{ $user->id }}, '{{ addslashes($user->name) }}', '{{ route('users.destroy', $user) }}')"
+                                            title="Supprimer">
+                                        <i class="fas fa-trash-can"></i>
+                                    </button>
                                 @endif
                             </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="text-center py-5">
+                        <td colspan="6" class="text-center py-5">
                             <div class="py-4">
                                 <i class="fas fa-users-slash fa-3x text-muted opacity-50 mb-3"></i>
                                 <h6 class="fw-bold text-dark">Aucun collaborateur trouvé</h6>
@@ -982,7 +1131,7 @@
                         <i class="fas fa-id-card me-1"></i> 1. Profil & Rôle
                     </button>
                     <button class="nav-link rounded-pill py-1.5 small fw-bold" id="pills-perms-btn" data-bs-toggle="pill" data-bs-target="#pills-perms-content" type="button" role="tab">
-                        <i class="fas fa-sliders me-1"></i> 2. Permissions (<span id="mob-perms-counter">0</span>/22)
+                        <i class="fas fa-sliders me-1"></i> 2. Permissions (<span id="mob-perms-counter">0</span>/{{ $totalPermissionsCount }})
                     </button>
                 </div>
             </div>
@@ -996,6 +1145,8 @@
                     <!-- ============================================== -->
                     <div class="col-12 col-lg-5 modal-col-left tab-pane-responsive" id="pills-profile-content">
                         
+                        <div id="userModalErrors" class="alert alert-danger border-0 rounded-3 small mb-3 d-none"></div>
+
                         <!-- Last Login Activity Banner (Visible only in Edit mode) -->
                         <div id="userLastLoginBanner" class="d-none alert alert-light border rounded-3 p-2.5 mb-3" style="background: #f8fafc;">
                             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
@@ -1106,33 +1257,42 @@
                             <div class="d-flex flex-column gap-2">
                                 @foreach($roles as $role)
                                 @php
+                                    $isRestricted = ($role->name === 'Admin' && !$canManageAdminRole);
                                     $roleColorClass = match($role->name) {
                                         'Admin' => 'selected-admin',
                                         'Manager' => 'selected-manager',
                                         'Staff' => 'selected-staff',
-                                        default => 'selected-admin',
+                                        default => 'selected-custom',
                                     };
                                     $icon = match($role->name) {
                                         'Admin' => 'fa-crown text-danger',
                                         'Manager' => 'fa-user-tie text-primary',
                                         'Staff' => 'fa-user-check text-success',
-                                        default => 'fa-shield text-secondary',
+                                        default => 'fa-shield-halved text-indigo',
                                     };
                                     $desc = match($role->name) {
                                         'Admin' => 'Accès total à tous les modules, configurations et comptabilité.',
                                         'Manager' => 'Gestion des commandes, catalogue, stocks, clients et analyses.',
                                         'Staff' => 'Traitement des commandes, produits et état des stocks.',
-                                        default => 'Accès standard configuré.',
+                                        default => 'Rôle personnalisé avec son propre jeu de permissions.',
                                     };
                                 @endphp
-                                <div class="role-select-card" id="role-card-{{ $role->name }}" 
-                                     onclick="selectRoleCard('{{ $role->name }}')">
+                                <div class="role-select-card {{ $isRestricted ? 'is-restricted' : '' }}"
+                                     id="role-card-{{ $role->name }}"
+                                     data-color-class="{{ $roleColorClass }}"
+                                     data-restricted="{{ $isRestricted ? '1' : '0' }}"
+                                     @if(!$isRestricted) onclick="selectRoleCard('{{ addslashes($role->name) }}')" @endif>
                                     <div class="role-check-indicator">
-                                        <i class="fas fa-check"></i>
+                                        <i class="fas {{ $isRestricted ? 'fa-lock' : 'fa-check' }}"></i>
                                     </div>
                                     <div class="d-flex align-items-center gap-2 mb-1">
-                                        <i class="fas {{ $icon }}"></i>
+                                        <i class="fas {{ $icon }}" @if(!in_array($role->name, ['Admin', 'Manager', 'Staff'])) style="color: #4f46e5;" @endif></i>
                                         <span class="fw-bold text-dark small">{{ $role->name }}</span>
+                                        @if($isRestricted)
+                                            <span class="badge bg-danger-subtle text-danger rounded-pill" style="font-size: 0.62rem;">
+                                                <i class="fas fa-lock me-1"></i>Admin requis
+                                            </span>
+                                        @endif
                                         <span class="badge bg-secondary-subtle text-secondary rounded-pill ms-auto me-4" style="font-size: 0.65rem;">
                                             {{ $role->permissions->count() }} règles
                                         </span>
@@ -1144,6 +1304,8 @@
                                            id="role-input-{{ $role->name }}" 
                                            class="d-none role-checkbox"
                                            data-role-name="{{ $role->name }}"
+                                           data-restricted="{{ $isRestricted ? '1' : '0' }}"
+                                           @if($isRestricted) disabled @endif
                                            data-permissions="{{ json_encode($role->permissions->pluck('name')) }}">
                                 </div>
                                 @endforeach
@@ -1154,7 +1316,7 @@
                         <div class="d-lg-none mt-4 pt-2">
                             <button type="button" class="btn btn-outline-danger w-100 rounded-pill py-2.5 fw-bold d-flex align-items-center justify-content-center gap-2"
                                     onclick="switchToPermissionsTab()">
-                                <span>Voir & Personnaliser les Permissions (22)</span>
+                                <span>Voir & Personnaliser les Permissions ({{ $totalPermissionsCount }})</span>
                                 <i class="fas fa-arrow-right"></i>
                             </button>
                         </div>
@@ -1175,8 +1337,11 @@
                                     <span class="fw-bold text-dark fs-6 d-flex align-items-center gap-2">
                                         <i class="fas fa-sliders text-success"></i> Permissions Granulaires
                                         <span class="badge bg-success-subtle text-success rounded-pill px-2 py-0.5" style="font-size: 0.72rem;" id="perms-active-badge">
-                                            <span id="perms-count-number">0</span> / 22 actives
+                                            <span id="perms-count-number">0</span> / {{ $totalPermissionsCount }} actives
                                         </span>
+                                    </span>
+                                    <span class="text-muted small d-block mt-0.5" id="perms-summary-breakdown" style="font-size: 0.72rem;">
+                                        0 via rôle • 0 directes
                                     </span>
                                 </div>
                                 <div class="d-flex gap-1">
@@ -1203,7 +1368,7 @@
                             <!-- Domain Filter Pills (Instant 1-Click Jump/Filter) -->
                             <div class="chips-scroll">
                                 <span class="domain-pill active" onclick="filterByDomain('all', this)">
-                                    Tous (22)
+                                    Tous ({{ $totalPermissionsCount }})
                                 </span>
                                 @foreach($permissionModules as $modKey => $module)
                                 <span class="domain-pill" onclick="filterByDomain('{{ $modKey }}', this)">
@@ -1274,6 +1439,11 @@
 
                                 </div>
                                 @endforeach
+                                <div id="perms-empty-search" class="text-center py-4 d-none">
+                                    <i class="fas fa-search text-muted opacity-50 mb-2"></i>
+                                    <div class="fw-semibold text-dark small">Aucune permission ne correspond à votre filtre</div>
+                                    <button type="button" class="btn btn-xs btn-link text-decoration-none mt-1" onclick="document.getElementById('perm-search-box').value=''; filterPermissionsList('');">Réinitialiser la recherche</button>
+                                </div>
                             </div>
                         </div>
 
@@ -1322,6 +1492,7 @@
             </div>
 
             <div class="modal-body p-3.5 bg-light">
+                <div id="pwdModalErrors" class="alert alert-danger border-0 rounded-3 small mb-3 d-none"></div>
                 <div class="card border-0 rounded-3 p-3 bg-white shadow-xs mb-3">
                     <div class="text-muted small">Identifiant :</div>
                     <div class="fw-bold text-dark font-monospace" id="pwd_modal_email"></div>
@@ -1365,42 +1536,211 @@
 
 @push('scripts')
 <script>
-let bsUserModal = null;
-let bsPwdModal = null;
+let activePermDomain = 'all';
 
-document.addEventListener('DOMContentLoaded', function() {
+function getUserModal() {
+    const el = document.getElementById('userModal');
+    return el ? bootstrap.Modal.getOrCreateInstance(el) : null;
+}
+
+function getPwdModal() {
+    const el = document.getElementById('passwordModal');
+    return el ? bootstrap.Modal.getOrCreateInstance(el) : null;
+}
+
+function getCsrfToken() {
+    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+}
+
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function showToast(icon, title) {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon,
+            title,
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+        });
+    }
+}
+
+function showErrorAlert(title, message) {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({ icon: 'error', title, text: message });
+    } else {
+        alert(message);
+    }
+}
+
+function clearModalErrors(boxId) {
+    const box = document.getElementById(boxId);
+    if (!box) return;
+    box.classList.add('d-none');
+    box.innerHTML = '';
+}
+
+function showModalErrors(boxId, message, fieldErrors = null) {
+    const box = document.getElementById(boxId);
+    if (!box) {
+        showErrorAlert('Erreur', message);
+        return;
+    }
+
+    let items = [];
+    if (fieldErrors && typeof fieldErrors === 'object') {
+        Object.values(fieldErrors).forEach(arr => {
+            if (Array.isArray(arr)) {
+                arr.forEach(msg => items.push(`<li>${escapeHtml(msg)}</li>`));
+            }
+        });
+    }
+
+    if (items.length > 0) {
+        box.innerHTML = `<div class="fw-bold mb-1"><i class="fas fa-circle-exclamation me-1"></i> Veuillez corriger les champs suivants :</div><ul class="mb-0 ps-3">${items.join('')}</ul>`;
+    } else {
+        box.innerHTML = `<i class="fas fa-circle-exclamation me-1"></i> ${escapeHtml(message || 'Une erreur est survenue.')}`;
+    }
+    box.classList.remove('d-none');
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function refreshUsersView() {
     const userModalEl = document.getElementById('userModal');
-    if (userModalEl) bsUserModal = new bootstrap.Modal(userModalEl);
-
     const pwdModalEl = document.getElementById('passwordModal');
-    if (pwdModalEl) bsPwdModal = new bootstrap.Modal(pwdModalEl);
+    if (userModalEl) bootstrap.Modal.getInstance(userModalEl)?.hide();
+    if (pwdModalEl) bootstrap.Modal.getInstance(pwdModalEl)?.hide();
 
-    // Mobile tabs button listener
+    if (window.SpaNavigator && typeof window.SpaNavigator.navigate === 'function') {
+        if (typeof window.SpaNavigator.clearCache === 'function') {
+            window.SpaNavigator.clearCache();
+        }
+        setTimeout(() => window.SpaNavigator.navigate(window.location.href), 200);
+    } else {
+        setTimeout(() => window.location.reload(), 200);
+    }
+}
+
+async function submitAjaxModalForm({ form, errorBoxId, submitBtn, defaultBtnHtml, loadingLabel }) {
+    clearModalErrors(errorBoxId);
+
+    const originalHtml = submitBtn ? submitBtn.innerHTML : defaultBtnHtml;
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin me-1.5"></i> ${escapeHtml(loadingLabel)}`;
+    }
+
+    try {
+        const res = await fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken()
+            },
+            body: new FormData(form)
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            showModalErrors(errorBoxId, data.message || `Erreur (${res.status})`, data.errors || null);
+            if (data.errors && document.getElementById('pills-profile-btn') && window.innerWidth < 992) {
+                syncMobileTabDisplay('profile');
+            }
+            return;
+        }
+
+        showToast('success', data.message || 'Opération enregistrée.');
+        refreshUsersView();
+    } catch (err) {
+        showModalErrors(errorBoxId, 'Erreur réseau : ' + err.message);
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalHtml;
+        }
+    }
+}
+
+function initUsersPage() {
+    getUserModal();
+    getPwdModal();
+
     const pBtn = document.getElementById('pills-profile-btn');
     const permsBtn = document.getElementById('pills-perms-btn');
-    if (pBtn && permsBtn) {
+    if (pBtn && permsBtn && !pBtn.dataset.bound) {
+        pBtn.dataset.bound = '1';
         pBtn.addEventListener('click', () => syncMobileTabDisplay('profile'));
         permsBtn.addEventListener('click', () => syncMobileTabDisplay('perms'));
     }
-});
+
+    const userForm = document.getElementById('userForm');
+    if (userForm && !userForm.dataset.bound) {
+        userForm.dataset.bound = '1';
+        userForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const submitBtn = document.getElementById('userSubmitBtn');
+            submitAjaxModalForm({
+                form: userForm,
+                errorBoxId: 'userModalErrors',
+                submitBtn,
+                defaultBtnHtml: '<i class="fas fa-check-circle me-1.5"></i> Enregistrer',
+                loadingLabel: 'Enregistrement...'
+            });
+        });
+    }
+
+    const passwordForm = document.getElementById('passwordForm');
+    if (passwordForm && !passwordForm.dataset.bound) {
+        passwordForm.dataset.bound = '1';
+        passwordForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const submitBtn = passwordForm.querySelector('button[type="submit"]');
+            submitAjaxModalForm({
+                form: passwordForm,
+                errorBoxId: 'pwdModalErrors',
+                submitBtn,
+                defaultBtnHtml: '<i class="fas fa-check me-1"></i> Appliquer',
+                loadingLabel: 'Application...'
+            });
+        });
+    }
+
+    updateBulkBar();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initUsersPage);
+} else {
+    initUsersPage();
+}
 
 // Mobile tab switcher helpers
 function syncMobileTabDisplay(tab) {
-    if (window.innerWidth >= 992) return; // Desktop shows both simultaneously
+    if (window.innerWidth >= 992) return;
 
     const leftCol = document.getElementById('pills-profile-content');
     const rightCol = document.getElementById('pills-perms-content');
     const backBtn = document.getElementById('mobBackBtn');
 
     if (tab === 'profile') {
-        leftCol.style.display = 'block';
-        rightCol.style.display = 'none';
+        if (leftCol) leftCol.style.display = 'block';
+        if (rightCol) rightCol.style.display = 'none';
         if (backBtn) backBtn.style.display = 'none';
         document.getElementById('pills-profile-btn')?.classList.add('active');
         document.getElementById('pills-perms-btn')?.classList.remove('active');
     } else {
-        leftCol.style.display = 'none';
-        rightCol.style.display = 'block';
+        if (leftCol) leftCol.style.display = 'none';
+        if (rightCol) rightCol.style.display = 'block';
         if (backBtn) backBtn.style.display = 'inline-block';
         document.getElementById('pills-perms-btn')?.classList.add('active');
         document.getElementById('pills-profile-btn')?.classList.remove('active');
@@ -1415,8 +1755,18 @@ function switchToProfileTab() {
     syncMobileTabDisplay('profile');
 }
 
+function clearRoleSelections() {
+    document.querySelectorAll('.role-select-card').forEach(c => {
+        c.classList.remove('selected-admin', 'selected-manager', 'selected-staff', 'selected-custom');
+    });
+    document.querySelectorAll('.role-checkbox').forEach(cb => {
+        cb.checked = false;
+    });
+}
+
 // 1. OPEN CREATE MODAL
 function openCreateModal() {
+    clearModalErrors('userModalErrors');
     document.getElementById('userModalLabel').textContent = 'Nouveau Collaborateur';
     document.getElementById('userModalSub').textContent = 'Créer un compte d\'accès sécurisé avec rôles et permissions';
     document.getElementById('userModalIcon').className = 'fas fa-user-plus text-danger';
@@ -1424,7 +1774,6 @@ function openCreateModal() {
     document.getElementById('userForm').action = "{{ route('users.store') }}";
     document.getElementById('userSubmitBtn').innerHTML = '<i class="fas fa-check-circle me-1.5"></i> Enregistrer';
 
-    // Reset inputs
     const lastLoginBanner = document.getElementById('userLastLoginBanner');
     if (lastLoginBanner) lastLoginBanner.classList.add('d-none');
 
@@ -1436,44 +1785,48 @@ function openCreateModal() {
     document.getElementById('user_password').value = '';
     document.getElementById('user_password').required = true;
     document.getElementById('password_hint').textContent = 'Min. 8 caractères sécurisés.';
+    const copiedToast = document.getElementById('pwd-copied-toast');
+    if (copiedToast) copiedToast.style.display = 'none';
 
-    // Reset roles cards
-    document.querySelectorAll('.role-select-card').forEach(c => {
-        c.classList.remove('selected-admin', 'selected-manager', 'selected-staff');
-    });
-    document.querySelectorAll('.role-checkbox').forEach(cb => cb.checked = false);
+    clearRoleSelections();
 
-    // Default to Staff role
-    selectRoleCard('Staff');
+    const staffCard = document.getElementById('role-card-Staff');
+    if (staffCard && staffCard.dataset.restricted !== '1') {
+        selectRoleCard('Staff');
+    } else {
+        const firstAvailable = document.querySelector('.role-checkbox:not([disabled])');
+        if (firstAvailable?.dataset.roleName) {
+            selectRoleCard(firstAvailable.dataset.roleName);
+        }
+    }
 
-    // Reset switches
     document.querySelectorAll('.perm-switch-input').forEach(sw => sw.checked = false);
     onPermSwitchChange();
 
-    // Auto-generate strong initial password
-    generateStrongPassword('user_password');
+    // Auto-generate strong initial password without mutating clipboard on open
+    generateStrongPassword('user_password', false);
 
-    // Reset domain filter & search
     document.getElementById('perm-search-box').value = '';
-    filterPermissionsList('');
     filterByDomain('all', document.querySelector('.domain-pill'));
-
-    // Mobile initial view
     syncMobileTabDisplay('profile');
 
-    if (bsUserModal) bsUserModal.show();
+    getUserModal()?.show();
 }
 
 // 2. OPEN EDIT MODAL VIA AJAX
-function openEditModal(userId) {
-    document.getElementById('userModalLabel').textContent = 'Chargement en cours...';
-    document.getElementById('userModalIcon').className = 'fas fa-spinner fa-spin text-primary';
+async function openEditModal(userId) {
+    clearModalErrors('userModalErrors');
 
-    fetch(`/users/${userId}`, {
-        headers: { 'Accept': 'application/json' }
-    })
-    .then(res => res.json())
-    .then(data => {
+    try {
+        const res = await fetch(`/users/${userId}`, {
+            headers: { 'Accept': 'application/json' }
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            showErrorAlert('Accès refusé', data.message || `Impossible de charger ce compte (${res.status}).`);
+            return;
+        }
+
         document.getElementById('userModalLabel').textContent = `Modifier : ${data.name}`;
         document.getElementById('userModalSub').textContent = `ID #${data.id} • ${data.email}`;
         document.getElementById('userModalIcon').className = 'fas fa-pencil text-primary';
@@ -1501,10 +1854,10 @@ function openEditModal(userId) {
             if (data.last_login_at) {
                 if (data.is_online) {
                     loginDot.className = 'rounded-circle bg-success flex-shrink-0 pulse-dot';
-                    loginText.innerHTML = `<span class="text-success fw-bold">En ligne actuellement</span> <span class="text-muted fw-normal" style="font-size: 0.74rem;">(${data.last_login_diff})</span>`;
+                    loginText.innerHTML = `<span class="text-success fw-bold">En ligne actuellement</span> <span class="text-muted fw-normal" style="font-size: 0.74rem;">(${escapeHtml(data.last_login_diff)})</span>`;
                 } else {
                     loginDot.className = 'rounded-circle bg-secondary flex-shrink-0';
-                    loginText.innerHTML = `${data.last_login_diff} <span class="text-muted fw-normal" style="font-size: 0.74rem;">(${data.last_login_at})</span>`;
+                    loginText.innerHTML = `${escapeHtml(data.last_login_diff)} <span class="text-muted fw-normal" style="font-size: 0.74rem;">(${escapeHtml(data.last_login_at)})</span>`;
                 }
                 if (data.last_login_ip) {
                     loginIp.textContent = 'IP: ' + data.last_login_ip;
@@ -1519,56 +1872,46 @@ function openEditModal(userId) {
             }
         }
 
-        // Reset roles cards
-        document.querySelectorAll('.role-select-card').forEach(c => {
-            c.classList.remove('selected-admin', 'selected-manager', 'selected-staff');
-        });
-        document.querySelectorAll('.role-checkbox').forEach(cb => cb.checked = false);
-
-        // Select user roles
-        data.roles.forEach(roleName => {
+        clearRoleSelections();
+        (data.roles || []).forEach(roleName => {
             selectRoleCard(roleName, true);
         });
 
-        // Set direct permissions switches
+        const directPerms = Array.isArray(data.direct_permissions) ? data.direct_permissions : [];
         document.querySelectorAll('.perm-switch-input').forEach(sw => {
-            sw.checked = data.direct_permissions.includes(sw.value);
+            sw.checked = directPerms.includes(sw.value);
         });
 
         onPermSwitchChange();
 
-        // Reset search & filter
         document.getElementById('perm-search-box').value = '';
-        filterPermissionsList('');
         filterByDomain('all', document.querySelector('.domain-pill'));
-
         syncMobileTabDisplay('profile');
 
-        if (bsUserModal) bsUserModal.show();
-    })
-    .catch(err => {
-        alert('Erreur lors du chargement : ' + err.message);
-    });
+        getUserModal()?.show();
+    } catch (err) {
+        showErrorAlert('Erreur de chargement', err.message);
+    }
 }
 
 // 3. ROLE SELECTOR CARD CLICK
 function selectRoleCard(roleName, multi = false) {
     const card = document.getElementById(`role-card-${roleName}`);
     const input = document.getElementById(`role-input-${roleName}`);
-    if (!card || !input) return;
+    if (!card || !input || card.dataset.restricted === '1') return;
 
-    const roleColorClass = roleName === 'Admin' ? 'selected-admin' : (roleName === 'Manager' ? 'selected-manager' : 'selected-staff');
+    const roleColorClass = card.dataset.colorClass || (
+        roleName === 'Admin' ? 'selected-admin' :
+        (roleName === 'Manager' ? 'selected-manager' :
+        (roleName === 'Staff' ? 'selected-staff' : 'selected-custom'))
+    );
 
     if (!multi) {
-        document.querySelectorAll('.role-select-card').forEach(c => {
-            c.classList.remove('selected-admin', 'selected-manager', 'selected-staff');
-        });
-        document.querySelectorAll('.role-checkbox').forEach(cb => cb.checked = false);
-
+        clearRoleSelections();
         card.classList.add(roleColorClass);
         input.checked = true;
     } else {
-        const isSelected = card.classList.contains(roleColorClass);
+        const isSelected = input.checked;
         if (isSelected) {
             card.classList.remove(roleColorClass);
             input.checked = false;
@@ -1581,20 +1924,11 @@ function selectRoleCard(roleName, multi = false) {
     onPermSwitchChange();
 }
 
-// 4. RESET PERMISSIONS TO CURRENT ROLE
+// 4. RESET DIRECT OVERRIDES TO ROLE BASELINE
 function resetPermsToRole() {
-    const inheritedPerms = new Set();
-    document.querySelectorAll('.role-checkbox:checked').forEach(cb => {
-        try {
-            const perms = JSON.parse(cb.getAttribute('data-permissions') || '[]');
-            perms.forEach(p => inheritedPerms.add(p));
-        } catch(e) {}
-    });
-
     document.querySelectorAll('.perm-switch-input').forEach(sw => {
-        sw.checked = inheritedPerms.has(sw.value);
+        sw.checked = false;
     });
-
     onPermSwitchChange();
 }
 
@@ -1606,10 +1940,13 @@ function onPermSwitchChange() {
         try {
             const perms = JSON.parse(cb.getAttribute('data-permissions') || '[]');
             perms.forEach(p => inheritedPerms.add(p));
-        } catch(e) {}
+        } catch (e) {}
     });
 
     let totalActive = 0;
+    let viaRoleCount = 0;
+    let directExtraCount = 0;
+
     document.querySelectorAll('.perm-switch-input').forEach(sw => {
         const permName = sw.value;
         const isInherited = inheritedPerms.has(permName);
@@ -1617,12 +1954,11 @@ function onPermSwitchChange() {
         const row = document.getElementById(`perm-row-${permName}`);
 
         if (badge) {
-            if (isInherited) {
-                badge.classList.remove('d-none');
-            } else {
-                badge.classList.add('d-none');
-            }
+            badge.classList.toggle('d-none', !isInherited);
         }
+
+        if (isInherited) viaRoleCount++;
+        if (sw.checked && !isInherited) directExtraCount++;
 
         const isActive = sw.checked || isInherited;
         if (isActive) {
@@ -1633,56 +1969,59 @@ function onPermSwitchChange() {
         }
     });
 
-    // Update counters
     const countNumber = document.getElementById('perms-count-number');
     if (countNumber) countNumber.textContent = totalActive;
 
     const mobCounter = document.getElementById('mob-perms-counter');
     if (mobCounter) mobCounter.textContent = totalActive;
+
+    const breakdown = document.getElementById('perms-summary-breakdown');
+    if (breakdown) {
+        breakdown.textContent = `${viaRoleCount} via rôle • ${directExtraCount} directe${directExtraCount > 1 ? 's' : ''}`;
+    }
 }
 
-// 6. INSTANT LIVE SEARCH FOR PERMISSIONS
-function filterPermissionsList(query) {
-    const q = query.toLowerCase().trim();
-    document.querySelectorAll('.perm-item').forEach(item => {
-        const name = item.getAttribute('data-perm-name') || '';
-        const desc = item.getAttribute('data-perm-desc') || '';
-        if (q === '' || name.includes(q) || desc.includes(q)) {
-            item.style.display = 'flex';
-        } else {
-            item.style.display = 'none';
-        }
-    });
+// 6. INSTANT LIVE SEARCH & DOMAIN FILTER FOR PERMISSIONS
+function applyPermissionFilters() {
+    const q = (document.getElementById('perm-search-box')?.value || '').toLowerCase().trim();
+    let totalVisible = 0;
 
-    // Hide module headers if all items are hidden
     document.querySelectorAll('.perm-module-section').forEach(sec => {
-        const visible = sec.querySelectorAll('.perm-item[style*="display: flex"]');
-        if (q !== '' && visible.length === 0) {
-            sec.style.display = 'none';
-        } else {
-            sec.style.display = 'block';
-        }
+        const domainKey = sec.getAttribute('data-domain-key');
+        const matchesDomain = (activePermDomain === 'all' || domainKey === activePermDomain);
+        let sectionVisible = 0;
+
+        sec.querySelectorAll('.perm-item').forEach(item => {
+            const name = item.getAttribute('data-perm-name') || '';
+            const desc = item.getAttribute('data-perm-desc') || '';
+            const show = matchesDomain && (q === '' || name.includes(q) || desc.includes(q));
+            item.classList.toggle('d-none', !show);
+            if (show) {
+                sectionVisible++;
+                totalVisible++;
+            }
+        });
+
+        sec.classList.toggle('d-none', !matchesDomain || sectionVisible === 0);
     });
+
+    const emptyBox = document.getElementById('perms-empty-search');
+    if (emptyBox) {
+        emptyBox.classList.toggle('d-none', totalVisible > 0);
+    }
 }
 
-// 7. FILTER PERMISSIONS BY DOMAIN PILLS
+function filterPermissionsList() {
+    applyPermissionFilters();
+}
+
 function filterByDomain(domainKey, clickedPill) {
+    activePermDomain = domainKey || 'all';
     document.querySelectorAll('.domain-pill').forEach(p => p.classList.remove('active'));
     if (clickedPill) clickedPill.classList.add('active');
 
-    document.querySelectorAll('.perm-module-section').forEach(sec => {
-        if (domainKey === 'all' || sec.getAttribute('data-domain-key') === domainKey) {
-            sec.style.display = 'block';
-        } else {
-            sec.style.display = 'none';
-        }
-    });
+    applyPermissionFilters();
 
-    // Reset search box when selecting a domain
-    document.getElementById('perm-search-box').value = '';
-    document.querySelectorAll('.perm-item').forEach(i => i.style.display = 'flex');
-
-    // Scroll to top of perms container
     const scrollArea = document.getElementById('perms-scroll-area');
     if (scrollArea) scrollArea.scrollTop = 0;
 }
@@ -1705,7 +2044,7 @@ function toggleAllPerms(state) {
 }
 
 // 8. PASSWORD GENERATOR & STRENGTH EVALUATOR
-function generateStrongPassword(targetInputId) {
+function generateStrongPassword(targetInputId, copyToClip = true) {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789#@!%*?";
     let pwd = "Wina-";
     for (let i = 0; i < 9; i++) {
@@ -1714,8 +2053,11 @@ function generateStrongPassword(targetInputId) {
     const input = document.getElementById(targetInputId);
     if (input) {
         input.value = pwd;
-        checkPasswordStrength(pwd);
-        copyToClipboard(targetInputId, 'pwd-copied-toast');
+        if (targetInputId === 'user_password') checkPasswordStrength(pwd);
+        if (copyToClip) {
+            const toastId = targetInputId === 'modal_new_password' ? 'pwd-reset-copied-toast' : 'pwd-copied-toast';
+            copyToClipboard(targetInputId, toastId);
+        }
     }
 }
 
@@ -1764,7 +2106,7 @@ function copyToClipboard(inputId, toastId) {
     if (!input || !input.value) return;
 
     if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(input.value);
+        navigator.clipboard.writeText(input.value).catch(() => {});
     } else {
         input.select();
         document.execCommand('copy');
@@ -1778,60 +2120,199 @@ function copyToClipboard(inputId, toastId) {
 }
 
 // 9. TOGGLE STATUS (AJAX)
-function toggleUserStatus(userId, userName, triggerSwitch = null) {
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
-    fetch(`/users/${userId}/toggle-status`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
-        }
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            const mobDot = document.getElementById(`mob-dot-${userId}`);
-            if (mobDot) mobDot.className = `status-dot ${data.status}`;
-            
-            const deskDot = document.getElementById(`desk-dot-${userId}`);
-            if (deskDot) deskDot.className = `status-dot ${data.status}`;
-            
-            const mobLabel = document.getElementById(`mob-status-label-${userId}`);
-            if (mobLabel) mobLabel.textContent = data.status === 'active' ? 'Actif' : 'Inactif';
-            
-            const deskCol = document.getElementById(`desk-status-col-${userId}`);
-            if (deskCol) deskCol.innerHTML = data.badge;
-            
-            const deskBtn = document.getElementById(`desk-btn-toggle-${userId}`);
-            if (deskBtn) {
-                deskBtn.innerHTML = data.status === 'active' 
-                    ? '<i class="fas fa-toggle-on text-success fa-lg"></i>' 
-                    : '<i class="fas fa-toggle-off text-muted fa-lg"></i>';
+async function toggleUserStatus(userId, userName, triggerSwitch = null) {
+    try {
+        const res = await fetch(`/users/${userId}/toggle-status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken()
             }
-        } else {
-            alert(data.message || 'Action impossible');
+        });
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok || !data.success) {
             if (triggerSwitch) triggerSwitch.checked = !triggerSwitch.checked;
+            showErrorAlert('Action impossible', data.message || `Erreur (${res.status})`);
+            return;
         }
-    })
-    .catch(err => {
-        alert('Erreur réseau : ' + err.message);
+
+        const isActive = data.status === 'active';
+        const mobDot = document.getElementById(`mob-dot-${userId}`);
+        if (mobDot) mobDot.className = `status-dot ${data.status}`;
+
+        const deskDot = document.getElementById(`desk-dot-${userId}`);
+        if (deskDot) deskDot.className = `status-dot ${data.status}`;
+
+        const mobSwitch = document.getElementById(`switch-mob-${userId}`);
+        if (mobSwitch && mobSwitch !== triggerSwitch) mobSwitch.checked = isActive;
+
+        const mobLabel = document.getElementById(`mob-status-label-${userId}`);
+        if (mobLabel) mobLabel.textContent = isActive ? 'Actif' : 'Inactif';
+
+        const deskCol = document.getElementById(`desk-status-col-${userId}`);
+        if (deskCol) deskCol.innerHTML = data.badge;
+
+        const deskBtn = document.getElementById(`desk-btn-toggle-${userId}`);
+        if (deskBtn) {
+            deskBtn.innerHTML = isActive
+                ? '<i class="fas fa-toggle-on text-success fa-lg"></i>'
+                : '<i class="fas fa-toggle-off text-muted fa-lg"></i>';
+        }
+
+        showToast('success', `${userName} est maintenant ${isActive ? 'actif' : 'inactif'}.`);
+    } catch (err) {
         if (triggerSwitch) triggerSwitch.checked = !triggerSwitch.checked;
-    });
+        showErrorAlert('Erreur réseau', err.message);
+    }
 }
 
 // 10. OPEN PASSWORD RESET MODAL
 function openPasswordModal(userId, userName, userEmail) {
+    clearModalErrors('pwdModalErrors');
     document.getElementById('pwd_modal_name').textContent = userName;
     document.getElementById('pwd_modal_email').textContent = userEmail;
     document.getElementById('passwordForm').action = `/users/${userId}/reset-password`;
     document.getElementById('modal_new_password').value = '';
     document.getElementById('pwd-reset-copied-toast').style.display = 'none';
 
-    generateStrongPassword('modal_new_password');
+    generateStrongPassword('modal_new_password', false);
 
-    if (bsPwdModal) bsPwdModal.show();
+    getPwdModal()?.show();
+}
+
+// 11. BULK SELECTION & ACTIONS
+function getSelectedUserIds() {
+    const ids = new Set();
+    document.querySelectorAll('.user-select-cb:checked').forEach(cb => {
+        const val = Number(cb.value);
+        if (val > 0) ids.add(val);
+    });
+    return Array.from(ids);
+}
+
+function updateBulkBar() {
+    const ids = getSelectedUserIds();
+    const bar = document.getElementById('usersBulkBar');
+    const countEl = document.getElementById('usersBulkCount');
+    if (!bar || !countEl) return;
+
+    countEl.textContent = ids.length;
+    bar.classList.toggle('d-none', ids.length === 0);
+    bar.classList.toggle('d-flex', ids.length > 0);
+
+    const allMaster = document.getElementById('selectAllUsers');
+    if (allMaster) {
+        const totalUnique = new Set(Array.from(document.querySelectorAll('.user-select-cb')).map(cb => cb.value)).size;
+        allMaster.checked = totalUnique > 0 && ids.length === totalUnique;
+        allMaster.indeterminate = ids.length > 0 && ids.length < totalUnique;
+    }
+}
+
+function onUserSelectChange(cb) {
+    document.querySelectorAll(`.user-select-cb[value="${cb.value}"]`).forEach(other => {
+        other.checked = cb.checked;
+    });
+    updateBulkBar();
+}
+
+function toggleSelectAllUsers(masterCb) {
+    document.querySelectorAll('.user-select-cb').forEach(cb => {
+        cb.checked = masterCb.checked;
+    });
+    updateBulkBar();
+}
+
+function clearUserSelection() {
+    document.querySelectorAll('.user-select-cb').forEach(cb => {
+        cb.checked = false;
+    });
+    const allMaster = document.getElementById('selectAllUsers');
+    if (allMaster) {
+        allMaster.checked = false;
+        allMaster.indeterminate = false;
+    }
+    updateBulkBar();
+}
+
+async function runBulkAction(action) {
+    const userIds = getSelectedUserIds();
+    if (userIds.length === 0) return;
+
+    const payload = { action, user_ids: userIds };
+    if (action === 'assign_role') {
+        const role = document.getElementById('bulkRoleSelect')?.value || '';
+        if (!role) {
+            showErrorAlert('Rôle requis', 'Veuillez sélectionner un rôle à appliquer.');
+            return;
+        }
+        payload.role = role;
+    }
+
+    try {
+        const res = await fetch("{{ route('users.bulk-action') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken()
+            },
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            showErrorAlert('Action groupée refusée', data.message || `Erreur (${res.status})`);
+            return;
+        }
+
+        clearUserSelection();
+        showToast('success', data.message || 'Action groupée effectuée.');
+        refreshUsersView();
+    } catch (err) {
+        showErrorAlert('Erreur réseau', err.message);
+    }
+}
+
+// 12. DELETE USER CONFIRMATION (AJAX)
+async function deleteUserConfirm(userId, userName, destroyUrl) {
+    let confirmed = false;
+    if (typeof Swal !== 'undefined') {
+        const result = await Swal.fire({
+            icon: 'warning',
+            title: 'Supprimer ce compte ?',
+            text: `Le compte "${userName}" sera définitivement supprimé.`,
+            showCancelButton: true,
+            confirmButtonColor: '#dc2626',
+            confirmButtonText: 'Supprimer',
+            cancelButtonText: 'Annuler'
+        });
+        confirmed = result.isConfirmed;
+    } else {
+        confirmed = confirm(`Supprimer définitivement le collaborateur ${userName} ?`);
+    }
+
+    if (!confirmed) return;
+
+    try {
+        const res = await fetch(destroyUrl, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken()
+            }
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            showErrorAlert('Suppression impossible', data.message || `Erreur (${res.status})`);
+            return;
+        }
+
+        showToast('success', data.message || `Compte "${userName}" supprimé.`);
+        refreshUsersView();
+    } catch (err) {
+        showErrorAlert('Erreur réseau', err.message);
+    }
 }
 </script>
 @endpush

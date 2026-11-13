@@ -15,7 +15,7 @@ class StoreController extends Controller
     /**
      * Display listing of stores, warehouses, and storage locations with financial & stock intelligence.
      */
-    public function index()
+    public function index(Request $request)
     {
         $stores = Store::withCount('productStocks')
             ->orderBy('sort_order')
@@ -70,6 +70,20 @@ class StoreController extends Controller
         $totalStockCostValuation = (float) $stores->sum('cost_valuation');
         $totalStockRetailValuation = (float) $stores->sum('retail_valuation');
 
+        $type = $request->get('type');
+        $search = trim((string) $request->get('search', ''));
+        if (in_array($type, ['store', 'warehouse', 'showroom', 'workshop'])) {
+            $stores = $stores->where('type', $type)->values();
+        }
+        if ($search !== '') {
+            $needle = mb_strtolower($search);
+            $stores = $stores->filter(function ($s) use ($needle) {
+                return str_contains(mb_strtolower((string) $s->name), $needle)
+                    || str_contains(mb_strtolower((string) $s->code), $needle)
+                    || str_contains(mb_strtolower((string) $s->city), $needle);
+            })->values();
+        }
+
         return view('stores.index', compact(
             'stores',
             'totalStores',
@@ -77,7 +91,9 @@ class StoreController extends Controller
             'totalActive',
             'totalStockUnits',
             'totalStockCostValuation',
-            'totalStockRetailValuation'
+            'totalStockRetailValuation',
+            'type',
+            'search'
         ));
     }
 
@@ -219,6 +235,12 @@ class StoreController extends Controller
             'min_quantity'  => ['nullable', 'integer', 'min:0'],
         ]);
 
+        $existingStock = ProductStock::where('product_id', $validated['product_id'])
+            ->where('store_id', $validated['store_id'])
+            ->first();
+        $stockBefore = (int) ($existingStock->quantity ?? 0);
+        $stockAfter = (int) $validated['quantity'];
+
         $productStock = ProductStock::updateOrCreate(
             [
                 'product_id' => $validated['product_id'],
@@ -226,7 +248,7 @@ class StoreController extends Controller
             ],
             [
                 'location_code' => $validated['location_code'],
-                'quantity'      => $validated['quantity'],
+                'quantity'      => $stockAfter,
                 'min_quantity'  => $validated['min_quantity'] ?? 2,
             ]
         );
@@ -236,6 +258,20 @@ class StoreController extends Controller
         if ($product) {
             $totalStock = ProductStock::where('product_id', $product->id)->sum('quantity');
             $product->update(['stock' => $totalStock, 'stock_quantity' => $totalStock]);
+
+            if ($stockBefore !== $stockAfter && auth()->check()) {
+                InventoryMovement::create([
+                    'product_id'       => $product->id,
+                    'type'             => 'adjustment',
+                    'quantity'         => abs($stockAfter - $stockBefore),
+                    'stock_before'     => $stockBefore,
+                    'stock_after'      => $stockAfter,
+                    'from_location_id' => $stockAfter < $stockBefore ? $validated['store_id'] : null,
+                    'to_location_id'   => $stockAfter >= $stockBefore ? $validated['store_id'] : null,
+                    'reason'           => 'Mise à jour stock & rayon' . ($validated['location_code'] ? " ({$validated['location_code']})" : ''),
+                    'created_by'       => auth()->id(),
+                ]);
+            }
         }
 
         return back()->with('success', "Emplacement et stock mis à jour pour le produit.");
@@ -270,6 +306,8 @@ class StoreController extends Controller
         }
 
         DB::transaction(function () use ($product, $fromStore, $toStore, $fromStock, $qty, $validated) {
+            $stockBefore = (int) $fromStock->quantity;
+
             // Deduct from source
             $fromStock->decrement('quantity', $qty);
 
@@ -288,8 +326,8 @@ class StoreController extends Controller
                 'product_id'       => $product->id,
                 'type'             => 'transfer',
                 'quantity'         => $qty,
-                'stock_before'     => $fromStock->quantity + $qty,
-                'stock_after'      => $fromStock->quantity,
+                'stock_before'     => $stockBefore,
+                'stock_after'      => $stockBefore - $qty,
                 'from_location_id' => $fromStore->id,
                 'to_location_id'   => $toStore->id,
                 'reason'           => "Transfert de {$fromStore->name} vers {$toStore->name}. " . ($validated['reason'] ?? ''),

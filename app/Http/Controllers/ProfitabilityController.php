@@ -30,13 +30,77 @@ class ProfitabilityController extends Controller
         [$startDate, $endDate] = $this->resolveDateRange($period, $request->get('start_date'), $request->get('end_date'));
 
         $sortBy = $request->get('sort', 'profit_desc');
+        $search = trim((string) $request->get('search', ''));
+        $marginFilter = $request->get('margin_filter', 'all');
+        $storeId = $request->filled('store_id') ? (int) $request->get('store_id') : null;
+        $perPage = in_array((int) $request->get('per_page', 25), [15, 25, 50, 100], true) ? (int) $request->get('per_page', 25) : 25;
+        $currentPage = max(1, (int) $request->get('page', 1));
 
-        $overall = $this->profitabilityService->getOverallBenefits($startDate, $endDate);
-        $productBenefits = $this->profitabilityService->getProductBenefits($startDate, $endDate, 50, $sortBy);
-        $brandBenefits = $this->profitabilityService->getBrandBenefits($startDate, $endDate);
-        $categoryBenefits = $this->profitabilityService->getCategoryBenefits($startDate, $endDate);
-        $expenseBenefits = $this->profitabilityService->getExpenseBreakdown($startDate, $endDate);
-        $trends = $this->profitabilityService->getTimelineTrends($startDate, $endDate);
+        $overall = $this->profitabilityService->getOverallBenefits($startDate, $endDate, $storeId);
+        $productBenefits = $this->profitabilityService->getProductBenefits(
+            $startDate,
+            $endDate,
+            0,
+            $sortBy,
+            $storeId,
+            $search !== '' ? $search : null,
+            $marginFilter !== 'all' ? $marginFilter : null
+        );
+
+        $totalProductsCount = $productBenefits->count();
+        $lastPage = max(1, (int) ceil($totalProductsCount / $perPage));
+        $currentPage = min($currentPage, $lastPage);
+        $pagedProducts = new \Illuminate\Pagination\LengthAwarePaginator(
+            $productBenefits->slice(($currentPage - 1) * $perPage, $perPage)->values(),
+            $totalProductsCount,
+            $perPage,
+            $currentPage,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        $productDataset = $productBenefits->map(function ($item) {
+            $imgSrc = '';
+            if (!empty($item->product_image)) {
+                $imgSrc = \Illuminate\Support\Str::startsWith($item->product_image, ['http://', 'https://', 'images/', '/'])
+                    ? asset(ltrim($item->product_image, '/'))
+                    : asset('storage/' . $item->product_image);
+            }
+            $isSold = (bool) ($item->is_sold ?? ($item->quantity_sold > 0));
+            $isNeg = $item->has_cost && ($isSold ? $item->net_profit < 0 : $item->unit_margin < 0);
+            $isLow = $item->has_cost && !$isNeg && $item->margin_percentage < 15;
+
+            return [
+                'id' => (int) $item->product_id,
+                'n' => (string) ($item->product_name ?? ''),
+                'sk' => (string) ($item->product_sku ?? ''),
+                'br' => (string) ($item->brand_name ?? ''),
+                'ct' => (string) ($item->category_name ?? ''),
+                'im' => $imgSrc,
+                'st' => (int) ($item->catalog_stock ?? 0),
+                'q' => (int) $item->quantity_sold,
+                'p' => round((float) $item->avg_selling_price, 2),
+                'cp' => round((float) $item->cost_price, 2),
+                'r' => round((float) $item->total_revenue, 2),
+                'tc' => round((float) $item->total_cost, 2),
+                'np' => round((float) $item->net_profit, 2),
+                'um' => round((float) ($item->unit_margin ?? 0), 2),
+                'm' => (float) $item->margin_percentage,
+                'sh' => (float) ($item->profit_share ?? 0),
+                'so' => $isSold ? 1 : 0,
+                'hc' => $item->has_cost ? 1 : 0,
+                'ng' => $isNeg ? 1 : 0,
+                'lw' => $isLow ? 1 : 0,
+                'hl' => ($item->has_cost && !$isNeg && !$isLow) ? 1 : 0,
+            ];
+        })->values();
+
+        $brandBenefits = $this->profitabilityService->getBrandBenefits($startDate, $endDate, $storeId);
+        $categoryBenefits = $this->profitabilityService->getCategoryBenefits($startDate, $endDate, $storeId);
+        $expenseBenefits = $this->profitabilityService->getExpenseBreakdown($startDate, $endDate, $storeId);
+        $trends = $this->profitabilityService->getTimelineTrends($startDate, $endDate, $storeId);
+        $storeOverview = $this->profitabilityService->getStoreOverview($startDate, $endDate);
+        $stores = \App\Models\Store::where('is_active', true)->orderBy('sort_order')->orderBy('name')->get();
+        $selectedStore = $storeId ? $stores->firstWhere('id', $storeId) : null;
 
         // Missing cost warnings
         $missingCostCount = Product::where('cost_price', '<=', 0)->orWhereNull('cost_price')->count();
@@ -44,14 +108,25 @@ class ProfitabilityController extends Controller
         return view('reports.profitability', compact(
             'overall',
             'productBenefits',
+            'pagedProducts',
+            'productDataset',
+            'perPage',
+            'currentPage',
+            'lastPage',
             'brandBenefits',
             'categoryBenefits',
             'expenseBenefits',
             'trends',
+            'storeOverview',
+            'stores',
+            'selectedStore',
+            'storeId',
             'period',
             'startDate',
             'endDate',
             'sortBy',
+            'search',
+            'marginFilter',
             'missingCostCount'
         ));
     }
@@ -249,8 +324,20 @@ class ProfitabilityController extends Controller
 
         $period = $request->get('period', 'month');
         [$startDate, $endDate] = $this->resolveDateRange($period, $request->get('start_date'), $request->get('end_date'));
+        $sortBy = $request->get('sort', 'profit_desc');
+        $storeId = $request->filled('store_id') ? (int) $request->get('store_id') : null;
+        $search = trim((string) $request->get('search', ''));
+        $marginFilter = $request->get('margin_filter', 'all');
 
-        $productBenefits = $this->profitabilityService->getProductBenefits($startDate, $endDate, 500, 'profit_desc');
+        $productBenefits = $this->profitabilityService->getProductBenefits(
+            $startDate,
+            $endDate,
+            0,
+            $sortBy,
+            $storeId,
+            $search !== '' ? $search : null,
+            $marginFilter !== 'all' ? $marginFilter : null
+        );
 
         $filename = 'benefices_marges_' . $startDate->format('Y-m-d') . '_au_' . $endDate->format('Y-m-d') . '.csv';
 

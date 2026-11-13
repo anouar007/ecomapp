@@ -115,12 +115,11 @@ class ViewsAnalyticsController extends Controller
             ->groupBy('product_id')
             ->having('views_in_period', '>=', 1)
             ->whereHas('product', function ($q) {
-                $q->where(function ($sub) {
-                    $sub->where('stock', '<=', 0)
-                        ->orWhere(function ($s2) {
-                            $s2->where('track_inventory', true)->where('stock_quantity', '<=', 0);
-                        });
-                });
+                $q->where('stock', '<=', 0)
+                    ->where(function ($sub) {
+                        $sub->where('track_inventory', true)
+                            ->orWhere('stock_quantity', '<=', 0);
+                    });
             })
             ->with(['product' => function ($q) {
                 $q->with('primaryImage', 'productCategory');
@@ -135,7 +134,8 @@ class ViewsAnalyticsController extends Controller
         // 8. 100% Accurate Real-time active clients & visitors
         $onlineStats = RealtimePresence::getLiveStats();
 
-        // Save traffic peak snapshot continuously
+        // Sync historical range & record live concurrent snapshot
+        SiteTrafficPeak::syncDateRange($startDateStr, $endDateStr);
         SiteTrafficPeak::recordCurrentTraffic($onlineStats['total_online']);
 
         // 9. Top Records / Traffic Peaks (Day, Week, Month, Year) filtered by date
@@ -575,20 +575,84 @@ class ViewsAnalyticsController extends Controller
         $onlineStats = RealtimePresence::getLiveStats();
 
         $staffRoles = ['Admin', 'Manager', 'Staff'];
-        $totalRegisteredClients = \App\Models\User::whereDoesntHave('roles', function($q) use ($staffRoles) {
+        $totalRegisteredClients = \App\Models\User::whereDoesntHave('roles', function ($q) use ($staffRoles) {
             $q->whereIn('name', $staffRoles);
         })->count();
 
         // Record traffic peak snapshot continuously in real-time
-        SiteTrafficPeak::recordCurrentTraffic($onlineStats['total_online']);
+        $todayEntry = SiteTrafficPeak::recordCurrentTraffic($onlineStats['total_online']);
+        $allTimePeak = SiteTrafficPeak::orderByDesc('peak_concurrent_users')
+            ->orderByDesc('unique_visitors')
+            ->first();
 
         return response()->json([
             'online_clients' => $onlineStats['total_online'],
             'online_auth_clients' => $onlineStats['auth_online'],
             'online_guests' => $onlineStats['guest_online'],
             'total_registered_clients' => $totalRegisteredClients ?: \App\Models\User::count(),
+            'today_peak' => (int) ($todayEntry->peak_concurrent_users ?? 0),
+            'today_peak_time' => $todayEntry->peak_time ? Carbon::parse($todayEntry->peak_time)->format('H:i') : null,
+            'all_time_record' => (int) ($allTimePeak->peak_concurrent_users ?? 0),
+            'all_time_date' => $allTimePeak && $allTimePeak->record_date ? Carbon::parse($allTimePeak->record_date)->translatedFormat('d M Y') : null,
+            'all_time_time' => $allTimePeak && $allTimePeak->peak_time ? Carbon::parse($allTimePeak->peak_time)->format('H:i') : null,
             'updated_at' => now()->format('H:i:s'),
         ]);
+    }
+
+    /**
+     * Count deduplicated unique visitors (by IP) across all telemetry tables for an exact date window.
+     */
+    protected function countDistinctVisitorsForPeriod(string $start, string $end): int
+    {
+        try {
+            $row = DB::selectOne("
+                SELECT COUNT(DISTINCT ip_address) as unique_ips
+                FROM (
+                    SELECT ip_address FROM product_views WHERE viewed_date BETWEEN ? AND ? AND ip_address IS NOT NULL
+                    UNION ALL
+                    SELECT ip_address FROM category_views WHERE viewed_date BETWEEN ? AND ? AND ip_address IS NOT NULL
+                    UNION ALL
+                    SELECT ip_address FROM search_logs WHERE searched_date BETWEEN ? AND ? AND ip_address IS NOT NULL
+                ) as period_union
+            ", [$start, $end, $start, $end, $start, $end]);
+
+            return (int) ($row->unique_ips ?? 0);
+        } catch (\Throwable $e) {
+            return 0;
+        }
+    }
+
+    /**
+     * Summarize a grouped collection of daily SiteTrafficPeak rows with deduplicated unique visitors.
+     */
+    protected function summarizePeakGroup($rows): array
+    {
+        $sorted = $rows->sort(function ($a, $b) {
+            return [(int) $b->peak_concurrent_users, (int) $b->unique_visitors, (int) $b->total_views]
+                <=> [(int) $a->peak_concurrent_users, (int) $a->unique_visitors, (int) $a->total_views];
+        });
+
+        $peakDay = $sorted->first();
+        $dates = $rows->map(fn ($r) => $r->record_date instanceof Carbon ? $r->record_date->toDateString() : substr((string) $r->record_date, 0, 10))->sort()->values();
+        $rangeStart = $dates->first();
+        $rangeEnd = $dates->last();
+        $dedupUnique = ($rangeStart && $rangeEnd) ? $this->countDistinctVisitorsForPeriod($rangeStart, $rangeEnd) : 0;
+        $maxDailyUnique = (int) $rows->max('unique_visitors');
+        $totalViews = (int) $rows->sum('total_views');
+        $daysCount = max(1, $rows->count());
+
+        return [
+            'concurrent' => (int) ($peakDay?->peak_concurrent_users ?? 0),
+            'unique_users' => max($dedupUnique, $maxDailyUnique),
+            'total_views' => $totalViews,
+            'avg_daily_views' => (int) round($totalViews / $daysCount),
+            'days_count' => $daysCount,
+            'range_start' => $rangeStart,
+            'range_end' => $rangeEnd,
+            'peak_day_label' => $peakDay && $peakDay->record_date
+                ? Carbon::parse($peakDay->record_date)->translatedFormat('d M')
+                : null,
+        ];
     }
 
     /**
@@ -596,71 +660,84 @@ class ViewsAnalyticsController extends Controller
      */
     protected function getTrafficPeakRecords(string $startDateStr, string $endDateStr): array
     {
-        $query = SiteTrafficPeak::whereBetween('record_date', [$startDateStr, $endDateStr]);
+        $rows = SiteTrafficPeak::whereBetween('record_date', [$startDateStr, $endDateStr])
+            ->orderBy('record_date')
+            ->get();
 
         // 1. Top Day
-        $topDay = (clone $query)->orderByDesc('peak_concurrent_users')
-            ->orderByDesc('unique_visitors')
-            ->first();
+        $topDay = $rows->sort(function ($a, $b) {
+            return [(int) $b->peak_concurrent_users, (int) $b->unique_visitors, (int) $b->total_views]
+                <=> [(int) $a->peak_concurrent_users, (int) $a->unique_visitors, (int) $a->total_views];
+        })->first();
 
-        // 2. Top Week
-        $topWeek = (clone $query)->selectRaw('year, week, MAX(peak_concurrent_users) as max_concurrent, SUM(unique_visitors) as total_unique, SUM(total_views) as total_hits, MIN(record_date) as week_start, MAX(record_date) as week_end')
-            ->groupBy('year', 'week')
-            ->orderByDesc('max_concurrent')
-            ->orderByDesc('total_unique')
-            ->first();
+        // 2. Top ISO Week
+        $topWeekData = $rows->groupBy(function ($item) {
+            $dt = Carbon::parse($item->record_date);
+            return $dt->format('o-W');
+        })->map(function ($group, $isoKey) {
+            $summary = $this->summarizePeakGroup($group);
+            [$isoYear, $isoWeek] = explode('-', $isoKey);
+            $summary['week_num'] = (int) $isoWeek;
+            $summary['year'] = (int) $isoYear;
+            $summary['label'] = 'Semaine ' . (int) $isoWeek . ' (' . $isoYear . ')';
+            $summary['range'] = Carbon::parse($summary['range_start'])->format('d/m') . ' - ' . Carbon::parse($summary['range_end'])->format('d/m');
+            return $summary;
+        })->sort(function ($a, $b) {
+            return [$b['concurrent'], $b['unique_users'], $b['total_views']]
+                <=> [$a['concurrent'], $a['unique_users'], $a['total_views']];
+        })->first();
 
         // 3. Top Month
-        $topMonth = (clone $query)->selectRaw('year, month, MAX(peak_concurrent_users) as max_concurrent, SUM(unique_visitors) as total_unique, SUM(total_views) as total_hits')
-            ->groupBy('year', 'month')
-            ->orderByDesc('max_concurrent')
-            ->orderByDesc('total_unique')
-            ->first();
+        $topMonthData = $rows->groupBy(function ($item) {
+            return Carbon::parse($item->record_date)->format('Y-m');
+        })->map(function ($group, $ym) {
+            $summary = $this->summarizePeakGroup($group);
+            [$year, $month] = explode('-', $ym);
+            $summary['month_num'] = (int) $month;
+            $summary['year'] = (int) $year;
+            $summary['label'] = Carbon::createFromDate((int) $year, (int) $month, 1)->translatedFormat('F Y');
+            return $summary;
+        })->sort(function ($a, $b) {
+            return [$b['concurrent'], $b['unique_users'], $b['total_views']]
+                <=> [$a['concurrent'], $a['unique_users'], $a['total_views']];
+        })->first();
 
         // 4. Top Year
-        $topYear = (clone $query)->selectRaw('year, MAX(peak_concurrent_users) as max_concurrent, SUM(unique_visitors) as total_unique, SUM(total_views) as total_hits')
-            ->groupBy('year')
-            ->orderByDesc('max_concurrent')
-            ->orderByDesc('total_unique')
-            ->first();
+        $topYearData = $rows->groupBy(function ($item) {
+            return Carbon::parse($item->record_date)->format('Y');
+        })->map(function ($group, $year) {
+            $summary = $this->summarizePeakGroup($group);
+            $summary['year'] = (int) $year;
+            $summary['label'] = 'Année ' . $year;
+            return $summary;
+        })->sort(function ($a, $b) {
+            return [$b['concurrent'], $b['unique_users'], $b['total_views']]
+                <=> [$a['concurrent'], $a['unique_users'], $a['total_views']];
+        })->first();
 
-        // All-Time Records (for comparison badge)
-        $allTimePeak = SiteTrafficPeak::orderByDesc('peak_concurrent_users')->first();
+        // All-Time & Today Records
+        $allTimePeak = SiteTrafficPeak::orderByDesc('peak_concurrent_users')
+            ->orderByDesc('unique_visitors')
+            ->first();
+        $todayPeak = SiteTrafficPeak::where('record_date', now()->toDateString())->first();
 
         return [
             'top_day' => $topDay ? [
-                'concurrent' => $topDay->peak_concurrent_users,
-                'unique_users' => $topDay->unique_visitors,
-                'total_views' => $topDay->total_views,
+                'concurrent' => (int) $topDay->peak_concurrent_users,
+                'unique_users' => (int) $topDay->unique_visitors,
+                'total_views' => (int) $topDay->total_views,
                 'date' => $topDay->record_date ? Carbon::parse($topDay->record_date)->translatedFormat('d F Y') : '-',
                 'raw_date' => $topDay->record_date ? Carbon::parse($topDay->record_date)->format('Y-m-d') : null,
                 'time' => $topDay->peak_time ? Carbon::parse($topDay->peak_time)->format('H:i') : null,
             ] : null,
-            'top_week' => $topWeek ? [
-                'concurrent' => (int)$topWeek->max_concurrent,
-                'unique_users' => (int)$topWeek->total_unique,
-                'total_views' => (int)$topWeek->total_hits,
-                'week_num' => $topWeek->week,
-                'year' => $topWeek->year,
-                'label' => 'Semaine ' . $topWeek->week . ' (' . $topWeek->year . ')',
-                'range' => Carbon::parse($topWeek->week_start)->format('d/m') . ' - ' . Carbon::parse($topWeek->week_end)->format('d/m'),
-            ] : null,
-            'top_month' => $topMonth ? [
-                'concurrent' => (int)$topMonth->max_concurrent,
-                'unique_users' => (int)$topMonth->total_unique,
-                'total_views' => (int)$topMonth->total_hits,
-                'month_num' => $topMonth->month,
-                'year' => $topMonth->year,
-                'label' => Carbon::createFromDate($topMonth->year, $topMonth->month, 1)->translatedFormat('F Y'),
-            ] : null,
-            'top_year' => $topYear ? [
-                'concurrent' => (int)$topYear->max_concurrent,
-                'unique_users' => (int)$topYear->total_unique,
-                'total_views' => (int)$topYear->total_hits,
-                'year' => $topYear->year,
-                'label' => 'Année ' . $topYear->year,
-            ] : null,
-            'all_time_record' => $allTimePeak ? (int)$allTimePeak->peak_concurrent_users : 0,
+            'top_week' => $topWeekData,
+            'top_month' => $topMonthData,
+            'top_year' => $topYearData,
+            'today_peak' => $todayPeak ? (int) $todayPeak->peak_concurrent_users : 0,
+            'today_peak_time' => $todayPeak && $todayPeak->peak_time ? Carbon::parse($todayPeak->peak_time)->format('H:i') : null,
+            'all_time_record' => $allTimePeak ? (int) $allTimePeak->peak_concurrent_users : 0,
+            'all_time_date' => $allTimePeak && $allTimePeak->record_date ? Carbon::parse($allTimePeak->record_date)->translatedFormat('d M Y') : null,
+            'all_time_time' => $allTimePeak && $allTimePeak->peak_time ? Carbon::parse($allTimePeak->peak_time)->format('H:i') : null,
         ];
     }
 }

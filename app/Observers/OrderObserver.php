@@ -23,8 +23,10 @@ class OrderObserver
     {
         // Handle logic when status changes to 'cancelled'
         if ($order->isDirty('status') && $order->status === 'cancelled') {
-            $this->restoreStock($order);
-            
+            if ($order->stock_deducted) {
+                $order->restoreStock(null, "Annulation commande #{$order->order_number}");
+            }
+
             if ($order->invoice) {
                 $order->invoice->update(['status' => 'cancelled']);
             }
@@ -32,25 +34,12 @@ class OrderObserver
     }
 
     /**
-     * Handle the Order "deleted" event.
+     * Handle the Order "deleting" event (runs before cascade deletes order_items).
      */
-    public function deleted(Order $order): void
+    public function deleting(Order $order): void
     {
-        // Restore stock if a non-cancelled order is deleted
-        if ($order->status !== 'cancelled') {
-            $this->restoreStock($order);
-        }
-    }
-
-    /**
-     * Restore stock for order items.
-     */
-    protected function restoreStock(Order $order)
-    {
-        foreach ($order->items as $item) {
-            if ($item->product) {
-                $item->product->increment('stock', $item->quantity);
-            }
+        if ($order->status !== 'cancelled' && $order->stock_deducted) {
+            $order->restoreStock(null, "Suppression commande #{$order->order_number}");
         }
     }
 }

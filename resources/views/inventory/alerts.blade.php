@@ -32,6 +32,8 @@
         </div>
     </div>
 
+    @include('partials.subnav.inventory')
+
     @if(session('success'))
         <div class="alert alert-success d-flex align-items-center gap-2 rounded-3 shadow-sm mb-3">
             <i class="fas fa-check-circle"></i> <span>{{ session('success') }}</span>
@@ -126,7 +128,7 @@
                 </div>
 
                 @php
-                    $activeFilterKeys = ['status', 'alert_type', 'type'];
+                    $activeFilterKeys = ['status', 'alert_type', 'type', 'store_id'];
                     $hasActiveFilters = collect($activeFilterKeys)->some(fn($k) => request()->filled($k));
                     $activeFilterCount = collect($activeFilterKeys)->filter(fn($k) => request()->filled($k))->count();
                 @endphp
@@ -163,8 +165,23 @@
             <!-- Filtres Avancés : Collapsible sur Mobile (d-md-none), Grid intégrée sur Desktop (d-none d-md-block) -->
             <div class="collapse d-md-block mt-2.5" id="alertFiltersCollapse">
                 <div class="row g-2 pt-2 border-top">
+                    @if(isset($stores) && $stores->isNotEmpty())
+                    <!-- Magasin / Dépôt -->
+                    <div class="col-6 col-md-4">
+                        <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.04em;">Magasin / Dépôt</label>
+                        <select name="store_id" class="form-select form-select-sm" onchange="document.getElementById('alertFilterForm').submit()">
+                            <option value="">Tous les dépôts</option>
+                            @foreach($stores as $st)
+                                <option value="{{ $st->id }}" {{ request('store_id') == $st->id ? 'selected' : '' }}>
+                                    {{ $st->name }} ({{ $st->code }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endif
+
                     <!-- Statut -->
-                    <div class="col-6 col-md-6">
+                    <div class="col-6 col-md-4">
                         <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.04em;">Statut de traitement</label>
                         <select name="status" class="form-select form-select-sm" onchange="document.getElementById('alertFilterForm').submit()">
                             <option value="">Toutes les alertes</option>
@@ -174,7 +191,7 @@
                     </div>
 
                     <!-- Type d'Alerte -->
-                    <div class="col-6 col-md-6">
+                    <div class="col-6 col-md-4">
                         <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.04em;">Type d'alerte</label>
                         <select name="alert_type" class="form-select form-select-sm" onchange="document.getElementById('alertFilterForm').submit()">
                             <option value="">Tous les types</option>
@@ -263,6 +280,15 @@
                                         <span class="badge bg-light text-secondary border font-monospace mt-0.5" style="font-size: 0.65rem;">
                                             {{ $alert->product->sku ?? 'SANS-SKU' }}
                                         </span>
+                                        @if($alert->product->storeStocks && $alert->product->storeStocks->isNotEmpty())
+                                        <div class="d-flex flex-wrap gap-1 mt-1">
+                                            @foreach($alert->product->storeStocks as $ss)
+                                                <span class="badge {{ $ss->quantity <= 0 ? 'bg-light text-muted border' : 'bg-info-subtle text-info border border-info-subtle' }}" style="font-size: 0.62rem;">
+                                                    {{ $ss->store->name ?? ('Site #' . $ss->store_id) }}: {{ $ss->quantity }}
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                        @endif
                                     </div>
                                 </div>
                                 @else

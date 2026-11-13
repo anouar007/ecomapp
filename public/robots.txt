@@ -109,10 +109,15 @@ Disallow: /settings/
 Disallow: /activity-logs/
 Disallow: /analytics/
 Disallow: /reports/
+Allow: /ai-catalog.json
+Allow: /.well-known/ai-catalog.json
+Allow: /google-merchant.xml
+Allow: /opensearch.xml
 
 Sitemap: https://winashop.com/sitemap.xml
 Sitemap: https://winashop.com/google-merchant.xml
 # LLMs-Txt: https://winashop.com/llms.txt
 # LLMs-Full-Txt: https://winashop.com/llms-full.txt
 # AI-Catalog-JSON: https://winashop.com/ai-catalog.json
+# OpenSearch-XML: https://winashop.com/opensearch.xml
 

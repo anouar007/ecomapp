@@ -210,6 +210,7 @@ class CheckoutController extends Controller
                     'coupon_code' => $coupon?->code,
                     'total' => $total,
                     'status' => 'pending',
+                    'stock_deducted' => true,
                     'payment_status' => 'pending',
                     'payment_method' => 'cod',
                 ]);
@@ -238,15 +239,82 @@ class CheckoutController extends Controller
                         'subtotal' => $price * $qty,
                     ]);
 
-                    // Decrement Stock
+                    // Decrement Stock (variant + per-store + global stock & stock_quantity + audit movement)
+                    $usedStoreId = null;
                     if ($variantId) {
                         $variant = \App\Models\ProductVariant::find($variantId);
                         if ($variant) {
-                            $variant->decrement('stock', $qty);
+                            $stockBefore = (int) ($variant->stock ?? 0);
+                            $deductVar = min($stockBefore, $qty);
+                            $variant->stock = max(0, $stockBefore - $deductVar);
+                            $variant->save();
                             $variant->syncParentProductStock();
+                            $actorId = auth()->id() ?? $order->user_id ?? \App\Models\User::value('id');
+                            if ($actorId) {
+                                \App\Models\InventoryMovement::create([
+                                    'product_id' => $variant->product_id,
+                                    'variant_id' => $variant->id,
+                                    'type' => 'out',
+                                    'quantity' => $qty,
+                                    'stock_before' => $stockBefore,
+                                    'stock_after' => (int) $variant->stock,
+                                    'reference_type' => 'order',
+                                    'reference_id' => $order->id,
+                                    'reason' => "Commande en ligne #{$order->order_number}",
+                                    'created_by' => $actorId,
+                                ]);
+                            }
                         }
                     } elseif ($product && $product->track_inventory) {
-                        $product->decrement('stock', $qty);
+                        $stockBefore = (int) ($product->stock ?? 0);
+                        $defaultStoreId = Product::defaultStoreId();
+                        $remaining = $qty;
+                        $storeStocks = \App\Models\ProductStock::where('product_id', $product->id)
+                            ->where('quantity', '>', 0)
+                            ->orderByRaw($defaultStoreId ? "CASE WHEN store_id = {$defaultStoreId} THEN 0 ELSE 1 END" : 'store_id')
+                            ->orderByDesc('quantity')
+                            ->lockForUpdate()
+                            ->get();
+
+                        foreach ($storeStocks as $ss) {
+                            if ($remaining <= 0) {
+                                break;
+                            }
+                            $take = min($remaining, (int) $ss->quantity);
+                            if ($take > 0) {
+                                if ($usedStoreId === null) {
+                                    $usedStoreId = (int) $ss->store_id;
+                                }
+                                $ss->update(['quantity' => (int) $ss->quantity - $take]);
+                                $remaining -= $take;
+                            }
+                        }
+
+                        if ($usedStoreId) {
+                            \App\Models\OrderItem::where('order_id', $order->id)
+                                ->where('product_id', $product->id)
+                                ->whereNull('store_id')
+                                ->orderByDesc('id')
+                                ->limit(1)
+                                ->update(['store_id' => $usedStoreId]);
+                        }
+
+                        $newGlobal = $product->syncStockFromStores(-$qty);
+                        $actorId = auth()->id() ?? $order->user_id ?? \App\Models\User::value('id');
+                        if ($actorId) {
+                            \App\Models\InventoryMovement::create([
+                                'product_id' => $product->id,
+                                'type' => 'out',
+                                'quantity' => $qty,
+                                'stock_before' => $stockBefore,
+                                'stock_after' => $newGlobal,
+                                'from_location_id' => $usedStoreId,
+                                'reference_type' => 'order',
+                                'reference_id' => $order->id,
+                                'reason' => "Commande en ligne #{$order->order_number}",
+                                'created_by' => $actorId,
+                            ]);
+                        }
                     }
                 }
 

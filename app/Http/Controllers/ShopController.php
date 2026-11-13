@@ -107,6 +107,10 @@ class ShopController extends Controller
             \App\Services\ViewTrackingService::trackSearch($search, $products->total(), $request);
         }
 
+        $searchMeta = (is_string($search) && trim($search) !== '' && $products->total() > 0)
+            ? ProductSearchService::getSearchMeta($search)
+            : ['did_you_mean' => null, 'matched_count' => $products->total()];
+
         $viewData = compact(
             'products',
             'categories',
@@ -118,7 +122,8 @@ class ShopController extends Controller
             'randomProducts',
             'smartBrands',
             'activeBrand',
-            'brandSlug'
+            'brandSlug',
+            'searchMeta'
         );
 
         if ($request->ajax() || $request->wantsJson()) {
@@ -132,6 +137,7 @@ class ShopController extends Controller
                     'matching_categories' => $matchingCategories,
                     'brands' => $smartBrands,
                     'active_brand' => $activeBrand ? ['id' => $activeBrand->id, 'name' => $activeBrand->name, 'slug' => $activeBrand->slug] : null,
+                    'did_you_mean' => $searchMeta['did_you_mean'] ?? null,
                 ]);
             }
 

@@ -20,6 +20,7 @@ Route::get('/robots.txt', [\App\Http\Controllers\SitemapController::class, 'robo
 Route::get('/llms.txt', [\App\Http\Controllers\SitemapController::class, 'llmsTxt'])->name('llms.txt');
 Route::get('/.well-known/llms.txt', [\App\Http\Controllers\SitemapController::class, 'llmsTxt']);
 Route::get('/llms-full.txt', [\App\Http\Controllers\SitemapController::class, 'llmsFullTxt'])->name('llms.full.txt');
+Route::get('/opensearch.xml', [\App\Http\Controllers\SitemapController::class, 'openSearchXml'])->name('opensearch.xml');
 Route::get('/indexnow-{key}.txt', [\App\Http\Controllers\SitemapController::class, 'indexNowKey'])->where('key', '[a-zA-Z0-9\-]+')->name('indexnow.key');
 Route::get('/{key}.txt', [\App\Http\Controllers\SitemapController::class, 'indexNowKey'])->where('key', '[a-f0-9]{32}')->name('indexnow.root.key');
 Route::get('/media/proxy', [\App\Http\Controllers\DiagramMediaController::class, 'proxy'])->name('media.proxy');

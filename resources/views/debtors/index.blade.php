@@ -178,25 +178,7 @@
 </div>
 
 <!-- Navigation Croisée ERP (Créances <-> Règlements Clients <-> Fiches Clients) -->
-<div class="subnav-pills-bar">
-    <a href="{{ route('debtors.index') }}" class="subnav-pill active">
-        <i class="fas fa-hand-holding-dollar text-danger"></i>
-        <span>Créances & Débiteurs</span>
-        <span class="subnav-pill-badge">{{ $stats['total_debtors'] }}</span>
-    </a>
-    <a href="{{ route('client-credits.index') }}" class="subnav-pill">
-        <i class="fas fa-wallet text-warning"></i>
-        <span>Crédits & Plafonds Clients</span>
-    </a>
-    <a href="{{ route('client-credits.transactions') }}" class="subnav-pill">
-        <i class="fas fa-list-check text-primary"></i>
-        <span>Grand Livre des Règlements</span>
-    </a>
-    <a href="{{ route('customers.index') }}" class="subnav-pill">
-        <i class="fas fa-users text-secondary"></i>
-        <span>Fiches Clients</span>
-    </a>
-</div>
+@include('partials.subnav.clients')
 
 <!-- Enhanced Statistics (Product Section Standard) -->
 <div class="row g-3 mb-4">
@@ -273,51 +255,51 @@
         <form action="{{ route('debtors.index') }}" method="GET">
             <div class="row g-3">
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small text-uppercase text-muted">Search</label>
+                    <label class="form-label fw-semibold small text-uppercase text-muted">Rechercher</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light border-end-0">
                             <i class="fas fa-search text-muted"></i>
                         </span>
                         <input type="text" name="search" class="form-control border-start-0" 
-                               placeholder="Name, email, phone..." value="{{ request('search') }}">
+                               placeholder="Nom, email, téléphone..." value="{{ request('search') }}">
                     </div>
                 </div>
                 
                 <div class="col-md-2">
-                    <label class="form-label fw-semibold small text-uppercase text-muted">Balance Range</label>
+                    <label class="form-label fw-semibold small text-uppercase text-muted">Tranche de Solde</label>
                     <select name="balance_range" class="form-select">
-                        <option value="">All Amounts</option>
-                        <option value="0-500" {{ request('balance_range') == '0-500' ? 'selected' : '' }}>$0 - $500</option>
-                        <option value="500-1000" {{ request('balance_range') == '500-1000' ? 'selected' : '' }}>$500 - $1,000</option>
-                        <option value="1000-5000" {{ request('balance_range') == '1000-5000' ? 'selected' : '' }}>$1,000 - $5,000</option>
-                        <option value="5000+" {{ request('balance_range') == '5000+' ? 'selected' : '' }}>$5,000+</option>
+                        <option value="">Tous les montants</option>
+                        <option value="0-500" {{ request('balance_range') == '0-500' ? 'selected' : '' }}>0 - 500 DH</option>
+                        <option value="500-1000" {{ request('balance_range') == '500-1000' ? 'selected' : '' }}>500 - 1 000 DH</option>
+                        <option value="1000-5000" {{ request('balance_range') == '1000-5000' ? 'selected' : '' }}>1 000 - 5 000 DH</option>
+                        <option value="5000+" {{ request('balance_range') == '5000+' ? 'selected' : '' }}>5 000+ DH</option>
                     </select>
                 </div>
                 
                 <div class="col-md-2">
-                    <label class="form-label fw-semibold small text-uppercase text-muted">Risk Level</label>
+                    <label class="form-label fw-semibold small text-uppercase text-muted">Niveau de Risque</label>
                     <select name="risk" class="form-select">
-                        <option value="">All Risks</option>
-                        <option value="high" {{ request('risk') == 'high' ? 'selected' : '' }}>High Risk</option>
-                        <option value="medium" {{ request('risk') == 'medium' ? 'selected' : '' }}>Medium Risk</option>
-                        <option value="low" {{ request('risk') == 'low' ? 'selected' : '' }}>Low Risk</option>
+                        <option value="">Tous les risques</option>
+                        <option value="high" {{ request('risk') == 'high' ? 'selected' : '' }}>Risque Élevé</option>
+                        <option value="medium" {{ request('risk') == 'medium' ? 'selected' : '' }}>Risque Moyen</option>
+                        <option value="low" {{ request('risk') == 'low' ? 'selected' : '' }}>Risque Faible</option>
                     </select>
                 </div>
                 
                 <div class="col-md-2">
-                    <label class="form-label fw-semibold small text-uppercase text-muted">Sort By</label>
+                    <label class="form-label fw-semibold small text-uppercase text-muted">Trier par</label>
                     <select name="sort" class="form-select">
-                        <option value="balance_desc" {{ request('sort') == 'balance_desc' ? 'selected' : '' }}>Balance: High to Low</option>
-                        <option value="balance_asc" {{ request('sort') == 'balance_asc' ? 'selected' : '' }}>Balance: Low to High</option>
-                        <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Name: A-Z</option>
+                        <option value="balance_desc" {{ request('sort') == 'balance_desc' ? 'selected' : '' }}>Solde : Décroissant</option>
+                        <option value="balance_asc" {{ request('sort') == 'balance_asc' ? 'selected' : '' }}>Solde : Croissant</option>
+                        <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Nom : A-Z</option>
                     </select>
                 </div>
                 
                 <div class="col-md-2 d-flex align-items-end gap-2">
                     <button type="submit" class="btn btn-primary flex-grow-1">
-                        <i class="fas fa-filter"></i> Filter
+                        <i class="fas fa-filter"></i> Filtrer
                     </button>
-                    <a href="{{ route('debtors.index') }}" class="btn btn-outline-secondary">
+                    <a href="{{ route('debtors.index') }}" class="btn btn-outline-secondary" title="Réinitialiser">
                         <i class="fas fa-redo"></i>
                     </a>
                 </div>
@@ -437,6 +419,10 @@
                                class="action-btn action-btn-email" title="Envoyer un email">
                                 <i class="fas fa-envelope"></i>
                             </a>
+                            <a href="{{ route('client-credits.index', ['search' => $debtor->name]) }}" 
+                               class="action-btn action-btn-primary" title="Encaisser un règlement">
+                                <i class="fas fa-hand-holding-dollar"></i>
+                            </a>
                             <a href="{{ route('invoices.create') }}?customer_email={{ $debtor->email }}" 
                                class="action-btn action-btn-success" title="Créer une facture">
                                 <i class="fas fa-file-invoice"></i>
@@ -520,6 +506,9 @@
                     <a href="{{ route('customers.show', $debtor) }}" class="btn btn-sm btn-light rounded-circle border" style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;" title="Détails">
                         <i class="fas fa-eye text-primary"></i>
                     </a>
+                    <a href="{{ route('client-credits.index', ['search' => $debtor->name]) }}" class="btn btn-sm btn-light rounded-circle border" style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;" title="Encaisser">
+                        <i class="fas fa-hand-holding-dollar text-primary"></i>
+                    </a>
                     <a href="{{ route('invoices.create') }}?customer_email={{ $debtor->email }}" class="btn btn-sm btn-light rounded-circle border" style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;" title="Facturer">
                         <i class="fas fa-file-invoice text-success"></i>
                     </a>
@@ -538,7 +527,7 @@
     <div class="card-footer bg-white border-top">
         <div class="d-flex justify-content-between align-items-center">
             <div class="text-muted small">
-                Showing {{ $debtors->firstItem() }} to {{ $debtors->lastItem() }} of {{ $debtors->total() }} debtors
+                Affichage de {{ $debtors->firstItem() }} à {{ $debtors->lastItem() }} sur {{ $debtors->total() }} débiteurs
             </div>
             {{ $debtors->links() }}
         </div>

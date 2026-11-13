@@ -24,7 +24,10 @@ class RoleController extends Controller
     public function create()
     {
         $permissions = Permission::all();
-        return view('roles.create', compact('permissions'));
+        $permissionModules = $this->buildPermissionModules($permissions);
+        $permissionsByName = $permissions->keyBy('name');
+
+        return view('roles.create', compact('permissions', 'permissionModules', 'permissionsByName'));
     }
 
     /**
@@ -45,6 +48,20 @@ class RoleController extends Controller
             if (!empty($validated['permissions'])) {
                 $role->syncPermissions($validated['permissions']);
             }
+
+            \App\Models\ActivityLog::create([
+                'user_id' => auth()->id(),
+                'event' => 'created',
+                'description' => "Création du rôle « {$role->name} » (" . count($validated['permissions'] ?? []) . " permissions)",
+                'subject_type' => Role::class,
+                'subject_id' => $role->id,
+                'properties' => [
+                    'role_name' => $role->name,
+                    'permissions_count' => count($validated['permissions'] ?? []),
+                ],
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
             
             DB::commit();
             
@@ -61,10 +78,35 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
+        abort_if($role->name === 'Admin' && !auth()->user()?->hasRole('Admin'), 403, 'Seul un Administrateur peut modifier le rôle Admin.');
+
         $permissions = Permission::all();
         $rolePermissions = $role->permissions->pluck('id')->toArray();
-        
-        return view('roles.edit', compact('role', 'permissions', 'rolePermissions'));
+        $permissionModules = $this->buildPermissionModules($permissions);
+        $permissionsByName = $permissions->keyBy('name');
+
+        return view('roles.edit', compact('role', 'permissions', 'rolePermissions', 'permissionModules', 'permissionsByName'));
+    }
+
+    /**
+     * Group permissions by module using UserController::getPermissionModules plus any custom DB permissions.
+     */
+    protected function buildPermissionModules($permissions): array
+    {
+        $modules = UserController::getPermissionModules();
+        $known = collect($modules)->flatMap(fn ($mod) => array_keys($mod['permissions']))->flip();
+
+        $extras = $permissions->filter(fn ($perm) => ! $known->has($perm->name));
+        if ($extras->isNotEmpty()) {
+            $modules['custom'] = [
+                'title' => 'Autres Permissions',
+                'icon' => 'fas fa-puzzle-piece',
+                'color' => '#64748b',
+                'permissions' => $extras->mapWithKeys(fn ($perm) => [$perm->name => 'Permission personnalisée (' . $perm->name . ')'])->all(),
+            ];
+        }
+
+        return $modules;
     }
 
     /**
@@ -72,16 +114,36 @@ class RoleController extends Controller
      */
     public function update(Request $request, Role $role)
     {
+        abort_if($role->name === 'Admin' && !auth()->user()?->hasRole('Admin'), 403, 'Seul un Administrateur peut modifier le rôle Admin.');
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255', 'unique:roles,name,' . $role->id],
             'permissions' => ['array'],
             'permissions.*' => ['exists:permissions,id']
         ]);
 
+        if ($role->name === 'Admin') {
+            $validated['name'] = 'Admin';
+        }
+
         DB::beginTransaction();
         try {
             $role->update(['name' => $validated['name']]);
             $role->syncPermissions($validated['permissions'] ?? []);
+
+            \App\Models\ActivityLog::create([
+                'user_id' => auth()->id(),
+                'event' => 'updated',
+                'description' => "Mise à jour du rôle « {$role->name} » (" . count($validated['permissions'] ?? []) . " permissions)",
+                'subject_type' => Role::class,
+                'subject_id' => $role->id,
+                'properties' => [
+                    'role_name' => $role->name,
+                    'permissions_count' => count($validated['permissions'] ?? []),
+                ],
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
             
             DB::commit();
             
@@ -104,7 +166,21 @@ class RoleController extends Controller
         }
 
         try {
+            $roleName = $role->name;
+            $roleId = $role->id;
             $role->delete();
+
+            \App\Models\ActivityLog::create([
+                'user_id' => auth()->id(),
+                'event' => 'deleted',
+                'description' => "Suppression du rôle « {$roleName} »",
+                'subject_type' => Role::class,
+                'subject_id' => $roleId,
+                'properties' => ['role_name' => $roleName],
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]);
+
             return redirect()->route('roles.index')
                 ->with('success', 'Role deleted successfully.');
         } catch (\Exception $e) {

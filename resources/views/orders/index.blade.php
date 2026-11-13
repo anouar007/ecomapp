@@ -255,12 +255,12 @@
             </div>
         </div>
         <div class="brand-header-actions">
-            @if(request('status') || request('payment_status') || request('search'))
+            @if(request('status') || request('payment_status') || request('store_id') || request('search'))
                 <a href="{{ route('orders.index') }}" class="btn btn-outline-danger shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
                     <i class="fas fa-rotate-left"></i> <span>Toutes ({{ number_format($stats['total'] ?? 0, 0, ',', ' ') }})</span>
                 </a>
             @endif
-            <a href="{{ route('export.orders') }}" class="btn btn-outline-secondary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
+            <a href="{{ route('export.orders', request()->all()) }}" data-no-spa="true" class="btn btn-outline-secondary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
                 <i class="fas fa-file-csv text-success"></i> <span>Exporter CSV</span>
             </a>
             <a href="{{ route('orders.create') }}" class="btn-brand-primary flex-grow-1 flex-md-grow-0 justify-content-center text-nowrap px-3 py-2" style="font-size: 0.84rem;">
@@ -433,8 +433,8 @@
 
                 @php
                     $hasDateFilter = request('date_preset') || request('date_from') || request('date_to') || request('date');
-                    $hasActiveFilters = request('status') || request('payment_status') || $hasDateFilter;
-                    $activeFilterCount = collect(['status', 'payment_status', 'date_preset', 'date_from', 'date_to', 'date'])->filter(fn($k) => request()->filled($k))->count();
+                    $hasActiveFilters = request('status') || request('payment_status') || request('store_id') || $hasDateFilter;
+                    $activeFilterCount = collect(['status', 'payment_status', 'store_id', 'date_preset', 'date_from', 'date_to', 'date'])->filter(fn($k) => request()->filled($k))->count();
                 @endphp
 
                 <!-- Bouton Drawer Filtres Mobile (d-md-none) -->
@@ -457,7 +457,7 @@
                             {{ $orders->total() }} résultat(s)
                         </span>
                     @endif
-                    <a href="{{ route('export.orders', request()->all()) }}" class="btn-brand-outline">
+                    <a href="{{ route('export.orders', request()->all()) }}" data-no-spa="true" class="btn-brand-outline">
                         <i class="fas fa-file-csv me-1.5" style="color: var(--success-color)"></i>Exporter CSV
                     </a>
                 </div>
@@ -499,6 +499,19 @@
                             @endphp
                             @foreach($paymentStatusNames as $pstKey => $pstLabel)
                                 <option value="{{ $pstKey }}" {{ request('payment_status') == $pstKey ? 'selected' : '' }}>{{ $pstLabel }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Magasin / Dépôt source -->
+                    <div class="col-12 col-md-auto">
+                        <select name="store_id" class="form-select form-select-sm" style="min-width: 170px;">
+                            <option value="">🏪 Tous les dépôts</option>
+                            <option value="unassigned" {{ request('store_id') === 'unassigned' ? 'selected' : '' }}>⚠️ Dépôt à affecter</option>
+                            @foreach($stores ?? [] as $st)
+                                <option value="{{ $st->id }}" {{ (string) request('store_id') === (string) $st->id ? 'selected' : '' }}>
+                                    {{ $st->name }} ({{ $st->code }})
+                                </option>
                             @endforeach
                         </select>
                     </div>
@@ -548,7 +561,7 @@
 
                     <!-- Bouton Exporter sur Mobile (d-md-none) -->
                     <div class="col-12 d-md-none mt-2 pt-2 border-top">
-                        <a href="{{ route('export.orders', request()->all()) }}" class="btn btn-sm btn-outline-secondary w-100 justify-content-center">
+                        <a href="{{ route('export.orders', request()->all()) }}" data-no-spa="true" class="btn btn-sm btn-outline-secondary w-100 justify-content-center">
                             <i class="fas fa-file-csv me-1 text-success"></i> Exporter les commandes (CSV)
                         </a>
                     </div>
@@ -599,6 +612,20 @@
                 </a>
             @endif
 
+            @if(request('store_id'))
+                @php
+                    $selectedStoreObj = isset($stores) && is_numeric(request('store_id'))
+                        ? $stores->firstWhere('id', (int) request('store_id'))
+                        : null;
+                    $storeFilterLabel = request('store_id') === 'unassigned'
+                        ? 'À affecter'
+                        : ($selectedStoreObj?->name ?? '#' . request('store_id'));
+                @endphp
+                <a href="{{ request()->fullUrlWithQuery(['store_id' => null]) }}" class="badge bg-white text-dark border rounded-pill px-2.5 py-1.5 text-decoration-none d-inline-flex align-items-center gap-1 shadow-2xs" title="Supprimer ce filtre">
+                    <i class="fas fa-warehouse text-primary me-0.5"></i> Dépôt : {{ $storeFilterLabel }} <i class="fas fa-times text-muted ms-0.5"></i>
+                </a>
+            @endif
+
             @if($hasDateFilter)
                 @php
                     $presetLabels = [
@@ -646,7 +673,7 @@
                     {{ $orders->total() }}
                 </span>
             </div>
-            @if(request('status') || request('payment_status') || request('search'))
+            @if(request('status') || request('payment_status') || request('store_id') || request('search'))
                 <a href="{{ route('orders.index') }}" class="small text-danger fw-semibold text-decoration-none" style="font-size: 0.75rem;">
                     <i class="fas fa-times me-0.5"></i>Effacer filtres
                 </a>
@@ -756,6 +783,22 @@
                                             <span>x{{ $firstItem->quantity }}</span>
                                             @if($order->items->count() > 1)
                                                 <span class="text-muted ms-1">({{ $order->items->count() }} art.)</span>
+                                            @endif
+                                        </div>
+                                        @php
+                                            $orderStoreBadges = $order->items->pluck('store')->filter()->unique('id');
+                                            $hasUnassignedItem = $order->items->whereNull('store_id')->isNotEmpty();
+                                        @endphp
+                                        <div class="d-flex align-items-center gap-1 flex-wrap mt-1">
+                                            @foreach($orderStoreBadges as $stBadge)
+                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-1.5 py-0" style="font-size: 0.64rem;" title="{{ $stBadge->name }}">
+                                                    <i class="fas fa-warehouse me-0.5"></i>{{ $stBadge->name }}
+                                                </span>
+                                            @endforeach
+                                            @if($hasUnassignedItem)
+                                                <a href="{{ route('orders.show', $order) }}" class="badge bg-warning-subtle text-warning border border-warning-subtle px-1.5 py-0 text-decoration-none" style="font-size: 0.64rem;" title="Cliquer pour affecter un magasin / dépôt">
+                                                    <i class="fas fa-store-slash me-0.5"></i>À affecter
+                                                </a>
                                             @endif
                                         </div>
                                     </div>

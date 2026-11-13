@@ -109,9 +109,14 @@ Disallow: /settings/
 Disallow: /activity-logs/
 Disallow: /analytics/
 Disallow: /reports/
+Allow: /ai-catalog.json
+Allow: /.well-known/ai-catalog.json
+Allow: /google-merchant.xml
+Allow: /opensearch.xml
 
 Sitemap: {{ $sitemapUrl }}
 Sitemap: {{ $merchantUrl ?? url('/google-merchant.xml') }}
 # LLMs-Txt: {{ $llmsUrl ?? url('/llms.txt') }}
 # LLMs-Full-Txt: {{ $llmsFullUrl ?? url('/llms-full.txt') }}
 # AI-Catalog-JSON: {{ $aiJsonUrl ?? url('/ai-catalog.json') }}
+# OpenSearch-XML: {{ $opensearchUrl ?? url('/opensearch.xml') }}

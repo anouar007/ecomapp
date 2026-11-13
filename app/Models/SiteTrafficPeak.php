@@ -38,39 +38,40 @@ class SiteTrafficPeak extends Model
     {
         $today = now();
         $dateStr = $today->toDateString();
+        $concurrent = max(0, $currentConcurrent);
 
         $entry = static::firstOrNew(['record_date' => $dateStr]);
 
         if (!$entry->exists) {
-            $entry->year = (int)$today->format('Y');
-            $entry->month = (int)$today->format('n');
-            $entry->week = (int)$today->format('W');
-            $entry->peak_concurrent_users = max(1, $currentConcurrent);
+            $entry->year = (int) $today->format('Y');
+            $entry->month = (int) $today->format('n');
+            $entry->week = (int) $today->format('W');
+            $entry->peak_concurrent_users = $concurrent;
             $entry->peak_time = $today->format('H:i:s');
             $entry->unique_visitors = 0;
             $entry->total_views = 0;
         } else {
-            if ($currentConcurrent > $entry->peak_concurrent_users) {
-                $entry->peak_concurrent_users = $currentConcurrent;
+            if ($concurrent > (int) $entry->peak_concurrent_users) {
+                $entry->peak_concurrent_users = $concurrent;
                 $entry->peak_time = $today->format('H:i:s');
             }
         }
 
-        // Sync distinct visitors and total views for today
+        // Sync deterministic distinct visitors (by IP) and total views for today
         try {
             $dailyStats = DB::selectOne("
                 SELECT COUNT(DISTINCT ip_address) as unique_ips, COUNT(*) as total_hits
                 FROM (
-                    SELECT ip_address FROM product_views WHERE viewed_date = ?
+                    SELECT ip_address FROM product_views WHERE viewed_date = ? AND ip_address IS NOT NULL
                     UNION ALL
-                    SELECT ip_address FROM category_views WHERE viewed_date = ?
+                    SELECT ip_address FROM category_views WHERE viewed_date = ? AND ip_address IS NOT NULL
                     UNION ALL
-                    SELECT ip_address FROM search_logs WHERE searched_date = ?
+                    SELECT ip_address FROM search_logs WHERE searched_date = ? AND ip_address IS NOT NULL
                 ) as daily_union
             ", [$dateStr, $dateStr, $dateStr]);
 
-            $entry->unique_visitors = max((int)$entry->unique_visitors, (int)($dailyStats->unique_ips ?? 0));
-            $entry->total_views = max((int)$entry->total_views, (int)($dailyStats->total_hits ?? 0));
+            $entry->unique_visitors = max((int) $entry->unique_visitors, (int) ($dailyStats->unique_ips ?? 0));
+            $entry->total_views = max((int) $entry->total_views, (int) ($dailyStats->total_hits ?? 0));
         } catch (\Throwable $e) {
             // Failsafe
         }
@@ -78,6 +79,53 @@ class SiteTrafficPeak extends Model
         $entry->save();
 
         return $entry;
+    }
+
+    /**
+     * Ensure daily telemetry rows exist and are up-to-date for a requested date range.
+     */
+    public static function syncDateRange(string $startDateStr, string $endDateStr): void
+    {
+        try {
+            $records = DB::select("
+                SELECT dt,
+                       COUNT(DISTINCT ip_address) as unique_users,
+                       COUNT(*) as total_views
+                FROM (
+                    SELECT viewed_date as dt, ip_address FROM product_views WHERE viewed_date BETWEEN ? AND ? AND ip_address IS NOT NULL
+                    UNION ALL
+                    SELECT viewed_date as dt, ip_address FROM category_views WHERE viewed_date BETWEEN ? AND ? AND ip_address IS NOT NULL
+                    UNION ALL
+                    SELECT searched_date as dt, ip_address FROM search_logs WHERE searched_date BETWEEN ? AND ? AND ip_address IS NOT NULL
+                ) as combined
+                WHERE dt IS NOT NULL
+                GROUP BY dt
+            ", [
+                $startDateStr, $endDateStr,
+                $startDateStr, $endDateStr,
+                $startDateStr, $endDateStr,
+            ]);
+
+            foreach ($records as $r) {
+                if (empty($r->dt)) {
+                    continue;
+                }
+                $cDate = Carbon::parse($r->dt);
+                $entry = static::firstOrNew(['record_date' => $r->dt]);
+                $entry->year = (int) $cDate->format('Y');
+                $entry->month = (int) $cDate->format('n');
+                $entry->week = (int) $cDate->format('W');
+                $entry->unique_visitors = max((int) $entry->unique_visitors, (int) $r->unique_users);
+                $entry->total_views = max((int) $entry->total_views, (int) $r->total_views);
+                if (!$entry->exists && (int) $entry->peak_concurrent_users === 0) {
+                    $entry->peak_concurrent_users = 0;
+                    $entry->peak_time = '12:00:00';
+                }
+                $entry->save();
+            }
+        } catch (\Throwable $e) {
+            report($e);
+        }
     }
 
     /**
@@ -110,8 +158,8 @@ class SiteTrafficPeak extends Model
                 $entry->week = (int)$cDate->format('W');
                 $entry->unique_visitors = max((int)$entry->unique_visitors, (int)$r->unique_users);
                 $entry->total_views = max((int)$entry->total_views, (int)$r->total_views);
-                if ($entry->peak_concurrent_users === 0) {
-                    $entry->peak_concurrent_users = max(1, (int)$r->unique_users);
+                if (!$entry->exists && (int)$entry->peak_concurrent_users === 0) {
+                    $entry->peak_concurrent_users = 0;
                     $entry->peak_time = '12:00:00';
                 }
                 $entry->save();

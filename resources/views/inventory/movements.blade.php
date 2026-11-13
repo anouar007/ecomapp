@@ -24,6 +24,8 @@
         </div>
     </div>
 
+    @include('partials.subnav.inventory')
+
     @if(session('success'))
         <div class="alert alert-success d-flex align-items-center gap-2 rounded-3 shadow-sm mb-3">
             <i class="fas fa-check-circle"></i> <span>{{ session('success') }}</span>
@@ -43,7 +45,7 @@
                 </div>
 
                 @php
-                    $activeFilterKeys = ['type', 'product_id', 'start_date', 'end_date', 'date_from', 'date_to'];
+                    $activeFilterKeys = ['type', 'product_id', 'store_id', 'start_date', 'end_date', 'date_from', 'date_to'];
                     $hasActiveFilters = collect($activeFilterKeys)->some(fn($k) => request()->filled($k));
                     $activeFilterCount = collect($activeFilterKeys)->filter(fn($k) => request()->filled($k))->count();
                 @endphp
@@ -80,22 +82,37 @@
             <!-- Filtres Avancés : Collapsible sur Mobile (d-md-none), Grid intégrée sur Desktop (d-none d-md-block) -->
             <div class="collapse d-md-block mt-2.5" id="movementFiltersCollapse">
                 <div class="row g-2 pt-2 border-top">
-                    <!-- Type de Mouvement -->
+                    <!-- Magasin / Dépôt -->
+                    @if(isset($stores) && $stores->isNotEmpty())
                     <div class="col-6 col-md-3">
-                        <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.04em;">Type de mouvement</label>
+                        <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.04em;">Magasin / Dépôt</label>
+                        <select name="store_id" class="form-select form-select-sm" onchange="document.getElementById('movementFilterForm').submit()">
+                            <option value="">Tous les dépôts</option>
+                            @foreach($stores as $st)
+                                <option value="{{ $st->id }}" {{ request('store_id') == $st->id ? 'selected' : '' }}>
+                                    {{ $st->name }} ({{ $st->code }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endif
+
+                    <!-- Type de Mouvement -->
+                    <div class="col-6 col-md-2">
+                        <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.04em;">Type</label>
                         <select name="type" class="form-select form-select-sm" onchange="document.getElementById('movementFilterForm').submit()">
                             <option value="">Tous les types</option>
-                            <option value="in" {{ request('type') === 'in' ? 'selected' : '' }}>Entrée de stock (+)</option>
-                            <option value="out" {{ request('type') === 'out' ? 'selected' : '' }}>Sortie de stock (-)</option>
-                            <option value="adjustment" {{ request('type') === 'adjustment' ? 'selected' : '' }}>Correction / Ajustement</option>
-                            <option value="transfer" {{ request('type') === 'transfer' ? 'selected' : '' }}>Transfert interne</option>
-                            <option value="return" {{ request('type') === 'return' ? 'selected' : '' }}>Retour client</option>
+                            <option value="in" {{ request('type') === 'in' ? 'selected' : '' }}>Entrée (+)</option>
+                            <option value="out" {{ request('type') === 'out' ? 'selected' : '' }}>Sortie (-)</option>
+                            <option value="adjustment" {{ request('type') === 'adjustment' ? 'selected' : '' }}>Ajustement</option>
+                            <option value="transfer" {{ request('type') === 'transfer' ? 'selected' : '' }}>Transfert</option>
+                            <option value="return" {{ request('type') === 'return' ? 'selected' : '' }}>Retour</option>
                         </select>
                     </div>
 
                     <!-- Article Spécifique -->
                     <div class="col-6 col-md-3">
-                        <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.04em;">Article spécifique</label>
+                        <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.04em;">Article</label>
                         <select name="product_id" class="form-select form-select-sm" onchange="document.getElementById('movementFilterForm').submit()">
                             <option value="">Tous les articles</option>
                             @foreach($products as $prod)
@@ -107,17 +124,17 @@
                     </div>
 
                     <!-- Date de début -->
-                    <div class="col-6 col-md-3">
+                    <div class="col-6 col-md-2">
                         <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.04em;">Du</label>
-                        <input type="date" name="start_date" class="form-control form-control-sm" 
+                        <input type="date" name="start_date" class="form-control form-control-sm"
                                value="{{ request('start_date', request('date_from')) }}"
                                onchange="document.getElementById('movementFilterForm').submit()">
                     </div>
 
                     <!-- Date de fin -->
-                    <div class="col-6 col-md-3">
+                    <div class="col-6 col-md-2">
                         <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.04em;">Au</label>
-                        <input type="date" name="end_date" class="form-control form-control-sm" 
+                        <input type="date" name="end_date" class="form-control form-control-sm"
                                value="{{ request('end_date', request('date_to')) }}"
                                onchange="document.getElementById('movementFilterForm').submit()">
                     </div>
@@ -250,11 +267,24 @@
                                 @endif
                             </td>
 
-                            <!-- Type -->
+                            <!-- Type & Magasin / Dépôt -->
                             <td>
                                 <span class="badge bg-{{ $typeColor }}-subtle text-{{ $typeColor }} border border-{{ $typeColor }}-subtle d-inline-flex align-items-center gap-1 px-2 py-1" style="font-size: 0.72rem;">
                                     <i class="fas {{ $typeIcon }}"></i> {{ $typeLabel }}
                                 </span>
+                                @if($movement->fromStore || $movement->toStore)
+                                    <div class="mt-1 d-flex flex-wrap align-items-center gap-1" style="font-size: 0.68rem;">
+                                        @if($movement->fromStore && $movement->toStore)
+                                            <span class="badge bg-light text-dark border px-1.5 py-0.5">{{ $movement->fromStore->name }}</span>
+                                            <i class="fas fa-arrow-right text-muted" style="font-size: 0.58rem;"></i>
+                                            <span class="badge bg-info-subtle text-info border border-info-subtle px-1.5 py-0.5">{{ $movement->toStore->name }}</span>
+                                        @elseif($movement->toStore)
+                                            <span class="badge bg-light text-dark border px-1.5 py-0.5"><i class="fas fa-warehouse text-primary me-1"></i>{{ $movement->toStore->name }}</span>
+                                        @elseif($movement->fromStore)
+                                            <span class="badge bg-light text-dark border px-1.5 py-0.5"><i class="fas fa-warehouse text-secondary me-1"></i>{{ $movement->fromStore->name }}</span>
+                                        @endif
+                                    </div>
+                                @endif
                             </td>
 
                             <!-- Variation -->

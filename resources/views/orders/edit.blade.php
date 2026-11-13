@@ -32,6 +32,15 @@
     </div>
 
     <!-- Alertes Erreurs -->
+    @if(session('error'))
+        <div class="alert alert-danger border-0 rounded-4 shadow-sm mb-4">
+            <div class="d-flex align-items-center gap-3">
+                <i class="fas fa-exclamation-triangle fs-5"></i>
+                <div>{{ session('error') }}</div>
+            </div>
+        </div>
+    @endif
+
     @if(isset($errors) && $errors->any())
         <div class="alert alert-danger border-0 rounded-4 shadow-sm mb-4">
             <div class="d-flex align-items-start gap-3">
@@ -164,12 +173,95 @@
                     </div>
                 </div>
 
+                <!-- Provenance Stock par Article (Magasins / Dépôts) -->
+                <div class="product-form-card mb-4">
+                    <div class="product-form-card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div>
+                            <h2 class="product-form-card-title mb-0">
+                                <i class="fas fa-warehouse text-primary"></i> 3. Magasin / Dépôt par Produit
+                            </h2>
+                            <p class="product-form-card-subtitle mb-0">Choisissez d'où chaque produit de la commande est prélevé</p>
+                        </div>
+                        @if(isset($stores) && $stores->isNotEmpty() && $order->items->isNotEmpty())
+                            <div class="d-flex align-items-center gap-1.5">
+                                <select id="bulkApplyEditStore" class="form-select form-select-sm" style="min-width: 175px;">
+                                    <option value="">— Non assigné —</option>
+                                    @foreach($stores as $st)
+                                        <option value="{{ $st->id }}">{{ $st->name }} ({{ $st->code }})</option>
+                                    @endforeach
+                                </select>
+                                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-2.5 fw-semibold text-nowrap" onclick="applyBulkStoreEdit()">
+                                    <i class="fas fa-check-double me-1"></i>Appliquer à tous
+                                </button>
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead class="bg-light small text-muted text-uppercase">
+                                <tr>
+                                    <th class="border-0 ps-2">Produit</th>
+                                    <th class="border-0 text-center" style="width: 75px;">Qté</th>
+                                    <th class="border-0" style="min-width: 240px;">Magasin / Dépôt source</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($order->items as $item)
+                                    @php
+                                        $itemStoreStocks = $item->product ? $item->product->storeStocks->keyBy('store_id') : collect();
+                                        $hasItemStoreAllocations = $itemStoreStocks->isNotEmpty();
+                                        $selectedItemStore = old('item_stores.' . $item->id, $item->store_id);
+                                    @endphp
+                                    <tr>
+                                        <td class="ps-2 py-2.5">
+                                            <div class="d-flex align-items-center gap-2.5">
+                                                <div style="width: 40px; height: 40px; border-radius: 8px; overflow: hidden; background: #fff; border: 1px solid #e2e8f0; flex-shrink: 0; padding: 2px; display: flex; align-items: center; justify-content: center;">
+                                                    <img src="{{ $item->product_image }}" alt="{{ $item->product_name }}" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='{{ asset('images/camera/cat_cameras.jpg') }}';">
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="fw-bold text-dark small text-truncate" style="max-width: 240px;">{{ $item->product_name }}</div>
+                                                    <div class="text-muted" style="font-size: 0.72rem;">
+                                                        <span class="font-monospace">SKU: {{ $item->product_sku ?: 'N/A' }}</span>
+                                                        @if($item->variant_name)
+                                                            &bull; <span class="text-primary fw-semibold">{{ $item->variant_name }}</span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center py-2.5">
+                                            <span class="badge bg-light text-dark border fw-bold">x{{ $item->quantity }}</span>
+                                        </td>
+                                        <td class="py-2.5">
+                                            <select name="item_stores[{{ $item->id }}]" class="form-select form-select-sm edit-item-store-select">
+                                                <option value="">— Non assigné —</option>
+                                                @foreach($stores ?? [] as $st)
+                                                    @php
+                                                        $stStock = $itemStoreStocks->get($st->id);
+                                                        $stQty = $stStock ? (int) $stStock->quantity : 0;
+                                                        $stLoc = $stStock?->location_code ? ' [' . $stStock->location_code . ']' : '';
+                                                        $stLabel = $st->name . ($hasItemStoreAllocations ? " — Stock: {$stQty}{$stLoc}" : '');
+                                                    @endphp
+                                                    <option value="{{ $st->id }}" {{ (string) $selectedItemStore === (string) $st->id ? 'selected' : '' }}>
+                                                        {{ $stLabel }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <!-- Notes de commande -->
                 <div class="product-form-card">
                     <div class="product-form-card-header">
                         <div>
                             <h2 class="product-form-card-title">
-                                <i class="fas fa-comment-dots text-warning"></i> 3. Notes & Commentaires Internes
+                                <i class="fas fa-comment-dots text-warning"></i> 4. Notes & Commentaires Internes
                             </h2>
                             <p class="product-form-card-subtitle">Instructions particulières pour l'équipe ou le livreur</p>
                         </div>
@@ -247,6 +339,13 @@
 
 @push('scripts')
 <script>
+function applyBulkStoreEdit() {
+    const bulkVal = document.getElementById('bulkApplyEditStore')?.value ?? '';
+    document.querySelectorAll('.edit-item-store-select').forEach(sel => {
+        sel.value = bulkVal;
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const statusSelect = document.getElementById('status');
     const paySelect = document.getElementById('payment_status');

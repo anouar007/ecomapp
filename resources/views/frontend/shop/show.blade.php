@@ -877,6 +877,9 @@
     $reviewCount = $reviewCount ?? ($product->reviews()->count() ?? 0);
 @endphp
 <script type="application/ld+json">
+@php
+    $primaryCategory = $product->productCategory ?? $product->category;
+@endphp
 [
   {
     "@context": "https://schema.org",
@@ -894,25 +897,25 @@
         "name": "Boutique",
         "item": "{{ route('shop.index') }}"
       }
-      @if($product->category)
+      @if($primaryCategory)
       ,{
         "@type": "ListItem",
         "position": 3,
-        "name": "{{ addslashes($product->category->name) }}",
-        "item": "{{ route('shop.index', ['category' => $product->category->slug]) }}"
+        "name": "{{ addslashes($primaryCategory->name) }}",
+        "item": "{{ route('shop.index', ['category' => $primaryCategory->slug]) }}"
       },
       {
         "@type": "ListItem",
         "position": 4,
         "name": "{{ addslashes($product->name) }}",
-        "item": "{{ url()->current() }}"
+        "item": "{{ $productShareUrl }}"
       }
       @else
       ,{
         "@type": "ListItem",
         "position": 3,
         "name": "{{ addslashes($product->name) }}",
-        "item": "{{ url()->current() }}"
+        "item": "{{ $productShareUrl }}"
       }
       @endif
     ]
@@ -920,6 +923,7 @@
   {
     "@context": "https://schema.org/",
     "@type": "Product",
+    "@id": "{{ $productShareUrl }}#product",
     "name": {!! json_encode($product->name) !!},
     "inLanguage": ["fr-MA", "ar-MA", "en-MA"],
     "keywords": {!! json_encode($productKeywords) !!},
@@ -932,15 +936,15 @@
       "@type": "Brand",
       "name": {!! json_encode($brandGuess) !!}
     },
-    @if($product->category)
-    "category": {!! json_encode($product->category->name) !!},
+    @if($primaryCategory)
+    "category": {!! json_encode($primaryCategory->name) !!},
     @endif
     @if(!empty($extractedSpecs))
     "additionalProperty": {!! json_encode($extractedSpecs) !!},
     @endif
     "offers": {
       "@type": "Offer",
-      "url": "{{ url()->current() }}",
+      "url": "{{ $productShareUrl }}",
       "priceCurrency": "{{ setting('currency_code', 'MAD') }}",
       "price": "{{ number_format($product->final_price, 2, '.', '') }}",
       "priceValidUntil": "{{ now()->addYear()->format('Y-12-31') }}",
@@ -1093,6 +1097,24 @@
       }
       @endif
     ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "{{ $productShareUrl }}#webpage",
+    "url": "{{ $productShareUrl }}",
+    "name": {!! json_encode($product->name . ' — Prix au Maroc | ' . setting('app_name', 'WINA SHOP')) !!},
+    "isPartOf": {
+      "@id": "{{ url('/') }}#website"
+    },
+    "mainEntity": {
+      "@id": "{{ $productShareUrl }}#product"
+    },
+    "inLanguage": ["fr-MA", "ar-MA", "en-MA"],
+    "speakable": {
+      "@type": "SpeakableSpecification",
+      "cssSelector": ["h1", "#pdpFaqAccordion"]
+    }
   }
 ]
 </script>

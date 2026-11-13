@@ -157,6 +157,9 @@ html, body, .main-content {
             </div>
         </div>
         <div class="brand-header-actions">
+            <a href="{{ route('debtors.download') }}" class="btn-brand-outline">
+                <i class="fas fa-file-pdf text-danger me-1.5"></i> <span>Export PDF Débiteurs</span>
+            </a>
             <a href="{{ route('client-credits.transactions') }}" class="btn-brand-outline">
                 <i class="fas fa-list-check me-1.5" style="color: var(--primary-color)"></i> <span>Grand Livre</span>
             </a>
@@ -167,21 +170,7 @@ html, body, .main-content {
     </div>
 
     <!-- Navigation Croisée ERP (Clients <-> Crédits <-> Grand Livre) -->
-    <div class="subnav-pills-bar">
-        <a href="{{ route('customers.index') }}" class="subnav-pill">
-            <i class="fas fa-users"></i>
-            <span>Fiches & Profils Clients</span>
-        </a>
-        <a href="{{ route('client-credits.index') }}" class="subnav-pill active">
-            <i class="fas fa-wallet text-danger"></i>
-            <span>Crédits, Créances & Dettes</span>
-            <span class="subnav-pill-badge">{{ $totalDebtorsCount ?? 0 }} Débiteur(s)</span>
-        </a>
-        <a href="{{ route('client-credits.transactions') }}" class="subnav-pill">
-            <i class="fas fa-list-check text-primary"></i>
-            <span>Grand Livre des Règlements</span>
-        </a>
-    </div>
+    @include('partials.subnav.clients')
 
     <!-- Alert / Flash message -->
     @if(session('success'))

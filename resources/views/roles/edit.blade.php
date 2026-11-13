@@ -7,10 +7,25 @@
 @endpush
 
 @section('content')
-<div class="page-header">
-    <h1 class="page-title"><i class="fas fa-edit"></i> Edit Role: {{ $role->name }}</h1>
-    <p class="page-subtitle">Update role information and permissions</p>
-</div>
+<div class="dashboard-container">
+    <div class="brand-header">
+        <div class="d-flex align-items-center gap-2.5">
+            <div class="brand-header-icon flex-shrink-0">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <div>
+                <h1 class="brand-title">Modifier le Rôle : {{ $role->name }}</h1>
+                <p class="brand-subtitle">Mettez à jour le nom et la matrice des permissions</p>
+            </div>
+        </div>
+        <div class="brand-header-actions">
+            <a href="{{ route('roles.index') }}" class="btn-brand-outline">
+                <i class="fas fa-arrow-left me-1.5"></i> Retour aux Rôles
+            </a>
+        </div>
+    </div>
+
+    @include('partials.subnav.system')
 
 @if($errors->any())
 <div class="alert alert-danger">
@@ -54,23 +69,15 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label">
-                    <i class="fas fa-key"></i> Assign Permissions
+                <label class="form-label mb-2">
+                    <i class="fas fa-key me-1 text-primary"></i> Matrice des Permissions (Tableau de bord, Sections &amp; Actions)
                 </label>
-                <div class="permissions-grid">
-                    @foreach($permissions as $permission)
-                    <div class="permission-checkbox">
-                        <input type="checkbox" 
-                               id="permission-{{ $permission->id }}" 
-                               name="permissions[]" 
-                               value="{{ $permission->id }}"
-                               {{ in_array($permission->id, old('permissions', $rolePermissions)) ? 'checked' : '' }}>
-                        <label for="permission-{{ $permission->id }}">
-                            {{ ucwords(str_replace('_', ' ', $permission->name)) }}
-                        </label>
-                    </div>
-                    @endforeach
-                </div>
+                @include('roles._permission_matrix', [
+                    'permissionModules' => $permissionModules,
+                    'permissionsByName' => $permissionsByName,
+                    'permissions' => $permissions,
+                    'selectedPermissions' => old('permissions', $rolePermissions),
+                ])
             </div>
 
             <div class="form-actions">

@@ -25,7 +25,7 @@ class SendDailySummary extends Command
             'new_customers_today' => Customer::whereDate('created_at', today())->count(),
             'pending_orders' => Order::where('status', 'pending')->count(),
             'low_stock_products' => Product::where('track_inventory', true)
-                ->whereColumn('stock_quantity', '<=', 'low_stock_threshold')
+                ->whereRaw('stock <= COALESCE(low_stock_threshold, min_stock, 5)')
                 ->count(),
             'pending_reviews' => \App\Models\ProductReview::pending()->count(),
             'pending_returns' => \App\Models\ReturnOrder::pending()->count(),

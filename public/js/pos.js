@@ -403,6 +403,8 @@ window.checkout = function () {
     const customerEmail = document.getElementById('customerEmail').value.trim();
     const customerPhone = document.getElementById('customerPhone').value.trim();
     const paymentMethod = document.getElementById('paymentMethod').value;
+    const storeEl = document.getElementById('posStoreSelect');
+    const storeId = storeEl && storeEl.value ? storeEl.value : null;
 
     // Validate customer name
     if (!customerName || customerName.trim() === '') {
@@ -421,9 +423,11 @@ window.checkout = function () {
     checkoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
     const orderData = {
+        customer_id: document.getElementById('customerId')?.value || null,
         customer_name: customerName,
         customer_email: customerEmail || null,
         customer_phone: customerPhone || null,
+        store_id: storeId,
         payment_method: paymentMethod,
         items: cart.map(item => ({
             product_id: item.product_id,

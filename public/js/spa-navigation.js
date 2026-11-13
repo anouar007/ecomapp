@@ -175,8 +175,9 @@
         async navigate(url, pushState = true, isBackForward = false) {
             const targetUrl = new URL(url, window.location.origin).href;
 
-            // Don't re-navigate to the exact same page unless forced
+            // Don't re-navigate to the exact same page unless forced (still close mobile drawer)
             if (!isBackForward && targetUrl === window.location.href) {
+                this.closeMobileSidebar();
                 return;
             }
 
@@ -244,11 +245,14 @@
                 // 4. Synchronize Page-Specific Stylesheets (@push('styles'))
                 this.syncStyles(newDoc);
 
-                // 5. Swap Main Content HTML & Classes
+                // 5. Swap Main Content HTML & Classes (preserve sidebar-collapsed expanded state)
                 if (mainContent) {
+                    const wasExpanded = mainContent.classList.contains('expanded');
                     mainContent.innerHTML = newMain.innerHTML;
-                    // Preserve base class
                     mainContent.className = newMain.className || 'main-content';
+                    if (wasExpanded) {
+                        mainContent.classList.add('expanded');
+                    }
                 }
 
                 // 6. Synchronize Page-Specific Scripts Container
@@ -263,7 +267,11 @@
                     window.history.pushState({ spa: true, url: targetUrl }, newDoc.title, targetUrl);
                 }
 
-                // 8. Update Active Sidebar Links & Subnav Tabs
+                // 8. Sync Sidebar Collapse Preference (e.g. restore when leaving POS) & Active Nav
+                const targetPath = new URL(targetUrl).pathname.toLowerCase();
+                if (window.WinaSidebar && typeof window.WinaSidebar.syncFromPreference === 'function') {
+                    window.WinaSidebar.syncFromPreference(targetPath.startsWith('/pos'));
+                }
                 this.syncActiveNavigation(newDoc, targetUrl);
 
                 // 9. Close Mobile Sidebar Drawer if open
@@ -358,10 +366,10 @@
         },
 
         /**
-         * Sync active state on sidebar links and top breadcrumbs
+         * Sync active state on sidebar links and top navbar actions
          */
         syncActiveNavigation(newDoc, targetUrl) {
-            const targetPath = new URL(targetUrl).pathname;
+            const targetPath = new URL(targetUrl).pathname.replace(/\/+$/, '') || '/';
             const sidebarLinks = document.querySelectorAll('.sidebar-menu-link');
 
             // 1. Clear current active classes
@@ -369,27 +377,56 @@
 
             // 2. Read new active links from Laravel's rendered response
             const newActiveLinks = newDoc.querySelectorAll('.sidebar-menu-link.active');
+            let matched = false;
             if (newActiveLinks.length > 0) {
                 newActiveLinks.forEach(newLink => {
                     const href = newLink.getAttribute('href');
-                    const match = document.querySelector(`.sidebar-menu-link[href="${href}"]`);
-                    if (match) match.classList.add('active');
-                });
-            } else {
-                // Fallback pathname matching
-                sidebarLinks.forEach(link => {
-                    const linkHref = link.getAttribute('href');
-                    if (linkHref && linkHref.startsWith('http')) {
-                        try {
-                            const linkPath = new URL(linkHref).pathname;
-                            if (linkPath === targetPath) {
-                                link.classList.add('active');
-                            }
-                        } catch (e) {}
-                    } else if (linkHref === targetPath) {
-                        link.classList.add('active');
+                    if (!href) return;
+                    let match = null;
+                    sidebarLinks.forEach(link => {
+                        if (link.getAttribute('href') === href) {
+                            match = link;
+                        }
+                    });
+                    if (match) {
+                        match.classList.add('active');
+                        matched = true;
                     }
                 });
+            }
+
+            if (!matched) {
+                // Fallback normalized pathname matching
+                sidebarLinks.forEach(link => {
+                    const linkHref = link.getAttribute('href');
+                    if (!linkHref) return;
+                    try {
+                        const linkPath = new URL(linkHref, window.location.origin).pathname.replace(/\/+$/, '') || '/';
+                        if (linkPath === targetPath) {
+                            link.classList.add('active');
+                        }
+                    } catch (e) {}
+                });
+            }
+
+            // 3. Sync POS Top Navbar active pills (desktop & mobile)
+            const isPos = targetPath === '/pos' || targetPath.startsWith('/pos/');
+            const desktopPosBtn = document.querySelector('.navbar .nav-btn-pos');
+            if (desktopPosBtn) {
+                desktopPosBtn.classList.toggle('active', isPos);
+            }
+            const mobilePosBtn = document.querySelector('.navbar .nav-btn-shop-mobile[href*="/pos"]');
+            if (mobilePosBtn) {
+                mobilePosBtn.classList.toggle('text-white', isPos);
+                mobilePosBtn.classList.toggle('bg-danger', isPos);
+                mobilePosBtn.classList.toggle('border-danger', isPos);
+                const mobileIcon = mobilePosBtn.querySelector('i');
+                if (mobileIcon) mobileIcon.classList.toggle('text-white', isPos);
+            }
+
+            // 4. Expand collapsed section if active link lives inside it & ensure visibility
+            if (window.WinaSidebar && typeof window.WinaSidebar.onActiveLinkChanged === 'function') {
+                window.WinaSidebar.onActiveLinkChanged();
             }
         },
 
@@ -397,6 +434,10 @@
          * Automatically close mobile drawer when navigating
          */
         closeMobileSidebar() {
+            if (window.WinaSidebar && typeof window.WinaSidebar.closeMobile === 'function') {
+                window.WinaSidebar.closeMobile();
+                return;
+            }
             const sidebar = document.querySelector('.sidebar');
             const backdrop = document.querySelector('.sidebar-backdrop');
             const toggler = document.querySelector('.navbar-toggler');

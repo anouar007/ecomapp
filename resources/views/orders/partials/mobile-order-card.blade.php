@@ -202,6 +202,20 @@
                 <i class="fas fa-wallet text-muted me-1"></i>{{ ucfirst(str_replace('_', ' ', $order->payment_method)) }}
             </span>
         @endif
+        @php
+            $mobStores = $order->items->pluck('store')->filter()->unique('id');
+            $mobUnassigned = $order->items->whereNull('store_id')->isNotEmpty();
+        @endphp
+        @foreach($mobStores as $mst)
+            <span class="mobile-order-badge" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;">
+                <i class="fas fa-warehouse me-1"></i>{{ $mst->name }}
+            </span>
+        @endforeach
+        @if($mobUnassigned && $totalItemsCount > 0)
+            <a href="{{ route('orders.show', $order) }}" class="mobile-order-badge text-decoration-none" style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a;">
+                <i class="fas fa-store-slash me-1"></i>Dépôt à affecter
+            </a>
+        @endif
     </div>
 
     <!-- Bottom Actions Toolbar -->

@@ -83,38 +83,34 @@
             </div>
             <div>
                 <h1 class="brand-title">Journal d'Activité & Traçabilité</h1>
-                <p class="brand-subtitle">Historique complet des modifications : anciennes valeurs, dates et opérateurs</p>
+                <p class="brand-subtitle">Audit complet des actions : anciennes valeurs, adresses IP, modules et opérateurs</p>
             </div>
         </div>
 
-        <div class="brand-header-actions">
-            <form action="{{ route('activity-logs.clear') }}" method="POST" onsubmit="return confirm('Purger définitivement les journaux anciens de plus de 90 jours ?');" class="m-0">
+        <div class="brand-header-actions d-flex align-items-center gap-2 flex-wrap">
+            <a href="{{ route('activity-logs.export', request()->except('page')) }}" class="btn-brand-outline">
+                <i class="fas fa-file-csv me-1.5 text-success"></i>
+                <span>Exporter CSV</span>
+            </a>
+
+            <form id="purgeLogsForm" action="{{ route('activity-logs.clear') }}" method="POST" class="d-flex align-items-center gap-1.5 m-0">
                 @csrf
-                <input type="hidden" name="older_than_days" value="90">
-                <button type="submit" class="btn-brand-outline text-danger" style="border-color: #fee2e2;">
+                <select name="older_than_days" id="purgeDaysSelect" class="form-select form-select-sm rounded-pill bg-white border" style="width: auto; font-size: 0.78rem;">
+                    <option value="30">&gt; 30 jours</option>
+                    <option value="90" selected>&gt; 90 jours</option>
+                    <option value="180">&gt; 180 jours</option>
+                    <option value="365">&gt; 1 an</option>
+                </select>
+                <button type="button" onclick="confirmPurgeLogs()" class="btn-brand-outline text-danger" style="border-color: #fee2e2;">
                     <i class="fas fa-trash-can me-1.5 text-danger"></i>
-                    <span>Purger (>90j)</span>
+                    <span>Purger</span>
                 </button>
             </form>
         </div>
     </div>
 
     <!-- Navigation Croisée Système & Audit -->
-    <div class="subnav-pills-bar">
-        <a href="{{ route('activity-logs.index') }}" class="subnav-pill active">
-            <i class="fas fa-shield-alt text-primary"></i>
-            <span>Journal d'Activité & Traçabilité</span>
-            <span class="subnav-pill-badge">{{ $logs->total() ?? 0 }}</span>
-        </a>
-        <a href="{{ route('users.index') }}" class="subnav-pill">
-            <i class="fas fa-users-gear text-dark"></i>
-            <span>Équipe, Collaborateurs & Rôles</span>
-        </a>
-        <a href="{{ route('settings.index') }}" class="subnav-pill">
-            <i class="fas fa-sliders text-secondary"></i>
-            <span>Paramètres Système</span>
-        </a>
-    </div>
+    @include('partials.subnav.system')
 
     <!-- Feedback Alerts -->
     @if(session('success'))
@@ -125,45 +121,66 @@
     </div>
     @endif
 
-    <!-- KPI Statistics Cards (Product Section Standard) -->
-    <div class="row g-3 mb-4">
-        <div class="col-4">
-            <div class="stat-kpi-card">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <div class="stat-kpi-label">Total Événements</div>
-                        <div class="stat-kpi-value text-dark">{{ number_format($stats['total_activities']) }}</div>
-                        <div class="stat-kpi-sub text-muted">Historique audité</div>
-                    </div>
-                    <div class="stat-kpi-icon bg-primary-subtle text-primary">
-                        <i class="fas fa-list-check"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-4">
-            <div class="stat-kpi-card">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <div class="stat-kpi-label">Aujourd'hui</div>
-                        <div class="stat-kpi-value text-success">{{ number_format($stats['today_activities']) }}</div>
-                        <div class="stat-kpi-sub text-muted">Actions en direct</div>
-                    </div>
-                    <div class="stat-kpi-icon bg-success-subtle text-success">
-                        <i class="fas fa-bolt"></i>
+    <!-- KPI Statistics Cards -->
+    <div class="row g-2.5 g-md-3 mb-3">
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('activity-logs.index') }}" class="text-decoration-none d-block h-100">
+                <div class="stat-kpi-card h-100">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="stat-kpi-label">Résultats / Total</div>
+                            <div class="stat-kpi-value text-dark">{{ number_format($stats['filtered_count']) }}</div>
+                            <div class="stat-kpi-sub text-muted">sur {{ number_format($stats['total_activities']) }} au total</div>
+                        </div>
+                        <div class="stat-kpi-icon bg-primary-subtle text-primary">
+                            <i class="fas fa-list-check"></i>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
 
-        <div class="col-4">
-            <div class="stat-kpi-card">
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('activity-logs.index', ['start_date' => now()->toDateString(), 'end_date' => now()->toDateString()]) }}" class="text-decoration-none d-block h-100">
+                <div class="stat-kpi-card h-100">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="stat-kpi-label">Aujourd'hui</div>
+                            <div class="stat-kpi-value text-success">{{ number_format($stats['today_activities']) }}</div>
+                            <div class="stat-kpi-sub text-muted">Actions du jour</div>
+                        </div>
+                        <div class="stat-kpi-icon bg-success-subtle text-success">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('activity-logs.index', ['event' => 'security']) }}" class="text-decoration-none d-block h-100">
+                <div class="stat-kpi-card h-100">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="stat-kpi-label">Alertes &amp; Suppr.</div>
+                            <div class="stat-kpi-value text-danger">{{ number_format($stats['security_events']) }}</div>
+                            <div class="stat-kpi-sub text-muted">Suppressions &amp; sécurité</div>
+                        </div>
+                        <div class="stat-kpi-icon bg-danger-subtle text-danger">
+                            <i class="fas fa-shield-halved"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="stat-kpi-card h-100">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <div class="stat-kpi-label">Opérateurs</div>
                         <div class="stat-kpi-value text-info">{{ number_format($stats['unique_users']) }}</div>
-                        <div class="stat-kpi-sub text-muted">Membres actifs</div>
+                        <div class="stat-kpi-sub text-muted">Comptes tracés</div>
                     </div>
                     <div class="stat-kpi-icon bg-info-subtle text-info">
                         <i class="fas fa-users"></i>
@@ -174,77 +191,146 @@
     </div>
 
     <!-- Quick Event Filter Chips (Horizontal Scroll) -->
+    @php
+        $baseChipParams = request()->except(['event', 'page']);
+    @endphp
     <div class="chips-scroll mb-2.5">
-        <a href="{{ route('activity-logs.index', request()->except('event')) }}" 
+        <a href="{{ route('activity-logs.index', $baseChipParams) }}"
            class="chip-item {{ !request('event') ? 'active' : '' }}">
             <i class="fas fa-layer-group"></i>
-            <span>Tous les événements</span>
+            <span>Tous</span>
         </a>
-        <a href="{{ route('activity-logs.index', array_merge(request()->all(), ['event' => 'updated'])) }}" 
+        <a href="{{ route('activity-logs.index', array_merge($baseChipParams, ['event' => 'updated'])) }}"
            class="chip-item {{ request('event') === 'updated' ? 'active' : '' }}">
             <i class="fas fa-pen-to-square text-primary"></i>
             <span>Modifications</span>
         </a>
-        <a href="{{ route('activity-logs.index', array_merge(request()->all(), ['event' => 'created'])) }}" 
+        <a href="{{ route('activity-logs.index', array_merge($baseChipParams, ['event' => 'created'])) }}"
            class="chip-item {{ request('event') === 'created' ? 'active' : '' }}">
             <i class="fas fa-plus-circle text-success"></i>
             <span>Créations</span>
         </a>
-        <a href="{{ route('activity-logs.index', array_merge(request()->all(), ['event' => 'deleted'])) }}" 
+        <a href="{{ route('activity-logs.index', array_merge($baseChipParams, ['event' => 'deleted'])) }}"
            class="chip-item {{ request('event') === 'deleted' ? 'active' : '' }}">
             <i class="fas fa-trash-can text-danger"></i>
             <span>Suppressions</span>
         </a>
-        <a href="{{ route('activity-logs.index', array_merge(request()->all(), ['event' => 'login'])) }}" 
+        <a href="{{ route('activity-logs.index', array_merge($baseChipParams, ['event' => 'login'])) }}"
            class="chip-item {{ request('event') === 'login' ? 'active' : '' }}">
             <i class="fas fa-right-to-bracket text-info"></i>
             <span>Connexions</span>
+        </a>
+        <a href="{{ route('activity-logs.index', array_merge($baseChipParams, ['event' => 'exported'])) }}"
+           class="chip-item {{ request('event') === 'exported' ? 'active' : '' }}">
+            <i class="fas fa-file-export text-secondary"></i>
+            <span>Exports</span>
+        </a>
+        <a href="{{ route('activity-logs.index', array_merge($baseChipParams, ['event' => 'security'])) }}"
+           class="chip-item {{ request('event') === 'security' ? 'active' : '' }}">
+            <i class="fas fa-shield-exclamation text-danger"></i>
+            <span>Sécurité</span>
         </a>
     </div>
 
     <!-- Search & Filter Bar -->
     <div class="card border-0 rounded-4 shadow-xs bg-white mb-3">
         <div class="card-body p-2.5 p-md-3">
-            <form method="GET" action="{{ route('activity-logs.index') }}" class="row g-2 align-items-center">
-                @if(request('event'))
-                    <input type="hidden" name="event" value="{{ request('event') }}">
-                @endif
-                <div class="col-12 col-md-4">
+            <form method="GET" action="{{ route('activity-logs.index') }}" class="row g-2 align-items-center" id="activityFilterForm">
+                <div class="col-12 col-lg-3">
                     <div class="input-group">
                         <span class="input-group-text bg-light border-end-0 rounded-start-pill ps-3 text-muted">
                             <i class="fas fa-search"></i>
                         </span>
-                        <input type="text" name="search" class="form-control bg-light border-start-0 rounded-end-pill py-2" 
-                               placeholder="Rechercher par mot-clé, produit, commande..." 
+                        <input type="text" name="search" class="form-control bg-light border-start-0 rounded-end-pill py-2"
+                               placeholder="Mot-clé, IP, utilisateur, #ID..."
                                value="{{ request('search') }}">
                     </div>
                 </div>
-                
-                <div class="col-6 col-md-3">
-                    <select name="user_id" class="form-select bg-light rounded-pill py-2" onchange="this.form.submit()">
-                        <option value="">Tous les utilisateurs</option>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <select name="user_id" class="form-select bg-light rounded-pill py-2" onchange="this.form.submit()" aria-label="Filtrer par opérateur">
+                        <option value="">Tous opérateurs</option>
                         @foreach($users as $user)
-                            <option value="{{ $user->id }}" {{ request('user_id') == $user->id ? 'selected' : '' }}>
+                            <option value="{{ $user->id }}" {{ (string) request('user_id') === (string) $user->id ? 'selected' : '' }}>
                                 {{ $user->name }}
                             </option>
                         @endforeach
                     </select>
                 </div>
 
-                <div class="col-6 col-md-3">
-                    <input type="date" name="start_date" class="form-control bg-light rounded-pill py-2" 
-                           value="{{ request('start_date') }}" title="Date début" onchange="this.form.submit()">
+                <div class="col-6 col-md-3 col-lg-2">
+                    <select name="subject_type" class="form-select bg-light rounded-pill py-2" onchange="this.form.submit()" aria-label="Filtrer par module">
+                        <option value="">Tous les modules</option>
+                        @foreach($subjectTypes as $typeClass => $typeLabel)
+                            <option value="{{ $typeClass }}" {{ request('subject_type') === $typeClass ? 'selected' : '' }}>
+                                {{ $typeLabel }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
-                
-                <div class="col-12 col-md-2 d-flex gap-2">
-                    <button type="submit" class="btn btn-dark rounded-pill py-2 w-100 fw-semibold">
-                        Filtrer
-                    </button>
-                    @if(request()->hasAny(['search', 'user_id', 'start_date', 'end_date', 'event']))
-                        <a href="{{ route('activity-logs.index') }}" class="btn btn-outline-secondary rounded-pill py-2 px-3" title="Réinitialiser">
-                            <i class="fas fa-rotate-left"></i>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <select name="event" class="form-select bg-light rounded-pill py-2" onchange="this.form.submit()" aria-label="Filtrer par événement">
+                        <option value="">Tous événements</option>
+                        <option value="security" {{ request('event') === 'security' ? 'selected' : '' }}>Sécurité &amp; Suppressions</option>
+                        @foreach($eventOptions as $evtKey => $evtLabel)
+                            <option value="{{ $evtKey }}" {{ request('event') === $evtKey ? 'selected' : '' }}>
+                                {{ $evtLabel }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-6 col-md-3 col-lg-1">
+                    <select name="per_page" class="form-select bg-light rounded-pill py-2" onchange="this.form.submit()" aria-label="Lignes par page">
+                        @foreach([25, 50, 100] as $pp)
+                            <option value="{{ $pp }}" {{ (int) ($perPage ?? 50) === $pp ? 'selected' : '' }}>{{ $pp }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-light border-end-0 text-muted">Du</span>
+                        <input type="date" name="start_date" class="form-control bg-light border-start-0"
+                               value="{{ request('start_date') }}" title="Date début">
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-light border-end-0 text-muted">Au</span>
+                        <input type="date" name="end_date" class="form-control bg-light border-start-0"
+                               value="{{ request('end_date') }}" title="Date fin">
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-4 col-lg-8 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                        <span class="text-muted small me-1" style="font-size: 0.74rem;">Période :</span>
+                        <a href="{{ route('activity-logs.index', array_merge(request()->except(['start_date', 'end_date', 'page']), ['start_date' => now()->toDateString(), 'end_date' => now()->toDateString()])) }}"
+                           class="btn btn-xs btn-light border rounded-pill px-2.5 py-1 {{ request('start_date') === now()->toDateString() && request('end_date') === now()->toDateString() ? 'fw-bold border-dark' : '' }}" style="font-size: 0.74rem;">
+                            Aujourd'hui
                         </a>
-                    @endif
+                        <a href="{{ route('activity-logs.index', array_merge(request()->except(['start_date', 'end_date', 'page']), ['start_date' => now()->subDays(6)->toDateString(), 'end_date' => now()->toDateString()])) }}"
+                           class="btn btn-xs btn-light border rounded-pill px-2.5 py-1" style="font-size: 0.74rem;">
+                            7 jours
+                        </a>
+                        <a href="{{ route('activity-logs.index', array_merge(request()->except(['start_date', 'end_date', 'page']), ['start_date' => now()->subDays(29)->toDateString(), 'end_date' => now()->toDateString()])) }}"
+                           class="btn btn-xs btn-light border rounded-pill px-2.5 py-1" style="font-size: 0.74rem;">
+                            30 jours
+                        </a>
+                    </div>
+                    <div class="d-flex gap-2 ms-auto">
+                        <button type="submit" class="btn btn-dark btn-sm rounded-pill px-3.5 py-1.5 fw-semibold">
+                            <i class="fas fa-filter me-1"></i> Filtrer
+                        </button>
+                        @if(request()->hasAny(['search', 'user_id', 'subject_type', 'start_date', 'end_date', 'event']))
+                            <a href="{{ route('activity-logs.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3 py-1.5" title="Réinitialiser">
+                                <i class="fas fa-rotate-left me-1"></i> Réinitialiser
+                            </a>
+                        @endif
+                    </div>
                 </div>
             </form>
         </div>
@@ -259,10 +345,10 @@
                 <thead class="bg-light border-bottom">
                     <tr>
                         <th class="ps-4 py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.74rem; letter-spacing: 0.05em; width: 22%;">Opérateur</th>
-                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.74rem; letter-spacing: 0.05em; width: 14%;">Événement</th>
-                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.74rem; letter-spacing: 0.05em; width: 34%;">Description & Détail</th>
-                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.74rem; letter-spacing: 0.05em; width: 16%;">Date & Heure</th>
-                        <th class="pe-4 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.74rem; letter-spacing: 0.05em; width: 14%;">Comparatif Diff</th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.74rem; letter-spacing: 0.05em; width: 13%;">Événement</th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.74rem; letter-spacing: 0.05em; width: 35%;">Description &amp; Détail</th>
+                        <th class="py-3 text-secondary text-uppercase fw-semibold" style="font-size: 0.74rem; letter-spacing: 0.05em; width: 17%;">Date, IP &amp; Appareil</th>
+                        <th class="pe-4 py-3 text-secondary text-uppercase fw-semibold text-end" style="font-size: 0.74rem; letter-spacing: 0.05em; width: 13%;">Inspection</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y">
@@ -275,12 +361,19 @@
                     <tr class="hover-bg-light transition-all">
                         <td class="ps-4 py-3">
                             <div class="d-flex align-items-center gap-2.5">
-                                <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-xs flex-shrink-0" 
+                                <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-xs flex-shrink-0"
                                      style="width: 36px; height: 36px; background: linear-gradient(135deg, #334155 0%, #0f172a 100%); font-size: 0.85rem;">
                                     {{ strtoupper(substr($userName, 0, 1)) }}
                                 </div>
                                 <div class="min-w-0">
-                                    <span class="fw-bold text-dark text-truncate d-block small">{{ $userName }}</span>
+                                    @if($log->user_id)
+                                        <a href="{{ route('activity-logs.index', array_merge(request()->except('page'), ['user_id' => $log->user_id])) }}"
+                                           class="fw-bold text-dark text-truncate d-block small text-decoration-none" title="Filtrer par {{ $userName }}">
+                                            {{ $userName }}
+                                        </a>
+                                    @else
+                                        <span class="fw-bold text-dark text-truncate d-block small">{{ $userName }}</span>
+                                    @endif
                                     @if($userEmail)
                                         <small class="text-muted text-truncate d-block" style="font-size: 0.72rem;">{{ $userEmail }}</small>
                                     @endif
@@ -298,6 +391,11 @@
                                         {{ $log->subject_label }}
                                     </span>
                                 @endif
+                                @if($hasDiff)
+                                    <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2 py-0.5" style="font-size: 0.68rem;">
+                                        {{ count($log->changes) }} champ(s)
+                                    </span>
+                                @endif
                                 @if($log->source_url)
                                     <a href="{{ $log->source_url }}" class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill text-decoration-none px-2 py-0.5" style="font-size: 0.68rem;" title="Ouvrir la fiche source">
                                         <i class="fas fa-arrow-up-right-from-square me-1"></i> Fiche source
@@ -306,23 +404,29 @@
                             </div>
                         </td>
                         <td class="py-3">
-                            <div class="small fw-semibold text-dark">{{ $log->created_at->format('d/m/Y') }}</div>
-                            <small class="text-muted font-monospace" style="font-size: 0.72rem;">
-                                {{ $log->created_at->format('H:i:s') }} ({{ $log->created_at->diffForHumans() }})
-                            </small>
+                            <div class="small fw-semibold text-dark">
+                                {{ $log->created_at->format('d/m/Y') }}
+                                <span class="text-muted fw-normal font-monospace" style="font-size: 0.74rem;">{{ $log->created_at->format('H:i:s') }}</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-1.5 flex-wrap mt-0.5">
+                                @if($log->ip_address)
+                                    <a href="{{ route('activity-logs.index', ['search' => $log->ip_address]) }}"
+                                       class="badge bg-light text-secondary border font-monospace text-decoration-none px-1.5 py-0" style="font-size: 0.65rem;" title="Filtrer par IP">
+                                        {{ $log->ip_address }}
+                                    </a>
+                                @endif
+                                <small class="text-muted" style="font-size: 0.68rem;" title="{{ $log->user_agent }}">
+                                    {{ $log->user_agent_summary }}
+                                </small>
+                            </div>
                         </td>
                         <td class="pe-4 py-3 text-end">
-                            @if($hasDiff)
-                                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-semibold d-inline-flex align-items-center gap-1.5"
-                                        onclick="openLogDiffModal({{ $log->id }})">
-                                    <i class="fas fa-code-compare"></i>
-                                    <span>Voir Diff</span>
-                                </button>
-                            @else
-                                <a href="{{ route('activity-logs.show', $log) }}" class="btn btn-sm btn-light rounded-pill px-3 py-1 text-secondary border">
-                                    <i class="fas fa-eye me-1"></i> Détails
-                                </a>
-                            @endif
+                            <button type="button"
+                                    class="btn btn-sm {{ $hasDiff ? 'btn-outline-primary fw-semibold' : 'btn-light text-secondary border' }} rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1.5"
+                                    onclick="openLogDiffModal({{ $log->id }})">
+                                <i class="fas {{ $hasDiff ? 'fa-code-compare' : 'fa-eye' }}"></i>
+                                <span>{{ $hasDiff ? 'Voir Diff' : 'Détails' }}</span>
+                            </button>
                         </td>
                     </tr>
                     @empty
@@ -331,7 +435,7 @@
                             <div class="py-4 opacity-75">
                                 <i class="fas fa-history fa-3x text-muted mb-3"></i>
                                 <h6 class="fw-bold text-dark">Aucune activité enregistrée</h6>
-                                <p class="text-muted small mb-0">Les actions de création, mise à jour et suppression apparaîtront ici automatiquement.</p>
+                                <p class="text-muted small mb-0">Aucune trace ne correspond aux filtres sélectionnés.</p>
                             </div>
                         </td>
                     </tr>
@@ -353,7 +457,7 @@
         <div class="card border rounded-4 p-3 mb-2.5 bg-white shadow-xs">
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <div class="d-flex align-items-center gap-2 min-w-0">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-xs flex-shrink-0" 
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-xs flex-shrink-0"
                          style="width: 32px; height: 32px; background: linear-gradient(135deg, #334155 0%, #0f172a 100%); font-size: 0.8rem;">
                         {{ strtoupper(substr($userName, 0, 1)) }}
                     </div>
@@ -388,16 +492,11 @@
                 <small class="text-muted" style="font-size: 0.72rem;">
                     <i class="fas fa-clock me-1"></i>{{ $log->created_at->format('d/m/Y H:i:s') }}
                 </small>
-                @if($hasDiff)
-                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-semibold" 
-                            style="font-size: 0.78rem;" onclick="openLogDiffModal({{ $log->id }})">
-                        <i class="fas fa-code-compare me-1"></i> Voir Diff
-                    </button>
-                @else
-                    <a href="{{ route('activity-logs.show', $log) }}" class="btn btn-sm btn-light rounded-pill px-3 py-1 text-secondary border" style="font-size: 0.78rem;">
-                        <i class="fas fa-eye me-1"></i> Détails
-                    </a>
-                @endif
+                <button type="button"
+                        class="btn btn-sm {{ $hasDiff ? 'btn-outline-primary fw-semibold' : 'btn-light text-secondary border' }} rounded-pill px-3 py-1"
+                        style="font-size: 0.78rem;" onclick="openLogDiffModal({{ $log->id }})">
+                    <i class="fas {{ $hasDiff ? 'fa-code-compare' : 'fa-eye' }} me-1"></i> {{ $hasDiff ? 'Voir Diff' : 'Détails' }}
+                </button>
             </div>
         </div>
         @empty
@@ -440,7 +539,7 @@
 
             <!-- Modal Body -->
             <div class="modal-body p-3 p-md-4 bg-light">
-                
+
                 <!-- Operator & Metadata Card -->
                 <div class="card border-0 rounded-3 bg-white shadow-xs p-3 mb-3">
                     <div class="row g-2 small">
@@ -449,23 +548,24 @@
                             <strong class="text-dark d-block" id="diff_modal_user"></strong>
                         </div>
                         <div class="col-6 col-sm-3">
-                            <span class="text-muted d-block" style="font-size: 0.72rem;">Date & Heure :</span>
+                            <span class="text-muted d-block" style="font-size: 0.72rem;">Date &amp; Heure :</span>
                             <span class="text-dark font-monospace" id="diff_modal_date"></span>
                         </div>
                         <div class="col-6 col-sm-3">
-                            <span class="text-muted d-block" style="font-size: 0.72rem;">Adresse IP :</span>
-                            <span class="text-dark font-monospace" id="diff_modal_ip"></span>
+                            <span class="text-muted d-block" style="font-size: 0.72rem;">IP &amp; Appareil :</span>
+                            <span class="text-dark font-monospace d-block" id="diff_modal_ip"></span>
+                            <span class="text-muted d-block" style="font-size: 0.68rem;" id="diff_modal_ua"></span>
                         </div>
                         <div class="col-6 col-sm-3">
                             <span class="text-muted d-block" style="font-size: 0.72rem;">Élément ciblé :</span>
                             <span class="badge bg-secondary-subtle text-secondary border rounded-pill" id="diff_modal_subject"></span>
                         </div>
                     </div>
-                    <div class="mt-2 pt-2 border-top small text-muted font-monospace" style="font-size: 0.72rem;" id="diff_modal_desc"></div>
+                    <div class="mt-2 pt-2 border-top small text-muted font-monospace" style="font-size: 0.74rem;" id="diff_modal_desc"></div>
                 </div>
 
                 <!-- Changes Table -->
-                <div class="card border-0 rounded-3 bg-white shadow-xs overflow-hidden">
+                <div class="card border-0 rounded-3 bg-white shadow-xs overflow-hidden mb-3" id="diff_modal_changes_card">
                     <div class="card-header bg-white py-2.5 px-3 border-bottom d-flex align-items-center justify-content-between">
                         <span class="fw-bold text-dark small">
                             <i class="fas fa-table-columns text-primary me-1.5"></i> Attributs Modifiés (Ancienne vs Nouvelle Valeur)
@@ -488,13 +588,31 @@
                     </div>
                 </div>
 
+                <!-- Extra Properties Table -->
+                <div class="card border-0 rounded-3 bg-white shadow-xs overflow-hidden d-none" id="diff_modal_props_card">
+                    <div class="card-header bg-white py-2.5 px-3 border-bottom d-flex align-items-center justify-content-between">
+                        <span class="fw-bold text-dark small">
+                            <i class="fas fa-circle-info text-secondary me-1.5"></i> Propriétés &amp; Métadonnées
+                        </span>
+                        <span class="badge bg-light text-secondary border rounded-pill" id="diff_modal_props_count">0</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <tbody id="diff_modal_props_tbody" class="divide-y small"></tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
 
             <!-- Modal Footer -->
-            <div class="modal-footer bg-white py-2.5 px-3 border-top d-flex justify-content-between">
-                <div>
+            <div class="modal-footer bg-white py-2.5 px-3 border-top d-flex justify-content-between flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-2">
                     <a id="diff_modal_source_btn" href="#" class="btn btn-sm btn-primary rounded-pill px-3.5 d-none">
-                        <i class="fas fa-arrow-up-right-from-square me-1.5"></i> Consulter la fiche source
+                        <i class="fas fa-arrow-up-right-from-square me-1.5"></i> Fiche source
+                    </a>
+                    <a id="diff_modal_full_btn" href="#" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                        <i class="fas fa-expand me-1"></i> Page complète
                     </a>
                 </div>
                 <button type="button" class="btn btn-sm btn-light rounded-pill px-4" data-bs-dismiss="modal">
@@ -508,14 +626,56 @@
 
 @push('scripts')
 <script>
-let bsDiffModal = null;
-
-document.addEventListener('DOMContentLoaded', function() {
+function getLogDiffModal() {
     const el = document.getElementById('logDiffModal');
-    if (el) bsDiffModal = new bootstrap.Modal(el);
-});
+    return el ? bootstrap.Modal.getOrCreateInstance(el) : null;
+}
 
-function openLogDiffModal(logId) {
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function formatDiffValue(val, emptyLabel) {
+    if (val === null || val === undefined || val === '') {
+        return `<span class="text-muted fst-italic">${escapeHtml(emptyLabel)}</span>`;
+    }
+    const raw = typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val);
+    return `<span style="white-space: pre-wrap; word-break: break-word;">${escapeHtml(raw)}</span>`;
+}
+
+async function confirmPurgeLogs() {
+    const days = document.getElementById('purgeDaysSelect')?.value || '90';
+    const form = document.getElementById('purgeLogsForm');
+    if (!form) return;
+
+    let confirmed = false;
+    if (typeof Swal !== 'undefined') {
+        const res = await Swal.fire({
+            icon: 'warning',
+            title: 'Purger les anciens journaux ?',
+            text: `Les entrées antérieures à ${days} jours seront supprimées définitivement.`,
+            showCancelButton: true,
+            confirmButtonColor: '#dc2626',
+            confirmButtonText: 'Purger maintenant',
+            cancelButtonText: 'Annuler'
+        });
+        confirmed = res.isConfirmed;
+    } else {
+        confirmed = confirm(`Purger définitivement les journaux de plus de ${days} jours ?`);
+    }
+
+    if (confirmed) {
+        form.submit();
+    }
+}
+
+async function openLogDiffModal(logId) {
     document.getElementById('logDiffModalLabel').textContent = 'Chargement du comparatif...';
     document.getElementById('diff_modal_tbody').innerHTML = `
         <tr>
@@ -524,20 +684,29 @@ function openLogDiffModal(logId) {
             </td>
         </tr>
     `;
+    document.getElementById('diff_modal_props_card')?.classList.add('d-none');
 
-    if (bsDiffModal) bsDiffModal.show();
+    const fullBtn = document.getElementById('diff_modal_full_btn');
+    if (fullBtn) fullBtn.href = `/activity-logs/${logId}`;
 
-    fetch(`/activity-logs/${logId}`, {
-        headers: { 'Accept': 'application/json' }
-    })
-    .then(res => res.json())
-    .then(data => {
-        document.getElementById('logDiffModalLabel').textContent = `Activité #${data.id} • ${data.event.toUpperCase()}`;
+    getLogDiffModal()?.show();
+
+    try {
+        const res = await fetch(`/activity-logs/${logId}`, {
+            headers: { 'Accept': 'application/json' }
+        });
+        if (!res.ok) {
+            throw new Error(`Erreur serveur (${res.status})`);
+        }
+        const data = await res.json();
+
+        document.getElementById('logDiffModalLabel').textContent = `Activité #${data.id} • ${(data.event || '').toUpperCase()}`;
         document.getElementById('diff_modal_user').textContent = data.user_name + (data.user_email ? ` (${data.user_email})` : '');
-        document.getElementById('diff_modal_date').textContent = data.date;
-        document.getElementById('diff_modal_ip').textContent = data.ip_address;
-        document.getElementById('diff_modal_subject').textContent = data.subject_label;
-        document.getElementById('diff_modal_desc').textContent = data.description;
+        document.getElementById('diff_modal_date').textContent = data.date || '';
+        document.getElementById('diff_modal_ip').textContent = data.ip_address || '—';
+        document.getElementById('diff_modal_ua').textContent = data.user_agent_summary || '';
+        document.getElementById('diff_modal_subject').textContent = data.subject_label || 'Système';
+        document.getElementById('diff_modal_desc').textContent = data.description || '';
 
         const sourceBtn = document.getElementById('diff_modal_source_btn');
         if (sourceBtn) {
@@ -564,41 +733,51 @@ function openLogDiffModal(logId) {
                     </td>
                 </tr>
             `;
-            return;
+        } else {
+            keys.forEach(key => {
+                const item = changes[key] || {};
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="fw-bold text-dark font-monospace small ps-3">${escapeHtml(key)}</td>
+                    <td class="diff-old">${formatDiffValue(item.old, 'Vide / Initial')}</td>
+                    <td class="diff-new">${formatDiffValue(item.new, 'Supprimé / Nul')}</td>
+                `;
+                tbody.appendChild(tr);
+            });
         }
 
-        keys.forEach(key => {
-            const item = changes[key];
-            const oldVal = item.old !== null && item.old !== undefined ? (typeof item.old === 'object' ? JSON.stringify(item.old, null, 2) : String(item.old)) : '<span class="text-muted fst-italic">Vide / Initial</span>';
-            const newVal = item.new !== null && item.new !== undefined ? (typeof item.new === 'object' ? JSON.stringify(item.new, null, 2) : String(item.new)) : '<span class="text-muted fst-italic">Supprimé / Nul</span>';
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td class="fw-bold text-dark font-monospace small ps-3">
-                    ${escapeHtml(key)}
+        // Render extra properties (excluding old/new already shown in diff table)
+        const propsCard = document.getElementById('diff_modal_props_card');
+        const propsTbody = document.getElementById('diff_modal_props_tbody');
+        const propsCount = document.getElementById('diff_modal_props_count');
+        if (propsCard && propsTbody && propsCount) {
+            const rawProps = data.properties || {};
+            const extraKeys = Object.keys(rawProps).filter(k => k !== 'old' && k !== 'new');
+            propsTbody.innerHTML = '';
+            if (extraKeys.length > 0) {
+                propsCount.textContent = `${extraKeys.length} clé(s)`;
+                extraKeys.forEach(k => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="ps-3 py-2 fw-bold text-dark font-monospace" style="width: 30%;">${escapeHtml(k)}</td>
+                        <td class="pe-3 py-2 font-monospace text-secondary">${formatDiffValue(rawProps[k], '—')}</td>
+                    `;
+                    propsTbody.appendChild(tr);
+                });
+                propsCard.classList.remove('d-none');
+            } else {
+                propsCard.classList.add('d-none');
+            }
+        }
+    } catch (err) {
+        document.getElementById('diff_modal_tbody').innerHTML = `
+            <tr>
+                <td colspan="3" class="text-center py-4 text-danger small">
+                    <i class="fas fa-circle-exclamation me-1"></i> Erreur lors du chargement : ${escapeHtml(err.message)}
                 </td>
-                <td class="diff-old">
-                    ${oldVal}
-                </td>
-                <td class="diff-new">
-                    ${newVal}
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
-    })
-    .catch(err => {
-        alert('Erreur lors du chargement : ' + err.message);
-    });
-}
-
-function escapeHtml(str) {
-    if (!str) return '';
-    return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+            </tr>
+        `;
+    }
 }
 </script>
 @endpush

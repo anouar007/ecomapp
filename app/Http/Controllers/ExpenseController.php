@@ -19,13 +19,15 @@ class ExpenseController extends Controller
     {
         $this->authorizeAccess();
 
-        $period = $request->get('period', 'month');
+        $search = trim((string) $request->get('search', ''));
+        $defaultPeriod = ($search !== '' && !$request->filled('start_date')) ? 'all' : 'month';
+        $period = $request->get('period', $defaultPeriod);
         [$startDate, $endDate] = $this->resolveDateRange($period, $request->get('start_date'), $request->get('end_date'));
 
         $category = $request->get('category');
         $storeId = $request->get('store_id');
         $paymentMethod = $request->get('payment_method');
-        $search = trim((string) $request->get('search', ''));
+        $status = $request->get('status');
 
         // Base query for current period
         $query = Expense::with(['store', 'user'])
@@ -43,12 +45,19 @@ class ExpenseController extends Controller
             $query->where('payment_method', $paymentMethod);
         }
 
+        if (in_array($status, ['paid', 'pending'], true)) {
+            $query->where('status', $status);
+        }
+
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
                   ->orWhere('expense_number', 'like', "%{$search}%")
                   ->orWhere('reference_number', 'like', "%{$search}%")
                   ->orWhere('payee', 'like', "%{$search}%");
+                if (ctype_digit($search)) {
+                    $q->orWhere('id', (int) $search);
+                }
             });
         }
 
@@ -98,6 +107,22 @@ class ExpenseController extends Controller
         $categories = Expense::$categories;
         $paymentMethods = Expense::$paymentMethods;
 
+        // Daily trend for chart
+        $dailyExpenseTrend = (clone $query)
+            ->where('status', 'paid')
+            ->selectRaw('DATE(expense_date) as date, SUM(amount) as total, COUNT(*) as count')
+            ->groupBy('date')
+            ->orderBy('date', 'asc')
+            ->get()
+            ->map(function ($row) {
+                $row->label = Carbon::parse($row->date)->translatedFormat('d M');
+                $row->total = round((float) $row->total, 2);
+                return $row;
+            });
+
+        $pendingExpensesTotal = (float) (clone $query)->where('status', 'pending')->sum('amount');
+        $pendingExpensesCount = (int) (clone $query)->where('status', 'pending')->count();
+
         // Recurring Expenses & Monthly Burn Rate
         $recurringExpenses = RecurringExpense::with(['store', 'user'])
             ->withCount('generatedExpenses')
@@ -129,7 +154,11 @@ class ExpenseController extends Controller
             'category',
             'storeId',
             'paymentMethod',
+            'status',
             'search',
+            'dailyExpenseTrend',
+            'pendingExpensesTotal',
+            'pendingExpensesCount',
             'stores',
             'categories',
             'paymentMethods',
@@ -488,6 +517,7 @@ class ExpenseController extends Controller
             'month' => [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()],
             'last_month' => [Carbon::now()->subMonth()->startOfMonth(), Carbon::now()->subMonth()->endOfMonth()],
             'year' => [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()],
+            'all' => [Carbon::create(2000, 1, 1), Carbon::now()->addYear()],
             'custom' => [
                 $start ? Carbon::parse($start) : Carbon::now()->startOfMonth(),
                 $end ? Carbon::parse($end) : Carbon::now()->endOfMonth(),

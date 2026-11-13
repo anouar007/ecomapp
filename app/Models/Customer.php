@@ -182,6 +182,36 @@ class Customer extends Model
     }
 
     /**
+     * Adjust customer balance cleanly by delta without overwriting manual credits/avoirs.
+     */
+    public function applyBalanceDelta(float $delta): void
+    {
+        if (abs($delta) < 0.001) {
+            return;
+        }
+
+        $this->current_balance = round(floatval($this->current_balance) + $delta, 2);
+        $this->save();
+    }
+
+    /**
+     * Get unpaid or partially paid invoices for this customer.
+     */
+    public function openInvoices()
+    {
+        return Invoice::where('type', 'invoice')
+            ->whereIn('payment_status', ['unpaid', 'partial'])
+            ->where(function ($q) {
+                $q->where('customer_email', $this->email);
+                if (!empty($this->phone)) {
+                    $q->orWhere('customer_phone', $this->phone);
+                }
+            })
+            ->orderBy('issued_at', 'desc')
+            ->get();
+    }
+
+    /**
      * Update current balance based on outstanding invoices.
      */
     public function updateBalance()

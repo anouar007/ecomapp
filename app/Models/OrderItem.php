@@ -13,16 +13,25 @@ class OrderItem extends Model
         'order_id',
         'product_id',
         'variant_id',
+        'store_id',
         'product_name',
         'variant_name',
         'product_sku',
         'price',
+        'original_price',
+        'discount_amount',
+        'discount_type',
+        'discount_value',
         'quantity',
         'subtotal',
     ];
 
     protected $casts = [
+        'store_id' => 'integer',
         'price' => 'decimal:2',
+        'original_price' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'discount_value' => 'decimal:2',
         'quantity' => 'integer',
         'subtotal' => 'decimal:2',
     ];
@@ -33,6 +42,14 @@ class OrderItem extends Model
     public function order()
     {
         return $this->belongsTo(Order::class);
+    }
+
+    /**
+     * Get the store / magasin / dépôt fulfilling this item.
+     */
+    public function store()
+    {
+        return $this->belongsTo(Store::class, 'store_id');
     }
 
     /**

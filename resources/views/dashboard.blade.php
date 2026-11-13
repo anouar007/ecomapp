@@ -71,21 +71,38 @@
         </div>
     </div>
 
+    @php
+        $authUser = auth()->user();
+        $isAdmin = $authUser && $authUser->hasAnyRole(['Admin', 'Super Admin']);
+        $canQuickActions = $isAdmin || ($authUser && $authUser->can('dashboard_quick_actions'));
+        $canKpis = $isAdmin || ($authUser && $authUser->can('dashboard_kpis'));
+        $canFinanceHub = $isAdmin || ($authUser && $authUser->can('dashboard_finance_hub'));
+        $canCharts = $isAdmin || ($authUser && $authUser->can('dashboard_charts'));
+        $canRecentOrders = $isAdmin || ($authUser && $authUser->can('dashboard_recent_orders'));
+        $canStockAlerts = $isAdmin || ($authUser && $authUser->can('dashboard_stock_alerts'));
+        $canActivityFeed = $isAdmin || ($authUser && $authUser->can('dashboard_activity_feed'));
+    @endphp
+
     <!-- Synchronized Subnav Navigation Bar (Product Section Standard) -->
     <div class="subnav-pills-bar mb-3.5">
         <a href="#general" class="subnav-pill active" data-tab="general" onclick="switchDashboardTab('general', event)">
             <i class="fas fa-layer-group text-danger"></i>
             <span>Vue Générale</span>
         </a>
+        @if($canFinanceHub)
         <a href="#finances" class="subnav-pill" data-tab="finances" onclick="switchDashboardTab('finances', event)">
             <i class="fas fa-network-wired text-success"></i>
             <span>Cockpit ERP & Trésorerie</span>
             <span class="badge rounded-pill bg-success-subtle text-success ms-1" style="font-size: 0.68rem;">P&L</span>
         </a>
+        @endif
+        @if($canCharts)
         <a href="#charts" class="subnav-pill" data-tab="charts" onclick="switchDashboardTab('charts', event)">
             <i class="fas fa-chart-line text-primary"></i>
             <span>Graphiques & Ventes</span>
         </a>
+        @endif
+        @if($canRecentOrders)
         <a href="#orders" class="subnav-pill" data-tab="orders" onclick="switchDashboardTab('orders', event)">
             <i class="fas fa-receipt text-warning"></i>
             <span>Commandes Récentes</span>
@@ -93,6 +110,8 @@
                 <span class="badge rounded-pill bg-warning text-dark ms-1" style="font-size: 0.68rem;">{{ $quickStats['pending_orders'] }}</span>
             @endif
         </a>
+        @endif
+        @if($canStockAlerts)
         <a href="#stock" class="subnav-pill" data-tab="stock" onclick="switchDashboardTab('stock', event)">
             <i class="fas fa-boxes-stacked text-danger"></i>
             <span>Alertes Stock</span>
@@ -100,12 +119,16 @@
                 <span class="badge rounded-pill bg-danger text-white ms-1" style="font-size: 0.68rem;">{{ $quickStats['low_stock_total'] }}</span>
             @endif
         </a>
+        @endif
+        @if($canActivityFeed)
         <a href="#audit" class="subnav-pill" data-tab="audit" onclick="switchDashboardTab('audit', event)">
             <i class="fas fa-shield-alt text-dark"></i>
             <span>Journal d'Activité</span>
         </a>
+        @endif
     </div>
 
+    @if($canQuickActions)
     <!-- Quick Actions Pills (Barre d'accès rapide fluide & ERP) -->
     <div class="dashboard-quick-actions" id="section-quick-actions">
         <a href="{{ route('customers.index') }}" class="quick-action-pill border-success-subtle" title="Clients actuellement sur le site">
@@ -149,7 +172,9 @@
             <span class="quick-pill-text">Journal d'Audit</span>
         </a>
     </div>
+    @endif
 
+    @if($canKpis)
     <!-- KPI Metric Stat Cards (Product Section Standard) -->
     <div class="stats-grid-pro mb-4" id="section-kpis">
         <!-- KPI 1 : Chiffre d'affaires -->
@@ -229,7 +254,9 @@
             </div>
         </a>
     </div>
+    @endif
 
+    @if($canFinanceHub)
     <!-- Executive ERP Synergy Hub (Cockpit Consolidé : Trésorerie, Dépenses, Bénéfice Net & Dépôts) -->
     <div class="card border-0 rounded-4 shadow-xs mb-4" id="section-finances" style="background: #ffffff; border: 1px solid #e2e8f0 !important; overflow: hidden;">
         <div class="card-header bg-white border-bottom border-slate-100 py-3 px-3.5 d-flex align-items-center justify-content-between flex-wrap gap-2">
@@ -369,7 +396,9 @@
             </div>
         </div>
     </div>
+    @endif
 
+    @if($canCharts)
     <!-- Section Graphiques (Pro Dashboards Analytics) -->
     <div class="row g-3 g-md-4 dash-section" id="section-charts">
         <!-- Aperçu des revenus (Line Chart) -->
@@ -472,11 +501,14 @@
             </div>
         </div>
     </div>
+    @endif
 
+    @if($canRecentOrders || $canStockAlerts)
     <!-- Commandes récentes & Alertes stock (Alignement 100% harmonisé) -->
     <div class="row g-3 g-md-4" id="section-operations">
+        @if($canRecentOrders)
         <!-- Commandes récentes -->
-        <div class="col-lg-8" id="section-orders">
+        <div class="{{ $canStockAlerts ? 'col-lg-8' : 'col-lg-12' }}" id="section-orders">
             <div class="brand-table-card h-100 mb-0 d-flex flex-column justify-content-between">
                 <div>
                     <div class="card-header-pro">
@@ -629,9 +661,11 @@
                 </div>
             </div>
         </div>
+        @endif
 
+        @if($canStockAlerts)
         <!-- Widget Alertes Stock (Design Pro Wina Shop) -->
-        <div class="col-lg-4" id="section-stock">
+        <div class="{{ $canRecentOrders ? 'col-lg-4' : 'col-lg-12' }}" id="section-stock">
             <div class="brand-table-card h-100 mb-0 d-flex flex-column justify-content-between">
                 <div>
                     <div class="card-header-pro">
@@ -735,8 +769,11 @@
                 </div>
             </div>
         </div>
+        @endif
     </div>
+    @endif
 
+    @if($canActivityFeed)
     <!-- Traçabilité & Journal d'Activité en Direct (Audit Trail) -->
     <div class="card border-0 rounded-4 shadow-xs mt-3 mt-md-4 mb-2" id="section-audit" style="background: #ffffff; border: 1px solid #e2e8f0 !important;">
         <div class="card-header bg-white border-bottom border-slate-100 py-3 px-3.5 d-flex align-items-center justify-content-between flex-wrap gap-2">
@@ -812,6 +849,15 @@
             @endif
         </div>
     </div>
+    @endif
+
+    @if(!$canQuickActions && !$canKpis && !$canFinanceHub && !$canCharts && !$canRecentOrders && !$canStockAlerts && !$canActivityFeed)
+        <div class="card border-0 rounded-4 shadow-xs p-5 text-center bg-white border">
+            <i class="fas fa-user-lock text-muted opacity-50 mb-3" style="font-size: 2.5rem;"></i>
+            <h5 class="fw-bold text-dark">Accès limité au tableau de bord</h5>
+            <p class="text-muted small mb-0">Aucune section du tableau de bord n'est activée pour votre rôle actuel. Utilisez le menu latéral pour accéder à vos sections autorisées.</p>
+        </div>
+    @endif
 </div>
 
 <!-- Chart.js Integration with Real Controller Data -->

@@ -38,7 +38,7 @@
     @endphp
     @php
         $hasDuplicateQueryParams = request()->hasAny([
-            'lang', 'column', 'rating_filter', 'per_page', 'stock_status', 'featured', 'orderby', 'sort', 'min_price', 'max_price', 'paged'
+            'lang', 'column', 'rating_filter', 'per_page', 'stock_status', 'featured', 'orderby', 'sort', 'min_price', 'max_price', 'paged', 'q', 'search'
         ]) || str_starts_with(request()->getRequestUri(), '/public');
         $defaultRobotsDirective = $hasDuplicateQueryParams
             ? 'noindex, follow'
@@ -89,16 +89,28 @@
             $canonicalPath = rtrim($canonicalPath, '/');
         }
         $cleanCanonicalUrl = $canonicalScheme . '://' . $canonicalHost . $canonicalPath;
-        if (request()->routeIs('shop.index') && request()->filled('category') && !request()->hasAny(['search', 'q', 'sort', 'min_price', 'max_price', 'column', 'rating_filter'])) {
-            $cleanCanonicalUrl .= '?category=' . urlencode((string) request()->query('category'));
+        if (request()->routeIs('shop.index') && !request()->hasAny(['search', 'q', 'sort', 'min_price', 'max_price', 'column', 'rating_filter'])) {
+            $canonicalQueryParams = [];
+            if (request()->filled('category')) {
+                $canonicalQueryParams['category'] = (string) request()->query('category');
+            }
+            if (request()->filled('brand')) {
+                $canonicalQueryParams['brand'] = (string) request()->query('brand');
+            }
+            if (!empty($canonicalQueryParams)) {
+                $cleanCanonicalUrl .= '?' . http_build_query($canonicalQueryParams);
+            }
         }
     @endphp
     <link rel="canonical" href="{{ $cleanCanonicalUrl }}">
+    <link rel="search" type="application/opensearchdescription+xml" title="WINA SHOP Search" href="{{ route('opensearch.xml') }}">
 
     <!-- Multi-Language Hreflang Tags (Consolidated on Authoritative Canonical URL) -->
     <link rel="alternate" hreflang="fr" href="{{ $cleanCanonicalUrl }}">
     <link rel="alternate" hreflang="fr-MA" href="{{ $cleanCanonicalUrl }}">
+    <link rel="alternate" hreflang="ar" href="{{ $cleanCanonicalUrl }}">
     <link rel="alternate" hreflang="ar-MA" href="{{ $cleanCanonicalUrl }}">
+    <link rel="alternate" hreflang="en" href="{{ $cleanCanonicalUrl }}">
     <link rel="alternate" hreflang="en-MA" href="{{ $cleanCanonicalUrl }}">
     <link rel="alternate" hreflang="x-default" href="{{ $cleanCanonicalUrl }}">
 

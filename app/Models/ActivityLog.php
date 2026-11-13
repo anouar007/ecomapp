@@ -53,44 +53,43 @@ class ActivityLog extends Model
      */
     public function getChangesAttribute(): array
     {
-        $old = $this->properties['old'] ?? [];
-        $new = $this->properties['new'] ?? [];
-
-        if (empty($old) && empty($new)) {
-            return [];
-        }
-
+        $props = $this->properties ?? [];
+        $old = $props['old'] ?? [];
+        $new = $props['new'] ?? [];
         $changes = [];
 
-        if ($this->event === 'created') {
-            foreach ($new as $key => $newValue) {
-                $changes[$key] = [
-                    'old' => null,
-                    'new' => $newValue,
-                ];
+        if (!empty($old) || !empty($new)) {
+            if ($this->event === 'created') {
+                foreach ($new as $key => $newValue) {
+                    $changes[$key] = ['old' => null, 'new' => $newValue];
+                }
+            } elseif ($this->event === 'deleted') {
+                foreach ($old as $key => $oldValue) {
+                    $changes[$key] = ['old' => $oldValue, 'new' => null];
+                }
+            } else {
+                $allKeys = array_unique(array_merge(array_keys($old), array_keys($new)));
+                foreach ($allKeys as $key) {
+                    $oldValue = $old[$key] ?? null;
+                    $newValue = $new[$key] ?? null;
+                    if ($oldValue != $newValue) {
+                        $changes[$key] = ['old' => $oldValue, 'new' => $newValue];
+                    }
+                }
             }
-            return $changes;
         }
 
-        if ($this->event === 'deleted') {
-            foreach ($old as $key => $oldValue) {
-                $changes[$key] = [
-                    'old' => $oldValue,
-                    'new' => null,
-                ];
+        // Also extract paired old_* / new_* keys (e.g. old_roles/new_roles, old_status/new_status)
+        foreach ($props as $key => $value) {
+            if (!str_starts_with($key, 'old_')) {
+                continue;
             }
-            return $changes;
-        }
-
-        // Updated
-        $allKeys = array_unique(array_merge(array_keys($old), array_keys($new)));
-        foreach ($allKeys as $key) {
-            $oldValue = $old[$key] ?? null;
-            $newValue = $new[$key] ?? null;
-            if ($oldValue != $newValue) {
-                $changes[$key] = [
-                    'old' => $oldValue,
-                    'new' => $newValue,
+            $field = substr($key, 4);
+            $newKey = 'new_' . $field;
+            if ($field !== '' && array_key_exists($newKey, $props) && $value != $props[$newKey]) {
+                $changes[$field] = [
+                    'old' => $value,
+                    'new' => $props[$newKey],
                 ];
             }
         }
@@ -103,11 +102,17 @@ class ActivityLog extends Model
         return match($this->event) {
             'created' => '<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1"><i class="fas fa-plus-circle me-1"></i>Création</span>',
             'updated' => '<span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1"><i class="fas fa-pen-to-square me-1"></i>Modification</span>',
-            'deleted' => '<span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1"><i class="fas fa-trash-can me-1"></i>Suppression</span>',
+            'deleted', 'deleted_review', 'cleared' => '<span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1"><i class="fas fa-trash-can me-1"></i>' . ($this->event === 'cleared' ? 'Purge' : 'Suppression') . '</span>',
             'login' => '<span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2.5 py-1"><i class="fas fa-right-to-bracket me-1"></i>Connexion</span>',
             'logout' => '<span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2.5 py-1"><i class="fas fa-right-from-bracket me-1"></i>Déconnexion</span>',
+            'failed_login' => '<span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1"><i class="fas fa-shield-exclamation me-1"></i>Échec connexion</span>',
             'password_reset' => '<span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2.5 py-1"><i class="fas fa-key me-1"></i>Mot de passe</span>',
-            default => '<span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2.5 py-1">' . htmlspecialchars(ucfirst($this->event)) . '</span>',
+            'exported' => '<span class="badge bg-dark-subtle text-dark border border-secondary-subtle rounded-pill px-2.5 py-1"><i class="fas fa-file-export me-1"></i>Export CSV</span>',
+            'approved_return', 'approved_review' => '<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1"><i class="fas fa-check-circle me-1"></i>Approbation</span>',
+            'rejected_return', 'rejected_review' => '<span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2.5 py-1"><i class="fas fa-ban me-1"></i>Rejet</span>',
+            'completed_return' => '<span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1"><i class="fas fa-check-double me-1"></i>Retour clôturé</span>',
+            'viewed' => '<span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2.5 py-1"><i class="fas fa-eye me-1"></i>Consultation</span>',
+            default => '<span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2.5 py-1">' . htmlspecialchars(ucfirst(str_replace('_', ' ', $this->event))) . '</span>',
         };
     }
 
@@ -121,11 +126,14 @@ class ActivityLog extends Model
             'Category' => 'Catégorie',
             'Order' => 'Commande',
             'Invoice' => 'Facture',
+            'Payment' => 'Paiement Facture',
             'Customer' => 'Client',
             'Coupon' => 'Code Promo',
             'User' => 'Utilisateur',
+            'Role' => 'Rôle & Accès',
             'Setting' => 'Paramètre',
             'InventoryMovement' => 'Mouvement / Transfert Stock',
+            'Shipment' => 'Arrivage / Expédition',
             'Expense' => 'Dépense d\'Exploitation',
             'RecurringExpense' => 'Charge Récurrente Fixe',
             'CustomerTransaction' => 'Règlement / Opération Client',
@@ -160,8 +168,13 @@ class ActivityLog extends Model
                 'Store' => route('stores.index'),
                 'Product' => route('products.edit', $this->subject_id),
                 'ProductStock', 'InventoryMovement' => route('stores.stock'),
+                'Shipment' => route('shipments.show', $this->subject_id),
                 'Order' => route('orders.show', $this->subject_id),
                 'Invoice' => route('invoices.show', $this->subject_id),
+                'Payment' => isset($this->properties['invoice_id'])
+                    ? route('invoices.show', $this->properties['invoice_id'])
+                    : route('invoices.index'),
+                'Role' => route('roles.edit', $this->subject_id),
                 'User' => route('users.index'),
                 default => null,
             };
@@ -173,13 +186,46 @@ class ActivityLog extends Model
     public function getEventColorAttribute(): string
     {
         return match($this->event) {
-            'created' => 'success',
+            'created', 'approved_return', 'approved_review', 'completed_return' => 'success',
             'updated' => 'primary',
-            'deleted' => 'danger',
-            'viewed' => 'info',
+            'deleted', 'deleted_review', 'failed_login', 'cleared' => 'danger',
+            'viewed', 'exported' => 'info',
             'login' => 'success',
+            'password_reset', 'rejected_return', 'rejected_review' => 'warning',
             'logout' => 'secondary',
             default => 'secondary',
         };
+    }
+
+    /**
+     * Concise browser + OS label parsed from raw user_agent.
+     */
+    public function getUserAgentSummaryAttribute(): string
+    {
+        $ua = (string) ($this->user_agent ?? '');
+        if ($ua === '') {
+            return '—';
+        }
+
+        $browser = match (true) {
+            str_contains($ua, 'Edg') => 'Edge',
+            str_contains($ua, 'OPR') || str_contains($ua, 'Opera') => 'Opera',
+            str_contains($ua, 'Chrome') => 'Chrome',
+            str_contains($ua, 'Firefox') => 'Firefox',
+            str_contains($ua, 'Safari') => 'Safari',
+            str_contains($ua, 'curl') || str_contains($ua, 'PHPUnit') || str_contains($ua, 'Symfony') => 'Client API',
+            default => 'Navigateur',
+        };
+
+        $os = match (true) {
+            str_contains($ua, 'iPhone') || str_contains($ua, 'iPad') => 'iOS',
+            str_contains($ua, 'Android') => 'Android',
+            str_contains($ua, 'Windows') => 'Windows',
+            str_contains($ua, 'Macintosh') || str_contains($ua, 'Mac OS') => 'macOS',
+            str_contains($ua, 'Linux') => 'Linux',
+            default => null,
+        };
+
+        return $os ? "{$browser} • {$os}" : $browser;
     }
 }

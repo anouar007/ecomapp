@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Shipment extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\LogsActivity;
 
     protected $fillable = [
         'reference',

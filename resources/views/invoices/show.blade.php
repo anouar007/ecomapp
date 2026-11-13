@@ -1289,6 +1289,13 @@
                 </a>
                 @endif
 
+                @if($invoice->order?->customer_id)
+                <a href="{{ route('customers.show', $invoice->order->customer_id) }}" class="btn-pro btn-pro-secondary" title="Voir la Fiche Client 360">
+                    <i class="fas fa-user"></i>
+                    <span>{{ __('Fiche Client') }}</span>
+                </a>
+                @endif
+
                 @if($invoice->isInvoice() && $invoice->remaining_balance > 0)
                 <button type="button" class="btn-pro btn-pro-success" data-bs-toggle="modal" data-bs-target="#recordPaymentModal">
                     <i class="fas fa-money-bill-wave"></i>
@@ -1602,6 +1609,19 @@
                             <option value="other">{{ __('Autre') }}</option>
                         </select>
                     </div>
+
+                    @php($paymentStores = \App\Models\Store::where('is_active', true)->orderBy('sort_order')->orderBy('name')->get())
+                    @if($paymentStores->count() > 0)
+                    <div class="mb-3">
+                        <label class="form-label">{{ __('Caisse / Point de Stockage (Optionnel)') }}</label>
+                        <select name="store_id" class="form-control">
+                            <option value="">— {{ __('Aucun dépôt spécifique') }} —</option>
+                            @foreach($paymentStores as $pStore)
+                                <option value="{{ $pStore->id }}">{{ $pStore->name }} ({{ $pStore->code }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endif
 
                     <div class="mb-3">
                         <label class="form-label">{{ __('Numéro de référence / Chèque / Transaction') }}</label>

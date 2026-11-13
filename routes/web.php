@@ -34,8 +34,10 @@ Route::middleware('auth')->group(function () {
         Route::put('/profile', [CustomerDashboardController::class, 'updateProfile'])->name('profile.update');
     });
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard/live-clients', [DashboardController::class, 'liveClients'])->name('dashboard.live-clients');
+    Route::middleware('permission:view_dashboard')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard/live-clients', [DashboardController::class, 'liveClients'])->name('dashboard.live-clients');
+    });
     
     // Profile Management
     Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
@@ -44,16 +46,24 @@ Route::middleware('auth')->group(function () {
     Route::put('/profile/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password');
     
     // POS Terminal
-    Route::middleware('permission:manage_orders')->group(function () {
+    Route::middleware('permission:access_pos|manage_orders')->group(function () {
         Route::get('/pos', [\App\Http\Controllers\POSController::class, 'index'])->name('pos.index');
         Route::get('/pos/search', [\App\Http\Controllers\POSController::class, 'search'])->name('pos.search');
         Route::post('/pos/order', [\App\Http\Controllers\POSController::class, 'processOrder'])->name('pos.order');
+        Route::get('/pos/receipt/{order}', [\App\Http\Controllers\POSController::class, 'receipt'])->name('pos.receipt');
     });
     
-    // Products Management
-    Route::middleware('permission:manage_products')->group(function () {
+    // Products Management (granular actions + legacy manage_products)
+    Route::middleware('permission:manage_products|create_products')->group(function () {
+        Route::get('products/create', [\App\Http\Controllers\ProductController::class, 'create'])->name('products.create');
+        Route::post('products', [\App\Http\Controllers\ProductController::class, 'store'])->name('products.store');
         Route::post('products/import', [\App\Http\Controllers\ProductController::class, 'import'])->name('products.import');
         Route::get('products/template', [\App\Http\Controllers\ProductController::class, 'downloadTemplate'])->name('products.template');
+    });
+    Route::middleware('permission:manage_products|edit_products')->group(function () {
+        Route::get('products/{product}/edit', [\App\Http\Controllers\ProductController::class, 'edit'])->name('products.edit');
+        Route::put('products/{product}', [\App\Http\Controllers\ProductController::class, 'update'])->name('products.update');
+        Route::patch('products/{product}', [\App\Http\Controllers\ProductController::class, 'update']);
         Route::post('products/bulk-action', [\App\Http\Controllers\ProductController::class, 'bulkAction'])->name('products.bulk-action');
         Route::get('products/image-quality', [\App\Http\Controllers\ProductController::class, 'imageQualityHub'])->name('products.image-quality');
         Route::post('products/bulk-upgrade-4k', [\App\Http\Controllers\ProductController::class, 'bulkUpgrade4k'])->name('products.bulk-upgrade-4k');
@@ -65,13 +75,23 @@ Route::middleware('auth')->group(function () {
         Route::post('products/{product}/images/{image}/make-primary', [\App\Http\Controllers\ProductController::class, 'makePrimaryImage'])->name('products.images.make-primary');
         Route::post('products/{product}/images/{image}/padding', [\App\Http\Controllers\ProductController::class, 'updateSingleImagePadding'])->name('products.images.padding');
         Route::post('products/{product}/images/apply-padding-all', [\App\Http\Controllers\ProductController::class, 'applyPaddingToAllImages'])->name('products.images.apply-padding-all');
-        Route::resource('products', \App\Http\Controllers\ProductController::class);
+    });
+    Route::middleware('permission:manage_products|delete_products')->group(function () {
+        Route::delete('products/{product}', [\App\Http\Controllers\ProductController::class, 'destroy'])->name('products.destroy');
+    });
+    Route::middleware('permission:manage_products|view_products')->group(function () {
+        Route::get('products', [\App\Http\Controllers\ProductController::class, 'index'])->name('products.index');
+        Route::get('products/{product}', [\App\Http\Controllers\ProductController::class, 'show'])->name('products.show');
+    });
 
-        // Brands Management
+    // Brands Management
+    Route::middleware('permission:manage_products|manage_brands')->group(function () {
         Route::post('brands/auto-detect', [\App\Http\Controllers\BrandController::class, 'autoDetect'])->name('brands.auto-detect');
         Route::resource('brands', \App\Http\Controllers\BrandController::class);
+    });
 
-        // Product Tags & Badges Management
+    // Product Tags & Badges Management
+    Route::middleware('permission:manage_products|manage_product_tags')->group(function () {
         Route::resource('product-tags', \App\Http\Controllers\ProductTagController::class);
     });
     
@@ -80,10 +100,25 @@ Route::middleware('auth')->group(function () {
         Route::resource('categories', \App\Http\Controllers\CategoryController::class);
     });
     
-    // Orders Management  
-    Route::middleware('permission:manage_orders')->group(function () {
+    // Orders Management (granular actions + legacy manage_orders)
+    Route::middleware('permission:manage_orders|create_orders')->group(function () {
+        Route::get('orders/create', [\App\Http\Controllers\OrderController::class, 'create'])->name('orders.create');
+        Route::post('orders', [\App\Http\Controllers\OrderController::class, 'store'])->name('orders.store');
+    });
+    Route::middleware('permission:manage_orders|edit_orders')->group(function () {
+        Route::get('orders/{order}/edit', [\App\Http\Controllers\OrderController::class, 'edit'])->name('orders.edit');
+        Route::put('orders/{order}', [\App\Http\Controllers\OrderController::class, 'update'])->name('orders.update');
+        Route::patch('orders/{order}', [\App\Http\Controllers\OrderController::class, 'update']);
         Route::post('orders/{order}/quick-status', [\App\Http\Controllers\OrderController::class, 'quickUpdateStatus'])->name('orders.quick-status');
-        Route::resource('orders', \App\Http\Controllers\OrderController::class);
+        Route::post('orders/{order}/items/{item}/store', [\App\Http\Controllers\OrderController::class, 'updateItemStore'])->name('orders.items.update-store');
+        Route::post('orders/{order}/stores', [\App\Http\Controllers\OrderController::class, 'updateItemStores'])->name('orders.update-stores');
+    });
+    Route::middleware('permission:manage_orders|delete_orders')->group(function () {
+        Route::delete('orders/{order}', [\App\Http\Controllers\OrderController::class, 'destroy'])->name('orders.destroy');
+    });
+    Route::middleware('permission:manage_orders|view_orders')->group(function () {
+        Route::get('orders', [\App\Http\Controllers\OrderController::class, 'index'])->name('orders.index');
+        Route::get('orders/{order}', [\App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');
     });
     
     // Invoices Management
@@ -113,12 +148,12 @@ Route::middleware('auth')->group(function () {
         Route::resource('customers', \App\Http\Controllers\CustomerController::class);
         Route::post('customers/{customer}/add-points', [\App\Http\Controllers\CustomerController::class, 'addPoints'])->name('customers.add-points');
         Route::post('customers/{customer}/redeem-points', [\App\Http\Controllers\CustomerController::class, 'redeemPoints'])->name('customers.redeem-points');
-        
-        // Debtors Dashboard
+    });
+
+    // Client Credits, Debtors, Balances & Payment History with Proof Image
+    Route::middleware('permission:manage_customers|manage_client_credits')->group(function () {
         Route::get('debtors', [\App\Http\Controllers\DebtorsController::class, 'index'])->name('debtors.index');
         Route::get('debtors/download', [\App\Http\Controllers\DebtorsController::class, 'downloadPdf'])->name('debtors.download');
-
-        // Client Credits, Balances & Payment History with Proof Image
         Route::get('client-credits', [\App\Http\Controllers\CustomerCreditController::class, 'index'])->name('client-credits.index');
         Route::get('client-credits/transactions', [\App\Http\Controllers\CustomerCreditController::class, 'transactions'])->name('client-credits.transactions');
         Route::post('client-credits/transactions', [\App\Http\Controllers\CustomerCreditController::class, 'storeTransaction'])->name('client-credits.transactions.store');
@@ -127,7 +162,7 @@ Route::middleware('auth')->group(function () {
     });
     
     // Inventory Management
-    Route::middleware('permission:manage_inventory')->group(function () {
+    Route::middleware('permission:manage_inventory|view_inventory')->group(function () {
         Route::get('/inventory/export', [\App\Http\Controllers\InventoryController::class, 'export'])->name('inventory.export');
         Route::post('/inventory/bulk-action', [\App\Http\Controllers\InventoryController::class, 'bulkAction'])->name('inventory.bulk-action');
         Route::get('/inventory', [\App\Http\Controllers\InventoryController::class, 'index'])->name('inventory.index');
@@ -137,8 +172,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/inventory/{product}/adjust', [\App\Http\Controllers\InventoryController::class, 'processAdjustment'])->name('inventory.process-adjustment');
         Route::post('/inventory/alerts/{alert}/acknowledge', [\App\Http\Controllers\InventoryController::class, 'acknowledgeAlert'])->name('inventory.acknowledge-alert');
         Route::post('/inventory/alerts/bulk-acknowledge', [\App\Http\Controllers\InventoryController::class, 'bulkAcknowledge'])->name('inventory.bulk-acknowledge');
+    });
 
-        // Stores, Warehouses & Multi-Store Stock Locations
+    // Stores, Warehouses & Multi-Store Stock Locations
+    Route::middleware('permission:manage_inventory|manage_stores')->group(function () {
         Route::get('/stores', [\App\Http\Controllers\StoreController::class, 'index'])->name('stores.index');
         Route::post('/stores', [\App\Http\Controllers\StoreController::class, 'store'])->name('stores.store');
         Route::put('/stores/{store}', [\App\Http\Controllers\StoreController::class, 'update'])->name('stores.update');
@@ -158,6 +195,7 @@ Route::middleware('auth')->group(function () {
     // Activity Logs
     Route::middleware('permission:view_activity_logs')->group(function () {
         Route::get('/activity-logs', [\App\Http\Controllers\ActivityLogController::class, 'index'])->name('activity-logs.index');
+        Route::get('/activity-logs/export', [\App\Http\Controllers\ActivityLogController::class, 'exportCsv'])->name('activity-logs.export');
         Route::get('/activity-logs/{activityLog}', [\App\Http\Controllers\ActivityLogController::class, 'show'])->name('activity-logs.show');
         Route::post('/activity-logs/clear', [\App\Http\Controllers\ActivityLogController::class, 'clear'])->name('activity-logs.clear');
     });
@@ -190,14 +228,20 @@ Route::middleware('auth')->group(function () {
         Route::post('/returns/{return}/complete', [\App\Http\Controllers\ReturnController::class, 'complete'])->name('returns.complete');
     });
     
-    // Advanced Analytics & Views Intelligence
-    Route::middleware('permission:view_analytics')->group(function () {
+    // Advanced Analytics & Views Intelligence (granular sub-section permissions)
+    Route::middleware('permission:view_analytics|view_analytics_views')->group(function () {
         Route::get('/analytics/views', [\App\Http\Controllers\ViewsAnalyticsController::class, 'index'])->name('analytics.views');
         Route::get('/analytics/views/live-visitors', [\App\Http\Controllers\ViewsAnalyticsController::class, 'liveVisitors'])->name('analytics.views.live-visitors');
         Route::get('/analytics/views/export', [\App\Http\Controllers\ViewsAnalyticsController::class, 'export'])->name('analytics.views.export');
         Route::get('/analytics/views/product/{product}', [\App\Http\Controllers\ViewsAnalyticsController::class, 'productDetail'])->name('analytics.views.product');
+    });
+    Route::middleware('permission:view_analytics|view_analytics_sales')->group(function () {
         Route::get('/analytics', [\App\Http\Controllers\AnalyticsController::class, 'index'])->name('analytics.index');
         Route::get('/analytics/export', [\App\Http\Controllers\AnalyticsController::class, 'export'])->name('analytics.export');
+    });
+    Route::middleware('permission:view_analytics|view_analytics_insights')->group(function () {
+        Route::get('/analytics/insights', [\App\Http\Controllers\AnalyticsController::class, 'insights'])->name('analytics.insights');
+        Route::get('/analytics/insights/export', [\App\Http\Controllers\AnalyticsController::class, 'insightsExport'])->name('analytics.insights.export');
     });
     
     // Reports
@@ -205,29 +249,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/reports', [\App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
         Route::get('/reports/export-pdf', [\App\Http\Controllers\ReportController::class, 'exportPDF'])->name('reports.export.pdf');
         Route::get('/reports/export-csv', [\App\Http\Controllers\ReportController::class, 'exportCSV'])->name('reports.export.csv');
+    });
 
-        // Profitability & Benefits (Strictly Admin Only)
+    // Profitability & Inbound Purchase Shipments
+    Route::middleware('permission:view_reports|view_profitability')->group(function () {
         Route::get('/reports/profitability', [\App\Http\Controllers\ProfitabilityController::class, 'index'])->name('reports.profitability');
         Route::get('/reports/profitability/costs', [\App\Http\Controllers\ProfitabilityController::class, 'manageCosts'])->name('reports.profitability.costs');
         Route::get('/reports/profitability/export-csv', [\App\Http\Controllers\ProfitabilityController::class, 'exportCsv'])->name('reports.profitability.export');
         Route::post('/reports/profitability/products/{product}/cost', [\App\Http\Controllers\ProfitabilityController::class, 'updateCostPrice'])->name('reports.profitability.update-cost');
         Route::post('/reports/profitability/costs/batch', [\App\Http\Controllers\ProfitabilityController::class, 'updateBatchCosts'])->name('reports.profitability.update-costs-batch');
 
-        // Business Expenses Management (Charges & Dépenses d'Exploitation)
-        Route::get('/expenses', [\App\Http\Controllers\ExpenseController::class, 'index'])->name('expenses.index');
-        Route::post('/expenses', [\App\Http\Controllers\ExpenseController::class, 'store'])->name('expenses.store');
-        Route::put('/expenses/{expense}', [\App\Http\Controllers\ExpenseController::class, 'update'])->name('expenses.update');
-        Route::delete('/expenses/{expense}', [\App\Http\Controllers\ExpenseController::class, 'destroy'])->name('expenses.destroy');
-        Route::get('/expenses/export-csv', [\App\Http\Controllers\ExpenseController::class, 'exportCsv'])->name('expenses.export');
-
-        // Recurring Monthly Expenses (Charges Récurrentes Fixes)
-        Route::post('/expenses/recurring', [\App\Http\Controllers\ExpenseController::class, 'storeRecurring'])->name('expenses.recurring.store');
-        Route::put('/expenses/recurring/{recurringExpense}', [\App\Http\Controllers\ExpenseController::class, 'updateRecurring'])->name('expenses.recurring.update');
-        Route::patch('/expenses/recurring/{recurringExpense}/toggle', [\App\Http\Controllers\ExpenseController::class, 'toggleRecurring'])->name('expenses.recurring.toggle');
-        Route::delete('/expenses/recurring/{recurringExpense}', [\App\Http\Controllers\ExpenseController::class, 'destroyRecurring'])->name('expenses.recurring.destroy');
-        Route::post('/expenses/recurring/generate-month', [\App\Http\Controllers\ExpenseController::class, 'generateCurrentMonthRecurring'])->name('expenses.recurring.generate-month');
-
-        // Shipments & Inbound Purchase Costs Management (Strictly Admin Only)
         Route::get('/shipments', [\App\Http\Controllers\ShipmentController::class, 'index'])->name('shipments.index');
         Route::get('/shipments/create', [\App\Http\Controllers\ShipmentController::class, 'create'])->name('shipments.create');
         Route::post('/shipments', [\App\Http\Controllers\ShipmentController::class, 'store'])->name('shipments.store');
@@ -235,6 +266,21 @@ Route::middleware('auth')->group(function () {
         Route::get('/shipments/{shipment}', [\App\Http\Controllers\ShipmentController::class, 'show'])->name('shipments.show');
         Route::delete('/shipments/{shipment}', [\App\Http\Controllers\ShipmentController::class, 'destroy'])->name('shipments.destroy');
         Route::get('/shipments/product-history/{product}', [\App\Http\Controllers\ShipmentController::class, 'productHistory'])->name('shipments.product-history');
+    });
+
+    // Business Expenses & Recurring Overhead Management
+    Route::middleware('permission:view_reports|manage_expenses|manage_accounting')->group(function () {
+        Route::get('/expenses', [\App\Http\Controllers\ExpenseController::class, 'index'])->name('expenses.index');
+        Route::post('/expenses', [\App\Http\Controllers\ExpenseController::class, 'store'])->name('expenses.store');
+        Route::put('/expenses/{expense}', [\App\Http\Controllers\ExpenseController::class, 'update'])->name('expenses.update');
+        Route::delete('/expenses/{expense}', [\App\Http\Controllers\ExpenseController::class, 'destroy'])->name('expenses.destroy');
+        Route::get('/expenses/export-csv', [\App\Http\Controllers\ExpenseController::class, 'exportCsv'])->name('expenses.export');
+
+        Route::post('/expenses/recurring', [\App\Http\Controllers\ExpenseController::class, 'storeRecurring'])->name('expenses.recurring.store');
+        Route::put('/expenses/recurring/{recurringExpense}', [\App\Http\Controllers\ExpenseController::class, 'updateRecurring'])->name('expenses.recurring.update');
+        Route::patch('/expenses/recurring/{recurringExpense}/toggle', [\App\Http\Controllers\ExpenseController::class, 'toggleRecurring'])->name('expenses.recurring.toggle');
+        Route::delete('/expenses/recurring/{recurringExpense}', [\App\Http\Controllers\ExpenseController::class, 'destroyRecurring'])->name('expenses.recurring.destroy');
+        Route::post('/expenses/recurring/generate-month', [\App\Http\Controllers\ExpenseController::class, 'generateCurrentMonthRecurring'])->name('expenses.recurring.generate-month');
     });
     
     // Settings
@@ -261,17 +307,15 @@ Route::middleware('auth')->group(function () {
         Route::resource('custom-codes', \App\Http\Controllers\CustomCodeController::class);
     });
 
-    // Hero Slider & Banners Management
-    Route::post('banners/position/{position}', [\App\Http\Controllers\BannerController::class, 'savePosition'])->name('banners.save-position');
-    Route::resource('banners', \App\Http\Controllers\BannerController::class);
-
-    // Home Page Product Sections & Order Management
-    Route::get('home-sections', [\App\Http\Controllers\HomeSectionController::class, 'index'])->name('home-sections.index');
-    Route::post('home-sections', [\App\Http\Controllers\HomeSectionController::class, 'update'])->name('home-sections.update');
-    Route::get('home-sections/search-products', [\App\Http\Controllers\HomeSectionController::class, 'searchProducts'])->name('home-sections.search');
-
-    // Page & Navigation Management
+    // Page, Banners, Home Sections & Navigation Management
     Route::middleware('permission:manage_content')->group(function () {
+        Route::post('banners/position/{position}', [\App\Http\Controllers\BannerController::class, 'savePosition'])->name('banners.save-position');
+        Route::resource('banners', \App\Http\Controllers\BannerController::class);
+
+        Route::get('home-sections', [\App\Http\Controllers\HomeSectionController::class, 'index'])->name('home-sections.index');
+        Route::post('home-sections', [\App\Http\Controllers\HomeSectionController::class, 'update'])->name('home-sections.update');
+        Route::get('home-sections/search-products', [\App\Http\Controllers\HomeSectionController::class, 'searchProducts'])->name('home-sections.search');
+
         Route::resource('pages', \App\Http\Controllers\PageController::class);
         Route::get('menus', [\App\Http\Controllers\MenuController::class, 'index'])->name('menus.index');
         Route::post('menus', [\App\Http\Controllers\MenuController::class, 'store'])->name('menus.store');

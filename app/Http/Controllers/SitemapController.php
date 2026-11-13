@@ -113,11 +113,29 @@ class SitemapController extends Controller
         $llmsUrl = $baseUrl . '/llms.txt';
         $llmsFullUrl = $baseUrl . '/llms-full.txt';
         $aiJsonUrl = $baseUrl . '/ai-catalog.json';
+        $opensearchUrl = $baseUrl . '/opensearch.xml';
 
-        $content = view('robots', compact('sitemapUrl', 'merchantUrl', 'llmsUrl', 'llmsFullUrl', 'aiJsonUrl'))->render();
+        $content = view('robots', compact('sitemapUrl', 'merchantUrl', 'llmsUrl', 'llmsFullUrl', 'aiJsonUrl', 'opensearchUrl'))->render();
 
         return response($content, 200)
             ->header('Content-Type', 'text/plain; charset=utf-8');
+    }
+
+    /**
+     * Return OpenSearch XML description for browser & search engine instant search discovery (/opensearch.xml).
+     */
+    public function openSearchXml(): Response
+    {
+        $baseUrl = $this->enforceCanonical();
+        $shopUrl = $baseUrl . '/shop';
+        $liveSearchUrl = $baseUrl . '/shop/search/live';
+        $iconUrl = $baseUrl . '/favicon-32x32.png';
+
+        $xml = view('opensearch', compact('shopUrl', 'liveSearchUrl', 'iconUrl'))->render();
+
+        return response($xml, 200)
+            ->header('Content-Type', 'application/opensearchdescription+xml; charset=utf-8')
+            ->header('Cache-Control', 'public, max-age=86400');
     }
 
     /**
@@ -147,8 +165,12 @@ class SitemapController extends Controller
 
             $featuredProducts = Product::where('status', 'active')
                 ->with(['category', 'brand'])
+                ->orderByRaw('CASE WHEN stock > 0 THEN 1 ELSE 0 END DESC')
+                ->orderByRaw('CASE WHEN sort_order > 0 THEN 0 ELSE 1 END ASC')
+                ->orderBy('sort_order', 'asc')
+                ->orderByDesc('views_count')
                 ->orderByDesc('id')
-                ->take(150)
+                ->take(200)
                 ->get();
 
             $totalProducts = Product::where('status', 'active')->count();
@@ -178,7 +200,11 @@ class SitemapController extends Controller
 
             $categories = Category::where('status', 'active')
                 ->with(['products' => function($q) {
-                    $q->where('status', 'active')->orderBy('name');
+                    $q->where('status', 'active')
+                        ->orderByRaw('CASE WHEN stock > 0 THEN 1 ELSE 0 END DESC')
+                        ->orderByRaw('CASE WHEN sort_order > 0 THEN 0 ELSE 1 END ASC')
+                        ->orderBy('sort_order', 'asc')
+                        ->orderBy('name');
                 }])
                 ->get();
 
@@ -307,9 +333,13 @@ class SitemapController extends Controller
 
             $rawProducts = Product::where('status', 'active')
                 ->with(['category:id,name,slug', 'brand:id,name,slug'])
-                ->select(['id', 'name', 'slug', 'sku', 'price', 'sale_price', 'stock', 'image', 'category_id', 'brand_id', 'updated_at'])
+                ->with(['brand:id,name', 'category:id,name'])
+                ->select(['id', 'name', 'slug', 'sku', 'price', 'sale_price', 'stock', 'image', 'category_id', 'brand_id', 'sort_order', 'views_count', 'description', 'updated_at'])
+                ->orderByRaw('CASE WHEN stock > 0 THEN 1 ELSE 0 END DESC')
+                ->orderByRaw('CASE WHEN sort_order > 0 THEN 0 ELSE 1 END ASC')
+                ->orderBy('sort_order', 'asc')
+                ->orderByDesc('views_count')
                 ->orderByDesc('id')
-                ->take(500)
                 ->get();
 
             $byCategory = $rawProducts->groupBy('category_id');
@@ -343,6 +373,7 @@ class SitemapController extends Controller
                     'price_mad' => (float) $p->final_price,
                     'currency' => setting('currency_code', 'MAD'),
                     'in_stock' => $p->isInStock(),
+                    'featured' => (int) ($p->sort_order ?? 0) > 0,
                     'condition' => str_contains(strtolower($p->name), 'occasion') ? 'used_certified' : 'new_sealed',
                     'url' => $baseUrl . '/shop/' . ($p->slug ?: $p->id),
                     'image' => $imgUrl,
@@ -353,8 +384,9 @@ class SitemapController extends Controller
             });
 
             return [
-                'schema_version' => '2.0',
+                'schema_version' => '2.1',
                 'generated_at' => now()->toIso8601String(),
+                'total_products' => $products->count(),
                 'entity' => [
                     'name' => setting('app_name', 'WINA SHOP'),
                     'legal_name' => setting('company_name', 'WINA SHOP'),
@@ -366,6 +398,7 @@ class SitemapController extends Controller
                     'llms_full_txt' => $baseUrl . '/llms-full.txt',
                     'google_merchant_xml' => $baseUrl . '/google-merchant.xml',
                     'sitemap_xml' => $baseUrl . '/sitemap.xml',
+                    'opensearch_xml' => $baseUrl . '/opensearch.xml',
                     'phone_whatsapp' => setting('company_phone', '+212629035777'),
                     'email' => setting('company_email', 'contact@winashop.com'),
                     'address' => setting('company_address', '01 Rue 102, Hay Wiam, Al Oulfa, Casablanca, Maroc'),

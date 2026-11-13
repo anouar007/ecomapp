@@ -68,6 +68,55 @@
                 <form action="{{ route('inventory.process-adjustment', $product) }}" method="POST" id="mainAdjustmentForm">
                     @csrf
 
+                    @php
+                        $stores = $stores ?? collect();
+                        $selectedStoreId = $selectedStoreId ?? null;
+                        $storeStockMap = $product->storeStocks->keyBy('store_id');
+                    @endphp
+
+                    @if($stores->isNotEmpty())
+                    <!-- Sélecteur de Magasin / Dépôt -->
+                    <div class="mb-3.5 p-3 rounded-3 bg-light border">
+                        <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.72rem; letter-spacing: 0.04em;">
+                            <i class="fas fa-warehouse text-danger me-1"></i>Magasin / Point de stockage ciblé
+                        </label>
+                        <select name="store_id" id="storeSelectAdjust" class="form-select" onchange="onAdjustStoreChange(this)">
+                            <option value="" data-stock="{{ $product->stock ?? 0 }}" data-location="" data-min="2" data-label="Stock global">
+                                Stock global (Total produit : {{ $product->stock ?? 0 }} u.)
+                            </option>
+                            @foreach($stores as $st)
+                                @php
+                                    $rec = $storeStockMap->get($st->id);
+                                    $stQty = (int) ($rec->quantity ?? 0);
+                                    $stLoc = $rec->location_code ?? '';
+                                    $stMin = (int) ($rec->min_quantity ?? 2);
+                                @endphp
+                                <option value="{{ $st->id }}"
+                                        data-stock="{{ $stQty }}"
+                                        data-location="{{ $stLoc }}"
+                                        data-min="{{ $stMin }}"
+                                        data-label="{{ $st->name }}"
+                                        {{ (int)$selectedStoreId === (int)$st->id ? 'selected' : '' }}>
+                                    {{ $st->name }} ({{ $st->code }}) — {{ $stQty }} u.{{ $stLoc ? " · {$stLoc}" : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <div class="row g-2 mt-2" id="adjustStoreMetaRow" style="{{ $selectedStoreId ? '' : 'display: none;' }}">
+                            <div class="col-7">
+                                <label class="form-label text-muted small mb-0.5" style="font-size: 0.72rem;">Emplacement (Rayon / Étagère)</label>
+                                <input type="text" name="location_code" id="adjustLocationInput" class="form-control form-control-sm" placeholder="Ex: Rayon A - Étagère 2">
+                            </div>
+                            <div class="col-5">
+                                <label class="form-label text-muted small mb-0.5" style="font-size: 0.72rem;">Seuil alerte site</label>
+                                <input type="number" min="0" name="min_quantity" id="adjustMinQtyInput" class="form-control form-control-sm" value="2">
+                            </div>
+                        </div>
+                        <div class="form-text small" style="font-size: 0.72rem;">
+                            Ciblez un magasin ou dépôt précis pour gérer son stock et son emplacement, ou ajustez globalement.
+                        </div>
+                    </div>
+                    @endif
+
                     @if($product->variants && $product->variants->isNotEmpty())
                     <!-- Sélecteur de déclinaison / variante -->
                     <div class="mb-3.5 p-3 rounded-3 bg-light border">
@@ -287,6 +336,49 @@
                 </div>
             </div>
 
+            @if(isset($stores) && $stores->isNotEmpty())
+            <!-- Stock actuel par Magasin & Dépôt -->
+            <div class="bg-white border rounded-4 p-4 shadow-sm mb-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h6 class="fw-bold text-dark m-0" style="font-size: 0.95rem;">
+                        <i class="fas fa-warehouse text-danger me-1.5"></i>Stock par Magasin &amp; Dépôt
+                    </h6>
+                    <a href="{{ route('stores.stock', ['search' => $product->sku ?? $product->name]) }}" class="small text-primary text-decoration-none fw-semibold">
+                        Matrice <i class="fas fa-arrow-right ms-0.5"></i>
+                    </a>
+                </div>
+                <div class="d-flex flex-column gap-2">
+                    @foreach($stores as $st)
+                        @php
+                            $stRec = $product->storeStocks->firstWhere('store_id', $st->id);
+                            $stQty = (int) ($stRec->quantity ?? 0);
+                            $stLoc = $stRec->location_code ?? null;
+                            $stMin = (int) ($stRec->min_quantity ?? 2);
+                        @endphp
+                        <div class="d-flex align-items-center justify-content-between p-2.5 rounded-3 bg-light border">
+                            <div class="min-w-0">
+                                <div class="fw-semibold text-dark small text-truncate">{{ $st->name }}</div>
+                                <div class="text-muted" style="font-size: 0.7rem;">
+                                    <span class="font-monospace">{{ $st->code }}</span>
+                                    @if($stLoc)
+                                        · <span class="text-primary font-monospace"><i class="fas fa-map-pin me-0.5"></i>{{ $stLoc }}</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                                <span class="badge {{ $stQty <= 0 ? 'bg-danger' : ($stQty <= $stMin ? 'bg-warning text-dark' : 'bg-success') }} rounded-pill px-2 py-1">
+                                    {{ $stQty }} u.
+                                </span>
+                                <button type="button" class="btn btn-xs btn-outline-dark rounded-pill px-2 py-0.5" style="font-size: 0.7rem;" onclick="selectStoreForAdjust({{ $st->id }})">
+                                    Cibler
+                                </button>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
             <!-- Historique des 5 derniers mouvements pour cet article -->
             <div class="bg-white border rounded-4 p-4 shadow-sm">
                 <div class="d-flex align-items-center justify-content-between mb-3">
@@ -357,14 +449,65 @@
 <script>
     let currentStock = {{ $product->stock ?? 0 }};
 
+    document.addEventListener('DOMContentLoaded', function() {
+        const storeSelect = document.getElementById('storeSelectAdjust');
+        if (storeSelect && storeSelect.value) {
+            onAdjustStoreChange(storeSelect);
+        }
+    });
+
+    function selectStoreForAdjust(storeId) {
+        const storeSelect = document.getElementById('storeSelectAdjust');
+        if (storeSelect) {
+            storeSelect.value = String(storeId);
+            onAdjustStoreChange(storeSelect);
+            storeSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    function onAdjustStoreChange(select) {
+        const opt = select.options[select.selectedIndex];
+        const metaRow = document.getElementById('adjustStoreMetaRow');
+        const locInput = document.getElementById('adjustLocationInput');
+        const minInput = document.getElementById('adjustMinQtyInput');
+
+        if (select.value && opt) {
+            currentStock = parseInt(opt.dataset.stock, 10) || 0;
+            if (metaRow) metaRow.style.display = 'flex';
+            if (locInput) locInput.value = opt.dataset.location || '';
+            if (minInput) minInput.value = opt.dataset.min || 2;
+        } else {
+            if (metaRow) metaRow.style.display = 'none';
+            const variantSelect = document.getElementById('variantSelectAdjust');
+            if (variantSelect && variantSelect.value) {
+                const vOpt = variantSelect.options[variantSelect.selectedIndex];
+                currentStock = parseInt(vOpt.dataset.stock, 10) || 0;
+            } else {
+                currentStock = {{ $product->stock ?? 0 }};
+            }
+        }
+
+        const liveStockEl = document.getElementById('liveCurrentStock');
+        if (liveStockEl) liveStockEl.textContent = currentStock;
+
+        const op = document.getElementById('mainAdjustmentType').value;
+        if (op === 'adjustment') {
+            document.getElementById('mainQuantityInput').value = currentStock;
+        }
+        updateLiveCalc();
+    }
+
     function onAdjustVariantChange(select) {
+        const storeSelect = document.getElementById('storeSelectAdjust');
+        if (storeSelect && storeSelect.value) {
+            return;
+        }
         const opt = select.options[select.selectedIndex];
         if (opt) {
             currentStock = parseInt(opt.dataset.stock, 10) || 0;
             const liveStockEl = document.getElementById('liveCurrentStock');
             if (liveStockEl) liveStockEl.textContent = currentStock;
-            
-            // If in inventory mode, reset default value
+
             const op = document.getElementById('mainAdjustmentType').value;
             if (op === 'adjustment') {
                 document.getElementById('mainQuantityInput').value = currentStock;

@@ -85,6 +85,7 @@ class CustomerCreditController extends Controller
 
         // List of all active stores for modal cashier attribution
         $stores = Store::where('is_active', true)->orderBy('name')->get();
+        $totalDebtorsCount = $activeDebtorCount;
 
         return view('client_credits.index', compact(
             'customers',
@@ -93,6 +94,7 @@ class CustomerCreditController extends Controller
             'netBalance',
             'totalAccountsCount',
             'activeDebtorCount',
+            'totalDebtorsCount',
             'activeCreditorCount',
             'settledCount',
             'withLimitCount',
@@ -118,8 +120,11 @@ class CustomerCreditController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('transaction_number', 'LIKE', "%{$search}%")
                   ->orWhere('reference_number', 'LIKE', "%{$search}%")
-                  ->orWhere('notes', 'LIKE', "%{$search}%")
-                  ->orWhereHas('customer', function ($cq) use ($search) {
+                  ->orWhere('notes', 'LIKE', "%{$search}%");
+                if (ctype_digit($search)) {
+                    $q->orWhere('id', (int) $search);
+                }
+                $q->orWhereHas('customer', function ($cq) use ($search) {
                       $cq->where('name', 'LIKE', "%{$search}%")
                          ->orWhere('email', 'LIKE', "%{$search}%")
                          ->orWhere('phone', 'LIKE', "%{$search}%")
@@ -221,6 +226,50 @@ class CustomerCreditController extends Controller
             $validated,
             $request->file('proof_image')
         );
+
+        // Synchronize with linked Invoice & Order when recording a settlement
+        if ($trx->type === 'payment_received') {
+            $invoice = null;
+            if (!empty($validated['invoice_id'])) {
+                $invoice = \App\Models\Invoice::with(['payments', 'order'])->find($validated['invoice_id']);
+            } elseif (!empty($validated['order_id'])) {
+                $invoice = \App\Models\Invoice::with(['payments', 'order'])->where('order_id', $validated['order_id'])->first();
+                if ($invoice) {
+                    $trx->update(['invoice_id' => $invoice->id]);
+                }
+            }
+
+            if ($invoice) {
+                $invoice->payments()->create([
+                    'amount' => (float) $trx->amount,
+                    'payment_method' => $trx->payment_method,
+                    'payment_date' => $trx->payment_date ?? now(),
+                    'transaction_reference' => $trx->reference_number,
+                    'proof_file_path' => $trx->proof_image,
+                    'notes' => $trx->notes ?: "Règlement via Crédits & Règlements ({$trx->transaction_number})",
+                    'status' => 'completed',
+                    'created_by' => auth()->id(),
+                ]);
+
+                $totalPaid = (float) $invoice->payments()->where('status', 'completed')->sum('amount');
+                $invoiceTotal = (float) ($invoice->total_amount ?? $invoice->total ?? 0);
+                if ($totalPaid >= $invoiceTotal && $invoiceTotal > 0) {
+                    $invoice->payment_status = 'paid';
+                } elseif ($totalPaid > 0) {
+                    $invoice->payment_status = 'partial';
+                }
+                $invoice->save();
+
+                if ($invoice->order && $invoice->payment_status === 'paid') {
+                    $invoice->order->update(['payment_status' => 'paid']);
+                }
+            } elseif (!empty($validated['order_id'])) {
+                $order = \App\Models\Order::find($validated['order_id']);
+                if ($order && (float) $trx->amount >= (float) $order->total) {
+                    $order->update(['payment_status' => 'paid']);
+                }
+            }
+        }
 
         $typeLabel = $trx->type_label;
         $amountFormatted = number_format($trx->amount, 2, ',', ' ') . ' DH';

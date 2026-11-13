@@ -139,6 +139,9 @@ class ProductVariant extends Model
 
         // Record inventory movement with variant_id
         if ($this->product) {
+            $delta = $newStock - $stockBefore;
+            $storeId = !empty($options['store_id']) ? (int) $options['store_id'] : null;
+
             $this->product->inventoryMovements()->create([
                 'variant_id' => $this->id,
                 'type' => $type,
@@ -147,6 +150,8 @@ class ProductVariant extends Model
                 'stock_after' => $newStock,
                 'reference_type' => $options['reference_type'] ?? null,
                 'reference_id' => $options['reference_id'] ?? null,
+                'from_location_id' => $options['from_location_id'] ?? (($storeId && ($delta < 0 || $type === 'out')) ? $storeId : null),
+                'to_location_id' => $options['to_location_id'] ?? (($storeId && ($delta >= 0 && $type !== 'out')) ? $storeId : null),
                 'reason' => ($options['reason'] ?? 'Ajustement variante') . " [Variante: {$this->name}]",
                 'created_by' => $userId,
             ]);

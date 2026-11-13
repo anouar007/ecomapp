@@ -205,23 +205,38 @@
 
                 <!-- Section 2 : Sélection des Articles -->
                 <div class="product-form-card mb-4">
-                    <div class="product-form-card-header">
+                    <div class="product-form-card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
                         <div>
-                            <h2 class="product-form-card-title">
+                            <h2 class="product-form-card-title mb-0">
                                 <i class="fas fa-boxes-stacked text-danger"></i> 2. Articles commandés <span class="text-danger">*</span>
                             </h2>
-                            <p class="product-form-card-subtitle">Ajoutez un ou plusieurs articles depuis le catalogue produit</p>
+                            <p class="product-form-card-subtitle mb-0">Sélectionnez chaque produit ainsi que son magasin / dépôt de prélèvement</p>
                         </div>
+                        @if(isset($stores) && $stores->isNotEmpty())
+                            <div class="d-flex align-items-center gap-2">
+                                <label for="default_store_id" class="small fw-semibold text-secondary mb-0 text-nowrap">
+                                    <i class="fas fa-warehouse text-primary me-1"></i> Dépôt par défaut :
+                                </label>
+                                <select id="default_store_id" name="default_store_id" class="form-select form-select-sm" style="min-width: 190px;" onchange="applyDefaultStoreToPicker()">
+                                    <option value="">— Auto / À affecter —</option>
+                                    @foreach($stores as $st)
+                                        <option value="{{ $st->id }}" {{ old('default_store_id', $defaultStore?->id) == $st->id ? 'selected' : '' }}>
+                                            {{ $st->name }} ({{ $st->code }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
                     </div>
 
-                    <!-- Sélecteur rapide de produit -->
+                    <!-- Sélecteur rapide de produit + dépôt -->
                     <div class="p-3 bg-light rounded-3 mb-3 border">
                         <div class="row g-2 align-items-end">
-                            <div class="col-12 col-sm-7">
+                            <div class="col-12 col-md-5">
                                 <label for="product_picker" class="form-label small fw-semibold text-dark mb-1">
                                     Choisir un produit du catalogue
                                 </label>
-                                <select id="product_picker" class="form-select">
+                                <select id="product_picker" class="form-select" onchange="onProductPickerChange()">
                                     <option value="">-- Sélectionnez un produit --</option>
                                     @foreach($products as $prod)
                                         @if($prod->variants && $prod->variants->isNotEmpty())
@@ -253,17 +268,32 @@
                                 </select>
                             </div>
 
-                            <div class="col-6 col-sm-3">
+                            <div class="col-12 col-sm-6 col-md-3">
+                                <label for="store_picker" class="form-label small fw-semibold text-dark mb-1">
+                                    <i class="fas fa-store text-primary me-1"></i>Magasin / Dépôt
+                                </label>
+                                <select id="store_picker" class="form-select">
+                                    <option value="">— Non assigné —</option>
+                                    @foreach($stores ?? [] as $st)
+                                        <option value="{{ $st->id }}" {{ ($defaultStore?->id == $st->id) ? 'selected' : '' }}>
+                                            {{ $st->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-5 col-sm-3 col-md-2">
                                 <label for="quantity_picker" class="form-label small fw-semibold text-dark mb-1">Quantité</label>
                                 <input type="number" id="quantity_picker" class="form-control" value="1" min="1" max="999">
                             </div>
 
-                            <div class="col-6 col-sm-2">
+                            <div class="col-7 col-sm-3 col-md-2">
                                 <button type="button" class="btn btn-brand-primary w-100 justify-content-center" onclick="addSelectedProduct()" title="Ajouter à la commande">
-                                    <i class="fas fa-plus"></i> <span class="d-none d-sm-inline ms-1">Ajouter</span>
+                                    <i class="fas fa-plus"></i> <span class="ms-1">Ajouter</span>
                                 </button>
                             </div>
                         </div>
+                        <div id="pickerStoreHint" class="small text-muted mt-2 d-none"></div>
                     </div>
 
                     <!-- Liste des articles ajoutés -->
@@ -273,10 +303,11 @@
                                 <thead class="bg-light small text-muted text-uppercase">
                                     <tr>
                                         <th class="border-0 ps-3">Produit</th>
-                                        <th class="border-0 text-center" style="width: 130px;">P.U. TTC</th>
-                                        <th class="border-0 text-center" style="width: 140px;">Quantité</th>
-                                        <th class="border-0 text-end pe-3" style="width: 130px;">Total TTC</th>
-                                        <th class="border-0 text-center" style="width: 50px;"></th>
+                                        <th class="border-0" style="min-width: 210px;">Magasin / Dépôt source</th>
+                                        <th class="border-0 text-center" style="width: 115px;">P.U. TTC</th>
+                                        <th class="border-0 text-center" style="width: 130px;">Quantité</th>
+                                        <th class="border-0 text-end pe-3" style="width: 120px;">Total TTC</th>
+                                        <th class="border-0 text-center" style="width: 44px;"></th>
                                     </tr>
                                 </thead>
                                 <tbody id="orderItemsTbody">
@@ -294,7 +325,7 @@
                         <div id="noItemsAlert" class="text-center py-4 border rounded-3 bg-white text-muted">
                             <i class="fas fa-cart-arrow-down fs-2 mb-2 text-muted opacity-50"></i>
                             <div class="fw-semibold">Aucun article ajouté pour l'instant</div>
-                            <div class="small">Sélectionnez un produit ci-dessus et cliquez sur <strong>Ajouter</strong>.</div>
+                            <div class="small">Sélectionnez un produit, son dépôt et cliquez sur <strong>Ajouter</strong>.</div>
                         </div>
                     </div>
                 </div>
@@ -389,16 +420,131 @@
 @endsection
 
 @push('scripts')
+@php
+    $orderStoresPayload = [];
+    foreach ($stores ?? [] as $st) {
+        $orderStoresPayload[] = [
+            'id' => (int) $st->id,
+            'name' => $st->name,
+            'code' => $st->code,
+            'type' => $st->type,
+        ];
+    }
+
+    $productStoreStockPayload = [];
+    foreach ($products as $prod) {
+        $rows = [];
+        foreach ($prod->storeStocks as $ss) {
+            $rows[(int) $ss->store_id] = [
+                'qty' => (int) $ss->quantity,
+                'location' => $ss->location_code,
+            ];
+        }
+        $productStoreStockPayload[(int) $prod->id] = $rows;
+    }
+@endphp
 <script>
-    const currencySymbol = '{{ setting("currency_symbol", "MAD") }}';
+    const currencySymbol = @json(setting('currency_symbol', 'MAD'));
     const taxRate = {{ floatval(setting('tax_rate', 20)) }} / 100;
+    const orderStores = @json($orderStoresPayload);
+    const productStoreStocks = @json($productStoreStockPayload);
     let orderItems = [];
+
+    function getProductStoreInfo(productId, storeId) {
+        if (!productId || !storeId) return null;
+        const map = productStoreStocks[productId] || {};
+        return map[storeId] || null;
+    }
+
+    function productHasStoreAllocations(productId) {
+        const map = productStoreStocks[productId] || {};
+        return Object.keys(map).length > 0;
+    }
+
+    function escapeHtml(str) {
+        return String(str || '').replace(/[&<>"']/g, function(m) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+        });
+    }
+
+    function buildStoreOptionsHtml(productId, selectedStoreId) {
+        const hasAllocations = productHasStoreAllocations(productId);
+        let html = `<option value="">— Non assigné —</option>`;
+        orderStores.forEach(st => {
+            const info = getProductStoreInfo(productId, st.id);
+            const qty = info ? info.qty : 0;
+            const loc = info && info.location ? ` [${info.location}]` : '';
+            const stockText = hasAllocations ? ` — Stock: ${qty}${loc}` : '';
+            const selected = String(selectedStoreId || '') === String(st.id) ? 'selected' : '';
+            html += `<option value="${st.id}" ${selected}>${escapeHtml(st.name)}${escapeHtml(stockText)}</option>`;
+        });
+        return html;
+    }
+
+    function applyDefaultStoreToPicker() {
+        const def = document.getElementById('default_store_id')?.value || '';
+        const pickerStore = document.getElementById('store_picker');
+        if (pickerStore) {
+            pickerStore.value = def;
+            onProductPickerChange();
+        }
+    }
+
+    function onProductPickerChange() {
+        const picker = document.getElementById('product_picker');
+        const storePicker = document.getElementById('store_picker');
+        const hint = document.getElementById('pickerStoreHint');
+        const prodId = parseInt(picker?.value || 0);
+
+        if (!storePicker) return;
+
+        const prevVal = storePicker.value || (document.getElementById('default_store_id')?.value || '');
+        if (!prodId) {
+            storePicker.innerHTML = buildStoreOptionsHtml(0, prevVal);
+            if (hint) { hint.classList.add('d-none'); hint.innerHTML = ''; }
+            return;
+        }
+
+        // Rebuild store picker with live stock counts for this product
+        let bestStoreId = prevVal;
+        const map = productStoreStocks[prodId] || {};
+        const prevQty = map[prevVal]?.qty ?? 0;
+        if (productHasStoreAllocations(prodId) && prevQty <= 0) {
+            // Prefer a store that actually has stock if current default is empty
+            for (const st of orderStores) {
+                if ((map[st.id]?.qty ?? 0) > 0) {
+                    bestStoreId = String(st.id);
+                    break;
+                }
+            }
+        }
+        storePicker.innerHTML = buildStoreOptionsHtml(prodId, bestStoreId);
+
+        if (hint) {
+            if (productHasStoreAllocations(prodId)) {
+                const pills = orderStores.map(st => {
+                    const info = map[st.id];
+                    const qty = info ? info.qty : 0;
+                    const cls = qty > 0 ? 'bg-success-subtle text-success border-success-subtle' : 'bg-light text-muted border';
+                    const loc = info?.location ? ` (${escapeHtml(info.location)})` : '';
+                    return `<span class="badge ${cls} border me-1 mb-1">${escapeHtml(st.name)}: <strong>${qty}</strong>${loc}</span>`;
+                }).join('');
+                hint.innerHTML = `<i class="fas fa-warehouse text-primary me-1"></i>Disponibilité par dépôt : ${pills}`;
+                hint.classList.remove('d-none');
+            } else {
+                hint.innerHTML = `<i class="fas fa-info-circle text-muted me-1"></i>Stock global (aucune répartition par dépôt enregistrée pour ce produit).`;
+                hint.classList.remove('d-none');
+            }
+        }
+    }
 
     function addSelectedProduct() {
         const picker = document.getElementById('product_picker');
+        const storePicker = document.getElementById('store_picker');
         const qtyPicker = document.getElementById('quantity_picker');
         const prodId = parseInt(picker.value);
         const qty = parseInt(qtyPicker.value) || 1;
+        const storeId = storePicker && storePicker.value ? parseInt(storePicker.value) : null;
 
         if (!prodId) {
             Swal.fire({
@@ -419,8 +565,12 @@
         const variantId = selectedOption.getAttribute('data-variant-id') || null;
         const variantName = selectedOption.getAttribute('data-variant-name') || null;
 
-        // Check if item already exists with matching product_id and variant_id
-        const existing = orderItems.find(it => it.product_id === prodId && String(it.variant_id || '') === String(variantId || ''));
+        // Combine only when product, variant AND store match (allows splitting same product across two depots!)
+        const existing = orderItems.find(it =>
+            it.product_id === prodId &&
+            String(it.variant_id || '') === String(variantId || '') &&
+            String(it.store_id || '') === String(storeId || '')
+        );
         if (existing) {
             existing.quantity += qty;
         } else {
@@ -428,6 +578,7 @@
                 product_id: prodId,
                 variant_id: variantId,
                 variant_name: variantName,
+                store_id: storeId,
                 name: name,
                 price: price,
                 sku: sku,
@@ -440,6 +591,7 @@
         // Reset pickers
         picker.value = '';
         qtyPicker.value = 1;
+        onProductPickerChange();
 
         renderOrderItems();
     }
@@ -456,6 +608,11 @@
         } else {
             orderItems.splice(index, 1);
         }
+        renderOrderItems();
+    }
+
+    function updateItemStore(index, newStoreId) {
+        orderItems[index].store_id = newStoreId ? parseInt(newStoreId) : null;
         renderOrderItems();
     }
 
@@ -487,22 +644,40 @@
             subtotalGross += lineTotal;
             totalCount += item.quantity;
 
-            // Desktop Row
+            const storeOpts = buildStoreOptionsHtml(item.product_id, item.store_id);
+            let storeWarning = '';
+            if (item.store_id && productHasStoreAllocations(item.product_id)) {
+                const info = getProductStoreInfo(item.product_id, item.store_id);
+                const avail = info ? info.qty : 0;
+                if (avail < item.quantity) {
+                    storeWarning = `<div class="text-danger mt-1" style="font-size: 0.72rem;"><i class="fas fa-exclamation-triangle me-1"></i>Stock dépôt insuffisant (${avail} dispo)</div>`;
+                } else if (info && info.location) {
+                    storeWarning = `<div class="text-muted mt-1" style="font-size: 0.72rem;"><i class="fas fa-map-pin text-primary me-1"></i>${escapeHtml(info.location)} &bull; ${avail} dispo</div>`;
+                }
+            }
+
+            // Desktop Row (holds authoritative form inputs)
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td class="ps-3 py-2.5">
                     <div class="d-flex align-items-center gap-2.5">
                         <div style="width: 42px; height: 42px; border-radius: 8px; overflow: hidden; background: #ffffff; border: 1px solid #e2e8f0; flex-shrink: 0; padding: 2px; display: flex; align-items: center; justify-content: center;">
-                            <img src="${item.thumb || '/images/camera/cat_cameras.jpg'}" alt="${item.name}" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.src='/images/camera/cat_cameras.jpg'">
+                            <img src="${item.thumb || '/images/camera/cat_cameras.jpg'}" alt="${escapeHtml(item.name)}" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.src='/images/camera/cat_cameras.jpg'">
                         </div>
                         <div>
-                            <div class="fw-bold text-dark">${item.name}</div>
-                            <div class="text-muted small font-monospace">SKU: ${item.sku || 'N/A'}</div>
+                            <div class="fw-bold text-dark">${escapeHtml(item.name)}</div>
+                            <div class="text-muted small font-monospace">SKU: ${escapeHtml(item.sku || 'N/A')}</div>
                         </div>
                     </div>
                     <input type="hidden" name="items[${idx}][product_id]" value="${item.product_id}">
                     <input type="hidden" name="items[${idx}][variant_id]" value="${item.variant_id || ''}">
-                    <input type="hidden" name="items[${idx}][variant_name]" value="${item.variant_name || ''}">
+                    <input type="hidden" name="items[${idx}][variant_name]" value="${escapeHtml(item.variant_name || '')}">
+                </td>
+                <td class="py-2.5">
+                    <select name="items[${idx}][store_id]" class="form-select form-select-sm" onchange="updateItemStore(${idx}, this.value)">
+                        ${storeOpts}
+                    </select>
+                    ${storeWarning}
                 </td>
                 <td class="text-center py-2.5 text-secondary">
                     ${formatCurrency(item.price)}
@@ -532,17 +707,24 @@
                 <div class="d-flex justify-content-between align-items-start gap-2">
                     <div class="d-flex align-items-center gap-2 min-w-0 flex-grow-1">
                         <div style="width: 44px; height: 44px; border-radius: 8px; overflow: hidden; background: #ffffff; border: 1px solid #e2e8f0; flex-shrink: 0; padding: 2px; display: flex; align-items: center; justify-content: center;">
-                            <img src="${item.thumb || '/images/camera/cat_cameras.jpg'}" alt="${item.name}" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.src='/images/camera/cat_cameras.jpg'">
+                            <img src="${item.thumb || '/images/camera/cat_cameras.jpg'}" alt="${escapeHtml(item.name)}" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.src='/images/camera/cat_cameras.jpg'">
                         </div>
                         <div class="min-w-0 flex-grow-1">
-                            <div class="fw-bold text-dark text-truncate">${item.name}</div>
-                            <div class="text-muted small font-monospace">SKU: ${item.sku || 'N/A'}</div>
+                            <div class="fw-bold text-dark text-truncate">${escapeHtml(item.name)}</div>
+                            <div class="text-muted small font-monospace">SKU: ${escapeHtml(item.sku || 'N/A')}</div>
                             <div class="small text-secondary">${formatCurrency(item.price)} / unité</div>
                         </div>
                     </div>
                     <button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="removeItem(${idx})">
                         <i class="fas fa-trash-alt"></i>
                     </button>
+                </div>
+                <div class="mt-2">
+                    <label class="form-label small fw-semibold text-muted mb-1"><i class="fas fa-store text-primary me-1"></i>Magasin / Dépôt source</label>
+                    <select class="form-select form-select-sm" onchange="updateItemStore(${idx}, this.value)">
+                        ${storeOpts}
+                    </select>
+                    ${storeWarning}
                 </div>
                 <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
                     <div class="input-group input-group-sm" style="width: 105px;">

@@ -19,6 +19,7 @@ class PaymentController extends Controller
             'payment_method' => 'required|string',
             'payment_date' => 'required|date',
             'transaction_reference' => 'nullable|string',
+            'store_id' => 'nullable|exists:stores,id',
             'proof_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120', // 5MB max
             'notes' => 'nullable|string',
         ]);
@@ -41,11 +42,37 @@ class PaymentController extends Controller
 
         // Update invoice payment status
         $this->updateInvoiceStatus($invoice);
+        $invoice->refresh();
 
-        // Update customer balance
-        $customer = \App\Models\Customer::where('email', $invoice->customer_email)->first();
+        if ($invoice->order && $invoice->payment_status === 'paid') {
+            $invoice->order->update(['payment_status' => 'paid']);
+        }
+
+        // Sync payment into unified customer credit ledger & delta balance
+        $customer = $invoice->customer_email
+            ? \App\Models\Customer::where('email', $invoice->customer_email)->first()
+            : null;
+        if (!$customer && $invoice->order && $invoice->order->customer_id) {
+            $customer = $invoice->order->customer;
+        }
+
         if ($customer) {
-            $customer->updateBalance();
+            if (method_exists($customer, 'recordTransaction')) {
+                $customer->recordTransaction([
+                    'type' => 'payment_received',
+                    'amount' => (float) $payment->amount,
+                    'payment_method' => $payment->payment_method,
+                    'reference_number' => $payment->transaction_reference,
+                    'invoice_id' => $invoice->id,
+                    'order_id' => $invoice->order_id,
+                    'store_id' => $request->input('store_id'),
+                    'proof_image_path' => $proofPath,
+                    'notes' => $request->notes ?: "Règlement facture #{$invoice->invoice_number}",
+                    'payment_date' => $request->payment_date,
+                ]);
+            } else {
+                $customer->applyBalanceDelta(-(float) $payment->amount);
+            }
         }
 
         return back()->with('success', 'Payment recorded successfully.');

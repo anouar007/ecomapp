@@ -107,21 +107,7 @@
     </div>
 
     <!-- Navigation Croisée ERP (Arrivages <-> Coûts <-> Rentabilité) -->
-    <div class="subnav-pills-bar">
-        <a href="{{ route('shipments.index') }}" class="subnav-pill active">
-            <i class="fas fa-truck-ramp-box text-danger"></i>
-            <span>Arrivages & Expéditions Fournisseurs</span>
-            <span class="subnav-pill-badge">{{ $totalShipments }}</span>
-        </a>
-        <a href="{{ route('reports.profitability.costs') }}" class="subnav-pill">
-            <i class="fas fa-coins text-warning"></i>
-            <span>Coûts d'Achat & Prix de Revient</span>
-        </a>
-        <a href="{{ route('reports.profitability') }}" class="subnav-pill">
-            <i class="fas fa-chart-pie text-success"></i>
-            <span>Rapport de Rentabilité & Marges</span>
-        </a>
-    </div>
+    @include('partials.subnav.finance')
 
     <!-- Alert / Flash message -->
     @if(session('success'))

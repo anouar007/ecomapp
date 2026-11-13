@@ -2,6 +2,88 @@
 
 @section('title', 'Commande #' . $order->order_number)
 
+@push('styles')
+<style>
+.order-history-filter-pill {
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #475569;
+    border-radius: 9999px;
+    padding: 0.25rem 0.72rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.order-history-filter-pill:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+.order-history-filter-pill.active {
+    background: #0f172a;
+    color: #ffffff;
+    border-color: #0f172a;
+}
+.order-history-timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+.order-history-timeline::before {
+    content: '';
+    position: absolute;
+    left: 13px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: #e2e8f0;
+}
+.order-history-item {
+    position: relative;
+    padding-bottom: 1.15rem;
+}
+.order-history-item:last-child {
+    padding-bottom: 0;
+}
+.order-history-node {
+    position: absolute;
+    left: -2rem;
+    top: 2px;
+    width: 28px;
+    height: 28px;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.1);
+    z-index: 2;
+}
+.order-history-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.order-history-card:hover {
+    background: #ffffff;
+    border-color: #cbd5e1;
+}
+.order-diff-chip {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.22rem 0.55rem;
+    font-size: 0.76rem;
+}
+</style>
+@endpush
+
 @section('content')
     <!-- En-tête de la page (Clean & Pro) -->
     <div class="brand-header">
@@ -167,14 +249,52 @@
         <div class="col-12 col-lg-8">
             <!-- Articles commandés -->
             <div class="product-form-card mb-4">
-                <div class="product-form-card-header">
-                    <h2 class="product-form-card-title">
-                        <i class="fas fa-box-open text-danger"></i> Articles commandés
-                        <span class="badge rounded-pill bg-light text-secondary border px-2.5 ms-1" style="font-size: 0.72rem;">
-                            {{ $order->items->count() }} article{{ $order->items->count() > 1 ? 's' : '' }}
-                        </span>
-                    </h2>
+                <div class="product-form-card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <h2 class="product-form-card-title m-0">
+                            <i class="fas fa-box-open text-danger"></i> Articles commandés
+                            <span class="badge rounded-pill bg-light text-secondary border px-2.5 ms-1" style="font-size: 0.72rem;">
+                                {{ $order->items->count() }} article{{ $order->items->count() > 1 ? 's' : '' }}
+                            </span>
+                        </h2>
+                        @if($order->stock_deducted)
+                            <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle" style="font-size: 0.72rem;">
+                                <i class="fas fa-check-circle me-1"></i>Stock déduit
+                            </span>
+                        @else
+                            <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle" style="font-size: 0.72rem;">
+                                <i class="fas fa-clock me-1"></i>Prélèvement en attente
+                            </span>
+                        @endif
+                    </div>
+
+                    @if(isset($stores) && $stores->isNotEmpty() && $order->items->isNotEmpty())
+                        <form action="{{ route('orders.update-stores', $order) }}" method="POST" class="d-flex align-items-center gap-1.5 m-0">
+                            @csrf
+                            <input type="hidden" name="apply_all" value="1">
+                            <select name="bulk_store_id" class="form-select form-select-sm" style="min-width: 175px; max-width: 220px;" title="Affecter tous les articles à un magasin ou dépôt">
+                                <option value="">— Tout désaffecter —</option>
+                                @foreach($stores as $st)
+                                    <option value="{{ $st->id }}">{{ $st->name }} ({{ $st->code }})</option>
+                                @endforeach
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill px-2.5 fw-semibold text-nowrap" title="Appliquer ce dépôt à tous les articles">
+                                <i class="fas fa-warehouse me-1"></i>Tout affecter
+                            </button>
+                        </form>
+                    @endif
                 </div>
+
+                @if(session('success'))
+                    <div class="alert alert-success border-0 rounded-3 py-2 px-3 small mb-3">
+                        <i class="fas fa-check-circle me-1"></i> {{ session('success') }}
+                    </div>
+                @endif
+                @if(session('error'))
+                    <div class="alert alert-danger border-0 rounded-3 py-2 px-3 small mb-3">
+                        <i class="fas fa-exclamation-triangle me-1"></i> {{ session('error') }}
+                    </div>
+                @endif
 
                 <!-- Desktop Table View -->
                 <div class="table-responsive d-none d-md-block">
@@ -182,6 +302,7 @@
                         <thead class="bg-light text-muted small text-uppercase">
                             <tr>
                                 <th class="border-0 ps-3">Produit</th>
+                                <th class="border-0" style="min-width: 225px;">Magasin / Dépôt source</th>
                                 <th class="border-0 text-center">P.U. TTC</th>
                                 <th class="border-0 text-center">Quantité</th>
                                 <th class="border-0 text-end pe-3">Total TTC</th>
@@ -189,6 +310,11 @@
                         </thead>
                         <tbody>
                             @foreach($order->items as $item)
+                                @php
+                                    $itemStoreStocks = $item->product ? $item->product->storeStocks->keyBy('store_id') : collect();
+                                    $hasItemStoreAllocations = $itemStoreStocks->isNotEmpty();
+                                    $assignedStockRow = $item->store_id ? $itemStoreStocks->get($item->store_id) : null;
+                                @endphp
                                 <tr>
                                     <td class="ps-3 py-3">
                                         <div class="d-flex align-items-center gap-3">
@@ -218,6 +344,51 @@
                                             </div>
                                         </div>
                                     </td>
+                                    <td class="py-3">
+                                        <form action="{{ route('orders.items.update-store', [$order, $item]) }}"
+                                              method="POST"
+                                              class="item-store-form m-0"
+                                              data-item-id="{{ $item->id }}">
+                                            @csrf
+                                            <div class="input-group input-group-sm">
+                                                <select name="store_id"
+                                                        class="form-select form-select-sm item-store-select"
+                                                        aria-label="Magasin ou dépôt pour {{ $item->product_name }}">
+                                                    <option value="">— Non assigné —</option>
+                                                    @foreach($stores ?? [] as $st)
+                                                        @php
+                                                            $stStock = $itemStoreStocks->get($st->id);
+                                                            $stQty = $stStock ? (int) $stStock->quantity : 0;
+                                                            $stLoc = $stStock?->location_code ? ' [' . $stStock->location_code . ']' : '';
+                                                            $stLabel = $st->name . ($hasItemStoreAllocations ? " — Stock: {$stQty}{$stLoc}" : '');
+                                                        @endphp
+                                                        <option value="{{ $st->id }}" {{ (int) $item->store_id === (int) $st->id ? 'selected' : '' }}>
+                                                            {{ $stLabel }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                <button type="submit" class="btn btn-outline-primary px-2" title="Enregistrer ce dépôt">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            </div>
+                                            <div class="mt-1 d-flex align-items-center gap-1 flex-wrap item-store-meta" id="item-store-meta-{{ $item->id }}">
+                                                @if($item->store)
+                                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.68rem;">
+                                                        <i class="fas fa-warehouse me-1"></i>{{ $item->store->name }}
+                                                    </span>
+                                                    @if($assignedStockRow?->location_code)
+                                                        <span class="badge bg-light text-secondary border" style="font-size: 0.68rem;">
+                                                            <i class="fas fa-map-pin text-danger me-1"></i>{{ $assignedStockRow->location_code }}
+                                                        </span>
+                                                    @endif
+                                                @else
+                                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle" style="font-size: 0.68rem;">
+                                                        <i class="fas fa-exclamation-circle me-1"></i>Dépôt à attribuer
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </form>
+                                    </td>
                                     <td class="text-center py-3 fw-semibold text-secondary">
                                         {{ currency($item->price) }}
                                     </td>
@@ -238,6 +409,10 @@
                 <!-- Mobile Items Cards (Touch-friendly) -->
                 <div class="d-block d-md-none">
                     @foreach($order->items as $item)
+                        @php
+                            $itemStoreStocks = $item->product ? $item->product->storeStocks->keyBy('store_id') : collect();
+                            $hasItemStoreAllocations = $itemStoreStocks->isNotEmpty();
+                        @endphp
                         <div class="p-3 border rounded-3 mb-2 bg-light bg-opacity-25">
                             <div class="d-flex align-items-start gap-2.5">
                                 <div style="width: 52px; height: 52px; border-radius: 10px; overflow: hidden; background: #ffffff; border: 1px solid #e2e8f0; flex-shrink: 0; padding: 2px; display: flex; align-items: center; justify-content: center;">
@@ -265,6 +440,32 @@
                                             </span>
                                         @endif
                                     </div>
+                                    <form action="{{ route('orders.items.update-store', [$order, $item]) }}"
+                                          method="POST"
+                                          class="item-store-form mt-2 m-0"
+                                          data-item-id="{{ $item->id }}">
+                                        @csrf
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text bg-white text-primary px-2"><i class="fas fa-warehouse"></i></span>
+                                            <select name="store_id" class="form-select form-select-sm item-store-select">
+                                                <option value="">— Non assigné —</option>
+                                                @foreach($stores ?? [] as $st)
+                                                    @php
+                                                        $stStock = $itemStoreStocks->get($st->id);
+                                                        $stQty = $stStock ? (int) $stStock->quantity : 0;
+                                                        $stLoc = $stStock?->location_code ? ' [' . $stStock->location_code . ']' : '';
+                                                        $stLabel = $st->name . ($hasItemStoreAllocations ? " — {$stQty} dispo{$stLoc}" : '');
+                                                    @endphp
+                                                    <option value="{{ $st->id }}" {{ (int) $item->store_id === (int) $st->id ? 'selected' : '' }}>
+                                                        {{ $stLabel }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <button type="submit" class="btn btn-outline-primary px-2" title="Enregistrer">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </div>
+                                    </form>
                                     <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
                                         <span class="badge bg-white text-dark border px-2 py-1">
                                             {{ currency($item->price) }} &times; {{ $item->quantity }}
@@ -282,7 +483,7 @@
 
             <!-- Notes de la commande -->
             @if($order->notes)
-                <div class="product-form-card">
+                <div class="product-form-card mb-4">
                     <div class="product-form-card-header">
                         <h2 class="product-form-card-title">
                             <i class="fas fa-comment-dots text-warning"></i> Notes & Remarques
@@ -293,6 +494,114 @@
                     </div>
                 </div>
             @endif
+
+            <!-- Historique complet & Traçabilité -->
+            @php
+                $historyCollection = $orderHistory ?? collect();
+                $histStatusCount = $historyCollection->where('category', 'status')->count();
+                $histStockCount = $historyCollection->where('category', 'stock')->count();
+                $histPaymentCount = $historyCollection->where('category', 'payment')->count();
+            @endphp
+            <div class="product-form-card" id="orderHistorySection">
+                <div class="product-form-card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+                    <h2 class="product-form-card-title m-0">
+                        <i class="fas fa-clock-rotate-left text-danger"></i> Historique complet &amp; Traçabilité
+                        <span class="badge bg-light text-dark border rounded-pill ms-1.5" id="orderHistoryVisibleCount">{{ $historyCollection->count() }}</span>
+                    </h2>
+                    <div class="d-flex flex-wrap gap-1.5" id="orderHistoryFilters">
+                        <button type="button" class="order-history-filter-pill active" data-history-cat="all">
+                            Tout ({{ $historyCollection->count() }})
+                        </button>
+                        <button type="button" class="order-history-filter-pill" data-history-cat="status">
+                            Statuts &amp; Modifs ({{ $histStatusCount }})
+                        </button>
+                        <button type="button" class="order-history-filter-pill" data-history-cat="stock">
+                            Stock ({{ $histStockCount }})
+                        </button>
+                        <button type="button" class="order-history-filter-pill" data-history-cat="payment">
+                            Paiements ({{ $histPaymentCount }})
+                        </button>
+                    </div>
+                </div>
+
+                @if($historyCollection->isNotEmpty())
+                    <div class="order-history-timeline mt-2" id="orderHistoryTimeline">
+                        @foreach($historyCollection as $event)
+                            <div class="order-history-item" data-history-cat="{{ $event->category }}">
+                                <div class="order-history-node {{ $event->badge_class }} border">
+                                    <i class="{{ $event->icon }}"></i>
+                                </div>
+                                <div class="order-history-card">
+                                    <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-1">
+                                        <div class="fw-bold text-dark" style="font-size: 0.88rem;">
+                                            {{ $event->title }}
+                                        </div>
+                                        <div class="small text-muted d-flex align-items-center gap-2">
+                                            @if($event->timestamp)
+                                                <span title="{{ $event->timestamp->format('d/m/Y H:i:s') }}">
+                                                    <i class="far fa-clock me-1"></i>{{ $event->timestamp->format('d/m/Y à H:i') }}
+                                                </span>
+                                                <span class="badge bg-white text-secondary border rounded-pill" style="font-size: 0.68rem;">
+                                                    {{ $event->timestamp->diffForHumans() }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    @if($event->description)
+                                        <div class="small text-secondary mb-2">{{ $event->description }}</div>
+                                    @endif
+
+                                    @if(!empty($event->changes))
+                                        <div class="d-flex flex-wrap gap-1.5 mb-2">
+                                            @foreach($event->changes as $chg)
+                                                <div class="order-diff-chip">
+                                                    <span class="fw-semibold text-secondary">{{ $chg['field'] }} :</span>
+                                                    @if($chg['old'] !== null)
+                                                        <span class="text-danger text-decoration-line-through">{{ $chg['old'] }}</span>
+                                                        <i class="fas fa-arrow-right text-muted" style="font-size: 0.65rem;"></i>
+                                                    @endif
+                                                    <span class="fw-bold text-dark">{{ $chg['new'] }}</span>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+
+                                    @if(!empty($event->meta))
+                                        <div class="d-flex flex-wrap gap-1.5 mb-2">
+                                            @foreach($event->meta as $mKey => $mVal)
+                                                <div class="order-diff-chip">
+                                                    <span class="fw-semibold text-secondary">{{ $mKey }} :</span>
+                                                    <span class="fw-bold text-dark">{{ $mVal }}</span>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+
+                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 pt-1.5 border-top border-light-subtle text-muted" style="font-size: 0.74rem;">
+                                        <span>
+                                            <i class="fas fa-user-shield me-1 text-secondary"></i>
+                                            Par : <strong class="text-dark">{{ $event->actor }}</strong>
+                                        </span>
+                                        @if(!empty($event->ip))
+                                            <span class="font-monospace">IP: {{ $event->ip }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    <div id="orderHistoryEmptyCat" class="text-center py-4 text-muted small d-none">
+                        <i class="fas fa-filter fa-lg mb-2 opacity-25 d-block"></i>
+                        Aucun événement dans cette catégorie pour cette commande.
+                    </div>
+                @else
+                    <div class="text-center py-4 text-muted small">
+                        <i class="fas fa-history fa-2x mb-2 opacity-25 d-block"></i>
+                        Aucun historique détaillé enregistré pour cette commande.
+                    </div>
+                @endif
+            </div>
         </div>
 
         <!-- Colonne Latérale (Droite) : Récapitulatif, Client & Paiement -->
@@ -479,6 +788,14 @@
                         <span class="text-muted">Date d'enregistrement :</span>
                         <span class="text-dark">{{ $order->created_at->format('d/m/Y à H:i') }}</span>
                     </div>
+
+                    @if($order->payment_status !== 'paid' && $order->customer_id)
+                        <div class="pt-2.5 mt-1 border-top">
+                            <a href="{{ route('customers.show', $order->customer_id) }}" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-semibold w-100">
+                                <i class="fas fa-wallet me-1.5"></i> Encaisser / Solde Client ({{ currency($order->customer->current_balance ?? $order->total) }})
+                            </a>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -533,4 +850,134 @@
             </div>
         </div>
     </div>
+
+@push('scripts')
+<script>
+(function() {
+function initOrderShow() {
+    document.querySelectorAll('.item-store-form').forEach(form => {
+        const select = form.querySelector('.item-store-select');
+        let previousValue = select ? select.value : '';
+
+        if (select) {
+            select.addEventListener('change', function() {
+                form.dispatchEvent(new Event('submit', { cancelable: true }));
+            });
+        }
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const itemId = form.getAttribute('data-item-id');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const storeId = select ? select.value : '';
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            }
+
+            try {
+                const response = await fetch(form.getAttribute('action'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: JSON.stringify({ store_id: storeId || null })
+                });
+
+                const data = await response.json();
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || 'Impossible de mettre à jour le dépôt.');
+                }
+
+                previousValue = storeId;
+
+                // Keep desktop and mobile selects for the same item synchronized
+                document.querySelectorAll(`.item-store-form[data-item-id="${itemId}"] .item-store-select`).forEach(sel => {
+                    sel.value = storeId;
+                });
+
+                const metaEl = document.getElementById(`item-store-meta-${itemId}`);
+                if (metaEl) {
+                    if (data.item && data.item.store_name) {
+                        const locBadge = data.item.location_code
+                            ? `<span class="badge bg-light text-secondary border" style="font-size: 0.68rem;"><i class="fas fa-map-pin text-danger me-1"></i>${data.item.location_code}</span>`
+                            : '';
+                        metaEl.innerHTML = `<span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.68rem;"><i class="fas fa-warehouse me-1"></i>${data.item.store_name}</span>${locBadge}`;
+                    } else {
+                        metaEl.innerHTML = `<span class="badge bg-warning-subtle text-warning border border-warning-subtle" style="font-size: 0.68rem;"><i class="fas fa-exclamation-circle me-1"></i>Dépôt à attribuer</span>`;
+                    }
+                }
+
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 2600,
+                        timerProgressBar: true,
+                    });
+                }
+            } catch (err) {
+                if (select) {
+                    select.value = previousValue;
+                }
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Stock insuffisant / Erreur',
+                        text: err.message,
+                        confirmButtonColor: '#dc2626',
+                    });
+                } else {
+                    alert(err.message);
+                }
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-check"></i>';
+                }
+            }
+        });
+    });
+
+    // Live zero-refresh filter for Order History timeline
+    const historyFilterBtns = document.querySelectorAll('#orderHistoryFilters .order-history-filter-pill');
+    const historyItems = document.querySelectorAll('#orderHistoryTimeline .order-history-item');
+    const historyVisibleCount = document.getElementById('orderHistoryVisibleCount');
+    const historyEmptyCat = document.getElementById('orderHistoryEmptyCat');
+
+    historyFilterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const cat = this.dataset.historyCat || 'all';
+            historyFilterBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            let visible = 0;
+            historyItems.forEach(item => {
+                const match = cat === 'all' || item.dataset.historyCat === cat;
+                item.classList.toggle('d-none', !match);
+                if (match) visible++;
+            });
+
+            if (historyVisibleCount) historyVisibleCount.textContent = visible;
+            if (historyEmptyCat) historyEmptyCat.classList.toggle('d-none', visible > 0);
+        });
+    });
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initOrderShow);
+} else {
+    initOrderShow();
+}
+})();
+</script>
+@endpush
 @endsection

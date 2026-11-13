@@ -9,11 +9,13 @@
                 <div class="brand-header-icon">
                     <i class="fas fa-chart-pie"></i>
                 </div>
-                Financial Reports
+                États Financiers & Journaux
             </h1>
-            <p class="brand-subtitle">Generate and download standard financial statements and detailed ledgers.</p>
+            <p class="brand-subtitle">Générez et consultez le Bilan, Compte de Résultat (CPC) et Grand Livre comptable.</p>
         </div>
     </div>
+
+    @include('partials.subnav.finance')
 
     <div class="row">
         <!-- Balance Sheet -->

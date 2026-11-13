@@ -21,6 +21,18 @@
     </script>
 </div>
 
+@if(request('q') && !empty($searchMeta['did_you_mean']) && $products->total() > 0)
+<div class="alert alert-light border d-flex align-items-center justify-content-between flex-wrap gap-2 py-2 px-3 mb-3 rounded-3 shadow-sm" style="border-left: 3px solid #e10126 !important;">
+    <div class="small text-dark">
+        <i class="fas fa-magic text-danger me-1"></i>
+        {{ __('Recherche intelligente activée pour') }} « <strong>{{ request('q') }}</strong> » &mdash;
+        {{ __('résultats associés incluant') }}
+        <a href="{{ route('shop.index', ['q' => $searchMeta['did_you_mean']]) }}" class="fw-bold text-danger text-decoration-underline">{{ $searchMeta['did_you_mean'] }}</a>
+    </div>
+    <span class="badge bg-danger-subtle text-danger rounded-pill px-2.5 py-1" style="font-size: 0.72rem;">{{ $products->total() }} {{ __('produits') }}</span>
+</div>
+@endif
+
 @if(request('q') && isset($matchingCategories) && $matchingCategories->isNotEmpty())
 <div class="shop-matching-categories mb-3 p-2 rounded-3 bg-light border d-flex align-items-center flex-wrap gap-2">
     <span class="small text-muted d-flex align-items-center gap-1" style="font-weight: 500;">
@@ -54,7 +66,7 @@
                 @endif
             </p>
 
-            <div class="d-flex justify-content-center gap-2 flex-wrap mb-1">
+            <div class="d-flex justify-content-center gap-2 flex-wrap mb-3">
                 <button type="button" onclick="if(window.resetAllFilters) { window.resetAllFilters(); }" class="btn btn-outline-danger rounded-pill px-3 py-1.5 d-inline-flex gap-2 align-items-center shadow-sm" style="font-weight: 500; font-size: 0.85rem;">
                     <i class="fas fa-redo"></i> <span>{{ __('Réinitialiser les filtres') }}</span>
                 </button>
@@ -62,6 +74,19 @@
                     <i class="fas fa-th-large"></i> <span>{{ __('Voir tout le catalogue') }}</span>
                 </a>
             </div>
+
+            @if(isset($popularSearches) && !empty($popularSearches))
+            <div class="pt-2 border-top mt-2">
+                <div class="small text-muted mb-2 fw-semibold">{{ __('Recherches populaires :') }}</div>
+                <div class="d-flex justify-content-center flex-wrap gap-1.5">
+                    @foreach($popularSearches as $popQuery)
+                        <a href="{{ route('shop.index', ['q' => $popQuery]) }}" class="badge rounded-pill bg-light text-dark border text-decoration-none py-1.5 px-2.5 fw-normal" style="font-size: 0.78rem;">
+                            <i class="fas fa-search text-danger me-1" style="font-size: 0.65rem;"></i>{{ $popQuery }}
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+            @endif
         </div>
 
         {{-- SLIDER OF RANDOM PRODUCTS (EXACTLY AS ON PRODUCT PAGE) --}}

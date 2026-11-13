@@ -24,6 +24,8 @@
         </div>
     </div>
 
+    @include('partials.subnav.finance')
+
     <!-- Statistics Cards (Product Section Standard) -->
     <div class="row g-3 mb-4">
         <div class="col-6 col-lg-3">

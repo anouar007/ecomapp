@@ -24,25 +24,7 @@
 </div>
 
 <!-- Navigation Croisée Système & Audit -->
-<div class="subnav-pills-bar">
-    <a href="{{ route('users.index') }}" class="subnav-pill">
-        <i class="fas fa-users-gear text-dark"></i>
-        <span>Équipe & Collaborateurs</span>
-    </a>
-    <a href="{{ route('roles.index') }}" class="subnav-pill">
-        <i class="fas fa-shield-halved text-secondary"></i>
-        <span>Rôles & Permissions</span>
-    </a>
-    <a href="{{ route('permissions.index') }}" class="subnav-pill active">
-        <i class="fas fa-key text-danger"></i>
-        <span>Droits Granulaires</span>
-        <span class="subnav-pill-badge">{{ $permissions->count() }}</span>
-    </a>
-    <a href="{{ route('activity-logs.index') }}" class="subnav-pill">
-        <i class="fas fa-shield-alt text-primary"></i>
-        <span>Journal d'Activité & Traçabilité</span>
-    </a>
-</div>
+@include('partials.subnav.system')
 
 @if(session('success'))
 <div class="alert alert-success alert-dismissible fade show rounded-3 border-0 shadow-sm mb-3 mb-md-4" role="alert">

@@ -91,7 +91,9 @@ class DashboardController extends Controller
             'today_orders' => Order::whereDate('created_at', today())->count(),
             'today_revenue' => (float) Invoice::where('payment_status', 'paid')->whereDate('created_at', today())->sum('total_amount'),
             'pending_orders' => Order::whereIn('status', ['pending', 'en attente'])->count(),
-            'low_stock_total' => Product::where('stock', '<=', 10)->count(),
+            'low_stock_total' => Product::where('track_inventory', true)
+                ->whereRaw('stock <= COALESCE(low_stock_threshold, min_stock, 5)')
+                ->count(),
             'online_clients' => max(1, $onlineVisitors),
         ];
 
@@ -139,8 +141,12 @@ class DashboardController extends Controller
         // Recent orders
         $recentOrders = Order::with('user')->withCount('items')->latest()->take(6)->get();
         
-        // Low Stock Products (Stock <= 10)
-        $lowStockProducts = Product::where('stock', '<=', 10)->orderBy('stock', 'asc')->take(6)->get();
+        // Low Stock Products (matching active tracked threshold)
+        $lowStockProducts = Product::where('track_inventory', true)
+            ->whereRaw('stock <= COALESCE(low_stock_threshold, min_stock, 5)')
+            ->orderBy('stock', 'asc')
+            ->take(6)
+            ->get();
 
         // Synchronized ERP Financials & Operational Ecosystem
         $monthStart = now()->startOfMonth();

@@ -158,7 +158,8 @@ trait LogsActivity
             'CustomerTransaction' => 'Règlement / Transaction Client',
             'Store' => 'Point de Stockage / Dépôt',
             'ProductStock' => 'Stock Emplacement',
-            'InventoryMovement' => 'Mouvement / Transfert Stock',
+            'Shipment' => 'Arrivage / Expédition',
+            'Payment' => 'Paiement Facture',
             default => $base,
         };
     }
@@ -170,6 +171,7 @@ trait LogsActivity
     {
         return $this->expense_number
             ?? $this->transaction_number
+            ?? $this->reference
             ?? $this->name 
             ?? $this->title 
             ?? $this->order_number 

@@ -250,9 +250,10 @@ class ShipmentController extends Controller
                     $product->update(['cost_price' => $landedUnitCost]);
                 }
 
-                // Apply stock if received
+                // Apply stock if received (sync store stock + products.stock & products.stock_quantity)
                 if ($stockApplied && $shipment->status === 'received') {
-                    $product->increment('stock', $qty);
+                    $stockBefore = (int) ($product->stock ?? 0);
+                    $hadStoreRows = ProductStock::where('product_id', $product->id)->exists();
 
                     if ($shipment->store_id) {
                         $storeStock = ProductStock::firstOrCreate(
@@ -260,6 +261,12 @@ class ShipmentController extends Controller
                             ['quantity' => 0, 'min_quantity' => 2]
                         );
                         $storeStock->increment('quantity', $qty);
+                    }
+
+                    if ($hadStoreRows || ($shipment->store_id && $stockBefore <= 0)) {
+                        $product->syncStockFromStores();
+                    } else {
+                        $product->syncStockFields($stockBefore + $qty);
                     }
 
                     // Audit log movement

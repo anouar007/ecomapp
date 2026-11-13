@@ -76,18 +76,19 @@ class ProductController extends Controller
             }
         }
 
-        // Stock Filter
+        // Stock Filter (aligned with each product's min_stock / low_stock_threshold)
+        $thresholdExpr = 'COALESCE(min_stock, low_stock_threshold, 5)';
         if ($request->filled('stock_status')) {
             if ($request->stock_status === 'in_stock') {
-                $query->where('stock', '>', 5);
+                $query->whereRaw("stock > {$thresholdExpr}");
             } elseif ($request->stock_status === 'low_stock') {
-                $query->where('stock', '>', 0)->where('stock', '<=', 5);
+                $query->where('stock', '>', 0)->whereRaw("stock <= {$thresholdExpr}");
             } elseif ($request->stock_status === 'out_of_stock') {
                 $query->where('stock', '<=', 0);
             } elseif ($request->stock_status === 'coming_soon') {
                 $query->whereIn('availability_status', ['coming_soon', 'preorder', 'custom']);
             } elseif ($request->stock_status === 'alert') {
-                $query->where('stock', '<=', 5);
+                $query->whereRaw("stock <= {$thresholdExpr}");
             }
         }
 
@@ -102,8 +103,8 @@ class ProductController extends Controller
 
         $stats = [
             'total' => Product::count(),
-            'in_stock' => Product::where('stock', '>', 5)->count(),
-            'low_stock' => Product::where('stock', '>', 0)->where('stock', '<=', 5)->count(),
+            'in_stock' => Product::whereRaw("stock > {$thresholdExpr}")->count(),
+            'low_stock' => Product::where('stock', '>', 0)->whereRaw("stock <= {$thresholdExpr}")->count(),
             'out_of_stock' => Product::where('stock', '<=', 0)->count(),
             'active' => Product::where('status', 'active')->count(),
             'inactive' => Product::where('status', 'inactive')->count(),
@@ -283,6 +284,26 @@ class ProductController extends Controller
                         'sort_order' => $idx,
                     ]);
                 }
+            }
+
+            // Seed default active store stock when created via catalog with initial stock
+            if ((int) ($product->stock ?? 0) > 0 && ($defaultStoreId = Product::defaultStoreId())) {
+                \App\Models\ProductStock::create([
+                    'product_id' => $product->id,
+                    'store_id' => $defaultStoreId,
+                    'quantity' => (int) $product->stock,
+                    'min_quantity' => max(1, (int) ($product->min_stock ?? 2)),
+                ]);
+                \App\Models\InventoryMovement::create([
+                    'product_id' => $product->id,
+                    'type' => 'in',
+                    'quantity' => (int) $product->stock,
+                    'stock_before' => 0,
+                    'stock_after' => (int) $product->stock,
+                    'to_location_id' => $defaultStoreId,
+                    'reason' => 'Stock initial lors de la création produit',
+                    'created_by' => \Illuminate\Support\Facades\Auth::id() ?? \App\Models\User::value('id'),
+                ]);
             }
 
             // Handle multiple image uploads
@@ -475,6 +496,8 @@ class ProductController extends Controller
                 }
             }
 
+            $oldStock = (int) ($product->stock ?? 0);
+
             if (!empty($validVariants)) {
                 $validated['stock'] = (int) array_sum(array_column($validVariants, 'stock'));
             }
@@ -517,15 +540,60 @@ class ProductController extends Controller
                     }
                 }
 
-                // Recalculate parent product total stock and update DB directly
+                // Recalculate parent product total stock and keep stock_quantity synced
                 $totalStock = (int) ProductVariant::where('product_id', $product->id)->sum('stock');
-                DB::table('products')->where('id', $product->id)->update([
-                    'stock' => $totalStock,
-                    'stock_quantity' => $totalStock,
-                ]);
+                $product->syncStockFields($totalStock);
             } elseif (!$request->boolean('has_variants')) {
                 // If user toggled off variations, remove existing variants
                 $product->variants()->delete();
+            }
+
+            // Reconcile store allocations (product_stocks) with edited product stock & record movement
+            $targetStock = (int) ($product->stock ?? 0);
+            if ($targetStock !== $oldStock) {
+                $product->syncStockFields($targetStock);
+                $defaultStoreId = Product::defaultStoreId();
+                $storeRows = \App\Models\ProductStock::where('product_id', $product->id)->lockForUpdate()->get();
+
+                if ($storeRows->isNotEmpty()) {
+                    $storeSum = (int) $storeRows->sum('quantity');
+                    $delta = $targetStock - $storeSum;
+
+                    if ($delta > 0 && $defaultStoreId) {
+                        $defRow = $storeRows->firstWhere('store_id', $defaultStoreId) ?? $storeRows->first();
+                        $defRow->update(['quantity' => (int) $defRow->quantity + $delta]);
+                    } elseif ($delta < 0) {
+                        $toDeduct = abs($delta);
+                        $orderedRows = $storeRows->sortBy(fn ($r) => ($defaultStoreId && (int) $r->store_id === $defaultStoreId) ? 0 : 1);
+                        foreach ($orderedRows as $sr) {
+                            if ($toDeduct <= 0) {
+                                break;
+                            }
+                            $take = min($toDeduct, max(0, (int) $sr->quantity));
+                            if ($take > 0) {
+                                $sr->update(['quantity' => (int) $sr->quantity - $take]);
+                                $toDeduct -= $take;
+                            }
+                        }
+                    }
+                } elseif ($targetStock > 0 && $defaultStoreId) {
+                    \App\Models\ProductStock::create([
+                        'product_id' => $product->id,
+                        'store_id' => $defaultStoreId,
+                        'quantity' => $targetStock,
+                        'min_quantity' => max(1, (int) ($product->min_stock ?? 2)),
+                    ]);
+                }
+
+                \App\Models\InventoryMovement::create([
+                    'product_id' => $product->id,
+                    'type' => 'adjustment',
+                    'quantity' => abs($targetStock - $oldStock),
+                    'stock_before' => $oldStock,
+                    'stock_after' => $targetStock,
+                    'reason' => 'Mise à jour fiche produit',
+                    'created_by' => \Illuminate\Support\Facades\Auth::id() ?? \App\Models\User::value('id'),
+                ]);
             }
 
             // Handle image removal
@@ -786,18 +854,58 @@ class ProductController extends Controller
                     ]);
 
                 case 'increase_stock':
-                    $amount = $request->stock_amount ?? 10;
-                    Product::whereIn('id', $productIds)->increment('stock', $amount);
+                    $amount = max(1, (int) ($request->stock_amount ?? 10));
+                    DB::transaction(function () use ($productIds, $amount) {
+                        $defaultStoreId = Product::defaultStoreId();
+                        foreach (Product::whereIn('id', $productIds)->get() as $prod) {
+                            $targetStoreId = $prod->storeStocks()->orderByRaw($defaultStoreId ? "CASE WHEN store_id = {$defaultStoreId} THEN 0 ELSE 1 END" : 'store_id')->value('store_id') ?? $defaultStoreId;
+                            $prod->adjustStock($amount, 'in', \Illuminate\Support\Facades\Auth::id(), [
+                                'store_id' => $targetStoreId,
+                                'reason' => 'Augmentation groupée (catalogue produits)',
+                            ]);
+                        }
+                    });
                     return response()->json([
                         'success' => true,
                         'message' => "Stock increased by {$amount} for {$count} product(s)."
                     ]);
 
                 case 'decrease_stock':
-                    $amount = $request->stock_amount ?? 10;
-                    Product::whereIn('id', $productIds)->decrement('stock', $amount);
-                    // Ensure stock doesn't go negative
-                    Product::whereIn('id', $productIds)->where('stock', '<', 0)->update(['stock' => 0]);
+                    $amount = max(1, (int) ($request->stock_amount ?? 10));
+                    DB::transaction(function () use ($productIds, $amount) {
+                        $defaultStoreId = Product::defaultStoreId();
+                        foreach (Product::whereIn('id', $productIds)->get() as $prod) {
+                            $hasStores = $prod->storeStocks()->exists();
+                            if ($hasStores) {
+                                $remaining = $amount;
+                                $storeRows = $prod->storeStocks()
+                                    ->where('quantity', '>', 0)
+                                    ->orderByRaw($defaultStoreId ? "CASE WHEN store_id = {$defaultStoreId} THEN 0 ELSE 1 END" : 'store_id')
+                                    ->orderByDesc('quantity')
+                                    ->get();
+                                foreach ($storeRows as $ss) {
+                                    if ($remaining <= 0) {
+                                        break;
+                                    }
+                                    $take = min($remaining, (int) $ss->quantity);
+                                    if ($take > 0) {
+                                        $prod->adjustStock($take, 'out', \Illuminate\Support\Facades\Auth::id(), [
+                                            'store_id' => $ss->store_id,
+                                            'reason' => 'Diminution groupée (catalogue produits)',
+                                        ]);
+                                        $remaining -= $take;
+                                    }
+                                }
+                            } else {
+                                $take = min($amount, max(0, (int) $prod->stock));
+                                if ($take > 0) {
+                                    $prod->adjustStock($take, 'out', \Illuminate\Support\Facades\Auth::id(), [
+                                        'reason' => 'Diminution groupée (catalogue produits)',
+                                    ]);
+                                }
+                            }
+                        }
+                    });
                     return response()->json([
                         'success' => true,
                         'message' => "Stock decreased by {$amount} for {$count} product(s)."

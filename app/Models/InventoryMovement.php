@@ -41,6 +41,22 @@ class InventoryMovement extends Model
     }
 
     /**
+     * Get the source store/warehouse for this movement.
+     */
+    public function fromStore()
+    {
+        return $this->belongsTo(Store::class, 'from_location_id');
+    }
+
+    /**
+     * Get the destination store/warehouse for this movement.
+     */
+    public function toStore()
+    {
+        return $this->belongsTo(Store::class, 'to_location_id');
+    }
+
+    /**
      * Get the user who created this movement.
      */
     public function creator()
@@ -81,11 +97,11 @@ class InventoryMovement extends Model
     public function getTypeLabelAttribute(): string
     {
         return match($this->type) {
-            'in' => 'Stock In',
-            'out' => 'Stock Out',
-            'adjustment' => 'Adjustment',
-            'transfer' => 'Transfer',
-            'return' => 'Return',
+            'in' => 'Entrée',
+            'out' => 'Sortie',
+            'adjustment' => 'Ajustement',
+            'transfer' => 'Transfert',
+            'return' => 'Retour',
             default => ucfirst($this->type),
         };
     }

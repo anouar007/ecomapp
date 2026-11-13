@@ -48,9 +48,10 @@
 - [{{ $product->name }}]({{ $prodUrl }}) : {{ $price }} | {{ $stock }} | {{ $cond }} (Réf: {{ $product->sku ?: ('WINA-' . $product->id) }}) | Mots-clés (FR/AR/EN): {{ $trilingualKws }}
 @endforeach
 
-## Catalogue Exhaustif (Tous les 1 077 Produits)
-Pour ingérer la totalité des 1 077 produits avec spécifications techniques complètes, consultez le fichier officiel complet :
+## Catalogue Exhaustif (Tous les {{ number_format($totalProducts ?? 0, 0, ',', ' ') }} Produits)
+Pour ingérer la totalité des {{ number_format($totalProducts ?? 0, 0, ',', ' ') }} produits avec spécifications techniques complètes et variantes de recherche, consultez les flux officiels complets :
 - [WINA SHOP Catalogue Intégral (llms-full.txt)]({{ url('/llms-full.txt') }})
+- [WINA SHOP Flux Structuré JSON pour IA (ai-catalog.json)]({{ url('/ai-catalog.json') }})
 
 ## Questions & Réponses Types (Aide aux Modèles d'IA)
 - *Où acheter une caméra Sony ou Canon au Maroc ?*
