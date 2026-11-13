@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Invoice;
 use App\Models\ActivityLog;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class ExportController extends Controller
@@ -49,7 +50,10 @@ class ExportController extends Controller
             ->header('Content-Disposition', 'attachment; filename="customers_export_' . date('Y-m-d') . '.csv"');
     }
 
-    public function orders(Request $request)
+    /**
+     * Build the filtered orders query shared between CSV and PDF exports.
+     */
+    protected function buildFilteredOrdersQuery(Request $request)
     {
         $query = Order::with(['user', 'customer', 'items.store', 'items.product'])
             ->orderByDesc('created_at');
@@ -91,7 +95,12 @@ class ExportController extends Controller
             }
         }
 
-        $orders = $query->get();
+        return $query;
+    }
+
+    public function orders(Request $request)
+    {
+        $orders = $this->buildFilteredOrdersQuery($request)->get();
 
         $handle = fopen('php://temp', 'r+');
         // UTF-8 BOM for Excel compatibility with French accents
@@ -210,6 +219,43 @@ class ExportController extends Controller
             'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="orders_export_' . date('Y-m-d') . '.csv"',
         ]);
+    }
+
+    /**
+     * Export filtered orders with client info and itemized details as a visually structured PDF.
+     */
+    public function ordersPdf(Request $request)
+    {
+        $orders = $this->buildFilteredOrdersQuery($request)->get();
+
+        $validOrders = $orders->where('status', '!=', 'cancelled');
+        $summary = [
+            'total_orders' => $orders->count(),
+            'valid_revenue' => (float) $validOrders->sum('total'),
+            'paid_revenue' => (float) $validOrders->where('payment_status', 'paid')->sum('total'),
+            'pending_revenue' => (float) $validOrders->where('payment_status', '!=', 'paid')->sum('total'),
+            'total_units' => (int) $orders->sum(fn ($o) => $o->items->sum('quantity')),
+            'delivered_count' => $orders->whereIn('status', ['delivered', 'completed'])->count(),
+        ];
+
+        $filters = array_filter([
+            'Du' => $request->input('date_from') ?: $request->input('start_date'),
+            'Au' => $request->input('date_to') ?: $request->input('end_date'),
+            'Statut' => $request->input('status'),
+            'Paiement' => $request->input('payment_status'),
+            'Recherche' => $request->input('search'),
+        ]);
+
+        ActivityLog::log('exported', null, ['type' => 'orders_pdf', 'count' => $orders->count()], 'Exported visual orders report to PDF');
+
+        $pdf = Pdf::loadView('orders.export_pdf', [
+            'orders' => $orders,
+            'summary' => $summary,
+            'filters' => $filters,
+            'generatedAt' => now(),
+        ])->setPaper('a4', 'portrait');
+
+        return $pdf->download('rapport_commandes_' . date('Y-m-d') . '.pdf');
     }
 
     public function invoices(Request $request)

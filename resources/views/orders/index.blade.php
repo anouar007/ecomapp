@@ -260,6 +260,9 @@
                     <i class="fas fa-rotate-left"></i> <span>Toutes ({{ number_format($stats['total'] ?? 0, 0, ',', ' ') }})</span>
                 </a>
             @endif
+            <a href="{{ route('export.orders.pdf', request()->all()) }}" data-no-spa="true" class="btn btn-outline-danger shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
+                <i class="fas fa-file-pdf text-danger"></i> <span>Exporter PDF</span>
+            </a>
             <a href="{{ route('export.orders', request()->all()) }}" data-no-spa="true" class="btn btn-outline-secondary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
                 <i class="fas fa-file-csv text-success"></i> <span>Exporter CSV</span>
             </a>
@@ -457,6 +460,9 @@
                             {{ $orders->total() }} résultat(s)
                         </span>
                     @endif
+                    <a href="{{ route('export.orders.pdf', request()->all()) }}" data-no-spa="true" class="btn-brand-outline border-danger text-danger">
+                        <i class="fas fa-file-pdf me-1.5"></i>Exporter PDF
+                    </a>
                     <a href="{{ route('export.orders', request()->all()) }}" data-no-spa="true" class="btn-brand-outline">
                         <i class="fas fa-file-csv me-1.5" style="color: var(--success-color)"></i>Exporter CSV
                     </a>
@@ -560,9 +566,12 @@
                     </div>
 
                     <!-- Bouton Exporter sur Mobile (d-md-none) -->
-                    <div class="col-12 d-md-none mt-2 pt-2 border-top">
-                        <a href="{{ route('export.orders', request()->all()) }}" data-no-spa="true" class="btn btn-sm btn-outline-secondary w-100 justify-content-center">
-                            <i class="fas fa-file-csv me-1 text-success"></i> Exporter les commandes (CSV)
+                    <div class="col-12 d-md-none mt-2 pt-2 border-top d-flex gap-2">
+                        <a href="{{ route('export.orders.pdf', request()->all()) }}" data-no-spa="true" class="btn btn-sm btn-outline-danger flex-fill justify-content-center">
+                            <i class="fas fa-file-pdf me-1"></i> Exporter PDF
+                        </a>
+                        <a href="{{ route('export.orders', request()->all()) }}" data-no-spa="true" class="btn btn-sm btn-outline-secondary flex-fill justify-content-center">
+                            <i class="fas fa-file-csv me-1 text-success"></i> Exporter CSV
                         </a>
                     </div>
                 </div>

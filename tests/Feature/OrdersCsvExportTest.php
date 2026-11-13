@@ -102,6 +102,17 @@ class OrdersCsvExportTest extends TestCase
         ] as $expected) {
             $this->assertStringContainsString($expected, $csv);
         }
+
+        // Verify visual PDF export endpoint & UI button
+        $ordersPage = $this->actingAs($this->admin)->get(route('orders.index'));
+        $ordersPage->assertStatus(200);
+        $ordersPage->assertSee('Exporter PDF', false);
+
+        $pdfResponse = $this->actingAs($this->admin)
+            ->get(route('export.orders.pdf', ['search' => 'ORD-CSV-1001']));
+        $pdfResponse->assertStatus(200);
+        $this->assertStringContainsString('application/pdf', (string) $pdfResponse->headers->get('Content-Type'));
+        $this->assertStringStartsWith('%PDF', $pdfResponse->getContent());
     }
 }
 

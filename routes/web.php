@@ -205,6 +205,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/export/products', [\App\Http\Controllers\ExportController::class, 'products'])->name('export.products');
         Route::get('/export/customers', [\App\Http\Controllers\ExportController::class, 'customers'])->name('export.customers');
         Route::get('/export/orders', [\App\Http\Controllers\ExportController::class, 'orders'])->name('export.orders');
+        Route::get('/export/orders/pdf', [\App\Http\Controllers\ExportController::class, 'ordersPdf'])->name('export.orders.pdf');
         Route::get('/export/invoices', [\App\Http\Controllers\ExportController::class, 'invoices'])->name('export.invoices');
     });
     
