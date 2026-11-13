@@ -139,7 +139,7 @@ class Product extends Model
             \Illuminate\Support\Facades\Cache::forget('home_occasion_products_v1');
             \Illuminate\Support\Facades\Cache::forget('shop_catalog_categories');
 
-            if (!empty($product->category_id)) {
+            if (!empty($product->category_id) && \Illuminate\Support\Facades\Schema::hasTable('category_product')) {
                 \Illuminate\Support\Facades\DB::table('category_product')->insertOrIgnore([
                     'product_id' => $product->id,
                     'category_id' => $product->category_id,
