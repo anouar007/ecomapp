@@ -371,12 +371,12 @@ class SeoService
         if ($model instanceof Product) {
             $productImg = $model->image_url ?: $logoUrl;
             $activeVariants = $model->relationLoaded('variants')
-                ? $model->variants->where('is_active', true)
-                : $model->variants()->where('is_active', true)->get();
+                ? $model->variants
+                : $model->variants()->get();
 
             if ($activeVariants->isNotEmpty()) {
                 $prices = $activeVariants->pluck('price')->map(fn ($p) => (float) $p);
-                $hasStock = $activeVariants->sum('stock') > 0 || $model->stock > 0;
+                $hasStock = $model->stock > 0;
                 $offersSchema = [
                     '@type' => 'AggregateOffer',
                     'url' => self::getCanonicalUrl(),
@@ -387,11 +387,11 @@ class SeoService
                     'availability' => $hasStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
                     'offers' => $activeVariants->map(fn ($variant) => [
                         '@type' => 'Offer',
-                        'name' => $model->name . ' - ' . $variant->name,
+                        'name' => $model->name . ' - ' . $variant->size,
                         'priceCurrency' => 'MAD',
                         'price' => number_format((float) $variant->price, 2, '.', ''),
                         'priceValidUntil' => now()->addYear()->format('Y-m-d'),
-                        'availability' => $variant->stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+                        'availability' => $hasStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
                         'itemCondition' => 'https://schema.org/NewCondition',
                         'seller' => ['@id' => $baseUrl . '/#organization'],
                     ])->values()->all(),
