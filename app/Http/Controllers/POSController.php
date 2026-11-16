@@ -46,30 +46,37 @@ class POSController extends Controller
             ->when($categoryId, function($q) use ($categoryId) {
                 $q->where('category_id', $categoryId);
             })
-            ->with(['images', 'productCategory'])
-            ->limit(20)
+            ->with(['images', 'primaryImage', 'productCategory', 'variants'])
+            ->limit(30)
             ->get()
             ->map(function($product) {
-                // Get category name safely
                 $categoryName = null;
-                
-                    if ($product->productCategory) {
-                        $categoryName = $product->productCategory->name;
-                    } elseif (isset($product->category) && is_string($product->category)) {
-                        // Fallback to old string field if exists
-                        $categoryName = $product->category;
-                    }
-                
+                if ($product->productCategory) {
+                    $categoryName = $product->productCategory->name;
+                } elseif (isset($product->category) && is_string($product->category)) {
+                    $categoryName = $product->category;
+                }
+
+                $variants = $product->variants->map(fn ($v) => [
+                    'id' => $v->id,
+                    'size' => $v->size,
+                    'price' => (float) $v->price,
+                    'is_default' => (bool) $v->is_default,
+                ])->values();
+
+                $defaultVariant = $variants->firstWhere('is_default', true) ?? $variants->first();
+                $displayPrice = $defaultVariant ? $defaultVariant['price'] : (float) $product->price;
+
                 return [
                     'id' => $product->id,
                     'name' => $product->name,
                     'sku' => $product->sku,
-                    'price' => $product->price,
+                    'price' => $displayPrice,
+                    'sale_price' => $product->sale_price ? (float) $product->sale_price : null,
                     'stock' => $product->stock,
                     'category' => $categoryName,
-                    'image' => $product->images->first() 
-                        ? asset('storage/' . $product->images->first()->image_path)
-                        : null,
+                    'image' => $product->image_url,
+                    'variants' => $variants,
                 ];
             });
 
@@ -91,6 +98,8 @@ class POSController extends Controller
             'discount_type' => ['nullable', 'string', 'in:percent,fixed'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'exists:products,id'],
+            'items.*.variant_id' => ['nullable', 'exists:product_variants,id'],
+            'items.*.size' => ['nullable', 'string', 'max:60'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.price' => ['required', 'numeric', 'min:0'],
         ]);
@@ -111,14 +120,29 @@ class POSController extends Controller
                     ], 400);
                 }
 
-                $itemSubtotal = $item['price'] * $item['quantity'];
+                $unitPrice = (float) $item['price'];
+                $itemName = $product->name;
+
+                if (!empty($item['variant_id'])) {
+                    $variant = \App\Models\ProductVariant::where('id', $item['variant_id'])
+                        ->where('product_id', $product->id)
+                        ->first();
+                    if ($variant) {
+                        $unitPrice = (float) $variant->price;
+                        $itemName = $product->name . ' (' . $variant->size . ')';
+                    }
+                } elseif (!empty($item['size'])) {
+                    $itemName = $product->name . ' (' . $item['size'] . ')';
+                }
+
+                $itemSubtotal = $unitPrice * $item['quantity'];
                 $subtotal += $itemSubtotal;
 
                 $orderItems[] = [
                     'product_id' => $product->id,
-                    'product_name' => $product->name,
+                    'product_name' => $itemName,
                     'product_sku' => $product->sku ?? 'N/A',
-                    'price' => $item['price'],
+                    'price' => $unitPrice,
                     'quantity' => $item['quantity'],
                     'subtotal' => $itemSubtotal,
                 ];

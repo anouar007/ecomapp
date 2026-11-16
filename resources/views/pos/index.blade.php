@@ -489,6 +489,33 @@
     border-color: #f1f5f9;
 }
 
+/* Variant / Size Pills on POS Card */
+.pos-variant-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+}
+.pos-variant-pill {
+    border: 1px solid #d1dfd5;
+    background: #f8fbf9;
+    color: #1e4d34;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.pos-variant-pill:hover {
+    border-color: #2f8825;
+}
+.pos-variant-pill.active {
+    background: #1e4d34;
+    border-color: #1e4d34;
+    color: #ffffff;
+}
+
 /* Overlay Add Icon Styling */
 .overlay-add i {
     color: white;
@@ -966,6 +993,15 @@
         tax_rate: {{ setting("tax_rate", 0) }} / 100
     };
     
+    window.posSelectedVariants = window.posSelectedVariants || {};
+
+    window.selectPosVariant = function(productId, variantId) {
+        window.posSelectedVariants[productId] = variantId;
+        if (typeof products !== 'undefined') {
+            window.customDisplayProducts(products);
+        }
+    };
+
     // Override default POS display function to match new UI
     window.customDisplayProducts = function(products) {
         const grid = document.getElementById('productsGrid');
@@ -982,13 +1018,29 @@
         }
 
         grid.innerHTML = products.map(product => {
-            const cartItem = cart.find(item => item.product_id === product.id);
-            const quantityBadge = cartItem ? `<div class="qty-badge">${cartItem.quantity}</div>` : '';
+            const variants = Array.isArray(product.variants) ? product.variants : [];
+            let activeVariant = null;
+            if (variants.length > 0) {
+                const chosenId = window.posSelectedVariants[product.id];
+                activeVariant = chosenId
+                    ? variants.find(v => v.id === chosenId)
+                    : (variants.find(v => v.is_default) || variants[0]);
+                if (activeVariant) {
+                    window.posSelectedVariants[product.id] = activeVariant.id;
+                }
+            }
+
+            const totalInCart = cart
+                .filter(item => item.product_id === product.id)
+                .reduce((sum, item) => sum + item.quantity, 0);
+            const quantityBadge = totalInCart > 0 ? `<div class="qty-badge">${totalInCart}</div>` : '';
             
-            // Build image path correctly
+            // Image URL (already resolved by POSController::search via $product->image_url)
             let imageSrc = '';
             if (product.image) {
-                imageSrc = product.image.startsWith('http') ? product.image : `/storage/${product.image}`;
+                imageSrc = product.image.startsWith('http') || product.image.startsWith('/')
+                    ? product.image
+                    : `/storage/${product.image}`;
             }
             
             const imageHtml = imageSrc 
@@ -1006,14 +1058,13 @@
                 stockBadgeHtml = `<div class="stock-badge in-stock"><i class="fas fa-check-circle"></i> ${product.stock}</div>`;
             }
             
-            // Sale badge if applicable
-            const saleBadge = product.sale_price && parseFloat(product.sale_price) < parseFloat(product.price) 
+            const activePrice = activeVariant ? parseFloat(activeVariant.price) : parseFloat(product.price);
+            const saleBadge = (!activeVariant && product.sale_price && parseFloat(product.sale_price) < parseFloat(product.price))
                 ? `<div class="sale-badge">SALE</div>` 
                 : '';
             
-            // Price display
             let priceHtml = '';
-            if (product.sale_price && parseFloat(product.sale_price) < parseFloat(product.price)) {
+            if (!activeVariant && product.sale_price && parseFloat(product.sale_price) < parseFloat(product.price)) {
                 priceHtml = `
                     <div class="card-price-wrapper">
                         <span class="card-price sale">${formatCurrency(parseFloat(product.sale_price))}</span>
@@ -1021,10 +1072,21 @@
                     </div>
                 `;
             } else {
-                priceHtml = `<div class="card-price">${formatCurrency(parseFloat(product.price))}</div>`;
+                priceHtml = `<div class="card-price">${formatCurrency(activePrice)}</div>`;
             }
+
+            const variantPillsHtml = variants.length > 0
+                ? `<div class="pos-variant-pills" onclick="event.stopPropagation()">
+                    ${variants.map(v => `
+                        <button type="button"
+                                class="pos-variant-pill ${activeVariant && activeVariant.id === v.id ? 'active' : ''}"
+                                onclick="event.stopPropagation(); selectPosVariant(${product.id}, ${v.id})">
+                            ${v.size}
+                        </button>
+                    `).join('')}
+                   </div>`
+                : '';
             
-            // SKU display
             const skuHtml = product.sku ? `<div class="card-sku">${product.sku}</div>` : '';
 
             return `
@@ -1041,6 +1103,7 @@
                     <div class="card-content">
                         <div class="card-title">${product.name}</div>
                         ${skuHtml}
+                        ${variantPillsHtml}
                         <div class="card-footer">
                             ${priceHtml}
                         </div>
@@ -1075,18 +1138,20 @@
             document.getElementById('checkoutBtn').disabled = true;
             document.getElementById('checkoutBtn').innerHTML = `Charge ${formatCurrency(0)}`;
         } else {
-            container.innerHTML = cart.map(item => `
+            container.innerHTML = cart.map(item => {
+                const key = item.cart_key || `${item.product_id}`;
+                return `
                 <div class="cart-item">
                     <div class="item-details">
                         <h4>${item.name}</h4>
                         <div class="item-price">${formatCurrency(item.price)}</div>
                     </div>
                     <div class="item-controls">
-                        <div class="control-btn" onclick="updateQuantity(${item.product_id}, -1)">
+                        <div class="control-btn" onclick="updateQuantity('${key}', -1)">
                             <i class="fas fa-minus" style="font-size: 10px;"></i>
                         </div>
                         <div class="qty-text">${item.quantity}</div>
-                        <div class="control-btn" onclick="updateQuantity(${item.product_id}, 1)">
+                        <div class="control-btn" onclick="updateQuantity('${key}', 1)">
                             <i class="fas fa-plus" style="font-size: 10px;"></i>
                         </div>
                     </div>
@@ -1094,7 +1159,8 @@
                         ${formatCurrency(item.price * item.quantity)}
                     </div>
                 </div>
-            `).join('');
+            `;
+            }).join('');
             document.getElementById('checkoutBtn').disabled = false;
         }
         
@@ -1111,7 +1177,8 @@
     window.addToCartWithFeedback = function(id) {
         const product = products.find(p => p.id === id);
         if (product && product.stock > 0) {
-            addToCart(id);
+            const chosenVariantId = window.posSelectedVariants ? (window.posSelectedVariants[id] || null) : null;
+            addToCart(id, chosenVariantId);
             
             // Simple visual feedback if Toast isn't available
             if(typeof Toast !== 'undefined') {
