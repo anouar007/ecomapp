@@ -140,7 +140,7 @@
                 'delivered', 'livrée' => ['bg' => '#ecfdf5', 'color' => '#047857', 'border' => '#a7f3d0', 'dot' => 'dot-green', 'text' => 'Livrée'],
                 'shipped', 'expédiée' => ['bg' => 'rgb(192 246 255 / 53%)', 'color' => '#0093ac', 'border' => '#0dcaf0', 'dot' => 'dot-teal', 'text' => 'Expédiée'],
                 'processing', 'en cours' => ['bg' => '#eff6ff', 'color' => '#1d4ed8', 'border' => '#bfdbfe', 'dot' => 'dot-blue', 'text' => 'En cours'],
-                'en_demande' => ['bg' => '#eef2ff', 'color' => '#4338ca', 'border' => '#c7d2fe', 'dot' => 'dot-blue', 'text' => 'En Demande'],
+                'en_demande' => ['bg' => '#eef2ff', 'color' => '#4338ca', 'border' => '#c7d2fe', 'dot' => 'dot-blue', 'text' => 'Sur Commande'],
                 'cancelled', 'annulée' => ['bg' => '#fef2f2', 'color' => '#b91c1c', 'border' => '#fecaca', 'dot' => 'dot-red', 'text' => 'Annulée'],
                 default => ['bg' => '#fffbeb', 'color' => '#b45309', 'border' => '#fde68a', 'dot' => 'dot-amber', 'text' => 'En attente']
             };
@@ -172,7 +172,7 @@
                 </li>
                 <li>
                     <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $stLower === 'en_demande' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'en_demande')">
-                        <span><span class="status-dot dot-blue me-1.5"></span> En Demande</span>
+                        <span><span class="status-dot dot-blue me-1.5"></span> Sur Commande</span>
                         @if($stLower === 'en_demande') <i class="fas fa-check text-primary small"></i> @endif
                     </button>
                 </li>

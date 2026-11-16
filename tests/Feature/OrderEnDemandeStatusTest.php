@@ -49,7 +49,7 @@ class OrderEnDemandeStatusTest extends TestCase
                 'success' => true,
                 'order' => [
                     'status' => 'en_demande',
-                    'status_label' => 'En Demande',
+                    'status_label' => 'Sur Commande',
                 ],
             ]);
 
@@ -58,16 +58,16 @@ class OrderEnDemandeStatusTest extends TestCase
         // 2. Index & filter by en_demande
         $indexRes = $this->actingAs($this->admin)->get(route('orders.index', ['status' => 'en_demande']));
         $indexRes->assertStatus(200);
-        $indexRes->assertSee('En Demande', false);
+        $indexRes->assertSee('Sur Commande', false);
         $indexRes->assertSee('ORD-DEM-1001', false);
 
-        // 3. Edit & Show pages display En Demande
+        // 3. Edit & Show pages display Sur Commande
         $this->actingAs($this->admin)->get(route('orders.edit', $order))
             ->assertStatus(200)
-            ->assertSee('En Demande', false);
+            ->assertSee('Sur Commande', false);
 
         $this->actingAs($this->admin)->get(route('orders.show', $order))
             ->assertStatus(200)
-            ->assertSee('En Demande', false);
+            ->assertSee('Sur Commande', false);
     }
 }

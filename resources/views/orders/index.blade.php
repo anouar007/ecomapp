@@ -479,7 +479,7 @@
                             @php
                                 $statusNames = [
                                     'pending' => '⏳ En attente',
-                                    'en_demande' => '📋 En Demande',
+                                    'en_demande' => '📋 Sur Commande',
                                     'processing' => '⚙️ En cours',
                                     'shipped' => '🚚 Expédiée',
                                     'delivered' => '✅ Livrée',
@@ -597,7 +597,7 @@
                 @php
                     $statusBadgeLabels = [
                         'pending' => 'En attente',
-                        'en_demande' => 'En Demande',
+                        'en_demande' => 'Sur Commande',
                         'processing' => 'En cours',
                         'shipped' => 'Expédiée',
                         'delivered' => 'Livrée',
@@ -842,7 +842,7 @@
                                     'delivered', 'livrée' => 'Livrée',
                                     'shipped', 'expédiée' => 'Expédiée',
                                     'processing', 'en cours' => 'En cours',
-                                    'en_demande' => 'En Demande',
+                                    'en_demande' => 'Sur Commande',
                                     'pending' => 'En attente',
                                     'cancelled', 'annulée' => 'Annulée',
                                     default => ucfirst($order->status)
@@ -872,7 +872,7 @@
                                     </li>
                                     <li>
                                         <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $stLower === 'en_demande' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'en_demande')">
-                                            <span><span class="status-dot dot-blue me-1.5"></span> En Demande</span>
+                                            <span><span class="status-dot dot-blue me-1.5"></span> Sur Commande</span>
                                             @if($stLower === 'en_demande') <i class="fas fa-check text-primary small"></i> @endif
                                         </button>
                                     </li>
@@ -1191,7 +1191,7 @@
         const st = (order.status || '').toLowerCase();
         const stMap = {
             'pending': { label: 'En attente', dot: 'amber', badgeClass: 'warning', textClass: 'text-warning', mobBg: '#fffbeb', mobColor: '#b45309', mobBorder: '#fde68a' },
-            'en_demande': { label: 'En Demande', dot: 'blue', badgeClass: 'primary', textClass: 'text-primary', mobBg: '#eef2ff', mobColor: '#4338ca', mobBorder: '#c7d2fe' },
+            'en_demande': { label: 'Sur Commande', dot: 'blue', badgeClass: 'primary', textClass: 'text-primary', mobBg: '#eef2ff', mobColor: '#4338ca', mobBorder: '#c7d2fe' },
             'processing': { label: 'En cours', dot: 'blue', badgeClass: 'primary', textClass: 'text-primary', mobBg: '#eff6ff', mobColor: '#1d4ed8', mobBorder: '#bfdbfe' },
             'shipped': { label: 'Expédiée', dot: 'teal', badgeClass: 'info', textClass: 'text-info', mobBg: 'rgb(192 246 255 / 53%)', mobColor: '#0093ac', mobBorder: '#0dcaf0' },
             'delivered': { label: 'Livrée', dot: 'green', badgeClass: 'success', textClass: 'text-success', mobBg: '#ecfdf5', mobColor: '#047857', mobBorder: '#a7f3d0' },

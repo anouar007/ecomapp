@@ -236,7 +236,7 @@
                 'delivered', 'completed' => 'Livrée',
                 'shipped' => 'Expédiée',
                 'processing' => 'En cours',
-                'en_demande' => 'En Demande',
+                'en_demande' => 'Sur Commande',
                 'cancelled' => 'Annulée',
                 default => 'En attente',
             };

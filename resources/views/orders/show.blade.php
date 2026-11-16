@@ -216,7 +216,7 @@
                 @php
                     $stepLabels = [
                         'pending' => ['name' => 'En attente', 'icon' => 'fa-clock'],
-                        'en_demande' => ['name' => 'En Demande', 'icon' => 'fa-clipboard-list'],
+                        'en_demande' => ['name' => 'Sur Commande', 'icon' => 'fa-clipboard-list'],
                         'processing' => ['name' => 'En préparation', 'icon' => 'fa-cog'],
                         'shipped' => ['name' => 'Expédiée', 'icon' => 'fa-truck-fast'],
                         'delivered' => ['name' => 'Livrée', 'icon' => 'fa-circle-check'],

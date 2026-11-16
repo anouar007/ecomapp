@@ -371,7 +371,7 @@ class OrderController extends Controller
 
         $valueLabels = [
             'pending' => 'En attente',
-            'en_demande' => 'En Demande',
+            'en_demande' => 'Sur Commande',
             'processing' => 'En cours',
             'shipped' => 'Expédiée',
             'delivered' => 'Livrée',
@@ -869,7 +869,7 @@ class OrderController extends Controller
                     'delivered' => 'Livrée',
                     'shipped' => 'Expédiée',
                     'processing' => 'En cours',
-                    'en_demande' => 'En Demande',
+                    'en_demande' => 'Sur Commande',
                     'pending' => 'En attente',
                     'cancelled' => 'Annulée',
                     default => ucfirst($order->status)
