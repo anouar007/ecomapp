@@ -270,8 +270,8 @@
 
 .pos-product-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-    border-color: #6366f1;
+    box-shadow: 0 12px 20px -5px rgba(30, 77, 52, 0.12), 0 8px 10px -6px rgba(30, 77, 52, 0.08);
+    border-color: #2f8825;
 }
 
 .pos-product-card:active {
@@ -302,7 +302,7 @@
 .overlay-add {
     position: absolute;
     inset: 0;
-    background: rgba(99, 102, 241, 0.8);
+    background: rgba(30, 77, 52, 0.72);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -342,7 +342,7 @@
 
 .card-price {
     font-weight: 700;
-    color: #6366f1;
+    color: #1e4d34;
     font-size: 16px;
 }
 
@@ -514,6 +514,35 @@
     background: #1e4d34;
     border-color: #1e4d34;
     color: #ffffff;
+}
+.pos-quick-add-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: #1e4d34;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+.pos-quick-add-btn:hover {
+    background: #2f8825;
+    transform: scale(1.06);
+}
+.pos-cart-size-select {
+    margin-top: 4px;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #1e4d34;
+    background: #f2f7f3;
+    border: 1px solid #d1dfd5;
+    border-radius: 6px;
+    cursor: pointer;
 }
 
 /* Overlay Add Icon Styling */
@@ -997,8 +1026,19 @@
 
     window.selectPosVariant = function(productId, variantId) {
         window.posSelectedVariants[productId] = variantId;
-        if (typeof products !== 'undefined') {
-            window.customDisplayProducts(products);
+        const card = document.querySelector(`.pos-product-card[data-product-id="${productId}"]`);
+        const product = typeof products !== 'undefined' ? products.find(p => p.id === productId) : null;
+        if (!card || !product || !Array.isArray(product.variants)) return;
+
+        const variant = product.variants.find(v => v.id === variantId);
+        if (!variant) return;
+
+        card.querySelectorAll('.pos-variant-pill').forEach(btn => {
+            btn.classList.toggle('active', Number(btn.dataset.variantId) === variantId);
+        });
+        const priceEl = card.querySelector('.card-price');
+        if (priceEl) {
+            priceEl.textContent = formatCurrency(parseFloat(variant.price));
         }
     };
 
@@ -1079,6 +1119,8 @@
                 ? `<div class="pos-variant-pills" onclick="event.stopPropagation()">
                     ${variants.map(v => `
                         <button type="button"
+                                data-variant-id="${v.id}"
+                                title="${v.size} — ${formatCurrency(parseFloat(v.price))}"
                                 class="pos-variant-pill ${activeVariant && activeVariant.id === v.id ? 'active' : ''}"
                                 onclick="event.stopPropagation(); selectPosVariant(${product.id}, ${v.id})">
                             ${v.size}
@@ -1088,9 +1130,13 @@
                 : '';
             
             const skuHtml = product.sku ? `<div class="card-sku">${product.sku}</div>` : '';
+            const quickAddBtn = !isOutOfStock
+                ? `<button type="button" class="pos-quick-add-btn" title="Ajouter" onclick="event.stopPropagation(); addToCartWithFeedback(${product.id})"><i class="fas fa-plus"></i></button>`
+                : '';
 
             return `
-                <div class="pos-product-card ${isOutOfStock ? 'out-of-stock-card' : ''}" 
+                <div class="pos-product-card ${isOutOfStock ? 'out-of-stock-card' : ''}"
+                     data-product-id="${product.id}"
                      onclick="${isOutOfStock ? '' : `addToCartWithFeedback(${product.id})`}" 
                      title="${product.name}">
                     ${quantityBadge}
@@ -1106,6 +1152,7 @@
                         ${variantPillsHtml}
                         <div class="card-footer">
                             ${priceHtml}
+                            ${quickAddBtn}
                         </div>
                     </div>
                 </div>
@@ -1140,11 +1187,20 @@
         } else {
             container.innerHTML = cart.map(item => {
                 const key = item.cart_key || `${item.product_id}`;
+                const prod = typeof products !== 'undefined' ? products.find(p => p.id === item.product_id) : null;
+                const variants = prod && Array.isArray(prod.variants) ? prod.variants : [];
+                const sizeSwitcher = variants.length > 1
+                    ? `<select class="pos-cart-size-select" onchange="changeCartItemVariant('${key}', this.value)">
+                        ${variants.map(v => `<option value="${v.id}" ${Number(item.variant_id) === Number(v.id) ? 'selected' : ''}>${v.size} — ${formatCurrency(parseFloat(v.price))}</option>`).join('')}
+                       </select>`
+                    : (item.size ? `<span style="display:inline-block;margin-top:3px;font-size:11px;font-weight:700;color:#1e4d34;background:#f2f7f3;padding:1px 7px;border-radius:999px;">${item.size}</span>` : '');
+
                 return `
                 <div class="cart-item">
                     <div class="item-details">
                         <h4>${item.name}</h4>
                         <div class="item-price">${formatCurrency(item.price)}</div>
+                        ${sizeSwitcher}
                     </div>
                     <div class="item-controls">
                         <div class="control-btn" onclick="updateQuantity('${key}', -1)">

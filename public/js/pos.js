@@ -273,6 +273,36 @@ window.updateQuantity = function (cartKey, delta) {
     }
 }
 
+// Switch variant/size directly inside POS cart
+window.changeCartItemVariant = function (cartKey, newVariantId) {
+    const keyStr = String(cartKey);
+    const itemIndex = cart.findIndex(item => (item.cart_key || `${item.product_id}`) === keyStr);
+    if (itemIndex === -1) return;
+
+    const item = cart[itemIndex];
+    const product = products.find(p => p.id === item.product_id);
+    if (!product || !Array.isArray(product.variants)) return;
+
+    const variant = product.variants.find(v => String(v.id) === String(newVariantId));
+    if (!variant) return;
+
+    const newKey = `${product.id}_v${variant.id}`;
+    const existingTarget = cart.find((i, idx) => idx !== itemIndex && (i.cart_key || `${i.product_id}`) === newKey);
+
+    if (existingTarget) {
+        existingTarget.quantity += item.quantity;
+        cart.splice(itemIndex, 1);
+    } else {
+        item.cart_key = newKey;
+        item.variant_id = variant.id;
+        item.size = variant.size;
+        item.name = `${product.name} (${variant.size})`;
+        item.price = parseFloat(variant.price);
+    }
+
+    updateCart();
+}
+
 // Update cart display
 function updateCart() {
     const cartItemsContainer = document.getElementById('cartItems');
