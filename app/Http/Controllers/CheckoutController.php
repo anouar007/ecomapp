@@ -162,18 +162,29 @@ class CheckoutController extends Controller
             return $order;
         });
 
-        // Send Emails
-        try {
-            if (!empty($order->customer_email)) {
-                \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderConfirmation($order));
-            }
-            \Illuminate\Support\Facades\Mail::to(setting('contact_email', 'admin@speed.com'))->send(new \App\Mail\NewOrderNotification($order));
-        } catch (\Exception $e) {
-            \Log::error('Failed to send checkout emails: ' . $e->getMessage());
-        }
-
-        // Clear Cart
+        // Clear Cart immediately so response is ready
         session()->forget('cart');
+
+        // Send Emails after HTTP response is flushed to avoid 504 Gateway Time-out if SMTP is slow/unreachable
+        $orderId = $order->id;
+        dispatch(function () use ($orderId) {
+            try {
+                $freshOrder = Order::with('items')->find($orderId);
+                if (!$freshOrder) {
+                    return;
+                }
+                config(['mail.mailers.smtp.timeout' => 5]);
+                if (!empty($freshOrder->customer_email)) {
+                    \Illuminate\Support\Facades\Mail::to($freshOrder->customer_email)->send(new \App\Mail\OrderConfirmation($freshOrder));
+                }
+                $adminEmail = setting('contact_email');
+                if (!empty($adminEmail)) {
+                    \Illuminate\Support\Facades\Mail::to($adminEmail)->send(new \App\Mail\NewOrderNotification($freshOrder));
+                }
+            } catch (\Throwable $e) {
+                \Log::error('Failed to send checkout emails: ' . $e->getMessage());
+            }
+        })->afterResponse();
 
         return redirect()->route('checkout.success', ['order' => $order->id]);
     }
