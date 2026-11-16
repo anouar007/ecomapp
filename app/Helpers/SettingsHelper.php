@@ -30,9 +30,34 @@ if (!function_exists('app_logo_url')) {
             if (str_starts_with($logo, 'http://') || str_starts_with($logo, 'https://')) {
                 return $logo;
             }
+            if (file_exists(public_path($logo))) {
+                return asset($logo);
+            }
             return asset('storage/' . ltrim($logo, '/'));
         }
-        return $fallback ? asset($fallback) : asset('assets/images/emblem-gold.png');
+        return $fallback ? asset($fallback) : asset('assets/images/logo-symbol.png');
+    }
+}
+
+if (!function_exists('product_image_url')) {
+    /**
+     * Resolve product image URL whether stored in public assets, storage, or external URL.
+     *
+     * @param string|null $path
+     * @return string
+     */
+    function product_image_url(?string $path = null): string
+    {
+        if (empty($path)) {
+            return asset('assets/images/product_miel_hd.jpg');
+        }
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+        if (file_exists(public_path($path))) {
+            return asset($path);
+        }
+        return \Illuminate\Support\Facades\Storage::url($path);
     }
 }
 
@@ -62,13 +87,13 @@ if (!function_exists('currency')) {
      */
     function currency($amount, bool $showSymbol = true)
     {
-        $symbol = setting('currency_symbol', '$');
-        $decimals = setting('currency_decimals', 2);
+        $symbol = setting('currency_symbol', 'DH');
+        $decimals = (int) setting('currency_decimals', 0);
         $decimalSeparator = setting('decimal_separator', '.');
-        $thousandsSeparator = setting('thousands_separator', ',');
-        $position = setting('currency_position', 'before'); // before or after
+        $thousandsSeparator = setting('thousands_separator', ' ');
+        $position = setting('currency_position', 'after'); // before or after
         
-        $formatted = number_format($amount, $decimals, $decimalSeparator, $thousandsSeparator);
+        $formatted = number_format((float) $amount, $decimals, $decimalSeparator, $thousandsSeparator);
         
         if (!$showSymbol) {
             return $formatted;

@@ -90,11 +90,12 @@ class CheckoutController extends Controller
 
         // Create Order Items and Update Stock
         foreach ($cart as $id => $details) {
-            $product = \App\Models\Product::find($id);
+            $productId = $details['product_id'] ?? $id;
+            $product = \App\Models\Product::find($productId);
 
             OrderItem::create([
                 'order_id' => $order->id,
-                'product_id' => $id,
+                'product_id' => $productId,
                 'product_sku' => $product ? $product->sku : 'N/A',
                 'product_name' => $details['name'],
                 'price' => $details['price'],

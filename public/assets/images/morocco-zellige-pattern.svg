@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180">
+  <defs>
+    <g id="zellige-star">
+      <polygon points="90,16 107,50 142,38 130,73 164,90 130,107 142,142 107,130 90,164 73,130 38,142 50,107 16,90 50,73 38,38 73,50"
+               fill="#1e4d34" fill-opacity="0.025" stroke="#1e4d34" stroke-opacity="0.065" stroke-width="1"/>
+      <polygon points="90,38 101,61 124,53 116,76 139,90 116,104 124,127 101,119 90,142 79,119 56,127 64,104 41,90 64,76 56,53 79,61"
+               fill="none" stroke="#2f8825" stroke-opacity="0.055" stroke-width="0.9"/>
+    </g>
+  </defs>
+  <rect width="180" height="180" fill="transparent"/>
+  <path d="M90,0 L90,180 M0,90 L180,90" stroke="#1e4d34" stroke-opacity="0.035" stroke-width="0.8"/>
+  <use href="#zellige-star" x="0" y="0"/>
+  <use href="#zellige-star" x="-90" y="-90"/>
+  <use href="#zellige-star" x="90" y="-90"/>
+  <use href="#zellige-star" x="-90" y="90"/>
+  <use href="#zellige-star" x="90" y="90"/>
+</svg>

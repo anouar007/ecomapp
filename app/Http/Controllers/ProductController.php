@@ -68,11 +68,32 @@ class ProductController extends Controller
             'category_id' => ['nullable', 'exists:categories,id'],
             'images.*' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
+            'variants' => ['nullable', 'array'],
+            'variants.*.size' => ['nullable', 'string', 'max:60'],
+            'variants.*.price' => ['nullable', 'numeric', 'min:0'],
         ]);
+
+        $variantsInput = collect($request->input('variants', []))
+            ->filter(fn ($v) => !empty(trim((string) ($v['size'] ?? ''))) && isset($v['price']) && $v['price'] !== '')
+            ->values();
+
+        if ($variantsInput->isNotEmpty()) {
+            $validated['size'] = trim((string) $variantsInput[0]['size']);
+            $validated['price'] = (float) $variantsInput[0]['price'];
+        }
 
         DB::beginTransaction();
         try {
             $product = Product::create($validated);
+
+            foreach ($variantsInput as $index => $v) {
+                $product->variants()->create([
+                    'size' => trim((string) $v['size']),
+                    'price' => (float) $v['price'],
+                    'is_default' => $index === 0,
+                    'sort_order' => $index,
+                ]);
+            }
 
             // Handle multiple image uploads
             if ($request->hasFile('images')) {
@@ -102,7 +123,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $product->load('images', 'productCategory');
+        $product->load('images', 'productCategory', 'variants');
         $categories = \App\Models\Category::where('status', 'active')
             ->orderBy('name')
             ->get();
@@ -129,11 +150,34 @@ class ProductController extends Controller
             'status' => ['required', 'in:active,inactive'],
             'remove_images' => ['nullable', 'array'],
             'remove_images.*' => ['exists:product_images,id'],
+            'variants' => ['nullable', 'array'],
+            'variants.*.size' => ['nullable', 'string', 'max:60'],
+            'variants.*.price' => ['nullable', 'numeric', 'min:0'],
         ]);
+
+        $variantsInput = collect($request->input('variants', []))
+            ->filter(fn ($v) => !empty(trim((string) ($v['size'] ?? ''))) && isset($v['price']) && $v['price'] !== '')
+            ->values();
+
+        if ($variantsInput->isNotEmpty()) {
+            $validated['size'] = trim((string) $variantsInput[0]['size']);
+            $validated['price'] = (float) $variantsInput[0]['price'];
+        }
 
         DB::beginTransaction();
         try {
             $product->update($validated);
+
+            // Sync size & price variants
+            $product->variants()->delete();
+            foreach ($variantsInput as $index => $v) {
+                $product->variants()->create([
+                    'size' => trim((string) $v['size']),
+                    'price' => (float) $v['price'],
+                    'is_default' => $index === 0,
+                    'sort_order' => $index,
+                ]);
+            }
 
             // Handle image removal
             if ($request->has('remove_images')) {

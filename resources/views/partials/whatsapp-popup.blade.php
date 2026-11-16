@@ -1,10 +1,10 @@
 @php
-    $rawWa = function_exists('setting') ? setting('social_whatsapp', config('cooperative.whatsapp', '212661000000')) : config('cooperative.whatsapp', '212661000000');
+    $rawWa = function_exists('setting') ? setting('social_whatsapp', config('cooperative.whatsapp', '212706770940')) : config('cooperative.whatsapp', '212706770940');
     $waPhone = preg_replace('/[^0-9]/', '', $rawWa);
     if(empty($waPhone)) {
-        $waPhone = '212661000000';
+        $waPhone = '212706770940';
     }
-    $defaultMsg = urlencode("Bonjour Coopérative Aït Oumdis, je souhaite des informations sur vos soins 100% bio.");
+    $defaultMsg = urlencode("Bonjour Coopérative Aït Oumdis, je souhaite commander vos miels purs et produits du terroir.");
 @endphp
 
 <!-- WhatsApp Floating Button & Popup Widget -->
@@ -330,23 +330,23 @@
         <!-- Body with message bubbles & quick topics -->
         <div class="sp-wa-body">
             <div class="sp-wa-msg-bubble">
-                <div class="sp-wa-msg-author">Conseillère Aït Oumdis</div>
+                <div class="sp-wa-msg-author">Coopérative Aït Oumdis</div>
                 <p class="sp-wa-msg-text">
-                    Bonjour et bienvenue ! 🌿<br>
-                    Avez-vous besoin d'un conseil pour vos soins bio ou souhaitez-vous passer commande directement ?
+                    Bonjour et bienvenue ! 🍯🌿<br>
+                    Souhaitez-vous commander nos miels 100% purs, notre Amlou aux amandes &amp; Argan, ou demander conseil ?
                 </p>
                 <div class="sp-wa-msg-time">{{ date('H:i') }}</div>
             </div>
 
             <div class="sp-wa-quick-actions">
-                <a href="https://wa.me/{{ $waPhone }}?text={{ urlencode('Bonjour, je souhaite commander un soin.') }}" target="_blank" rel="noopener" class="sp-wa-chip">
-                    🛍️ Commander un soin
+                <a href="https://wa.me/{{ $waPhone }}?text={{ urlencode('Bonjour, je souhaite commander du Miel Pur (Thym, Daghmous, Sidr...).') }}" target="_blank" rel="noopener" class="sp-wa-chip">
+                    🍯 Commander du Miel Pur
                 </a>
-                <a href="https://wa.me/{{ $waPhone }}?text={{ urlencode("Bonjour, j'ai besoin d'un conseil beauté pour mes cheveux.") }}" target="_blank" rel="noopener" class="sp-wa-chip">
-                    🌿 Conseil Capillaire
+                <a href="https://wa.me/{{ $waPhone }}?text={{ urlencode('Bonjour, je souhaite commander votre Amlou aux amandes et huile d\'Argan.') }}" target="_blank" rel="noopener" class="sp-wa-chip">
+                    🥜 Commander Amlou Amandes &amp; Argan
                 </a>
-                <a href="https://wa.me/{{ $waPhone }}?text={{ urlencode('Bonjour, je souhaite des infos sur la crème solaire SunPure.') }}" target="_blank" rel="noopener" class="sp-wa-chip">
-                    ☀️ Info SunPure SPF 50+
+                <a href="https://wa.me/{{ $waPhone }}?text={{ urlencode('Bonjour, je souhaite des informations sur le Safran pur et vos tarifs.') }}" target="_blank" rel="noopener" class="sp-wa-chip">
+                    🌸 Infos Safran Pur &amp; Tarifs
                 </a>
             </div>
         </div>

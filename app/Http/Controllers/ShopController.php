@@ -52,7 +52,7 @@ class ShopController extends Controller
                 break;
         }
 
-        $products = $query->with(['images', 'productCategory'])
+        $products = $query->with(['images', 'productCategory', 'variants'])
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')
             ->paginate(12)->withQueryString();
@@ -72,7 +72,7 @@ class ShopController extends Controller
     public function show($id)
     {
         // For now using ID, later can switch to slug if added
-        $product = Product::with(['images', 'productCategory', 'inventoryMovements'])->findOrFail($id);
+        $product = Product::with(['images', 'productCategory', 'inventoryMovements', 'variants'])->findOrFail($id);
         
         // Paginate approved reviews separately - 5 per page
         $reviews = ProductReview::where('product_id', $product->id)

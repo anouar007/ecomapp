@@ -11,14 +11,14 @@
       <span class="current" style="color: #e2ad50; font-weight: 600;">Mes Favoris</span>
     </nav>
     <div style="max-width: 680px;">
-      <span style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 2px; color: #e2ad50; font-weight: 700; display: block; margin-bottom: 8px;">Vos Rituels Coup de Cœur</span>
+      <span style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 2px; color: #e2ad50; font-weight: 700; display: block; margin-bottom: 8px;">Votre Sélection Coup de Cœur</span>
       <h1 style="font-family: 'Playfair Display', Georgia, serif; font-size: clamp(2rem, 3.2vw, 2.7rem); font-weight: 600; color: #ffffff; margin: 0 0 10px 0;">Mes Favoris</h1>
-      <p style="font-size: 0.95rem; line-height: 1.6; color: rgba(255,255,255,0.85); margin: 0;">Retrouvez vos soins botaniques préférés et ajoutez-les à votre panier en un clic.</p>
+      <p style="font-size: 0.95rem; line-height: 1.6; color: rgba(255,255,255,0.85); margin: 0;">Retrouvez vos miels purs, votre Amlou et vos produits du terroir préférés et ajoutez-les à votre panier en un clic.</p>
     </div>
   </div>
 </header>
 
-<div class="py-5" style="background-color: #faf7f2; background-image: url('{{ asset('assets/images/botanical_pattern_bg.jpg') }}'); background-size: 850px auto; background-repeat: repeat; min-height: 70vh;">
+<div class="py-5" style="background-color: #ffffff; min-height: 70vh;">
     <div class="container">
 
         @if($wishlistItems->count() > 0)
@@ -28,13 +28,7 @@
                 <div class="card h-100 border-0 shadow-sm rounded-4 product-card overflow-hidden">
                     <div class="position-relative">
                         <a href="{{ route('shop.show', $item->product->id) }}">
-                            @if($item->product->main_image)
-                            <img src="{{ Storage::url($item->product->main_image) }}" class="card-img-top" alt="{{ $item->product->name }}" style="height: 250px; object-fit: cover;">
-                            @else
-                            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                                <i class="fas fa-image fa-3x text-muted opacity-25"></i>
-                            </div>
-                            @endif
+                            <img src="{{ $item->product->image_url }}" class="card-img-top" alt="{{ $item->product->name }}" style="height: 250px; object-fit: cover;">
                         </a>
                         <button class="btn btn-light shadow-sm rounded-circle position-absolute top-0 end-0 m-3 wishlist-btn text-danger" 
                                 onclick="removeFromWishlist(event, {{ $item->product->id }}, this)"

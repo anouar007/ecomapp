@@ -5,21 +5,25 @@
 @section('content')
 <style>
 /* ==========================================================================
-   EXCLUSIVE FULL-SCREEN PRO MOBILE & DESKTOP CHECKOUT EXPERIENCE
+   CLEAN AIT OUMDIS CHECKOUT EXPERIENCE (DESKTOP & MOBILE)
    ========================================================================== */
 .sp-checkout-page {
-    background-color: #faf8f4;
-    background-image: radial-gradient(rgba(194, 141, 50, 0.08) 1px, transparent 1px);
-    background-size: 22px 22px;
+    background-color: #ffffff;
     min-height: 100vh;
-    padding: 30px 0 140px;
+    padding: 0 0 120px;
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    color: #0c261e;
+    color: #2b302c;
+}
+
+.aod-checkout-hero {
+    padding: 36px 0 28px;
+    border-bottom: 1px solid #e3ede6;
+    margin-bottom: 32px;
 }
 
 /* Header & Breadcrumb */
 .sp-checkout-header {
-    margin-bottom: 24px;
+    margin-bottom: 0;
 }
 .sp-checkout-breadcrumb {
     display: flex;
@@ -27,38 +31,39 @@
     gap: 8px;
     font-size: 0.84rem;
     margin-bottom: 10px;
-    color: #6b7a72;
+    color: #5f6f65;
 }
 .sp-checkout-breadcrumb a {
-    color: #6b7a72;
+    color: #5f6f65;
     text-decoration: none;
+    font-weight: 600;
     transition: color 0.2s ease;
 }
 .sp-checkout-breadcrumb a:hover {
-    color: #c28d32;
+    color: #2f8825;
 }
 .sp-checkout-breadcrumb .sep {
-    color: #c28d32;
+    color: #2f8825;
     opacity: 0.7;
 }
 .sp-checkout-breadcrumb .current {
-    color: #0c261e;
-    font-weight: 600;
+    color: #2f8825;
+    font-weight: 700;
 }
 
 .sp-checkout-title {
     font-family: 'Playfair Display', Georgia, serif;
-    font-size: clamp(1.65rem, 3.2vw, 2.35rem);
+    font-size: clamp(1.75rem, 3vw, 2.3rem);
     font-weight: 700;
-    color: #0c261e;
-    margin: 0 0 10px;
+    color: #2b302c;
+    margin: 0 0 12px;
     letter-spacing: -0.01em;
     line-height: 1.2;
 }
 .sp-checkout-pill-bar {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: wrap;
 }
 .sp-reassurance-pill {
@@ -66,37 +71,35 @@
     align-items: center;
     gap: 8px;
     background: #ffffff;
-    border: 1px solid rgba(226, 173, 80, 0.4);
+    border: 1px solid #e3ede6;
     padding: 6px 14px;
     border-radius: 9999px;
     font-size: 0.82rem;
     font-weight: 600;
-    color: #0c261e;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    color: #1e4d34;
 }
 .sp-reassurance-pill .dot {
     width: 8px;
     height: 8px;
-    background: #10b981;
+    background: #2f8825;
     border-radius: 50%;
     display: inline-block;
-    box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
 }
 
 /* Checkout Container & Grid */
 .sp-checkout-container {
     max-width: 1240px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 24px;
 }
 
 /* Cards System */
 .sp-checkout-card {
     background: #ffffff;
-    border-radius: 20px;
-    border: 1px solid rgba(12, 38, 30, 0.07);
-    box-shadow: 0 4px 20px rgba(12, 38, 30, 0.04);
-    padding: 28px 24px;
+    border-radius: 18px;
+    border: 1px solid #e3ede6;
+    box-shadow: 0 4px 16px rgba(30, 77, 52, 0.03);
+    padding: 26px 24px;
     margin-bottom: 20px;
 }
 .sp-card-step-header {
@@ -105,48 +108,47 @@
     gap: 12px;
     margin-bottom: 20px;
     padding-bottom: 14px;
-    border-bottom: 1px solid rgba(12, 38, 30, 0.06);
+    border-bottom: 1px solid #e3ede6;
 }
 .sp-step-badge {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: #0c261e;
-    color: #e2ad50;
+    background: #2f8825;
+    color: #ffffff;
     font-weight: 800;
-    font-size: 0.90rem;
+    font-size: 0.88rem;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    border: 1.5px solid rgba(226, 173, 80, 0.4);
 }
 .sp-step-title {
     font-family: 'Playfair Display', Georgia, serif;
-    font-size: 1.25rem;
+    font-size: 1.22rem;
     font-weight: 700;
-    color: #0c261e;
+    color: #1e4d34;
     margin: 0;
 }
 .sp-step-sub {
-    font-size: 0.82rem;
-    color: #6b7a72;
+    font-size: 0.8rem;
+    color: #5f6f65;
     margin-left: auto;
+    font-weight: 600;
 }
 
 /* Form Groups & Inputs */
 .sp-fg {
-    margin-bottom: 18px;
+    margin-bottom: 16px;
 }
 .sp-city-badge {
     font-size: 0.74rem;
     font-weight: 700;
-    color: #0c261e;
-    background: #fbf8f2;
-    border: 1px solid rgba(194, 141, 50, 0.35);
-    padding: 2px 9px;
+    color: #1e4d34;
+    background: #edf6ed;
+    border: 1px solid #e3ede6;
+    padding: 3px 10px;
     border-radius: 20px;
-    transition: all 0.2s ease;
 }
 .sp-city-dropdown {
     position: absolute;
@@ -154,9 +156,9 @@
     left: 0;
     right: 0;
     background: #ffffff;
-    border: 1.5px solid rgba(12, 38, 30, 0.14);
+    border: 1px solid #e3ede6;
     border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(12, 38, 30, 0.16);
+    box-shadow: 0 10px 30px rgba(30, 77, 52, 0.12);
     z-index: 1050;
     max-height: 250px;
     overflow-y: auto;
@@ -167,20 +169,20 @@
     padding: 10px 14px;
     font-size: 0.88rem;
     font-weight: 600;
-    color: #0c261e;
+    color: #1e4d34;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    transition: background 0.15s ease, color 0.15s ease;
-    border-bottom: 1px solid rgba(12, 38, 30, 0.04);
+    transition: background 0.15s ease;
+    border-bottom: 1px solid #f2f7f4;
 }
 .sp-city-item:last-child {
     border-bottom: none;
 }
 .sp-city-item:hover, .sp-city-item.active {
-    background: #fbf8f2;
+    background: #f8fbf9;
 }
 .sp-city-name-wrap {
     display: flex;
@@ -191,47 +193,29 @@
 }
 .sp-city-name-en {
     font-weight: 700;
-    color: #0c261e;
+    color: #1e4d34;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 .sp-city-name-ar {
     font-size: 0.78rem;
-    color: #7a8b82;
+    color: #5f6f65;
     direction: rtl;
     white-space: nowrap;
 }
 .sp-city-price-tag {
     font-size: 0.74rem;
     font-weight: 800;
-    padding: 2px 7px;
+    padding: 2px 8px;
     border-radius: 6px;
     white-space: nowrap;
     flex-shrink: 0;
-}
-.sp-city-price-tag.rate-20 {
-    background: #eaf6ec;
-    color: #1e7e34;
-    border: 1px solid rgba(40, 167, 69, 0.25);
-}
-.sp-city-price-tag.rate-30 {
-    background: #eef5fc;
-    color: #1976d2;
-    border: 1px solid rgba(25, 118, 210, 0.25);
-}
-.sp-city-price-tag.rate-40 {
-    background: #fdf6ec;
-    color: #b26a00;
-    border: 1px solid rgba(226, 173, 80, 0.35);
-}
-.sp-city-price-tag.rate-35 {
-    background: #faf4e8;
-    color: #8c5b08;
-    border: 1px solid rgba(226, 173, 80, 0.4);
+    background: #edf6ed;
+    color: #2f8825;
 }
 .sp-city-match {
-    color: #c28d32;
+    color: #2f8825;
     font-weight: 800;
     text-decoration: underline;
     text-underline-offset: 2px;
@@ -240,60 +224,62 @@
     padding: 10px 14px;
     font-size: 0.84rem;
     font-weight: 700;
-    color: #0c261e;
-    background: #faf8f3;
-    border-top: 1px dashed rgba(226, 173, 80, 0.45);
+    color: #1e4d34;
+    background: #f8fbf9;
+    border-top: 1px dashed #dcebe0;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    transition: background 0.15s ease;
 }
 .sp-city-custom-opt:hover, .sp-city-custom-opt.active {
-    background: #f4efe4;
-    color: #c28d32;
+    background: #edf6ed;
+    color: #2f8825;
 }
 .sp-label {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     font-weight: 700;
-    color: #3b4d44;
+    color: #1e4d34;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 7px;
 }
+.sp-label i {
+    color: #2f8825 !important;
+}
 .sp-label .opt {
     text-transform: none;
     font-weight: 500;
-    color: #8c9c94;
+    color: #5f6f65;
     font-size: 0.76rem;
     letter-spacing: normal;
 }
 .sp-input, .sp-select {
     width: 100%;
-    height: 52px;
-    font-size: 16px !important; /* Critical: Prevents iOS auto-zoom */
-    padding: 12px 16px;
-    background-color: #fcfbf9;
-    border: 1.5px solid rgba(12, 38, 30, 0.12);
+    height: 50px;
+    font-size: 16px !important;
+    padding: 11px 15px;
+    background-color: #f8fbf9;
+    border: 1px solid #e3ede6;
     border-radius: 12px;
-    color: #0c261e;
+    color: #2b302c;
     font-weight: 500;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.2s ease;
     font-family: inherit;
     box-sizing: border-box;
 }
 .sp-input::placeholder {
-    color: #9baaa2;
+    color: #8fa196;
     font-size: 0.92rem;
 }
 .sp-input:focus, .sp-select:focus {
     background-color: #ffffff;
-    border-color: #0c261e;
-    box-shadow: 0 0 0 3.5px rgba(226, 173, 80, 0.25);
+    border-color: #2f8825;
+    box-shadow: 0 0 0 3px rgba(47, 136, 37, 0.14);
     outline: none;
 }
 .sp-input.is-invalid, .sp-select.is-invalid {
@@ -303,14 +289,13 @@
 
 /* Payment Method Card */
 .sp-payment-radio-card {
-    border: 2px solid #0c261e;
-    background: linear-gradient(180deg, #fbfbf9 0%, #ffffff 100%);
+    border: 1.5px solid #2f8825;
+    background: #f8fbf9;
     border-radius: 14px;
-    padding: 18px 18px;
+    padding: 18px;
     display: flex;
     align-items: flex-start;
     gap: 14px;
-    box-shadow: 0 4px 14px rgba(12, 38, 30, 0.06);
     position: relative;
     user-select: none;
 }
@@ -318,8 +303,8 @@
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    border: 2px solid #0c261e;
-    background: #0c261e;
+    border: 2px solid #2f8825;
+    background: #2f8825;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -331,15 +316,15 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #e2ad50;
+    background: #ffffff;
 }
 .sp-payment-card-body {
     flex-grow: 1;
 }
 .sp-payment-card-title {
-    font-size: 1.05rem;
+    font-size: 1.02rem;
     font-weight: 700;
-    color: #0c261e;
+    color: #1e4d34;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -347,124 +332,118 @@
     margin-bottom: 5px;
 }
 .sp-badge-recommended {
-    background: rgba(226, 173, 80, 0.18);
-    color: #9e6f1a;
-    border: 1px solid rgba(226, 173, 80, 0.4);
-    font-size: 0.70rem;
-    font-weight: 700;
-    padding: 2px 8px;
+    background: #edf6ed;
+    color: #2f8825;
+    border: 1px solid rgba(47, 136, 37, 0.25);
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 2px 9px;
     border-radius: 9999px;
     text-transform: uppercase;
 }
 .sp-payment-card-sub {
-    font-size: 0.86rem;
-    color: #6b7a72;
+    font-size: 0.85rem;
+    color: #5f6f65;
     line-height: 1.45;
     margin-bottom: 12px;
 }
 .sp-payment-tags {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     flex-wrap: wrap;
 }
 .sp-payment-tag {
-    font-size: 0.76rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    color: #0c261e;
+    color: #1e4d34;
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    background: #f4efe6;
+    background: #ffffff;
+    border: 1px solid #e3ede6;
     padding: 4px 10px;
-    border-radius: 6px;
+    border-radius: 8px;
 }
 
 /* Order Summary Items */
 .sp-summary-card {
-    background: #ffffff;
-    border-radius: 20px;
-    border: 1px solid rgba(12, 38, 30, 0.07);
-    box-shadow: 0 4px 20px rgba(12, 38, 30, 0.04);
-    padding: 26px 24px;
+    background: #f8fbf9;
+    border-radius: 18px;
+    border: 1px solid #e3ede6;
+    padding: 24px;
 }
 .sp-order-item {
     display: flex;
     align-items: center;
     gap: 14px;
-    padding: 14px 0;
-    border-bottom: 1px solid rgba(12, 38, 30, 0.06);
+    padding: 12px 0;
+    border-bottom: 1px solid #e3ede6;
 }
 .sp-order-item:first-child {
     padding-top: 0;
 }
 .sp-item-img-wrap {
     position: relative;
-    width: 62px;
-    height: 62px;
-    border-radius: 12px;
-    background: #fbfbf9;
-    border: 1px solid rgba(12, 38, 30, 0.08);
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    background: #ffffff;
+    border: 1px solid #e3ede6;
     flex-shrink: 0;
-    overflow: visible;
 }
 .sp-item-img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    border-radius: 12px;
-    padding: 3px;
+    object-fit: cover;
+    border-radius: 10px;
 }
 .sp-item-qty-badge {
     position: absolute;
     top: -6px;
     right: -6px;
-    background: #0c261e;
-    color: #e2ad50;
+    background: #2f8825;
+    color: #ffffff;
     border: 2px solid #ffffff;
     font-weight: 800;
-    font-size: 0.70rem;
+    font-size: 0.68rem;
     width: 20px;
     height: 20px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 .sp-item-info {
     flex-grow: 1;
     min-width: 0;
 }
 .sp-item-title {
-    font-size: 0.94rem;
+    font-size: 0.92rem;
     font-weight: 700;
-    color: #0c261e;
-    margin: 0 0 3px;
+    color: #1e4d34;
+    margin: 0 0 2px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 .sp-item-meta {
-    font-size: 0.78rem;
-    color: #6b7a72;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    font-size: 0.76rem;
+    color: #5f6f65;
 }
 .sp-item-price {
     font-weight: 700;
-    font-size: 1rem;
-    color: #0c261e;
+    font-size: 0.96rem;
+    color: #1e4d34;
     flex-shrink: 0;
 }
 
 /* Pricing Breakdown */
 .sp-pricing-box {
-    background: #fbfbf9;
+    background: #ffffff;
     border-radius: 12px;
     padding: 14px 16px;
-    margin: 18px 0;
-    border: 1px dashed rgba(226, 173, 80, 0.45);
+    margin: 16px 0;
+    border: 1px solid #e3ede6;
 }
 .sp-price-row {
     display: flex;
@@ -472,23 +451,14 @@
     align-items: center;
     font-size: 0.90rem;
     margin-bottom: 8px;
-    color: #6b7a72;
+    color: #5f6f65;
 }
 .sp-price-row:last-child {
     margin-bottom: 0;
 }
 .sp-price-val {
     font-weight: 700;
-    color: #0c261e;
-}
-.sp-free-tag {
-    background: #ecfdf5;
-    color: #059669;
-    font-weight: 800;
-    font-size: 0.78rem;
-    padding: 2px 8px;
-    border-radius: 6px;
-    border: 1px solid rgba(5, 150, 105, 0.2);
+    color: #1e4d34;
 }
 .sp-total-row {
     display: flex;
@@ -496,25 +466,21 @@
     align-items: flex-end;
     padding-top: 14px;
     margin-top: 14px;
-    border-top: 1.5px solid rgba(12, 38, 30, 0.08);
-}
-.sp-total-label-wrap {
-    display: flex;
-    flex-direction: column;
+    border-top: 1px solid #dcebe0;
 }
 .sp-total-main-label {
-    font-size: 1.15rem;
+    font-size: 1.08rem;
     font-weight: 800;
-    color: #0c261e;
+    color: #2b302c;
 }
 .sp-total-sub-label {
-    font-size: 0.78rem;
-    color: #6b7a72;
+    font-size: 0.76rem;
+    color: #5f6f65;
 }
 .sp-total-main-val {
-    font-size: 1.7rem;
+    font-size: 1.6rem;
     font-weight: 800;
-    color: #0c261e;
+    color: #1e4d34;
     letter-spacing: -0.02em;
     line-height: 1;
 }
@@ -522,27 +488,27 @@
 /* Desktop Submit Button */
 .sp-desktop-submit-btn {
     width: 100%;
-    height: 56px;
-    background: linear-gradient(135deg, #0c261e 0%, #164638 100%);
+    height: 52px;
+    background: #2f8825;
     color: #ffffff;
-    border: 1.5px solid rgba(226, 173, 80, 0.5);
+    border: none;
     border-radius: 9999px;
-    font-size: 1.05rem;
-    font-weight: 800;
+    font-size: 0.98rem;
+    font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    box-shadow: 0 8px 24px rgba(12, 38, 30, 0.35);
+    padding: 0 24px;
+    box-shadow: 0 6px 18px rgba(47, 136, 37, 0.25);
     cursor: pointer;
-    transition: all 0.22s ease;
+    transition: all 0.2s ease;
     margin-top: 18px;
 }
 .sp-desktop-submit-btn:hover {
-    background: linear-gradient(135deg, #0f3026 0%, #1c5243 100%);
-    border-color: #e2ad50;
-    transform: translateY(-2px);
-    box-shadow: 0 12px 28px rgba(12, 38, 30, 0.42), 0 0 16px rgba(226, 173, 80, 0.25);
+    background: #1e4d34;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(30, 77, 52, 0.28);
 }
 
 /* Reassurance Strip */
@@ -550,24 +516,24 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
-    margin-top: 18px;
+    margin-top: 16px;
     text-align: center;
 }
 .sp-trust-item {
-    background: #fbfbf9;
+    background: #ffffff;
     border-radius: 10px;
     padding: 10px 6px;
-    border: 1px solid rgba(12, 38, 30, 0.05);
+    border: 1px solid #e3ede6;
 }
 .sp-trust-icon {
-    font-size: 1.15rem;
-    color: #c28d32;
+    font-size: 1.05rem;
+    color: #2f8825;
     margin-bottom: 4px;
 }
 .sp-trust-label {
     font-size: 0.70rem;
     font-weight: 700;
-    color: #0c261e;
+    color: #1e4d34;
     line-height: 1.2;
 }
 
@@ -576,66 +542,27 @@
     display: none;
 }
 
-/* ==========================================================================
-   MOBILE FULL-SCREEN REFINEMENTS (@media max-width: 768px)
-   ========================================================================== */
 @media (max-width: 768px) {
     .sp-checkout-page {
-        padding: 10px 0 120px 0 !important;
-        background-size: 16px 16px;
+        padding: 0 0 110px 0 !important;
     }
-    
-    /* Maximum edge-to-edge width with safe 10px borders */
+    .aod-checkout-hero {
+        padding: 24px 0 20px;
+        margin-bottom: 20px;
+    }
     .sp-checkout-container {
-        padding-left: 10px !important;
-        padding-right: 10px !important;
+        padding-left: 14px !important;
+        padding-right: 14px !important;
         max-width: 100% !important;
     }
-    .sp-checkout-row {
-        --bs-gutter-x: 0 !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-    }
-    .sp-checkout-col {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-        width: 100% !important;
-    }
     .sp-checkout-card {
-        padding: 18px 14px !important;
+        padding: 18px 16px !important;
         border-radius: 16px !important;
         margin-bottom: 14px !important;
-        box-shadow: 0 2px 10px rgba(12, 38, 30, 0.04) !important;
     }
-    .sp-checkout-header {
-        margin-bottom: 14px !important;
-        padding: 0 4px !important;
-    }
-    .sp-checkout-title {
-        font-size: 1.45rem !important;
-        margin: 2px 0 6px !important;
-    }
-    .sp-reassurance-pill {
-        font-size: 0.74rem !important;
-        padding: 5px 12px !important;
-    }
-
-    /* Inputs take full mobile comfort */
-    .sp-input, .sp-select {
-        height: 50px !important;
-        padding: 10px 14px !important;
-        border-radius: 10px !important;
-    }
-    .sp-fg {
-        margin-bottom: 14px !important;
-    }
-
-    /* Hide desktop submit in card on mobile */
     .sp-desktop-submit-wrap {
         display: none !important;
     }
-
-    /* Mobile Sticky Checkout Bar (Fixed at bottom) */
     .sp-mobile-sticky-bar {
         display: flex !important;
         position: fixed !important;
@@ -645,10 +572,9 @@
         width: 100% !important;
         background: rgba(255, 255, 255, 0.98) !important;
         backdrop-filter: blur(12px) !important;
-        -webkit-backdrop-filter: blur(12px) !important;
         padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px)) !important;
-        border-top: 1.5px solid rgba(12, 38, 30, 0.08) !important;
-        box-shadow: 0 -8px 25px rgba(12, 38, 30, 0.12) !important;
+        border-top: 1px solid #e3ede6 !important;
+        box-shadow: 0 -6px 20px rgba(30, 77, 52, 0.08) !important;
         z-index: 10000 !important;
         align-items: center !important;
         gap: 12px !important;
@@ -660,42 +586,33 @@
     }
     .sp-sticky-total-label {
         font-size: 0.68rem;
-        color: #6b7a72;
+        color: #5f6f65;
         text-transform: uppercase;
         font-weight: 700;
-        letter-spacing: 0.04em;
         line-height: 1;
     }
     .sp-sticky-total-val {
-        font-size: 1.25rem;
+        font-size: 1.2rem;
         font-weight: 800;
-        color: #0c261e;
+        color: #1e4d34;
         line-height: 1.2;
     }
     .sp-sticky-submit-btn {
         flex-grow: 1;
-        height: 50px;
-        background: linear-gradient(135deg, #0c261e 0%, #174236 100%);
+        height: 48px;
+        background: #2f8825;
         color: #ffffff !important;
-        border: 1.5px solid rgba(226, 173, 80, 0.45);
+        border: none;
         border-radius: 9999px;
-        font-weight: 800;
-        font-size: 0.95rem;
-        letter-spacing: 0.01em;
+        font-weight: 700;
+        font-size: 0.92rem;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
-        box-shadow: 0 4px 16px rgba(12, 38, 30, 0.25);
         cursor: pointer;
-        transition: all 0.2s ease;
     }
-    .sp-sticky-submit-btn:active {
-        transform: scale(0.98);
-    }
-
-    /* Distraction-free: hide heavy marketing footer on mobile checkout */
-    body.checkout-page .sp-footer {
+    body.checkout-page .aod-footer {
         display: none !important;
     }
     #spFloatingCheckout {
@@ -705,29 +622,33 @@
 </style>
 
 <div class="sp-checkout-page">
-    <div class="sp-checkout-container">
-        
-        <!-- Header -->
-        <div class="sp-checkout-header">
-            <nav class="sp-checkout-breadcrumb" aria-label="Fil d'Ariane">
-                <a href="{{ route('home') }}"><i class="fas fa-home me-1"></i>Accueil</a>
-                <span class="sep">/</span>
-                <a href="{{ route('cart.index') }}">Panier</a>
-                <span class="sep">/</span>
-                <span class="current">Commande</span>
-            </nav>
-            <h1 class="sp-checkout-title">Finaliser ma Commande</h1>
-            <div class="sp-checkout-pill-bar">
-                <div class="sp-reassurance-pill">
-                    <span class="dot"></span>
-                    <span>Paiement en espèces à la livraison (COD)</span>
-                </div>
-                <div class="sp-reassurance-pill d-none d-sm-inline-flex">
-                    <i class="fas fa-shield-alt text-success"></i>
-                    <span>Commande 100% Sécurisée</span>
+    <!-- Soft Moroccan Zellige Checkout Header -->
+    <header class="aod-zellige-soft aod-checkout-hero">
+        <div class="sp-checkout-container" style="position: relative; z-index: 1;">
+            <div class="sp-checkout-header">
+                <nav class="sp-checkout-breadcrumb" aria-label="Fil d'Ariane">
+                    <a href="{{ route('home') }}">Accueil</a>
+                    <span class="sep">/</span>
+                    <a href="{{ route('cart.index') }}">Panier</a>
+                    <span class="sep">/</span>
+                    <span class="current">Commande</span>
+                </nav>
+                <h1 class="sp-checkout-title">Finaliser ma Commande</h1>
+                <div class="sp-checkout-pill-bar">
+                    <div class="sp-reassurance-pill">
+                        <span class="dot"></span>
+                        <span>Paiement en espèces à la livraison (COD)</span>
+                    </div>
+                    <div class="sp-reassurance-pill d-none d-sm-inline-flex">
+                        <i class="fas fa-truck" style="color: #2f8825;"></i>
+                        <span>Livraison rapide 24–48h partout au Maroc</span>
+                    </div>
                 </div>
             </div>
         </div>
+    </header>
+
+    <div class="sp-checkout-container">
 
         @if (isset($errors) && $errors->any())
         <div class="alert alert-danger rounded-4 mb-4 border-0 shadow-sm" style="background: #fff5f5; border-left: 4px solid #ef4444 !important; color: #991b1b;">
@@ -808,10 +729,10 @@
                             </div>
 
                             <!-- City (Text input with live proposed options + manual typing) -->
-                            <div class="col-md-6 sp-fg">
+                            <div class="col-12 sp-fg">
                                 <div class="d-flex justify-content-between align-items-center mb-1">
                                     <label class="sp-label mb-0" for="shipping_city">
-                                        <i class="fas fa-city" style="color: #c28d32;"></i>
+                                        <i class="fas fa-city"></i>
                                         <span>Ville <span class="text-danger">*</span></span>
                                     </label>
                                     <span id="spCityRateBadge" class="sp-city-badge">Livraison : {{ ($shippingFee ?? 35) }} DH</span>
@@ -825,8 +746,8 @@
                                            value="{{ old('shipping_city', auth()->user()->city ?? '') }}" 
                                            required 
                                            autocomplete="off">
-                                    <span class="position-absolute end-0 top-50 translate-middle-y me-3 text-muted" style="pointer-events: none; opacity: 0.6;">
-                                        <i class="fas fa-map-marker-alt" style="color: #c28d32;"></i>
+                                    <span class="position-absolute end-0 top-50 translate-middle-y me-3 text-muted" style="pointer-events: none; opacity: 0.7;">
+                                        <i class="fas fa-map-marker-alt" style="color: #2f8825;"></i>
                                     </span>
 
                                     <!-- Dropdown of Proposed Options -->
@@ -835,29 +756,15 @@
                                     </div>
                                 </div>
 
-                                <div class="form-text" style="font-size: 0.72rem; color: #6b7a72; margin-top: 5px;">
-                                    <i class="fas fa-info-circle me-1" style="color: #c28d32;"></i>Tapez votre ville pour voir le tarif de livraison ou saisissez librement (tarif standard : 35 DH).
+                                <div class="form-text" style="font-size: 0.74rem; color: #5f6f65; margin-top: 6px;">
+                                    <i class="fas fa-info-circle me-1" style="color: #2f8825;"></i>Casablanca : 20 DH • Autres villes du Maroc : 35 DH.
                                 </div>
-                            </div>
-
-                            <!-- State / Region -->
-                            <div class="col-md-6 sp-fg">
-                                <label class="sp-label" for="shipping_state">
-                                    <i class="fas fa-map-marked-alt" style="color: #c28d32;"></i>
-                                    <span>Région / Quartier <span class="opt">(Optionnel)</span></span>
-                                </label>
-                                <input type="text" 
-                                       id="shipping_state" 
-                                       name="shipping_state" 
-                                       class="sp-input @error('shipping_state') is-invalid @enderror" 
-                                       placeholder="Ex: Maârif, Guéliz, Agdal..." 
-                                       value="{{ old('shipping_state') }}">
                             </div>
 
                             <!-- Exact Address -->
                             <div class="col-12 sp-fg">
                                 <label class="sp-label" for="shipping_address">
-                                    <i class="fas fa-map-marker-alt" style="color: #c28d32;"></i>
+                                    <i class="fas fa-map-marker-alt"></i>
                                     <span>Adresse exacte de livraison <span class="text-danger">*</span></span>
                                 </label>
                                 <input type="text" 
@@ -892,9 +799,9 @@
                                     Vous ne payez <strong>aucun centime à l'avance</strong>. Le règlement se fait en espèces directement au livreur après réception de votre commande.
                                 </div>
                                 <div class="sp-payment-tags">
-                                    <span class="sp-payment-tag"><i class="fas fa-check-circle text-success"></i> Sans prépaiement</span>
-                                    <span class="sp-payment-tag"><i class="fas fa-box-open text-primary"></i> Colis vérifié</span>
-                                    <span class="sp-payment-tag"><i class="fas fa-shipping-fast" style="color: #c28d32;"></i> Livraison 24-48h</span>
+                                    <span class="sp-payment-tag"><i class="fas fa-check-circle" style="color: #2f8825;"></i> Sans prépaiement</span>
+                                    <span class="sp-payment-tag"><i class="fas fa-box-open" style="color: #2f8825;"></i> Colis vérifié</span>
+                                    <span class="sp-payment-tag"><i class="fas fa-shipping-fast" style="color: #2f8825;"></i> Livraison 24-48h</span>
                                 </div>
                             </div>
                         </div>
@@ -906,14 +813,14 @@
 
             <!-- Right Column: Order Summary -->
             <div class="col-lg-5 sp-checkout-col">
-                <div class="sp-summary-card sticky-top" style="top: 100px;">
+                <div class="sp-summary-card sticky-top" style="top: 96px;">
                     
                     <div class="sp-card-step-header" style="margin-bottom: 16px;">
-                        <span class="sp-step-badge" style="background: rgba(226,173,80,0.2); color: #0c261e; border-color: #c28d32;">
-                            <i class="fas fa-shopping-bag" style="font-size: 0.85rem; color: #c28d32;"></i>
+                        <span class="sp-step-badge" style="background: #edf6ed; color: #2f8825;">
+                            <i class="fas fa-shopping-bag" style="font-size: 0.85rem;"></i>
                         </span>
                         <h2 class="sp-step-title" style="font-size: 1.18rem;">Récapitulatif de commande</h2>
-                        <span class="sp-step-sub">{{ count($cart) }} soin{{ count($cart) > 1 ? 's' : '' }}</span>
+                        <span class="sp-step-sub">{{ count($cart) }} produit{{ count($cart) > 1 ? 's' : '' }}</span>
                     </div>
 
                     <!-- Items List -->
@@ -922,9 +829,9 @@
                         <div class="sp-order-item">
                             <div class="sp-item-img-wrap">
                                 @if(!empty($details['image']))
-                                    <img src="{{ Storage::url($details['image']) }}" alt="{{ $details['name'] }}" class="sp-item-img">
+                                    <img src="{{ product_image_url($details['image']) }}" alt="{{ $details['name'] }}" class="sp-item-img">
                                 @else
-                                    <div class="d-flex align-items-center justify-content-center h-100" style="color: #c28d32;">
+                                    <div class="d-flex align-items-center justify-content-center h-100" style="color: #2f8825;">
                                         <i class="fas fa-leaf"></i>
                                     </div>
                                 @endif
@@ -933,7 +840,7 @@
                             <div class="sp-item-info">
                                 <h3 class="sp-item-title" title="{{ $details['name'] }}">{{ $details['name'] }}</h3>
                                 <div class="sp-item-meta">
-                                    <span>{{ $details['category_name'] ?? 'Soin Botanique Bio' }}</span>
+                                    <span>{{ $details['category_name'] ?? 'Produit du Terroir' }}</span>
                                 </div>
                             </div>
                             <div class="sp-item-price">
@@ -951,7 +858,7 @@
                         </div>
                         <div class="sp-price-row">
                             <span>Frais de livraison</span>
-                            <span class="sp-price-val fw-bold" style="color: #0c261e;" id="spShippingFeeVal">{{ currency($shippingFee ?? 35) }}</span>
+                            <span class="sp-price-val fw-bold" style="color: #1e4d34;" id="spShippingFeeVal">{{ currency($shippingFee ?? 35) }}</span>
                         </div>
                     </div>
 
@@ -959,7 +866,6 @@
                     <div class="sp-total-row">
                         <div class="sp-total-label-wrap">
                             <span class="sp-total-main-label">Total à payer</span>
-                            <span class="sp-total-sub-label">TVA comprise • Paiement à la réception</span>
                         </div>
                         <div class="sp-total-main-val" id="spTotalVal">
                             {{ currency($total) }}
@@ -1028,9 +934,9 @@
     var baseSubtotal = {{ (float) ($subtotal ?? $total) }};
     var currentShippingFee = {{ (float) ($shippingFee ?? 35) }};
     var defaultShippingFee = 35;
-    var currencySymbol = @json(setting('currency_symbol', '$'));
-    var currencyPosition = @json(setting('currency_position', 'before'));
-    var currencyDecimals = @json(setting('currency_decimals', 2));
+    var currencySymbol = @json(setting('currency_symbol', 'DH'));
+    var currencyPosition = @json(setting('currency_position', 'after'));
+    var currencyDecimals = @json((int) setting('currency_decimals', 0));
 
     function formatMoney(amount) {
         var val = Number(amount).toFixed(currencyDecimals);
@@ -1111,8 +1017,12 @@
         if (!cityName || !cityName.trim()) {
             return defaultShippingFee;
         }
+        var clean = normalizeText(cityName);
+        if (clean === 'casablanca' || clean === 'casa' || clean === 'الدارالبيضاء' || clean === 'دارالبيضاء') {
+            return 20;
+        }
         var found = findMatchingCity(cityName);
-        return found ? found.price : defaultShippingFee; // 35 DH fallback for new/custom cities
+        return found ? found.price : defaultShippingFee; // 35 DH for all other cities
     }
 
     var cityInput = document.getElementById('shipping_city');

@@ -28,7 +28,7 @@ class CartController extends Controller
     public function addToCart(Request $request, $id)
     {
         try {
-            $product = Product::with(['images', 'primaryImage', 'productCategory'])->findOrFail($id);
+            $product = Product::with(['images', 'primaryImage', 'productCategory', 'variants'])->findOrFail($id);
             
             // Check if product is in stock
             if (!$product->isInStock()) {
@@ -40,13 +40,32 @@ class CartController extends Controller
                 }
                 return back()->with('error', 'This product is out of stock');
             }
-            
+
+            // Resolve variant (size & price)
+            $variant = null;
+            if ($request->filled('variant_id')) {
+                $variant = $product->variants->firstWhere('id', (int) $request->input('variant_id'));
+            }
+            if (!$variant && $product->variants->isNotEmpty()) {
+                $variant = $product->variants->firstWhere('is_default', true) ?? $product->variants->first();
+            }
+
+            $unitPrice = $variant ? (float) $variant->price : (float) $product->price;
+            $sizeLabel = $variant ? $variant->size : ($product->size ?: $product->volume);
+            $cartKey = $variant ? "{$product->id}_{$variant->id}" : (string) $product->id;
+            $displayName = $sizeLabel ? "{$product->name} ({$sizeLabel})" : $product->name;
+
             $cart = session()->get('cart', []);
-            $quantity = $request->integer('quantity', 1);
+            $quantity = max(1, $request->integer('quantity', 1));
             
-            // Check if requested quantity exceeds available stock
-            $currentQty = isset($cart[$id]) ? $cart[$id]['quantity'] : 0;
-            if (($currentQty + $quantity) > $product->stock) {
+            // Check if requested quantity across all sizes of this product exceeds available stock
+            $currentProductQty = 0;
+            foreach ($cart as $key => $item) {
+                if ((int) ($item['product_id'] ?? $key) === (int) $product->id) {
+                    $currentProductQty += (int) $item['quantity'];
+                }
+            }
+            if (($currentProductQty + $quantity) > $product->stock) {
                 if ($request->wantsJson()) {
                     return response()->json([
                         'success' => false,
@@ -56,14 +75,18 @@ class CartController extends Controller
                 return back()->with('error', "Only {$product->stock} items available in stock");
             }
 
-            if (isset($cart[$id])) {
-                $cart[$id]['quantity'] += $quantity;
+            if (isset($cart[$cartKey])) {
+                $cart[$cartKey]['quantity'] += $quantity;
             } else {
-                $cart[$id] = [
-                    'name' => $product->name,
+                $cart[$cartKey] = [
+                    'product_id' => $product->id,
+                    'variant_id' => $variant?->id,
+                    'size' => $sizeLabel,
+                    'name' => $displayName,
                     'quantity' => $quantity,
-                    'price' => $product->price,
-                    'image' => $product->main_image
+                    'price' => $unitPrice,
+                    'image' => $product->main_image,
+                    'category_name' => $product->category_name,
                 ];
             }
 

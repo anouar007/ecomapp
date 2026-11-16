@@ -15,13 +15,13 @@
     display: none;
     align-items: center;
     gap: 12px;
-    background: linear-gradient(135deg, #0c261e 0%, #174236 100%) !important;
+    background: linear-gradient(135deg, #1e4d34 0%, #2f8825 100%) !important;
     color: #ffffff !important;
     text-decoration: none !important;
     padding: 10px 22px 10px 14px;
     border-radius: 9999px;
-    border: 1.5px solid rgba(226, 173, 80, 0.5) !important;
-    box-shadow: 0 10px 28px rgba(12, 38, 30, 0.42), 0 2px 8px rgba(0, 0, 0, 0.18) !important;
+    border: 1.5px solid rgba(107, 191, 54, 0.55) !important;
+    box-shadow: 0 10px 28px rgba(30, 77, 52, 0.35), 0 2px 8px rgba(0, 0, 0, 0.14) !important;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
@@ -46,10 +46,10 @@
 }
 
 .sp-floating-checkout:hover {
-    background: linear-gradient(135deg, #0e2e25 0%, #1c5243 100%) !important;
-    border-color: #e2ad50 !important;
+    background: linear-gradient(135deg, #163b27 0%, #256f1c 100%) !important;
+    border-color: #6bbf36 !important;
     transform: translateX(-50%) translateY(-3px) scale(1.03) !important;
-    box-shadow: 0 14px 34px rgba(12, 38, 30, 0.5), 0 0 18px rgba(226, 173, 80, 0.3) !important;
+    box-shadow: 0 14px 34px rgba(30, 77, 52, 0.45) !important;
     color: #ffffff !important;
 }
 
@@ -62,9 +62,9 @@
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: rgba(226, 173, 80, 0.18);
-    border: 1px solid rgba(226, 173, 80, 0.4);
-    color: #e2ad50;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -74,7 +74,7 @@
 
 .sp-floating-checkout:hover .sp-fc-icon-box {
     transform: scale(1.08);
-    background: rgba(226, 173, 80, 0.28);
+    background: rgba(255, 255, 255, 0.24);
 }
 
 .sp-fc-badge {
@@ -85,14 +85,14 @@
     height: 18px;
     padding: 0 4px;
     border-radius: 9999px;
-    background: #e2ad50;
-    color: #0c261e;
+    background: #6bbf36;
+    color: #ffffff;
     font-size: 0.68rem;
     font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid #0c261e;
+    border: 2px solid #1e4d34;
     line-height: 1;
 }
 

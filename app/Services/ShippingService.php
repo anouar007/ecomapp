@@ -101,11 +101,16 @@ class ShippingService
             return self::DEFAULT_PRICE;
         }
 
+        $clean = self::normalize($cityName);
+        if (in_array($clean, ['casablanca', 'casa', 'الدارالبيضاء', 'دارالبيضاء'], true)) {
+            return 20.0;
+        }
+
         $found = self::findCity($cityName);
         if ($found && isset($found['price'])) {
             return (float) $found['price'];
         }
 
-        return self::DEFAULT_PRICE; // 35 DH for custom/new cities
+        return self::DEFAULT_PRICE; // 35 DH for all other cities
     }
 }

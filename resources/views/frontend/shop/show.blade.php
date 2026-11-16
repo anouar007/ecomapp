@@ -1,98 +1,41 @@
 @extends('layouts.frontend')
 
-@section('meta_title', $product->name . ' — ' . setting('app_name', 'Coopérative Aït Oumdis'))
-@section('meta_description', Str::limit(strip_tags($product->description), 155))
-@section('meta_keywords', $product->name . ', ' . ($product->category_name ?? '') . ', acheter ' . $product->name . ', ' . setting('app_name', 'boutique') . ', Maroc')
 @section('meta_type', 'product')
-@section('meta_image', $product->main_image ? asset('storage/' . $product->main_image) : asset('images/og-default.jpg'))
+@section('meta_image', $product->image_url)
 
 @section('json_ld')
 @php
-    $avgRating = $product->reviews()->avg('rating') ?? 0;
-    $reviewCount = $product->reviews()->count();
+    $seoLoc = \App\Services\SeoService::getLocale();
+    $homeLabel = match ($seoLoc) { 'ar' => 'الرئيسية', 'en' => 'Home', default => 'Accueil' };
+    $shopLabel = match ($seoLoc) { 'ar' => 'المتجر', 'en' => 'Shop', default => 'Boutique' };
+
+    $breadcrumbs = [
+        ['@type' => 'ListItem', 'position' => 1, 'name' => $homeLabel, 'item' => url('/')],
+        ['@type' => 'ListItem', 'position' => 2, 'name' => $shopLabel, 'item' => route('shop.index')],
+    ];
+    $pos = 3;
+    if ($product->category_name && optional($product->category)->slug) {
+        $breadcrumbs[] = [
+            '@type' => 'ListItem',
+            'position' => $pos++,
+            'name' => $product->category_name,
+            'item' => route('shop.index', ['category' => optional($product->category)->slug]),
+        ];
+    }
+    $breadcrumbs[] = [
+        '@type' => 'ListItem',
+        'position' => $pos,
+        'name' => $product->name,
+        'item' => \App\Services\SeoService::getCanonicalUrl(),
+    ];
+
+    $breadcrumbSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => $breadcrumbs,
+    ];
 @endphp
-<script type="application/ld+json">
-[
-  {
-    "@context": "https://schema.org/",
-    "@type": "Product",
-    "name": "{{ addslashes($product->name) }}",
-    "image": [
-      "{{ $product->main_image ? asset('storage/' . $product->main_image) : asset('images/og-default.jpg') }}"
-    ],
-    "description": "{{ addslashes(Str::limit(strip_tags($product->description), 155)) }}",
-    "sku": "{{ $product->sku ?? 'PROD-' . $product->id }}",
-    "mpn": "{{ $product->sku ?? 'PROD-' . $product->id }}",
-    @if($product->category_name)
-    "brand": {
-      "@type": "Brand",
-      "name": "{{ addslashes($product->category_name) }}"
-    },
-    @endif
-    "offers": {
-      "@type": "Offer",
-      "url": "{{ url()->current() }}",
-      "priceCurrency": "{{ setting('currency_code', 'MAD') }}",
-      "price": "{{ $product->isOnSale() ? $product->sale_price : $product->price }}",
-      "itemCondition": "https://schema.org/NewCondition",
-      "availability": "{{ $product->isInStock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
-      "seller": {
-        "@type": "Organization",
-        "name": "{{ addslashes(setting('app_name', 'Coopérative Aït Oumdis')) }}"
-      }
-    }
-    @if($reviewCount > 0)
-    ,
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "{{ number_format($avgRating, 1) }}",
-      "reviewCount": "{{ $reviewCount }}",
-      "bestRating": "5",
-      "worstRating": "1"
-    }
-    @endif
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Accueil",
-        "item": "{{ url('/') }}"
-      },
-      {
-        "@type": "ListItem",
-        "position": 2,
-        "name": "Boutique",
-        "item": "{{ route('shop.index') }}"
-      }
-      @if($product->category_name && optional($product->category)->slug)
-      ,{
-        "@type": "ListItem",
-        "position": 3,
-        "name": "{{ addslashes($product->category_name) }}",
-        "item": "{{ route('shop.index', ['category' => optional($product->category)->slug]) }}"
-      },
-      {
-        "@type": "ListItem",
-        "position": 4,
-        "name": "{{ addslashes($product->name) }}",
-        "item": "{{ url()->current() }}"
-      }
-      @else
-      ,{
-        "@type": "ListItem",
-        "position": 3,
-        "name": "{{ addslashes($product->name) }}",
-        "item": "{{ url()->current() }}"
-      }
-      @endif
-    ]
-  }
-]
-</script>
+<script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}</script>
 @endsection
 
 
@@ -137,21 +80,17 @@
                 <div class="col-lg-6 pdp-image-panel">
                     {{-- Main Image --}}
                     <div class="pdp-main-image-wrap" id="zoomWrap" onmousemove="pdpZoom(event)">
-                        @if($product->main_image)
-                            <img id="mainImage" src="{{ Storage::url($product->main_image) }}"
-                                 alt="{{ $product->name }}" class="pdp-main-image">
-                        @else
-                            <div class="pdp-no-image"><i class="fas fa-print"></i></div>
-                        @endif
+                        <img id="mainImage" src="{{ $product->image_url }}"
+                             alt="{{ $product->name }}" class="pdp-main-image">
 
                         {{-- Badges --}}
                         <div class="pdp-badges">
                             @if(!$product->isInStock())
                                 <span class="pdp-badge pdp-badge--oos">Rupture de stock</span>
-                            @elseif($product->created_at->diffInDays(now()) < 14)
-                                <span class="pdp-badge pdp-badge--new">Nouveau</span>
                             @elseif($product->isOnSale())
                                 <span class="pdp-badge pdp-badge--sale">−{{ $product->discount_percentage }}%</span>
+                            @else
+                                <span class="pdp-badge pdp-badge--new">100% Pur &amp; Naturel</span>
                             @endif
                         </div>
                     </div>
@@ -161,13 +100,13 @@
                     <div class="pdp-thumbs">
                         {{-- First thumb = main image --}}
                         <div class="pdp-thumb active"
-                             onclick="pdpChangeImage('{{ Storage::url($product->main_image) }}', this)">
-                            <img src="{{ Storage::url($product->main_image) }}" alt="Main">
+                             onclick="pdpChangeImage('{{ $product->image_url }}', this)">
+                            <img src="{{ $product->image_url }}" alt="Main">
                         </div>
                         @foreach($product->images as $img)
                         <div class="pdp-thumb"
-                             onclick="pdpChangeImage('{{ Storage::url($img->image_path) }}', this)">
-                            <img src="{{ Storage::url($img->image_path) }}" alt="Vue {{ $loop->iteration + 1 }}">
+                             onclick="pdpChangeImage('{{ product_image_url($img->image_path) }}', this)">
+                            <img src="{{ product_image_url($img->image_path) }}" alt="Vue {{ $loop->iteration + 1 }}">
                         </div>
                         @endforeach
                     </div>
@@ -197,14 +136,26 @@
                     </div>
                     @endif
 
-                    {{-- Price --}}
+                    @php
+                        $pdpVariants = $product->relationLoaded('variants') ? $product->variants : $product->variants()->get();
+                        $pdpDefaultVariant = $pdpVariants->firstWhere('is_default', true) ?? $pdpVariants->first();
+                        $pdpPrice = $pdpDefaultVariant ? currency($pdpDefaultVariant->price) : ($product->isOnSale() ? $product->formatted_sale_price : $product->formatted_price);
+                        $pdpSize = $pdpDefaultVariant ? $pdpDefaultVariant->size : ($product->size ?: $product->volume);
+                    @endphp
+
+                    {{-- Price & Weight --}}
                     <div class="pdp-price-row">
-                        @if($product->isOnSale())
-                            <span class="pdp-price-main">{{ $product->formatted_sale_price }}</span>
+                        @if(!$pdpDefaultVariant && $product->isOnSale())
+                            <span class="pdp-price-main" id="pdpPriceDisplay">{{ $pdpPrice }}</span>
                             <span class="pdp-price-old">{{ $product->formatted_price }}</span>
                             <span class="pdp-discount-badge">−{{ $product->discount_percentage }}%</span>
                         @else
-                            <span class="pdp-price-main">{{ $product->formatted_price }}</span>
+                            <span class="pdp-price-main" id="pdpPriceDisplay">{{ $pdpPrice }}</span>
+                        @endif
+                        @if($pdpSize)
+                            <span id="pdpSizeBadge" style="background: #edf6ed; color: #1e4d34; border: 1px solid #e3ede6; font-size: 0.82rem; font-weight: 800; padding: 4px 12px; border-radius: 9999px;">
+                                Format : {{ $pdpSize }}
+                            </span>
                         @endif
                         @if($product->isInStock())
                             <span class="pdp-stock-badge pdp-stock-badge--in">
@@ -217,10 +168,36 @@
                         @endif
                     </div>
 
-                    {{-- Description --}}
+                    @if($pdpVariants->count() > 0)
+                    <div class="mb-3">
+                        <div style="font-size: 0.78rem; font-weight: 800; color: #1e4d34; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
+                            Choisir le format :
+                        </div>
+                        <div class="aod-size-pills" style="margin-top: 0;">
+                            @foreach($pdpVariants as $v)
+                                <button type="button"
+                                        class="aod-size-pill {{ ($pdpDefaultVariant && $pdpDefaultVariant->id === $v->id) ? 'active' : '' }}"
+                                        style="padding: 8px 16px; font-size: 0.84rem;"
+                                        data-variant-id="{{ $v->id }}"
+                                        data-size="{{ $v->size }}"
+                                        data-formatted-price="{{ currency($v->price) }}"
+                                        onclick="selectPdpSize(this)">
+                                    {{ $v->size }} — {{ currency($v->price) }}
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+
+                    {{-- Short Summary + Anchor to Full Description --}}
                     @if($product->description)
                     <div class="pdp-description">
-                        {!! nl2br(e($product->description)) !!}
+                        {!! nl2br(e(Str::limit($product->description, 190))) !!}
+                        <div class="mt-2">
+                            <a href="#pdpFullDescription" style="color: #2f8825; font-weight: 700; font-size: 0.85rem; text-decoration: none;">
+                                Lire la description complète <i class="fas fa-arrow-down ms-1" style="font-size: 0.75rem;"></i>
+                            </a>
+                        </div>
                     </div>
                     @endif
 
@@ -231,6 +208,7 @@
                     <form id="addToCartForm" onsubmit="pdpAddToCart(event)">
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        <input type="hidden" name="variant_id" id="pdpVariantId" value="{{ $pdpDefaultVariant ? $pdpDefaultVariant->id : '' }}">
                         <div class="pdp-cart-row">
                             <div class="pdp-qty-wrap">
                                 <button type="button" class="pdp-qty-btn" onclick="pdpChangeQty(-1)">
@@ -252,12 +230,60 @@
 
                     {{-- Trust Pills --}}
                     <div class="pdp-trust-row">
-                        <div class="pdp-trust-pill"><i class="fas fa-truck"></i> Livraison rapide</div>
-                        <div class="pdp-trust-pill"><i class="fas fa-undo"></i> Retours 30j</div>
-                        <div class="pdp-trust-pill"><i class="fas fa-shield-alt"></i> Paiement sécurisé</div>
+                        <div class="pdp-trust-pill"><i class="fas fa-truck"></i> Livraison partout au Maroc</div>
+                        <div class="pdp-trust-pill"><i class="fas fa-hand-holding-usd"></i> Paiement à la livraison</div>
+                        <div class="pdp-trust-pill"><i class="fas fa-certificate"></i> 100% Pur &amp; Naturel</div>
                     </div>
                 </div>
 
+            </div>
+        </div>
+
+        {{-- =============================================
+             FULL PRODUCT DESCRIPTION & GUARANTEES SECTION
+             ============================================= --}}
+        <div id="pdpFullDescription" class="row g-4 mt-4" style="scroll-margin-top: 96px;">
+            <div class="col-lg-8">
+                <div class="pdp-section-card" style="background: #ffffff; border: 1px solid #e3ede6; border-radius: 18px; padding: 28px;">
+                    <h2 class="pdp-section-title" style="font-family: 'Playfair Display', Georgia, serif; color: #1e4d34; font-size: 1.4rem; margin-bottom: 16px;">
+                        <i class="fas fa-file-alt me-2" style="color: #2f8825;"></i>
+                        Description complète &amp; Bienfaits
+                    </h2>
+                    <div style="font-size: 0.95rem; line-height: 1.75; color: #2b302c;">
+                        @if($product->description)
+                            {!! nl2br(e($product->description)) !!}
+                        @else
+                            <p class="mb-0" style="color: #5f6f65;">Produit 100% pur et naturel préparé avec soin par la Coopérative Aït Oumdis.</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="pdp-section-card" style="background: #f8fbf9; border: 1px solid #e3ede6; border-radius: 18px; padding: 26px;">
+                    <h3 class="pdp-section-title" style="font-family: 'Playfair Display', Georgia, serif; color: #1e4d34; font-size: 1.15rem; margin-bottom: 14px;">
+                        <i class="fas fa-shield-alt me-2" style="color: #2f8825;"></i>
+                        Engagements Aït Oumdis
+                    </h3>
+                    <ul class="list-unstyled mb-0 d-flex flex-column gap-3" style="font-size: 0.88rem; color: #2b302c;">
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="fas fa-check-circle mt-1" style="color: #2f8825;"></i>
+                            <span><strong>100% Pur &amp; Naturel :</strong> Sans sucre ajouté, sans conservateurs ni additifs.</span>
+                        </li>
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="fas fa-check-circle mt-1" style="color: #2f8825;"></i>
+                            <span><strong>Origine Maroc :</strong> Récolté et conditionné par la Coopérative Aït Oumdis.</span>
+                        </li>
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="fas fa-check-circle mt-1" style="color: #2f8825;"></i>
+                            <span><strong>Livraison Rapide :</strong> 20 DH à Casablanca et 35 DH partout au Maroc (24–48h).</span>
+                        </li>
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="fas fa-check-circle mt-1" style="color: #2f8825;"></i>
+                            <span><strong>Paiement à la Réception :</strong> Réglez en espèces uniquement à l'arrivée du colis.</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -378,12 +404,8 @@
                     <div class="pcard">
                         <div class="pcard-img">
                             <a href="{{ route('shop.show', $related->id) }}">
-                                @if($related->main_image)
-                                    <img src="{{ Storage::url($related->main_image) }}"
-                                         alt="{{ $related->name }}" loading="lazy">
-                                @else
-                                    <div class="pcard-no-img"><i class="fas fa-print"></i></div>
-                                @endif
+                                <img src="{{ $related->image_url }}"
+                                     alt="{{ $related->name }}" loading="lazy">
                             </a>
                             {{-- Badges --}}
                             @if(!$related->isInStock())
@@ -459,17 +481,41 @@ function pdpChangeQty(delta) {
     inp.value = val;
 }
 
+// ── Size Selector ─────────────────────────────────
+function selectPdpSize(btn) {
+    document.querySelectorAll('.aod-size-pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+
+    const variantId = btn.getAttribute('data-variant-id') || '';
+    const size = btn.getAttribute('data-size') || '';
+    const formattedPrice = btn.getAttribute('data-formatted-price') || '';
+
+    const variantInp = document.getElementById('pdpVariantId');
+    if (variantInp) variantInp.value = variantId;
+
+    const priceEl = document.getElementById('pdpPriceDisplay');
+    if (priceEl && formattedPrice) priceEl.textContent = formattedPrice;
+
+    const sizeBadge = document.getElementById('pdpSizeBadge');
+    if (sizeBadge && size) sizeBadge.textContent = 'Format : ' + size;
+}
+
 // ── Add to Cart ───────────────────────────────────
 function pdpAddToCart(event) {
     event.preventDefault();
     const btn      = document.getElementById('addToCartBtn');
     const btnText  = document.getElementById('addToCartText');
     const quantity = document.getElementById('pdpQty').value;
+    const variantInp = document.getElementById('pdpVariantId');
+    const variantId = variantInp ? variantInp.value : null;
     const productId = {{ $product->id }};
 
     btn.disabled = true;
     const orig = btnText.innerHTML;
     btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ajout…';
+
+    const payload = { quantity: parseInt(quantity) };
+    if (variantId) payload.variant_id = parseInt(variantId);
 
     fetch(`/cart/add/${productId}`, {
         method: 'POST',
@@ -478,7 +524,7 @@ function pdpAddToCart(event) {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
             'Accept': 'application/json'
         },
-        body: JSON.stringify({ quantity: parseInt(quantity) })
+        body: JSON.stringify(payload)
     })
     .then(r => r.json())
     .then(data => {
@@ -496,7 +542,7 @@ function pdpAddToCart(event) {
             }
             if (typeof refreshMiniCart === 'function') refreshMiniCart(false);
             Swal.fire({ toast:true, position:'top-end', icon:'success',
-                title:'Soin ajouté au panier !',
+                title:'Produit ajouté au panier !',
                 text:'{{ addslashes($product->name) }}',
                 showConfirmButton:false, timer:2500,
                 background:'#0c261e', color:'#fff' });

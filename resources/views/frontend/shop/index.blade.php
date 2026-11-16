@@ -1,16 +1,74 @@
 @extends('layouts.frontend')
 
 @php
+    $seoLoc = \App\Services\SeoService::getLocale();
     $activeCategory = $categories->where('slug', request('category'))->first();
-    $pageTitle = $activeCategory
-        ? ($activeCategory->name . ' — ' . setting('app_name', 'Coopérative Aït Oumdis'))
-        : (request('q') ? 'Résultats pour "' . request('q') . '" — ' . setting('app_name') : 'Boutique — ' . setting('app_name', 'Coopérative Aït Oumdis'));
-        $pageDescription = $activeCategory
-        ? ('Découvrez notre gamme de ' . $activeCategory->name . '. Cosmétiques 100% naturels et bio du Haut Atlas, livrés partout au Maroc. ' . $activeCategory->products_count . ' soins disponibles.')
-        : "Découvrez notre collection de soins botaniques 100% bio du Haut Atlas : soins capillaires anti-chute au romarin, protection solaire minérale SPF 50+ et rituels artisanaux d'Aït Oumdis. Livraison partout au Maroc.";
-    $pageKeywords = $activeCategory
-        ? ($activeCategory->name . ', ' . setting('app_name', 'boutique') . ', acheter ' . $activeCategory->name . ' Maroc, prix ' . $activeCategory->name)
-        : setting('app_name', 'Coopérative Aït Oumdis') . ', cosmétiques naturels maroc, huiles végétales bio, soins du terroir, argan pur, Haut Atlas Azilal';
+    $searchTerm = request('q') ?: request('search');
+
+    $brandName = match ($seoLoc) {
+        'ar' => 'تعاونية آيت أومديس',
+        'en' => 'Aït Oumdis Cooperative',
+        default => setting('app_name', 'Coopérative Aït Oumdis'),
+    };
+
+    if ($activeCategory) {
+        $pageTitle = $activeCategory->name . ' — ' . $brandName;
+        $pageDescription = match ($seoLoc) {
+            'ar' => "اكتشف تشكيلة {$activeCategory->name} الطبيعية 100% من {$brandName}. عسل حر وأملو وزعفران أصيل مع التوصيل لجميع مدن المغرب ({$activeCategory->products_count} منتجات متوفرة).",
+            'en' => "Explore our {$activeCategory->name} collection from {$brandName}. 100% pure natural Moroccan honey, artisanal Amlou & terroir products ({$activeCategory->products_count} products available).",
+            default => "Découvrez notre sélection de {$activeCategory->name}. Miels purs, Amlou artisanal et produits 100% naturels de la {$brandName}, livrés partout au Maroc ({$activeCategory->products_count} produits disponibles).",
+        };
+        $pageKeywords = $activeCategory->name . ', ' . \App\Services\SeoService::getKeywords('shop.index');
+    } elseif ($searchTerm) {
+        $pageTitle = match ($seoLoc) {
+            'ar' => "نتائج البحث عن \"{$searchTerm}\" — {$brandName}",
+            'en' => "Search results for \"{$searchTerm}\" — {$brandName}",
+            default => "Résultats pour \"{$searchTerm}\" — {$brandName}",
+        };
+        $pageDescription = \App\Services\SeoService::getDescription('shop.index');
+        $pageKeywords = $searchTerm . ', ' . \App\Services\SeoService::getKeywords('shop.index');
+    } else {
+        $pageTitle = \App\Services\SeoService::getTitle('shop.index');
+        $pageDescription = \App\Services\SeoService::getDescription('shop.index');
+        $pageKeywords = \App\Services\SeoService::getKeywords('shop.index');
+    }
+
+    $homeLabel = match ($seoLoc) { 'ar' => 'الرئيسية', 'en' => 'Home', default => 'Accueil' };
+    $shopLabel = match ($seoLoc) { 'ar' => 'المتجر', 'en' => 'Shop', default => 'Boutique' };
+
+    $breadcrumbItems = [
+        ['@type' => 'ListItem', 'position' => 1, 'name' => $homeLabel, 'item' => url('/')],
+        ['@type' => 'ListItem', 'position' => 2, 'name' => $shopLabel, 'item' => route('shop.index')],
+    ];
+    if ($activeCategory) {
+        $breadcrumbItems[] = [
+            '@type' => 'ListItem',
+            'position' => 3,
+            'name' => $activeCategory->name,
+            'item' => route('shop.index', ['category' => $activeCategory->slug]),
+        ];
+    }
+
+    $shopLdGraph = [
+        [
+            '@context' => 'https://schema.org',
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => $breadcrumbItems,
+        ],
+        [
+            '@context' => 'https://schema.org',
+            '@type' => 'ItemList',
+            'name' => $pageTitle,
+            'url' => \App\Services\SeoService::getCanonicalUrl(),
+            'numberOfItems' => $products->total(),
+            'itemListElement' => $products->values()->map(fn ($prod, $i) => [
+                '@type' => 'ListItem',
+                'position' => $i + 1,
+                'url' => route('shop.show', $prod->id),
+                'name' => $prod->name,
+            ])->all(),
+        ],
+    ];
 @endphp
 
 @section('meta_title', $pageTitle)
@@ -18,65 +76,55 @@
 @section('meta_keywords', $pageKeywords)
 
 @section('json_ld')
-<script type="application/ld+json">
-[
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Accueil",
-        "item": "{{ url('/') }}"
-      },
-      {
-        "@type": "ListItem",
-        "position": 2,
-        "name": "Boutique",
-        "item": "{{ route('shop.index') }}"
-      }
-      @if($activeCategory)
-      ,{
-        "@type": "ListItem",
-        "position": 3,
-        "name": "{{ addslashes($activeCategory->name) }}",
-        "item": "{{ route('shop.index', ['category' => $activeCategory->slug]) }}"
-      }
-      @endif
-    ]
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    "name": "{{ addslashes($pageTitle) }}",
-    "url": "{{ url()->current() }}",
-    "numberOfItems": {{ $products->total() }},
-    "itemListElement": [
-      @foreach($products as $i => $prod)
-      {
-        "@type": "ListItem",
-        "position": {{ $i + 1 }},
-        "url": "{{ route('shop.show', $prod->id) }}",
-        "name": "{{ addslashes($prod->name) }}"
-      }{{ !$loop->last ? ',' : '' }}
-      @endforeach
-    ]
-  }
-]
-</script>
+<script type="application/ld+json">{!! json_encode($shopLdGraph, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}</script>
 @endsection
 
 @section('content')
 
 {{-- =============================================
+     CLEAN MOROCCAN ZELLIGE SHOP HEADER
+     ============================================= --}}
+  <header class="aod-zellige-soft" style="padding: 44px 0 36px; border-bottom: 1px solid #e3ede6;">
+    <div class="aod-container" style="position: relative; z-index: 1;">
+      <nav aria-label="Fil d'Ariane" style="margin-bottom: 10px; display: flex; align-items: center; gap: 8px; font-size: 0.84rem;">
+        <a href="{{ route('home') }}" style="color: #5f6f65; text-decoration: none; font-weight: 600;">Accueil</a>
+        <span style="color: #2f8825;">/</span>
+        <span style="color: #2f8825; font-weight: 700;">Nos Produits</span>
+        @if(request('category'))
+          <span style="color: #2f8825;">/</span>
+          <span style="color: #1e4d34; font-weight: 700;">{{ $categories->where('slug', request('category'))->first()->name ?? 'Catégorie' }}</span>
+        @endif
+      </nav>
+
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px;">
+        <div style="max-width: 680px;">
+          <h1 style="font-family: 'Playfair Display', Georgia, serif; font-size: clamp(1.9rem, 3vw, 2.4rem); font-weight: 700; color: #2b302c; margin: 0 0 8px 0;">
+            @if(request('q'))
+                Résultats pour « {{ request('q') }} »
+            @elseif(request('category'))
+                {{ $categories->where('slug', request('category'))->first()->name ?? 'Nos Produits' }}
+            @else
+                Catalogue Coopérative Aït Oumdis
+            @endif
+          </h1>
+          <p style="font-size: 0.95rem; line-height: 1.6; color: #5f6f65; margin: 0;">
+            Miels 100% purs du Maroc, Amlou traditionnel aux amandes et à l'huile d'Argan, et Safran véritable.
+          </p>
+        </div>
+
+        <div style="background: #2f8825; padding: 8px 18px; border-radius: 9999px; color: #ffffff; font-size: 0.86rem; font-weight: 700;">
+          <span>{{ $products->total() ?? $products->count() }} {{ ($products->total() ?? $products->count()) > 1 ? 'produits disponibles' : 'produit disponible' }}</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+{{-- =============================================
      MAIN SHOP LAYOUT
      ============================================= --}}
-<section class="shop-body" style="background-color: #faf7f2; background-image: url('{{ asset('assets/images/botanical_pattern_bg.jpg') }}'); background-size: 850px auto; background-repeat: repeat; background-position: center top; padding: 50px 0 100px;">
-    <div class="container">
+<section class="shop-body" style="background-color: #ffffff; padding: 48px 0 90px;">
+    <div class="aod-container">
         <div class="row g-5">
-
-            
 
             {{-- ── MOBILE FLOATING FILTER BUTTON (FAB) ── --}}
             <button class="btn btn-primary btn-fab d-lg-none shadow-lg d-flex align-items-center justify-content-center" 
@@ -84,16 +132,12 @@
                 <i class="fas fa-sliders-h fs-4"></i>
             </button>
 
-
-
             {{-- ── SIDEBAR (Desktop) / OFFCANVAS (Mobile) ── --}}
             <div class="col-lg-3 d-none d-lg-block">
                 <div class="shop-sidebar sticky-top" style="top: 100px;">
                     @include('frontend.shop.partials.sidebar-content')
                 </div>
             </div>
-
-
 
             {{-- ── PRODUCT GRID ── --}}
             <div class="col-lg-9">
@@ -145,15 +189,13 @@
 }
 </style>
 
-                
-
                 <div class="shop-toolbar mb-4 d-none d-lg-flex">
                     <div class="shop-toolbar-left">
                         <span class="shop-toolbar-title" id="categoryTitle">
                             @if(request('category'))
                                 {{ $categories->where('slug', request('category'))->first()->name ?? 'Produits' }}
                             @else
-                                Tous nos soins botaniques
+                                Tous nos produits du terroir
                             @endif
                         </span>
                         <span class="shop-toolbar-count">{{ $products->total() }} produit{{ $products->total() != 1 ? 's' : '' }}</span>
@@ -201,89 +243,6 @@
         </div>
     </div>
 </section>
-
-{{-- =============================================
-     SHOP HERO STRIP (dark, matching home page)
-     ============================================= --}}
-  <header class="sp-boutique-hero" style="background-image: linear-gradient(90deg, rgba(8, 26, 19, 0.94) 0%, rgba(8, 26, 19, 0.80) 45%, rgba(8, 26, 19, 0.35) 82%, rgba(8, 26, 19, 0.65) 100%), url('{{ asset('assets/images/shop-hero.jpg') }}'); background-size: cover; background-position: center right; background-repeat: no-repeat; padding: 130px 0 35px 0; color: #ffffff; position: relative;">
-    <div class="sp-boutique-hero-inner" style="max-width: 1280px; margin: 0 auto; padding: 0 24px;">
-      <nav class="sp-breadcrumb" aria-label="Fil d'Ariane" style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px; font-size: 0.84rem;">
-        <a href="{{ route('home') }}" style="color: rgba(255,255,255,0.65); text-decoration: none;">Accueil</a>
-        <span class="sep" style="color: rgba(226,173,80,0.5);">/</span>
-        <span class="current" style="color: #e2ad50; font-weight: 600;">Boutique</span>
-        @if(request('category'))
-          <span class="sep" style="color: rgba(226,173,80,0.5);">/</span>
-          <span class="current" style="color: #ffffff; font-weight: 600;">{{ $categories->where('slug', request('category'))->first()->name ?? 'Catégorie' }}</span>
-        @endif
-      </nav>
-
-      <div class="sp-boutique-header-row" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; margin-bottom: 30px;">
-        <div class="sp-boutique-title-group" style="max-width: 680px;">
-          <h1 style="font-family: 'Playfair Display', Georgia, serif; font-size: clamp(2rem, 3.2vw, 2.7rem); font-weight: 600; color: #ffffff; margin: 0 0 10px 0;">
-            @if(request('q'))
-                Résultats pour « {{ request('q') }} »
-            @elseif(request('category'))
-                {{ $categories->where('slug', request('category'))->first()->name ?? 'Nos Soins' }}
-            @else
-                La Boutique Botanique
-            @endif
-          </h1>
-          <p class="sp-boutique-subtitle" style="font-size: 0.95rem; line-height: 1.6; color: rgba(255,255,255,0.8); margin: 0;">
-            Soins d'altitude formulés à 100% d'actifs purs du Haut Atlas marocain. Récoltés et distillés artisanalement par les femmes de la Coopérative Aït Oumdis.
-          </p>
-        </div>
-
-        <div class="sp-shop-count" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(8px); padding: 8px 18px; border-radius: 9999px; border: 1px solid rgba(226,173,80,0.35); color: #ffffff; font-size: 0.88rem;">
-          <span><strong>{{ $products->total() ?? $products->count() }}</strong> {{ ($products->total() ?? $products->count()) > 1 ? 'soins disponibles' : 'soin disponible' }}</span>
-        </div>
-      </div>
-
-      <div class="sp-boutique-trust-strip" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; padding: 18px 22px; background: #ffffff; border-radius: 18px; border: 1px solid rgba(12,38,30,0.08); box-shadow: 0 10px 30px rgba(12, 38, 30, 0.08); margin-top: 24px;">
-        <div class="sp-trust-strip-item" style="display: flex; align-items: center; gap: 12px;">
-          <div class="sp-trust-strip-icon" style="width: 40px; height: 40px; border-radius: 12px; background: rgba(226,173,80,0.14); color: #c28d32; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-          </div>
-          <div>
-            <div style="font-size: 0.86rem; font-weight: 700; color: #0c261e; line-height: 1.25;">Livraison Express</div>
-            <div style="font-size: 0.74rem; color: #6b7a72; margin-top: 2px;">24 à 48h partout au Maroc</div>
-          </div>
-        </div>
-
-        <div class="sp-trust-strip-item" style="display: flex; align-items: center; gap: 12px;">
-          <div class="sp-trust-strip-icon" style="width: 40px; height: 40px; border-radius: 12px; background: rgba(226,173,80,0.14); color: #c28d32; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-          </div>
-          <div>
-            <div style="font-size: 0.86rem; font-weight: 700; color: #0c261e; line-height: 1.25;">Paiement à la Livraison</div>
-            <div style="font-size: 0.74rem; color: #6b7a72; margin-top: 2px;">Réglez en espèces à réception</div>
-          </div>
-        </div>
-
-        <div class="sp-trust-strip-item" style="display: flex; align-items: center; gap: 12px;">
-          <div class="sp-trust-strip-icon" style="width: 40px; height: 40px; border-radius: 12px; background: rgba(226,173,80,0.14); color: #c28d32; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          </div>
-          <div>
-            <div style="font-size: 0.86rem; font-weight: 700; color: #0c261e; line-height: 1.25;">100% Bio & Terroir</div>
-            <div style="font-size: 0.74rem; color: #6b7a72; margin-top: 2px;">Actifs purs du Haut Atlas</div>
-          </div>
-        </div>
-
-        <div class="sp-trust-strip-item" style="display: flex; align-items: center; gap: 12px;">
-          <div class="sp-trust-strip-icon" style="width: 40px; height: 40px; border-radius: 12px; background: rgba(226,173,80,0.14); color: #c28d32; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-          </div>
-          <div>
-            <div style="font-size: 0.86rem; font-weight: 700; color: #0c261e; line-height: 1.25;">Artisanat Solidaire</div>
-            <div style="font-size: 0.74rem; color: #6b7a72; margin-top: 2px;">Coopérative Aït Oumdis</div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </header>
-
-
 
 {{-- ── OFFCANVAS COMPONENTS (Moved outside main containers) ── --}}
 <div class="offcanvas offcanvas-bottom border-0 shadow-lg d-lg-none" tabindex="-1" id="shopFiltersBottom" style="height: 85vh; border-radius: 24px 24px 0 0; background: #faf9f5;">
@@ -394,7 +353,7 @@ document.querySelectorAll('.category-filter').forEach(link => {
             el.classList.toggle('active', isMatch);
         });
         const titleSpan = this.querySelector('span');
-        const titleText = (titleSpan && titleSpan.innerText && slug) ? titleSpan.innerText : 'Tous nos soins botaniques';
+        const titleText = (titleSpan && titleSpan.innerText && slug) ? titleSpan.innerText : 'Tous nos produits du terroir';
         const catTitle = document.getElementById('categoryTitle');
         if (catTitle) catTitle.innerText = titleText;
         fetchProducts();

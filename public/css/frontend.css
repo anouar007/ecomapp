@@ -1736,11 +1736,8 @@ a { text-decoration: none; }
 /* ── Body ── */
 .shop-body {
     padding: 56px 0 100px;
-    background-color: #faf7f2;
-    background-image: url('../assets/images/botanical_pattern_bg.jpg');
-    background-size: 850px auto;
-    background-repeat: repeat;
-    background-position: center top;
+    background-color: #ffffff;
+    background-image: none;
 }
 
 /* ── Sidebar ── */
@@ -2008,11 +2005,8 @@ a { text-decoration: none; }
 
 /* ── Body ── */
 .pdp-body {
-    background-color: #faf7f2;
-    background-image: url('../assets/images/botanical_pattern_bg.jpg');
-    background-size: 850px auto;
-    background-repeat: repeat;
-    background-position: center top;
+    background-color: #ffffff;
+    background-image: none;
     padding: 40px 0 80px;
 }
 

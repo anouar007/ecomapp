@@ -47,9 +47,9 @@ class SeoService
 
         if (str_starts_with($route, 'shop.')) {
             return match ($locale) {
-                'ar' => "متجر مستحضرات التجميل الطبيعية والعضوية | تعاونية آيت أومديس المغرب",
-                'en' => "Handcrafted Organic Moroccan Cosmetics Shop | Aït Oumdis Cooperative",
-                default => "Boutique Cosmétiques Bio & Naturels du Haut Atlas | Coopérative Aït Oumdis",
+                'ar' => "متجر العسل الحر وأملو والمنتجات الطبيعية | تعاونية آيت أومديس المغرب",
+                'en' => "Pure Moroccan Honey, Artisanal Amlou & Saffron Shop | Aït Oumdis Cooperative",
+                default => "Boutique Miels Purs, Amlou & Produits du Terroir | Coopérative Aït Oumdis",
             };
         }
 
@@ -71,10 +71,32 @@ class SeoService
 
         // Default: Home Page
         return match ($locale) {
-            'ar' => "تعاونية آيت أومديس | مستحضرات تجميل وزيوت طبيعية وعضوية من الأطلس الكبير",
-            'en' => "Aït Oumdis Cooperative | Pure Organic Moroccan Cosmetics & Natural Oils",
-            default => "Coopérative Aït Oumdis | Cosmétiques Naturels & Bio du Haut Atlas Maroc",
+            'ar' => "تعاونية آيت أومديس | العسل الحر، أملو باللوز وأركان والزعفران الحر بالمغرب",
+            'en' => "Aït Oumdis Cooperative | Pure Moroccan Honey, Almond & Argan Amlou & Saffron",
+            default => "Coopérative Aït Oumdis | Miels Purs, Amlou Artisanal & Produits Naturels du Maroc",
         };
+    }
+
+    /**
+     * Get canonical URL for the current request, stripping tracking params
+     * while preserving meaningful query params (like category, page, lang).
+     */
+    public static function getCanonicalUrl(): string
+    {
+        $baseUrl = url()->current();
+        $allowedParams = array_filter(
+            request()->only(['category', 'search', 'page', 'lang']),
+            fn ($value) => $value !== null && $value !== ''
+        );
+
+        // Normalize default 'fr' when no explicit lang param was requested
+        if (isset($allowedParams['lang']) && !in_array($allowedParams['lang'], self::LOCALES, true)) {
+            unset($allowedParams['lang']);
+        }
+
+        return empty($allowedParams)
+            ? $baseUrl
+            : $baseUrl . '?' . http_build_query($allowedParams);
     }
 
     /**
@@ -85,14 +107,16 @@ class SeoService
         $locale = self::getLocale();
 
         if ($model instanceof Product) {
-            $desc = strip_tags($model->description ?? '');
-            if (!empty($desc)) {
-                return mb_substr($desc, 0, 160);
+            $rawDesc = trim(preg_replace('/\s+/', ' ', strip_tags($model->description ?? '')));
+            if (!empty($rawDesc)) {
+                return mb_strlen($rawDesc) > 160
+                    ? mb_substr($rawDesc, 0, 157) . '...'
+                    : $rawDesc;
             }
             return match ($locale) {
-                'ar' => "تسوق {$model->name} الأصلي من تعاونية آيت أومديس. منتج طبيعي 100% معصور على البارد، مستخلص من خيرات الأطلس المغربي. الدفع عند الاستلام.",
-                'en' => "Buy authentic {$model->name} handcrafted by Aït Oumdis Cooperative. 100% pure organic Moroccan botanical care. Fast shipping & Cash on Delivery.",
-                default => "Achetez {$model->name} pur et bio de la Coopérative Aït Oumdis. Soin cosmétique d'exception issu du Haut Atlas marocain. Livraison rapide partout au Maroc.",
+                'ar' => "تسوق {$model->name} الأصلي من تعاونية آيت أومديس. منتج طبيعي وحر 100% من خيرات المغرب. الدفع عند الاستلام.",
+                'en' => "Buy authentic {$model->name} from Aït Oumdis Cooperative. 100% pure natural Moroccan honey and terroir products. Fast shipping & Cash on Delivery.",
+                default => "Achetez {$model->name} 100% pur et naturel de la Coopérative Aït Oumdis. Produit authentique du terroir marocain. Livraison rapide partout au Maroc.",
             };
         }
 
@@ -100,9 +124,17 @@ class SeoService
 
         if (str_starts_with($route, 'shop.')) {
             return match ($locale) {
-                'ar' => "اكتشف تشكيلة مستحضرات التجميل المغربية الطبيعية والعضوية من تعاونية آيت أومديس: زيت الأركان، التين الشوكي، ماء الورد البلدي، وصابون بلدي فاخر.",
-                'en' => "Discover our pure Moroccan organic cosmetics: Certified Argan oil, Prickly pear seed oil, Moroccan black soap, and pure damask rose water.",
-                default => "Découvrez notre collection de cosmétiques bio marocains de la Coopérative Aït Oumdis : Huile d'argan certifiée, huile de pépins de figue de barbarie et soins traditionnels.",
+                'ar' => "اكتشف تشكيلة العسل الحر المغربي (الزعتر، الدغموس، السدر، الفرنان، الخروب، البرتقال، الكاليبتوس)، أملو باللوز وأركان، والزعفران الحر من تعاونية آيت أومديس.",
+                'en' => "Discover our pure Moroccan honeys (Thyme, Daghmous, Sidr, Carob, Orange Blossom, Eucalyptus), traditional Almond & Argan Amlou, and pure Saffron.",
+                default => "Découvrez nos miels 100% purs du Maroc (Thym, Daghmous, Sidr, Fernan, Caroubier, Oranger, Eucalyptus), notre Amlou aux amandes et huile d'Argan, et notre Safran véritable.",
+            };
+        }
+
+        if (str_starts_with($route, 'cart.')) {
+            return match ($locale) {
+                'ar' => "راجع سلة مشترياتك من العسل الحر وأملو والزعفران من تعاونية آيت أومديس. توصيل سريع 20 درهم للدار البيضاء و35 درهم لباقي المدن.",
+                'en' => "Review your Aït Oumdis Cooperative shopping cart. Fast delivery across Morocco: 20 DH in Casablanca, 35 DH in other cities. Cash on delivery.",
+                default => "Consultez votre panier Coopérative Aït Oumdis. Livraison rapide : 20 DH à Casablanca et 35 DH dans les autres villes du Maroc. Paiement à la livraison.",
             };
         }
 
@@ -116,9 +148,9 @@ class SeoService
 
         // Home
         return match ($locale) {
-            'ar' => "المتجر الإلكتروني الرسمي لتعاونية آيت أومديس في المغرب. مستحضرات تجميل نباتية وعضوية 100% مستخلصة يدوياً من جبال الأطلس: زيت الأركان، التين الشوكي، ماء الورد وأعشاب برية. شحن لجميع المدن.",
-            'en' => "Official store of Aït Oumdis Cooperative. 100% pure handcrafted Moroccan organic cosmetics from the High Atlas: Organic Argan oil, Prickly pear seed oil, Rose water & natural skincare.",
-            default => "Boutique officielle de la Coopérative Aït Oumdis. Cosmétiques 100% bio et naturels du Haut Atlas marocain : Huile d'Argan pure certifiée, Huile de pépins de figue de barbarie, Eau de rose & soins artisanaux.",
+            'ar' => "المتجر الرسمي لتعاونية آيت أومديس في المغرب. عسل حر طبيعي 100% (الزعتر، الدغموس، السدر، الفرنان، الخروب، البرتقال)، أملو باللوز وزيت أركان، وزعفران حر أصيل. توصيل لجميع المدن.",
+            'en' => "Official store of Aït Oumdis Cooperative. 100% pure Moroccan honeys (Thyme, Daghmous, Sidr, Orange Blossom), Almond & Argan Amlou, and pure Saffron.",
+            default => "Boutique officielle de la Coopérative Aït Oumdis. Miels 100% purs et naturels du Maroc (Thym, Daghmous, Sidr, Oranger, Caroubier, Eucalyptus), Amlou artisanal aux amandes et Argan, et Safran pur.",
         };
     }
 
@@ -128,11 +160,12 @@ class SeoService
     public static function getKeywords(?string $page = null, $model = null): string
     {
         $locale = self::getLocale();
+        $productPrefix = ($model instanceof Product) ? $model->name . ', ' : '';
 
-        return match ($locale) {
-            'ar' => "تعاونية آيت أومديس, زيت أركان أصلي, زيت بذور التين الشوكي, ماء الورد المغربي, مستحضرات تجميل طبيعية المغرب, صابون بلدي, زيوت عضوية, الأطلس الكبير, شراء مستحضرات تجميل المغرب",
-            'en' => "ait oumdis cooperative, moroccan argan oil, prickly pear seed oil, pure moroccan rose water, organic cosmetics morocco, handcrafted high atlas skincare, natural beauty morocco",
-            default => "coopérative aït oumdis, cosmétiques bio maroc, huile d argan pure bio, figue de barbarie maroc, eau de rose marocaine, produits naturels haut atlas, soins bio maroc, coopérative féminine maroc",
+        return $productPrefix . match ($locale) {
+            'ar' => "تعاونية آيت أومديس, عسل الزعتر, عسل الدغموس, عسل السدر, عسل الفرنان, عسل الخروب, عسل البرتقال, أملو باللوز وأركان, الزعفران الحر, عسل حر المغرب",
+            'en' => "ait oumdis cooperative, moroccan pure honey, thyme honey morocco, daghmous honey, sidr honey, almond argan amlou, pure moroccan saffron, organic honey morocco",
+            default => "coopérative aït oumdis, miel pur maroc, miel de thym, miel de daghmous, miel de sidr, miel d'oranger, amlou amandes argan, safran pur maroc, produits du terroir",
         };
     }
 
@@ -183,11 +216,11 @@ class SeoService
 
         $title = self::getTitle($page, $model);
         $description = self::getDescription($page, $model);
-        $url = request()->fullUrl();
+        $url = self::getCanonicalUrl();
 
         $image = ($model instanceof Product && $model->main_image)
-            ? asset('storage/' . $model->main_image)
-            : (Setting::get('app_logo') ? asset('storage/' . Setting::get('app_logo')) : asset('assets/images/home-hero.jpg'));
+            ? $model->image_url
+            : (Setting::get('app_logo') ? app_logo_url() : asset('assets/images/hero-miel-amlou.jpg'));
 
         return [
             'title' => $title,
@@ -198,6 +231,7 @@ class SeoService
             'alternate_locales' => $alternateLocales,
             'site_name' => match ($locale) {
                 'ar' => 'تعاونية آيت أومديس',
+                'en' => 'Aït Oumdis Cooperative',
                 default => Setting::get('app_name', 'Coopérative Aït Oumdis'),
             },
         ];
@@ -210,7 +244,14 @@ class SeoService
     {
         $locale = self::getLocale();
         $baseUrl = url('/');
-        $logoUrl = Setting::get('app_logo') ? asset('storage/' . Setting::get('app_logo')) : asset('assets/images/emblem-gold.png');
+        $logoUrl = app_logo_url('assets/images/logo.png');
+        $route = $page ?? \Route::currentRouteName() ?? '';
+
+        $orgDescription = match ($locale) {
+            'ar' => 'تعاونية آيت أومديس المغربية متخصصة في إنتاج وتسويق العسل الحر الطبيعي 100%، أملو التقليدي باللوز وزيت أركان، والزعفران الحر.',
+            'en' => 'Moroccan cooperative specializing in 100% pure natural honeys, artisanal Almond & Argan Amlou, pure Saffron, and authentic terroir products.',
+            default => 'Coopérative marocaine spécialisée dans les miels 100% purs, l\'Amlou artisanal aux amandes et huile d\'Argan, le Safran pur et les produits naturels du terroir.',
+        };
 
         $graph = [];
 
@@ -228,7 +269,7 @@ class SeoService
                 'caption' => 'Coopérative Aït Oumdis Logo',
             ],
             'image' => $logoUrl,
-            'description' => 'Coopérative artisanale marocaine spécialisée dans les cosmétiques bio et produits du terroir du Haut Atlas.',
+            'description' => $orgDescription,
             'address' => [
                 '@type' => 'PostalAddress',
                 'addressLocality' => 'Aït Oumdis',
@@ -238,7 +279,7 @@ class SeoService
             'priceRange' => '$$',
             'contactPoint' => [
                 '@type' => 'ContactPoint',
-                'telephone' => Setting::get('contact_phone', '+212 600 000000'),
+                'telephone' => Setting::get('contact_phone', '+212 706 770940'),
                 'contactType' => 'customer service',
                 'availableLanguage' => ['Arabic', 'French', 'English'],
                 'areaServed' => 'MA',
@@ -251,7 +292,7 @@ class SeoService
             '@id' => $baseUrl . '/#website',
             'url' => $baseUrl,
             'name' => 'Coopérative Aït Oumdis',
-            'alternateName' => ['تعاونية آيت أومديس', 'Ait Oumdis Cosmetics'],
+            'alternateName' => ['تعاونية آيت أومديس', 'Ait Oumdis Cooperative'],
             'publisher' => ['@id' => $baseUrl . '/#organization'],
             'inLanguage' => ['fr-MA', 'ar-MA', 'en'],
             'potentialAction' => [
@@ -264,28 +305,126 @@ class SeoService
             ],
         ];
 
-        // 3. Product Schema if viewing product
-        if ($model instanceof Product) {
-            $productImg = $model->main_image ? asset('storage/' . $model->main_image) : $logoUrl;
+        // 3. FAQPage Schema on Home
+        if ($route === 'home' || $page === 'home') {
+            $faqs = match ($locale) {
+                'ar' => [
+                    [
+                        'q' => 'هل عسل تعاونية آيت أومديس طبيعي وحر 100%؟',
+                        'a' => 'نعم، جميع أنواع العسل لدينا (الزعتر، الدغموس، السدر، الفرنان، الخروب، البرتقال، الكاليبتوس) طبيعية وحرة 100% بدون أي إضافات أو سكريات مضافة.',
+                    ],
+                    [
+                        'q' => 'ما هي تكلفة التوصيل داخل المغرب؟',
+                        'a' => 'تكلفة التوصيل هي 20 درهم داخل مدينة الدار البيضاء، و35 درهم لجميع المدن والمناطق المغربية الأخرى.',
+                    ],
+                    [
+                        'q' => 'ما هي طرق الدفع المتاحة؟',
+                        'a' => 'نوفر خدمة الدفع نقداً عند الاستلام (Cash on Delivery) في جميع مدن المغرب بعد معاينة طلبك.',
+                    ],
+                ],
+                'en' => [
+                    [
+                        'q' => 'Are Aït Oumdis Cooperative honeys 100% pure and natural?',
+                        'a' => 'Yes, all our Moroccan honeys (Thyme, Daghmous, Sidr, Fernan, Carob, Orange Blossom, Eucalyptus) are 100% pure, raw, and harvested without additives.',
+                    ],
+                    [
+                        'q' => 'What are the delivery fees across Morocco?',
+                        'a' => 'Delivery is 20 DH in Casablanca and 35 DH across all other Moroccan cities.',
+                    ],
+                    [
+                        'q' => 'What payment methods do you accept?',
+                        'a' => 'We offer Cash on Delivery across all cities in Morocco.',
+                    ],
+                ],
+                default => [
+                    [
+                        'q' => 'Les miels de la Coopérative Aït Oumdis sont-ils 100% purs et naturels ?',
+                        'a' => 'Oui, tous nos miels marocains (Thym, Daghmous, Sidr, Fernan, Caroubier, Oranger, Eucalyptus) sont 100% purs, récoltés artisanalement et sans aucun ajout.',
+                    ],
+                    [
+                        'q' => 'Quels sont les frais de livraison au Maroc ?',
+                        'a' => 'La livraison est à 20 DH à Casablanca et à 35 DH dans toutes les autres villes du Maroc.',
+                    ],
+                    [
+                        'q' => 'Comment puis-je payer ma commande ?',
+                        'a' => 'Nous proposons le paiement à la livraison (Cash on Delivery) partout au Maroc.',
+                    ],
+                ],
+            };
+
             $graph[] = [
+                '@type' => 'FAQPage',
+                '@id' => $baseUrl . '/#faq',
+                'inLanguage' => $locale === 'ar' ? 'ar-MA' : ($locale === 'en' ? 'en' : 'fr-MA'),
+                'mainEntity' => array_map(fn ($item) => [
+                    '@type' => 'Question',
+                    'name' => $item['q'],
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => $item['a'],
+                    ],
+                ], $faqs),
+            ];
+        }
+
+        // 4. Product Schema if viewing product
+        if ($model instanceof Product) {
+            $productImg = $model->image_url ?: $logoUrl;
+            $activeVariants = $model->relationLoaded('variants')
+                ? $model->variants->where('is_active', true)
+                : $model->variants()->where('is_active', true)->get();
+
+            if ($activeVariants->isNotEmpty()) {
+                $prices = $activeVariants->pluck('price')->map(fn ($p) => (float) $p);
+                $hasStock = $activeVariants->sum('stock') > 0 || $model->stock > 0;
+                $offersSchema = [
+                    '@type' => 'AggregateOffer',
+                    'url' => self::getCanonicalUrl(),
+                    'priceCurrency' => 'MAD',
+                    'lowPrice' => number_format($prices->min(), 2, '.', ''),
+                    'highPrice' => number_format($prices->max(), 2, '.', ''),
+                    'offerCount' => $activeVariants->count(),
+                    'availability' => $hasStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+                    'offers' => $activeVariants->map(fn ($variant) => [
+                        '@type' => 'Offer',
+                        'name' => $model->name . ' - ' . $variant->name,
+                        'priceCurrency' => 'MAD',
+                        'price' => number_format((float) $variant->price, 2, '.', ''),
+                        'priceValidUntil' => now()->addYear()->format('Y-m-d'),
+                        'availability' => $variant->stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+                        'itemCondition' => 'https://schema.org/NewCondition',
+                        'seller' => ['@id' => $baseUrl . '/#organization'],
+                    ])->values()->all(),
+                ];
+            } else {
+                $offersSchema = [
+                    '@type' => 'Offer',
+                    'url' => self::getCanonicalUrl(),
+                    'priceCurrency' => 'MAD',
+                    'price' => number_format((float) $model->price, 2, '.', ''),
+                    'priceValidUntil' => now()->addYear()->format('Y-m-d'),
+                    'availability' => $model->stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+                    'itemCondition' => 'https://schema.org/NewCondition',
+                    'seller' => ['@id' => $baseUrl . '/#organization'],
+                ];
+            }
+
+            $productSchema = [
                 '@type' => 'Product',
-                '@id' => url()->current() . '/#product',
+                '@id' => self::getCanonicalUrl() . '#product',
                 'name' => $model->name,
                 'description' => self::getDescription($page, $model),
                 'image' => $productImg,
                 'sku' => $model->sku ?? 'AOD-' . $model->id,
                 'brand' => ['@id' => $baseUrl . '/#organization'],
-                'offers' => [
-                    '@type' => 'Offer',
-                    'url' => url()->current(),
-                    'priceCurrency' => 'MAD',
-                    'price' => (string) $model->price,
-                    'priceValidUntil' => now()->addYear()->format('Y-m-d'),
-                    'availability' => $model->stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-                    'itemCondition' => 'https://schema.org/NewCondition',
-                    'seller' => ['@id' => $baseUrl . '/#organization'],
-                ],
+                'offers' => $offersSchema,
             ];
+
+            if ($model->relationLoaded('category') && $model->category) {
+                $productSchema['category'] = $model->category->name;
+            }
+
+            $graph[] = $productSchema;
         }
 
         return json_encode([

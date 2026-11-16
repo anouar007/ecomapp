@@ -483,7 +483,6 @@ body {
 .sp-products-section {
   position: relative;
   background-color: var(--sp-cream-bg);
-  background-image: url('../assets/images/botanical_pattern_bg.jpg');
   background-size: 900px auto;
   background-repeat: repeat;
   background-position: center top;
@@ -1919,7 +1918,6 @@ html[dir="rtl"] .sp-footer-desc {
    ========================================================================== */
 .sp-cart-page-wrapper {
   background-color: var(--sp-cream-bg);
-  background-image: url('../assets/images/botanical_pattern_bg.jpg');
   background-size: 900px auto;
   background-repeat: repeat;
   min-height: calc(100vh - 180px);
@@ -5459,7 +5457,6 @@ html[dir="rtl"] .sp-footer-desc {
 
 .sp-pdp-wrapper {
   background-color: var(--sp-cream-bg);
-  background-image: url('../assets/images/botanical_pattern_bg.jpg');
   background-size: 900px auto;
   background-repeat: repeat;
   background-position: center top;
@@ -7615,7 +7612,6 @@ html[dir="rtl"] .sp-footer-desc {
 /* ── Page wrapper ── */
 .cart-page {
   background: var(--sp-cream-bg, #faf8f3);
-  background-image: url('../assets/images/botanical_pattern_bg.jpg');
   background-size: 700px auto;
   min-height: 100vh;
   padding-bottom: 88px;

@@ -1,20 +1,34 @@
+@php
+    $seoModel = $seoModel ?? ($product ?? null);
+    $seoLocale = \App\Services\SeoService::getLocale();
+    $seoDir = \App\Services\SeoService::getDirection();
+    $seoTitle = \App\Services\SeoService::getTitle(null, $seoModel);
+    $seoDescription = \App\Services\SeoService::getDescription(null, $seoModel);
+    $seoKeywords = \App\Services\SeoService::getKeywords(null, $seoModel);
+    $seoCanonical = \App\Services\SeoService::getCanonicalUrl();
+    $seoHreflangs = \App\Services\SeoService::getHreflangUrls();
+    $seoOg = \App\Services\SeoService::getOpenGraphData(null, $seoModel);
+@endphp
 <!DOCTYPE html>
-<html lang="{{ setting('language', 'fr') }}" dir="{{ setting('text_direction', 'ltr') }}">
+<html lang="{{ $seoLocale }}" dir="{{ $seoDir }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('meta_title', setting('app_name', 'Coopérative Aït Oumdis'))</title>
-    <meta name="description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
-    <meta name="keywords" content="@yield('meta_keywords', setting('app_name', 'boutique') . ', e-commerce, Maroc, acheter en ligne, livraison Maroc')">
+    <title>@yield('meta_title', $seoTitle)</title>
+    <meta name="description" content="@yield('meta_description', $seoDescription)">
+    <meta name="keywords" content="@yield('meta_keywords', $seoKeywords)">
     <meta name="robots" content="@yield('meta_robots', 'index, follow')">
-    <meta name="author" content="{{ setting('app_name', 'Coopérative Aït Oumdis') }}">
+    <meta name="author" content="{{ $seoOg['site_name'] }}">
     <meta name="developer" content="Elegant Boost (https://elegantboost.com/)">
     <meta name="designer" content="Elegant Boost">
-    <meta name="theme-color" content="#0c261e">
+    <meta name="theme-color" content="#1e4d34">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <!-- Canonical URL -->
-    <link rel="canonical" href="{{ url()->current() }}">
+    <!-- Canonical & Multilingual Hreflang URLs -->
+    <link rel="canonical" href="@yield('canonical_url', $seoCanonical)">
+    @foreach($seoHreflangs as $hreflang => $hrefUrl)
+    <link rel="alternate" hreflang="{{ $hreflang }}" href="{{ $hrefUrl }}">
+    @endforeach
 
     <!-- Preconnect to external resources for faster loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,25 +42,29 @@
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="@yield('meta_type', 'website')">
-    <meta property="og:site_name" content="{{ setting('app_name', 'Coopérative Aït Oumdis') }}">
-    <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('meta_title', setting('app_name', 'Coopérative Aït Oumdis'))">
-    <meta property="og:description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
-    <meta property="og:image" content="@yield('meta_image', app_logo_url('images/og-default.jpg'))">
+    <meta property="og:site_name" content="{{ $seoOg['site_name'] }}">
+    <meta property="og:url" content="@yield('canonical_url', $seoCanonical)">
+    <meta property="og:title" content="@yield('meta_title', $seoOg['title'])">
+    <meta property="og:description" content="@yield('meta_description', $seoOg['description'])">
+    <meta property="og:image" content="@yield('meta_image', $seoOg['image'])">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:locale" content="{{ setting('language', 'fr') === 'ar' ? 'ar_MA' : 'fr_MA' }}">
+    <meta property="og:locale" content="{{ $seoOg['locale'] }}">
+    @foreach($seoOg['alternate_locales'] as $altLocale)
+    <meta property="og:locale:alternate" content="{{ $altLocale }}">
+    @endforeach
     <meta property="og:updated_time" content="{{ now()->toIso8601String() }}">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="{{ url()->current() }}">
-    <meta name="twitter:title" content="@yield('meta_title', setting('app_name', 'Coopérative Aït Oumdis'))">
-    <meta name="twitter:description" content="@yield('meta_description', setting('app_description', 'High performance e-commerce platform.'))">
-    <meta name="twitter:image" content="@yield('meta_image', app_logo_url('images/og-default.jpg'))">    
-    <meta name="twitter:site" content="@yield('twitter_site', '@' . str_replace(' ', '', setting('app_name', 'Coopérative Aït Oumdis')))">
-    
+    <meta name="twitter:url" content="@yield('canonical_url', $seoCanonical)">
+    <meta name="twitter:title" content="@yield('meta_title', $seoOg['title'])">
+    <meta name="twitter:description" content="@yield('meta_description', $seoOg['description'])">
+    <meta name="twitter:image" content="@yield('meta_image', $seoOg['image'])">
+    <meta name="twitter:site" content="@yield('twitter_site', '@AIT_OUMDIS')">
+
     <!-- JSON-LD Structured Data Schema -->
+    <script type="application/ld+json">{!! \App\Services\SeoService::getJsonLd(null, $seoModel) !!}</script>
     @yield('json_ld')
     
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600;1,700&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -58,6 +76,7 @@
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('css/sunpure-theme.css') }}">
     <link rel="stylesheet" href="{{ asset('css/frontend.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/aitoumdis-clean.css') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Custom Head Codes -->
     @php
@@ -89,37 +108,41 @@
     @endforeach
 
     <!-- ==========================================================================
-       SUNPURE LUXURY HEADER
+       CLEAN AIT OUMDIS COOPERATIVE HEADER (WHITE & LOGO GREEN)
        ========================================================================== -->
-  <header class="sp-header {{ !request()->routeIs('home') ? 'sp-header-solid' : '' }}" id="spHeader">
-    <div class="sp-nav-container">
-      <a href="{{ route('home') }}" class="sp-logo-link" aria-label="Accueil Coopérative Aït Oumdis">
-        <img src="{{ app_logo_url() }}" alt="Logo {{ setting('app_name', 'Aït Oumdis') }}" class="sp-logo-symbol">
-        <div class="sp-logo-text-wrap">
-          <span class="sp-logo-main">AIT OUMDIS</span>
-          <span class="sp-logo-sub">COOPERATIVE</span>
+  <header class="aod-header" id="spHeader">
+    <div class="aod-nav-container">
+      <a href="{{ route('home') }}" class="aod-brand-link" aria-label="Accueil Coopérative Aït Oumdis">
+        <img src="{{ app_logo_url('assets/images/logo-symbol.png') }}" alt="Logo {{ setting('app_name', 'Aït Oumdis') }}" class="aod-brand-symbol">
+        <div class="aod-brand-text">
+          <span class="aod-brand-title">AIT OUMDIS</span>
+          <span class="aod-brand-sub">COOPERATIVE</span>
         </div>
       </a>
 
-      <ul class="sp-nav-menu" id="spNavMenu">
-        <li><a href="{{ route('home') }}" class="sp-nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Accueil</a></li>
-        <li><a href="{{ route('shop.index') }}" class="sp-nav-link {{ request()->routeIs('shop.*') ? 'active' : '' }}">Boutique</a></li>
-        <li><a href="{{ route('home') }}#a-propos" class="sp-nav-link">À propos</a></li>
-        <li><a href="{{ route('home') }}#engagements-bio" class="sp-nav-link">Nos engagements</a></li>
+      <ul class="aod-nav-menu" id="spNavMenu">
+        <li><a href="{{ route('home') }}" class="aod-nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Accueil</a></li>
+        <li><a href="{{ route('shop.index') }}" class="aod-nav-link {{ request()->routeIs('shop.*') ? 'active' : '' }}">Nos Produits</a></li>
+        <li><a href="{{ route('home') }}#a-propos" class="aod-nav-link">La Coopérative</a></li>
+        <li><a href="{{ route('home') }}#contact-direct" class="aod-nav-link">Contact</a></li>
       </ul>
 
-      <div class="sp-nav-actions">
-        <!-- Bouton Panier -->
-        <button class="sp-nav-action-btn cart-toggle-btn {{ request()->routeIs('cart.*') ? 'active' : '' }}" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart" title="Voir mon panier" aria-label="Ouvrir le panier" style="background: transparent; border: none; cursor: pointer; padding: 0;">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-          <span class="sp-cart-count" id="header-cart-count">{{ count(session('cart', [])) }}</span>
+      <div class="aod-nav-actions">
+        <!-- Direct Phone Pill -->
+        <a href="tel:+212706770940" class="aod-phone-pill d-none d-md-inline-flex" title="Appelez-nous">
+          <i class="fas fa-phone-alt"></i>
+          <span>07 06 77 09 40</span>
+        </a>
+
+        <!-- Cart Button -->
+        <button class="aod-cart-btn cart-toggle-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#miniCart" title="Voir mon panier" aria-label="Ouvrir le panier">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="aod-cart-badge sp-cart-count" id="header-cart-count">{{ count(session('cart', [])) }}</span>
         </button>
 
-        <!-- Bouton Menu Mobile -->
-        <button class="sp-mobile-menu-btn" id="spMobileMenuBtn" aria-label="Menu mobile" type="button">
-          <span></span>
-          <span></span>
-          <span></span>
+        <!-- Mobile Menu Button -->
+        <button class="aod-mobile-toggle" id="spMobileMenuBtn" aria-label="Menu mobile" type="button">
+          <i class="fas fa-bars"></i>
         </button>
       </div>
     </div>
@@ -130,19 +153,18 @@
     </main>
 
     <!-- Offcanvas Mini Cart -->
-    <!-- ====== MINI CART OFFCANVAS (redesigned) ====== -->
     <style>
     #miniCart {
         width: 420px;
         max-width: 100vw;
-        background: #faf9f5;
+        background: #f5faf6;
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
     @media (max-width: 480px) {
         #miniCart { width: 100vw; }
     }
     .mc-header {
-        background: #0c261e;
+        background: #1e4d34;
         color: #ffffff;
         padding: 18px 20px;
         display: flex;
@@ -159,7 +181,7 @@
         font-weight: 700;
         color: #ffffff;
     }
-    .mc-header-title svg { color: #e2ad50; }
+    .mc-header-title svg { color: #6bbf36; }
     .mc-close-btn {
         width: 34px; height: 34px;
         border-radius: 50%;
@@ -259,23 +281,23 @@
     .mc-item-price {
         font-size: 1rem;
         font-weight: 800;
-        color: #c28d32;
+        color: #2f8825;
         white-space: nowrap;
     }
     .mc-qty-ctrl {
         display: flex;
         align-items: center;
         gap: 4px;
-        background: #f4f0e8;
+        background: #eaf5e8;
         border-radius: 9999px;
         padding: 3px 6px;
-        border: 1px solid rgba(12,38,30,0.08);
+        border: 1px solid rgba(30,77,52,0.12);
     }
     .mc-qty-btn {
         width: 26px; height: 26px;
         border: none;
         background: transparent;
-        color: #0c261e;
+        color: #1e4d34;
         border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
         cursor: pointer;
@@ -283,13 +305,13 @@
         transition: background 0.2s;
         flex-shrink: 0;
     }
-    .mc-qty-btn:hover { background: rgba(12,38,30,0.08); }
+    .mc-qty-btn:hover { background: rgba(47,136,37,0.15); }
     .mc-qty-val {
         width: 26px;
         text-align: center;
         font-size: 0.85rem;
         font-weight: 700;
-        color: #0c261e;
+        color: #1e4d34;
         border: none;
         background: transparent;
         pointer-events: none;
@@ -322,26 +344,26 @@
         width: 80px; height: 80px;
         border-radius: 50%;
         background: #ffffff;
-        box-shadow: 0 4px 18px rgba(12,38,30,0.06);
+        box-shadow: 0 4px 18px rgba(30,77,52,0.06);
         display: flex; align-items: center; justify-content: center;
-        color: #c28d32;
+        color: #2f8825;
         margin-bottom: 8px;
     }
     .mc-empty-title {
         font-family: 'Playfair Display', Georgia, serif;
         font-size: 1.1rem;
         font-weight: 700;
-        color: #0c261e;
+        color: #1e4d34;
     }
     .mc-empty-sub {
         font-size: 0.84rem;
-        color: #8a9e97;
+        color: #5a6b60;
         line-height: 1.5;
     }
     .mc-footer {
         flex-shrink: 0;
         background: #ffffff;
-        border-top: 1px solid rgba(12,38,30,0.07);
+        border-top: 1px solid rgba(30,77,52,0.08);
         padding: 18px 20px 22px;
         margin-bottom: env(safe-area-inset-bottom, 0px);
     }
@@ -351,20 +373,20 @@
         align-items: center;
         margin-bottom: 16px;
         padding-bottom: 14px;
-        border-bottom: 1px dashed rgba(12,38,30,0.1);
+        border-bottom: 1px dashed rgba(30,77,52,0.12);
     }
     .mc-subtotal-label {
         font-size: 0.72rem;
         font-weight: 700;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: #8a9e97;
+        color: #5a6b60;
     }
     .mc-subtotal-value {
         font-family: 'Playfair Display', Georgia, serif;
         font-size: 1.3rem;
         font-weight: 700;
-        color: #0c261e;
+        color: #1e4d34;
     }
     .mc-btn-checkout {
         display: flex;
@@ -372,7 +394,7 @@
         justify-content: space-between;
         width: 100%;
         padding: 14px 22px;
-        background: #0c261e;
+        background: #2f8825;
         color: #ffffff;
         border: none;
         border-radius: 14px;
@@ -386,10 +408,10 @@
         margin-bottom: 10px;
     }
     .mc-btn-checkout:hover {
-        background: #153a2e;
+        background: #1e4d34;
         color: #ffffff;
         transform: translateY(-1px);
-        box-shadow: 0 6px 20px rgba(12,38,30,0.25);
+        box-shadow: 0 6px 20px rgba(47,136,37,0.28);
     }
     .mc-btn-checkout svg { flex-shrink: 0; }
     .mc-btn-view-cart {
@@ -435,7 +457,7 @@
                         <!-- Image -->
                         <div class="mc-item-img-wrap">
                             @if(!empty($details['image']))
-                                <img src="{{ Storage::url($details['image']) }}"
+                                <img src="{{ product_image_url($details['image']) }}"
                                      alt="{{ $details['name'] }}"
                                      class="mc-item-img"
                                      onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
@@ -453,15 +475,15 @@
                         <!-- Info -->
                         <div class="mc-item-body">
                             <div class="mc-item-name" title="{{ $details['name'] }}">{{ $details['name'] }}</div>
-                            <div class="mc-item-cat">{{ $details['category_name'] ?? 'Soin naturel' }}</div>
+                            <div class="mc-item-cat">{{ $details['category_name'] ?? 'Produit du Terroir' }}</div>
                             <div class="mc-item-footer">
                                 <span class="mc-item-price">{{ currency($details['price']) }}</span>
                                 <div class="mc-qty-ctrl">
-                                    <button class="mc-qty-btn" onclick="updateQty({{ $id }}, {{ $details['quantity'] - 1 }})">
+                                    <button class="mc-qty-btn" onclick="updateQty('{{ $id }}', {{ $details['quantity'] - 1 }})">
                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/></svg>
                                     </button>
                                     <input class="mc-qty-val" value="{{ $details['quantity'] }}" readonly>
-                                    <button class="mc-qty-btn" onclick="updateQty({{ $id }}, {{ $details['quantity'] + 1 }})">
+                                    <button class="mc-qty-btn" onclick="updateQty('{{ $id }}', {{ $details['quantity'] + 1 }})">
                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                                     </button>
                                 </div>
@@ -469,7 +491,7 @@
                         </div>
 
                         <!-- Remove -->
-                        <button class="mc-remove-btn" onclick="removeItem({{ $id }})" title="Retirer">
+                        <button class="mc-remove-btn" onclick="removeItem('{{ $id }}')" title="Retirer">
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                         </button>
                     </div>
@@ -479,7 +501,7 @@
                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
                         </div>
                         <div class="mc-empty-title">Votre panier est vide</div>
-                        <div class="mc-empty-sub">Découvrez nos soins 100% naturels<br>du Haut Atlas marocain.</div>
+                        <div class="mc-empty-sub">Découvrez nos miels purs, notre Amlou artisanal<br>et nos trésors du terroir marocain.</div>
                         <a href="{{ route('shop.index') }}" class="mc-btn-checkout" style="margin-top:12px; width:auto; padding: 12px 28px;" data-bs-dismiss="offcanvas">
                             <span>Voir la boutique</span>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -507,104 +529,50 @@
     </div>
 
     <!-- ==========================================================================
-       SUNPURE LUXURY FOOTER
+       CLEAN AIT OUMDIS COOPERATIVE FOOTER
        ========================================================================== -->
-  <footer class="sp-footer" id="contact">
-    <div class="sp-footer-wave-top">
-      <svg viewBox="0 0 1440 40" preserveAspectRatio="none" fill="var(--sp-footer-green)">
-        <path d="M0,0 C380,35 920,40 1440,5 L1440,40 L0,40 Z"></path>
-      </svg>
-    </div>
-    <div class="sp-footer-container">
-      <div class="sp-footer-grid">
-        
-        <!-- Col 1 : Logo & Signature Cursive -->
-        <div class="sp-footer-brand-col">
-          <a href="{{ route('home') }}" class="sp-logo-link" style="gap: 12px; text-decoration: none;">
-            <img src="{{ app_logo_url() }}" alt="Logo {{ setting('app_name', 'Aït Oumdis') }}" class="sp-logo-symbol">
-            <div class="sp-logo-text-wrap">
-              <span class="sp-logo-main">AIT OUMDIS</span>
-              <span class="sp-logo-sub">COOPERATIVE</span>
+  <footer class="aod-footer" id="contact">
+    <div class="aod-container">
+      <div class="aod-footer-grid">
+        <div>
+          <a href="{{ route('home') }}" class="aod-brand-link" style="margin-bottom: 14px;">
+            <span style="width: 52px; height: 52px; border-radius: 50%; background: #ffffff; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid rgba(107, 191, 54, 0.55); flex-shrink: 0;">
+              <img src="{{ app_logo_url('assets/images/logo-symbol.png') }}" alt="Logo Aït Oumdis" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; padding: 3px;">
+            </span>
+            <div class="aod-brand-text">
+              <span class="aod-brand-title" style="color: #ffffff;">AIT OUMDIS</span>
+              <span class="aod-brand-sub" style="color: #6bbf36;">COOPERATIVE</span>
             </div>
           </a>
-          <div class="sp-footer-signature-wrap">
-            <div class="sp-footer-signature">Naturellement proche de vous</div>
-            <span class="sp-sig-underline"></span>
-          </div>
-          <p class="sp-footer-desc">
-            @if(($currentLocale ?? app()->getLocale() ?? 'fr') === 'ar')
-              تعاونية فلاحية وحرفية أصيلة في قلب الأطلس الكبير على ارتفاع 1800 متر. نصنع مستحضرات تجميل طبيعية وعضوية 100% بيو: زيوت نباتية نفيسة، عناية طبيعية بالشعر وواقي الشمس SunPure من كنوز الطبيعة المغربية المستدامة.
-            @elseif(($currentLocale ?? app()->getLocale() ?? 'fr') === 'en')
-              Authentic artisanal cooperative nestled at 1,800m in Morocco's High Atlas. We craft 100% organic and natural botanical skincare, pure oils, and SunPure suncare born from ancestral Moroccan heritage.
-            @else
-              Coopérative artisanale nichée à 1 800 m d'altitude dans le Haut Atlas marocain. Nous formulons des soins cosmétiques 100% biologiques et naturels : huiles végétales pures, rituels capillaires et protecteurs solaires SunPure, issus d'un savoir-faire ancestral respectueux de la terre.
-            @endif
+          <p style="font-size: 0.9rem; color: rgba(255,255,255,0.82); line-height: 1.65; max-width: 420px; margin: 0;">
+            Coopérative marocaine spécialisée dans les miels 100% purs (Thym, Daghmous, Sidr, Fernan, Caroubier, Oranger, Eucalyptus, Herbes sauvages), l'Amlou aux amandes et huile d'Argan, et le Safran véritable.
           </p>
         </div>
 
-        <!-- Col 2 : Liens utiles (Titre Doré) -->
         <div>
-          <h4 class="sp-footer-col-title sp-col-gold">Liens utiles</h4>
-          <ul class="sp-footer-links-list">
-            <li><a href="{{ route('home') }}" class="sp-footer-link">Accueil</a></li>
-            <li><a href="{{ route('shop.index') }}" class="sp-footer-link">Boutique</a></li>
-            <li><a href="{{ route('home') }}#a-propos" class="sp-footer-link">À propos</a></li>
-            <li><a href="{{ route('home') }}#contact" class="sp-footer-link">Contact</a></li>
+          <h4 class="aod-footer-title">Navigation</h4>
+          <ul class="aod-footer-links">
+            <li><a href="{{ route('home') }}">Accueil</a></li>
+            <li><a href="{{ route('shop.index') }}">Tous nos Produits</a></li>
+            <li><a href="{{ route('cart.index') }}">Mon Panier</a></li>
+            <li><a href="{{ route('checkout.index') }}">Commander</a></li>
           </ul>
         </div>
 
-        <!-- Col 3 : Service client -->
         <div>
-          <h4 class="sp-footer-col-title">Service client</h4>
-          <ul class="sp-footer-links-list">
-            <li><a href="{{ route('cart.index') }}" class="sp-footer-link">Mon Panier</a></li>
-            <li><a href="{{ route('checkout.index') }}" class="sp-footer-link">Livraison & Commande</a></li>
-            <li><a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', setting('social_whatsapp', '212661000000')) }}" target="_blank" rel="noopener" class="sp-footer-link">Assistance WhatsApp</a></li>
-            <li><a href="{{ route('home') }}#pourquoi-sunpure" class="sp-footer-link">Nos Garanties</a></li>
+          <h4 class="aod-footer-title">Contact Direct</h4>
+          <ul class="aod-footer-links">
+            <li><a href="tel:+212706770940"><i class="fas fa-phone-alt me-2" style="color: #6bbf36;"></i>07 06 77 09 40</a></li>
+            <li><a href="tel:+212670035202"><i class="fas fa-phone-alt me-2" style="color: #6bbf36;"></i>06 70 03 52 02</a></li>
+            <li><a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', setting('social_whatsapp', '212706770940')) }}" target="_blank" rel="noopener"><i class="fab fa-whatsapp me-2" style="color: #6bbf36;"></i>WhatsApp Direct</a></li>
+            <li><a href="https://www.instagram.com/ait_oumdis/" target="_blank" rel="noopener"><i class="fab fa-instagram me-2" style="color: #6bbf36;"></i>@AIT_OUMDIS</a></li>
           </ul>
         </div>
-
-        <!-- Col 4 : Restez connectés -->
-        <div>
-          <h4 class="sp-footer-col-title">Restez connectés</h4>
-          <p class="sp-newsletter-desc">Recevez nos nouveautés et offres spéciales</p>
-          <form class="sp-newsletter-form" onsubmit="event.preventDefault(); alert('Merci ! Vous êtes bien inscrit(e) à nos offres.'); this.reset();">
-            <input type="email" placeholder="Votre adresse e-mail" required class="sp-newsletter-input">
-            <button type="submit" class="sp-newsletter-btn">S'inscrire</button>
-          </form>
-          <div class="sp-social-links">
-            <a href="{{ setting('social_instagram', 'https://www.instagram.com/aitoumdiscooperative/') }}" target="_blank" rel="noopener" class="sp-social-icon" aria-label="Instagram" title="Suivez-nous sur Instagram">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-            </a>
-            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', setting('social_whatsapp', '212661000000')) }}" target="_blank" rel="noopener" class="sp-social-icon" aria-label="WhatsApp" title="Écrivez-nous sur WhatsApp">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.316 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.818-.981z"/></svg>
-            </a>
-          </div>
-        </div>
-
-        <!-- Col 5 : Fabriqué au Maroc -->
-        <div class="sp-morocco-badge-wrap">
-          <div class="sp-morocco-vsep"></div>
-          <div class="sp-morocco-inner">
-            <div class="sp-morocco-badge-text">
-              Fabriqué<br>au Maroc
-              <span class="sp-morocco-gold-line"></span>
-            </div>
-          </div>
-        </div>
-
       </div>
 
-      <!-- Bas de page légal -->
-      <div class="sp-footer-bottom">
-        <div>
-          &copy; {{ date('Y') }} {{ setting('app_name', 'Coopérative Aït Oumdis') }}. Tous droits réservés.
-        </div>
-        <div class="sp-footer-legal-links">
-          <a href="{{ route('shop.index') }}">Boutique</a>
-          <span class="sep">|</span>
-          <a href="{{ route('home') }}#engagements-bio">Nos Engagements</a>
-        </div>
+      <div class="aod-footer-bottom">
+        <div>&copy; {{ date('Y') }} {{ setting('app_name', 'Coopérative Aït Oumdis') }}. Tous droits réservés.</div>
+        <div>Aitoumdis.com • Produits 100% Naturels du Maroc</div>
       </div>
     </div>
   </footer>
@@ -779,8 +747,34 @@
             }
         }
 
+        // Product Card Size Selector
+        function selectAodCardSize(btn, event) {
+            if (event) event.stopPropagation();
+            const card = btn.closest('.aod-product-card');
+            if (!card) return;
+
+            card.querySelectorAll('.aod-size-pill').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+
+            const variantId = btn.getAttribute('data-variant-id') || '';
+            const size = btn.getAttribute('data-size') || '';
+            const formattedPrice = btn.getAttribute('data-formatted-price') || '';
+
+            card.setAttribute('data-selected-variant-id', variantId);
+
+            const weightBadge = card.querySelector('.js-card-weight-badge');
+            if (weightBadge && size) weightBadge.textContent = size;
+
+            const priceEl = card.querySelector('.js-card-price');
+            if (priceEl && formattedPrice) priceEl.textContent = formattedPrice;
+
+            const unitEl = card.querySelector('.js-card-unit');
+            if (unitEl && size) unitEl.textContent = '/ ' + size;
+        }
+        window.selectAodCardSize = selectAodCardSize;
+
         // Global Add To Cart function
-        function addToCart(id, qty = 1, btn = null) {
+        function addToCart(id, qty = 1, btn = null, variantId = null) {
             if (!btn && window.event && window.event.currentTarget) {
                 btn = window.event.currentTarget;
             }
@@ -797,6 +791,11 @@
             const tokenEl = document.querySelector('meta[name="csrf-token"]');
             const token = tokenEl ? tokenEl.getAttribute('content') : '{{ csrf_token() }}';
 
+            const payload = { quantity: qty };
+            if (variantId) {
+                payload.variant_id = variantId;
+            }
+
             fetch('/cart/add/' + id, {
                 method: 'POST',
                 headers: {
@@ -804,7 +803,7 @@
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 },
-                body: JSON.stringify({ quantity: qty })
+                body: JSON.stringify(payload)
             })
             .then(r => r.json())
             .then(data => {
@@ -820,7 +819,7 @@
                             toast: true,
                             position: 'top-end',
                             icon: 'success',
-                            title: 'Soin ajouté au panier !',
+                            title: 'Produit ajouté au panier !',
                             showConfirmButton: false,
                             timer: 2000,
                             background: '#0c261e',

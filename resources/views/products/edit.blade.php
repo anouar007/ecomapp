@@ -110,7 +110,7 @@
                 <div class="multi-image-upload" id="imagePreviewContainer">
                     @foreach($product->images as $image)
                     <div class="image-upload-box">
-                        <img src="{{ asset('storage/' . $image->image_path) }}" alt="Product image">
+                        <img src="{{ product_image_url($image->image_path) }}" alt="Product image">
                         @if($image->is_primary)
                             <span class="primary-badge">PRIMARY</span>
                         @endif
@@ -157,7 +157,7 @@
                            name="size" 
                            class="form-control" 
                            value="{{ old('size', $product->size ?? $product->volume) }}" 
-                           placeholder="e.g. 50ml, 125ml, 200g, Pack 4 Soins">
+                           placeholder="e.g. 1 KG, 500g, 800g, 1g, 100ml">
                     <small class="form-help">
                         Badge shown on top-right of product card
                     </small>
@@ -190,7 +190,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="cost_price" class="form-label">
-                        <i class="fas fa-dollar-sign"></i> Cost Price ($)
+                        <i class="fas fa-coins"></i> Cost Price (DH)
                     </label>
                     <input type="number" 
                            id="cost_price" 
@@ -205,7 +205,7 @@
 
                 <div class="form-group">
                     <label for="price" class="form-label">
-                        <i class="fas fa-tag"></i> Selling Price ($) <span class="required">*</span>
+                        <i class="fas fa-tag"></i> Selling Price (DH) <span class="required">*</span>
                     </label>
                     <input type="number" 
                            id="price" 
@@ -219,6 +219,8 @@
                     <small class="form-help">Price you sell to customers</small>
                 </div>
             </div>
+
+            @include('products.partials.variants-manager', ['product' => $product])
 
             @if($product->cost_price)
             <div class="alert alert-info" style="margin-bottom: 24px;">

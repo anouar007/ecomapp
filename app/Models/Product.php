@@ -74,6 +74,22 @@ class Product extends Model
     }
 
     /**
+     * Get all size/price variants for the product.
+     */
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    /**
+     * Get the primary/default variant if defined.
+     */
+    public function defaultVariant()
+    {
+        return $this->hasOne(ProductVariant::class)->orderByDesc('is_default')->orderBy('sort_order')->orderBy('id');
+    }
+
+    /**
      * Get all images for the product.
      */
     public function images()
@@ -332,7 +348,7 @@ class Product extends Model
     {
         $main = $this->main_image;
         if (!$main) {
-            return asset('assets/images/pack-rituel.jpg');
+            return asset('assets/images/product_miel_hd.jpg');
         }
 
         if (str_starts_with($main, 'http://') || str_starts_with($main, 'https://')) {

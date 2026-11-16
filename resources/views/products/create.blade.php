@@ -135,7 +135,7 @@
                            name="size" 
                            class="form-control" 
                            value="{{ old('size') }}" 
-                           placeholder="e.g. 50ml, 125ml, 200g, Pack 4 Soins">
+                           placeholder="e.g. 1 KG, 500g, 800g, 1g, 100ml">
                     <small class="form-help">
                         Badge shown on top-right of product card
                     </small>
@@ -208,6 +208,8 @@
                     <small class="form-help">Price you sell to customers</small>
                 </div>
             </div>
+
+            @include('products.partials.variants-manager')
 
             <div class="form-row">
                 <div class="form-group">
