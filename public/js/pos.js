@@ -230,6 +230,7 @@ window.addToCart = function (productId, variantId = null) {
             cart_key: cartKey,
             product_id: productId,
             variant_id: activeVariantId,
+            base_name: product.name,
             size: activeSize,
             name: displayName,
             price: unitPrice,
@@ -402,8 +403,8 @@ function updateTotals() {
 
     // Update charge button text
     const checkoutBtn = document.getElementById('checkoutBtn');
-    if (checkoutBtn && cart.length > 0) {
-        checkoutBtn.textContent = `Charge ${formatCurrency(total)}`;
+    if (checkoutBtn) {
+        checkoutBtn.textContent = `Charge ${formatCurrency(cart.length > 0 ? total : 0)}`;
     }
 }
 

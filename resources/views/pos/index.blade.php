@@ -1117,15 +1117,20 @@
 
             const variantPillsHtml = variants.length > 0
                 ? `<div class="pos-variant-pills" onclick="event.stopPropagation()">
-                    ${variants.map(v => `
+                    ${variants.map(v => {
+                        const vKey = `${product.id}_v${v.id}`;
+                        const inCartItem = cart.find(i => (i.cart_key || `${i.product_id}`) === vKey);
+                        const qtyTag = inCartItem ? ` <span style="opacity:0.85;">(${inCartItem.quantity})</span>` : '';
+                        return `
                         <button type="button"
                                 data-variant-id="${v.id}"
                                 title="${v.size} — ${formatCurrency(parseFloat(v.price))}"
                                 class="pos-variant-pill ${activeVariant && activeVariant.id === v.id ? 'active' : ''}"
                                 onclick="event.stopPropagation(); selectPosVariant(${product.id}, ${v.id})">
-                            ${v.size}
+                            ${v.size}${qtyTag}
                         </button>
-                    `).join('')}
+                    `;
+                    }).join('')}
                    </div>`
                 : '';
             
@@ -1189,43 +1194,45 @@
                 const key = item.cart_key || `${item.product_id}`;
                 const prod = typeof products !== 'undefined' ? products.find(p => p.id === item.product_id) : null;
                 const variants = prod && Array.isArray(prod.variants) ? prod.variants : [];
+                const titleText = item.base_name || item.name;
                 const sizeSwitcher = variants.length > 1
                     ? `<select class="pos-cart-size-select" onchange="changeCartItemVariant('${key}', this.value)">
                         ${variants.map(v => `<option value="${v.id}" ${Number(item.variant_id) === Number(v.id) ? 'selected' : ''}>${v.size} — ${formatCurrency(parseFloat(v.price))}</option>`).join('')}
                        </select>`
-                    : (item.size ? `<span style="display:inline-block;margin-top:3px;font-size:11px;font-weight:700;color:#1e4d34;background:#f2f7f3;padding:1px 7px;border-radius:999px;">${item.size}</span>` : '');
+                    : (item.size ? `<span style="display:inline-block;margin-top:3px;font-size:11px;font-weight:700;color:#1e4d34;background:#f2f7f3;padding:2px 8px;border-radius:999px;border:1px solid #d1dfd5;">${item.size}</span>` : '');
+
+                const lineTotal = parseFloat(item.price) * parseInt(item.quantity, 10);
 
                 return `
-                <div class="cart-item">
-                    <div class="item-details">
-                        <h4>${item.name}</h4>
-                        <div class="item-price">${formatCurrency(item.price)}</div>
-                        ${sizeSwitcher}
-                    </div>
-                    <div class="item-controls">
-                        <div class="control-btn" onclick="updateQuantity('${key}', -1)">
-                            <i class="fas fa-minus" style="font-size: 10px;"></i>
-                        </div>
-                        <div class="qty-text">${item.quantity}</div>
-                        <div class="control-btn" onclick="updateQuantity('${key}', 1)">
-                            <i class="fas fa-plus" style="font-size: 10px;"></i>
+                <div class="cart-item" style="align-items:flex-start;gap:8px;">
+                    <div class="item-details" style="flex:1;min-width:0;">
+                        <h4 style="margin-bottom:2px;">${titleText}</h4>
+                        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:2px;">
+                            ${sizeSwitcher}
+                            <span class="item-price" style="font-size:11px;color:#64748b;">${formatCurrency(parseFloat(item.price))} × ${item.quantity}</span>
                         </div>
                     </div>
-                    <div style="font-weight: 600; color: #334155; min-width: 70px; text-align: right;">
-                        ${formatCurrency(item.price * item.quantity)}
+                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+                        <div class="item-controls">
+                            <div class="control-btn" onclick="updateQuantity('${key}', -1)" title="Moins">
+                                <i class="fas fa-minus" style="font-size: 10px;"></i>
+                            </div>
+                            <div class="qty-text">${item.quantity}</div>
+                            <div class="control-btn" onclick="updateQuantity('${key}', 1)" title="Plus">
+                                <i class="fas fa-plus" style="font-size: 10px;"></i>
+                            </div>
+                            <div class="control-btn" onclick="removeFromCart('${key}')" title="Supprimer" style="color:#dc2626;border-color:#fecaca;">
+                                <i class="fas fa-times" style="font-size: 10px;"></i>
+                            </div>
+                        </div>
+                        <div style="font-weight: 700; color: #1e4d34; font-size: 13px;">
+                            ${formatCurrency(lineTotal)}
+                        </div>
                     </div>
                 </div>
             `;
             }).join('');
             document.getElementById('checkoutBtn').disabled = false;
-        }
-        
-        // Update Total Button Text
-        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const total = subtotal; // Total is now equal to subtotal as prices are tax-inclusive
-        
-        if(cart.length > 0) {
-            document.getElementById('checkoutBtn').innerHTML = `Charge ${formatCurrency(total)}`;
         }
     };
 
