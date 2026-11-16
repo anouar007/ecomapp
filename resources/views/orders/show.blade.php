@@ -183,7 +183,7 @@
 
     <!-- Stepper de progression de la commande -->
     @php
-        $steps = ['pending', 'processing', 'shipped', 'delivered'];
+        $steps = ['pending', 'en_demande', 'processing', 'shipped', 'delivered'];
         $currentStatusIndex = array_search(strtolower($order->status), $steps);
         if (strtolower($order->status) === 'cancelled') $currentStatusIndex = -1;
     @endphp
@@ -202,9 +202,10 @@
                 @php
                     $stepPercent = match($currentStatusIndex) {
                         0 => 0,
-                        1 => 33,
-                        2 => 66,
-                        3 => 100,
+                        1 => 25,
+                        2 => 50,
+                        3 => 75,
+                        4 => 100,
                         default => 0
                     };
                 @endphp
@@ -215,6 +216,7 @@
                 @php
                     $stepLabels = [
                         'pending' => ['name' => 'En attente', 'icon' => 'fa-clock'],
+                        'en_demande' => ['name' => 'En Demande', 'icon' => 'fa-clipboard-list'],
                         'processing' => ['name' => 'En préparation', 'icon' => 'fa-cog'],
                         'shipped' => ['name' => 'Expédiée', 'icon' => 'fa-truck-fast'],
                         'delivered' => ['name' => 'Livrée', 'icon' => 'fa-circle-check'],

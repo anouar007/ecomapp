@@ -103,7 +103,16 @@ class CheckoutController extends Controller
         $request->validate([
             'customer_name' => 'required|string|max:255',
             'customer_email' => 'nullable|email|max:255',
-            'customer_phone' => 'required|string|max:30',
+            'customer_phone' => [
+                'required',
+                'string',
+                'max:30',
+                function ($attribute, $value, $fail) {
+                    if ($this->normalizeAndValidatePhone((string) $value) === null) {
+                        $fail('Veuillez saisir un numéro de téléphone valide (ex : 06 12 34 56 78 ou +212 6 12 34 56 78).');
+                    }
+                },
+            ],
             'shipping_address' => 'required|string|max:255',
             'shipping_city' => 'required|string|max:255',
             'shipping_city_custom' => 'nullable|string|max:255',
@@ -118,10 +127,7 @@ class CheckoutController extends Controller
 
         // Normalize & clean customer phone & email
         $rawPhone = trim($request->customer_phone);
-        $cleanPhone = preg_replace('/[^\d\+]/', '', $rawPhone);
-        if (preg_match('/^[5-8]\d{8}$/', $cleanPhone)) {
-            $cleanPhone = '0' . $cleanPhone;
-        }
+        $cleanPhone = $this->normalizeAndValidatePhone($rawPhone) ?? preg_replace('/[^\d\+]/', '', $rawPhone);
         $cleanEmail = !empty($request->customer_email) ? trim(strtolower((string)$request->customer_email)) : null;
 
         // Determine actual city name (support manual entry if city is not in the list)
@@ -532,5 +538,55 @@ class CheckoutController extends Controller
             'updated_at' => $order->updated_at ? $order->updated_at->toIso8601String() : null,
             'updated_at_formatted' => $order->updated_at ? $order->updated_at->format('H:i:s') : null,
         ]);
+    }
+
+    /**
+     * Normalize and validate a checkout phone number (Moroccan local/international or E.164 international).
+     */
+    protected function normalizeAndValidatePhone(string $raw): ?string
+    {
+        $trimmed = trim($raw);
+        if ($trimmed === '' || preg_match('/[a-zA-Z]/', $trimmed)) {
+            return null;
+        }
+
+        // Only digits, spaces, +, -, ., (, ) allowed
+        if (preg_match('/[^\d\s\+\-\.\(\)]/', $trimmed)) {
+            return null;
+        }
+
+        $compact = preg_replace('/[\s\-\.\(\)]+/', '', $trimmed);
+        if (str_starts_with($compact, '00')) {
+            $compact = '+' . substr($compact, 2);
+        }
+
+        // Moroccan with country code (+212 or 212)
+        if (preg_match('/^(?:\+?212)0?([5-8]\d{8})$/', $compact, $m)) {
+            return '0' . $m[1];
+        }
+        if (preg_match('/^\+?212/', $compact)) {
+            return null;
+        }
+
+        // Moroccan local 10 digits (05/06/07/08 + 8 digits) or 9 digits without leading 0
+        if (preg_match('/^0([5-8]\d{8})$/', $compact, $m)) {
+            return '0' . $m[1];
+        }
+        if (preg_match('/^([5-8]\d{8})$/', $compact, $m)) {
+            return '0' . $m[1];
+        }
+        if (str_starts_with($compact, '0')) {
+            return null;
+        }
+
+        // Valid international E.164 (+ followed by 8-15 digits, not starting with 0, not all identical digits)
+        if (preg_match('/^\+[1-9]\d{7,14}$/', $compact)) {
+            $digits = substr($compact, 1);
+            if (! preg_match('/^(\d)\1+$/', $digits)) {
+                return $compact;
+            }
+        }
+
+        return null;
     }
 }

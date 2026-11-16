@@ -64,10 +64,19 @@
                                         <input type="tel" 
                                                id="customer_phone" 
                                                name="customer_phone" 
-                                               class="form-control checkout-input" 
-                                               placeholder="...." 
+                                               inputmode="tel"
+                                               autocomplete="tel"
+                                               class="form-control checkout-input @error('customer_phone') is-invalid @enderror" 
+                                               placeholder="Ex: 06 12 34 56 78" 
                                                required
                                                value="{{ old('customer_phone', auth()->user()->phone ?? '') }}">
+                                    </div>
+                                    <div id="phone-validation-feedback" class="small mt-1 @error('customer_phone') text-danger fw-semibold @else text-muted @enderror" style="font-size: 0.78rem;">
+                                        @error('customer_phone')
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                        @else
+                                            Format accepté : 06 / 07 / 05 XX XX XX XX ou +212...
+                                        @enderror
                                     </div>
                                 </div>
 
@@ -728,7 +737,98 @@ document.addEventListener('DOMContentLoaded', function() {
         cityInput.focus();
     });
 
-    // Ensure manual city is validated on form submit & show instant loading state
+    // Client-side phone validation before checkout submit
+    const phoneInput = document.getElementById('customer_phone');
+    const phoneFeedback = document.getElementById('phone-validation-feedback');
+
+    function validatePhoneValue(raw) {
+        const trimmed = (raw || '').trim();
+        if (!trimmed) return { valid: false, message: 'Veuillez saisir votre numéro de téléphone.' };
+        if (/[a-zA-Z]/.test(trimmed) || /[^\d\s\+\-\.\(\)]/.test(trimmed)) {
+            return { valid: false, message: 'Le numéro ne doit contenir que des chiffres (ex: 06 12 34 56 78).' };
+        }
+
+        let compact = trimmed.replace(/[\s\-\.\(\)]+/g, '');
+        if (compact.startsWith('00')) {
+            compact = '+' + compact.slice(2);
+        }
+
+        const maIntl = compact.match(/^(?:\+?212)0?([5-8]\d{8})$/);
+        if (maIntl) {
+            return { valid: true, normalized: '0' + maIntl[1] };
+        }
+        if (/^\+?212/.test(compact)) {
+            return { valid: false, message: 'Numéro marocain invalide. Exemple : +212 6 12 34 56 78.' };
+        }
+
+        const maLocal = compact.match(/^0([5-8]\d{8})$/);
+        if (maLocal) {
+            return { valid: true, normalized: '0' + maLocal[1] };
+        }
+        const maNine = compact.match(/^([5-8]\d{8})$/);
+        if (maNine) {
+            return { valid: true, normalized: '0' + maNine[1] };
+        }
+        if (compact.startsWith('0')) {
+            return { valid: false, message: 'Le numéro doit contenir 10 chiffres (ex: 06 12 34 56 78).' };
+        }
+
+        if (/^\+[1-9]\d{7,14}$/.test(compact) && !/^(\d)\1+$/.test(compact.slice(1))) {
+            return { valid: true, normalized: compact };
+        }
+
+        return { valid: false, message: 'Numéro invalide. Exemple : 06 12 34 56 78 ou +212 6 12 34 56 78.' };
+    }
+
+    function applyPhoneValidationUI(showError) {
+        if (!phoneInput) return true;
+        const result = validatePhoneValue(phoneInput.value);
+
+        if (result.valid) {
+            phoneInput.setCustomValidity('');
+            phoneInput.classList.remove('is-invalid');
+            phoneInput.classList.add('is-valid');
+            if (phoneFeedback) {
+                phoneFeedback.className = 'small mt-1 text-success fw-semibold';
+                phoneFeedback.innerHTML = '<i class="fas fa-check-circle me-1"></i>Numéro valide';
+            }
+            return true;
+        }
+
+        phoneInput.setCustomValidity(result.message);
+        phoneInput.classList.remove('is-valid');
+        if (showError) {
+            phoneInput.classList.add('is-invalid');
+            if (phoneFeedback) {
+                phoneFeedback.className = 'small mt-1 text-danger fw-semibold';
+                phoneFeedback.innerHTML = '<i class="fas fa-exclamation-circle me-1"></i>' + result.message;
+            }
+        } else {
+            phoneInput.classList.remove('is-invalid');
+            if (phoneFeedback) {
+                phoneFeedback.className = 'small mt-1 text-muted';
+                phoneFeedback.textContent = 'Format accepté : 06 / 07 / 05 XX XX XX XX ou +212...';
+            }
+        }
+        return false;
+    }
+
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function () {
+            const digitsCount = (this.value || '').replace(/\D/g, '').length;
+            applyPhoneValidationUI(digitsCount >= 10);
+        });
+        phoneInput.addEventListener('blur', function () {
+            if (this.value.trim() !== '') {
+                applyPhoneValidationUI(true);
+            }
+        });
+        if (phoneInput.value.trim() !== '') {
+            applyPhoneValidationUI(false);
+        }
+    }
+
+    // Ensure manual city & phone are validated on form submit & show instant loading state
     const checkoutForm = document.getElementById('checkout-form');
     const submitBtn = document.getElementById('checkout-submit-btn');
     const progressBar = document.getElementById('checkout-progress-bar');
@@ -738,6 +838,15 @@ document.addEventListener('DOMContentLoaded', function() {
         checkoutForm.addEventListener('submit', function(e) {
             if (isSubmitting) {
                 e.preventDefault();
+                return false;
+            }
+
+            if (!applyPhoneValidationUI(true)) {
+                e.preventDefault();
+                if (phoneInput) {
+                    phoneInput.focus();
+                    phoneInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
                 return false;
             }
 

@@ -66,7 +66,7 @@ class FrontendVerificationTest extends TestCase
         $response = $this->actingAs($user)->post(route('checkout.store'), [
             'customer_name' => 'Registered Shopper',
             'customer_email' => $user->email,
-            'customer_phone' => '555-0199',
+            'customer_phone' => '0612345678',
             'shipping_address' => '123 Boulevard Anfa',
             'shipping_city' => 'Casablanca',
             'shipping_state' => 'Casablanca-Settat',

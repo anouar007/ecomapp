@@ -228,9 +228,17 @@
         @php
             $statusBadge = match($order->status) {
                 'delivered', 'completed' => 'badge-success',
-                'processing', 'shipped' => 'badge-info',
+                'processing', 'shipped', 'en_demande' => 'badge-info',
                 'cancelled', 'refunded' => 'badge-danger',
                 default => 'badge-warning',
+            };
+            $statusLabel = match($order->status) {
+                'delivered', 'completed' => 'Livrée',
+                'shipped' => 'Expédiée',
+                'processing' => 'En cours',
+                'en_demande' => 'En Demande',
+                'cancelled' => 'Annulée',
+                default => 'En attente',
             };
             $payBadge = $order->payment_status === 'paid' ? 'badge-success' : 'badge-warning';
             $clientName = $order->customer_name ?? ($order->customer->name ?? ($order->user->name ?? 'Client'));
@@ -250,7 +258,7 @@
                             </span>
                         </td>
                         <td class="text-right">
-                            <span class="badge {{ $statusBadge }}">{{ ucfirst($order->status) }}</span>
+                            <span class="badge {{ $statusBadge }}">{{ $statusLabel }}</span>
                             <span class="badge {{ $payBadge }}" style="margin-left: 3px;">
                                 {{ $order->payment_status === 'paid' ? 'Payé' : 'Paiement en attente' }}
                             </span>

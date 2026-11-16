@@ -83,6 +83,7 @@
                             </label>
                             <select id="status" name="status" class="form-select @error('status') is-invalid @enderror" required>
                                 <option value="pending" {{ old('status', $order->status) == 'pending' ? 'selected' : '' }}>⏳ En attente</option>
+                                <option value="en_demande" {{ old('status', $order->status) == 'en_demande' ? 'selected' : '' }}>📋 En Demande</option>
                                 <option value="processing" {{ old('status', $order->status) == 'processing' ? 'selected' : '' }}>⚙️ En préparation (En cours)</option>
                                 <option value="shipped" {{ old('status', $order->status) == 'shipped' ? 'selected' : '' }}>🚚 Expédiée</option>
                                 <option value="delivered" {{ old('status', $order->status) == 'delivered' ? 'selected' : '' }}>✅ Livrée (Déduire le stock)</option>

@@ -156,6 +156,7 @@ class OrderController extends Controller
         $stats = [
             'total' => (clone $statsQuery)->count(),
             'pending' => (clone $statsQuery)->where('status', 'pending')->count(),
+            'en_demande' => (clone $statsQuery)->where('status', 'en_demande')->count(),
             'processing' => (clone $statsQuery)->where('status', 'processing')->count(),
             'shipped' => (clone $statsQuery)->where('status', 'shipped')->count(),
             'delivered' => (clone $statsQuery)->where('status', 'delivered')->count(),
@@ -370,6 +371,7 @@ class OrderController extends Controller
 
         $valueLabels = [
             'pending' => 'En attente',
+            'en_demande' => 'En Demande',
             'processing' => 'En cours',
             'shipped' => 'Expédiée',
             'delivered' => 'Livrée',
@@ -621,7 +623,7 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         $validated = $request->validate([
-            'status' => ['required', 'in:pending,processing,shipped,delivered,cancelled'],
+            'status' => ['required', 'in:pending,en_demande,processing,shipped,delivered,cancelled'],
             'payment_status' => ['required', 'in:pending,paid,failed,refunded'],
             'payment_method' => ['nullable', 'string', 'max:50'],
             'transaction_id' => ['nullable', 'string', 'max:255'],
@@ -791,7 +793,7 @@ class OrderController extends Controller
     public function quickUpdateStatus(Request $request, Order $order)
     {
         $validated = $request->validate([
-            'status' => ['nullable', 'in:pending,processing,shipped,delivered,cancelled'],
+            'status' => ['nullable', 'in:pending,en_demande,processing,shipped,delivered,cancelled'],
             'payment_status' => ['nullable', 'in:pending,paid,failed,refunded'],
         ]);
 
@@ -849,6 +851,7 @@ class OrderController extends Controller
         $stats = [
             'total' => (clone $statsQuery)->count(),
             'pending' => (clone $statsQuery)->where('status', 'pending')->count(),
+            'en_demande' => (clone $statsQuery)->where('status', 'en_demande')->count(),
             'processing' => (clone $statsQuery)->where('status', 'processing')->count(),
             'shipped' => (clone $statsQuery)->where('status', 'shipped')->count(),
             'delivered' => (clone $statsQuery)->where('status', 'delivered')->count(),
@@ -866,6 +869,7 @@ class OrderController extends Controller
                     'delivered' => 'Livrée',
                     'shipped' => 'Expédiée',
                     'processing' => 'En cours',
+                    'en_demande' => 'En Demande',
                     'pending' => 'En attente',
                     'cancelled' => 'Annulée',
                     default => ucfirst($order->status)
@@ -881,6 +885,7 @@ class OrderController extends Controller
             'stats' => [
                 'total' => $stats['total'],
                 'pending' => $stats['pending'],
+                'en_demande' => $stats['en_demande'],
                 'processing' => $stats['processing'],
                 'shipped' => $stats['shipped'],
                 'delivered' => $stats['delivered'],

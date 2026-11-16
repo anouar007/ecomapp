@@ -479,6 +479,7 @@
                             @php
                                 $statusNames = [
                                     'pending' => '⏳ En attente',
+                                    'en_demande' => '📋 En Demande',
                                     'processing' => '⚙️ En cours',
                                     'shipped' => '🚚 Expédiée',
                                     'delivered' => '✅ Livrée',
@@ -596,6 +597,7 @@
                 @php
                     $statusBadgeLabels = [
                         'pending' => 'En attente',
+                        'en_demande' => 'En Demande',
                         'processing' => 'En cours',
                         'shipped' => 'Expédiée',
                         'delivered' => 'Livrée',
@@ -825,7 +827,7 @@
                                 $statusDot = match($stLower) {
                                     'delivered', 'livrée' => 'green',
                                     'shipped', 'expédiée' => 'teal',
-                                    'processing', 'en cours' => 'blue',
+                                    'processing', 'en cours', 'en_demande' => 'blue',
                                     'cancelled', 'annulée' => 'red',
                                     default => 'amber'
                                 };
@@ -833,13 +835,14 @@
                                     'delivered', 'livrée' => 'success',
                                     'cancelled', 'annulée' => 'danger',
                                     'shipped', 'expédiée' => 'info',
-                                    'processing', 'en cours' => 'primary',
+                                    'processing', 'en cours', 'en_demande' => 'primary',
                                     default => 'warning'
                                 };
                                 $statusText = match($stLower) {
                                     'delivered', 'livrée' => 'Livrée',
                                     'shipped', 'expédiée' => 'Expédiée',
                                     'processing', 'en cours' => 'En cours',
+                                    'en_demande' => 'En Demande',
                                     'pending' => 'En attente',
                                     'cancelled', 'annulée' => 'Annulée',
                                     default => ucfirst($order->status)
@@ -865,6 +868,12 @@
                                         <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $stLower === 'pending' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'pending')">
                                             <span><span class="status-dot dot-amber me-1.5"></span> En attente</span>
                                             @if($stLower === 'pending') <i class="fas fa-check text-warning small"></i> @endif
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between {{ $stLower === 'en_demande' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'en_demande')">
+                                            <span><span class="status-dot dot-blue me-1.5"></span> En Demande</span>
+                                            @if($stLower === 'en_demande') <i class="fas fa-check text-primary small"></i> @endif
                                         </button>
                                     </li>
                                     <li>
@@ -1182,6 +1191,7 @@
         const st = (order.status || '').toLowerCase();
         const stMap = {
             'pending': { label: 'En attente', dot: 'amber', badgeClass: 'warning', textClass: 'text-warning', mobBg: '#fffbeb', mobColor: '#b45309', mobBorder: '#fde68a' },
+            'en_demande': { label: 'En Demande', dot: 'blue', badgeClass: 'primary', textClass: 'text-primary', mobBg: '#eef2ff', mobColor: '#4338ca', mobBorder: '#c7d2fe' },
             'processing': { label: 'En cours', dot: 'blue', badgeClass: 'primary', textClass: 'text-primary', mobBg: '#eff6ff', mobColor: '#1d4ed8', mobBorder: '#bfdbfe' },
             'shipped': { label: 'Expédiée', dot: 'teal', badgeClass: 'info', textClass: 'text-info', mobBg: 'rgb(192 246 255 / 53%)', mobColor: '#0093ac', mobBorder: '#0dcaf0' },
             'delivered': { label: 'Livrée', dot: 'green', badgeClass: 'success', textClass: 'text-success', mobBg: '#ecfdf5', mobColor: '#047857', mobBorder: '#a7f3d0' },
