@@ -51,7 +51,6 @@
     {{-- Card Body --}}
     <div class="aod-card-body">
         <div class="aod-card-meta-row">
-            <span class="aod-card-cat-text">{{ $product->category_name ?: 'Terroir Aït Oumdis' }}</span>
             <span class="aod-card-stock {{ !$inStock ? 'is-out' : '' }}">
                 {{ $inStock ? 'En stock' : 'Épuisé' }}
             </span>
