@@ -4,21 +4,60 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
 use App\Services\ShippingService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
 {
     /**
+     * Remove stale/deleted products from the session cart so checkout never hits FK errors.
+     */
+    protected function sanitizeCart(array $cart): array
+    {
+        if (empty($cart)) {
+            return [];
+        }
+
+        $productIds = collect($cart)
+            ->map(fn ($details, $id) => (int) ($details['product_id'] ?? $id))
+            ->filter()
+            ->unique()
+            ->values();
+
+        $existingIds = Product::whereIn('id', $productIds)->pluck('id')->flip();
+
+        $clean = [];
+        foreach ($cart as $key => $details) {
+            $pid = (int) ($details['product_id'] ?? $key);
+            if ($existingIds->has($pid)) {
+                $clean[$key] = $details;
+            }
+        }
+
+        if (count($clean) !== count($cart)) {
+            if (empty($clean)) {
+                session()->forget('cart');
+            } else {
+                session()->put('cart', $clean);
+            }
+        }
+
+        return $clean;
+    }
+
+    /**
      * Show the checkout form.
      */
     public function index()
     {
-        $cart = session()->get('cart', []);
-        
+        $rawCart = session()->get('cart', []);
+        $cart = $this->sanitizeCart($rawCart);
+
         if (empty($cart)) {
-            return redirect()->route('shop.index')->with('error', 'Your cart is empty.');
+            return redirect()->route('shop.index')->with('error', 'Votre panier est vide ou les articles sélectionnés ne sont plus disponibles.');
         }
 
         $subtotal = 0;
@@ -48,10 +87,11 @@ class CheckoutController extends Controller
             'shipping_city' => 'required|string|max:255',
         ]);
 
-        $cart = session()->get('cart', []);
-        
+        $rawCart = session()->get('cart', []);
+        $cart = $this->sanitizeCart($rawCart);
+
         if (empty($cart)) {
-            return redirect()->route('shop.index')->with('error', 'Your cart is empty.');
+            return redirect()->route('shop.index')->with('error', 'Votre panier est vide ou les articles sélectionnés ne sont plus disponibles.');
         }
 
         $subtotal = 0;
@@ -66,52 +106,67 @@ class CheckoutController extends Controller
         $tax = $subtotal - ($subtotal / (1 + $taxRateSetting));
         $subtotalNet = $subtotal - $tax;
 
-        // Create Order
-        $order = Order::create([
-            'order_number' => 'ORD-' . strtoupper(Str::random(10)),
-            'user_id' => auth()->id(), // Link to user if logged in
-            'customer_name' => $request->customer_name,
-            'customer_email' => $request->customer_email,
-            'customer_phone' => $request->customer_phone,
-            'ice' => $request->ice,
-            'shipping_address' => $request->shipping_address,
-            'shipping_city' => $request->shipping_city,
-            'shipping_state' => $request->shipping_state,
-            'shipping_zip'   => 'N/A',
-            'shipping_country' => 'Morocco',
-            'subtotal' => $subtotalNet,
-            'tax' => $tax,
-            'shipping_cost' => $shippingCost,
-            'total' => $total,
-            'status' => 'pending',
-            'payment_status' => 'pending',
-            'payment_method' => 'cod',
-        ]);
-
-        // Create Order Items and Update Stock
-        foreach ($cart as $id => $details) {
-            $productId = $details['product_id'] ?? $id;
-            $product = \App\Models\Product::find($productId);
-
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $productId,
-                'product_sku' => $product ? $product->sku : 'N/A',
-                'product_name' => $details['name'],
-                'price' => $details['price'],
-                'quantity' => $details['quantity'],
-                'subtotal' => $details['price'] * $details['quantity'],
+        $order = DB::transaction(function () use ($request, $cart, $subtotalNet, $tax, $shippingCost, $total) {
+            // Create Order
+            $order = Order::create([
+                'order_number' => 'ORD-' . strtoupper(Str::random(10)),
+                'user_id' => auth()->id(),
+                'customer_name' => $request->customer_name,
+                'customer_email' => $request->customer_email,
+                'customer_phone' => $request->customer_phone,
+                'ice' => $request->ice,
+                'shipping_address' => $request->shipping_address,
+                'shipping_city' => $request->shipping_city,
+                'shipping_state' => $request->shipping_state,
+                'shipping_zip' => 'N/A',
+                'shipping_country' => 'Morocco',
+                'subtotal' => $subtotalNet,
+                'tax' => $tax,
+                'shipping_cost' => $shippingCost,
+                'total' => $total,
+                'status' => 'pending',
+                'payment_status' => 'pending',
+                'payment_method' => 'cod',
             ]);
 
-            // Decrement Stock
-            if ($product && $product->track_inventory) {
-                $product->decrement('stock', $details['quantity']);
+            $productIds = collect($cart)
+                ->map(fn ($details, $id) => (int) ($details['product_id'] ?? $id))
+                ->unique()
+                ->values();
+            $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
+
+            // Create Order Items and Update Stock
+            foreach ($cart as $id => $details) {
+                $productId = (int) ($details['product_id'] ?? $id);
+                $product = $products->get($productId);
+                if (!$product) {
+                    continue;
+                }
+
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $product->id,
+                    'product_sku' => $product->sku ?? 'N/A',
+                    'product_name' => $details['name'],
+                    'price' => $details['price'],
+                    'quantity' => $details['quantity'],
+                    'subtotal' => $details['price'] * $details['quantity'],
+                ]);
+
+                // Decrement Stock
+                if ($product->track_inventory) {
+                    $product->decrement('stock', $details['quantity']);
+                }
             }
-        }
+
+            return $order;
+        });
 
         // Send Emails
         try {
-            \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderConfirmation($order));
+            if (!empty($order->customer_email)) {
+                \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderConfirmation($order));
+            }
             \Illuminate\Support\Facades\Mail::to(setting('contact_email', 'admin@speed.com'))->send(new \App\Mail\NewOrderNotification($order));
         } catch (\Exception $e) {
             \Log::error('Failed to send checkout emails: ' . $e->getMessage());
