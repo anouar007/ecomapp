@@ -109,8 +109,9 @@ class ExpenseController extends Controller
         $categories = Expense::$categories;
         $paymentMethods = Expense::$paymentMethods;
 
-        // Daily trend for chart
+        // Daily trend for chart (reorder() clears any prior orderBy on $query for strict ONLY_FULL_GROUP_BY)
         $dailyExpenseTrend = (clone $query)
+            ->reorder()
             ->setEagerLoads([])
             ->where('status', 'paid')
             ->selectRaw('DATE(expense_date) as date, SUM(amount) as total, COUNT(*) as count')
