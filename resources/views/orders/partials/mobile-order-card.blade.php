@@ -194,7 +194,6 @@
                         @if($stLower === 'delivered') <i class="fas fa-check text-success small"></i> @endif
                     </button>
                 </li>
-                <li><hr class="dropdown-divider my-1"></li>
                 <li>
                     <button type="button" class="dropdown-item rounded-2 py-1.5 px-2 d-flex align-items-center justify-content-between text-danger {{ $stLower === 'cancelled' ? 'active' : '' }}" onclick="quickUpdateOrder({{ $order->id }}, 'status', 'cancelled')">
                         <span><span class="status-dot dot-red me-1.5"></span> Annulée</span>
