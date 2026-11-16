@@ -126,8 +126,8 @@ class ExpenseController extends Controller
         $pendingExpensesTotal = (float) (clone $query)->where('status', 'pending')->sum('amount');
         $pendingExpensesCount = (int) (clone $query)->where('status', 'pending')->count();
 
-        // Recurring Expenses & Monthly Burn Rate (safe if recurring_expenses table isn't migrated yet)
-        if (Schema::hasTable('recurring_expenses')) {
+        // Recurring Expenses & Monthly Burn Rate (safe if recurring_expenses table/column isn't migrated yet)
+        if (Schema::hasTable('recurring_expenses') && Schema::hasColumn('expenses', 'recurring_expense_id')) {
             $recurringExpenses = RecurringExpense::with(['store', 'user'])
                 ->withCount('generatedExpenses')
                 ->orderBy('is_active', 'desc')
