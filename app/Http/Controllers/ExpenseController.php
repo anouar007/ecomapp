@@ -7,6 +7,7 @@ use App\Models\RecurringExpense;
 use App\Models\Store;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -77,10 +78,11 @@ class ExpenseController extends Controller
 
         // Category breakdown for chart & summary
         $categoryBreakdown = (clone $query)
+            ->setEagerLoads([])
             ->where('status', 'paid')
             ->selectRaw('category, COUNT(*) as count, SUM(amount) as total')
             ->groupBy('category')
-            ->orderBy('total', 'desc')
+            ->orderByDesc('total')
             ->get()
             ->map(function ($item) use ($periodExpenses) {
                 $meta = Expense::$categories[$item->category] ?? [
@@ -109,10 +111,11 @@ class ExpenseController extends Controller
 
         // Daily trend for chart
         $dailyExpenseTrend = (clone $query)
+            ->setEagerLoads([])
             ->where('status', 'paid')
             ->selectRaw('DATE(expense_date) as date, SUM(amount) as total, COUNT(*) as count')
-            ->groupBy('date')
-            ->orderBy('date', 'asc')
+            ->groupByRaw('DATE(expense_date)')
+            ->orderByRaw('DATE(expense_date) asc')
             ->get()
             ->map(function ($row) {
                 $row->label = Carbon::parse($row->date)->translatedFormat('d M');
@@ -123,12 +126,16 @@ class ExpenseController extends Controller
         $pendingExpensesTotal = (float) (clone $query)->where('status', 'pending')->sum('amount');
         $pendingExpensesCount = (int) (clone $query)->where('status', 'pending')->count();
 
-        // Recurring Expenses & Monthly Burn Rate
-        $recurringExpenses = RecurringExpense::with(['store', 'user'])
-            ->withCount('generatedExpenses')
-            ->orderBy('is_active', 'desc')
-            ->orderBy('day_of_month', 'asc')
-            ->get();
+        // Recurring Expenses & Monthly Burn Rate (safe if recurring_expenses table isn't migrated yet)
+        if (Schema::hasTable('recurring_expenses')) {
+            $recurringExpenses = RecurringExpense::with(['store', 'user'])
+                ->withCount('generatedExpenses')
+                ->orderBy('is_active', 'desc')
+                ->orderBy('day_of_month', 'asc')
+                ->get();
+        } else {
+            $recurringExpenses = collect();
+        }
 
         $recurringCount = $recurringExpenses->count();
         $recurringMonthlyTotal = (float) $recurringExpenses->where('is_active', true)->sum('amount');
@@ -502,7 +509,11 @@ class ExpenseController extends Controller
     private function authorizeAccess(): void
     {
         $user = auth()->user();
-        abort_if(!$user || (!$user->hasRole('Admin') && !$user->hasPermissionTo('manage_accounting') && !$user->hasPermissionTo('manage_expenses')), 403, 'Accès non autorisé.');
+        abort_if(
+            !$user || (!$user->hasAnyRole(['Admin', 'Super Admin']) && !$user->can('manage_accounting') && !$user->can('manage_expenses')),
+            403,
+            'Accès non autorisé.'
+        );
     }
 
     /**

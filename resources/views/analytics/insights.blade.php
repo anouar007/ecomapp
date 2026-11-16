@@ -213,32 +213,138 @@
         </div>
     </div>
 
-    <!-- Graphiques Villes & Heures de pointe -->
+    <!-- Row 1: Jours de Pointe & Heures de Pointe (50/50 spacieux) -->
+    @php
+        $peakDayOrders = (int) ($timing['peak_day']['orders'] ?? 0);
+        $peakHourOrders = (int) ($timing['peak_hour']['orders'] ?? 0);
+        $morningOrders = collect($timing['by_hour'])->slice(6, 6)->sum('orders');
+        $afternoonOrders = collect($timing['by_hour'])->slice(12, 6)->sum('orders');
+        $eveningNightOrders = collect($timing['by_hour'])->slice(18, 6)->sum('orders') + collect($timing['by_hour'])->slice(0, 6)->sum('orders');
+    @endphp
     <div class="row g-3 mb-4">
         <div class="col-12 col-lg-6">
-            <div class="insight-panel p-3 p-md-4 h-100">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                        <h5 class="fw-bold text-dark mb-0"><i class="fas fa-map-pin text-info me-2"></i>Top 10 Villes de Livraison</h5>
-                        <small class="text-muted">Nombre de commandes expédiées par ville</small>
+            <div class="insight-panel p-3 p-md-4 h-100 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+                    <div class="d-flex align-items-center gap-2.5">
+                        <div class="insight-kpi-icon bg-danger-subtle text-danger"><i class="fas fa-calendar-week"></i></div>
+                        <div>
+                            <h5 class="fw-bold text-dark mb-0">Jours de Pointe (Lun - Dim)</h5>
+                            <small class="text-muted">Répartition hebdomadaire des commandes et du CA</small>
+                        </div>
                     </div>
+                    @if(!empty($timing['peak_day']) && $peakDayOrders > 0)
+                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1 fw-bold flex-shrink-0" style="font-size: 0.74rem;">
+                            <i class="fas fa-fire me-1"></i>Pic : {{ $timing['peak_day']['label'] }} ({{ $peakDayOrders }} cmd)
+                        </span>
+                    @endif
                 </div>
-                <div style="height: 280px; position: relative;">
-                    <canvas id="topCitiesChart"></canvas>
+                <div style="height: 220px; position: relative;">
+                    <canvas id="peakDaysChart"></canvas>
+                </div>
+                <div class="row g-1.5 mt-3 pt-3 border-top text-center">
+                    @foreach($timing['by_day'] as $dayStat)
+                        @php $isPeakDay = $peakDayOrders > 0 && (int) $dayStat['orders'] === $peakDayOrders; @endphp
+                        <div class="col">
+                            <div class="p-2 rounded-3 border {{ $isPeakDay ? 'bg-danger-subtle border-danger shadow-xs' : ($dayStat['orders'] > 0 ? 'bg-light-subtle' : 'bg-white opacity-75') }}">
+                                <div class="fw-bold {{ $isPeakDay ? 'text-danger' : 'text-secondary' }}" style="font-size: 0.72rem;">{{ $dayStat['label'] }}</div>
+                                <div class="fw-extrabold {{ $dayStat['orders'] > 0 ? 'text-dark' : 'text-muted' }}" style="font-size: 0.95rem;">{{ $dayStat['orders'] }}</div>
+                                <div class="text-muted text-truncate" style="font-size: 0.64rem;">{{ number_format((float) $dayStat['revenue'], 0, ',', ' ') }} DH</div>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
             </div>
         </div>
 
         <div class="col-12 col-lg-6">
-            <div class="insight-panel p-3 p-md-4 h-100">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                        <h5 class="fw-bold text-dark mb-0"><i class="fas fa-business-time text-warning me-2"></i>Heures de Pointe (00h - 23h)</h5>
-                        <small class="text-muted">Moments où les clients passent le plus de commandes</small>
+            <div class="insight-panel p-3 p-md-4 h-100 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+                    <div class="d-flex align-items-center gap-2.5">
+                        <div class="insight-kpi-icon bg-warning-subtle text-warning"><i class="fas fa-business-time"></i></div>
+                        <div>
+                            <h5 class="fw-bold text-dark mb-0">Heures de Pointe (00h - 23h)</h5>
+                            <small class="text-muted">Créneaux horaires les plus actifs de la journée</small>
+                        </div>
+                    </div>
+                    @if(!empty($timing['peak_hour']) && $peakHourOrders > 0)
+                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2.5 py-1 fw-bold flex-shrink-0" style="font-size: 0.74rem;">
+                            <i class="fas fa-bolt me-1"></i>Pic : {{ $timing['peak_hour']['label'] }} ({{ $peakHourOrders }} cmd)
+                        </span>
+                    @endif
+                </div>
+                <div style="height: 220px; position: relative;">
+                    <canvas id="peakHoursChart"></canvas>
+                </div>
+                <div class="row g-2 mt-3 pt-3 border-top text-center">
+                    <div class="col-4">
+                        <div class="p-2 rounded-3 bg-light-subtle border">
+                            <div class="text-muted fw-semibold" style="font-size: 0.7rem;"><i class="fas fa-sun text-warning me-1"></i>Matin (06h-12h)</div>
+                            <div class="fw-bold text-dark" style="font-size: 0.92rem;">{{ $morningOrders }} cmd</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-2 rounded-3 bg-light-subtle border">
+                            <div class="text-muted fw-semibold" style="font-size: 0.7rem;"><i class="fas fa-cloud-sun text-primary me-1"></i>Après-midi (12h-18h)</div>
+                            <div class="fw-bold text-dark" style="font-size: 0.92rem;">{{ $afternoonOrders }} cmd</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-2 rounded-3 bg-light-subtle border">
+                            <div class="text-muted fw-semibold" style="font-size: 0.7rem;"><i class="fas fa-moon text-indigo me-1"></i>Soir &amp; Nuit (18h-06h)</div>
+                            <div class="fw-bold text-dark" style="font-size: 0.92rem;">{{ $eveningNightOrders }} cmd</div>
+                        </div>
                     </div>
                 </div>
-                <div style="height: 280px; position: relative;">
-                    <canvas id="peakHoursChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 2: Top 10 Villes de Livraison (Graphique + Podium Top 5) -->
+    <div class="insight-panel p-3 p-md-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 pb-2 border-bottom">
+            <div class="d-flex align-items-center gap-2.5">
+                <div class="insight-kpi-icon bg-info-subtle text-info"><i class="fas fa-map-pin"></i></div>
+                <div>
+                    <h5 class="fw-bold text-dark mb-0">Top 10 Villes de Livraison</h5>
+                    <small class="text-muted">Volume de commandes expédiées et podium des meilleures villes</small>
+                </div>
+            </div>
+            <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2.5 py-1 fw-semibold">
+                {{ $insights['cities']->count() }} ville(s) desservie(s)
+            </span>
+        </div>
+
+        <div class="row g-4 align-items-center">
+            <div class="col-12 col-lg-7">
+                <div style="height: 290px; position: relative;">
+                    <canvas id="topCitiesChart"></canvas>
+                </div>
+            </div>
+            <div class="col-12 col-lg-5">
+                <div class="d-flex flex-column gap-2">
+                    @forelse($insights['cities']->take(5) as $idx => $city)
+                        <div class="p-2.5 rounded-3 border {{ $idx === 0 ? 'bg-info-subtle border-info-subtle' : 'bg-light-subtle' }}">
+                            <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
+                                <div class="d-flex align-items-center gap-2 min-w-0">
+                                    <span class="badge {{ $idx === 0 ? 'bg-info text-white' : ($idx === 1 ? 'bg-primary text-white' : 'bg-secondary-subtle text-dark') }} rounded-circle d-inline-flex align-items-center justify-content-center"
+                                          style="width: 22px; height: 22px; font-size: 0.72rem;">{{ $idx + 1 }}</span>
+                                    <span class="fw-bold text-dark text-truncate" style="font-size: 0.88rem;">{{ $city->city }}</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-1.5 flex-shrink-0">
+                                    <span class="badge bg-white text-primary border rounded-pill px-2 py-0.5 fw-bold" style="font-size: 0.72rem;">{{ $city->orders_count }} cmd</span>
+                                    <span class="fw-bold text-dark" style="font-size: 0.84rem;">{{ currency($city->revenue) }}</span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="progress flex-grow-1" style="height: 5px;">
+                                    <div class="progress-bar {{ $idx === 0 ? 'bg-info' : 'bg-primary' }}" style="width: {{ min(100, $city->revenue_share) }}%"></div>
+                                </div>
+                                <span class="text-muted fw-semibold" style="font-size: 0.7rem;">{{ $city->revenue_share }}% CA &bull; {{ $city->delivery_rate }}% livré</span>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center py-4 text-muted small">Aucune ville de livraison sur cette période.</div>
+                    @endforelse
                 </div>
             </div>
         </div>
@@ -306,9 +412,9 @@
         </div>
     </div>
 
-    <!-- Bottom Row: Paiements, Catégories & Jours de la semaine -->
+    <!-- Bottom Row: Paiements & Catégories -->
     <div class="row g-3">
-        <div class="col-12 col-lg-4">
+        <div class="col-12 col-lg-6">
             <div class="insight-panel p-3 p-md-4 h-100">
                 <h6 class="fw-bold text-dark mb-3"><i class="fas fa-credit-card text-success me-2"></i>Modes de Paiement &amp; Encaissement</h6>
                 <div class="d-flex flex-column gap-2.5">
@@ -330,7 +436,7 @@
             </div>
         </div>
 
-        <div class="col-12 col-lg-4">
+        <div class="col-12 col-lg-6">
             <div class="insight-panel p-3 p-md-4 h-100">
                 <h6 class="fw-bold text-dark mb-3"><i class="fas fa-layer-group text-primary me-2"></i>Top Catégories Vendues</h6>
                 @php
@@ -350,15 +456,6 @@
                     @empty
                         <div class="text-muted small py-3 text-center">Aucune vente par catégorie.</div>
                     @endforelse
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-lg-4">
-            <div class="insight-panel p-3 p-md-4 h-100">
-                <h6 class="fw-bold text-dark mb-3"><i class="fas fa-calendar-week text-danger me-2"></i>Commandes par Jour de Semaine</h6>
-                <div style="height: 215px; position: relative;">
-                    <canvas id="peakDaysChart"></canvas>
                 </div>
             </div>
         </div>
@@ -382,26 +479,36 @@ document.addEventListener('DOMContentLoaded', function () {
                 datasets: [{
                     label: 'Commandes',
                     data: topCities.map(c => c.orders_count),
-                    backgroundColor: 'rgba(14, 165, 233, 0.75)',
-                    borderColor: '#0284c7',
-                    borderWidth: 1,
+                    backgroundColor: topCities.map((_, i) => i === 0 ? 'rgba(14, 165, 233, 0.9)' : (i < 3 ? 'rgba(59, 130, 246, 0.78)' : 'rgba(100, 116, 139, 0.45)')),
                     borderRadius: 6,
+                    barThickness: 18,
                 }]
             },
             options: {
                 indexAxis: 'y',
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => {
+                                const c = topCities[ctx.dataIndex];
+                                return ` ${c.orders_count} cmd • ${Number(c.revenue || 0).toLocaleString('fr-FR')} DH (${c.revenue_share}%)`;
+                            }
+                        }
+                    }
+                },
                 scales: {
-                    x: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } } },
-                    y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+                    x: { beginAtZero: true, grid: { color: 'rgba(148, 163, 184, 0.15)' }, ticks: { stepSize: 1, font: { size: 11 } } },
+                    y: { grid: { display: false }, ticks: { font: { size: 11, weight: '600' } } }
                 }
             }
         });
     }
 
     const byHour = @json($insights['timing']['by_hour']);
+    const maxHourOrders = Math.max(0, ...byHour.map(h => h.orders));
     const hoursCanvas = document.getElementById('peakHoursChart');
     if (hoursCanvas) {
         new Chart(hoursCanvas, {
@@ -411,25 +518,34 @@ document.addEventListener('DOMContentLoaded', function () {
                 datasets: [{
                     label: 'Commandes',
                     data: byHour.map(h => h.orders),
-                    backgroundColor: 'rgba(245, 158, 11, 0.7)',
-                    borderColor: '#d97706',
-                    borderWidth: 1,
-                    borderRadius: 4,
+                    backgroundColor: byHour.map(h => h.orders > 0 && h.orders === maxHourOrders ? 'rgba(245, 158, 11, 0.95)' : 'rgba(245, 158, 11, 0.45)'),
+                    borderRadius: 5,
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => {
+                                const h = byHour[ctx.dataIndex];
+                                return ` ${h.orders} cmd • ${Number(h.revenue || 0).toLocaleString('fr-FR')} DH`;
+                            }
+                        }
+                    }
+                },
                 scales: {
                     x: { grid: { display: false }, ticks: { maxTicksLimit: 12, font: { size: 10 } } },
-                    y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } } }
+                    y: { beginAtZero: true, grid: { color: 'rgba(148, 163, 184, 0.15)' }, ticks: { stepSize: 1, font: { size: 11 } } }
                 }
             }
         });
     }
 
     const byDay = @json($insights['timing']['by_day']);
+    const maxDayOrders = Math.max(0, ...byDay.map(d => d.orders));
     const daysCanvas = document.getElementById('peakDaysChart');
     if (daysCanvas) {
         new Chart(daysCanvas, {
@@ -439,19 +555,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 datasets: [{
                     label: 'Commandes',
                     data: byDay.map(d => d.orders),
-                    backgroundColor: 'rgba(220, 38, 38, 0.75)',
-                    borderColor: '#dc2626',
-                    borderWidth: 1,
-                    borderRadius: 6,
+                    backgroundColor: byDay.map(d => d.orders > 0 && d.orders === maxDayOrders ? 'rgba(220, 38, 38, 0.9)' : 'rgba(220, 38, 38, 0.42)'),
+                    borderRadius: 8,
+                    maxBarThickness: 34,
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => {
+                                const d = byDay[ctx.dataIndex];
+                                return ` ${d.orders} cmd • ${Number(d.revenue || 0).toLocaleString('fr-FR')} DH`;
+                            }
+                        }
+                    }
+                },
                 scales: {
-                    x: { grid: { display: false }, ticks: { font: { size: 11 } } },
-                    y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } } }
+                    x: { grid: { display: false }, ticks: { font: { size: 11, weight: '600' } } },
+                    y: { beginAtZero: true, grid: { color: 'rgba(148, 163, 184, 0.15)' }, ticks: { stepSize: 1, font: { size: 11 } } }
                 }
             }
         });
