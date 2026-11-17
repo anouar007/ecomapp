@@ -3,8 +3,17 @@
 @section('meta_title', 'Mon Panier — Coopérative Aït Oumdis')
 
 @section('content')
+<style>
+@media (max-width: 768px) {
+    .aod-cart-header { padding: 24px 0 20px !important; }
+    .aod-cart-section { padding: 24px 0 90px !important; }
+    .aod-cart-item-card { padding: 14px !important; border-radius: 14px !important; }
+    .aod-cart-item-img { width: 64px !important; height: 64px !important; }
+    .aod-cart-summary { position: static !important; padding: 20px 16px !important; }
+}
+</style>
 {{-- Clean Moroccan Zellige Cart Header --}}
-<header class="aod-zellige-soft" style="padding: 40px 0 32px; border-bottom: 1px solid #e3ede6;">
+<header class="aod-zellige-soft aod-cart-header" style="padding: 40px 0 32px; border-bottom: 1px solid #e3ede6;">
     <div class="aod-container" style="position: relative; z-index: 1;">
         <nav aria-label="Fil d'Ariane" style="margin-bottom: 10px; display: flex; align-items: center; gap: 8px; font-size: 0.84rem;">
             <a href="{{ route('home') }}" style="color: #5f6f65; text-decoration: none; font-weight: 600;">Accueil</a>
@@ -31,7 +40,7 @@
     </div>
 </header>
 
-<section style="background-color: #ffffff; padding: 48px 0 90px; min-height: 60vh;">
+<section class="aod-cart-section" style="background-color: #ffffff; padding: 48px 0 90px; min-height: 60vh;">
     <div class="aod-container">
         @if(session('cart') && count(session('cart')) > 0)
         <div class="row g-4">
@@ -40,13 +49,13 @@
                     @php $total = 0; @endphp
                     @foreach(session('cart') as $id => $details)
                     @php $total += $details['price'] * $details['quantity']; @endphp
-                    <div class="rounded-4" style="background: #ffffff; border: 1px solid #e3ede6; padding: 18px 20px; box-shadow: 0 2px 10px rgba(30, 77, 52, 0.03);" id="cart-row-{{ $id }}">
+                    <div class="rounded-4 aod-cart-item-card" style="background: #ffffff; border: 1px solid #e3ede6; padding: 18px 20px; box-shadow: 0 2px 10px rgba(30, 77, 52, 0.03);" id="cart-row-{{ $id }}">
                         <div class="row align-items-center g-3">
                             <!-- Image & Name -->
                             <div class="col-12 col-md-6 d-flex align-items-center">
                                 <div class="flex-shrink-0 me-3">
                                     @if(!empty($details['image']))
-                                        <img src="{{ product_image_url($details['image']) }}" alt="{{ $details['name'] }}" class="rounded-3 object-fit-cover" style="width: 82px; height: 82px; border: 1px solid #e3ede6; background: #f6f4ee;">
+                                        <img src="{{ product_image_url($details['image']) }}" alt="{{ $details['name'] }}" class="rounded-3 object-fit-cover aod-cart-item-img" style="width: 82px; height: 82px; border: 1px solid #e3ede6; background: #f6f4ee;">
                                     @else
                                         <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 82px; height: 82px; background: #f8fbf9; border: 1px solid #e3ede6; color: #2f8825;">
                                             <i class="fas fa-leaf fa-lg"></i>
@@ -97,7 +106,7 @@
             </div>
 
             <div class="col-lg-4">
-                <div class="rounded-4 sticky-top" style="top: 96px; z-index: 1; background: #f8fbf9; border: 1px solid #e3ede6; padding: 26px;">
+                <div class="rounded-4 sticky-top aod-cart-summary" style="top: 96px; z-index: 1; background: #f8fbf9; border: 1px solid #e3ede6; padding: 26px;">
                     <h5 class="fw-bold mb-4" style="font-family: 'Playfair Display', Georgia, serif; color: #1e4d34; font-size: 1.25rem;">
                         Récapitulatif
                     </h5>

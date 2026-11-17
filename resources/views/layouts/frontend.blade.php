@@ -76,7 +76,7 @@
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('css/sunpure-theme.css') }}">
     <link rel="stylesheet" href="{{ asset('css/frontend.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/aitoumdis-clean.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/aitoumdis-clean.css') }}?v={{ filemtime(public_path('css/aitoumdis-clean.css')) }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Custom Head Codes -->
     @php
