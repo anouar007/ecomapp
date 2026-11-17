@@ -566,7 +566,8 @@ body {
 
 @media (max-width: 540px) {
   .aod-products-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
 }
 
@@ -1614,17 +1615,45 @@ body {
   .aod-card-media {
     height: auto !important;
     aspect-ratio: 9 / 16;
+    max-height: 290px;
+  }
+  .aod-product-card {
+    border-radius: 14px;
   }
   .aod-card-body {
-    padding: 14px 14px 16px;
+    padding: 10px 10px 12px;
+  }
+  .aod-card-title {
+    font-size: 0.88rem;
+    line-height: 1.25;
+  }
+  .aod-card-desc {
+    font-size: 0.74rem;
+    -webkit-line-clamp: 2;
+    margin-bottom: 8px;
+  }
+  .aod-size-pills {
+    gap: 4px;
+    margin-bottom: 8px;
   }
   .aod-size-pill {
-    padding: 6px 12px;
-    font-size: 0.78rem;
+    padding: 3px 8px;
+    font-size: 0.7rem;
+  }
+  .aod-card-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .aod-card-price {
+    font-size: 1rem;
   }
   .aod-btn-add {
-    min-height: 40px;
-    padding: 9px 14px;
+    width: 100%;
+    justify-content: center;
+    min-height: 34px;
+    padding: 7px 10px;
+    font-size: 0.78rem;
   }
   .aod-flyer-contact-card {
     padding: 20px 14px;
