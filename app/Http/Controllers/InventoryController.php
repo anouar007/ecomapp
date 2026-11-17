@@ -11,6 +11,7 @@ use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class InventoryController extends Controller
 {
@@ -120,7 +121,7 @@ class InventoryController extends Controller
         }
 
         $query = $this->buildFilteredProductQuery($request, $selectedStoreId);
-        $query->with(['productCategory', 'variants', 'storeStocks.store']);
+        $query->with(['productCategory', 'variants', 'storeStocks.store', 'primaryImage', 'images']);
 
         // 30-day sales velocity
         $startDate = now()->subDays(30);
@@ -130,7 +131,8 @@ class InventoryController extends Controller
 
         // Sorting
         $sortBy = $request->get('sort_by', 'name');
-        $sortDir = strtolower($request->get('sort_dir', 'asc')) === 'desc' ? 'desc' : 'asc';
+        $defaultDir = $sortBy === 'sold_last_30_days' ? 'desc' : 'asc';
+        $sortDir = strtolower($request->get('sort_dir', $defaultDir)) === 'desc' ? 'desc' : 'asc';
         $allowedSorts = ['name', 'sku', 'stock', 'sold_last_30_days'];
         if (!in_array($sortBy, $allowedSorts)) {
             $sortBy = 'name';
@@ -141,6 +143,8 @@ class InventoryController extends Controller
                 DB::raw("COALESCE((SELECT quantity FROM product_stocks WHERE product_stocks.product_id = products.id AND product_stocks.store_id = {$selectedStoreId} LIMIT 1), 0)"),
                 $sortDir
             );
+        } elseif ($sortBy === 'sold_last_30_days') {
+            $query->orderByRaw("COALESCE(sold_last_30_days, 0) {$sortDir}");
         } else {
             $query->orderBy($sortBy, $sortDir);
         }
@@ -160,9 +164,9 @@ class InventoryController extends Controller
             ->get()
             ->keyBy('store_id');
 
-        // Statistics (store-scoped when a store is selected, otherwise global)
+        // Statistics via SQL aggregates (store-scoped when a store is selected, otherwise global)
         $stats = [
-            'total_products' => Product::where('track_inventory', true)->count(),
+            'total_products' => 0,
             'low_stock' => 0,
             'out_of_stock' => 0,
             'total_stock_value' => 0,
@@ -172,49 +176,42 @@ class InventoryController extends Controller
 
         try {
             if ($selectedStoreId) {
-                $tracked = Product::where('track_inventory', true)
-                    ->with(['storeStocks' => fn ($sq) => $sq->where('store_id', $selectedStoreId)])
-                    ->get();
-
-                foreach ($tracked as $product) {
-                    $stRecord = $product->storeStocks->first();
-                    $qty = (int) ($stRecord->quantity ?? 0);
-                    $minQty = (int) ($stRecord->min_quantity ?? 2);
-
-                    if ($qty <= 0) {
-                        $stats['out_of_stock']++;
-                    } elseif ($qty <= $minQty) {
-                        $stats['low_stock']++;
-                    }
-
-                    if ($qty > 0) {
-                        $stats['stocked_products']++;
-                    }
-                    $stats['total_units'] += $qty;
-
-                    if ($product->cost_price) {
-                        $stats['total_stock_value'] += $qty * $product->cost_price;
-                    }
-                }
+                $agg = DB::table('products')
+                    ->leftJoin('product_stocks as ps', function ($join) use ($selectedStoreId) {
+                        $join->on('products.id', '=', 'ps.product_id')
+                             ->where('ps.store_id', '=', $selectedStoreId);
+                    })
+                    ->where('products.track_inventory', true)
+                    ->selectRaw('
+                        COUNT(*) as total_products,
+                        SUM(CASE WHEN COALESCE(ps.quantity, 0) <= 0 THEN 1 ELSE 0 END) as out_of_stock,
+                        SUM(CASE WHEN COALESCE(ps.quantity, 0) > 0 AND COALESCE(ps.quantity, 0) <= COALESCE(ps.min_quantity, 2) THEN 1 ELSE 0 END) as low_stock,
+                        SUM(CASE WHEN COALESCE(ps.quantity, 0) > 0 THEN 1 ELSE 0 END) as stocked_products,
+                        COALESCE(SUM(COALESCE(ps.quantity, 0)), 0) as total_units,
+                        COALESCE(SUM(CASE WHEN products.cost_price IS NOT NULL THEN COALESCE(ps.quantity, 0) * products.cost_price ELSE 0 END), 0) as total_stock_value
+                    ')
+                    ->first();
             } else {
-                $tracked = Product::where('track_inventory', true)->get();
-                foreach ($tracked as $product) {
-                    $qty = (int) ($product->stock ?? 0);
-                    $threshold = (int) ($product->low_stock_threshold ?? $product->min_stock ?? 10);
-                    if ($qty <= 0) {
-                        $stats['out_of_stock']++;
-                    } elseif ($qty <= $threshold) {
-                        $stats['low_stock']++;
-                    }
-                    if ($qty > 0) {
-                        $stats['stocked_products']++;
-                    }
-                    $stats['total_units'] += $qty;
+                $agg = DB::table('products')
+                    ->where('track_inventory', true)
+                    ->selectRaw('
+                        COUNT(*) as total_products,
+                        SUM(CASE WHEN COALESCE(stock, 0) <= 0 THEN 1 ELSE 0 END) as out_of_stock,
+                        SUM(CASE WHEN COALESCE(stock, 0) > 0 AND COALESCE(stock, 0) <= COALESCE(low_stock_threshold, min_stock, 10) THEN 1 ELSE 0 END) as low_stock,
+                        SUM(CASE WHEN COALESCE(stock, 0) > 0 THEN 1 ELSE 0 END) as stocked_products,
+                        COALESCE(SUM(COALESCE(stock, 0)), 0) as total_units,
+                        COALESCE(SUM(CASE WHEN cost_price IS NOT NULL THEN COALESCE(stock, 0) * cost_price ELSE 0 END), 0) as total_stock_value
+                    ')
+                    ->first();
+            }
 
-                    if ($product->cost_price) {
-                        $stats['total_stock_value'] += $qty * $product->cost_price;
-                    }
-                }
+            if ($agg) {
+                $stats['total_products'] = (int) ($agg->total_products ?? 0);
+                $stats['out_of_stock'] = (int) ($agg->out_of_stock ?? 0);
+                $stats['low_stock'] = (int) ($agg->low_stock ?? 0);
+                $stats['stocked_products'] = (int) ($agg->stocked_products ?? 0);
+                $stats['total_units'] = (int) ($agg->total_units ?? 0);
+                $stats['total_stock_value'] = (float) ($agg->total_stock_value ?? 0);
             }
         } catch (\Exception $e) {
             // Keep safe defaults
@@ -223,6 +220,15 @@ class InventoryController extends Controller
         $allocatedUnits = (int) $storeUnitStats->sum('total_units');
         $globalTrackedUnits = (int) Product::where('track_inventory', true)->sum('stock');
         $unallocatedUnits = max(0, $globalTrackedUnits - $allocatedUnits);
+        $unacknowledgedAlertsCount = StockAlert::unacknowledged()->count();
+
+        $transferProducts = $stores->count() >= 2
+            ? Product::where('track_inventory', true)
+                ->select(['id', 'name', 'sku', 'stock'])
+                ->with(['storeStocks:id,product_id,store_id,quantity'])
+                ->orderBy('name')
+                ->get()
+            : collect();
 
         return view('inventory.index', compact(
             'products',
@@ -232,7 +238,11 @@ class InventoryController extends Controller
             'selectedStore',
             'selectedStoreId',
             'storeUnitStats',
-            'unallocatedUnits'
+            'unallocatedUnits',
+            'unacknowledgedAlertsCount',
+            'transferProducts',
+            'sortBy',
+            'sortDir'
         ));
     }
 
@@ -266,6 +276,7 @@ class InventoryController extends Controller
 
         $callback = function () use ($request, $columns, $selectedStore, $selectedStoreId, $isAdmin) {
             $file = fopen('php://output', 'w');
+            fwrite($file, "\xEF\xBB\xBF");
             fputcsv($file, $columns);
 
             $query = $this->buildFilteredProductQuery($request, $selectedStoreId)
@@ -280,7 +291,9 @@ class InventoryController extends Controller
                         $qty = (int) ($stRecord->quantity ?? 0);
                         $minQty = (int) ($stRecord->min_quantity ?? 2);
                         $loc = $stRecord->location_code ?? '';
-                        $status = $qty <= 0 ? 'Out of Stock' : ($qty <= $minQty ? 'Low Stock' : 'In Stock');
+                        $status = !$product->track_inventory
+                            ? 'Not Tracked'
+                            : ($qty <= 0 ? 'Out of Stock' : ($qty <= $minQty ? 'Low Stock' : 'In Stock'));
 
                         fputcsv($file, [
                             $product->name,
@@ -296,7 +309,10 @@ class InventoryController extends Controller
                         ]);
                     } else {
                         $qty = (int) ($product->stock ?? 0);
-                        $status = $qty <= 0 ? 'Out of Stock' : ($qty <= ($product->low_stock_threshold ?? 10) ? 'Low Stock' : 'In Stock');
+                        $threshold = (int) ($product->low_stock_threshold ?? $product->min_stock ?? 10);
+                        $status = !$product->track_inventory
+                            ? 'Not Tracked'
+                            : ($qty <= 0 ? 'Out of Stock' : ($qty <= $threshold ? 'Low Stock' : 'In Stock'));
                         $breakdown = $product->storeStocks
                             ->map(fn ($ss) => ($ss->store->name ?? ('#' . $ss->store_id)) . ': ' . $ss->quantity . ($ss->location_code ? " ({$ss->location_code})" : ''))
                             ->implode(' | ');
@@ -447,7 +463,10 @@ class InventoryController extends Controller
             'adjustment_type' => 'required|in:in,out,adjustment,transfer,return',
             'quantity' => "required|integer|min:{$minQty}",
             'reason' => 'required|string|max:500',
-            'variant_id' => 'nullable|exists:product_variants,id',
+            'variant_id' => [
+                'nullable',
+                Rule::exists('product_variants', 'id')->where('product_id', $product->id),
+            ],
             'store_id' => 'nullable|exists:stores,id',
             'location_code' => 'nullable|string|max:100',
             'min_quantity' => 'nullable|integer|min:0',
@@ -550,5 +569,67 @@ class InventoryController extends Controller
             ]);
 
         return back()->with('success', count($validated['alert_ids']) . ' alerts acknowledged!');
+    }
+
+    /**
+     * Perform bulk inventory actions on selected products.
+     */
+    public function bulkAction(Request $request)
+    {
+        $validated = $request->validate([
+            'action' => 'required|in:adjust_in,adjust_out,enable_tracking,disable_tracking',
+            'product_ids' => 'required|array|min:1',
+            'product_ids.*' => 'integer|exists:products,id',
+            'quantity' => 'required_if:action,adjust_in,adjust_out|nullable|integer|min:1',
+            'reason' => 'nullable|string|max:500',
+            'store_id' => 'nullable|integer|exists:stores,id',
+        ]);
+
+        $products = Product::whereIn('id', $validated['product_ids'])->get();
+        $action = $validated['action'];
+        $updated = 0;
+        $skipped = [];
+
+        DB::transaction(function () use ($products, $action, $validated, &$updated, &$skipped) {
+            foreach ($products as $product) {
+                if ($action === 'enable_tracking') {
+                    $product->update(['track_inventory' => true]);
+                    $updated++;
+                } elseif ($action === 'disable_tracking') {
+                    $product->update(['track_inventory' => false]);
+                    $updated++;
+                } else {
+                    $type = $action === 'adjust_in' ? 'in' : 'out';
+                    $options = [
+                        'reason' => $validated['reason'] ?: 'Ajustement groupé depuis l\'inventaire',
+                    ];
+                    if (!empty($validated['store_id'])) {
+                        $options['store_id'] = (int) $validated['store_id'];
+                    }
+
+                    if ($product->adjustStock((int) $validated['quantity'], $type, Auth::id(), $options)) {
+                        $updated++;
+                    } else {
+                        $skipped[] = $product->name;
+                    }
+                }
+            }
+        });
+
+        $message = "{$updated} article(s) mis à jour avec succès.";
+        if (!empty($skipped)) {
+            $message .= ' Ignoré(s) (stock insuffisant) : ' . implode(', ', array_slice($skipped, 0, 5)) . (count($skipped) > 5 ? '…' : '');
+        }
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => $updated > 0,
+                'updated' => $updated,
+                'skipped' => $skipped,
+                'message' => $message,
+            ], $updated > 0 ? 200 : 422);
+        }
+
+        return back()->with($updated > 0 ? 'success' : 'error', $message);
     }
 }

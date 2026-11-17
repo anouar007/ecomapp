@@ -127,7 +127,7 @@ class ProductVariant extends Model
             $newStock = $quantity;
             $movementQty = abs($newStock - $stockBefore);
         } else {
-            $newStock = $stockBefore + ($type === 'in' ? $quantity : -$quantity);
+            $newStock = $stockBefore + (in_array($type, ['in', 'return'], true) ? abs($quantity) : -abs($quantity));
             $movementQty = abs($quantity);
         }
 

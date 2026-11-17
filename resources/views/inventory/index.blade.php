@@ -112,8 +112,9 @@
             <a href="{{ route('inventory.alerts', array_filter(['store_id' => $selectedStoreId])) }}" class="btn btn-outline-warning shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
                 <i class="fas fa-bell text-warning"></i>
                 <span>Alertes</span>
-                @if(($stats['low_stock'] + $stats['out_of_stock']) > 0)
-                    <span class="badge bg-danger text-white rounded-pill px-1.5" style="font-size: 0.7rem;">{{ $stats['low_stock'] + $stats['out_of_stock'] }}</span>
+                @php $alertsBadgeCount = $unacknowledgedAlertsCount ?? ($stats['low_stock'] + $stats['out_of_stock']); @endphp
+                @if($alertsBadgeCount > 0)
+                    <span class="badge bg-danger text-white rounded-pill px-1.5" style="font-size: 0.7rem;">{{ $alertsBadgeCount }}</span>
                 @endif
             </a>
             <a href="{{ route('inventory.movements', array_filter(['store_id' => $selectedStoreId])) }}" class="btn btn-outline-secondary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
@@ -140,6 +141,22 @@
             <div class="d-flex align-items-center gap-2">
                 <i class="fas fa-triangle-exclamation fs-5"></i>
                 <div>{{ session('error') }}</div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
+    @endif
+    @if($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show rounded-4 border-0 shadow-xs mb-3" role="alert">
+            <div class="d-flex align-items-start gap-2">
+                <i class="fas fa-triangle-exclamation fs-5 mt-0.5"></i>
+                <div>
+                    <div class="fw-semibold">Veuillez corriger les erreurs suivantes :</div>
+                    <ul class="mb-0 ps-3 small">
+                        @foreach($errors->all() as $err)
+                            <li>{{ $err }}</li>
+                        @endforeach
+                    </ul>
+                </div>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
         </div>
@@ -180,7 +197,7 @@
                     $isActiveStore = (int) $selectedStoreId === (int) $st->id;
                     $stUnits = (int) ($storeUnitStats->get($st->id)->total_units ?? 0);
                     $stIcon = match($st->type) {
-                        'warehouse' => 'fa-warehouse text-purple',
+                        'warehouse' => 'fa-warehouse text-danger',
                         'showroom' => 'fa-tv text-info',
                         'workshop' => 'fa-wrench text-warning',
                         default => 'fa-shop text-primary',
@@ -294,9 +311,11 @@
                 </div>
 
                 @php
-                    $activeFilterKeys = ['store_id', 'category_id', 'stock_status', 'location_code', 'sort_by', 'per_page'];
+                    $activeFilterKeys = ['store_id', 'category_id', 'stock_status', 'location_code', 'sort_by', 'sort_dir', 'per_page'];
                     $hasActiveFilters = collect($activeFilterKeys)->some(fn($k) => request()->filled($k));
                     $activeFilterCount = collect($activeFilterKeys)->filter(fn($k) => request()->filled($k))->count();
+                    $currentSortBy = $sortBy ?? request('sort_by', 'name');
+                    $currentSortDir = $sortDir ?? request('sort_dir', 'asc');
                 @endphp
 
                 <button type="button"
@@ -376,12 +395,18 @@
                     <!-- Tri par -->
                     <div class="col-6 col-lg-2">
                         <label class="form-label text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.04em;">Trier par</label>
-                        <select name="sort_by" class="form-select form-select-sm" onchange="document.getElementById('inventoryFilterForm').submit()">
-                            <option value="name" {{ request('sort_by', 'name') === 'name' ? 'selected' : '' }}>Nom du produit</option>
-                            <option value="sku" {{ request('sort_by') === 'sku' ? 'selected' : '' }}>Code SKU</option>
-                            <option value="stock" {{ request('sort_by') === 'stock' ? 'selected' : '' }}>Quantité {{ $selectedStore ? '(ce dépôt)' : '' }}</option>
-                            <option value="sold_last_30_days" {{ request('sort_by') === 'sold_last_30_days' ? 'selected' : '' }}>Ventes (30j)</option>
-                        </select>
+                        <div class="input-group input-group-sm">
+                            <select name="sort_by" class="form-select form-select-sm" onchange="onSortByChange(this)">
+                                <option value="name" {{ $currentSortBy === 'name' ? 'selected' : '' }}>Nom du produit</option>
+                                <option value="sku" {{ $currentSortBy === 'sku' ? 'selected' : '' }}>Code SKU</option>
+                                <option value="stock" {{ $currentSortBy === 'stock' ? 'selected' : '' }}>Quantité {{ $selectedStore ? '(ce dépôt)' : '' }}</option>
+                                <option value="sold_last_30_days" {{ $currentSortBy === 'sold_last_30_days' ? 'selected' : '' }}>Ventes (30j)</option>
+                            </select>
+                            <input type="hidden" name="sort_dir" id="inventorySortDirInput" value="{{ $currentSortDir }}">
+                            <button type="button" class="btn btn-outline-secondary" onclick="toggleInventorySortDir()" title="{{ $currentSortDir === 'desc' ? 'Ordre décroissant (cliquer pour inverser)' : 'Ordre croissant (cliquer pour inverser)' }}">
+                                <i class="fas {{ $currentSortDir === 'desc' ? 'fa-arrow-down-wide-short' : 'fa-arrow-up-short-wide' }}"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Par page -->
@@ -442,19 +467,69 @@
         @endif
     </div>
 
+    <!-- BARRE D'ACTIONS GROUPÉES (Desktop) -->
+    <div id="invBulkBar" class="card border-0 shadow-sm mb-3 d-none" style="border-radius: 14px; background: #0f172a; color: #fff;">
+        <div class="card-body py-2.5 px-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-primary rounded-pill px-2.5 py-1" id="invBulkCount">0</span>
+                <span class="small fw-semibold">article(s) sélectionné(s)</span>
+                @if($selectedStore)
+                    <span class="badge bg-light text-dark rounded-pill" style="font-size: 0.7rem;">Dépôt : {{ $selectedStore->name }}</span>
+                @endif
+            </div>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <div class="input-group input-group-sm" style="width: 110px;">
+                    <span class="input-group-text bg-dark text-white border-secondary">Qté</span>
+                    <input type="number" id="invBulkQty" class="form-control bg-dark text-white border-secondary text-center fw-bold" value="1" min="1">
+                </div>
+                <button type="button" class="btn btn-sm btn-success rounded-pill px-3 fw-semibold" onclick="submitInvBulkAction('adjust_in')">
+                    <i class="fas fa-plus me-1"></i>Entrée
+                </button>
+                <button type="button" class="btn btn-sm btn-warning rounded-pill px-3 fw-semibold" onclick="submitInvBulkAction('adjust_out')">
+                    <i class="fas fa-minus me-1"></i>Sortie
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-light rounded-pill px-2.5" onclick="clearInvSelection()" title="Tout désélectionner">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- AFFICHAGE DESKTOP -->
     <div class="brand-table-card inventory-table-card d-none d-md-block shadow-sm border" style="overflow: hidden !important;">
         <div style="overflow-x: hidden !important; width: 100% !important;">
             <table class="brand-table align-middle" style="table-layout: fixed !important; width: 100% !important; margin: 0 !important;">
                 <thead>
                     <tr>
-                        <th style="width: 24%; padding-left: 1.25rem;">Article</th>
-                        <th style="width: 26%;">
-                            {{ $selectedStore ? 'Stock : ' . $selectedStore->name : 'Stock & Répartition Dépôts' }}
+                        <th style="width: 38px; padding-left: 1rem;">
+                            <input type="checkbox" class="form-check-input" id="invSelectAll" onchange="toggleInvSelectAll(this)" title="Tout sélectionner">
                         </th>
-                        <th class="text-center" style="width: 8%;">Ventes (30j)</th>
-                        <th class="text-center" style="width: 9%;">Autonomie</th>
-                        <th class="text-center" style="width: 8%;">{{ $selectedStore ? 'Seuil Site' : 'Seuil' }}</th>
+                        <th style="width: 23%;">
+                            <a href="{{ route('inventory.index', array_merge(request()->except('page'), ['sort_by' => 'name', 'sort_dir' => ($currentSortBy === 'name' && $currentSortDir === 'asc') ? 'desc' : 'asc'])) }}" class="text-decoration-none text-reset d-inline-flex align-items-center gap-1">
+                                <span>Article</span>
+                                @if($currentSortBy === 'name')
+                                    <i class="fas fa-sort-{{ $currentSortDir === 'asc' ? 'up' : 'down' }} text-primary"></i>
+                                @endif
+                            </a>
+                        </th>
+                        <th style="width: 25%;">
+                            <a href="{{ route('inventory.index', array_merge(request()->except('page'), ['sort_by' => 'stock', 'sort_dir' => ($currentSortBy === 'stock' && $currentSortDir === 'desc') ? 'asc' : 'desc'])) }}" class="text-decoration-none text-reset d-inline-flex align-items-center gap-1">
+                                <span>{{ $selectedStore ? 'Stock : ' . $selectedStore->name : 'Stock & Répartition Dépôts' }}</span>
+                                @if($currentSortBy === 'stock')
+                                    <i class="fas fa-sort-{{ $currentSortDir === 'asc' ? 'up' : 'down' }} text-primary"></i>
+                                @endif
+                            </a>
+                        </th>
+                        <th class="text-center" style="width: 9%;">
+                            <a href="{{ route('inventory.index', array_merge(request()->except('page'), ['sort_by' => 'sold_last_30_days', 'sort_dir' => ($currentSortBy === 'sold_last_30_days' && $currentSortDir === 'desc') ? 'asc' : 'desc'])) }}" class="text-decoration-none text-reset d-inline-flex align-items-center gap-1">
+                                <span>Ventes (30j)</span>
+                                @if($currentSortBy === 'sold_last_30_days')
+                                    <i class="fas fa-sort-{{ $currentSortDir === 'asc' ? 'up' : 'down' }} text-primary"></i>
+                                @endif
+                            </a>
+                        </th>
+                        <th class="text-center" style="width: 8%;">Autonomie</th>
+                        <th class="text-center" style="width: 7%;">{{ $selectedStore ? 'Seuil Site' : 'Seuil' }}</th>
                         <th class="text-end" style="width: 11%;">{{ $isAdmin ? 'Valeur Stock' : 'Statut' }}</th>
                         <th class="text-end" style="width: 14%; padding-right: 1.25rem;">Actions</th>
                     </tr>
@@ -535,8 +610,12 @@
                         }
                     @endphp
                     <tr>
+                        <!-- Checkbox -->
+                        <td style="padding-left: 1rem;">
+                            <input type="checkbox" class="form-check-input inv-row-checkbox" value="{{ $product->id }}" onchange="updateInvBulkBar()">
+                        </td>
                         <!-- Article -->
-                        <td style="padding-left: 1.25rem;">
+                        <td>
                             <div class="d-flex align-items-center gap-2 min-w-0">
                                 <div class="mobile-inv-avatar flex-shrink-0" style="width: 38px; height: 38px;">
                                     <img src="{{ $product->thumbnail }}"
@@ -554,7 +633,7 @@
                                         </span>
                                         <span class="text-muted small">•</span>
                                         <span class="text-muted small text-truncate" style="font-size: 0.72rem;">
-                                            {{ $product->productCategory->name ?? ($product->category->name ?? 'Non classé') }}
+                                            {{ $product->productCategory->name ?? 'Non classé' }}
                                         </span>
                                     </div>
                                     @if($product->variants && $product->variants->isNotEmpty())
@@ -700,7 +779,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7">
+                        <td colspan="8">
                             <div class="text-center py-5">
                                 <div class="brand-avatar mx-auto mb-3" style="width: 56px; height: 56px; font-size: 22px;">
                                     <i class="fas fa-box-open"></i>
@@ -743,6 +822,8 @@
                     </div>
 
                     <div class="modal-body p-3.5">
+                        <div id="modalAdjustError" class="alert alert-danger py-2 px-3 small rounded-3 d-none mb-3" role="alert"></div>
+
                         <!-- Product Preview Card -->
                         <div class="p-3 mb-3 rounded-3 bg-light border d-flex align-items-center justify-content-between">
                             <div class="min-w-0">
@@ -863,7 +944,7 @@
                     </div>
 
                     <div class="modal-footer border-0 p-3.5 pt-0">
-                        <button type="submit" class="btn btn-brand-primary w-100 py-2.5 fw-semibold d-inline-flex align-items-center justify-content-center gap-2">
+                        <button type="submit" id="modalAdjustSubmitBtn" class="btn btn-brand-primary w-100 py-2.5 fw-semibold d-inline-flex align-items-center justify-content-center gap-2">
                             <i class="fas fa-check"></i> <span>Enregistrer l'ajustement</span>
                         </button>
                         <button type="button" class="btn btn-link text-muted small w-100 text-decoration-none mt-1" data-bs-dismiss="modal">
@@ -895,11 +976,14 @@
                 </div>
 
                 <div class="modal-body p-4">
+                    <div id="invTransferError" class="alert alert-danger py-2 px-3 small rounded-3 d-none mb-3"></div>
+
                     <div class="mb-3">
                         <label class="form-label small fw-bold text-dark mb-1">Article à transférer <span class="text-danger">*</span></label>
+                        <input type="text" id="inv_transfer_product_search" class="form-control form-control-sm rounded-3 mb-1.5" placeholder="Filtrer par nom ou SKU..." oninput="filterTransferProducts(this.value)">
                         <select name="product_id" id="inv_transfer_product_id" class="form-select rounded-3" required onchange="refreshTransferSourceLabels()">
                             <option value="">Sélectionnez un article...</option>
-                            @foreach($products as $p)
+                            @foreach(($transferProducts ?? $products) as $p)
                                 <option value="{{ $p->id }}">{{ $p->name }} (SKU: {{ $p->sku ?? 'N/A' }})</option>
                             @endforeach
                         </select>
@@ -908,7 +992,7 @@
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-dark mb-1">Dépôt Source (Origine) <span class="text-danger">*</span></label>
-                            <select name="from_store_id" id="inv_transfer_from_store" class="form-select rounded-3" required>
+                            <select name="from_store_id" id="inv_transfer_from_store" class="form-select rounded-3" required onchange="onTransferStoreChange('from')">
                                 @foreach($stores as $st)
                                     <option value="{{ $st->id }}" data-name="{{ $st->name }} ({{ $st->code }})">{{ $st->name }} ({{ $st->code }})</option>
                                 @endforeach
@@ -916,7 +1000,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-dark mb-1">Dépôt Destination (Arrivée) <span class="text-danger">*</span></label>
-                            <select name="to_store_id" id="inv_transfer_to_store" class="form-select rounded-3" required>
+                            <select name="to_store_id" id="inv_transfer_to_store" class="form-select rounded-3" required onchange="onTransferStoreChange('to')">
                                 @foreach($stores as $idx => $st)
                                     <option value="{{ $st->id }}" data-name="{{ $st->name }} ({{ $st->code }})" {{ $idx === 1 ? 'selected' : '' }}>{{ $st->name }} ({{ $st->code }})</option>
                                 @endforeach
@@ -926,8 +1010,11 @@
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold text-dark mb-1">Quantité à transférer <span class="text-danger">*</span></label>
-                            <input type="number" min="1" step="1" name="quantity" class="form-control rounded-3 fw-bold" placeholder="Ex: 5" required>
+                            <label class="form-label small fw-bold text-dark mb-1">
+                                Quantité à transférer <span class="text-danger">*</span>
+                                <span class="badge bg-light text-secondary border ms-1 fw-normal" id="invTransferAvailBadge"></span>
+                            </label>
+                            <input type="number" min="1" step="1" name="quantity" id="inv_transfer_qty" class="form-control rounded-3 fw-bold" placeholder="Ex: 5" required oninput="validateTransferQty()">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-dark mb-1">Emplacement destination (Optionnel)</label>
@@ -981,15 +1068,102 @@
             'storeStocks' => $storeStockList,
         ];
     }
+
+    $transferStockMap = [];
+    foreach (($transferProducts ?? collect()) as $tp) {
+        $ssMap = [];
+        foreach ($tp->storeStocks as $ss) {
+            $ssMap[(int) $ss->store_id] = (int) $ss->quantity;
+        }
+        $transferStockMap[$tp->id] = $ssMap;
+    }
 @endphp
 <script>
     window.__invProducts = Object.assign(window.__invProducts || {}, @json($invMetaMap));
+    window.__transferStoreStocks = @json($transferStockMap);
 
-    let currentModalProductId = null;
-    let currentProductStock = 0;
-    let modalBaseStock = 0;
-    let modalVariantsList = [];
-    let modalStoreStocks = [];
+    function onSortByChange(selectEl) {
+        const dirInput = document.getElementById('inventorySortDirInput');
+        if (dirInput) {
+            dirInput.value = selectEl.value === 'sold_last_30_days' ? 'desc' : 'asc';
+        }
+        document.getElementById('inventoryFilterForm').submit();
+    }
+
+    function toggleInventorySortDir() {
+        const dirInput = document.getElementById('inventorySortDirInput');
+        if (!dirInput) return;
+        dirInput.value = dirInput.value === 'desc' ? 'asc' : 'desc';
+        document.getElementById('inventoryFilterForm').submit();
+    }
+
+    function getSelectedInvProductIds() {
+        return Array.from(document.querySelectorAll('.inv-row-checkbox:checked')).map(cb => parseInt(cb.value, 10));
+    }
+
+    function toggleInvSelectAll(masterCb) {
+        document.querySelectorAll('.inv-row-checkbox').forEach(cb => {
+            cb.checked = masterCb.checked;
+        });
+        updateInvBulkBar();
+    }
+
+    function clearInvSelection() {
+        const master = document.getElementById('invSelectAll');
+        if (master) master.checked = false;
+        document.querySelectorAll('.inv-row-checkbox').forEach(cb => cb.checked = false);
+        updateInvBulkBar();
+    }
+
+    function updateInvBulkBar() {
+        const ids = getSelectedInvProductIds();
+        const bar = document.getElementById('invBulkBar');
+        const countEl = document.getElementById('invBulkCount');
+        if (!bar || !countEl) return;
+        countEl.textContent = ids.length;
+        bar.classList.toggle('d-none', ids.length === 0);
+    }
+
+    async function submitInvBulkAction(action) {
+        const ids = getSelectedInvProductIds();
+        if (ids.length === 0) return;
+
+        const qty = parseInt(document.getElementById('invBulkQty')?.value || '1', 10) || 1;
+        const selectedStoreId = @json($selectedStoreId);
+
+        try {
+            const resp = await fetch(@json(route('inventory.bulk-action')), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                },
+                body: JSON.stringify({
+                    action: action,
+                    product_ids: ids,
+                    quantity: qty,
+                    store_id: selectedStoreId,
+                    reason: 'Ajustement groupé depuis l\'inventaire'
+                })
+            });
+            const data = await resp.json();
+            if (!resp.ok || !data.success) {
+                alert(data.message || 'Erreur lors de l\'action groupée.');
+                return;
+            }
+            window.location.reload();
+        } catch (err) {
+            alert('Erreur réseau lors de l\'action groupée.');
+        }
+    }
+
+    var currentModalProductId = null;
+    var currentProductStock = 0;
+    var modalBaseStock = 0;
+    var modalVariantsList = [];
+    var modalStoreStocks = [];
 
     function openAdjustModal(productId, preferredStoreId = null, selectedVariantId = null) {
         const meta = window.__invProducts[productId];
@@ -1001,6 +1175,11 @@
         modalStoreStocks = meta.storeStocks || [];
 
         document.getElementById('modalProductName').textContent = meta.name;
+        const errBox = document.getElementById('modalAdjustError');
+        if (errBox) {
+            errBox.classList.add('d-none');
+            errBox.textContent = '';
+        }
         const form = document.getElementById('adjustStockForm');
         form.action = `/inventory/${productId}/adjust`;
 
@@ -1172,6 +1351,18 @@
         const modalEl = document.getElementById('transferInventoryModal');
         if (!modalEl) return;
 
+        const searchInput = document.getElementById('inv_transfer_product_search');
+        if (searchInput) {
+            searchInput.value = '';
+            filterTransferProducts('');
+        }
+
+        const errBox = document.getElementById('invTransferError');
+        if (errBox) {
+            errBox.classList.add('d-none');
+            errBox.textContent = '';
+        }
+
         const prodSelect = document.getElementById('inv_transfer_product_id');
         if (prodSelect && productId) {
             prodSelect.value = String(productId);
@@ -1191,25 +1382,154 @@
         new bootstrap.Modal(modalEl).show();
     }
 
+    function filterTransferProducts(query) {
+        const prodSelect = document.getElementById('inv_transfer_product_id');
+        if (!prodSelect) return;
+        const q = (query || '').trim().toLowerCase();
+        Array.from(prodSelect.options).forEach(opt => {
+            if (!opt.value) return;
+            const match = !q || opt.textContent.toLowerCase().includes(q);
+            opt.hidden = !match;
+        });
+    }
+
+    function onTransferStoreChange(changed) {
+        const fromSelect = document.getElementById('inv_transfer_from_store');
+        const toSelect = document.getElementById('inv_transfer_to_store');
+        if (fromSelect && toSelect && fromSelect.value === toSelect.value) {
+            const target = changed === 'from' ? toSelect : fromSelect;
+            const other = Array.from(target.options).find(o => o.value !== fromSelect.value);
+            if (other) target.value = other.value;
+        }
+        validateTransferQty();
+    }
+
+    function getTransferSourceAvailable() {
+        const prodSelect = document.getElementById('inv_transfer_product_id');
+        const fromSelect = document.getElementById('inv_transfer_from_store');
+        if (!prodSelect || !fromSelect || !prodSelect.value) return null;
+        const map = window.__transferStoreStocks?.[prodSelect.value];
+        if (map) {
+            return parseInt(map[fromSelect.value] ?? 0, 10) || 0;
+        }
+        const meta = window.__invProducts[prodSelect.value];
+        if (meta) {
+            const rec = (meta.storeStocks || []).find(s => String(s.store_id) === String(fromSelect.value));
+            return rec ? rec.quantity : 0;
+        }
+        return 0;
+    }
+
+    function validateTransferQty() {
+        const badge = document.getElementById('invTransferAvailBadge');
+        const qtyInput = document.getElementById('inv_transfer_qty');
+        const errBox = document.getElementById('invTransferError');
+        const avail = getTransferSourceAvailable();
+
+        if (badge) {
+            badge.textContent = avail === null ? '' : `Dispo : ${avail} u.`;
+        }
+        if (qtyInput && avail !== null) {
+            const requested = parseInt(qtyInput.value || '0', 10) || 0;
+            if (requested > avail && errBox) {
+                errBox.textContent = `Attention : la quantité demandée (${requested}) dépasse le stock disponible dans le dépôt source (${avail}).`;
+                errBox.classList.remove('d-none');
+            } else if (errBox) {
+                errBox.classList.add('d-none');
+            }
+        }
+    }
+
     function refreshTransferSourceLabels() {
         const prodSelect = document.getElementById('inv_transfer_product_id');
         const fromSelect = document.getElementById('inv_transfer_from_store');
         const toSelect = document.getElementById('inv_transfer_to_store');
         if (!prodSelect) return;
 
+        const map = window.__transferStoreStocks?.[prodSelect.value];
         const meta = window.__invProducts[prodSelect.value];
+
         [fromSelect, toSelect].forEach(sel => {
             if (!sel) return;
             Array.from(sel.options).forEach(opt => {
                 const base = opt.dataset.name || opt.textContent;
-                if (!meta) {
+                if (!prodSelect.value || (!map && !meta)) {
                     opt.textContent = base;
                     return;
                 }
-                const rec = (meta.storeStocks || []).find(s => String(s.store_id) === String(opt.value));
-                const qty = rec ? rec.quantity : 0;
+                let qty = 0;
+                if (map) {
+                    qty = parseInt(map[opt.value] ?? 0, 10) || 0;
+                } else {
+                    const rec = (meta.storeStocks || []).find(s => String(s.store_id) === String(opt.value));
+                    qty = rec ? rec.quantity : 0;
+                }
                 opt.textContent = `${base} — ${qty} pcs`;
             });
+        });
+
+        validateTransferQty();
+    }
+
+    if (!window.__invAdjustListenerBound) {
+        window.__invAdjustListenerBound = true;
+        document.addEventListener('submit', async function (e) {
+            const adjustForm = e.target;
+            if (!adjustForm || adjustForm.id !== 'adjustStockForm') return;
+
+            e.preventDefault();
+            const errBox = document.getElementById('modalAdjustError');
+            const submitBtn = document.getElementById('modalAdjustSubmitBtn');
+            if (errBox) {
+                errBox.classList.add('d-none');
+                errBox.textContent = '';
+            }
+
+            const origHtml = submitBtn ? submitBtn.innerHTML : '';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Enregistrement...';
+            }
+
+            try {
+                const formData = new FormData(adjustForm);
+                const resp = await fetch(adjustForm.action, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                });
+                const data = await resp.json();
+                if (!resp.ok || !data.success) {
+                    let msg = data.message || 'Impossible d\'enregistrer l\'ajustement.';
+                    if (data.errors) {
+                        msg = Object.values(data.errors).flat().join(' ');
+                    }
+                    if (errBox) {
+                        errBox.textContent = msg;
+                        errBox.classList.remove('d-none');
+                    }
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = origHtml;
+                    }
+                    return;
+                }
+
+                // Preserve all active filters, search, sort & page
+                window.location.reload();
+            } catch (err) {
+                if (errBox) {
+                    errBox.textContent = 'Erreur réseau lors de l\'enregistrement.';
+                    errBox.classList.remove('d-none');
+                }
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = origHtml;
+                }
+            }
         });
     }
 </script>

@@ -447,7 +447,7 @@
 
 @push('scripts')
 <script>
-    let currentStock = {{ $product->stock ?? 0 }};
+    var currentStock = {{ $product->stock ?? 0 }};
 
     document.addEventListener('DOMContentLoaded', function() {
         const storeSelect = document.getElementById('storeSelectAdjust');
