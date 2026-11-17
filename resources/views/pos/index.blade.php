@@ -609,12 +609,12 @@
 }
 
 .panel-title i {
-    color: #6366f1;
+    color: #1e4d34;
     font-size: 14px;
 }
 
 .panel-badge {
-    background: #6366f1;
+    background: #1e4d34;
     color: white;
     font-size: 11px;
     font-weight: 700;
@@ -1192,32 +1192,29 @@
         } else {
             container.innerHTML = cart.map(item => {
                 const key = item.cart_key || `${item.product_id}`;
-                const prod = typeof products !== 'undefined' ? products.find(p => p.id === item.product_id) : null;
-                const variants = prod && Array.isArray(prod.variants) ? prod.variants : [];
                 const titleText = item.base_name || item.name;
-                const sizeSwitcher = variants.length > 1
-                    ? `<select class="pos-cart-size-select" onchange="changeCartItemVariant('${key}', this.value)">
-                        ${variants.map(v => `<option value="${v.id}" ${Number(item.variant_id) === Number(v.id) ? 'selected' : ''}>${v.size} — ${formatCurrency(parseFloat(v.price))}</option>`).join('')}
-                       </select>`
-                    : (item.size ? `<span style="display:inline-block;margin-top:3px;font-size:11px;font-weight:700;color:#1e4d34;background:#f2f7f3;padding:2px 8px;border-radius:999px;border:1px solid #d1dfd5;">${item.size}</span>` : '');
-
-                const lineTotal = parseFloat(item.price) * parseInt(item.quantity, 10);
+                const sizeBadge = item.size
+                    ? `<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#1e4d34;background:#edf5ef;padding:2px 9px;border-radius:999px;border:1px solid #c7decb;">${item.size}</span>`
+                    : '';
+                const unitPrice = parseFloat(item.price);
+                const qty = parseInt(item.quantity, 10);
+                const lineTotal = unitPrice * qty;
 
                 return `
-                <div class="cart-item" style="align-items:flex-start;gap:8px;">
-                    <div class="item-details" style="flex:1;min-width:0;">
-                        <h4 style="margin-bottom:2px;">${titleText}</h4>
-                        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:2px;">
-                            ${sizeSwitcher}
-                            <span class="item-price" style="font-size:11px;color:#64748b;">${formatCurrency(parseFloat(item.price))} × ${item.quantity}</span>
+                <div class="cart-item" style="align-items:center;gap:10px;padding:12px;margin-bottom:10px;background:#f9fbf9;border:1px solid #e3ede6;border-radius:12px;">
+                    <div class="item-details" style="flex:1;min-width:0;padding-right:0;">
+                        <h4 style="margin-bottom:5px;font-size:13.5px;font-weight:700;color:#111c16;">${titleText}</h4>
+                        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+                            ${sizeBadge}
+                            <span style="font-size:12px;color:#556b5d;font-weight:600;">${formatCurrency(unitPrice)} × ${qty}</span>
                         </div>
                     </div>
-                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
                         <div class="item-controls">
                             <div class="control-btn" onclick="updateQuantity('${key}', -1)" title="Moins">
                                 <i class="fas fa-minus" style="font-size: 10px;"></i>
                             </div>
-                            <div class="qty-text">${item.quantity}</div>
+                            <div class="qty-text" style="min-width:22px;text-align:center;font-weight:700;">${qty}</div>
                             <div class="control-btn" onclick="updateQuantity('${key}', 1)" title="Plus">
                                 <i class="fas fa-plus" style="font-size: 10px;"></i>
                             </div>
@@ -1225,7 +1222,7 @@
                                 <i class="fas fa-times" style="font-size: 10px;"></i>
                             </div>
                         </div>
-                        <div style="font-weight: 700; color: #1e4d34; font-size: 13px;">
+                        <div style="font-weight: 800; color: #1e4d34; font-size: 13.5px;">
                             ${formatCurrency(lineTotal)}
                         </div>
                     </div>
