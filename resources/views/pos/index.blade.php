@@ -1261,8 +1261,8 @@
         return config.position === 'before' ? config.symbol + formatted : formatted + ' ' + config.symbol;
     };
 </script>
-<script src="{{ asset('js/pos.js') }}"></script>
-<script src="{{ asset('js/pos-customer.js') }}"></script>
+<script src="{{ asset('js/pos.js') }}?v={{ filemtime(public_path('js/pos.js')) }}"></script>
+<script src="{{ asset('js/pos-customer.js') }}?v={{ filemtime(public_path('js/pos-customer.js')) }}"></script>
 <script>
     // Monkey Patch the display functions from pos.js after it loads
     document.addEventListener('DOMContentLoaded', function() {

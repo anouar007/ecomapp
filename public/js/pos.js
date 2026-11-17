@@ -203,7 +203,7 @@ window.addToCart = function (productId, variantId = null) {
     let selectedVariant = null;
     if (variants.length > 0) {
         selectedVariant = variantId
-            ? variants.find(v => v.id === variantId)
+            ? variants.find(v => String(v.id) === String(variantId))
             : (variants.find(v => v.is_default) || variants[0]);
     }
 
