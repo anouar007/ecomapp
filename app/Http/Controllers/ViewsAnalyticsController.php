@@ -388,10 +388,29 @@ class ViewsAnalyticsController extends Controller
         $todayStr = now()->toDateString();
         $todayProductViews = ProductView::where('viewed_date', $todayStr)->count();
         $todaySearches = SearchLog::where('searched_date', $todayStr)->count();
+        $todayVisitors = DB::table(function ($query) use ($todayStr) {
+            $query->select('ip_address')
+                ->from('product_views')
+                ->where('viewed_date', $todayStr)
+                ->whereNotNull('ip_address')
+                ->union(
+                    DB::table('category_views')
+                        ->select('ip_address')
+                        ->where('viewed_date', $todayStr)
+                        ->whereNotNull('ip_address')
+                )
+                ->union(
+                    DB::table('search_logs')
+                        ->select('ip_address')
+                        ->where('searched_date', $todayStr)
+                        ->whereNotNull('ip_address')
+                );
+        }, 'today_visitors')->count();
 
         return [
             'product_views' => $productViews,
             'unique_visitors' => $uniqueVisitors,
+            'today_visitors' => $todayVisitors,
             'category_views' => $categoryViews,
             'total_searches' => $totalSearches,
             'zero_result_searches' => $zeroResultSearches,

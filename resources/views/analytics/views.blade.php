@@ -412,8 +412,8 @@
 
     @include('partials.subnav.analytics')
 
-    <!-- 5 KPI Summary Cards (2 on mobile, 3 on tablet, 5 on desktop) -->
-    <div class="row row-cols-2 row-cols-md-3 row-cols-xl-5 g-2 g-md-3 mb-3 mb-md-4">
+    <!-- 6 KPI Summary Cards (2 on mobile, 3 on tablet, 6 on desktop) -->
+    <div class="row row-cols-2 row-cols-md-3 row-cols-xl-6 g-2 g-md-3 mb-3 mb-md-4">
         <!-- 1. En Direct / Visiteurs Actifs -->
         <div class="col">
             <div class="views-kpi-card kpi-accent-emerald h-100">
@@ -430,6 +430,23 @@
                 <div class="text-muted small mt-1.5 d-flex align-items-center justify-content-between flex-wrap gap-1" style="font-size: 0.72rem;">
                     <span><strong class="text-dark live-auth-counter">{{ $onlineStats['auth_online'] ?? 0 }}</strong> connectés</span>
                     <span class="badge bg-light text-secondary border px-1.5 py-0.5"><span class="live-guest-counter">{{ $onlineStats['guest_online'] ?? 1 }}</span> vis.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Total Visiteurs (Période) -->
+        <div class="col">
+            <div class="views-kpi-card kpi-accent-amber h-100">
+                <div class="d-flex align-items-center justify-content-between mb-1.5">
+                    <div class="views-kpi-label text-truncate">Total Visiteurs</div>
+                    <div class="views-kpi-icon bg-warning-subtle text-amber">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                </div>
+                <div class="views-kpi-value">{{ number_format($kpi['unique_visitors'] ?? 0, 0, ',', ' ') }}</div>
+                <div class="text-muted small mt-1.5 d-flex align-items-center justify-content-between flex-wrap gap-1" style="font-size: 0.72rem;">
+                    <span>Auj. : <strong class="text-dark">{{ number_format($kpi['today_visitors'] ?? 0, 0, ',', ' ') }}</strong></span>
+                    <span class="badge bg-light text-secondary border px-1.5 py-0.5">Uniques</span>
                 </div>
             </div>
         </div>
