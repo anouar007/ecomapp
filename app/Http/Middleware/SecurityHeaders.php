@@ -46,6 +46,14 @@ class SecurityHeaders
             'geolocation=(), microphone=(), camera=()'
         );
 
+        // Enforce HTTPS (HSTS) when served over TLS
+        if ($request->isSecure()) {
+            $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+        }
+
+        // Hide server/PHP version header
+        $response->headers->remove('X-Powered-By');
+
         // Optimize and GZIP-compress eligible text/HTML/JSON/XML responses for instant transfer speed
         $this->optimizeAndCompressResponse($request, $response);
 

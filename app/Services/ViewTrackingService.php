@@ -158,7 +158,7 @@ class ViewTrackingService
             }
 
             $cleaned = trim(preg_replace('/\s+/u', ' ', (string) $query));
-            if (mb_strlen($cleaned) < 2) {
+            if (mb_strlen($cleaned) < 2 || static::isSecurityProbe($cleaned)) {
                 return;
             }
 
@@ -241,6 +241,17 @@ class ViewTrackingService
 
         $host = parse_url($referer, PHP_URL_HOST);
         return $host ? Str::limit($host, 100, '') : 'Direct';
+    }
+
+    /**
+     * Detect automated SQLi / XSS scanner probes so they are not logged as customer search terms.
+     */
+    public static function isSecurityProbe(string $query): bool
+    {
+        return (bool) preg_match(
+            '/(extractvalue\s*\(|updatexml\s*\(|union\s+(all\s+)?select|select\s+.*\s+from|elt\s*\(|concat\s*\(\s*0x|order\s+by\s+\d+\s*--|sleep\s*\(\s*\d+|benchmark\s*\(|<\s*script\b|javascript:|onerror\s*=)/i',
+            $query
+        );
     }
 }
 

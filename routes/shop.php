@@ -32,17 +32,17 @@ Route::get('/google{code}.html', function ($code) {
 
 // Home & Newsletter
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::post('/newsletter', [\App\Http\Controllers\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
+Route::post('/newsletter', [\App\Http\Controllers\NewsletterController::class, 'subscribe'])->middleware('throttle:10,1')->name('newsletter.subscribe');
 
 // About & Contact
 Route::get('/about', [\App\Http\Controllers\HomeController::class, 'about'])->name('about');
 Route::get('/a-propos', function() { return redirect()->route('about'); });
 Route::get('/contact', [\App\Http\Controllers\HomeController::class, 'contact'])->name('contact');
-Route::post('/contact', [\App\Http\Controllers\HomeController::class, 'sendContact'])->name('contact.send');
+Route::post('/contact', [\App\Http\Controllers\HomeController::class, 'sendContact'])->middleware('throttle:10,1')->name('contact.send');
 
 // Shop & Products
-Route::get('/shop', [\App\Http\Controllers\ShopController::class, 'index'])->name('shop.index');
-Route::get('/shop/search/live', [\App\Http\Controllers\ShopController::class, 'liveSearch'])->name('shop.search.live');
+Route::get('/shop', [\App\Http\Controllers\ShopController::class, 'index'])->middleware('throttle:90,1')->name('shop.index');
+Route::get('/shop/search/live', [\App\Http\Controllers\ShopController::class, 'liveSearch'])->middleware('throttle:90,1')->name('shop.search.live');
 
 // Client Search History (logged-in clients; guests use browser localStorage)
 Route::middleware(['auth', 'throttle:60,1'])->prefix('search-history')->name('search-history.')->group(function () {
@@ -76,12 +76,12 @@ Route::patch('/cart/update', [\App\Http\Controllers\CartController::class, 'upda
 Route::delete('/cart/remove', [\App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
 Route::get('/cart/mini', [\App\Http\Controllers\CartController::class, 'miniCartItems'])->name('cart.mini');
 Route::get('/cart/mini-footer', [\App\Http\Controllers\CartController::class, 'miniCartFooter'])->name('cart.miniFooter');
-Route::post('/cart/apply-coupon', [\App\Http\Controllers\CartController::class, 'applyCoupon'])->name('cart.applyCoupon');
+Route::post('/cart/apply-coupon', [\App\Http\Controllers\CartController::class, 'applyCoupon'])->middleware('throttle:20,1')->name('cart.applyCoupon');
 Route::post('/cart/remove-coupon', [\App\Http\Controllers\CartController::class, 'removeCoupon'])->name('cart.removeCoupon');
 
 // Checkout
 Route::get('/checkout', [\App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout.index');
-Route::post('/checkout', [\App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout.store');
+Route::post('/checkout', [\App\Http\Controllers\CheckoutController::class, 'store'])->middleware('throttle:20,1')->name('checkout.store');
 Route::get('/checkout/orders/{order}/live-status', [\App\Http\Controllers\CheckoutController::class, 'liveStatus'])->name('checkout.liveStatus');
 Route::get('/checkout/success/{order}/status', [\App\Http\Controllers\CheckoutController::class, 'liveStatus']);
 Route::get('/checkout/success/{order}', [\App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
