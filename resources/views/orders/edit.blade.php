@@ -11,7 +11,7 @@
             </div>
             <div>
                 <div class="d-flex align-items-center gap-2 text-muted small mb-1">
-                    <a href="{{ route('orders.index') }}" class="text-decoration-none text-muted">Commandes</a>
+                    <a href="{{ $order->isPosOrder() ? route('orders.pos') : route('orders.index') }}" class="text-decoration-none text-muted">{{ $order->isPosOrder() ? 'Commandes POS' : 'Commandes' }}</a>
                     <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
                     <a href="{{ route('orders.show', $order) }}" class="text-decoration-none text-muted font-monospace">#{{ $order->order_number }}</a>
                     <i class="fas fa-chevron-right" style="font-size: 10px;"></i>

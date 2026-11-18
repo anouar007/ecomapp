@@ -78,7 +78,7 @@ class HomeController extends Controller
                     'image' => $imageUrl,
                     'icon' => $imageUrl, // backwards compatibility for any view referencing icon
                     'url' => route('shop.index', ['category' => $cat->slug]),
-                    'highlight' => stripos($cat->name, 'occasion') !== false,
+                    'highlight' => false,
                 ];
             })->toArray();
         });

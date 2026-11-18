@@ -116,6 +116,9 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:manage_orders|delete_orders')->group(function () {
         Route::delete('orders/{order}', [\App\Http\Controllers\OrderController::class, 'destroy'])->name('orders.destroy');
     });
+    Route::middleware('permission:access_pos|manage_orders|view_orders')->group(function () {
+        Route::get('orders/pos', [\App\Http\Controllers\OrderController::class, 'posOrders'])->name('orders.pos');
+    });
     Route::middleware('permission:manage_orders|view_orders')->group(function () {
         Route::get('orders', [\App\Http\Controllers\OrderController::class, 'index'])->name('orders.index');
         Route::get('orders/{order}', [\App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');

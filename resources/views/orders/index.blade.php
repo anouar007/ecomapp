@@ -236,39 +236,60 @@
 
 @extends('layouts.app')
 
-@section('title', 'Gestion des commandes')
+@php
+    $isPosChannel = ($channel ?? 'website') === 'pos';
+    $indexRoute = $indexRoute ?? ($isPosChannel ? 'orders.pos' : 'orders.index');
+    $exportParams = array_merge(request()->all(), ['channel' => $isPosChannel ? 'pos' : 'website']);
+@endphp
+
+@section('title', $isPosChannel ? 'Commandes POS (Caisse)' : 'Commandes Site Web')
 
 @section('content')
     <!-- En-tête de page (Clean & Pro) -->
     <div class="brand-header">
         <div class="d-flex align-items-center gap-2.5">
             <div class="brand-header-icon flex-shrink-0">
-                <i class="fas fa-shopping-bag"></i>
+                <i class="fas {{ $isPosChannel ? 'fa-cash-register' : 'fa-shopping-bag' }}"></i>
             </div>
             <div>
-                <h1 class="brand-title">Gestion des commandes</h1>
+                <h1 class="brand-title">{{ $isPosChannel ? 'Commandes POS (Caisse)' : 'Commandes Site Web' }}</h1>
                 <p class="brand-subtitle d-flex align-items-center gap-2 flex-wrap mb-0">
-                    <span>Suivez et gérez vos commandes selon leur statut de livraison</span>
+                    <span>{{ $isPosChannel ? 'Consultez et gérez les ventes effectuées en boutique depuis la caisse POS' : 'Suivez et gérez vos commandes provenant du site web selon leur statut de livraison' }}</span>
                     <span class="badge bg-light text-dark border px-2 py-1"><i class="fas fa-receipt text-primary me-1"></i> <strong id="kpi-total-orders">{{ number_format($stats['total'] ?? $orders->total(), 0, ',', ' ') }}</strong> total</span>
                     <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1"><i class="fas fa-coins me-1"></i> <strong id="kpi-revenue-orders">{{ currency($stats['revenue'] ?? 0) }}</strong> encaissés</span>
                 </p>
             </div>
         </div>
         <div class="brand-header-actions">
+            @if($isPosChannel)
+                <a href="{{ route('orders.index') }}" class="btn btn-outline-secondary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
+                    <i class="fas fa-globe text-primary"></i> <span>Commandes Site Web</span>
+                </a>
+            @else
+                <a href="{{ route('orders.pos') }}" class="btn btn-outline-secondary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
+                    <i class="fas fa-cash-register text-danger"></i> <span>Commandes POS</span>
+                </a>
+            @endif
             @if(request('status') || request('payment_status') || request('store_id') || request('search'))
-                <a href="{{ route('orders.index') }}" class="btn btn-outline-danger shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
+                <a href="{{ route($indexRoute) }}" class="btn btn-outline-danger shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
                     <i class="fas fa-rotate-left"></i> <span>Toutes ({{ number_format($stats['total'] ?? 0, 0, ',', ' ') }})</span>
                 </a>
             @endif
-            <a href="{{ route('export.orders.pdf', request()->all()) }}" data-no-spa="true" class="btn btn-outline-danger shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
+            <a href="{{ route('export.orders.pdf', $exportParams) }}" data-no-spa="true" class="btn btn-outline-danger shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
                 <i class="fas fa-file-pdf text-danger"></i> <span>Exporter PDF</span>
             </a>
-            <a href="{{ route('export.orders', request()->all()) }}" data-no-spa="true" class="btn btn-outline-secondary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
+            <a href="{{ route('export.orders', $exportParams) }}" data-no-spa="true" class="btn btn-outline-secondary shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-1.5 flex-grow-1 flex-md-grow-0 fw-semibold" style="font-size: 0.84rem;">
                 <i class="fas fa-file-csv text-success"></i> <span>Exporter CSV</span>
             </a>
-            <a href="{{ route('orders.create') }}" class="btn-brand-primary flex-grow-1 flex-md-grow-0 justify-content-center text-nowrap px-3 py-2" style="font-size: 0.84rem;">
-                <i class="fas fa-plus me-1"></i> <span class="d-none d-sm-inline">Nouvelle commande</span><span class="d-sm-none">Créer</span>
-            </a>
+            @if($isPosChannel)
+                <a href="{{ route('pos.index') }}" class="btn-brand-primary flex-grow-1 flex-md-grow-0 justify-content-center text-nowrap px-3 py-2" style="font-size: 0.84rem;">
+                    <i class="fas fa-cash-register me-1"></i> <span class="d-none d-sm-inline">Ouvrir la caisse POS</span><span class="d-sm-none">Caisse</span>
+                </a>
+            @else
+                <a href="{{ route('orders.create') }}" class="btn-brand-primary flex-grow-1 flex-md-grow-0 justify-content-center text-nowrap px-3 py-2" style="font-size: 0.84rem;">
+                    <i class="fas fa-plus me-1"></i> <span class="d-none d-sm-inline">Nouvelle commande</span><span class="d-sm-none">Créer</span>
+                </a>
+            @endif
         </div>
     </div>
 
@@ -285,7 +306,7 @@
     <div class="row row-cols-2 row-cols-sm-3 row-cols-xl-6 g-2.5 g-md-3 mb-4">
         <!-- 0. Toutes les commandes (All orders) -->
         <div class="col mb-2">
-            <a href="{{ route('orders.index', request()->except(['status', 'page'])) }}" 
+            <a href="{{ route($indexRoute, request()->except(['status', 'page'])) }}" 
                class="order-kpi-card kpi-theme-all h-100 {{ !request('status') ? 'active-filter' : '' }}"
                title="Voir toutes les commandes">
                 <div>
@@ -308,7 +329,7 @@
 
         <!-- 1. En attente (pending) -->
         <div class="col mb-2">
-            <a href="{{ request('status') === 'pending' ? route('orders.index', request()->except(['status', 'page'])) : route('orders.index', array_merge(request()->except('page'), ['status' => 'pending'])) }}" 
+            <a href="{{ request('status') === 'pending' ? route($indexRoute, request()->except(['status', 'page'])) : route($indexRoute, array_merge(request()->except('page'), ['status' => 'pending'])) }}" 
                class="order-kpi-card kpi-theme-pending h-100 {{ request('status') === 'pending' ? 'active-filter' : '' }}"
                title="Filtrer : Commandes en attente">
                 <div>
@@ -331,7 +352,7 @@
 
         <!-- 2. En cours (processing) -->
         <div class="col mb-2">
-            <a href="{{ request('status') === 'processing' ? route('orders.index', request()->except(['status', 'page'])) : route('orders.index', array_merge(request()->except('page'), ['status' => 'processing'])) }}" 
+            <a href="{{ request('status') === 'processing' ? route($indexRoute, request()->except(['status', 'page'])) : route($indexRoute, array_merge(request()->except('page'), ['status' => 'processing'])) }}" 
                class="order-kpi-card kpi-theme-processing h-100 {{ request('status') === 'processing' ? 'active-filter' : '' }}"
                title="Filtrer : Commandes en cours de préparation">
                 <div>
@@ -354,7 +375,7 @@
 
         <!-- 3. Expédiée (shipped) -->
         <div class="col mb-2">
-            <a href="{{ request('status') === 'shipped' ? route('orders.index', request()->except(['status', 'page'])) : route('orders.index', array_merge(request()->except('page'), ['status' => 'shipped'])) }}" 
+            <a href="{{ request('status') === 'shipped' ? route($indexRoute, request()->except(['status', 'page'])) : route($indexRoute, array_merge(request()->except('page'), ['status' => 'shipped'])) }}" 
                class="order-kpi-card kpi-theme-shipped h-100 {{ request('status') === 'shipped' ? 'active-filter' : '' }}"
                title="Filtrer : Commandes expédiées en acheminement">
                 <div>
@@ -377,7 +398,7 @@
 
         <!-- 4. Livrée (delivered) -->
         <div class="col mb-2">
-            <a href="{{ request('status') === 'delivered' ? route('orders.index', request()->except(['status', 'page'])) : route('orders.index', array_merge(request()->except('page'), ['status' => 'delivered'])) }}" 
+            <a href="{{ request('status') === 'delivered' ? route($indexRoute, request()->except(['status', 'page'])) : route($indexRoute, array_merge(request()->except('page'), ['status' => 'delivered'])) }}" 
                class="order-kpi-card kpi-theme-delivered h-100 {{ request('status') === 'delivered' ? 'active-filter' : '' }}"
                title="Filtrer : Commandes livrées avec succès">
                 <div>
@@ -400,7 +421,7 @@
 
         <!-- 5. Annulée (cancelled) -->
         <div class="col mb-2">
-            <a href="{{ request('status') === 'cancelled' ? route('orders.index', request()->except(['status', 'page'])) : route('orders.index', array_merge(request()->except('page'), ['status' => 'cancelled'])) }}" 
+            <a href="{{ request('status') === 'cancelled' ? route($indexRoute, request()->except(['status', 'page'])) : route($indexRoute, array_merge(request()->except('page'), ['status' => 'cancelled'])) }}" 
                class="order-kpi-card kpi-theme-cancelled h-100 {{ request('status') === 'cancelled' ? 'active-filter' : '' }}"
                title="Filtrer : Commandes annulées ou rejetées">
                 <div>
@@ -424,7 +445,7 @@
 
     <!-- Barre de filtres unifiée (Desktop & Mobile) -->
     <div class="brand-filter-bar mb-3">
-        <form method="GET" action="{{ route('orders.index') }}" id="orderFilterForm">
+        <form method="GET" action="{{ route($indexRoute) }}" id="orderFilterForm">
             <!-- Row 1 : Champ Recherche + Bouton Toggle Mobile + Actions Desktop -->
             <div class="d-flex align-items-center gap-2 flex-wrap">
                 <div class="brand-search-wrapper flex-grow-1" style="min-width: 170px;">
@@ -561,17 +582,17 @@
                         <button type="submit" class="btn-brand-primary btn-sm flex-grow-1 flex-md-grow-0 justify-content-center" title="Appliquer les filtres">
                             <i class="fas fa-filter me-1"></i> <span class="d-none d-md-inline">Filtrer</span><span class="d-md-none">Appliquer les filtres</span>
                         </button>
-                        <a href="{{ route('orders.index') }}" class="btn-brand-light btn-sm flex-shrink-0" title="Réinitialiser les filtres">
+                        <a href="{{ route($indexRoute) }}" class="btn-brand-light btn-sm flex-shrink-0" title="Réinitialiser les filtres">
                             <i class="fas fa-redo"></i>
                         </a>
                     </div>
 
                     <!-- Bouton Exporter sur Mobile (d-md-none) -->
                     <div class="col-12 d-md-none mt-2 pt-2 border-top d-flex gap-2">
-                        <a href="{{ route('export.orders.pdf', request()->all()) }}" data-no-spa="true" class="btn btn-sm btn-outline-danger flex-fill justify-content-center">
+                        <a href="{{ route('export.orders.pdf', $exportParams) }}" data-no-spa="true" class="btn btn-sm btn-outline-danger flex-fill justify-content-center">
                             <i class="fas fa-file-pdf me-1"></i> Exporter PDF
                         </a>
-                        <a href="{{ route('export.orders', request()->all()) }}" data-no-spa="true" class="btn btn-sm btn-outline-secondary flex-fill justify-content-center">
+                        <a href="{{ route('export.orders', $exportParams) }}" data-no-spa="true" class="btn btn-sm btn-outline-secondary flex-fill justify-content-center">
                             <i class="fas fa-file-csv me-1 text-success"></i> Exporter CSV
                         </a>
                     </div>
@@ -667,7 +688,7 @@
                 </a>
             @endif
 
-            <a href="{{ route('orders.index') }}" class="small text-danger fw-semibold text-decoration-none ms-1">
+            <a href="{{ route($indexRoute) }}" class="small text-danger fw-semibold text-decoration-none ms-1">
                 Effacer tout
             </a>
         </div>
@@ -685,7 +706,7 @@
                 </span>
             </div>
             @if(request('status') || request('payment_status') || request('store_id') || request('search'))
-                <a href="{{ route('orders.index') }}" class="small text-danger fw-semibold text-decoration-none" style="font-size: 0.75rem;">
+                <a href="{{ route($indexRoute) }}" class="small text-danger fw-semibold text-decoration-none" style="font-size: 0.75rem;">
                     <i class="fas fa-times me-0.5"></i>Effacer filtres
                 </a>
             @endif
@@ -701,7 +722,7 @@
                 <h6 class="fw-bold text-dark">Aucune commande trouvée</h6>
                 <p class="text-muted small mb-0">Aucun enregistrement ne correspond à vos critères de recherche.</p>
                 @if(request('search') || $hasActiveFilters)
-                    <a href="{{ route('orders.index') }}" class="btn-brand-primary btn-sm mt-3">
+                    <a href="{{ route($indexRoute) }}" class="btn-brand-primary btn-sm mt-3">
                         <i class="fas fa-redo me-1"></i> Réinitialiser les filtres
                     </a>
                 @endif
@@ -744,6 +765,16 @@
                             <a href="{{ route('orders.show', $order) }}" class="fw-bold text-primary text-decoration-none font-monospace">
                                 #{{ $order->order_number }}
                             </a>
+                            @php $forcedOosItems = $order->forcedOutOfStockItems(); @endphp
+                            @if($forcedOosItems->isNotEmpty())
+                                <div class="mt-1">
+                                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-0.5"
+                                          style="font-size: 0.66rem;"
+                                          title="Contient un produit hors stock (forcé en stock) : {{ $forcedOosItems->pluck('display_name')->implode(', ') }}">
+                                        <i class="fas fa-triangle-exclamation text-warning me-1"></i>Rupture ({{ $forcedOosItems->count() }})
+                                    </span>
+                                </div>
+                            @endif
                         </td>
                         <td>
                             <div class="d-flex align-items-center gap-1.5 flex-wrap">

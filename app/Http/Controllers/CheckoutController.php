@@ -151,13 +151,17 @@ class CheckoutController extends Controller
             $variantId = $details['variant_id'] ?? null;
             $qty = (int)$details['quantity'];
 
+            $product = Product::find($productId);
+            if ($product && $product->force_in_stock) {
+                continue;
+            }
+
             if ($variantId) {
                 $variant = \App\Models\ProductVariant::find($variantId);
                 if ($variant && $variant->stock < $qty) {
                     return redirect()->route('cart.index')->with('error', "La variante \"{$variant->name}\" pour \"{$details['name']}\" n'a que {$variant->stock} unité(s) en stock.");
                 }
             } else {
-                $product = Product::find($productId);
                 if ($product && $product->track_inventory && $product->stock < $qty) {
                     return redirect()->route('cart.index')->with('error', "Le produit \"{$product->name}\" n'a que {$product->stock} unité(s) en stock.");
                 }

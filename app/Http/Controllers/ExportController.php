@@ -58,6 +58,12 @@ class ExportController extends Controller
         $query = Order::with(['user', 'customer', 'items.store', 'items.product'])
             ->orderByDesc('created_at');
 
+        if ($request->input('channel') === 'pos') {
+            $query->pos();
+        } elseif ($request->input('channel') === 'website') {
+            $query->website();
+        }
+
         $startDate = $request->input('date_from') ?: $request->input('start_date');
         $endDate = $request->input('date_to') ?: $request->input('end_date');
 

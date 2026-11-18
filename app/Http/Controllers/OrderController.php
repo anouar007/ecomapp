@@ -28,10 +28,29 @@ class OrderController extends Controller
     }
 
     /**
-     * Display a listing of orders.
+     * Display a listing of website orders (excluding POS orders).
      */
     public function index(Request $request)
     {
+        return $this->renderOrdersList($request, 'website');
+    }
+
+    /**
+     * Display a listing of POS (in-store) orders.
+     */
+    public function posOrders(Request $request)
+    {
+        return $this->renderOrdersList($request, 'pos');
+    }
+
+    /**
+     * Shared listing builder for website orders and POS orders.
+     */
+    protected function renderOrdersList(Request $request, string $channel = 'website')
+    {
+        $isPos = $channel === 'pos';
+        $indexRoute = $isPos ? 'orders.pos' : 'orders.index';
+
         $stores = $this->activeStores();
         $storeFilter = $request->input('store_id');
 
@@ -44,6 +63,12 @@ class OrderController extends Controller
             'invoice',
             'quote',
         ]);
+
+        if ($isPos) {
+            $query->pos();
+        } else {
+            $query->website();
+        }
 
         // Filter by delivery status
         if ($request->filled('status')) {
@@ -137,6 +162,11 @@ class OrderController extends Controller
 
         // Base query for top KPI cards synchronized with active filters
         $statsQuery = Order::query();
+        if ($isPos) {
+            $statsQuery->pos();
+        } else {
+            $statsQuery->website();
+        }
         if (!empty($dateFrom)) {
             $statsQuery->whereDate('created_at', '>=', $dateFrom);
         }
@@ -169,7 +199,7 @@ class OrderController extends Controller
 
         $orders = $query->latest()->paginate(15)->withQueryString();
 
-        return view('orders.index', compact('orders', 'stats', 'stores'));
+        return view('orders.index', compact('orders', 'stats', 'stores', 'channel', 'indexRoute'));
     }
 
     /**

@@ -93,7 +93,7 @@
             </div>
             <div>
                 <div class="d-flex align-items-center gap-2 text-muted small mb-1">
-                    <a href="{{ route('orders.index') }}" class="text-decoration-none text-muted">Commandes</a>
+                    <a href="{{ $order->isPosOrder() ? route('orders.pos') : route('orders.index') }}" class="text-decoration-none text-muted">{{ $order->isPosOrder() ? 'Commandes POS' : 'Commandes' }}</a>
                     <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
                     <span class="text-dark fw-semibold font-monospace">#{{ $order->order_number }}</span>
                     <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
@@ -110,7 +110,7 @@
         <!-- Boutons d'action responsive -->
         <div class="brand-header-actions d-flex align-items-center gap-2 flex-wrap">
             <!-- Retour -->
-            <a href="{{ route('orders.index') }}" class="btn btn-sm btn-light border rounded-pill px-3 py-1.5 text-secondary d-inline-flex align-items-center gap-1.5 shadow-2xs" title="Retour aux commandes">
+            <a href="{{ $order->isPosOrder() ? route('orders.pos') : route('orders.index') }}" class="btn btn-sm btn-light border rounded-pill px-3 py-1.5 text-secondary d-inline-flex align-items-center gap-1.5 shadow-2xs" title="Retour aux commandes">
                 <i class="fas fa-arrow-left"></i> <span>Retour</span>
             </a>
 
@@ -246,6 +246,26 @@
         </div>
     @endif
 
+    @php $forcedOosItems = $order->forcedOutOfStockItems(); @endphp
+    @if($forcedOosItems->isNotEmpty())
+        <div class="alert alert-warning border border-warning-subtle rounded-4 shadow-2xs mb-4 d-flex align-items-start gap-3" role="alert">
+            <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center flex-shrink-0" style="width: 36px; height: 36px;">
+                <i class="fas fa-triangle-exclamation"></i>
+            </div>
+            <div>
+                <h6 class="fw-bold mb-1 text-dark">Produit(s) en rupture de stock réelle (affiché(s) « En stock » au client)</h6>
+                <p class="small mb-1 text-dark">
+                    Cette commande contient {{ $forcedOosItems->count() > 1 ? 'des articles actuellement hors stock' : 'un article actuellement hors stock' }} avec l'option <strong>Toujours en stock</strong>. Contactez le client pour lui proposer une alternative si nécessaire :
+                </p>
+                <ul class="small mb-0 ps-3 fw-semibold text-dark">
+                    @foreach($forcedOosItems as $oosItem)
+                        <li>{{ $oosItem->display_name }} <span class="text-muted fw-normal">(qté commandée : {{ $oosItem->quantity }})</span></li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    @endif
+
     <div class="row g-4">
         <!-- Colonne Principale (Gauche) : Articles et Notes -->
         <div class="col-12 col-lg-8">
@@ -340,6 +360,11 @@
                                                     @if($item->variant_name)
                                                         <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-normal" style="font-size: 0.72rem;">
                                                             <i class="fas fa-layer-group me-1"></i>{{ $item->variant_name }}
+                                                        </span>
+                                                    @endif
+                                                    @if($item->isForcedOutOfStock())
+                                                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle font-normal" style="font-size: 0.72rem;" title="Ce produit a un stock réel à 0 mais est forcé « En stock »">
+                                                            <i class="fas fa-triangle-exclamation text-warning me-1"></i>Hors stock réel (Forcé en stock)
                                                         </span>
                                                     @endif
                                                 </div>
@@ -439,6 +464,11 @@
                                         @if($item->variant_name)
                                             <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-normal" style="font-size: 0.7rem;">
                                                 <i class="fas fa-layer-group me-1"></i>{{ $item->variant_name }}
+                                            </span>
+                                        @endif
+                                        @if($item->isForcedOutOfStock())
+                                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle font-normal" style="font-size: 0.7rem;">
+                                                <i class="fas fa-triangle-exclamation text-warning me-1"></i>Hors stock réel (Forcé)
                                             </span>
                                         @endif
                                     </div>

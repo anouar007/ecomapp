@@ -814,9 +814,17 @@
             </li>
             @if(auth()->check() && (auth()->user()->hasAnyRole(['Admin', 'Super Admin']) || auth()->user()->canAny(['manage_orders', 'view_orders', 'create_orders', 'edit_orders'])))
             <li class="sidebar-menu-item" data-section="sales">
-                <a href="{{ route('orders.index') }}" class="sidebar-menu-link {{ request()->routeIs('orders.*') ? 'active' : '' }}" data-tooltip="Commandes">
+                <a href="{{ route('orders.index') }}" class="sidebar-menu-link {{ request()->routeIs('orders.*') && !request()->routeIs('orders.pos') ? 'active' : '' }}" data-tooltip="Commandes Site Web">
                     <i class="fas fa-shopping-cart"></i>
                     <span>Commandes</span>
+                </a>
+            </li>
+            @endif
+            @if(auth()->check() && (auth()->user()->hasAnyRole(['Admin', 'Super Admin']) || auth()->user()->canAny(['access_pos', 'manage_orders', 'view_orders'])))
+            <li class="sidebar-menu-item" data-section="sales">
+                <a href="{{ route('orders.pos') }}" class="sidebar-menu-link {{ request()->routeIs('orders.pos') ? 'active' : '' }}" data-tooltip="Commandes POS">
+                    <i class="fas fa-receipt"></i>
+                    <span>Commandes POS</span>
                 </a>
             </li>
             @endif

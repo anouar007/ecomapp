@@ -23,6 +23,7 @@ class Product extends Model
         'stock_quantity',
         'min_stock',
         'low_stock_threshold',
+        'force_in_stock',
         'category_id',
         'brand_id',
         'status',
@@ -52,6 +53,7 @@ class Product extends Model
         'min_stock' => 'integer',
         'sort_order' => 'integer',
         'sale_end_date' => 'datetime',
+        'force_in_stock' => 'boolean',
     ];
 
     /**
@@ -869,6 +871,9 @@ class Product extends Model
      */
     public function isInStock()
     {
+        if ($this->force_in_stock) {
+            return true;
+        }
         return $this->stock > 0;
     }
 
@@ -1231,21 +1236,29 @@ class Product extends Model
                 'triggered_at' => now(),
             ]);
 
-            // Send email notification to admin users
-            $admins = \App\Models\User::whereHas('roles', function($q) {
-                $q->where('name', 'admin');
-            })->get();
+            // Send email notification to admin users after the HTTP response so SMTP latency never blocks stock saves
+            $alertId = $alert->id;
+            dispatch(function () use ($alertId) {
+                $freshAlert = \App\Models\StockAlert::with('product')->find($alertId);
+                if (!$freshAlert) {
+                    return;
+                }
 
-            foreach ($admins as $admin) {
-                $settings = \App\Models\NotificationSetting::forUser($admin->id);
-                if ($settings->isEnabled('low_stock_alert')) {
-                    try {
-                        $admin->notify(new \App\Notifications\LowStockAlert($alert));
-                    } catch (\Throwable $e) {
-                        \Illuminate\Support\Facades\Log::warning('Low stock email notification failed: ' . $e->getMessage());
+                $admins = \App\Models\User::whereHas('roles', function ($q) {
+                    $q->where('name', 'admin');
+                })->get();
+
+                foreach ($admins as $admin) {
+                    $settings = \App\Models\NotificationSetting::forUser($admin->id);
+                    if ($settings->isEnabled('low_stock_alert')) {
+                        try {
+                            $admin->notify(new \App\Notifications\LowStockAlert($freshAlert));
+                        } catch (\Throwable $e) {
+                            \Illuminate\Support\Facades\Log::warning('Low stock email notification failed: ' . $e->getMessage());
+                        }
                     }
                 }
-            }
+            })->afterResponse();
         }
     }
 
@@ -1264,6 +1277,9 @@ class Product extends Model
      */
     public function isOutOfStock(): bool
     {
+        if ($this->force_in_stock) {
+            return false;
+        }
         return ($this->stock ?? 0) <= 0;
     }
 

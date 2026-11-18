@@ -204,11 +204,9 @@
                     <div class="stat-kpi-label text-truncate">Commandes totales</div>
                     <div class="stat-kpi-value text-dark">{{ number_format($stats['total_orders']) }}</div>
                     <div class="stat-kpi-sub text-muted">
-                        @if(($quickStats['pending_orders'] ?? 0) > 0)
-                            <i class="fas fa-clock text-warning me-1"></i><strong class="text-warning">{{ $quickStats['pending_orders'] }}</strong> en attente
-                        @else
-                            <i class="fas fa-check-circle text-success me-1"></i>Flux à jour
-                        @endif
+                        <span>Web : <strong class="text-primary">{{ number_format($stats['website_orders'] ?? 0) }}</strong></span>
+                        <span class="mx-1">&bull;</span>
+                        <span>POS : <strong class="text-danger">{{ number_format($stats['pos_orders'] ?? 0) }}</strong></span>
                     </div>
                 </div>
                 <div class="stat-kpi-icon bg-success-subtle text-success flex-shrink-0">
@@ -253,6 +251,52 @@
                 </div>
             </div>
         </a>
+    </div>
+
+    <!-- Répartition des Commandes : Site Web vs Caisse POS -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-6">
+            <a href="{{ route('orders.index') }}" class="stat-kpi-card text-decoration-none h-100 d-block">
+                <div class="d-flex align-items-center justify-content-between gap-3">
+                    <div class="min-w-0">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">
+                                <i class="fas fa-globe me-1"></i> Site Web
+                            </span>
+                            <span class="text-muted small">Aujourd'hui : <strong class="text-dark">{{ number_format($quickStats['today_website_orders'] ?? 0) }}</strong> ({{ currency($quickStats['today_website_revenue'] ?? 0) }})</span>
+                        </div>
+                        <div class="d-flex align-items-baseline gap-3 flex-wrap">
+                            <div class="stat-kpi-value text-dark mb-0">{{ number_format($stats['website_orders'] ?? 0) }} <span class="fs-6 fw-normal text-muted">commandes</span></div>
+                            <div class="text-primary fw-bold small">{{ currency($stats['website_revenue'] ?? 0) }}</div>
+                        </div>
+                    </div>
+                    <div class="stat-kpi-icon bg-primary-subtle text-primary flex-shrink-0">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-12 col-md-6">
+            <a href="{{ route('orders.pos') }}" class="stat-kpi-card text-decoration-none h-100 d-block">
+                <div class="d-flex align-items-center justify-content-between gap-3">
+                    <div class="min-w-0">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">
+                                <i class="fas fa-cash-register me-1"></i> Caisse POS
+                            </span>
+                            <span class="text-muted small">Aujourd'hui : <strong class="text-dark">{{ number_format($quickStats['today_pos_orders'] ?? 0) }}</strong> ({{ currency($quickStats['today_pos_revenue'] ?? 0) }})</span>
+                        </div>
+                        <div class="d-flex align-items-baseline gap-3 flex-wrap">
+                            <div class="stat-kpi-value text-dark mb-0">{{ number_format($stats['pos_orders'] ?? 0) }} <span class="fs-6 fw-normal text-muted">commandes</span></div>
+                            <div class="text-danger fw-bold small">{{ currency($stats['pos_revenue'] ?? 0) }}</div>
+                        </div>
+                    </div>
+                    <div class="stat-kpi-icon bg-danger-subtle text-danger flex-shrink-0">
+                        <i class="fas fa-cash-register"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
     </div>
     @endif
 
@@ -543,9 +587,16 @@
                                 @forelse($recentOrders as $order)
                                 <tr style="cursor: pointer;" onclick="window.location='{{ route('orders.show', $order) }}'">
                                     <td>
-                                        <span class="order-ref-badge">
-                                            #{{ $order->order_number }}
-                                        </span>
+                                        <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                                            <span class="order-ref-badge">
+                                                #{{ $order->order_number }}
+                                            </span>
+                                            @if($order->isPosOrder())
+                                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-1.5 py-0" style="font-size: 0.62rem;">POS</span>
+                                            @else
+                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-1.5 py-0" style="font-size: 0.62rem;">Web</span>
+                                            @endif
+                                        </div>
                                     </td>
                                     <td>
                                         <div class="d-flex align-items-center gap-2.5">

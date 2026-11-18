@@ -139,6 +139,8 @@ class AnalyticsController extends Controller
             ->get()
             ->keyBy('status');
 
+        $channelStats = $this->getChannelBreakdown($start, $end, $prevStart, $prevEnd, $totalOrders, $totalRevenue);
+
         return [
             'total_revenue' => $totalRevenue,
             'total_orders' => $totalOrders,
@@ -152,8 +154,48 @@ class AnalyticsController extends Controller
             'orders_growth' => $this->calculateGrowth($totalOrders, $prevOrders),
             'aov_growth' => $this->calculateGrowth($averageOrderValue, $prevAov),
             'orders_by_status' => $ordersByStatus,
+            'channel_breakdown' => $channelStats,
             'daily_sales' => $this->getDailySales($start, $end),
             'top_selling_products' => $this->getTopSellingProducts($start, $end),
+        ];
+    }
+
+    /**
+     * Compute separate order and revenue metrics for Website vs POS channels.
+     */
+    protected function getChannelBreakdown(
+        Carbon $start,
+        Carbon $end,
+        Carbon $prevStart,
+        Carbon $prevEnd,
+        int $totalOrders,
+        float $totalRevenue
+    ): array {
+        $buildChannel = function (string $scope) use ($start, $end, $prevStart, $prevEnd, $totalOrders, $totalRevenue) {
+            $orders = (int) Order::{$scope}()->whereBetween('created_at', [$start, $end])->count();
+            $validBase = Order::{$scope}()->whereBetween('created_at', [$start, $end])->where('status', '!=', 'cancelled');
+            $validOrders = (int) (clone $validBase)->count();
+            $revenue = (float) (clone $validBase)->sum('total');
+            $aov = $validOrders > 0 ? round($revenue / $validOrders, 2) : 0.0;
+
+            $prevOrders = (int) Order::{$scope}()->whereBetween('created_at', [$prevStart, $prevEnd])->count();
+            $prevRevenue = (float) Order::{$scope}()->whereBetween('created_at', [$prevStart, $prevEnd])->where('status', '!=', 'cancelled')->sum('total');
+
+            return [
+                'orders' => $orders,
+                'valid_orders' => $validOrders,
+                'revenue' => $revenue,
+                'avg_order_value' => $aov,
+                'orders_share' => $totalOrders > 0 ? round(($orders / $totalOrders) * 100, 1) : 0.0,
+                'revenue_share' => $totalRevenue > 0 ? round(($revenue / $totalRevenue) * 100, 1) : 0.0,
+                'orders_growth' => $this->calculateGrowth($orders, $prevOrders),
+                'revenue_growth' => $this->calculateGrowth($revenue, $prevRevenue),
+            ];
+        };
+
+        return [
+            'website' => $buildChannel('website'),
+            'pos' => $buildChannel('pos'),
         ];
     }
 
@@ -374,6 +416,24 @@ class AnalyticsController extends Controller
             fputcsv($out, ['Panier moyen (DH)', number_format($analytics['sales']['average_order_value'], 2, '.', '')], ';');
             fputcsv($out, ['Taux de completion (%)', $analytics['sales']['completion_rate']], ';');
             fputcsv($out, [], ';');
+
+            $channels = $analytics['sales']['channel_breakdown'] ?? [];
+            if (!empty($channels)) {
+                fputcsv($out, ['CANAUX DE VENTE', 'Canal', 'Commandes', 'Part Commandes (%)', 'Chiffre d\'affaires (DH)', 'Part CA (%)', 'Panier moyen (DH)'], ';');
+                foreach (['website' => 'Site Web', 'pos' => 'Caisse POS'] as $cKey => $cLabel) {
+                    $cData = $channels[$cKey] ?? [];
+                    fputcsv($out, [
+                        '',
+                        $cLabel,
+                        $cData['orders'] ?? 0,
+                        $cData['orders_share'] ?? 0,
+                        number_format((float) ($cData['revenue'] ?? 0), 2, '.', ''),
+                        $cData['revenue_share'] ?? 0,
+                        number_format((float) ($cData['avg_order_value'] ?? 0), 2, '.', ''),
+                    ], ';');
+                }
+                fputcsv($out, [], ';');
+            }
 
             fputcsv($out, ['CLIENTS & CATALOGUE'], ';');
             fputcsv($out, ['Nouveaux clients', $analytics['customers']['new_customers']], ';');

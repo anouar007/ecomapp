@@ -173,6 +173,7 @@ class ProductController extends Controller
             'brand_id' => ['nullable', 'exists:brands,id'],
             'images.*' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
+            'force_in_stock' => ['nullable', 'boolean'],
             'availability_status' => ['nullable', 'string', 'in:standard,coming_soon,preorder,custom'],
             'custom_stock_tag' => ['nullable', 'string', 'max:100'],
             'custom_stock_button_text' => ['nullable', 'string', 'max:100'],
@@ -190,6 +191,7 @@ class ProductController extends Controller
         ]);
 
         $validated['sort_order'] = isset($validated['sort_order']) && $validated['sort_order'] !== '' ? (int) $validated['sort_order'] : 0;
+        $validated['force_in_stock'] = $request->boolean('force_in_stock');
         $validated['availability_status'] = $request->input('availability_status', 'standard') ?: 'standard';
         $validated['custom_stock_tag'] = trim((string) $request->input('custom_stock_tag', '')) ?: null;
         $validated['custom_stock_button_text'] = trim((string) $request->input('custom_stock_button_text', '')) ?: null;
@@ -406,6 +408,7 @@ class ProductController extends Controller
             'brand_id' => ['nullable', 'exists:brands,id'],
             'images.*' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
+            'force_in_stock' => ['nullable', 'boolean'],
             'availability_status' => ['nullable', 'string', 'in:standard,coming_soon,preorder,custom'],
             'custom_stock_tag' => ['nullable', 'string', 'max:100'],
             'custom_stock_button_text' => ['nullable', 'string', 'max:100'],
@@ -426,6 +429,8 @@ class ProductController extends Controller
 
         if (array_key_exists('sort_order', $validated)) {
             $validated['sort_order'] = isset($validated['sort_order']) && $validated['sort_order'] !== '' ? (int) $validated['sort_order'] : 0;
+        }
+        $validated['force_in_stock'] = $request->boolean('force_in_stock');
         $validated['availability_status'] = $request->input('availability_status', 'standard') ?: 'standard';
         $validated['custom_stock_tag'] = trim((string) $request->input('custom_stock_tag', '')) ?: null;
         $validated['custom_stock_button_text'] = trim((string) $request->input('custom_stock_button_text', '')) ?: null;
@@ -435,7 +440,6 @@ class ProductController extends Controller
         $validated['custom_btn_color'] = trim((string) $request->input('custom_btn_color', '')) ?: null;
         $validated['custom_btn_bg'] = trim((string) $request->input('custom_btn_bg', '')) ?: null;
         $validated['custom_btn_border'] = trim((string) $request->input('custom_btn_border', '')) ?: null;
-        }
 
         if ($request->has('image_padding')) {
             $rawPadding = trim((string) $request->input('image_padding'));

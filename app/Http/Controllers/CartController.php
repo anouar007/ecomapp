@@ -122,26 +122,28 @@ class CartController extends Controller
                 return back()->with('error', $errorMsg);
             }
 
-            // Check stock based on variant or base product
-            if ($variant) {
-                if (!$variant->isInStock()) {
-                    if ($isAjax) {
-                        return response()->json([
-                            'success' => false,
-                            'message' => "La variante '{$variant->name}' est actuellement en rupture de stock"
-                        ], 400);
+            // Check stock based on variant or base product (skip if product is forced in stock)
+            if (!$product->force_in_stock) {
+                if ($variant) {
+                    if (!$variant->isInStock()) {
+                        if ($isAjax) {
+                            return response()->json([
+                                'success' => false,
+                                'message' => "La variante '{$variant->name}' est actuellement en rupture de stock"
+                            ], 400);
+                        }
+                        return back()->with('error', "La variante '{$variant->name}' est actuellement en rupture de stock");
                     }
-                    return back()->with('error', "La variante '{$variant->name}' est actuellement en rupture de stock");
-                }
-            } else {
-                if (!$product->isInStock()) {
-                    if ($isAjax) {
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Ce produit est actuellement en rupture de stock'
-                        ], 400);
+                } else {
+                    if (!$product->isInStock()) {
+                        if ($isAjax) {
+                            return response()->json([
+                                'success' => false,
+                                'message' => 'Ce produit est actuellement en rupture de stock'
+                            ], 400);
+                        }
+                        return back()->with('error', 'Ce produit est actuellement en rupture de stock');
                     }
-                    return back()->with('error', 'Ce produit est actuellement en rupture de stock');
                 }
             }
             
@@ -149,18 +151,20 @@ class CartController extends Controller
             $quantity = $request->integer('quantity', 1);
             $cartKey = $variant ? "{$product->id}_{$variant->id}" : (string)$product->id;
             
-            $maxStock = $variant ? (int)$variant->stock : (int)$product->stock;
-            $currentQty = isset($cart[$cartKey]) ? $cart[$cartKey]['quantity'] : 0;
-            
-            if (($currentQty + $quantity) > $maxStock) {
-                $varLabel = $variant ? " pour la variante '{$variant->name}'" : "";
-                if ($isAjax) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => "Seulement {$maxStock} article(s) disponible(s) en stock{$varLabel}"
-                    ], 400);
+            if (!$product->force_in_stock) {
+                $maxStock = $variant ? (int)$variant->stock : (int)$product->stock;
+                $currentQty = isset($cart[$cartKey]) ? $cart[$cartKey]['quantity'] : 0;
+                
+                if (($currentQty + $quantity) > $maxStock) {
+                    $varLabel = $variant ? " pour la variante '{$variant->name}'" : "";
+                    if ($isAjax) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => "Seulement {$maxStock} article(s) disponible(s) en stock{$varLabel}"
+                        ], 400);
+                    }
+                    return back()->with('error', "Seulement {$maxStock} article(s) disponible(s) en stock{$varLabel}");
                 }
-                return back()->with('error', "Seulement {$maxStock} article(s) disponible(s) en stock{$varLabel}");
             }
 
             $price = $variant ? (float)$variant->price : ($product->isOnSale() ? (float)$product->sale_price : (float)$product->price);
@@ -221,23 +225,25 @@ class CartController extends Controller
         if ($id && $quantity > 0) {
             $cart = session()->get('cart', []);
             if (isset($cart[$id])) {
-                // Check stock against variant or product
-                if (!empty($cart[$id]['variant_id'])) {
-                    $variant = ProductVariant::find($cart[$id]['variant_id']);
-                    if ($variant && $variant->stock < $quantity) {
-                        return response()->json([
-                            'success' => false,
-                            'message' => "Seulement {$variant->stock} article(s) disponible(s) en stock pour '{$variant->name}'"
-                        ], 400);
-                    }
-                } else {
-                    $productId = $cart[$id]['product_id'] ?? $id;
-                    $product = Product::find($productId);
-                    if ($product && $product->stock < $quantity) {
-                        return response()->json([
-                            'success' => false,
-                            'message' => "Seulement {$product->stock} article(s) disponible(s) en stock"
-                        ], 400);
+                // Check stock against variant or product (skip if product is forced in stock)
+                $productId = $cart[$id]['product_id'] ?? explode('_', $id)[0];
+                $product = Product::find($productId);
+                if (!$product || !$product->force_in_stock) {
+                    if (!empty($cart[$id]['variant_id'])) {
+                        $variant = ProductVariant::find($cart[$id]['variant_id']);
+                        if ($variant && $variant->stock < $quantity) {
+                            return response()->json([
+                                'success' => false,
+                                'message' => "Seulement {$variant->stock} article(s) disponible(s) en stock pour '{$variant->name}'"
+                            ], 400);
+                        }
+                    } else {
+                        if ($product && $product->stock < $quantity) {
+                            return response()->json([
+                                'success' => false,
+                                'message' => "Seulement {$product->stock} article(s) disponible(s) en stock"
+                            ], 400);
+                        }
                     }
                 }
 

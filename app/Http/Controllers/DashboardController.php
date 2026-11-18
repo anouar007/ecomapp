@@ -77,6 +77,10 @@ class DashboardController extends Controller
             'online_auth_clients' => $onlineAuthClients,
             
             'total_orders' => Order::count(),
+            'website_orders' => Order::website()->count(),
+            'pos_orders' => Order::pos()->count(),
+            'website_revenue' => (float) Order::website()->where('status', '!=', 'cancelled')->sum('total'),
+            'pos_revenue' => (float) Order::pos()->where('status', '!=', 'cancelled')->sum('total'),
             'orders_growth' => $calculateGrowth(Order::class),
             
             'total_revenue' => Invoice::where('payment_status', 'paid')->sum('total_amount'),
@@ -89,6 +93,10 @@ class DashboardController extends Controller
         // Quick Highlights for today / urgent actions
         $quickStats = [
             'today_orders' => Order::whereDate('created_at', today())->count(),
+            'today_website_orders' => Order::website()->whereDate('created_at', today())->count(),
+            'today_pos_orders' => Order::pos()->whereDate('created_at', today())->count(),
+            'today_website_revenue' => (float) Order::website()->where('status', '!=', 'cancelled')->whereDate('created_at', today())->sum('total'),
+            'today_pos_revenue' => (float) Order::pos()->where('status', '!=', 'cancelled')->whereDate('created_at', today())->sum('total'),
             'today_revenue' => (float) Invoice::where('payment_status', 'paid')->whereDate('created_at', today())->sum('total_amount'),
             'pending_orders' => Order::whereIn('status', ['pending', 'en attente'])->count(),
             'low_stock_total' => Product::where('track_inventory', true)

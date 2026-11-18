@@ -1295,7 +1295,7 @@
                         <div class="d-flex flex-wrap gap-2" id="pdpVariantPills">                            
                             @foreach($product->variants as $variant)
                                 @php
-                                    $isVarInStock = $variant->isInStock();
+                                    $isVarInStock = $product->force_in_stock || $variant->isInStock();
                                 @endphp
                                 <button type="button" 
                                         class="pdp-variant-pill btn {{ !$isVarInStock ? 'is-out-of-stock' : '' }}"
@@ -1371,7 +1371,7 @@
                                 </button>
                                 <label for="pdpQty" class="visually-hidden">{{ __('Quantité') }}</label>
                                 <input type="number" name="quantity" id="pdpQty" value="1"
-                                       min="1" max="{{ $product->stock }}" class="pdp-qty-input" aria-label="{{ __('Quantité') }}">
+                                       min="1" max="{{ $product->force_in_stock ? 9999 : $product->stock }}" class="pdp-qty-input" aria-label="{{ __('Quantité') }}">
                                 <button type="button" class="pdp-qty-btn" onclick="pdpChangeQty(1)" aria-label="{{ __('Augmenter la quantité') }}">
                                     <i class="fas fa-plus" aria-hidden="true"></i>
                                 </button>
@@ -2124,14 +2124,16 @@ function pdpSelectVariant(button) {
     const commanderWrap = document.getElementById('pdpCommanderWrap');
     const addToCartText = document.getElementById('addToCartText');
 
-    if (inStock && stock > 0) {
+    const forceInStock = {{ $product->force_in_stock ? 'true' : 'false' }};
+    if (forceInStock || (inStock && stock > 0)) {
+        const effectiveMax = forceInStock ? 9999 : stock;
         if (stockBadge) {
             stockBadge.className = 'pdp-stock-badge pdp-stock-badge--in';
             stockBadge.innerHTML = `<i class="fas fa-check-circle" aria-hidden="true"></i><span class="pdp-stock-label">{{ __('In stock') }}</span>`;
         }
         if (qtyInput) {
-            qtyInput.max = stock;
-            if (parseInt(qtyInput.value) > stock) qtyInput.value = stock;
+            qtyInput.max = effectiveMax;
+            if (parseInt(qtyInput.value) > effectiveMax) qtyInput.value = effectiveMax;
         }
         if (addToCartBtn) {
             addToCartBtn.disabled = false;

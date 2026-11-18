@@ -241,4 +241,21 @@ class OrderItem extends Model
 
         return '#';
     }
+
+    /**
+     * Whether this item's product is forced in stock while currently out of real stock.
+     */
+    public function isForcedOutOfStock(): bool
+    {
+        $product = $this->product;
+        if (!$product || !$product->force_in_stock) {
+            return false;
+        }
+
+        if ($this->variant_id && $this->variant) {
+            return (int) ($this->variant->stock ?? 0) <= 0;
+        }
+
+        return (int) ($product->stock ?? 0) <= 0;
+    }
 }

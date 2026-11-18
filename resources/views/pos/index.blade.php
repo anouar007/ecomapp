@@ -919,10 +919,10 @@
                 <i class="fas fa-rotate-left text-danger"></i>
             </button>
 
-            <div class="pos-kpi-pill d-none d-md-inline-flex" title="Ventes POS d'aujourd'hui">
+            <a href="{{ route('orders.pos') }}" class="pos-kpi-pill d-none d-md-inline-flex text-decoration-none" title="Voir les commandes POS">
                 <i class="fas fa-chart-line"></i>
                 <span>Aujourd'hui : <strong id="todaySalesCount">{{ $todayPosCount ?? 0 }}</strong> • <strong id="todaySalesTotal">{{ currency($todayPosTotal ?? 0) }}</strong></span>
-            </div>
+            </a>
 
             <button type="button" class="pos-icon-btn" onclick="openHeldOrdersModal()" title="Tickets mis en attente">
                 <i class="fas fa-pause-circle text-warning"></i>

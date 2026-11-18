@@ -1017,6 +1017,22 @@
                         </div>
                     </div>
 
+                    <!-- Toujours en stock (Forcer disponibilité) -->
+                    <div class="mt-3 pt-3 border-top">
+                        <div class="form-check form-switch d-flex align-items-start gap-2 ps-0">
+                            <input type="hidden" name="force_in_stock" value="0">
+                            <input class="form-check-input ms-0 mt-1 flex-shrink-0" type="checkbox" role="switch" id="force_in_stock" name="force_in_stock" value="1" {{ old('force_in_stock') ? 'checked' : '' }} style="width: 2.25em; height: 1.15em; cursor: pointer;">
+                            <label class="form-check-label" for="force_in_stock" style="cursor: pointer;">
+                                <span class="fw-semibold text-dark d-block">
+                                    <i class="fas fa-infinity text-success me-1"></i> Toujours en stock (forcer disponibilité)
+                                </span>
+                                <span class="text-muted d-block" style="font-size: 0.75rem;">
+                                    Le client verra toujours le produit « En stock » et pourra le commander normalement même si le stock est à 0.
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
                     <!-- Disponibilité & Tag Spécial (Coming Soon / Arrivage) -->
                     <div class="mt-3 pt-3 border-top">
                         <label class="form-label fw-semibold text-dark d-flex align-items-center justify-content-between mb-1">

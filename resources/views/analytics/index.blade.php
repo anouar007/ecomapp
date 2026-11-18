@@ -295,6 +295,112 @@
         </div>
     </div>
 
+    <!-- Répartition par Canal : Site Web vs Caisse POS -->
+    @php
+        $channelData = $sales['channel_breakdown'] ?? [];
+        $webChannel = $channelData['website'] ?? ['orders' => 0, 'revenue' => 0, 'avg_order_value' => 0, 'orders_share' => 0, 'revenue_share' => 0, 'orders_growth' => 0, 'revenue_growth' => 0];
+        $posChannel = $channelData['pos'] ?? ['orders' => 0, 'revenue' => 0, 'avg_order_value' => 0, 'orders_share' => 0, 'revenue_share' => 0, 'orders_growth' => 0, 'revenue_growth' => 0];
+    @endphp
+    <div class="analytics-panel p-3 p-md-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div>
+                <h5 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                    <i class="fas fa-code-branch text-danger"></i>
+                    <span>Performance par Canal : Site Web vs Caisse POS</span>
+                </h5>
+                <small class="text-muted">Comparaison séparée des commandes et du chiffre d'affaires sur la période</small>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ route('orders.index') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold">
+                    <i class="fas fa-globe me-1"></i> Commandes Web
+                </a>
+                <a href="{{ route('orders.pos') }}" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-semibold">
+                    <i class="fas fa-cash-register me-1"></i> Commandes POS
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <!-- Site Web -->
+            <div class="col-12 col-md-6">
+                <div class="p-3 rounded-3 border bg-light-subtle h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 fw-semibold">
+                            <i class="fas fa-globe me-1"></i> Site Web
+                        </span>
+                        <span class="text-muted small fw-semibold">{{ $webChannel['orders_share'] }}% des commandes &bull; {{ $webChannel['revenue_share'] }}% du CA</span>
+                    </div>
+                    <div class="row g-2 text-center mt-1">
+                        <div class="col-4">
+                            <div class="bg-white rounded-3 p-2 border">
+                                <div class="text-muted" style="font-size: 0.72rem;">Commandes</div>
+                                <div class="fw-bold fs-5 text-dark">{{ number_format($webChannel['orders'], 0, ',', ' ') }}</div>
+                                <div class="growth-pill {{ $webChannel['orders_growth'] > 0 ? 'growth-up' : ($webChannel['orders_growth'] < 0 ? 'growth-down' : 'growth-flat') }}">
+                                    {{ $webChannel['orders_growth'] >= 0 ? '+' : '' }}{{ $webChannel['orders_growth'] }}%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="bg-white rounded-3 p-2 border">
+                                <div class="text-muted" style="font-size: 0.72rem;">Chiffre d'affaires</div>
+                                <div class="fw-bold fs-6 text-primary">{{ currency($webChannel['revenue']) }}</div>
+                                <div class="growth-pill {{ $webChannel['revenue_growth'] > 0 ? 'growth-up' : ($webChannel['revenue_growth'] < 0 ? 'growth-down' : 'growth-flat') }}">
+                                    {{ $webChannel['revenue_growth'] >= 0 ? '+' : '' }}{{ $webChannel['revenue_growth'] }}%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="bg-white rounded-3 p-2 border">
+                                <div class="text-muted" style="font-size: 0.72rem;">Panier moyen</div>
+                                <div class="fw-bold fs-6 text-dark">{{ currency($webChannel['avg_order_value']) }}</div>
+                                <div class="text-muted" style="font-size: 0.68rem;">par commande</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Caisse POS -->
+            <div class="col-12 col-md-6">
+                <div class="p-3 rounded-3 border bg-light-subtle h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1 fw-semibold">
+                            <i class="fas fa-cash-register me-1"></i> Caisse POS
+                        </span>
+                        <span class="text-muted small fw-semibold">{{ $posChannel['orders_share'] }}% des commandes &bull; {{ $posChannel['revenue_share'] }}% du CA</span>
+                    </div>
+                    <div class="row g-2 text-center mt-1">
+                        <div class="col-4">
+                            <div class="bg-white rounded-3 p-2 border">
+                                <div class="text-muted" style="font-size: 0.72rem;">Commandes</div>
+                                <div class="fw-bold fs-5 text-dark">{{ number_format($posChannel['orders'], 0, ',', ' ') }}</div>
+                                <div class="growth-pill {{ $posChannel['orders_growth'] > 0 ? 'growth-up' : ($posChannel['orders_growth'] < 0 ? 'growth-down' : 'growth-flat') }}">
+                                    {{ $posChannel['orders_growth'] >= 0 ? '+' : '' }}{{ $posChannel['orders_growth'] }}%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="bg-white rounded-3 p-2 border">
+                                <div class="text-muted" style="font-size: 0.72rem;">Chiffre d'affaires</div>
+                                <div class="fw-bold fs-6 text-danger">{{ currency($posChannel['revenue']) }}</div>
+                                <div class="growth-pill {{ $posChannel['revenue_growth'] > 0 ? 'growth-up' : ($posChannel['revenue_growth'] < 0 ? 'growth-down' : 'growth-flat') }}">
+                                    {{ $posChannel['revenue_growth'] >= 0 ? '+' : '' }}{{ $posChannel['revenue_growth'] }}%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="bg-white rounded-3 p-2 border">
+                                <div class="text-muted" style="font-size: 0.72rem;">Panier moyen</div>
+                                <div class="fw-bold fs-6 text-dark">{{ currency($posChannel['avg_order_value']) }}</div>
+                                <div class="text-muted" style="font-size: 0.68rem;">par vente POS</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Graphiques Principaux -->
     <div class="row g-3 mb-4">
         <div class="col-12 col-lg-8">

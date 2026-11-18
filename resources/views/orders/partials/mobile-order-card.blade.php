@@ -13,6 +13,14 @@
                         title="Copier le N°">
                     <i class="far fa-copy"></i>
                 </button>
+                @php $forcedOosItems = $order->forcedOutOfStockItems(); @endphp
+                @if($forcedOosItems->isNotEmpty())
+                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-0.5"
+                          style="font-size: 0.65rem;"
+                          title="Produit hors stock (forcé) : {{ $forcedOosItems->pluck('display_name')->implode(', ') }}">
+                        <i class="fas fa-triangle-exclamation text-warning me-1"></i>Rupture ({{ $forcedOosItems->count() }})
+                    </span>
+                @endif
             </div>
             <div class="mobile-order-date">
                 <i class="far fa-clock me-1 opacity-75"></i>{{ $order->created_at->format('d/m/Y') }} à {{ $order->created_at->format('H:i') }}

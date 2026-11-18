@@ -44,13 +44,9 @@ class POSController extends Controller
             ->get();
         $defaultStore = $stores->firstWhere('is_default', true) ?? $stores->first();
 
-        $todayPosQuery = Order::whereDate('created_at', today())
-            ->where('status', '!=', 'cancelled')
-            ->where(function ($q) {
-                $q->where('shipping_address', 'Vente en boutique (POS)')
-                    ->orWhere('shipping_address', 'Walk-in Customer')
-                    ->orWhere('notes', 'like', '%POS%');
-            });
+        $todayPosQuery = Order::pos()
+            ->whereDate('created_at', today())
+            ->where('status', '!=', 'cancelled');
 
         $todayPosCount = (clone $todayPosQuery)->count();
         $todayPosTotal = (float) (clone $todayPosQuery)->sum('total');

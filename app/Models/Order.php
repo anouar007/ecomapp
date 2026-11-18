@@ -545,4 +545,51 @@ class Order extends Model
             ];
         });
     }
+
+    /**
+     * Scope a query to only include POS (in-store) orders.
+     */
+    public function scopePos($query)
+    {
+        return $query->where(function ($q) {
+            $q->whereIn('shipping_address', ['Vente en boutique (POS)', 'Walk-in Customer'])
+                ->orWhere('notes', 'like', '%POS%');
+        });
+    }
+
+    /**
+     * Scope a query to only include website / non-POS orders.
+     */
+    public function scopeWebsite($query)
+    {
+        return $query->where(function ($q) {
+            $q->where(function ($sub) {
+                $sub->whereNull('shipping_address')
+                    ->orWhereNotIn('shipping_address', ['Vente en boutique (POS)', 'Walk-in Customer']);
+            })->where(function ($sub) {
+                $sub->whereNull('notes')
+                    ->orWhere('notes', 'not like', '%POS%');
+            });
+        });
+    }
+
+    /**
+     * Determine whether this order originated from the POS terminal.
+     */
+    public function isPosOrder(): bool
+    {
+        $address = (string) ($this->shipping_address ?? '');
+        $notes = (string) ($this->notes ?? '');
+
+        return in_array($address, ['Vente en boutique (POS)', 'Walk-in Customer'], true)
+            || stripos($notes, 'POS') !== false;
+    }
+
+    /**
+     * Get order items whose product is forced in stock while currently out of real stock.
+     */
+    public function forcedOutOfStockItems()
+    {
+        return $this->items->filter(fn (OrderItem $item) => $item->isForcedOutOfStock())->values();
+    }
 }
