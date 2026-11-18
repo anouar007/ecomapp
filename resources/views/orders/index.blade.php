@@ -204,6 +204,32 @@
         background: #fee2e2;
         color: #dc2626;
     }
+
+    .kpi-theme-en-demande {
+        --kpi-accent: #8b5cf6;
+        --kpi-border: #ddd6fe;
+        --kpi-active-bg: #f5f3ff;
+        --kpi-ring: rgba(139, 92, 246, 0.25);
+    }
+    .kpi-theme-en-demande .order-kpi-icon {
+        background: #ede9fe;
+        color: #7c3aed;
+    }
+    .kpi-theme-en-demande .order-kpi-badge {
+        background: #ede9fe;
+        color: #6d28d9;
+    }
+    .kpi-theme-en-demande .order-kpi-value {
+        color: #6d28d9;
+    }
+
+    @media (min-width: 1200px) {
+        .row-cols-xl-7 > * {
+            flex: 0 0 auto;
+            width: 14.285714%;
+        }
+    }
+    }
     .kpi-theme-cancelled .order-kpi-badge {
         background: #fee2e2;
         color: #b91c1c;
@@ -296,14 +322,15 @@
     @php
         $totalOrdersCount = $stats['total'] ?? 0;
         $pendingPct = $totalOrdersCount > 0 ? round(($stats['pending'] / $totalOrdersCount) * 100, 1) : 0;
+        $enDemandePct = $totalOrdersCount > 0 ? round((($stats['en_demande'] ?? 0) / $totalOrdersCount) * 100, 1) : 0;
         $processingPct = $totalOrdersCount > 0 ? round(($stats['processing'] / $totalOrdersCount) * 100, 1) : 0;
         $shippedPct = $totalOrdersCount > 0 ? round(($stats['shipped'] / $totalOrdersCount) * 100, 1) : 0;
         $deliveredPct = $totalOrdersCount > 0 ? round(($stats['delivered'] / $totalOrdersCount) * 100, 1) : 0;
         $cancelledPct = $totalOrdersCount > 0 ? round(($stats['cancelled'] / $totalOrdersCount) * 100, 1) : 0;
     @endphp
 
-    <!-- 6 Delivery Status Cards (Interactive Filters with All Orders) -->
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-xl-6 g-2.5 g-md-3 mb-4">
+    <!-- 7 Delivery Status Cards (Interactive Filters with All Orders) -->
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-xl-7 g-2.5 g-md-3 mb-4">
         <!-- 0. Toutes les commandes (All orders) -->
         <div class="col mb-2">
             <a href="{{ route($indexRoute, request()->except(['status', 'page'])) }}" 
@@ -346,6 +373,29 @@
                 </div>
                 <div class="order-kpi-footer">
                     <i class="fas fa-hourglass-half"></i> <span>À traiter</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- 1b. Sur Commande (en_demande) -->
+        <div class="col mb-2">
+            <a href="{{ request('status') === 'en_demande' ? route($indexRoute, request()->except(['status', 'page'])) : route($indexRoute, array_merge(request()->except('page'), ['status' => 'en_demande'])) }}" 
+               class="order-kpi-card kpi-theme-en-demande h-100 {{ request('status') === 'en_demande' ? 'active-filter' : '' }}"
+               title="Filtrer : Commandes sur commande">
+                <div>
+                    <div class="order-kpi-top">
+                        <span class="order-kpi-label" style="color: #6d28d9;">Sur Commande</span>
+                        <span class="order-kpi-badge" id="kpi-en-demande-pct">{{ $enDemandePct }}%</span>
+                    </div>
+                    <div class="order-kpi-body">
+                        <div class="order-kpi-value" id="kpi-en-demande-orders">{{ number_format($stats['en_demande'] ?? 0, 0, ',', ' ') }}</div>
+                        <div class="order-kpi-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-kpi-footer">
+                    <i class="fas fa-clock-rotate-left"></i> <span>Approvisionnement</span>
                 </div>
             </a>
         </div>
@@ -1335,6 +1385,12 @@
             if (el) el.textContent = new Intl.NumberFormat('fr-FR').format(stats.pending);
             const pctEl = document.getElementById('kpi-pending-pct');
             if (pctEl) pctEl.textContent = calcPct(stats.pending);
+        }
+        if (stats.en_demande !== undefined) {
+            const el = document.getElementById('kpi-en-demande-orders');
+            if (el) el.textContent = new Intl.NumberFormat('fr-FR').format(stats.en_demande);
+            const pctEl = document.getElementById('kpi-en-demande-pct');
+            if (pctEl) pctEl.textContent = calcPct(stats.en_demande);
         }
         if (stats.processing !== undefined) {
             const el = document.getElementById('kpi-processing-orders');
