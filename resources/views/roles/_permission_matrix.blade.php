@@ -81,82 +81,91 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const container = document.getElementById('permissionModulesContainer');
-    if (!container) return;
+(function () {
+    function initPermissionMatrix() {
+        const container = document.getElementById('permissionModulesContainer');
+        if (!container || container.dataset.permMatrixBound === '1') return;
+        container.dataset.permMatrixBound = '1';
 
-    function refreshCounts() {
-        const allBoxes = container.querySelectorAll('.perm-checkbox');
-        const checkedBoxes = container.querySelectorAll('.perm-checkbox:checked');
-        const globalBadge = document.getElementById('globalPermCount');
-        if (globalBadge) {
-            globalBadge.textContent = `${checkedBoxes.length} / ${allBoxes.length} sélectionnées`;
-        }
-
-        container.querySelectorAll('.perm-module-card').forEach(card => {
-            const boxes = card.querySelectorAll('.perm-checkbox');
-            const checked = card.querySelectorAll('.perm-checkbox:checked');
-            const badge = card.querySelector('.module-count-badge');
-            const toggleBtn = card.querySelector('.toggle-module-btn');
-            if (badge) badge.textContent = `${checked.length} / ${boxes.length}`;
-            if (toggleBtn) {
-                toggleBtn.textContent = (boxes.length > 0 && checked.length === boxes.length) ? 'Tout décocher' : 'Tout cocher';
+        function refreshCounts() {
+            const allBoxes = container.querySelectorAll('.perm-checkbox');
+            const checkedBoxes = container.querySelectorAll('.perm-checkbox:checked');
+            const globalBadge = document.getElementById('globalPermCount');
+            if (globalBadge) {
+                globalBadge.textContent = `${checkedBoxes.length} / ${allBoxes.length} sélectionnées`;
             }
-        });
-    }
 
-    container.addEventListener('change', function (e) {
-        if (!e.target.classList.contains('perm-checkbox')) return;
-        const item = e.target.closest('.perm-item');
-        if (item) {
-            item.classList.toggle('bg-primary-subtle', e.target.checked);
-            item.classList.toggle('border-primary-subtle', e.target.checked);
-            item.classList.toggle('bg-white', !e.target.checked);
+            container.querySelectorAll('.perm-module-card').forEach(card => {
+                const boxes = card.querySelectorAll('.perm-checkbox');
+                const checked = card.querySelectorAll('.perm-checkbox:checked');
+                const badge = card.querySelector('.module-count-badge');
+                const toggleBtn = card.querySelector('.toggle-module-btn');
+                if (badge) badge.textContent = `${checked.length} / ${boxes.length}`;
+                if (toggleBtn) {
+                    toggleBtn.textContent = (boxes.length > 0 && checked.length === boxes.length) ? 'Tout décocher' : 'Tout cocher';
+                }
+            });
         }
-        refreshCounts();
-    });
 
-    container.querySelectorAll('.toggle-module-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            const card = btn.closest('.perm-module-card');
-            const boxes = Array.from(card.querySelectorAll('.perm-checkbox'));
-            const allChecked = boxes.every(b => b.checked);
-            boxes.forEach(b => {
-                b.checked = !allChecked;
+        container.addEventListener('change', function (e) {
+            if (!e.target.classList.contains('perm-checkbox')) return;
+            const item = e.target.closest('.perm-item');
+            if (item) {
+                item.classList.toggle('bg-primary-subtle', e.target.checked);
+                item.classList.toggle('border-primary-subtle', e.target.checked);
+                item.classList.toggle('bg-white', !e.target.checked);
+            }
+            refreshCounts();
+        });
+
+        container.querySelectorAll('.toggle-module-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const card = btn.closest('.perm-module-card');
+                const boxes = Array.from(card.querySelectorAll('.perm-checkbox'));
+                const allChecked = boxes.every(b => b.checked);
+                boxes.forEach(b => {
+                    b.checked = !allChecked;
+                    b.dispatchEvent(new Event('change', { bubbles: true }));
+                });
+            });
+        });
+
+        document.getElementById('selectAllGlobalBtn')?.addEventListener('click', () => {
+            container.querySelectorAll('.perm-checkbox').forEach(b => {
+                b.checked = true;
                 b.dispatchEvent(new Event('change', { bubbles: true }));
             });
         });
-    });
 
-    document.getElementById('selectAllGlobalBtn')?.addEventListener('click', () => {
-        container.querySelectorAll('.perm-checkbox').forEach(b => {
-            b.checked = true;
-            b.dispatchEvent(new Event('change', { bubbles: true }));
-        });
-    });
-
-    document.getElementById('deselectAllGlobalBtn')?.addEventListener('click', () => {
-        container.querySelectorAll('.perm-checkbox').forEach(b => {
-            b.checked = false;
-            b.dispatchEvent(new Event('change', { bubbles: true }));
-        });
-    });
-
-    document.getElementById('permSearchInput')?.addEventListener('input', function () {
-        const q = this.value.trim().toLowerCase();
-        container.querySelectorAll('.perm-module-card').forEach(card => {
-            let visibleCount = 0;
-            card.querySelectorAll('.perm-item').forEach(item => {
-                const hay = item.dataset.search || '';
-                const match = !q || hay.includes(q);
-                item.classList.toggle('d-none', !match);
-                if (match) visibleCount++;
+        document.getElementById('deselectAllGlobalBtn')?.addEventListener('click', () => {
+            container.querySelectorAll('.perm-checkbox').forEach(b => {
+                b.checked = false;
+                b.dispatchEvent(new Event('change', { bubbles: true }));
             });
-            card.classList.toggle('d-none', visibleCount === 0);
         });
-    });
 
-    refreshCounts();
-});
+        document.getElementById('permSearchInput')?.addEventListener('input', function () {
+            const q = this.value.trim().toLowerCase();
+            container.querySelectorAll('.perm-module-card').forEach(card => {
+                let visibleCount = 0;
+                card.querySelectorAll('.perm-item').forEach(item => {
+                    const hay = item.dataset.search || '';
+                    const match = !q || hay.includes(q);
+                    item.classList.toggle('d-none', !match);
+                    if (match) visibleCount++;
+                });
+                card.classList.toggle('d-none', visibleCount === 0);
+            });
+        });
+
+        refreshCounts();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initPermissionMatrix);
+    } else {
+        initPermissionMatrix();
+    }
+})();
 </script>
 

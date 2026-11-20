@@ -3,7 +3,7 @@
 @section('title', 'Edit Role')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/management.css') }}">
+<link rel="stylesheet" href="{{ asset('css/management.css') }}?v={{ filemtime(public_path('css/management.css')) }}">
 @endpush
 
 @section('content')

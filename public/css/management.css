@@ -476,8 +476,14 @@
     color: #1e40af;
 }
 
-/* Modal - Professional & Modern */
-.modal {
+/* Preserve Bootstrap 5 modal visibility control when hidden */
+.modal:not(.show) {
+    display: none !important;
+    pointer-events: none !important;
+}
+
+/* Modal - Professional & Modern (scoped to avoid colliding with Bootstrap 5 modals) */
+.management-custom-modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -492,7 +498,7 @@
     animation: fadeIn 0.3s ease-out;
 }
 
-.modal-content {
+.management-custom-modal .modal-content {
     background: white;
     border-radius: 20px;
     width: 90%;
@@ -515,7 +521,7 @@
     }
 }
 
-.modal-header {
+.management-custom-modal .modal-header {
     padding: 28px 32px;
     border-bottom: 2px solid #e2e8f0;
     display: flex;
@@ -525,7 +531,7 @@
     border-radius: 20px 20px 0 0;
 }
 
-.modal-title {
+.management-custom-modal .modal-title {
     font-size: 22px;
     font-weight: 700;
     color: #1e293b;
@@ -536,7 +542,7 @@
     background-clip: text;
 }
 
-.modal-close {
+.management-custom-modal .modal-close {
     background: #f1f5f9;
     border: none;
     font-size: 24px;
@@ -551,23 +557,23 @@
     transition: all 0.3s ease;
 }
 
-.modal-close:hover {
+.management-custom-modal .modal-close:hover {
     background: #e2e8f0;
     color: #1e293b;
     transform: rotate(90deg);
 }
 
-.modal-body {
+.management-custom-modal .modal-body {
     padding: 32px;
 }
 
-.modal-subtitle {
+.management-custom-modal .modal-subtitle {
     color: #64748b;
     margin-bottom: 24px;
     font-size: 15px;
 }
 
-.modal-footer {
+.management-custom-modal .modal-footer {
     padding: 24px 32px;
     border-top: 2px solid #e2e8f0;
     display: flex;

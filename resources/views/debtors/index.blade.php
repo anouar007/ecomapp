@@ -3,7 +3,7 @@
 @section('title', 'Debtors Dashboard')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/management.css') }}">
+<link rel="stylesheet" href="{{ asset('css/management.css') }}?v={{ filemtime(public_path('css/management.css')) }}">
 <style>
 .debtors-hero {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
