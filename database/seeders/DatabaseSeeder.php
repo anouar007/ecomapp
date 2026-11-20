@@ -2,8 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Product;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -16,6 +15,18 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RolePermissionSeeder::class,
             StoreCategoriesSeeder::class,
+        ]);
+
+        // Protect existing production/store catalogs from being overwritten by legacy placeholder seeders.
+        $hasExistingProducts = Product::count() > 0;
+        $forceLegacySeed = filter_var(env('FORCE_LEGACY_CATALOG_SEED', false), FILTER_VALIDATE_BOOLEAN);
+
+        if ($hasExistingProducts && !$forceLegacySeed) {
+            $this->command?->warn('Skipped legacy catalog product seeders because products already exist. Set FORCE_LEGACY_CATALOG_SEED=true only on an intentionally fresh catalog setup.');
+            return;
+        }
+
+        $this->call([
             CameraProductsSeeder::class,
             LensProductsSeeder::class,
             LightingStudioProductsSeeder::class,
