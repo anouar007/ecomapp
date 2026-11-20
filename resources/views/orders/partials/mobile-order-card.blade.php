@@ -1,4 +1,26 @@
-<div class="mobile-order-card my-2" id="mobile-order-card-{{ $order->id }}">
+@php
+    $stLower = strtolower($order->status);
+    $normalizedStatus = match($stLower) {
+        'delivered', 'livrée' => 'delivered',
+        'shipped', 'expédiée' => 'shipped',
+        'processing', 'en cours' => 'processing',
+        'en_demande' => 'en_demande',
+        'reserved', 'réservé' => 'reserved',
+        'cancelled', 'annulée' => 'cancelled',
+        default => 'pending'
+    };
+    $statusStyle = match($normalizedStatus) {
+        'delivered' => ['bg' => '#059669', 'color' => '#ffffff', 'border' => '#047857', 'dot' => 'dot-green', 'text' => 'Livrée'],
+        'shipped' => ['bg' => '#0093ac', 'color' => '#ffffff', 'border' => '#0e7490', 'dot' => 'dot-teal', 'text' => 'Expédiée'],
+        'processing' => ['bg' => '#2563eb', 'color' => '#ffffff', 'border' => '#1d4ed8', 'dot' => 'dot-blue', 'text' => 'En cours'],
+        'en_demande' => ['bg' => '#4338ca', 'color' => '#ffffff', 'border' => '#3730a3', 'dot' => 'dot-indigo', 'text' => 'Sur Commande'],
+        'reserved' => ['bg' => '#7c3aed', 'color' => '#ffffff', 'border' => '#6d28d9', 'dot' => 'dot-purple', 'text' => 'Réservé'],
+        'cancelled' => ['bg' => '#dc2626', 'color' => '#ffffff', 'border' => '#b91c1c', 'dot' => 'dot-red', 'text' => 'Annulée'],
+        default => ['bg' => '#d97706', 'color' => '#ffffff', 'border' => '#b45309', 'dot' => 'dot-amber', 'text' => 'En attente']
+    };
+@endphp
+
+<div class="mobile-order-card mobile-order-status-{{ $normalizedStatus }} my-2" id="mobile-order-card-{{ $order->id }}">
     <!-- Top Row: Order Number, Date and Price -->
     <div class="mobile-order-header">
         <div>
@@ -142,28 +164,6 @@
         <span class="mobile-order-items-pill">
             <i class="fas fa-box text-muted me-1"></i>{{ $totalItemsCount }} article{{ $totalItemsCount > 1 ? 's' : '' }}
         </span>
-
-        @php
-            $stLower = strtolower($order->status);
-            $normalizedStatus = match($stLower) {
-                'delivered', 'livrée' => 'delivered',
-                'shipped', 'expédiée' => 'shipped',
-                'processing', 'en cours' => 'processing',
-                'en_demande' => 'en_demande',
-                'reserved', 'réservé' => 'reserved',
-                'cancelled', 'annulée' => 'cancelled',
-                default => 'pending'
-            };
-            $statusStyle = match($normalizedStatus) {
-                'delivered' => ['bg' => '#059669', 'color' => '#ffffff', 'border' => '#047857', 'dot' => 'dot-green', 'text' => 'Livrée'],
-                'shipped' => ['bg' => '#0093ac', 'color' => '#ffffff', 'border' => '#0e7490', 'dot' => 'dot-teal', 'text' => 'Expédiée'],
-                'processing' => ['bg' => '#2563eb', 'color' => '#ffffff', 'border' => '#1d4ed8', 'dot' => 'dot-blue', 'text' => 'En cours'],
-                'en_demande' => ['bg' => '#4338ca', 'color' => '#ffffff', 'border' => '#3730a3', 'dot' => 'dot-indigo', 'text' => 'Sur Commande'],
-                'reserved' => ['bg' => '#7c3aed', 'color' => '#ffffff', 'border' => '#6d28d9', 'dot' => 'dot-purple', 'text' => 'Réservé'],
-                'cancelled' => ['bg' => '#dc2626', 'color' => '#ffffff', 'border' => '#b91c1c', 'dot' => 'dot-red', 'text' => 'Annulée'],
-                default => ['bg' => '#d97706', 'color' => '#ffffff', 'border' => '#b45309', 'dot' => 'dot-amber', 'text' => 'En attente']
-            };
-        @endphp
 
         <!-- Delivery Status Pill (Interactive Quick Switcher) -->
         <div class="dropdown d-inline-block">

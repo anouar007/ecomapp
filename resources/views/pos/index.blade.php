@@ -800,15 +800,25 @@
 }
 
 .cart-item-card {
-    background: #f8fafc;
+    background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
     padding: 11px 12px;
     margin-bottom: 10px;
-    transition: border-color 0.15s;
+    transition: background-color 0.15s, border-color 0.15s;
+}
+
+.cart-item-card:nth-child(odd) {
+    background: #ffffff;
+}
+
+.cart-item-card:nth-child(even) {
+    background: #f3f4f6;
+    border-color: #d1d5db;
 }
 
 .cart-item-card:hover {
+    background: #e9eef5;
     border-color: #cbd5e1;
 }
 

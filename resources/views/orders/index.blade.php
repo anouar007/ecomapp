@@ -1374,12 +1374,42 @@
             }
         }
 
+        // Mobile Order Card Border Color
+        const mobCard = document.getElementById(`mobile-order-card-${orderId}`);
+        if (mobCard) {
+            const normalizedStMap = {
+                'pending': 'pending',
+                'en_demande': 'en_demande',
+                'reserved': 'reserved',
+                'réservé': 'reserved',
+                'processing': 'processing',
+                'en cours': 'processing',
+                'shipped': 'shipped',
+                'expédiée': 'shipped',
+                'delivered': 'delivered',
+                'livrée': 'delivered',
+                'cancelled': 'cancelled',
+                'annulée': 'cancelled'
+            };
+            const normalizedSt = normalizedStMap[st] || 'pending';
+            mobCard.classList.remove(
+                'mobile-order-status-pending',
+                'mobile-order-status-en_demande',
+                'mobile-order-status-reserved',
+                'mobile-order-status-processing',
+                'mobile-order-status-shipped',
+                'mobile-order-status-delivered',
+                'mobile-order-status-cancelled'
+            );
+            mobCard.classList.add(`mobile-order-status-${normalizedSt}`);
+        }
+
         // Mobile Delivery Badge
         const mobStatusPill = document.getElementById(`mob-status-pill-${orderId}`);
         if (mobStatusPill) {
             mobStatusPill.style.background = sInfo.mobBg;
             mobStatusPill.style.color = sInfo.mobColor;
-            mobStatusPill.style.border = `1px solid ${sInfo.mobBorder}`;
+            mobStatusPill.style.setProperty('border', `1px solid ${sInfo.mobBorder}`, 'important');
             const mobLabel = document.getElementById(`mob-status-label-${orderId}`);
             if (mobLabel) mobLabel.textContent = sInfo.label;
             const mobDot = document.getElementById(`mob-status-dot-${orderId}`);
