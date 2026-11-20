@@ -1234,8 +1234,8 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .checkout-input-group:focus-within {
-    border-color: #dc2626 !important;
-    box-shadow: 0 0 0 3.5px rgba(220, 38, 38, 0.15) !important;
+    border-color: #78c1ff !important;
+    box-shadow: 0 0 0 0px rgba(220, 38, 38, 0.15) !important;
 }
 
 .checkout-input-group .input-group-text {
@@ -1249,7 +1249,7 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .checkout-input-group:focus-within .input-group-text {
-    background-color: #fef2f2 !important;
+    background-color: #f8fafc !important;
     color: #dc2626 !important;
 }
 
@@ -1728,8 +1728,8 @@ document.addEventListener('DOMContentLoaded', function() {
     justify-content: center;
     flex-shrink: 0;
     font-size: 0.98rem;
-    background: #fef2f2;
-    color: #dc2626;
+    background: #f0fdf4;
+    color: #16a34a;
     transition: all 0.2s ease;
 }
 
@@ -1799,19 +1799,19 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .delivery-option-card.is-selected {
-    border-color: #dc2626;
-    background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
-    box-shadow: 0 4px 14px rgba(220, 38, 38, 0.12), 0 0 0 3px rgba(220, 38, 38, 0.08);
+        border-color: #16a34a;
+    background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+    box-shadow: 0 4px 14px rgba(22, 163, 74, 0.12), 0 0 0 3px rgba(22, 163, 74, 0.09);
 }
 
 .delivery-option-card.is-selected .delivery-card-icon {
-    background: #dc2626;
-    color: #ffffff;
+    background: #16a34a;
+    color: #ffff;
 }
 
 .delivery-option-card.is-selected .delivery-check-indicator {
-    background: #dc2626;
-    border-color: #dc2626;
+    background: #16a34a;
+    border-color: #16a34a;
 }
 
 .delivery-option-card.is-selected .delivery-check-indicator i {
@@ -1983,9 +1983,9 @@ document.addEventListener('DOMContentLoaded', function() {
     padding: 6px 12px;
     margin: 0 !important;
     border-radius: 7px !important;
-    border: 1px solid #fecaca;
-    background: #fef2f2;
-    color: #dc2626;
+    background: #016b9f;
+    border: none;
+    color: white;
     font-size: 0.77rem;
     font-weight: 600;
     white-space: nowrap;
@@ -1995,10 +1995,9 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .btn-geo-locate:hover:not(:disabled) {
-    background: #dc2626;
-    border-color: #dc2626;
+    background: #00537dff;
+    border-color: none;
     color: #ffffff;
-    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);
 }
 
 .btn-geo-locate:disabled,

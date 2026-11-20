@@ -12277,8 +12277,8 @@ html:not(.aos-init) [data-aos] {
 }
 
 .checkout-input-group:focus-within {
-    border-color: #dc2626 !important;
-    box-shadow: 0 0 0 3.5px rgba(220, 38, 38, .15) !important
+    border-color: #78c1ff !important;
+    box-shadow: 0 0 0 0px rgba(220, 38, 38, .15) !important
 }
 
 .checkout-input-group .input-group-text {
@@ -12292,7 +12292,7 @@ html:not(.aos-init) [data-aos] {
 }
 
 .checkout-input-group:focus-within .input-group-text {
-    background-color: #fef2f2 !important;
+    background-color: #f8fafc !important;
     color: #dc2626 !important
 }
 
